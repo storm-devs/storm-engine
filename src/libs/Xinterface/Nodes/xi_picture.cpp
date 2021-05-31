@@ -176,7 +176,7 @@ void CXI_PICTURE::SaveParametersToIni()
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 }
 
-void CXI_PICTURE::SetNewPicture(bool video, char *sNewTexName)
+void CXI_PICTURE::SetNewPicture(bool video, const char *sNewTexName)
 {
     ReleasePicture();
     if (video)
@@ -190,7 +190,7 @@ void CXI_PICTURE::SetNewPicture(bool video, char *sNewTexName)
     ChangeUV(uv);
 }
 
-void CXI_PICTURE::SetNewPictureFromDir(char *dirName)
+void CXI_PICTURE::SetNewPictureFromDir(const char *dirName)
 {
     char param[512];
     sprintf(param, "resource\\textures\\%s", dirName);
@@ -209,7 +209,7 @@ void CXI_PICTURE::SetNewPictureFromDir(char *dirName)
     }
 }
 
-void CXI_PICTURE::SetNewPictureByGroup(char *groupName, char *picName)
+void CXI_PICTURE::SetNewPictureByGroup(const char *groupName, const char *picName)
 {
     if (!m_pcGroupName || _stricmp(m_pcGroupName, groupName) != 0)
     {
@@ -260,17 +260,15 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
     case 2: // Set a new picture or video picture
     {
         const auto bVideo = message.Long() != 0;
-        char param[256];
-        message.String(sizeof(param) - 1, param);
-        SetNewPicture(bVideo, param);
+        const std::string &param = message.String();
+        SetNewPicture(bVideo, param.c_str());
     }
     break;
 
     case 3: // Get a random picture from the directory
     {
-        char param[256];
-        message.String(sizeof(param) - 1, param);
-        SetNewPictureFromDir(param);
+        const std::string &param = message.String();
+        SetNewPictureFromDir(param.c_str());
     }
     break;
 
@@ -301,11 +299,9 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
 
     case 6: // set new picture by group and picture name
     {
-        char groupName[256];
-        char picName[256];
-        message.String(sizeof(groupName), groupName);
-        message.String(sizeof(picName), picName);
-        SetNewPictureByGroup(groupName, picName);
+        const std::string &groupName = message.String();
+        const std::string &picName = message.String();
+        SetNewPictureByGroup(groupName.c_str(), picName.c_str());
     }
     break;
 
@@ -318,12 +314,11 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
 
     case 8: // remove texture from other picture to this
     {
-        char srcNodeName[256];
-        message.String(sizeof(srcNodeName), srcNodeName);
-        auto *pNod = static_cast<CINODE *>(ptrOwner->FindNode(srcNodeName, nullptr));
+        const std::string &srcNodeName = message.String();
+        auto *pNod = static_cast<CINODE *>(ptrOwner->FindNode(srcNodeName.c_str(), nullptr));
         if (pNod->m_nNodeType != NODETYPE_PICTURE)
         {
-            core.Trace("Warning! XINTERFACE:: node with name %s have not picture type.", srcNodeName);
+            core.Trace("Warning! XINTERFACE:: node with name %s have not picture type.", srcNodeName.c_str());
         }
         else
         {

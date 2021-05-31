@@ -1,8 +1,6 @@
 #include "SEA_AI.h"
-#include "../../Shared/messages.h"
+#include "../../shared/messages.h"
 #include "AIGroup.h"
-#include "AISeaGoods.h"
-#include "LocatorShow.h"
 
 SEA_AI::SEA_AI()
 {
@@ -78,8 +76,6 @@ void SEA_AI::ProcessMessage(uint32_t iMsg, uint32_t wParam, uint32_t lParam)
 
 uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
 {
-    char cGroupName[256], cOtherGroupName[256], cTemp[256];
-
     auto iCode = message.Long();
     switch (iCode)
     {
@@ -104,37 +100,39 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         AddShip(eidShip, pACharacter, pAShip);
     }
     break;
-    case AI_MESSAGE_GROUP_SET_LOCATION_OTHER_GROUP:
-        message.String(sizeof(cGroupName), cGroupName);
-        message.String(sizeof(cOtherGroupName), cOtherGroupName);
-        AIGroup::GroupSetLocationNearOtherGroup(cGroupName, cOtherGroupName);
+    case AI_MESSAGE_GROUP_SET_LOCATION_OTHER_GROUP: {
+        const std::string &cGroupName = message.String();
+        const std::string &cOtherGroupName = message.String();
+        AIGroup::GroupSetLocationNearOtherGroup(cGroupName.c_str(), cOtherGroupName.c_str());
         break;
-    case AI_MESSAGE_GROUP_SET_TYPE:
-        message.String(sizeof(cGroupName), cGroupName);
-        message.String(sizeof(cTemp), cTemp);
-        AIGroup::GroupSetType(cGroupName, cTemp);
+    }
+    case AI_MESSAGE_GROUP_SET_TYPE: {
+        const std::string &cGroupName = message.String();
+        const std::string &cTemp = message.String();
+        AIGroup::GroupSetType(cGroupName.c_str(), cTemp.c_str());
         break;
+    }
     case AI_MESSAGE_GROUP_SET_COMMANDER: {
-        message.String(sizeof(cGroupName), cGroupName);
+        const std::string &cGroupName = message.String();
         auto *pCharacter = message.AttributePointer();
-        AIGroup::GroupSetCommander(cGroupName, pCharacter);
+        AIGroup::GroupSetCommander(cGroupName.c_str(), pCharacter);
     }
     break;
     case AI_MESSAGE_GROUP_GET_ATTACK_HP: {
-        message.String(sizeof(cGroupName), cGroupName);
+        const std::string &cGroupName = message.String();
         auto fDistance = message.Float();
         auto *pVData = message.ScriptVariablePointer();
-        pVData->Set(AIGroup::GetAttackHP(cGroupName, fDistance));
+        pVData->Set(AIGroup::GetAttackHP(cGroupName.c_str(), fDistance));
     }
     break;
     case AI_MESSAGE_GROUP_SET_XYZ_AY: {
         float x, y, z, ay;
-        message.String(sizeof(cGroupName), cGroupName);
+        const std::string &cGroupName = message.String();
         x = message.Float();
         y = message.Float();
         z = message.Float();
         ay = message.Float();
-        AIGroup::SetXYZ_AY(cGroupName, CVECTOR(x, y, z), ay);
+        AIGroup::SetXYZ_AY(cGroupName.c_str(), CVECTOR(x, y, z), ay);
     }
     break;
     case AI_MESSAGE_SHIP_SET_SAIL_STATE: {
@@ -207,21 +205,23 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         uint32_t dwCommand = message.Long();
         switch (dwCommand)
         {
-        case AITASK_MOVE:
-            message.String(sizeof(cGroupName), cGroupName);
+        case AITASK_MOVE: {
+            const std::string &cGroupName = message.String();
             vPnt.x = message.Float();
             vPnt.y = message.Float();
             vPnt.z = message.Float();
-            AIGroup::GroupSetMove(cGroupName, vPnt);
+            AIGroup::GroupSetMove(cGroupName.c_str(), vPnt);
             break;
-        case AITASK_ATTACK:
-            message.String(sizeof(cGroupName), cGroupName);
-            message.String(sizeof(cGroupAttackingName), cGroupAttackingName);
-            AIGroup::GroupSetAttack(cGroupName, cGroupAttackingName);
+        }
+        case AITASK_ATTACK: {
+            const std::string &cGroupName = message.String();
+            const std::string &cGroupAttackingName = message.String();
+            AIGroup::GroupSetAttack(cGroupName.c_str(), cGroupAttackingName.c_str());
             break;
+        }
         case AITASK_RUNAWAY:
-            message.String(sizeof(cGroupName), cGroupName);
-            AIGroup::GroupSetRunAway(cGroupName);
+            const std::string &cGroupName = message.String();
+            AIGroup::GroupSetRunAway(cGroupName.c_str());
             break;
         }
     }
@@ -238,8 +238,8 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
     break;
     case AI_MESSAGE_SHIP_CHANGE_GROUP: {
         auto *pACharacter = message.AttributePointer();
-        message.String(sizeof(cGroupName), cGroupName);
-        AIGroup::ShipChangeGroup(pACharacter, cGroupName);
+        const std::string &cGroupName = message.String();
+        AIGroup::ShipChangeGroup(pACharacter, cGroupName.c_str());
     }
     break;
     case AI_MESSAGE_CANNON_FIRE: {

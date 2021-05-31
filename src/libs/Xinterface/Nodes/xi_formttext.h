@@ -51,7 +51,7 @@ class CXI_FORMATEDTEXT : public CINODE
         return true;
     }
 
-    void SetFormatedText(char *str);
+    void SetFormatedText(const char *str);
     void SetPointer(float fPos);
     float GetLineStep() const;
     float GetCurPos() const;

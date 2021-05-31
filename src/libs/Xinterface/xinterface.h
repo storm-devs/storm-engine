@@ -230,7 +230,7 @@ class XINTERFACE : public XINTERFACE_BASE
     void ShowPrevTexture();
     // initialisation function
     void LoadIni();
-    void LoadDialog(char *sFileName);
+    void LoadDialog(const char *sFileName);
     // control function
     CINODE *GetActivingNode(CINODE *findRoot);
     void DoControl();
@@ -242,13 +242,13 @@ class XINTERFACE : public XINTERFACE_BASE
     CINODE *GetClickNode(CINODE *searchNod, long xPos, long yPos) const;
     // release function
     void ReleaseOld();
-    void ReleaseDinamicPic(char *sPicName);
+    void ReleaseDinamicPic(const char *sPicName);
     // save load functions
-    bool SFLB_DoSaveFileData(char *saveName, char *saveData) const;
-    bool SFLB_GetSaveFileData(char *saveName, long bufSize, char *buf);
+    bool SFLB_DoSaveFileData(const char *saveName, const char *saveData) const;
+    bool SFLB_GetSaveFileData(const char *saveName, long bufSize, char *buf);
     char *SaveFileFind(long saveNum, char *buffer, size_t bufSize, long &fileSize);
-    bool NewSaveFileName(char *fileName) const;
-    void DeleteSaveFile(char *fileName);
+    bool NewSaveFileName(const char *fileName) const;
+    void DeleteSaveFile(const char *fileName);
     // node control
     void AddNodeToList(CINODE *nod, long priority = 80);
     // locked function
@@ -258,8 +258,8 @@ class XINTERFACE : public XINTERFACE_BASE
     // Game time function
     void IncrementGameTime(uint32_t dwDeltaTime);
     // Options functions
-    void SaveOptionsFile(char *fileName, ATTRIBUTES *pAttr);
-    void LoadOptionsFile(char *fileName, ATTRIBUTES *pAttr);
+    void SaveOptionsFile(const char *fileName, ATTRIBUTES *pAttr);
+    void LoadOptionsFile(const char *fileName, ATTRIBUTES *pAttr);
     //
     int LoadIsExist();
     //

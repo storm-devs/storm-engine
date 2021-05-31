@@ -1,5 +1,4 @@
 #include "Lightning.h"
-#include <stdio.h>
 
 LIGHTNING::LIGHTNING()
 {
@@ -92,7 +91,7 @@ void LIGHTNING::Realize(uint32_t Delta_Time)
             pR->vPos = pL->vPos;
             pR->fSize = pL->fSize;
             pR->fAngle = 0.0f;
-            pRS->DrawRects(pR, 1, static_cast<char *>(pL->sTechnique), dwSubTexX, dwSubTexY, pL->fScaleX, pL->fScaleY);
+            pRS->DrawRects(pR, 1, pL->sTechnique.c_str(), dwSubTexX, dwSubTexY, pL->fScaleX, pL->fScaleY);
         }
     }
 
@@ -109,7 +108,7 @@ void LIGHTNING::Realize(uint32_t Delta_Time)
             pR->vPos = pL->vPos;
             pR->fSize = pL->Flash.fSize;
             pR->fAngle = 0.0f;
-            pRS->DrawRects(pR, 1, static_cast<char *>(pL->Flash.sTechnique));
+            pRS->DrawRects(pR, 1, pL->Flash.sTechnique.c_str());
         }
     }
 }
@@ -128,7 +127,7 @@ uint64_t LIGHTNING::ProcessMessage(MESSAGE &message)
         auto *pL = &aLightnings.back();
 
         pL->dwSubTexture = message.Long();
-        message.String(sizeof(pL->sTechnique), pL->sTechnique);
+        pL->sTechnique = message.String();
         pL->fTime = message.Float();
         pL->dwFlickerTime = static_cast<uint32_t>(message.Long());
         pL->fSize = message.Float();
@@ -138,7 +137,7 @@ uint64_t LIGHTNING::ProcessMessage(MESSAGE &message)
         pL->vPos.y = message.Float();
         pL->vPos.z = message.Float();
 
-        message.String(sizeof(pL->Flash.sTechnique), pL->Flash.sTechnique);
+        pL->Flash.sTechnique = message.String();
         pL->Flash.fSize = message.Float();
         pL->Flash.fTime = message.Float();
 

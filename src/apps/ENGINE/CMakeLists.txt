@@ -20,7 +20,6 @@ add_executable(${PROJECT_NAME} WIN32
     ifs.h
     internal_functions.cpp
     Main.cpp
-    message_script.h
     messages.h
     s_classtab.cpp
     s_classtab.h

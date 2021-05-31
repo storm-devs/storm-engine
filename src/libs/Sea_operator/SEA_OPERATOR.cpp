@@ -2,9 +2,9 @@
 
 #include "core.h"
 
-#include "../../Shared/messages.h"
-#include "Entity.h"
+#include "../../shared/messages.h"
 #include "defines.h"
+#include "entity.h"
 #include "rands.h"
 
 char dbgs[1024];
@@ -57,8 +57,7 @@ uint64_t SEA_OPERATOR::ProcessMessage(MESSAGE &message)
         if (myShip != static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(firedShip)))
             break;
 
-        char bortName[256];
-        message.String(255, static_cast<char *>(bortName));
+        const std::string &bortName = message.String();
         CVECTOR direction, destination;
         direction.x = message.Float();
         direction.y = message.Float();
@@ -67,7 +66,7 @@ uint64_t SEA_OPERATOR::ProcessMessage(MESSAGE &message)
         destination.y = message.Float();
         destination.z = message.Float();
         ballTracked = false;
-        HandleShipFire(firedShip, bortName, direction, destination);
+        HandleShipFire(firedShip, bortName.c_str(), direction, destination);
     }
     break;
 
@@ -252,7 +251,7 @@ void SEA_OPERATOR::HandleShipIdle()
     actionBuffer.push(action);
 }
 
-void SEA_OPERATOR::HandleShipFire(entid_t _shipID, char *_bortName, const CVECTOR &_destination,
+void SEA_OPERATOR::HandleShipFire(entid_t _shipID, const char *_bortName, const CVECTOR &_destination,
                                   const CVECTOR &_direction)
 {
     auto bort = BORT_FRONT;

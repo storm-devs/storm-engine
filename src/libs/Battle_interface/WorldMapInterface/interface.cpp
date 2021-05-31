@@ -69,9 +69,8 @@ uint64_t WM_INTERFACE::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_BATTLE_LAND_MAKE_COMMAND: {
-        char param[256];
-        message.String(sizeof(param) - 1, param);
-        if (_stricmp(param, "cancel") == 0)
+        const std::string &param = message.String();
+        if (_stricmp(param.c_str(), "cancel") == 0)
         {
             ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
         }

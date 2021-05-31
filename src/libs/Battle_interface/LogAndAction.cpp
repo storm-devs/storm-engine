@@ -1,5 +1,5 @@
 #include "LogAndAction.h"
-#include "../../Shared/battle_interface/log_msg.h"
+#include "../../shared/battle_interface/log_msg.h"
 #include "controls.h"
 #include "core.h"
 #include "message.h"
@@ -106,8 +106,7 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
     {
     case LOG_ADD_STRING: {
         const auto stringImmortal = message.Long() != 0;
-        char param[256];
-        message.String(sizeof(param) - 1, param);
+        const std::string &param = message.String();
         if (stringImmortal)
         {
             // find the last element of the list
@@ -116,18 +115,18 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
                 if (last->alpha > 255.f)
                     break;
             if (last == nullptr)
-                SetString(param, true);
+                SetString(param.c_str(), true);
             else
             {
                 STORM_DELETE(last->str);
                 if (param[0] != 0)
                 {
-                    const auto len = strlen(param) + 1;
+                    const auto len = param.size() + 1;
                     if ((last->str = new char[len]) == nullptr)
                     {
                         throw std::runtime_error("allocate memory error");
                     }
-                    strcpy_s(last->str, len, param);
+                    strcpy_s(last->str, len, param.c_str());
                 }
                 else
                 {
@@ -147,13 +146,12 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
             }
         }
         else
-            SetString(param, false);
+            SetString(param.c_str(), false);
     }
     break;
     case LOG_SET_ACTIVE_ACTION: {
-        char param[256];
-        message.String(sizeof(param) - 1, param);
-        SetAction(param);
+        const std::string &param = message.String();
+        SetAction(param.c_str());
     }
     break;
     case LOG_AND_ACTIONS_INIT: {
@@ -183,9 +181,8 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
         }
         break;
     case LI_OTHER_MSG: {
-        char param[256];
-        message.String(sizeof(param) - 1, param);
-        if (_stricmp(param, "SetTimeScale") == 0)
+        const std::string &param = message.String();
+        if (_stricmp(param.c_str(), "SetTimeScale") == 0)
         {
             core.SetTimeScale(message.Float());
         }
@@ -419,7 +416,7 @@ void ILogAndActions::Release()
     rs = nullptr;
 }
 
-void ILogAndActions::SetString(char *str, bool immortal)
+void ILogAndActions::SetString(const char *str, bool immortal)
 {
     if (str == nullptr)
         return;
@@ -485,7 +482,7 @@ void ILogAndActions::SetString(char *str, bool immortal)
     }
 }
 
-void ILogAndActions::SetAction(char *actionName)
+void ILogAndActions::SetAction(const char *actionName)
 {
     ATTRIBUTES *pA;
 

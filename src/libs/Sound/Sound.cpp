@@ -1,8 +1,7 @@
-#include "../../Shared/messages.h"
+#include "../../shared/messages.h"
 #include "../SoundService/VSoundService.h"
-#include "Entity.h"
 
-#include "SOUND.H"
+#include "Sound.h"
 
 #include "core.h"
 
@@ -44,7 +43,6 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
 
     auto code = message.Long();
     CVECTOR vector, vector2;
-    char tempString[SOUND_STRING_SIZE];
     long temp, temp2, temp3, temp4, vt;
     long id, tempLong;
     float minD, maxD;
@@ -86,8 +84,8 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
         vector2.z = message.Float();
         soundService->SetCameraOrientation(vector, vector2);
         break;
-    case MSG_SOUND_PLAY:
-        message.String(sizeof(tempString), tempString); // filename
+    case MSG_SOUND_PLAY: {
+        const std::string &tempString = message.String(); // filename
 
         temp = message.Long(); // type
         // defaults
@@ -140,10 +138,11 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
         }
 
         outValue = static_cast<uint32_t>(soundService->SoundPlay(
-            tempString, static_cast<eSoundType>(temp), static_cast<eVolumeType>(vt), (temp2 != 0), (temp3 != 0),
+            tempString.c_str(), static_cast<eSoundType>(temp), static_cast<eVolumeType>(vt), (temp2 != 0), (temp3 != 0),
             (temp4 != 0), tempLong, &vector, minD, maxD, loopPauseTime, volume));
 
         break;
+    }
     case MSG_SOUND_STOP:
         id = message.Long();
         tempLong = message.Long();
@@ -208,23 +207,26 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
     case MSG_SOUND_SCHEME_RESET:
         soundService->ResetScheme();
         break;
-    case MSG_SOUND_SCHEME_SET:
-        message.String(sizeof(tempString), tempString); // scheme_name
-        soundService->SetScheme(tempString);
+    case MSG_SOUND_SCHEME_SET: {
+        const std::string &tempString = message.String();
+        soundService->SetScheme(tempString.c_str());
         break;
-    case MSG_SOUND_SCHEME_ADD:
-        message.String(sizeof(tempString), tempString); // scheme_name
-        soundService->AddScheme(tempString);
+    }
+    case MSG_SOUND_SCHEME_ADD: {
+        const std::string &tempString = message.String();
+        soundService->AddScheme(tempString.c_str());
         break;
+    }
 
     case MSG_SOUND_SET_ENABLED:
         soundService->SetEnabled(message.Long() != 0);
         break;
 
-    case MSG_SOUND_ALIAS_ADD:
-        message.String(sizeof(tempString), tempString); // alias_name
-        soundService->LoadAliasFile(tempString);
+    case MSG_SOUND_ALIAS_ADD: {
+        const std::string &tempString = message.String();
+        soundService->LoadAliasFile(tempString.c_str());
         break;
+    }
     }
 
     return outValue;

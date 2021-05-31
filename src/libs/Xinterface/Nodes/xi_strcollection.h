@@ -50,7 +50,7 @@ class CXI_STRCOLLECTION : public CINODE
 
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
-    STRINGDESCR *CreateNewDinamicString(char *strID, char *strStr);
+    STRINGDESCR *CreateNewDinamicString(const char *strID, const char *strStr);
 
   protected:
     int m_nStr;               // string quantity

@@ -28,7 +28,7 @@ class CXI_VIDEORECT : public CINODE
 
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
-    void StartVideoPlay(char *videoFile);
+    void StartVideoPlay(const char *videoFile);
 
     uint32_t m_dwColor;
     FXYRECT m_rectTex;

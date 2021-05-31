@@ -75,7 +75,7 @@ class SEA_OPERATOR : public Entity
     void FirstInit();
     bool IsTimeToActivate(bool _testControls = true);
     void SetIfMyShip(entid_t _shipID);
-    void HandleShipFire(entid_t _shipID, char *_bortName, const CVECTOR &_destination, const CVECTOR &_direction);
+    void HandleShipFire(entid_t _shipID, const char *_bortName, const CVECTOR &_destination, const CVECTOR &_direction);
     void HandleShipHit();
     void HandleShipIdle();
     void StartNewAction();

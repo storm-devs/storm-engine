@@ -267,16 +267,14 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     case 0: // Add dinamic string
     {
         // string ID & data
-        char paramID[256], paramStr[512];
-        message.String(sizeof(paramID), paramID);   // msg
-        message.String(sizeof(paramStr), paramStr); // msg
-        auto *pstr = CreateNewDinamicString(paramID, paramStr);
+        const std::string &paramID = message.String();
+        const std::string &paramStr = message.String();
+        auto *pstr = CreateNewDinamicString(paramID.c_str(), paramStr.c_str());
         if (pstr == nullptr)
             return -1;
         // string font
-        char fontName[256];
-        message.String(sizeof(fontName), fontName); // msg
-        pstr->nFontNum = m_rs->LoadFont(fontName);
+        const std::string &fontName = message.String();
+        pstr->nFontNum = m_rs->LoadFont(fontName.c_str());
         // string pos.x&y, color front&back, alignment, shadow, scale
         pstr->scrPos.x = message.Long() + m_hostRect.left; // msg
         pstr->scrPos.y = message.Long() + m_hostRect.top;  // msg
@@ -300,7 +298,7 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         const int nWidth = message.Long(); // msg
         if (nWidth > 0)
         {
-            const int realWidth = m_rs->StringWidth(paramStr, pstr->nFontNum, pstr->fScale);
+            const int realWidth = m_rs->StringWidth(paramStr.c_str(), pstr->nFontNum, pstr->fScale);
             if (realWidth > nWidth)
                 pstr->fScale *= static_cast<float>(nWidth - 1) / realWidth;
         }
@@ -309,9 +307,8 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     case 1: // change line by number
     {
         const auto n = message.Long() - 1;
-        char param[512];
-        message.String(sizeof(param), param);
-        ChangeString(n, param);
+        const std::string &param = message.String();
+        ChangeString(n, param.c_str());
     }
     break;
     case 2: // copy a line from one place to another (the first line is number 1)
@@ -368,7 +365,7 @@ void CXI_STRCOLLECTION::ChangeStringPos(long num, XYPOINT &pntNewPos) const
         m_pStrDescr[num].scrPos = pntNewPos;
 }
 
-CXI_STRCOLLECTION::STRINGDESCR *CXI_STRCOLLECTION::CreateNewDinamicString(char *strID, char *strStr)
+CXI_STRCOLLECTION::STRINGDESCR *CXI_STRCOLLECTION::CreateNewDinamicString(const char *strID, const char *strStr)
 {
     if (strID == nullptr || strID[0] == 0)
         return nullptr;

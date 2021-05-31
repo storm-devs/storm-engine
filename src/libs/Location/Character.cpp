@@ -12,7 +12,7 @@
 #include "CharactersGroups.h"
 #include "Lights.h"
 
-#include "../../Shared/messages.h"
+#include "../../shared/messages.h"
 #include "../SoundService/VSoundService.h"
 #include "defines.h"
 #include "geometry.h"
@@ -2937,23 +2937,19 @@ void Character::ReleaseSound(long id)
 
 bool Character::zLoadModel(MESSAGE &message)
 {
-    char name[256];
-    char ani[256];
     char mpath[300];
     EntityManager::EraseEntity(shadow);
     EntityManager::EraseEntity(waterrings);
     EntityManager::EraseEntity(mdl);
-    message.String(256, name);
-    name[255] = 0;
-    message.String(256, ani);
-    ani[255] = 0;
+    const std::string &name = message.String();
+    const std::string &ani = message.String();
     // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
     if (gs)
         gs->SetTexturePath("characters\\");
     // Path to the model
     strcpy_s(mpath, "characters\\");
-    strcat_s(mpath, name);
+    strcat_s(mpath, name.c_str());
     // Create and load the model
     if (!(mdl = EntityManager::CreateEntity("modelr")))
     {
@@ -2970,9 +2966,9 @@ bool Character::zLoadModel(MESSAGE &message)
     }
     if (gs)
         gs->SetTexturePath("");
-    if (!core.Send_Message(mdl, "ls", MSG_MODEL_LOAD_ANI, ani) != 0)
+    if (!core.Send_Message(mdl, "ls", MSG_MODEL_LOAD_ANI, ani.c_str()) != 0)
     {
-        core.Trace("Character animation '%s' not loaded", ani);
+        core.Trace("Character animation '%s' not loaded", ani.c_str());
         EntityManager::EraseEntity(mdl);
         return false;
     }
@@ -3019,33 +3015,27 @@ bool Character::zTeleport(MESSAGE &message, bool isAy)
 
 bool Character::zTeleportL(MESSAGE &message)
 {
-    char group[256];
-    char name[256];
-    message.String(256, group);
-    group[255] = 0;
-    message.String(256, name);
-    name[255] = 0;
-    return Teleport(group, name);
+    const std::string &group = message.String();
+    const std::string &name = message.String();
+    return Teleport(group.c_str(), name.c_str());
 }
 
 bool Character::zAddDetector(MESSAGE &message)
 {
     if (numDetectors >= sizeof(detector) / sizeof(Detector *))
         return false;
-    char group[256];
-    message.String(256, group);
-    group[255] = 0;
-    if (!group[0])
+    const std::string &group = message.String();
+    if (group.empty())
         return false;
     // Checking for creation
     for (long i = 0; i < numDetectors; i++)
     {
-        if (_stricmp(detector[i]->la->GetGroupName(), group) == 0)
+        if (_stricmp(detector[i]->la->GetGroupName(), group.c_str()) == 0)
             return false;
     }
     // Looking for a group
     auto *const location = GetLocation();
-    LocatorArray *la = location->FindLocatorsGroup(group);
+    LocatorArray *la = location->FindLocatorsGroup(group.c_str());
     if (!la)
         return false;
     detector[numDetectors++] = new Detector(la);
@@ -3054,12 +3044,10 @@ bool Character::zAddDetector(MESSAGE &message)
 
 bool Character::zDelDetector(MESSAGE &message)
 {
-    char group[256];
-    message.String(256, group);
-    group[255] = 0;
+    const std::string &group = message.String();
     for (long i = 0; i < numDetectors; i++)
     {
-        if (_stricmp(detector[i]->la->GetGroupName(), group) == 0)
+        if (_stricmp(detector[i]->la->GetGroupName(), group.c_str()) == 0)
         {
             detector[i]->Exit(this);
             delete detector[i];
@@ -3072,12 +3060,10 @@ bool Character::zDelDetector(MESSAGE &message)
 
 bool Character::zActionPlay(MESSAGE &message)
 {
-    char buf[256];
-    message.String(sizeof(buf) - 1, buf);
-    buf[sizeof(buf) - 1] = 0;
-    if (buf[0])
+    const std::string &buf = message.String();
+    if (!buf.empty())
     {
-        userIdle.SetName(buf);
+        userIdle.SetName(buf.c_str());
         MODEL *m = Model();
         if (!m)
             return false;
@@ -3094,13 +3080,9 @@ bool Character::zActionPlay(MESSAGE &message)
 bool Character::zEntry(MESSAGE &message)
 {
     EntryToLocation();
-    char grp[256];
-    char name[256];
-    message.String(sizeof(grp) - 1, grp);
-    grp[sizeof(grp) - 1] = 0;
-    message.String(sizeof(name) - 1, name);
-    name[sizeof(name) - 1] = 0;
-    return Teleport(grp, name);
+    const std::string &grp = message.String();
+    const std::string &name = message.String();
+    return Teleport(grp.c_str(), name.c_str());
 }
 
 bool Character::zSetBlade(MESSAGE &message)
@@ -3108,11 +3090,9 @@ bool Character::zSetBlade(MESSAGE &message)
     const long nBladeIdx = message.Long();
 
     isBladeSet = false;
-    char name[256];
-    message.String(sizeof(name) - 1, name);
-    name[sizeof(name) - 1] = 0;
+    const std::string &name = message.String();
     isBladeSet = true;
-    if (!name[0])
+    if (name.empty())
     {
         isBladeSet = false;
         SetFightMode(false);
@@ -3125,7 +3105,7 @@ bool Character::zSetBlade(MESSAGE &message)
         if (!(blade = EntityManager::CreateEntity("blade")))
             return false;
     }
-    core.Send_Message(blade, "llisfll", MSG_BLADE_SET, nBladeIdx, mdl, name, t, s, e);
+    core.Send_Message(blade, "llisfll", MSG_BLADE_SET, nBladeIdx, mdl, name.c_str(), t, s, e);
     UpdateWeapons();
     return true;
 }
@@ -3134,35 +3114,29 @@ bool Character::zSetGun(MESSAGE &message)
 {
     isGunSet = false;
     // if(!isBladeSet) return false; // eddy. let the gun hang, it does not interfere
-    char name[256];
-    message.String(sizeof(name) - 1, name);
-    name[sizeof(name) - 1] = 0;
+    const std::string &name = message.String();
     isGunSet = true;
-    if (!name[0])
+    if (name.empty())
         isGunSet = false;
     if (!EntityManager::GetEntityPointer(blade))
     {
         if (!(blade = EntityManager::CreateEntity("blade")))
             return false;
     }
-    core.Send_Message(blade, "lis", MSG_BLADE_GUNSET, mdl, name);
+    core.Send_Message(blade, "lis", MSG_BLADE_GUNSET, mdl, name.c_str());
     UpdateWeapons();
     return true;
 }
 
 bool Character::zTurnByLoc(MESSAGE &message)
 {
-    char group[256];
-    char name[256];
-    message.String(sizeof(group) - 1, group);
-    group[sizeof(group) - 1] = 0;
-    message.String(sizeof(name) - 1, name);
-    name[sizeof(name) - 1] = 0;
+    const std::string &group = message.String();
+    const std::string &name = message.String();
     auto *const location = GetLocation();
-    LocatorArray *la = location->FindLocatorsGroup(group);
+    LocatorArray *la = location->FindLocatorsGroup(group.c_str());
     if (!la)
         return false;
-    const long li = la->FindByName(name);
+    const long li = la->FindByName(name.c_str());
     if (li < 0)
         return false;
     CMatrix mtx;
@@ -3221,75 +3195,69 @@ bool Character::zDistByCharacter(MESSAGE &message, bool is2D)
 
 uint32_t Character::zExMessage(MESSAGE &message)
 {
-    char msg[64];
-    char grp[32];
-    message.String(sizeof(msg), msg);
-    msg[sizeof(msg) - 1] = 0;
+    const std::string &msg = message.String();
     LocatorArray *la;
     long i;
     VDATA *v;
     CVECTOR pos;
-    if (_stricmp(msg, "TieItem") == 0)
+    if (_stricmp(msg.c_str(), "TieItem") == 0)
     {
         i = message.Long();
-        char modelName[MAX_PATH];
-        message.String(sizeof(modelName), modelName);
-        char locatorName[128];
-        message.String(sizeof(locatorName), locatorName);
+        const std::string &modelName = message.String();
+        const std::string &locatorName = message.String();
         if (!EntityManager::GetEntityPointer(blade))
         {
             if (!(blade = EntityManager::CreateEntity("blade")))
                 return 0;
             UpdateWeapons();
         }
-        core.Send_Message(blade, "lilss", 1001, mdl, i, modelName, locatorName);
+        core.Send_Message(blade, "lilss", 1001, mdl, i, modelName.c_str(), locatorName.c_str());
         return 1;
     }
-    if (_stricmp(msg, "UntieItem") == 0)
+    if (_stricmp(msg.c_str(), "UntieItem") == 0)
     {
         i = message.Long();
         core.Send_Message(blade, "ll", 1002, i);
         return 1;
     }
     auto *const location = GetLocation();
-    if (_stricmp(msg, "HandLightOn") == 0)
+    if (_stricmp(msg.c_str(), "HandLightOn") == 0)
     {
         // remove the old source
         if (m_nHandLightID >= 0)
             location->GetLights()->DelMovingLight(m_nHandLightID);
         // create a new
-        message.String(sizeof(msg), msg);
-        m_nHandLightID = location->GetLights()->AddMovingLight(msg, GetHandLightPos());
+        const std::string &secondMsg = message.String();
+        m_nHandLightID = location->GetLights()->AddMovingLight(secondMsg.c_str(), GetHandLightPos());
         return 1;
     }
-    if (_stricmp(msg, "HandLightOff") == 0)
+    if (_stricmp(msg.c_str(), "HandLightOff") == 0)
     {
         if (m_nHandLightID >= 0)
             location->GetLights()->DelMovingLight(m_nHandLightID);
         m_nHandLightID = -1;
         return 1;
     }
-    if (_stricmp(msg, "PlaySound") == 0)
+    if (_stricmp(msg.c_str(), "PlaySound") == 0)
     {
-        message.String(32, msg);
-        msg[31] = 0;
-        return PlaySound(msg) != SOUND_INVALID_ID;
+        const std::string &secondMsg = message.String();
+        return PlaySound(secondMsg.c_str()) != SOUND_INVALID_ID;
     }
-    if (_stricmp(msg, "IsFightMode") == 0)
+    if (_stricmp(msg.c_str(), "IsFightMode") == 0)
     {
         return IsFight();
     }
-    if (_stricmp(msg, "IsSetBalde") == 0)
+    if (_stricmp(msg.c_str(), "IsSetBalde") == 0)
     {
         return IsSetBlade();
     }
-    if (_stricmp(msg, "IsDead") == 0)
+    if (_stricmp(msg.c_str(), "IsDead") == 0)
     {
         return deadName != nullptr;
     }
     if (!deadName)
     {
-        if (_stricmp(msg, "FindDialogCharacter") == 0)
+        if (_stricmp(msg.c_str(), "FindDialogCharacter") == 0)
         {
             Character *chr = FindDialogCharacter();
             if (chr && chr->AttributesPointer)
@@ -3298,23 +3266,22 @@ uint32_t Character::zExMessage(MESSAGE &message)
             }
             return -1;
         }
-        if (_stricmp(msg, "SetFightMode") == 0)
+        if (_stricmp(msg.c_str(), "SetFightMode") == 0)
         {
             return SetFightMode(message.Long() != 0, false);
         }
-        if (_stricmp(msg, "ChangeFightMode") == 0)
+        if (_stricmp(msg.c_str(), "ChangeFightMode") == 0)
         {
             return SetFightMode(message.Long() != 0, true);
         }
-        if (_stricmp(msg, "FindForvardLocator") == 0)
+        if (_stricmp(msg.c_str(), "FindForvardLocator") == 0)
         {
             // Group name
-            message.String(sizeof(grp), grp);
-            grp[sizeof(grp) - 1] = 0;
+            const std::string &grp = message.String();
             // Variable for locator name
             v = message.ScriptVariablePointer();
             // Looking for a locator
-            la = location->FindLocatorsGroup(grp);
+            la = location->FindLocatorsGroup(grp.c_str());
             i = location->supervisor.FindForvardLocator(la, curPos, CVECTOR(sinf(ay), 0.0f, cosf(ay)));
             if (i < 0)
             {
@@ -3324,19 +3291,17 @@ uint32_t Character::zExMessage(MESSAGE &message)
             v->Set((char *)la->LocatorName(i));
             return 1;
         }
-        if (_stricmp(msg, "DistToLocator") == 0)
+        if (_stricmp(msg.c_str(), "DistToLocator") == 0)
         {
             // Group name
-            message.String(sizeof(grp), grp);
-            grp[sizeof(grp) - 1] = 0;
+            const std::string &grp = message.String();
             // Locator name
-            message.String(sizeof(msg), msg);
-            msg[sizeof(msg) - 1] = 0;
+            const std::string &msg = message.String();
             v = message.ScriptVariablePointer();
-            la = location->FindLocatorsGroup(grp);
+            la = location->FindLocatorsGroup(grp.c_str());
             i = -1;
             if (la)
-                i = la->FindByName(msg);
+                i = la->FindByName(msg.c_str());
             if (i < 0)
             {
                 v->Set(-1.0f);
@@ -3346,40 +3311,39 @@ uint32_t Character::zExMessage(MESSAGE &message)
             v->Set(sqrtf(~(pos - curPos)));
             return 1;
         }
-        if (_stricmp(msg, "InDialog") == 0)
+        if (_stricmp(msg.c_str(), "InDialog") == 0)
         {
             isDialog = message.Long() != 0;
             return 1;
         }
-        if (_stricmp(msg, "SetSex") == 0)
+        if (_stricmp(msg.c_str(), "SetSex") == 0)
         {
             isMale = message.Long() != 0;
             return 1;
         }
-        if (_stricmp(msg, "SetFightWOWeapon") == 0)
+        if (_stricmp(msg.c_str(), "SetFightWOWeapon") == 0)
         {
             isFightWOWps = message.Long() != 0;
             UpdateWeapons();
             return 1;
         }
-        if (_stricmp(msg, "LockFightMode") == 0)
+        if (_stricmp(msg.c_str(), "LockFightMode") == 0)
         {
             lockFightMode = message.Long() != 0;
             return 1;
         }
-        if (_stricmp(msg, "CheckFightMode") == 0)
+        if (_stricmp(msg.c_str(), "CheckFightMode") == 0)
         {
             return isFight;
         }
-        if (_stricmp(msg, "IsActive") == 0)
+        if (_stricmp(msg.c_str(), "IsActive") == 0)
         {
             return isActiveState;
         }
-        if (_stricmp(msg, "CheckID") == 0)
+        if (_stricmp(msg.c_str(), "CheckID") == 0)
         {
 #ifdef _DEBUG
-            message.String(sizeof(msg), msg);
-            msg[sizeof(msg) - 1] = 0;
+            const std::string &msg = message.String();
             if (AttributesPointer)
             {
                 const char *id = AttributesPointer->GetAttribute("id");
@@ -3387,16 +3351,16 @@ uint32_t Character::zExMessage(MESSAGE &message)
                 {
                     if (strcmp(id, characterID) != 0)
                         __debugbreak();
-                    if (strcmp(id, msg) != 0)
+                    if (strcmp(id, msg.c_str()) != 0)
                         __debugbreak();
                 }
             }
-            if (strcmp(msg, characterID) != 0)
+            if (strcmp(msg.c_str(), characterID) != 0)
                 __debugbreak();
 #endif
             return 1;
         }
-        if (_stricmp(msg, "GunBelt") == 0)
+        if (_stricmp(msg.c_str(), "GunBelt") == 0)
         {
             if (message.Long() != 0)
                 core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
@@ -3409,10 +3373,8 @@ uint32_t Character::zExMessage(MESSAGE &message)
 
 bool Character::zPlaySound(MESSAGE &message)
 {
-    char name[64];
-    message.String(sizeof(name), name);
-    name[sizeof(name) - 1] = 0;
-    return PlaySound(name) != SOUND_INVALID_ID;
+    const std::string &name = message.String();
+    return PlaySound(name.c_str()) != SOUND_INVALID_ID;
 }
 
 // Check the ability to fly

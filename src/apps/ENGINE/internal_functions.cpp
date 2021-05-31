@@ -385,7 +385,7 @@ uint32_t COMPILER::GetIntFunctionCode(const char *func_name)
 DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t arguments)
 {
     //    char Format_string[MAX_PATH];
-    char Message_string[2 * MAX_PATH];
+    std::string Message_string;
     entid_t ent;
     uint32_t functions_num;
     uint32_t function_code;
@@ -418,7 +418,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
     ATTRIBUTES *pA;
     ATTRIBUTES *pRoot;
     Entity *pE;
-    MESSAGE_SCRIPT ms;
+    MESSAGE ms;
     uint32_t s_off;
 
     static EntityManager::EntityVector *entVec;
@@ -1110,10 +1110,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
         if (TempLong1 == TempLong2)
         {
-            Message_string[0] = pChar[TempLong1];
-            Message_string[1] = 0;
+            Message_string = std::string(pChar[TempLong1], 1);
             pV = SStack.Push();
-            pV->Set(Message_string);
+            pV->Set(Message_string.c_str());
             pVResult = pV;
             return pV;
         }
@@ -1125,10 +1124,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pVResult = pV;
             return pV;
         }
-        memcpy(Message_string, pChar + TempLong1, TempLong2 - TempLong1 + 1);
-        Message_string[TempLong2 - TempLong1 + 1] = 0;
+        Message_string = std::string(pChar + TempLong1, pChar + TempLong2 + 1);
         pV = SStack.Push();
-        pV->Set(Message_string);
+        pV->Set(Message_string.c_str());
         pVResult = pV;
         return pV;
         break;
@@ -1701,8 +1699,8 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             return pResult;
         case 's':
             pResult = SStack.Push();
-            pEventMessage->String(sizeof(Message_string), Message_string);
-            pResult->Set(Message_string);
+            Message_string = pEventMessage->String();
+            pResult->Set(Message_string.c_str());
             pVResult = pResult;
             return pResult;
         case 'i':
@@ -1792,7 +1790,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         if (arguments > 1)
         {
             CreateMessage(&ms, s_off, 1);
-            ms.ResetIndex();
+            ms.Move2Start();
             ProcessEvent(pChar, &ms);
         }
         else
@@ -1804,7 +1802,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         // set stack pointer to correct position (vars in stack remain valid)
         break;
     case FUNC_POSTEVENT:
-        MESSAGE_SCRIPT *pMS;
+        MESSAGE *pMS;
         S_EVENTMSG *pEM;
         s_off = SStack.GetDataNum() - arguments; // set stack offset
         pV = SStack.Read(s_off, 0);
@@ -1823,9 +1821,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->Get(TempLong1);
         if (arguments >= 4) // event w/o message
         {
-            pMS = new MESSAGE_SCRIPT;
+            pMS = new MESSAGE();
             CreateMessage(pMS, s_off, 2);
-            pMS->ResetIndex();
+            pMS->Move2Start();
         }
         else
             pMS = nullptr;
@@ -1854,7 +1852,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pE = EntityManager::GetEntityPointer(ent);
         if (pE)
         {
-            ms.ResetIndex();
+            ms.Move2Start();
             mresult = pE->ProcessMessage(ms);
         }
         for (n = 0; n < arguments; n++)
@@ -2570,7 +2568,7 @@ void COMPILER::DumpAttributes(ATTRIBUTES *pA, long level)
 }
 
 // assume first param - format string
-bool COMPILER::CreateMessage(MESSAGE_SCRIPT *pMs, uint32_t s_off, uint32_t var_offset, bool s2s)
+bool COMPILER::CreateMessage(MESSAGE *pMs, uint32_t s_off, uint32_t var_offset, bool s2s)
 {
     uintptr_t TempPtr;
     long TempLong1;
@@ -2623,7 +2621,7 @@ bool COMPILER::CreateMessage(MESSAGE_SCRIPT *pMs, uint32_t s_off, uint32_t var_o
                 return false;
             }
             pV->Get(TempLong1);
-            pMs->Set((char *)&TempLong1);
+            pMs->Set(TempLong1);
             break;
         case 'p':
             pV = pV->GetVarPointer();
@@ -2633,7 +2631,7 @@ bool COMPILER::CreateMessage(MESSAGE_SCRIPT *pMs, uint32_t s_off, uint32_t var_o
                 return false;
             }
             pV->GetPtr(TempPtr);
-            pMs->Set((char *)&TempPtr);
+            pMs->Set(TempPtr);
             break;
         case 'f':
             pV = pV->GetVarPointer();
@@ -2650,7 +2648,7 @@ bool COMPILER::CreateMessage(MESSAGE_SCRIPT *pMs, uint32_t s_off, uint32_t var_o
                 }
             }
             pV->Get(TempFloat1);
-            pMs->Set((char *)&TempFloat1);
+            pMs->Set(TempFloat1);
             break;
         case 'i':
             pV = pV->GetVarPointer();
@@ -2660,11 +2658,11 @@ bool COMPILER::CreateMessage(MESSAGE_SCRIPT *pMs, uint32_t s_off, uint32_t var_o
                 return false;
             }
             pV->Get(TempEid);
-            pMs->Set((char *)&TempEid);
+            pMs->SetEntity(TempEid);
             break;
         case 'e':
             pV = pV->GetVarPointer();
-            pMs->Set((char *)&pV);
+            pMs->Set(pV);
             break;
         case 's':
             if (pV->GetType() != VAR_STRING)
@@ -2673,7 +2671,14 @@ bool COMPILER::CreateMessage(MESSAGE_SCRIPT *pMs, uint32_t s_off, uint32_t var_o
                 return false;
             }
             pV->Get(pChar);
-            pMs->Set((char *)pChar);
+            if (pChar != nullptr)
+            {
+                pMs->Set(pChar);
+            }
+            else
+            {
+                pMs->Set("");
+            }
             break;
         case 'a':
             pV = pV->GetVarPointer();
@@ -2683,7 +2688,7 @@ bool COMPILER::CreateMessage(MESSAGE_SCRIPT *pMs, uint32_t s_off, uint32_t var_o
                 return false;
             }
             pA = pV->GetAClass();
-            pMs->Set((char *)&pA);
+            pMs->Set(pA);
             break;
         }
         n++;

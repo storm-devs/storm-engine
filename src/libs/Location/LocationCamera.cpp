@@ -12,10 +12,10 @@
 
 #include "core.h"
 
-#include "../../Shared/messages.h"
+#include "../../shared/messages.h"
 #include "Character.h"
-#include "Entity.h"
 #include "Location.h"
+#include "entity.h"
 #include "sea_base.h"
 
 //#define CAMERA_VIEW_TEST_ENABLE
@@ -416,10 +416,9 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
     break;
 
     case -2: {
-        char trackname[MAX_PATH];
-        message.String(sizeof(trackname), trackname);
+        const std::string &trackname = message.String();
         const auto fTrackTime = message.Float();
-        LoadCameraTrack(trackname, fTrackTime);
+        LoadCameraTrack(trackname.c_str(), fTrackTime);
         auto *pA = message.AttributePointer();
         // SetTrackCameraPauses(pA);
     }

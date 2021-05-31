@@ -33,9 +33,9 @@ class CXI_PICTURE : public CINODE
 
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
-    void SetNewPicture(bool video, char *sNewTexName);
-    void SetNewPictureFromDir(char *dirName);
-    void SetNewPictureByGroup(char *groupName, char *picName);
+    void SetNewPicture(bool video, const char *sNewTexName);
+    void SetNewPictureFromDir(const char *dirName);
+    void SetNewPictureByGroup(const char *groupName, const char *picName);
     void SetNewPictureByPointer(IDirect3DBaseTexture9 *pTex);
     void ReleasePicture();
 

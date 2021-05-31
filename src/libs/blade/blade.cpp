@@ -7,7 +7,7 @@ Comments:
 model binded to an animated locator
 ******************************************************************************/
 #include "blade.h"
-#include "../../Shared/messages.h"
+#include "../../shared/messages.h"
 #include "geometry.h"
 static const char *handName = "Saber_hand";
 static const char *beltName = "Saber_belt";
@@ -171,15 +171,13 @@ bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
     EntityManager::EraseEntity(eid);
 
     // model name
-    char mdlName[200];
-    message.String(sizeof(mdlName), mdlName);
-    mdlName[sizeof(mdlName) - 1] = 0;
-    if (mdlName[0] != '\0')
+    const std::string &mdlName = message.String();
+    if (!mdlName.empty())
     {
         // path of the model
         char path[256];
         strcpy_s(path, "Ammo\\");
-        strcat_s(path, mdlName);
+        strcat_s(path, mdlName.c_str());
         // path of the textures
         auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
         if (gs)
@@ -348,15 +346,13 @@ bool BLADE::LoadGunModel(MESSAGE &message)
     EntityManager::EraseEntity(gun);
     man = message.EntityID();
     // model name
-    char mdlName[200];
-    message.String(sizeof(mdlName), mdlName);
-    mdlName[sizeof(mdlName) - 1] = 0;
-    if (mdlName[0] != '\0')
+    const std::string &mdlName = message.String();
+    if (!mdlName.empty())
     {
         // path of the model
         char path[256];
         strcpy_s(path, "Ammo\\");
-        strcat_s(path, mdlName);
+        strcat_s(path, mdlName.c_str());
         // path of the textures
         auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
         if (gs)
@@ -538,16 +534,14 @@ void BLADE::AddTieItem(MESSAGE &message)
 {
     const auto nItemIdx = message.Long();
 
-    char mdlName[MAX_PATH];
-    message.String(sizeof(mdlName), mdlName);
-
-    char locName[128];
-    message.String(sizeof(locName), locName);
+    const std::string &mdlName = message.String();
+    const std::string &locName = message.String();
 
     auto n = FindTieItemByIndex(nItemIdx);
     if (n >= 0)
     {
-        core.Trace("Warning! BLADE::AddTieItem(%d,%s,%s) already set that item", nItemIdx, mdlName, locName);
+        core.Trace("Warning! BLADE::AddTieItem(%d,%s,%s) already set that item", nItemIdx, mdlName.c_str(),
+                   locName.c_str());
     }
     else
     {
@@ -557,11 +551,12 @@ void BLADE::AddTieItem(MESSAGE &message)
         if (n < ITEMS_INFO_QUANTITY)
         {
             items[n].nItemIndex = nItemIdx;
-            items[n].LoadItemModel(mdlName, locName);
+            items[n].LoadItemModel(mdlName.c_str(), locName.c_str());
         }
         else
         {
-            core.Trace("Warning! BLADE::AddTieItem(%d,%s,%s) very mach items already set", nItemIdx, mdlName, locName);
+            core.Trace("Warning! BLADE::AddTieItem(%d,%s,%s) very mach items already set", nItemIdx, mdlName.c_str(),
+                       locName.c_str());
         }
     }
 }

@@ -340,26 +340,27 @@ uint64_t CORE::Send_Message(entid_t Destination, const char *Format, ...)
     if (!ptr)
         return 0;
 
-    message.Reset(Format); // reset message class
-    PZERO(&message.Sender_ID, sizeof(entid_t));
-    va_start(message.args, Format);
+    va_list args;
+    va_start(args, Format);
+    message.Reset(Format, args);
     const auto rc = static_cast<Entity *>(ptr)->ProcessMessage(message); // transfer control
-    va_end(message.args);
+    va_end(args);
     return rc;
 }
 
 uint32_t CORE::PostEvent(const char *Event_name, uint32_t post_time, const char *Format, ...)
 {
-    MESSAGE_SCRIPT *pMS;
+    MESSAGE *pMS;
     MESSAGE message;
 
     entid_t id;
 
     if (Format != nullptr)
     {
-        pMS = new MESSAGE_SCRIPT;
-        va_start(message.args, Format);
-        message.Reset(Format);
+        pMS = new MESSAGE();
+        va_list args;
+        va_start(args, Format);
+        message.Reset(Format, args);
         pMS->Reset(Format);
 
         auto bAction = true;
@@ -371,31 +372,31 @@ uint32_t CORE::PostEvent(const char *Event_name, uint32_t post_time, const char 
             case 'l':
                 long v;
                 v = message.Long();
-                pMS->Set((char *)&v);
+                pMS->Set(v);
                 break;
             case 'f':
                 float f;
                 f = message.Float();
-                pMS->Set((char *)&f);
+                pMS->Set(f);
                 break;
             case 'i':
                 id = message.EntityID();
-                pMS->Set((char *)&id);
+                pMS->SetEntity(id);
                 break;
             case 'e':
                 VDATA *e;
                 e = message.ScriptVariablePointer();
-                pMS->Set((char *)&e);
+                pMS->Set(e);
                 break;
-            case 's':
-                char *s;
-                s = message.StringPointer();
-                pMS->Set(static_cast<char *>(s));
+            case 's': {
+                const std::string &s = message.StringPointer();
+                pMS->Set(s);
                 break;
+            }
             case 'a':
                 ATTRIBUTES *a;
                 a = message.AttributePointer();
-                pMS->Set((char *)&a);
+                pMS->Set(a);
                 break;
 
                 //-------------------------------------
@@ -404,7 +405,7 @@ uint32_t CORE::PostEvent(const char *Event_name, uint32_t post_time, const char 
                 break;
             }
         }
-        va_end(message.args);
+        va_end(args);
     }
     else
         pMS = nullptr;
@@ -423,13 +424,14 @@ VDATA *CORE::Event(const char *Event_name, const char *Format, ...)
         pVD = Compiler->ProcessEvent(Event_name);
         return pVD;
     }
+    va_list args;
+    va_start(args, Format);
     MESSAGE message;
-    va_start(message.args, Format); // 1
-    message.Reset(Format);          // reset message class    // 2
+    message.Reset(Format, args);
     // ....
     pVD = Compiler->ProcessEvent(Event_name, message);
 
-    va_end(message.args);
+    va_end(args);
     return pVD;
 }
 

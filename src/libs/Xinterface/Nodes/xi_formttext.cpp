@@ -786,7 +786,7 @@ void CXI_FORMATEDTEXT::GetOneLine(int fontNum, char *pStr, char *buf, int bufSiz
     }
 }
 
-void CXI_FORMATEDTEXT::SetFormatedText(char *str)
+void CXI_FORMATEDTEXT::SetFormatedText(const char *str)
 {
     // delete old lines
     while (m_listRoot != nullptr)

@@ -315,13 +315,12 @@ uint32_t CXI_BUTTON::MessageProc(long msgcode, MESSAGE &message)
 
     case 2: // change picture
     {
-        char param[256];
-        message.String(sizeof(param), param);
-        const auto len = strlen(param) + 1;
+        const std::string &param = message.String();
+        const auto len = param.size() + 1;
         if (len == 1)
             break;
 
-        if (m_sGroupName == nullptr || _stricmp(m_sGroupName, param) != 0)
+        if (m_sGroupName == nullptr || _stricmp(m_sGroupName, param.c_str()) != 0)
         {
             PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
             STORM_DELETE(m_sGroupName);
@@ -329,12 +328,12 @@ uint32_t CXI_BUTTON::MessageProc(long msgcode, MESSAGE &message)
             m_sGroupName = new char[len];
             if (m_sGroupName == nullptr)
                 throw std::runtime_error("allocate memory error");
-            memcpy(m_sGroupName, param, len);
+            memcpy(m_sGroupName, param.c_str(), len);
             m_idTex = pPictureService->GetTextureID(m_sGroupName);
         }
 
-        message.String(sizeof(param), param);
-        pPictureService->GetTexturePos(m_sGroupName, param, m_tRect);
+        const std::string &param2 = message.String();
+        pPictureService->GetTexturePos(m_sGroupName, param2.c_str(), m_tRect);
     }
     break;
     }

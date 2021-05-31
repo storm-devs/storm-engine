@@ -30,8 +30,6 @@ Messages and save/load state format specificators:
 	'd' - double
 	'p' - pointer (char *)
 	's' - string (char *)
-	'm' - memory block (dword size, char * memory)
-	'v' - structure (sizeof(struct),struct)
 
 	Examples read:
 	byte	b = m.Byte();
@@ -41,22 +39,11 @@ Messages and save/load state format specificators:
 	float	f = m.Float();
 	double	d = m.Double();
 	char *	p = m.Pointer();
-	
-	char s[200];
-	m.String(sizeof(s),s);
-
-	char buffer[1024];
-	m.MemoryBlock(sizeof(buffer),buffer);
-
-	RECT struct;
-	m.Struct(sizeof(struct),&struct);
-
+	std::string s = m.String();
 
 	Examples write:
 	Send_Message("bwlufdp",b,w,l,u,f,d,p);
-	Send_Message("s",s);
-	Send_Message("m",sizeof(buffer),buffer);
-	Send_Message("v",sizeof(struct),struct);
+	Send_Message("s",s.c_str());
 
 Save state mechanism scheme:
 	

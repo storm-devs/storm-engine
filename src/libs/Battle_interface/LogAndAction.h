@@ -47,8 +47,8 @@ class ILogAndActions : public Entity
     void ActionChange(bool bFastComShow, bool bLogStringShow);
     void Release();
 
-    void SetString(char *str, bool immortal);
-    void SetAction(char *actionName);
+    void SetString(const char *str, bool immortal);
+    void SetAction(const char *actionName);
 
   protected:
     // log stings parameters

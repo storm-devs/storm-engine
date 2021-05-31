@@ -1,10 +1,10 @@
 #include "aviplayer.h"
-#include <stdio.h>
+#include <cstdio>
 
 #include "core.h"
 
 #include "../shared/interface/messages.h"
-#include "Entity.h"
+#include "entity.h"
 
 #define IRELEASE(i)                                                                                                    \
     {                                                                                                                  \
@@ -144,11 +144,9 @@ uint64_t CAviPlayer::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_SET_VIDEO_PLAY: {
-        char param[256];
-        char vidName[256];
-        message.String(sizeof(param) - 1, param);
-        sprintf_s(vidName, "%s\\%s", VIDEO_DIRECTORY, param);
-        if (!PlayMedia(vidName))
+        const std::string &param = message.String();
+        const std::string vidName = fmt::format("{}\\{}", VIDEO_DIRECTORY, param);
+        if (!PlayMedia(vidName.c_str()))
         {
             CleanupInterfaces();
             core.PostEvent("ievntEndVideo", 1, nullptr);
@@ -159,7 +157,7 @@ uint64_t CAviPlayer::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-bool CAviPlayer::PlayMedia(char *fileName)
+bool CAviPlayer::PlayMedia(const char *fileName)
 {
     auto hr = S_OK;
     DDSURFACEDESC ddsd;

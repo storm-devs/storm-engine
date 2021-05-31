@@ -42,7 +42,7 @@ WdmObjects::WdmObjects()
     {
         entryModels[i] = -1;
     }
-    strcpy(coordinate, "N -- --' W -- --'");
+    coordinate = "N -- --' W -- --'";
     strcpy(stCoordinate, "Coordinates");
     resizeRatio = 1.0f;
 }

@@ -1,5 +1,5 @@
 #include "backscene.h"
-#include "../Shared/messages.h"
+#include "../shared/messages.h"
 #include "../xinterface.h"
 #include "geometry.h"
 #include "math3d/Matrix.h"
@@ -308,23 +308,25 @@ void InterfaceBackScene::Realize(uint32_t Delta_Time)
 uint64_t InterfaceBackScene::ProcessMessage(MESSAGE &message)
 {
     const auto nMsgCode = message.Long();
-    char param[1024];
     switch (nMsgCode)
     {
-    case 0: // load model
-        message.String(sizeof(param), param);
-        LoadModel(param);
+    case 0: { // load model
+        const std::string &param = message.String();
+        LoadModel(param.c_str());
         break;
+    }
 
-    case 1: // set camera
-        message.String(sizeof(param), param);
-        SetCameraPosition(param);
+    case 1: { // set camera
+        const std::string &param = message.String();
+        SetCameraPosition(param.c_str());
         break;
+    }
 
-    case 2: // set ship position by locator
-        message.String(sizeof(param), param);
-        SetShipPosition(param, message.AttributePointer());
+    case 2: { // set ship position by locator
+        const std::string &param = message.String();
+        SetShipPosition(param.c_str(), message.AttributePointer());
         break;
+    }
 
     case 3: // create menu list
     {
@@ -368,22 +370,22 @@ uint64_t InterfaceBackScene::ProcessMessage(MESSAGE &message)
 
     case 8: // set light source
     {
-        message.String(sizeof(param), param); // light attributes name
-        InitLight(AttributesPointer ? AttributesPointer->GetAttributeClass(param) : nullptr);
+        const std::string &param = message.String();
+        InitLight(AttributesPointer ? AttributesPointer->GetAttributeClass(param.c_str()) : nullptr);
     }
     break;
 
     case 9: // add animation model
     {
-        message.String(sizeof(param), param); // animation model attributes name
-        InitAniModel(AttributesPointer ? AttributesPointer->GetAttributeClass(param) : nullptr);
+        const std::string &param = message.String();
+        InitAniModel(AttributesPointer ? AttributesPointer->GetAttributeClass(param.c_str()) : nullptr);
     }
     break;
 
     case 10: // add model
     {
-        message.String(sizeof(param), param); // model attributes name
-        InitStaticModel(AttributesPointer ? AttributesPointer->GetAttributeClass(param) : nullptr);
+        const std::string &param = message.String();
+        InitStaticModel(AttributesPointer ? AttributesPointer->GetAttributeClass(param.c_str()) : nullptr);
     }
     break;
     }

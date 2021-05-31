@@ -2,13 +2,13 @@
 
 #include "core.h"
 
-#include "../../Shared/battle_interface/msg_control.h"
-#include "../../Shared/sea_ai/Script_defines.h"
+#include "../../shared/battle_interface/msg_control.h"
 #include "../../shared/mast_msg.h"
 #include "../../shared/sail_msg.h"
-#include "Entity.h"
+#include "../../shared/sea_ai/Script_defines.h"
 #include "Weather_Base.h"
 #include "defines.h"
+#include "entity.h"
 #include "ship_base.h"
 #include "vfile_service.h"
 
@@ -993,27 +993,22 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
         m_nMastCreatedCharacter = message.Long();
         if (m_nMastCreatedCharacter != -1)
         {
-            char param[256];
-            message.String(sizeof(param) - 1, param);
-            param[sizeof(param) - 1] = 0;
-            int slen = strlen(param);
-            if (slen > 0)
+            const std::string &param = message.String();
+            if (!param.empty())
             {
-                if ((m_sMastName = new char[slen + 1]) == nullptr)
+                if ((m_sMastName = new char[param.size() + 1]) == nullptr)
                 {
                     throw std::runtime_error("allocate memory error");
                 }
-                strcpy_s(m_sMastName, slen + 1, param);
+                strcpy_s(m_sMastName, param.size() + 1, param.c_str());
             }
         }
         break;
 
         // script message
     case MSG_SAIL_SCRIPT_PROCESSING: {
-        char param[256];
-        param[0] = 0;
-        message.String(sizeof(param), param);
-        return ScriptProcessing(param, message);
+        const std::string &param = message.String();
+        return ScriptProcessing(param.c_str(), message);
     }
     break;
     }
