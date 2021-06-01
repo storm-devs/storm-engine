@@ -1107,15 +1107,6 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pVResult = pV;
             return pV;
         }
-
-        if (TempLong1 == TempLong2)
-        {
-            Message_string = std::string(pChar[TempLong1], 1);
-            pV = SStack.Push();
-            pV->Set(Message_string.c_str());
-            pVResult = pV;
-            return pV;
-        }
         Message_string = std::string(pChar + TempLong1, pChar + TempLong2 + 1);
         pV = SStack.Push();
         pV->Set(Message_string.c_str());
