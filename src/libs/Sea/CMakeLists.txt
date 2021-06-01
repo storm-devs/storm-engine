@@ -2,7 +2,7 @@ project(sea)
 
 add_library(${PROJECT_NAME} STATIC
     EnvMap.cpp
-    sea.cpp
+    SEA.cpp
     SEA.h
     sea_defines.h
     sea_struct.h

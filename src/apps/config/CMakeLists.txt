@@ -8,7 +8,7 @@ add_executable(${PROJECT_NAME} WIN32
     StdAfx.cpp
     StdAfx.h
 
-    ${STORM_RESOURCE_DIR}/setup/setup.rc
+    ${STORM_RESOURCE_DIR}/setup/Setup.rc
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${STORM_RESOURCE_DIR}/setup)
