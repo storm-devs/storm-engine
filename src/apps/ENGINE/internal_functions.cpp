@@ -1116,14 +1116,6 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pVResult = pV;
             return pV;
         }
-        if (TempLong2 - TempLong1 >= sizeof(Message_string))
-        {
-            SetError("internal: buffer too small");
-            pV = SStack.Push();
-            pV->Set("");
-            pVResult = pV;
-            return pV;
-        }
         Message_string = std::string(pChar + TempLong1, pChar + TempLong2 + 1);
         pV = SStack.Push();
         pV->Set(Message_string.c_str());

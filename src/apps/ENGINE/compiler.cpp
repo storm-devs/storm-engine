@@ -1793,8 +1793,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         SetError("Invalid variable name");
                         return false;
                     }
-                    strcpy_s(var_name, Token.GetData());
-                    lvi.name = var_name;
+                    lvi.name = Token.GetData();
                     lvi.elements = 1;
                     Token.Get();
                     if (Token.GetType() == SQUARE_OPEN_BRACKET)
@@ -1828,7 +1827,12 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         Token.Get(); // SQUARE_CLOSE_BRACKET
                         Token.Get();
                     }
-                    if (!FuncTab.AddFuncVar(func_code, lvi))
+
+                    if (lvi.name.empty())
+                    {
+                        SetWarning("Empty variable name");
+                    }
+                    else if (!FuncTab.AddFuncVar(func_code, lvi))
                     {
                         SetError("Duplicate variable name: %s", lvi.name.c_str());
                         return false;
