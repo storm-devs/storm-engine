@@ -65,7 +65,10 @@ class SKY : public Entity
     std::vector<std::string> aSkyDirArray;
     uint32_t dwSkyColor;
     float fSkySpeedRotate, fSkySize, fAngleY, fSkyAngle;
-    std::string sTechSky, sTechSkyBlend, sTechSkyBlendAlpha, sTechSkyFog;
+    std::string sTechSky = "Sky";
+    std::string sTechSkyBlend = "SkyBlend";
+    std::string sTechSkyBlendAlpha = "Skyblend_alpha";
+    std::string sTechSkyFog = "SkyFog";
 
     VDX9RENDER *pRS;
     long TexturesID[SKY_NUM_TEXTURES];
