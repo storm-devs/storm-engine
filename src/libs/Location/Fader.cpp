@@ -164,7 +164,7 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
             // Hint texture
             if (numberOfTips > 0)
             {
-                const std::string texturePath = _name + "interfaces\\int_border.tga";
+                const std::string texturePath = "interfaces\\int_border.tga";
                 tipsID = rs->TextureCreate(texturePath.c_str());
                 rs->SetTipsImage(texturePath.c_str());
             }
