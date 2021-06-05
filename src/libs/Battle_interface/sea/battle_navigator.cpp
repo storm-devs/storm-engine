@@ -182,7 +182,7 @@ void BATTLE_NAVIGATOR::Draw() const
     }
 
     // show heading angles
-    if (m_idCourseVBuf != -1L)
+    if (m_idCourseVBuf != -1L && m_idBestCourseTex != -1L)
     {
         rs->TextureSet(0, m_idBestCourseTex);
         rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idCourseVBuf, sizeof(BI_ONETEXTURE_VERTEX), 0, 2, "battle_rectangle");
