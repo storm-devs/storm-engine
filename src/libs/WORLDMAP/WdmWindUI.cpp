@@ -94,7 +94,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
         if (s && s[0])
             dateFont = wdmObjects->wm->GetRS()->LoadFont(s);
         const auto *coordinate = ap->GetAttribute("coordinate");
-        if (coordinate != nullptr) 
+        if (coordinate != nullptr)
         {
             strcpy_s(wdmObjects->stCoordinate, coordinate);
         }
