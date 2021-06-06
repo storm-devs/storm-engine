@@ -275,7 +275,7 @@ void CORE::ProcessEngineIniFile()
             throw std::runtime_error("fail to run program");
 
         // Script version test
-        if (m_targetVersion >= storm::ENGINE_VERSION::LATEST)
+        if (targetVersion_ >= storm::ENGINE_VERSION::LATEST)
         {
             long iScriptVersion = 0xFFFFFFFF;
             auto *pVScriptVersion = static_cast<VDATA *>(core.GetScriptVariable("iScriptVersion"));
@@ -908,6 +908,11 @@ void *CORE::GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex)
     return real_var->value.get();
 }
 
+storm::ENGINE_VERSION CORE::GetTargetEngineVersion() const noexcept
+{
+    return targetVersion_;
+}
+
 void CORE::Start_CriticalSection()
 {
     EnterCriticalSection(&lock);
@@ -925,10 +930,10 @@ void CORE::loadCompatibilitySettings(INIFILE &inifile)
     inifile.ReadString("compatibility", "target_version", strBuffer.data(), strBuffer.size(), "latest");
     const std::string_view target_engine_version = strBuffer.data();
 
-    m_targetVersion = getTargetEngineVersion(target_engine_version);
-    if (m_targetVersion == ENGINE_VERSION::UNKNOWN)
+    targetVersion_ = getTargetEngineVersion(target_engine_version);
+    if (targetVersion_ == ENGINE_VERSION::UNKNOWN)
     {
         tracelog->warn("Unknown target version '{}' in engine compatibility settings", target_engine_version);
-        m_targetVersion = ENGINE_VERSION::LATEST;
+        targetVersion_ = ENGINE_VERSION::LATEST;
     }
 }
