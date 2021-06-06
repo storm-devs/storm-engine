@@ -868,7 +868,7 @@ void FLAG::SetAdd(int flagNum)
                 if (pvdat->IsArray())
                 {
                     pvdat->Get(curTexNumC, 0);
-                    pvdat->Get(curTexNumR, 0);
+                    pvdat->Get(curTexNumR, 1);
                 }
                 else
                 {
