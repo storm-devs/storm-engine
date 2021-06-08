@@ -172,7 +172,8 @@ def read_save(file_name):
         num_strings, cur_ptr = read_int8_16_32(buffer, cur_ptr)
         for _ in range(num_strings):
             s, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
-            save_data['strings'].append(s)
+            if s is not None:
+                save_data['strings'].append(s)
 
         s_db = str_db.create_db(save_data['strings'])
 
