@@ -397,6 +397,7 @@ void SHIP_CAMERA::Load(CSaveLoad *pSL)
     vCenter = pSL->LoadVector();
     vAng = pSL->LoadVector();
     fModelAy = pSL->LoadFloat();
+    uint32_t shipcode = pSL->LoadLong();
     lIlsInitCnt = pSL->LoadLong();
 
     SetOn(pSL->LoadDword() != 0);

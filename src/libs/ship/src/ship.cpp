@@ -1951,8 +1951,45 @@ void SHIP::Load(CSaveLoad *pSL)
     SetACharacter(pSL->LoadAPointer("character"));
     pAShip = pSL->LoadAPointer("ship");
 
-    RealizeLayer = pSL->LoadDword();
-    ExecuteLayer = pSL->LoadDword();
+    // RealizeLayer = pSL->LoadDword();
+    // ExecuteLayer = pSL->LoadDword();
+    std::string sRealizeLayer = pSL->LoadString();
+    std::string sExecuteLayer = pSL->LoadString();
+
+    std::unordered_map<std::string, int> m;
+    m["execute"] = 0;
+    m["realize"] = 1;
+    m["sea_execute"] = 2;
+    m["sea_realize"] = 3;
+    m["interface_execute"] = 4;
+    m["interface_realize"] = 5;
+    m["fader_execute"] = 6;
+    m["fader_realize"] = 7;
+    m["lighter_execute"] = 8;
+    m["lighter_realize"] = 9;
+    m["video_execute"] = 10;
+    m["video_realize"] = 11;
+    m["editor_realize"] = 12;
+    m["info_realize"] = 13;
+    m["sound_debug_realize"] = 14;
+    m["sea_reflection"] = 15;
+    m["sea_reflection2"] = 16;
+    m["sea_sunroad"] = 17;
+    m["sun_trace"] = 18;
+    m["sails_trace"] = 19;
+    m["hull_trace"] = 20;
+    m["mast_island_trace"] = 21;
+    m["mast_ship_trace"] = 22;
+    m["ship_cannon_trace"] = 23;
+    m["fort_cannon_trace"] = 24;
+    m["island_trace"] = 25;
+    m["shadow"] = 26;
+    m["blood"] = 27;
+    m["rain_drops"] = 28;
+
+    RealizeLayer = m[sRealizeLayer];
+    ExecuteLayer = m[sExecuteLayer];
+
     const std::string sTmp = pSL->LoadString();
     strcpy_s(cShipIniName, sTmp.c_str());
     pSL->LoadLong();
@@ -2027,6 +2064,8 @@ void SHIP::Load(CSaveLoad *pSL)
             core.Event(SHIP_LOAD_SHIPACTIVATEFIREPLACE, "lllf", GetIndex(GetACharacter()),
                        aFirePlaces[i].GetBallCharacterIndex(), i, aFirePlaces[i].GetRunTime());
     }
+    float fXHeel = pSL->LoadFloat();
+    float fZHeel = pSL->LoadFloat();
 
     ZERO(ShipPoints);
 }
