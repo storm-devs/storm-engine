@@ -1,10 +1,18 @@
 #!python
+# Python 3.7: Dictionary iteration order is guaranteed to be in order of insertion
+import sys
+MIN_PYTHON = (3, 7)
+if sys.version_info < MIN_PYTHON:
+    sys.exit("Python {'.'.join([str(n) for n in MIN_PYTHON])} or later is required.")
 
 import argparse
 import os
 import struct
 import zlib
-from enum import IntEnum
+from enum import Enum
+
+import str_db
+import seasave
 
 
 FILEINFO_CONFIG = {
@@ -13,7 +21,7 @@ FILEINFO_CONFIG = {
 }
 
 
-class VarType(IntEnum):
+class VarType(Enum):
     Integer = 6
     Float = 7
     String = 8
@@ -21,6 +29,7 @@ class VarType(IntEnum):
     Reference = 10
     ArrayReference = 11
     Pointer = 12
+    BinaryBlob = 13
 
 
 # Deserialization
@@ -50,24 +59,28 @@ def read_string(buffer, cur_ptr, encoding):
     return s, cur_ptr
 
 
-def read_attributes_data(buffer, v, cur_ptr, str_encoding):
-    attributes = v['attr']
-    num_subclasses, cur_ptr = read_int8_16_32(buffer, cur_ptr)
+def read_attributes_data(buffer, cur_ptr, s_db, str_encoding):
+    num_attributes, cur_ptr = read_int8_16_32(buffer, cur_ptr)
     name_code, cur_ptr = read_int8_16_32(buffer, cur_ptr)
     value, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
-    attributes.append({
-        'num_subclasses': num_subclasses,
+
+    a = {
         'name_code': name_code,
         'value': value
-    })
+    }
 
-    for _ in range(num_subclasses):
-        v, cur_ptr = read_attributes_data(buffer, v, cur_ptr, str_encoding)
+    if num_attributes > 0:
+        attributes = {}
+        for _ in range(num_attributes):
+            attr, cur_ptr = read_attributes_data(buffer, cur_ptr, s_db, str_encoding)
+            attr_name = str_db.get_str(s_db, attr['name_code'])
+            attributes[attr_name] = attr
+        a['attributes'] = attributes    
 
-    return v, cur_ptr
+    return a, cur_ptr
 
 
-def read_value(var_type, buffer, cur_ptr, str_encoding, obj_id_format):
+def read_value(var_type, buffer, cur_ptr, s_db, str_encoding, obj_id_format):
     if var_type == VarType.Integer:
         v = struct.unpack_from('l', buffer, cur_ptr)[0]
         cur_ptr += 4
@@ -80,8 +93,12 @@ def read_value(var_type, buffer, cur_ptr, str_encoding, obj_id_format):
         v = {}
         v['id'] = struct.unpack_from(obj_id_format, buffer, cur_ptr)
         cur_ptr += struct.calcsize(obj_id_format)
-        v['attr'] = []
-        v, cur_ptr = read_attributes_data(buffer, v, cur_ptr, str_encoding)
+        attributes = {}
+        attr, cur_ptr = read_attributes_data(buffer, cur_ptr, s_db, str_encoding)
+        attr_name = str_db.get_str(s_db, attr['name_code'])
+        attributes[attr_name] = attr
+        v['attributes'] = attributes
+
     elif var_type == VarType.Reference:
         v = {}
         var_index, cur_ptr = read_int8_16_32(buffer, cur_ptr)
@@ -107,8 +124,7 @@ def read_value(var_type, buffer, cur_ptr, str_encoding, obj_id_format):
     return v, cur_ptr
 
 
-def read_variable(buffer, cur_ptr, str_encoding, obj_id_format):
-    name, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
+def read_variable(buffer, cur_ptr, s_db, str_encoding, obj_id_format):
     type = struct.unpack_from('I', buffer, cur_ptr)[0]
     type = VarType(type)
     cur_ptr += 4
@@ -118,11 +134,10 @@ def read_variable(buffer, cur_ptr, str_encoding, obj_id_format):
 
     values = []
     for _ in range(num_values):
-        v, cur_ptr = read_value(type, buffer, cur_ptr, str_encoding, obj_id_format)
+        v, cur_ptr = read_value(type, buffer, cur_ptr, s_db, str_encoding, obj_id_format)
         values.append(v)
 
     var = {
-        'name': name,
         'type': type,
         'values': values
     }
@@ -159,17 +174,26 @@ def read_save(file_name):
             s, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
             save_data['strings'].append(s)
 
+        s_db = str_db.create_db(save_data['strings'])
+
         save_data['segments'] = []
         num_segments, cur_ptr = read_int8_16_32(buffer, cur_ptr)
         for _ in range(num_segments):
             s, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
             save_data['segments'].append(s)
 
-        save_data['vars'] = []
+        vars = {}
         num_vars, cur_ptr = read_int8_16_32(buffer, cur_ptr)
-        for i in range(num_vars):
-            var, cur_ptr = read_variable(buffer, cur_ptr, str_encoding, obj_id_format)
-            save_data['vars'].append(var)
+        for _ in range(num_vars):
+            name, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
+            var, cur_ptr = read_variable(buffer, cur_ptr, s_db, str_encoding, obj_id_format)
+            vars[name] = var
+        
+        #if 'oSeaSave' in vars:
+        #    seasave_data = vars['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value']
+        #    seasave.read_seasave(bytes.fromhex(seasave_data[8:]))
+
+        save_data['vars'] = vars
 
         assert(cur_ptr == size_decompressed)
 
@@ -224,16 +248,16 @@ def write_string(s, buffer, encoding):
     return buffer
 
 
-def write_attributes_data(attr, buffer, str_encoding):
-    a = attr[0]
-    buffer = write_int8_16_32(a['num_subclasses'], buffer)
+def write_attributes_data(a, buffer, str_encoding):
+    num_attributes = len(a['attributes']) if 'attributes' in a else 0
+    buffer = write_int8_16_32(num_attributes, buffer)
     buffer = write_int8_16_32(a['name_code'], buffer)
     buffer = write_string(a['value'], buffer, str_encoding)
 
-    for _ in range(a['num_subclasses']):
-        attr = attr[1:]
-        buffer, attr = write_attributes_data(attr, buffer, str_encoding)
-    return buffer, attr
+    if num_attributes > 0:
+        for attr in a['attributes'].values():
+            buffer = write_attributes_data(attr, buffer, str_encoding)
+    return buffer
 
 
 def write_value(var_type, value, buffer, fileinfo_config):
@@ -246,8 +270,8 @@ def write_value(var_type, value, buffer, fileinfo_config):
     elif var_type == VarType.Object:
         id = value['id']
         buffer += struct.pack(fileinfo_config['obj_id_format'], *id)
-        if value['attr']:
-            buffer, _ = write_attributes_data(value['attr'], buffer, fileinfo_config['str_encoding'])
+        root_attr = next(iter(value['attributes']))
+        buffer = write_attributes_data(value['attributes'][root_attr], buffer, fileinfo_config['str_encoding'])
     elif var_type == VarType.Reference:
         buffer = write_int8_16_32(value['var_index'], buffer)
         if value['var_index'] != 0xffffffff:
@@ -266,7 +290,6 @@ def write_value(var_type, value, buffer, fileinfo_config):
 
 
 def write_variable(var, buffer, fileinfo_config):
-    buffer = write_string(var['name'], buffer, fileinfo_config['str_encoding'])
     buffer += struct.pack('I', var['type'].value)
     buffer += struct.pack('I', len(var['values']))
 
@@ -297,8 +320,9 @@ def write_save(save_data, filename):
 
     variables = save_data['vars']
     buffer = write_int8_16_32(len(variables), buffer)
-    for var in variables:
-        buffer = write_variable(var, buffer, fileinfo_config)
+    for varname in variables:
+        buffer = write_string(varname, buffer, str_encoding)    
+        buffer = write_variable(variables[varname], buffer, fileinfo_config)
     buffer_compressed = zlib.compress(buffer, zlib.Z_BEST_COMPRESSION)
 
     # write extdata
@@ -483,9 +507,8 @@ def convert_107_to_173(save_data):
         'NCSunGlow',
         'NCAstronomy'
     ]
-    to_remove = [x for x in save_data['vars'] if x['name'] in removed_vars]
-    for var in to_remove:
-        save_data['vars'].remove(var)
+    for var in removed_vars:
+        del save_data['vars'][var]
 
     to_int = [
         'sCurrentSeaExecute',
@@ -524,8 +547,8 @@ def convert_107_to_173(save_data):
         'blood': 27,
         'rain_drops': 28
     }
-    for var in save_data['vars']:
-        if var['name'] in to_int:
+    for name, var in save_data['vars'].items():
+        if name in to_int:
             assert(var['type'] == VarType.String)
             var['type'] = VarType.Integer
 
@@ -537,18 +560,35 @@ def convert_107_to_173(save_data):
             for val in var['values']:
                 val['id'] = (sum(val['id']),) # one item tuple
 
+        # itemModels array should have ITEMS_QUANTITY elements (see program/items/items.h)
+        #if name == 'itemModels':
+        #    assert(var['type'] == VarType.Object)
+        #    assert(len(var['values']) == 498)
+        #    elem_copy = dict(var['values'][-1])
+        #    for _ in range(500-498):
+        #        var['values'].append(elem_copy)
+
     return save_data
 
 
 def dump_save(save_data, filename):
     def fallback(v):
+        if isinstance(v, Enum):
+            return v.name
         return f'Unsupported type: {type(v)}'
 
     import json
     with open(filename, 'w', encoding='utf-8') as f:
         copy = dict(save_data)
-        copy['strings'] = sorted(save_data['strings'])
-        copy['vars'] = sorted(save_data['vars'], key=lambda k: k['name']) 
+        #copy['strings'] = sorted(save_data['strings'])
+        #copy['vars'] = sorted(save_data['vars'], key=lambda k: k['name'])
+
+            #if var['type'] == VarType.Object:
+            #    for v in var['values']:
+            #        for a in v['attributes']:
+            #            a['name'] = str_db.get_str(s_db, a['name_code'])
+
+
         json.dump(copy, f, ensure_ascii=False, indent=4, default=fallback)
 
 
@@ -562,12 +602,12 @@ if __name__ == '__main__':
 
     filename, file_extension = os.path.splitext(input_file)
 
-    # dump_save(save_data, f'{filename}_read.txt')
+    dump_save(save_data, f'{filename}_read.json')
 
     save_data = convert_107_to_173(save_data)
     filename += '_173'
 
-    # dump_save(save_data, f'{filename}_write.txt')
+    dump_save(save_data, f'{filename}_write.json')
 
     output_file = filename + file_extension
     write_save(save_data, output_file)
