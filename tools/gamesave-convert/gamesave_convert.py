@@ -52,7 +52,7 @@ def read_int8_16_32(buffer, cur_ptr):
 def read_string(buffer, cur_ptr, encoding):
     str_len, cur_ptr = read_int8_16_32(buffer, cur_ptr)
     if str_len == 0:
-        return '', cur_ptr
+        return None, cur_ptr
     s = struct.unpack_from(f'{str_len-1}s', buffer, cur_ptr)[0]  # str_len-1 to skip trailing '\0'
     s = s.decode(encoding)
     cur_ptr += str_len
@@ -238,7 +238,7 @@ def write_int8_16_32(value, buffer):
 
 
 def write_string(s, buffer, encoding):
-    if s:
+    if s is not None:
         s = s.encode(encoding) + b'\x00'
         str_len = len(s)
         buffer = write_int8_16_32(str_len, buffer)
