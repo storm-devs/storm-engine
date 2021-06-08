@@ -27,9 +27,8 @@ class VarType(Enum):
     String = 8
     Object = 9
     Reference = 10
-    ArrayReference = 11
+    AttributeReference = 11
     Pointer = 12
-    BinaryBlob = 13
 
 
 # Deserialization
@@ -106,7 +105,7 @@ def read_value(var_type, buffer, cur_ptr, s_db, str_encoding, obj_id_format):
         if var_index != 0xffffffff:
             array_index, cur_ptr = read_int8_16_32(buffer, cur_ptr)
             v['array_index'] = array_index
-    elif var_type == VarType.ArrayReference:
+    elif var_type == VarType.AttributeReference:
         v = {}
         var_index, cur_ptr = read_int8_16_32(buffer, cur_ptr)
         v['var_index'] = var_index
@@ -277,7 +276,7 @@ def write_value(var_type, value, buffer, fileinfo_config):
         buffer = write_int8_16_32(value['var_index'], buffer)
         if value['var_index'] != 0xffffffff:
             buffer = write_int8_16_32(value['array_index'], buffer)
-    elif var_type == VarType.ArrayReference:
+    elif var_type == VarType.AttributeReference:
         buffer = write_int8_16_32(value['var_index'], buffer)
         if value['var_index'] != 0xffffffff:
             buffer = write_int8_16_32(value['array_index'], buffer)
