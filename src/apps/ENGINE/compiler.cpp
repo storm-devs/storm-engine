@@ -1088,9 +1088,11 @@ void COMPILER::ProcessFrame(uint32_t DeltaTime)
 
 void COMPILER::ResizeBCodeBuffer(SEGMENT_DESC &Segment, uint32_t add_size)
 {
-    if ((Segment.BCode_Program_size + add_size) >= Segment.BCode_Buffer_size)
+    int64_t needed_memory = static_cast<int64_t>(Segment.BCode_Program_size) + add_size - Segment.BCode_Buffer_size;
+    if (needed_memory >= 0)
     {
-        Segment.BCode_Buffer_size += BCODE_BUFFER_BLOCKSIZE;
+        const auto needed_blocks = (needed_memory - 1) / BCODE_BUFFER_BLOCKSIZE + 1;
+        Segment.BCode_Buffer_size += needed_blocks * BCODE_BUFFER_BLOCKSIZE;
         // Segment.pCode = (char *)RESIZE(Segment.pCode,Segment.BCode_Buffer_size);
         auto *const newPtr = new char[Segment.BCode_Buffer_size];
         memcpy(newPtr, Segment.pCode, Segment.BCode_Program_size);
