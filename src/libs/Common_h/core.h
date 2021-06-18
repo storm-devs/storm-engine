@@ -155,10 +155,12 @@ class CORE
 
     void *GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex = nullptr);
 
+    [[nodiscard]] storm::ENGINE_VERSION GetTargetEngineVersion() const noexcept;
+
   private:
     void loadCompatibilitySettings(INIFILE &inifile);
 
-    storm::ENGINE_VERSION m_targetVersion = storm::ENGINE_VERSION::LATEST;
+    storm::ENGINE_VERSION targetVersion_ = storm::ENGINE_VERSION::LATEST;
 };
 // core instance
 extern CORE core;

@@ -601,8 +601,16 @@ void FLAG::LoadIni()
         memcpy(TextureName, param, len);
     }
 
-    FlagTextureQuantity = (int)ini->GetLong(section, "TextureCountColumn", 4);
-    FlagTextureQuantityRow = (int)ini->GetLong(section, "TextureCountRow", 8);
+    if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
+    {
+        FlagTextureQuantity = static_cast<int>(ini->GetLong(section, "TextureCount", 10));
+        FlagTextureQuantityRow = 1;
+    }
+    else
+    {
+        FlagTextureQuantity = static_cast<int>(ini->GetLong(section, "TextureCountColumn", 4));
+        FlagTextureQuantityRow = static_cast<int>(ini->GetLong(section, "TextureCountRow", 8));
+    }
 
     SetTextureCoordinate();
 
@@ -829,30 +837,48 @@ void FLAG::SetAdd(int flagNum)
         {
             long curTexNumC = 0;
             long curTexNumR = 0;
+
             // set texture number
-            if (flist[fn]->isShip) // ship
+            if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
             {
-                pvdat = core.Event("GetRiggingData", "sllla", "GetShipFlagTexNum", flist[fn]->triangle,
-                                   gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag,
-                                   gdata[flist[fn]->HostGroup].char_attributes);
+                pvdat = core.Event("GetRiggingData", "sll", "GetFlagTexNum", flist[fn]->triangle,
+                                   gdata[flist[fn]->HostGroup].nation);
             }
             else
             {
-                pvdat = core.Event("GetRiggingData", "slll", "GetTownFlagTexNum", flist[fn]->triangle,
-                                   gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
+                if (flist[fn]->isShip) // ship
+                {
+                    pvdat = core.Event("GetRiggingData", "sllla", "GetShipFlagTexNum", flist[fn]->triangle,
+                                       gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag,
+                                       gdata[flist[fn]->HostGroup].char_attributes);
+                }
+                else
+                {
+                    pvdat = core.Event("GetRiggingData", "slll", "GetTownFlagTexNum", flist[fn]->triangle,
+                                       gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
+                }
             }
             if (pvdat == nullptr)
             {
-                flist[fn]->texNumC = 0;
-                flist[fn]->texNumR = 0;
+                curTexNumC = 0;
+                curTexNumR = 0;
             }
             else
             {
-                pvdat->Get(curTexNumC, 0);
-                pvdat->Get(curTexNumR, 1);
-                flist[fn]->texNumC = curTexNumC;
-                flist[fn]->texNumR = curTexNumR;
+                if (pvdat->IsArray())
+                {
+                    pvdat->Get(curTexNumC, 0);
+                    pvdat->Get(curTexNumR, 1);
+                }
+                else
+                {
+                    pvdat->Get(curTexNumC);
+                    curTexNumR = 0;
+                }
             }
+
+            flist[fn]->texNumC = curTexNumC;
+            flist[fn]->texNumR = curTexNumR;
 
             flist[fn]->vectQuant = (int)(len / FLAGVECTORLEN); // number of flag segments
             if (flist[fn]->vectQuant < MinSegmentQuantity)
