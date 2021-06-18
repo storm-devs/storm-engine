@@ -1,6 +1,8 @@
 #!python
+
 # Python 3.7: Dictionary iteration order is guaranteed to be in order of insertion
 import sys
+
 MIN_PYTHON = (3, 7)
 if sys.version_info < MIN_PYTHON:
     sys.exit("Python {'.'.join([str(n) for n in MIN_PYTHON])} or later is required.")
@@ -9,15 +11,15 @@ import argparse
 import os
 import struct
 import zlib
+import logging
 from enum import Enum
 
 import str_db
 import seasave
 
-
 FILEINFO_CONFIG = {
-    'ver 1.0.7': { 'str_encoding': 'cp1251', 'obj_id_format': 'QQQ' },
-    'ver 1.7.3': { 'str_encoding': 'utf-8', 'obj_id_format': 'Q' }
+    'ver 1.0.7': {'str_encoding': 'cp1251', 'obj_id_format': 'QQQ'},
+    'ver 1.7.3': {'str_encoding': 'utf-8', 'obj_id_format': 'Q'}
 }
 
 
@@ -52,7 +54,7 @@ def read_string(buffer, cur_ptr, encoding):
     str_len, cur_ptr = read_int8_16_32(buffer, cur_ptr)
     if str_len == 0:
         return None, cur_ptr
-    s = struct.unpack_from(f'{str_len-1}s', buffer, cur_ptr)[0]  # str_len-1 to skip trailing '\0'
+    s = struct.unpack_from(f'{str_len - 1}s', buffer, cur_ptr)[0]  # str_len-1 to skip trailing '\0'
     s = s.decode(encoding)
     cur_ptr += str_len
     return s, cur_ptr
@@ -74,7 +76,7 @@ def read_attributes_data(buffer, cur_ptr, s_db, str_encoding):
             attr, cur_ptr = read_attributes_data(buffer, cur_ptr, s_db, str_encoding)
             attr_name = str_db.get_str(s_db, attr['name_code'])
             attributes[attr_name] = attr
-        a['attributes'] = attributes    
+        a['attributes'] = attributes
 
     return a, cur_ptr
 
@@ -124,8 +126,8 @@ def read_value(var_type, buffer, cur_ptr, s_db, str_encoding, obj_id_format):
 
 
 def read_variable(buffer, cur_ptr, s_db, str_encoding, obj_id_format):
-    type = struct.unpack_from('I', buffer, cur_ptr)[0]
-    type = VarType(type)
+    t = struct.unpack_from('I', buffer, cur_ptr)[0]
+    t = VarType(t)
     cur_ptr += 4
 
     num_values = struct.unpack_from('I', buffer, cur_ptr)[0]
@@ -133,11 +135,11 @@ def read_variable(buffer, cur_ptr, s_db, str_encoding, obj_id_format):
 
     values = []
     for _ in range(num_values):
-        v, cur_ptr = read_value(type, buffer, cur_ptr, s_db, str_encoding, obj_id_format)
+        v, cur_ptr = read_value(t, buffer, cur_ptr, s_db, str_encoding, obj_id_format)
         values.append(v)
 
     var = {
-        'type': type,
+        'type': t,
         'values': values
     }
 
@@ -146,7 +148,7 @@ def read_variable(buffer, cur_ptr, s_db, str_encoding, obj_id_format):
 
 def read_save(file_name):
     with open(file_name, 'rb') as f:
-        save_data = dict()
+        save_data = {}
         file_info = struct.unpack('32s', f.read(32))[0]
         file_info = file_info[0:file_info.find(b'\x00')]
         file_info = file_info.decode('utf-8')
@@ -167,14 +169,19 @@ def read_save(file_name):
         cur_ptr = 0
         save_data['program_dir'], cur_ptr = read_string(buffer, cur_ptr, str_encoding)
 
-        save_data['strings'] = []
+        strings = []
         num_strings, cur_ptr = read_int8_16_32(buffer, cur_ptr)
         for _ in range(num_strings):
             s, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
             if s is not None:
-                save_data['strings'].append(s)
+                #if not s.isascii():
+                    #logging.warning(f'non ascii string: {s} (cp1251: {s.encode("cp1251").hex(" ")}, utf-8: {s.encode("utf-8").hex(" ")})')
+                strings.append(s)
 
-        s_db = str_db.create_db(save_data['strings'])
+        s_db = str_db.create_db(strings, str_encoding)
+        save_data['strings'] = {}
+        for s in strings:
+            save_data['strings'][s] = str_db.get_int(s_db, s, str_encoding)
 
         save_data['segments'] = []
         num_segments, cur_ptr = read_int8_16_32(buffer, cur_ptr)
@@ -188,17 +195,17 @@ def read_save(file_name):
             name, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
             var, cur_ptr = read_variable(buffer, cur_ptr, s_db, str_encoding, obj_id_format)
             vars[name] = var
-        
-        #if 'oSeaSave' in vars:
+
+        # if 'oSeaSave' in vars:
         #    seasave_data = vars['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value']
         #    seasave.read_seasave(bytes.fromhex(seasave_data[8:]))
 
         save_data['vars'] = vars
 
-        assert(cur_ptr == size_decompressed)
+        assert (cur_ptr == size_decompressed)
 
         # read extdata
-        assert(extdata_offset == f.tell())
+        assert (extdata_offset == f.tell())
         extdata_size_compressed = struct.unpack('I', f.read(4))[0]
         extdata_buffer_compressed = struct.unpack(f'{extdata_size_compressed}s', f.read(extdata_size_compressed))[0]
         extdata_buffer = zlib.decompress(extdata_buffer_compressed)
@@ -213,12 +220,12 @@ def read_save(file_name):
         save_data['save_icon'] = struct.unpack_from(f'{save_icon_size}s', extdata_buffer, cur_ptr)[0]
         cur_ptr += save_icon_size
 
-        assert(cur_ptr == extdata_size_decompressed)
+        assert (cur_ptr == extdata_size_decompressed)
 
         # check EOF
-        assert(f.tell() == os.fstat(f.fileno()).st_size)
+        assert (f.tell() == os.fstat(f.fileno()).st_size)
 
-        return save_data
+        return save_data, s_db
 
 
 # Serialization
@@ -310,7 +317,7 @@ def write_save(save_data, filename):
 
     strings = save_data['strings']
     buffer = write_int8_16_32(len(strings), buffer)
-    for s in strings:
+    for s in strings.keys():
         buffer = write_string(s, buffer, str_encoding)
 
     segments = save_data['segments']
@@ -321,7 +328,7 @@ def write_save(save_data, filename):
     variables = save_data['vars']
     buffer = write_int8_16_32(len(variables), buffer)
     for varname in variables:
-        buffer = write_string(varname, buffer, str_encoding)    
+        buffer = write_string(varname, buffer, str_encoding)
         buffer = write_variable(variables[varname], buffer, fileinfo_config)
     buffer_compressed = zlib.compress(buffer, zlib.Z_BEST_COMPRESSION)
 
@@ -339,7 +346,7 @@ def write_save(save_data, filename):
     # compose all the data
     raw_data = bytearray()
     raw_data += struct.pack('32s', file_info.encode(str_encoding) + b'\x00')
-    raw_data += struct.pack('I', struct.calcsize('32sIIII') + len(buffer_compressed)) # extdata_offset
+    raw_data += struct.pack('I', struct.calcsize('32sIIII') + len(buffer_compressed))  # extdata_offset
     raw_data += struct.pack('I', len(extdata_buffer))
     raw_data += struct.pack('I', len(buffer))
     raw_data += struct.pack('I', len(buffer_compressed))
@@ -353,9 +360,9 @@ def write_save(save_data, filename):
 
 # Conversion
 
-def convert_107_to_173(save_data):
-    if (save_data['file_info'] == 'ver 1.7.3'):
-        return save_data
+def convert_107_to_173(save_data, s_db):
+    if save_data['file_info'] == 'ver 1.7.3':
+        return save_data, s_db
 
     save_data['file_info'] = 'ver 1.7.3'
 
@@ -547,28 +554,57 @@ def convert_107_to_173(save_data):
         'blood': 27,
         'rain_drops': 28
     }
+
     for name, var in save_data['vars'].items():
         if name in to_int:
-            assert(var['type'] == VarType.String)
+            assert (var['type'] == VarType.String)
             var['type'] = VarType.Integer
 
-            assert(len(var['values']) == 1)
+            assert (len(var['values']) == 1)
             strval = var['values'][0]
             var['values'][0] = layers[strval]
 
         if var['type'] == VarType.Object:
             for val in var['values']:
-                val['id'] = (sum(val['id']),) # one item tuple
+                val['id'] = (sum(val['id']),)  # one item tuple
 
-        # itemModels array should have ITEMS_QUANTITY elements (see program/items/items.h)
-        #if name == 'itemModels':
-        #    assert(var['type'] == VarType.Object)
-        #    assert(len(var['values']) == 498)
-        #    elem_copy = dict(var['values'][-1])
-        #    for _ in range(500-498):
-        #        var['values'].append(elem_copy)
+    # cleanup strings
+    used_str = {}
 
-    return save_data
+    def visit_attribute(hierarchy, name, a):
+        used_str[name] = used_str[name] + 1 if name in used_str else 1
+        if not name.isascii():
+            logging.warning(f'non ascii attribute name "{name}" in {".".join(hierarchy)}')
+        if 'attributes' in a:
+            for attr_name, attr in a['attributes'].items():
+                visit_attribute([*hierarchy, name], attr_name, attr)
+
+    for name, var in save_data['vars'].items():
+        if var['type'] == VarType.Object:
+            for i, val in enumerate(var['values']):
+                root_attr_name, root_attr = next(iter(val['attributes'].items()))
+                visit_attribute([f'{name}[{i}]'], root_attr_name, root_attr)
+
+    # s_db = str_db.remove_unused(s_db, used_str, 'cp1251')
+    s_db = str_db.create_db(used_str.keys(), 'utf-8')
+    save_data['strings'] = {}
+    for s in used_str.keys():
+        save_data['strings'][s] = str_db.get_int(s_db, s, 'utf-8')
+
+    # assign new name codes to attributes
+    def fix_attribute(name, a):
+        a['name_code'] = str_db.get_int(s_db, name, 'utf-8')
+        if 'attributes' in a:
+            for attr_name, attr in a['attributes'].items():
+                fix_attribute(attr_name, attr)
+
+    for name, var in save_data['vars'].items():
+        if var['type'] == VarType.Object:
+            for val in var['values']:
+                root_attr_name, root_attr = next(iter(val['attributes'].items()))
+                fix_attribute(root_attr_name, root_attr)
+
+    return save_data, s_db
 
 
 def dump_save(save_data, filename):
@@ -580,15 +616,6 @@ def dump_save(save_data, filename):
     import json
     with open(filename, 'w', encoding='utf-8') as f:
         copy = dict(save_data)
-        #copy['strings'] = sorted(save_data['strings'])
-        #copy['vars'] = sorted(save_data['vars'], key=lambda k: k['name'])
-
-            #if var['type'] == VarType.Object:
-            #    for v in var['values']:
-            #        for a in v['attributes']:
-            #            a['name'] = str_db.get_str(s_db, a['name_code'])
-
-
         json.dump(copy, f, ensure_ascii=False, indent=4, default=fallback)
 
 
@@ -598,16 +625,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     input_file = os.path.abspath(args.input_file)
-    save_data = read_save(input_file)
+    save_data, s_db = read_save(input_file)
 
     filename, file_extension = os.path.splitext(input_file)
 
-    dump_save(save_data, f'{filename}_read.json')
+    # dump_save(save_data, f'{filename}_read.json')
 
-    save_data = convert_107_to_173(save_data)
+    save_data, s_db = convert_107_to_173(save_data, s_db)
     filename += '_173'
 
-    dump_save(save_data, f'{filename}_write.json')
+    # dump_save(save_data, f'{filename}_write.json')
 
     output_file = filename + file_extension
     write_save(save_data, output_file)
