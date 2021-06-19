@@ -136,8 +136,8 @@ class FLAG : public Entity
         entid_t model_id;
         bool bDeleted;
         bool isShip;
-        entid_t ship_id;
-        ATTRIBUTES *char_attributes;
+        entid_t ship_id{};
+        ATTRIBUTES *char_attributes = nullptr;
     };
 
     int groupQuantity;
