@@ -578,7 +578,7 @@ class Character : public Entity
     ActionCharacter recoil;      // Bounce back
     ActionCharacter strafe_l;    // Bounce to the left
     ActionCharacter strafe_r;    // Bounce to the right
-    bool isStunEnable;           // Is the stun allowed after the enemy's blow
+    long stunChance;             // Is the stun allowed after the enemy's blow
     // Logical state
     FightAction fgtCurType;   // Current action type
     long fgtCurIndex;         // Current Activity Index

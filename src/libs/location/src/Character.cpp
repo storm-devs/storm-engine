@@ -539,7 +539,7 @@ Character::Character()
     fgtCurIndex = fgtSetIndex = -1;
     isParryState = false;
     isFeintState = false;
-    isStunEnable = true;
+    stunChance = 100;
     //
     isMove = false;
     isBack = false;
@@ -4212,13 +4212,7 @@ void Character::UpdateAnimation()
                     isFired = false;
                     break;
                 case fgt_hit_attack: // The reaction of hitting a character putting him into the stall
-                    if (IsPlayer() && !isStunEnable)
-                    // boal did not find a better one, but ours always has this ID, it will work
-                    {
-                        if (rand() % 100 >= 50)
-                            break; // boal doesn't always break into animation
-                    }
-                    if (isStunEnable)
+                    if (rand() % 100 < stunChance)
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                         if (!(isSet = SetAction(hit[fgtSetIndex].name, hit[fgtSetIndex].tblend, 0.0f, 1.0f, true)))
@@ -4261,12 +4255,7 @@ void Character::UpdateAnimation()
                     }
                     break;
                 case fgt_hit_fire: // The reaction from the shot, putting him into stall
-                    if (IsPlayer() && !isStunEnable)
-                    {
-                        if (rand() % 100 >= 50)
-                            break; // boal doesn't always break into animation
-                    }
-                    if (isStunEnable)
+                    if (rand() % 100 < stunChance)
                     {
                         core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                         if (!(isSet = SetAction(hitFire.name, hitFire.tblend, 0.0f, 0.0f, true)))

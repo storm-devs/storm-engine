@@ -61,7 +61,7 @@ NPCharacter::NPCharacter() : taskstack{}
     defencePrbBlock = 0.9f;
     defencePrbParry = 0.1f;
     isRecoilEnable = true;
-    isStunEnable = true; // ugeen 29.12.10
+    stunChance = 100;
     // Shooting
     fireCur = 0.0f;
     isFireEnable = true;
@@ -144,10 +144,10 @@ bool NPCharacter::PostInit()
     tmpBool = isFireEnable;
     if (vd && vd->Get(tmpBool))
         isFireEnable = tmpBool != 0;
-    vd = core.Event("NPC_Event_EnableStun", "i", GetId());
-    tmpBool = isStunEnable;
-    if (vd && vd->Get(tmpBool))
-        isStunEnable = tmpBool != 0;
+    vd = core.Event("NPC_Event_StunChance", "i", GetId());
+    auto tmpLong = stunChance;
+    if (vd && vd->Get(tmpLong))
+        stunChance = tmpLong;
     // Parameter normalization
     if (attackCur < 0.0f)
         attackCur = 0.0f;
@@ -626,11 +626,6 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
         // else
         // CmdStay();
     }
-
-    VDATA *vd = core.Event("NPC_Event_EnableStun", "i", GetId());
-    long tmpBool = isStunEnable;
-    if (vd && vd->Get(tmpBool))
-        isStunEnable = tmpBool != 0;
 
     float kdst;
 
