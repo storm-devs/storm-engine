@@ -667,7 +667,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_idGradBackVBuf =
         rs->CreateVertexBuffer(BI_COLORONLY_VERTEX_FORMAT, 3 * sizeof(BI_COLORONLY_VERTEX), D3DUSAGE_WRITEONLY);
     m_idCurChargeVBuf =
-        rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT, 4 * 4 * sizeof(BI_ONETEXTURE_VERTEX), D3DUSAGE_WRITEONLY);
+        rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT, 3 * 4 * sizeof(BI_ONETEXTURE_VERTEX), D3DUSAGE_WRITEONLY);
     if (m_idEmptyVBuf == -1 || m_idCourseVBuf == -1 || m_idCannonVBuf == -1 || m_idSpeedVBuf == -1 ||
         m_idMapVBuf == -1 || m_idFireZoneVBuf == -1 || m_idShipsVBuf == -1 || m_idGradBackVBuf == -1 ||
         m_idCurChargeVBuf == -1)
@@ -788,7 +788,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     pV = static_cast<BI_ONETEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idCurChargeVBuf));
     if (pV != nullptr)
     {
-        for (i = 0; i < 4 * 4; i++)
+        for (i = 0; i < 3 * 4; i++)
         {
             pV[i].pos.z = 1.f;
             pV[i].w = .5f;
