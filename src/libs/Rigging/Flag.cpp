@@ -150,7 +150,6 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
     case MSG_FLAG_INIT: {
         const auto eidModel = message.EntityID();
         const auto nNation = message.Long();
-        entid_t eidShip = message.EntityID();
 
         MODEL *host_mdl;
         host_mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(eidModel));
@@ -180,10 +179,15 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
         gdata[groupQuantity - 1].model_id = eidModel;
         gdata[groupQuantity - 1].nation = nNation;
         gdata[groupQuantity - 1].bDeleted = false;
-        gdata[groupQuantity - 1].ship_id = eidShip;
         gdata[groupQuantity - 1].isShip = true;
-        gdata[groupQuantity - 1].char_attributes =
-            ((VAI_OBJBASE *)EntityManager::GetEntityPointer(gdata[groupQuantity - 1].ship_id))->GetACharacter();
+
+        if (message.GetFormat().size() >= 4)
+        {
+            entid_t eidShip = message.EntityID();
+            gdata[groupQuantity - 1].ship_id = eidShip;
+            gdata[groupQuantity - 1].char_attributes =
+                ((VAI_OBJBASE *)EntityManager::GetEntityPointer(gdata[groupQuantity - 1].ship_id))->GetACharacter();
+        }
 
         NODE *nod;
         GEOS::INFO gi;
