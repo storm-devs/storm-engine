@@ -763,14 +763,17 @@ float BIShipIcon::GetProgressShipClass(long nShipNum)
 
 void BIShipIcon::GetShipUVFromPictureIndex(long nPicIndex, FRECT &rUV)
 {
-    const long ny = nPicIndex / 16;
-    const long nx = nPicIndex - ny * 16;
-    rUV.left = nx * .0625f;
-    // rUV.top = ny * .25f;
-    rUV.top = ny * .0625f; // boal
-    rUV.right = rUV.left + .0625f;
-    // rUV.bottom = rUV.top + .25f;
-    rUV.bottom = rUV.top + .0625f; // boal
+    // TODO: Make picture count configurable
+    const float pictureCount = core.GetTargetEngineVersion() >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN ? 16.f : 8.f;
+    const float pictureWidth = 1.0f / pictureCount;
+    const float pictureHeight = 1.0f / pictureCount;
+
+    const float ny = std::floor(static_cast<float>(nPicIndex) / pictureCount);
+    const float nx = static_cast<float>(nPicIndex) - ny * pictureCount;
+    rUV.left = nx * pictureWidth;
+    rUV.top = ny * pictureHeight; // boal
+    rUV.right = rUV.left + pictureWidth;
+    rUV.bottom = rUV.top + pictureHeight; // boal
 }
 
 long BIShipIcon::GetShipClass(long nCharIdx)
