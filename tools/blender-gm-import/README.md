@@ -37,6 +37,10 @@ Used textures:
 Dragoon_1.tga
 ```
 
+### Remark about Windows
+There is an easier way for Windows users -
+you can drag file with the model to the file ``parse-gm.cmd`` and results will be saved in the model folder
+
 ## Blender Plugin Installation
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Select import_json_gm.py from io_import_json_gm folder -> Enable "Import: JSON GM"
