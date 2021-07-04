@@ -1,5 +1,5 @@
 {
-  "name": "sea-dogs-coas-model-blender-preimport-parser",
+  "name": "gm-blender-preimport-parser",
   "type": "module",
   "version": "1.0.0",
   "main": "index.js",
