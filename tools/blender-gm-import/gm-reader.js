@@ -662,7 +662,8 @@ export class GmReader {
     this.readTriangles();
     this.readVertexBuffers();
     this.readVertices();
-    this.readBsp();
+    // not required, calculated on export and not used in model editor
+    // this.readBsp();
   }
 
   prepareForBlenderImport() {
