@@ -1,4 +1,4 @@
-# Sea-Dogs-COAS-model-blender-import
+# Blender GM import
 
 ## Требования
 

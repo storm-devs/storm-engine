@@ -1,4 +1,4 @@
-# Sea-Dogs-COAS-model-blender-import
+# Blender GM import
 
 [Русская версия Readme](https://github.com/storm-devs/storm-engine/blob/develop/tools/blender-gm-import/README_RUS.md)
 
