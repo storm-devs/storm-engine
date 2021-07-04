@@ -11,7 +11,7 @@
 Пример:
 ```
 C/
-    models/
+    example-folder/
         model.gm
         textures/
             texture1.tga
@@ -47,6 +47,17 @@ Edit -> Preferences... -> Add-ons -> Install... -> Выбрать import_json_gm
 ## Использование плагина в Blender
 ```
 File -> Import... -> JSON GM Import(.gm.json)
+```
+
+Текстуры должны находиться в той же папке, что и результат, в подпапке textures.
+Пример:
+```
+C/
+    example-folder/
+        model.json.gm
+        textures/
+            texture1.tga
+            texture2.tga
 ```
 
 ## Автор

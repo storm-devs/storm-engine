@@ -13,7 +13,7 @@ The textures must be in ``textures`` subfolder in the same folder as the model.
 E.g.:
 ```
 C/
-    models/
+    example-folder/
         model.gm
         textures/
             texture1.tga
@@ -49,6 +49,17 @@ Edit -> Preferences... -> Add-ons -> Install... -> Select import_json_gm.py from
 ## Blender Usage
 ```
 File -> Import... -> JSON GM Import(.gm.json)
+```
+
+The textures must be in ``textures`` subfolder in the same folder as the result.
+E.g.:
+```
+C/
+    example-folder/
+        model.json.gm
+        textures/
+            texture1.tga
+            texture2.tga
 ```
 
 ## Author
