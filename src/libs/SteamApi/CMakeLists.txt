@@ -5,7 +5,7 @@ set(PRIVATE_SRC
     src/SteamApiScriptLib.cpp
 )
 
-if(Config_STORM_ENABLE_STEAM)
+if(STORM_ENABLE_STEAM)
     set(PRIVATE_SRC ${PRIVATE_SRC}
         src/achievements.hpp
         src/achievements.cpp
