@@ -30,6 +30,9 @@ def import_json_gm(context,file_path=""):
     collection = bpy.data.collections.new(file_name)
     bpy.context.scene.collection.children.link(collection)
 
+    root = bpy.data.objects.new( "root", None )
+    collection.objects.link(root)
+
     for object in data:
         name = object.get('name')
 
@@ -44,6 +47,7 @@ def import_json_gm(context,file_path=""):
 
         me = bpy.data.meshes.new(name)
         ob = bpy.data.objects.new(name, me)
+        ob.parent = root
 
         bm = bmesh.new()
         bm.from_mesh(me)
@@ -148,8 +152,8 @@ def import_json_gm(context,file_path=""):
               except Exception as e:
                 print(str(e))
 
-        bmesh.ops.rotate(bm, verts=bm.verts, cent=(0.0, 0.0, 0.0), matrix=mathutils.Matrix.Rotation(math.radians(90.0), 3, 'X'))
-        bmesh.ops.rotate(bm, verts=bm.verts, cent=(0.0, 0.0, 0.0), matrix=mathutils.Matrix.Rotation(math.radians(90.0), 3, 'Z'))
+        """ bmesh.ops.rotate(bm, verts=bm.verts, cent=(0.0, 0.0, 0.0), matrix=mathutils.Matrix.Rotation(math.radians(90.0), 3, 'X'))
+        bmesh.ops.rotate(bm, verts=bm.verts, cent=(0.0, 0.0, 0.0), matrix=mathutils.Matrix.Rotation(math.radians(90.0), 3, 'Z')) """
 
         """ TODO backface Culling """
 
@@ -163,6 +167,13 @@ def import_json_gm(context,file_path=""):
             for i, index in enumerate(polygon.vertices):
                 loop_index = polygon.loop_indices[i]
                 col.data[loop_index].color = colors[index]
+
+        """ hack, texture is too dark without it """
+        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+    root.rotation_euler[0] = math.radians(90)
+    root.rotation_euler[2] = math.radians(90)
     return {'FINISHED'}
 
 
