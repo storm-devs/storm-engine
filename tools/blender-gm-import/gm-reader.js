@@ -666,8 +666,24 @@ export class GmReader {
     // this.readBsp();
   }
 
+  getLocatorsTrees() {
+    return this.labels.reduce((labels, { name, groupName, m }) => {
+      if (!labels[groupName]) {
+        // eslint-disable-next-line no-param-reassign
+        labels[groupName] = [];
+      }
+      labels[groupName].push({
+        name,
+        m,
+      });
+      return labels;
+    }, {});
+  }
+
   prepareForBlenderImport() {
-    const data = [];
+    const objects = [];
+
+    let xIsMirrored;
 
     for (let i = 0; i < this.objects.length; i++) {
       const {
@@ -678,18 +694,20 @@ export class GmReader {
 
       const { type } = this.vertexBuffers[vertexBuff];
 
+      xIsMirrored = type !== 4;
+
       const material = this.materials[materialIdx];
       const { groupName: materialGroupName, name: materialName, textureNames } = material;
 
       const verticies = vertexBuffer.map(({ pos: { x, y, z } }) => {
         // TODO check other types
-        const preparedX = type !== 4 ? -x : x;
+        const preparedX = xIsMirrored ? -x : x;
         return [preparedX, y, z];
       });
       // TODO mirror x on animated???
       const normals = vertexBuffer.map(({ norm: { x, y, z } }) => {
         // TODO check other types
-        const preparedX = type !== 4 ? -x : x;
+        const preparedX = xIsMirrored ? -x : x;
         return [preparedX, y, z];
       });
 
@@ -708,7 +726,7 @@ export class GmReader {
 
       const faces = this.triangles.slice(striangle, striangle + ntriangles).map(([v1, v2, v3]) => [v1, v2, v3]);
 
-      data.push({
+      objects.push({
         name,
         verticies,
         normals,
@@ -724,6 +742,8 @@ export class GmReader {
       });
     }
 
-    return data;
+    const locatorsTrees = this.getLocatorsTrees();
+
+    return { objects, locatorsTrees, xIsMirrored };
   }
 }

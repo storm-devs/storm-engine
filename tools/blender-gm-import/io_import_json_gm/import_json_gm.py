@@ -27,13 +27,15 @@ def import_json_gm(context,file_path=""):
     f = open(file_path,)
     data = json.load(f)
 
+    xIsMirrored = data['xIsMirrored']
+
     collection = bpy.data.collections.new(file_name)
     bpy.context.scene.collection.children.link(collection)
 
     root = bpy.data.objects.new( "root", None )
     collection.objects.link(root)
 
-    for object in data:
+    for object in data['objects']:
         name = object.get('name')
 
         vertices = object.get('verticies')
@@ -171,6 +173,23 @@ def import_json_gm(context,file_path=""):
         """ hack, texture is too dark without it """
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
         bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+    for locators_tree in data['locatorsTrees']:
+        group_locator_name = locators_tree
+        group_locator = bpy.data.objects.new( group_locator_name, None )
+        collection.objects.link(group_locator)
+        group_locator.parent = root
+
+        for locator_data in data['locatorsTrees'][locators_tree]:
+            locator_name = locator_data['name']
+            locator_m = locator_data['m']
+            locator = bpy.data.objects.new( locator_name, None )
+            collection.objects.link(locator)
+            locator.parent = group_locator
+            locator.matrix_basis = locator_m
+
+            if xIsMirrored:
+                locator.location[0] = -locator.location[0]
 
     root.rotation_euler[0] = math.radians(90)
     root.rotation_euler[2] = math.radians(90)
