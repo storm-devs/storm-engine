@@ -21,6 +21,11 @@ jobs:
       fail-fast: false
       matrix:
         configuration: [msvc-debug, msvc-release]#, clang-debug]
+        enable_steam: [false]
+        include:
+          - enable_steam: true
+            configuration: msvc-release
+    name: 'build-windows [${{ matrix.configuration}}, steam: ${{ matrix.enable_steam }}]'
     steps:
     - uses: actions/checkout@v2
       with:
@@ -36,10 +41,11 @@ jobs:
         useVcpkgToolchainFile: false
         buildDirectory: '${{ github.workspace }}/build'
         configurationRegexFilter: '${{ matrix.configuration }}'
+        cmakeAppendedArgs: '-DSTORM_ENABLE_STEAM=${{ matrix.enable_steam }}'
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: storm-engine.${{ matrix.configuration }}
+        name: storm-engine.${{ matrix.configuration }}-steam-${{ matrix.enable_steam}}
         path: build\${{ matrix.configuration }}\bin
     - name: Run tests
       run: '${{ github.workspace }}/build/${{ matrix.configuration }}/bin/test-all.exe'
