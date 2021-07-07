@@ -594,7 +594,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     auto fileS = fio->_CreateFile(param, std::ios::binary | std::ios::in);
     if (!fileS.is_open())
     {
-        core.tracelog->warn("WARNING! Strings file \"{}\" does not exist", fileName);
+        spdlog::warn("WARNING! Strings file \"{}\" does not exist", fileName);
         return -1;
     }
 
@@ -602,7 +602,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
 
     if (filesize <= 0)
     {
-        core.tracelog->warn("WARNING! Strings file \"{}\" has zero size", fileName);
+        spdlog::warn("WARNING! Strings file \"{}\" has zero size", fileName);
         return -1;
     }
 

@@ -5,8 +5,8 @@ find_package(Fmod REQUIRED)
 add_executable(${PROJECT_NAME} WIN32
     compiler.cpp
     compiler.h
-    ExecutableLifecycleService.hpp
-    ExecutableLifecycleService.cpp
+    LifecycleDiagnosticsService.hpp
+    LifecycleDiagnosticsService.cpp
     Core.cpp
     data.cpp
     data.h
@@ -14,8 +14,6 @@ add_executable(${PROJECT_NAME} WIN32
     expression.cpp
     file_service.cpp
     file_service.h
-    fs.cpp
-    fs.h
     ifs.cpp
     ifs.h
     internal_functions.cpp

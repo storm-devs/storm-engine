@@ -2,8 +2,6 @@
 
 #include "core.h"
 
-#include "filesystem.h"
-
 #include "../DataCache/DataCache.h"
 #include "../GeomCache/GeomCache.h"
 #include "../Service/particleservice.h"
@@ -13,6 +11,8 @@
 #include "../ICommon/Names.h"
 #include "../System/DataSource/DataString.h"
 #include "defines.h"
+
+#include <filesystem>
 
 uint32_t GraphRead = 0;
 
@@ -84,7 +84,7 @@ void ParticleManager::SetProjectTexture(const char *FileName)
 
     pProjectTexture = pRS->TextureCreate(FileName);
 
-    const fs::path path = FileName;
+    const std::filesystem::path path = FileName;
     pProjectTextureNormalMap = pRS->TextureCreate((path.stem().string() + "nm").c_str());
 
     TextureName = FileName;
@@ -102,7 +102,7 @@ bool ParticleManager::OpenProject(const char *FileName)
     ShortProjectName = FileName;
 
     // std::string LongFileName = "resource\\particles\\";
-    auto path = fs::path() / "resource" / "particles" / FileName;
+    auto path = std::filesystem::path() / "resource" / "particles" / FileName;
     auto pathStr = path.extension().string();
     if (_stricmp(pathStr.c_str(), ".prj") != 0)
         path += ".prj";

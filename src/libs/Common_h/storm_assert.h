@@ -1,5 +1,5 @@
 #pragma once
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 #define EX_OFF
 

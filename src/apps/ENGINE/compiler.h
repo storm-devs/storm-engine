@@ -17,8 +17,8 @@
 #include "tclass_list.h"
 #include "token.h"
 
-#define COMPILER_LOG_FILENAME u8"compile.log"
-#define COMPILER_ERRORLOG_FILENAME u8"error.log"
+#define COMPILER_LOG "compile"
+#define COMPILER_ERRORLOG "error"
 #define BCODE_BUFFER_BLOCKSIZE 4096
 #define IOBUFFER_SIZE 65535
 
@@ -174,10 +174,6 @@ class COMPILER : public VIRTUAL_COMPILER
     ATTRIBUTES *rAP;
 
   public:
-    std::shared_ptr<spdlog::logger> tracelog;
-    std::shared_ptr<spdlog::logger> errorlog;
-    std::shared_ptr<spdlog::logger> warninglog;
-
     bool bBreakOnError;
     COMPRESS Compress;
 

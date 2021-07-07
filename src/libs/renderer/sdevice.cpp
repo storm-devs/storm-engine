@@ -3,7 +3,6 @@
 #include "core.h"
 
 #include "Entity.h"
-#include "filesystem.h"
 #include "inlines.h"
 #include "s_import_func.h"
 #include "script_libriary.h"
@@ -1192,7 +1191,7 @@ long DX9RENDER::TextureCreate(const char *fname)
         return -1L;
     }
 
-    fs::path path = fname;
+    std::filesystem::path path = fname;
     std::string pathStr = path.extension().string();
     if (_stricmp(pathStr.c_str(), ".tx") == 0)
         path.replace_extension();
@@ -2440,15 +2439,15 @@ void DX9RENDER::RecompileEffects()
 {
     effects_.release();
 
-    fs::path cur_path = fs::current_path();
-    fs::current_path(fio->_GetExecutableDirectory());
-    for (const auto &p : fs::recursive_directory_iterator("resource/techniques"))
+    std::filesystem::path cur_path = std::filesystem::current_path();
+    std::filesystem::current_path(fio->_GetExecutableDirectory());
+    for (const auto &p : std::filesystem::recursive_directory_iterator("resource/techniques"))
         if (is_regular_file(p) && p.path().extension() == ".fx")
         {
             auto s = p.path().string(); // hug microsoft
             effects_.compile(s.c_str());
         }
-    fs::current_path(cur_path);
+    std::filesystem::current_path(cur_path);
 }
 
 bool DX9RENDER::ResetDevice()
