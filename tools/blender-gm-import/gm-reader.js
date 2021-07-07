@@ -323,7 +323,7 @@ export class GmReader {
 
       const lights = [];
       for (let j = 0; j < 8; j++) {
-        lights.push(this.readFloatLE());
+        lights.push(this.readInt32LE());
       }
 
       const bones = [];
