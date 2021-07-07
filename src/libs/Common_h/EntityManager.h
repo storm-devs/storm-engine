@@ -440,7 +440,7 @@ class EntityManager final
 
     static EntityInternalData &GetEntityData(const entid_t entity)
     {
-        static EntityInternalData null;
+        static EntityInternalData null{.deleted = true};
 
         const auto index = static_cast<entid_index_t>(entity);
 
