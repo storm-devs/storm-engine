@@ -2713,7 +2713,7 @@ void Character::ActionEvent(Animation *animation, long playerIndex, const char *
                     isFired = true;
                     float kDist;
                     Character *chr = FindGunTarget(kDist);
-                    entid_t enemy;
+                    entid_t enemy{};
                     if (chr)
                     {
                         enemy = chr->GetId();

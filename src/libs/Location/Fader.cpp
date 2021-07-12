@@ -64,7 +64,7 @@ bool Fader::Init()
     const auto &entities = EntityManager::GetEntityIdVector("Fader");
     for (auto eid : entities)
     {
-        if (eid != GetId())
+        if (eid == GetId())
             continue;
 
         if (fadeIn == static_cast<Fader *>(EntityManager::GetEntityPointer(eid))->fadeIn)

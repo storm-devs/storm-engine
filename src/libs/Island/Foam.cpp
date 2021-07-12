@@ -725,36 +725,40 @@ void CoastFoam::RecalculateFoam(long iFoam)
 
     auto sx = 0.0f;
     auto ii = 0.0f;
-    for (long i = 0; i < pF->aFoamParts.size() - 1; i++)
+
+    if (!pF->aFoamParts.empty())
     {
-        auto *pF1 = &pF->aFoamParts[i];
-        auto *pF2 = &pF->aFoamParts[i + 1];
-
-        const auto dx = (pF1->v[0] - pF2->v[0]).GetLength() / static_cast<float>(iFoamDivides);
-        for (long j = 0; j < iFoamDivides; j++)
+        for (size_t i = 0; i < pF->aFoamParts.size() - 1; i++)
         {
-            if (j == 0 && i != 0)
-                continue;
+            auto *pF1 = &pF->aFoamParts[i];
+            auto *pF2 = &pF->aFoamParts[i + 1];
 
-            // WorkPart * pWP = &pF->aWorkParts[pF->aWorkParts.Add()];
-            pF->aWorkParts.push_back(WorkPart{});
-            auto *pWP = &pF->aWorkParts.back();
-            pWP->tu = sx * pF->fTexScaleX;
-            pWP->v[0] =
-                pF1->v[1] + static_cast<float>(j) / static_cast<float>(iFoamDivides - 1) * (pF2->v[1] - pF1->v[1]);
-            pWP->v[1] =
-                pF1->v[0] + static_cast<float>(j) / static_cast<float>(iFoamDivides - 1) * (pF2->v[0] - pF1->v[0]);
-
-            const auto fStartPos = sinf(ii / 14.0f * PI) * 0.1f;
-            for (long k = 0; k < 8; k++)
+            const auto dx = (pF1->v[0] - pF2->v[0]).GetLength() / static_cast<float>(iFoamDivides);
+            for (long j = 0; j < iFoamDivides; j++)
             {
-                pWP->p[k].fPos = fStartPos + (static_cast<float>(k) / 7.0f) * 0.4f;
-                pWP->p[k].fSpeed = 2.0f; // RRnd(pF->fSpeedMin, pF->fSpeedMax);
-                // pWP->p[k].fA = 0.0f;
-            }
+                if (j == 0 && i != 0)
+                    continue;
 
-            sx += dx;
-            ii++;
+                // WorkPart * pWP = &pF->aWorkParts[pF->aWorkParts.Add()];
+                pF->aWorkParts.push_back(WorkPart{});
+                auto *pWP = &pF->aWorkParts.back();
+                pWP->tu = sx * pF->fTexScaleX;
+                pWP->v[0] =
+                    pF1->v[1] + static_cast<float>(j) / static_cast<float>(iFoamDivides - 1) * (pF2->v[1] - pF1->v[1]);
+                pWP->v[1] =
+                    pF1->v[0] + static_cast<float>(j) / static_cast<float>(iFoamDivides - 1) * (pF2->v[0] - pF1->v[0]);
+
+                const auto fStartPos = sinf(ii / 14.0f * PI) * 0.1f;
+                for (long k = 0; k < 8; k++)
+                {
+                    pWP->p[k].fPos = fStartPos + (static_cast<float>(k) / 7.0f) * 0.4f;
+                    pWP->p[k].fSpeed = 2.0f; // RRnd(pF->fSpeedMin, pF->fSpeedMax);
+                    // pWP->p[k].fA = 0.0f;
+                }
+
+                sx += dx;
+                ii++;
+            }
         }
     }
 }
