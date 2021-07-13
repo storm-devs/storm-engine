@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME blade
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common
 )

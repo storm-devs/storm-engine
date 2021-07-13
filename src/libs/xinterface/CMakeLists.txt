@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME xinterface
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common ddraw amstrmid
 )

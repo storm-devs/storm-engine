@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME sea_cameras
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common
 )

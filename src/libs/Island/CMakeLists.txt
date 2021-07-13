@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME island
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common sea_ai
 )

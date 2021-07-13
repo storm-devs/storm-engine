@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME steam_api
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common steamworks
 )

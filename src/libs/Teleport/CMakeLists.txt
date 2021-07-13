@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME teleport
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common pcs_controls
 )

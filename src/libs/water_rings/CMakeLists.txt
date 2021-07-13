@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME water_rings
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common
 )

@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME collide
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common
 )

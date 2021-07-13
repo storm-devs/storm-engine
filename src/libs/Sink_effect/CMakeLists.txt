@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME sink_effect
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common sound_service
 )

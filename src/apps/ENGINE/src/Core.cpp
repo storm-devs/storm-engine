@@ -1,7 +1,5 @@
 #include "core.h"
 
-#include "VmaInit.h"
-
 #include "SteamApi.hpp"
 #include "compiler.h"
 #include "controls.h"
@@ -53,8 +51,6 @@ ENGINE_VERSION getTargetEngineVersion(const std::string_view &version)
 } // namespace storm
 
 uint32_t dwNumberScriptCommandsExecuted = 0;
-
-//extern std::vector<VMA *> GP_CLASSES_STACK = {};
 
 typedef struct
 {
@@ -298,7 +294,7 @@ void CORE::ProcessEngineIniFile()
 
 bool CORE::LoadClassesTable()
 {
-    for (auto *c : GP_CLASSES_STACK)
+    for (auto *c : __STORM_CLASSES_REGISTRY)
     {
         const auto hash = MakeHashValue(c->GetName());
         c->SetHash(hash);
@@ -442,7 +438,7 @@ VDATA *CORE::Event(const char *Event_name, const char *Format, ...)
 void *CORE::MakeClass(const char *class_name)
 {
     const long hash = MakeHashValue(class_name);
-    for (auto *const c : GP_CLASSES_STACK)
+    for (auto *const c : __STORM_CLASSES_REGISTRY)
         if (c->GetHash() == hash && _stricmp(class_name, c->GetName()) == 0)
             return c->CreateClass();
 
@@ -451,7 +447,7 @@ void *CORE::MakeClass(const char *class_name)
 
 void CORE::ReleaseServices()
 {
-    for (auto *const c : GP_CLASSES_STACK)
+    for (auto *const c : __STORM_CLASSES_REGISTRY)
         if (c->Service())
             c->Clear();
 
@@ -461,7 +457,7 @@ void CORE::ReleaseServices()
 VMA *CORE::FindVMA(const char *class_name)
 {
     const long hash = MakeHashValue(class_name);
-    for (auto *const c : GP_CLASSES_STACK)
+    for (auto *const c : __STORM_CLASSES_REGISTRY)
         if (c->GetHash() == hash && _stricmp(class_name, c->GetName()) == 0)
             return c;
 
@@ -470,7 +466,7 @@ VMA *CORE::FindVMA(const char *class_name)
 
 VMA *CORE::FindVMA(long hash)
 {
-    for (auto *const c : GP_CLASSES_STACK)
+    for (auto *const c : __STORM_CLASSES_REGISTRY)
         if (c->GetHash() == hash)
             return c;
 

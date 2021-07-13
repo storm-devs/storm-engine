@@ -25,10 +25,7 @@ MakeHashValue(const char *string)
 }
 
 class VMA;
-
-// extern VMA* _pModuleClassRoot;
-inline std::vector<VMA *> GP_CLASSES_STACK;
-// extern VSYSTEM_API* _VSYSTEM_API;
+inline std::vector<VMA *> __STORM_CLASSES_REGISTRY;
 
 class VMA
 {
@@ -42,20 +39,18 @@ class VMA
     {
         nReference = 0;
         nHash = 0;
-        GP_CLASSES_STACK.push_back(this);
-        // pNext = _pModuleClassRoot;
-        //_pModuleClassRoot = this;
-    };
+        __STORM_CLASSES_REGISTRY.push_back(this);
+    }
     VMA *Next() const
     {
         return pNext;
     }
 
-    virtual ~VMA(){};
+    virtual ~VMA() = default;
     long Build_Version()
     {
         return -1;
-    };
+    }
     void SetHash(long _hash)
     {
         nHash = _hash;
@@ -67,7 +62,7 @@ class VMA
     void Set(VMA *_p)
     {
         pNext = _p;
-    };
+    }
     virtual bool Service()
     {
         return false;
@@ -83,7 +78,7 @@ class VMA
     virtual void RefDec()
     {
         nReference--;
-    };
+    }
     virtual long GetReference()
     {
         return nReference;
@@ -91,14 +86,12 @@ class VMA
     virtual void Clear()
     {
         nReference = 0;
-    };
+    }
     virtual bool ScriptLibriary()
     {
         return false;
     }
 };
-
-#define STORM_KEEP_SYMBOL(x) __pragma(optimize("", off)) static volatile x; __pragma(optimize("", on))
 
 #define CREATE_CLASS(a)                                                                                                \
     class a##vmacd : public VMA                                                                                        \
@@ -113,7 +106,7 @@ class VMA
             nReference++;                                                                                              \
             return new a;                                                                                              \
         }                                                                                                              \
-    } STORM_KEEP_SYMBOL(a##vmaci)
+    } a##vmaci;
 #define CREATE_SERVICE(a)                                                                                              \
     class a##vmacd : public VMA                                                                                        \
     {                                                                                                                  \
@@ -141,21 +134,21 @@ class VMA
                 delete pService;                                                                                       \
             pService = 0;                                                                                              \
         };                                                                                                             \
-    } STORM_KEEP_SYMBOL(a##vmaci)
+    } a##vmaci;
 #define CREATE_SCRIPTLIBRIARY(a)                                                                                       \
     class a##vmacd : public VMA                                                                                        \
     {                                                                                                                  \
-      public: /*a * pLibraryInitClass;*/                                                                               \
+      public:                                                                                                          \
         const char *GetName()                                                                                          \
         {                                                                                                              \
             return #a;                                                                                                 \
         }                                                                                                              \
         void *CreateClass()                                                                                            \
-        { /*if(pLibraryInitClass == 0) pLibraryInitClass = new a; nReference++; return pLibraryInitClass;*/            \
+        {                                                                                                              \
             return new a;                                                                                              \
         }                                                                                                              \
         bool ScriptLibriary()                                                                                          \
         {                                                                                                              \
             return true;                                                                                               \
-        } /*void Clear(){nReference = 0; if(pLibraryInitClass) delete pLibraryInitClass; pLibraryInitClass = 0;}*/;    \
-    } STORM_KEEP_SYMBOL(a##vmaci)
+        }                                                                                                              \
+    } a##vmaci;

@@ -14,9 +14,7 @@ macro(_process_sources group public_header_only)
         list(APPEND SRCS ${ARGN})
 
         # mark as HEADER_FILE_ONLY if specified 
-        ## normaly, this should be set. but we have some logic logic in public headers that has to be compiled
-        ## will be uncommented in future
-        #set_source_files_properties(${files_list} PROPERTIES HEADER_FILE_ONLY ${public_header_only})
+        set_source_files_properties(${files_list} PROPERTIES HEADER_FILE_ONLY ${public_header_only})
 
         # map to source group (basically for Visual Studio)
         foreach(file ${files_list})
@@ -100,21 +98,43 @@ macro(STORM_SETUP)
 		add_executable("${_SETUP_TARGET_NAME}" WIN32 ${SRCS})
 	elseif(${_SETUP_TYPE} STREQUAL "library")
 		add_library("${_SETUP_TARGET_NAME}" ${lib_mode} ${SRCS})
+    elseif(${_SETUP_TYPE} STREQUAL "storm_module")
+        add_library("${_SETUP_TARGET_NAME}" ${lib_mode} ${SRCS})
+        set_target_properties("${_SETUP_TARGET_NAME}" PROPERTIES
+            STORM_MODULE YES
+        )
     else()
         message(FATAL_ERROR "[StormSetup] 'TYPE' is incorrect!")
 	endif()
 
-	set_target_properties("${_SETUP_TARGET_NAME}" PROPERTIES 
+	set_target_properties("${_SETUP_TARGET_NAME}" PROPERTIES
         OUTPUT_NAME ${_SETUP_TARGET_NAME} 
         VERSION "1"
     )
 
     if(_SETUP_DEPENDENCIES)
 	    target_link_libraries("${_SETUP_TARGET_NAME}" ${lib_scope} ${_SETUP_DEPENDENCIES})
+
+        if(${_SETUP_TYPE} STREQUAL "executable")
+            foreach(dep ${_SETUP_DEPENDENCIES})
+                if(TARGET ${dep})
+                    get_property(is_storm_module TARGET ${dep} PROPERTY STORM_MODULE SET)
+                    if(is_storm_module)
+                        # TODO: make it portable? (at least for gcc it is --whole-archive)
+                        list(APPEND target_link_flags "/WHOLEARCHIVE:${dep}")
+                    endif()
+                endif()
+            endforeach()
+        endif()
     endif()
 
     if(_SETUP_LINKER_FLAGS)
-        set_target_properties(${_SETUP_TARGET_NAME} PROPERTIES LINK_FLAGS ${_SETUP_LINKER_FLAGS})
+        list(APPEND target_link_flags ${_SETUP_LINKER_FLAGS})
+    endif()
+
+    if(target_link_flags)
+        list(JOIN target_link_flags " " target_link_flags_string)
+        set_target_properties(${_SETUP_TARGET_NAME} PROPERTIES LINK_FLAGS ${target_link_flags_string})
     endif()
 
     if(_SETUP_NO_SRC)

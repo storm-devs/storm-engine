@@ -25,3 +25,4 @@ bin, crashpad_handler.exe -> ./bin
 bin, 7za.exe -> ./bin
 lib, fmod.dll -> ./bin
 lib, fmodL.dll -> ./bin
+lib, steam_api64.dll -> ./bin

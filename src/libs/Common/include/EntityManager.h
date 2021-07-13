@@ -214,7 +214,7 @@ class EntityManager final
             throw std::runtime_error("null hash");
         }
         VMA *pClass = nullptr;
-        for (const auto &c : GP_CLASSES_STACK)
+        for (const auto &c : __STORM_CLASSES_REGISTRY)
         {
             if (c->GetHash() == hash && _stricmp(name, c->GetName()) == 0)
             {

@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME sea_ai
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common
 )

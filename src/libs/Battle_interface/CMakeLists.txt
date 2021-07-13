@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME battle_interface
-    TYPE library
+    TYPE storm_module
     DEPENDENCIES common
 )
