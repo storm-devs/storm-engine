@@ -1,6 +1,8 @@
 #include "core.h"
-#include "SteamApi.hpp"
+
 #include "VmaInit.h"
+
+#include "SteamApi.hpp"
 #include "compiler.h"
 #include "controls.h"
 #include "fs.h"
@@ -51,6 +53,8 @@ ENGINE_VERSION getTargetEngineVersion(const std::string_view &version)
 } // namespace storm
 
 uint32_t dwNumberScriptCommandsExecuted = 0;
+
+//extern std::vector<VMA *> GP_CLASSES_STACK = {};
 
 typedef struct
 {

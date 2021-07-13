@@ -27,6 +27,8 @@
 #include "defines.h"
 #include "entity.h"
 
+CREATE_CLASS(WorldMap)
+
 //============================================================================================
 
 //#define EVENTS_OFF

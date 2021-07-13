@@ -5,6 +5,9 @@
 #include "../K2Wrapper/particles.h"
 #include "../Manager/particlemanager.h"
 
+CREATE_SERVICE(ParticleService)
+CREATE_CLASS(PARTICLES)
+
 ParticleService::ParticleService()
 {
     pDefaultManager = nullptr;

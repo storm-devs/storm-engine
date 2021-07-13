@@ -9,6 +9,8 @@
 namespace steamapi
 {
 
+CREATE_SCRIPTLIBRIARY(SteamApiScriptLib)
+
 namespace
 {
 uint32_t getSteamEnabled(VS_STACK *pS)

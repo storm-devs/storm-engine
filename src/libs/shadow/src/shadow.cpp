@@ -10,6 +10,8 @@ dynamic shadow cpp file
 #include "shadow.h"
 #include "shared/messages.h"
 
+CREATE_CLASS(Shadow)
+
 static unsigned long HEAD_DENSITY = 0xFF606060;
 static unsigned long DENSITY = 0xFF606040;
 static const float nearBlend = 8.0f;

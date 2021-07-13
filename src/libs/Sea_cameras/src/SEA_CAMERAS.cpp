@@ -3,6 +3,11 @@
 #include "DeckCamera.h"
 #include "FreeCamera.h"
 
+CREATE_CLASS(SEA_CAMERAS)
+CREATE_CLASS(FREE_CAMERA)
+CREATE_CLASS(SHIP_CAMERA)
+CREATE_CLASS(DECK_CAMERA)
+
 SEA_CAMERAS::SEA_CAMERAS()
 {
     bActive = true;

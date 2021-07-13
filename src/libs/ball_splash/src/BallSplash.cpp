@@ -4,8 +4,9 @@
 
 #include "core.h"
 
-#include "Entity.h"
 #include "vfile_service.h"
+
+CREATE_CLASS(BALLSPLASH)
 
 //--------------------------------------------------------------------
 BALLSPLASH::BALLSPLASH() : renderer(nullptr), sea(nullptr)

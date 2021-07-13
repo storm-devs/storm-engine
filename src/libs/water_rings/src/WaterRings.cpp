@@ -5,6 +5,8 @@
 
 #include "IVBufferManager.h"
 
+CREATE_CLASS(WaterRings)
+
 //------------------------------------------------------------------------------------
 WaterRings::WaterRings() : ivManager(nullptr)
 {

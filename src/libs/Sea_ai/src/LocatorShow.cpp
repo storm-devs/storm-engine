@@ -1,5 +1,7 @@
 #include "LocatorShow.h"
 
+CREATE_CLASS(SeaLocatorShow)
+
 SeaLocatorShow::SeaLocatorShow()
 {
     fScale = 0.7f;

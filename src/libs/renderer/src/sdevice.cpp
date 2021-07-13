@@ -13,6 +13,9 @@
 #include <DxErr.h>
 #include <corecrt_io.h>
 
+CREATE_SERVICE(DX9RENDER)
+CREATE_SCRIPTLIBRIARY(DX9RENDER_SCRIPT_LIBRIARY)
+
 #define POST_PROCESS_FVF (D3DFVF_XYZRHW | D3DFVF_TEX4)
 
 #define S_RELEASE(a, b)                                                                                                \

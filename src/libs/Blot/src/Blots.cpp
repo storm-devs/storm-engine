@@ -15,6 +15,8 @@
 #include "shared/messages.h"
 #include "Entity.h"
 
+CREATE_CLASS(Blots)
+
 #define BLOTS_RADIUS 0.6f
 
 //============================================================================================

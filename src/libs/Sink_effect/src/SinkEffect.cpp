@@ -3,7 +3,8 @@
 #include "Entity.h"
 #include "core.h"
 #include "ship_base.h"
-#include <stdio.h>
+
+CREATE_CLASS(SINKEFFECT)
 
 //--------------------------------------------------------------------
 SINKEFFECT::SINKEFFECT() : renderer(nullptr), sea(nullptr)

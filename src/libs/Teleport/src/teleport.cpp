@@ -6,6 +6,10 @@
 #include "defines.h"
 #include "vfile_service.h"
 
+CREATE_CLASS(TMPTELEPORT)
+CREATE_CLASS(FINDFILESINTODIRECTORY)
+CREATE_CLASS(FINDDIALOGNODES)
+
 #define DELETE_PTR(x)                                                                                                  \
     if (x)                                                                                                             \
         delete x;                                                                                                      \

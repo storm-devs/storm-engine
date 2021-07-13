@@ -3,6 +3,9 @@
 #include "core.h"
 #include "entity.h"
 
+CREATE_CLASS(LOCATOR)
+CREATE_CLASS(BLAST)
+
 LOCATOR::LOCATOR()
 {
     gs = nullptr;

@@ -9,6 +9,9 @@ model binded to an animated locator
 #include "blade.h"
 #include "shared/messages.h"
 #include "geometry.h"
+
+CREATE_CLASS(BLADE)
+
 static const char *handName = "Saber_hand";
 static const char *beltName = "Saber_belt";
 static const char *bloodName = "Saber_blood";

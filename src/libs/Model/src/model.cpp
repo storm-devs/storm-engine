@@ -4,6 +4,8 @@
 #include "entity.h"
 #include "modelr.h"
 
+CREATE_CLASS(MODELR)
+
 IDirect3DVertexBuffer9 *dest_vb;
 
 MODELR::MODELR()

@@ -16,6 +16,8 @@
 #include "an_file.h"
 #include "vfile_service.h"
 
+CREATE_SERVICE(AnimationServiceImp)
+
 //============================================================================================
 
 // Unused animation unload time

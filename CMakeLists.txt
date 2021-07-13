@@ -28,8 +28,6 @@ foreach (conan_target ${CONAN_TARGETS})
 endforeach()
 ###
 
-include(AutoSetup)
-
 option(STORM_ENABLE_STEAM "Enable Steam integration" OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")

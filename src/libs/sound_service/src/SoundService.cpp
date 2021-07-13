@@ -12,6 +12,9 @@
 #include "DebugEntity.h"
 #include "math3d/Color.h"
 
+CREATE_SERVICE(SoundService)
+CREATE_CLASS(SoundVisualisationEntity)
+
 #define DISTANCEFACTOR 1.0f
 #define CHECKFMODERR(expr) ErrorHandler(expr, __FILE__, __LINE__, __func__, #expr)
 

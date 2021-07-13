@@ -14,7 +14,9 @@ macro(_process_sources group public_header_only)
         list(APPEND SRCS ${ARGN})
 
         # mark as HEADER_FILE_ONLY if specified 
-        set_source_files_properties(${files_list} PROPERTIES HEADER_FILE_ONLY ${public_header_only})
+        ## normaly, this should be set. but we have some logic logic in public headers that has to be compiled
+        ## will be uncommented in future
+        #set_source_files_properties(${files_list} PROPERTIES HEADER_FILE_ONLY ${public_header_only})
 
         # map to source group (basically for Visual Studio)
         foreach(file ${files_list})
@@ -87,8 +89,15 @@ macro(STORM_SETUP)
         set(lib_mode STATIC)
     endif()
 
+    if(_SETUP_NO_SRC)
+        set(lib_scope INTERFACE)
+        set(lib_mode INTERFACE)
+    else()
+        set(lib_scope PUBLIC)
+    endif()
+
 	if(${_SETUP_TYPE} STREQUAL "executable")
-		add_executable("${_SETUP_TARGET_NAME}" ${SRCS})
+		add_executable("${_SETUP_TARGET_NAME}" WIN32 ${SRCS})
 	elseif(${_SETUP_TYPE} STREQUAL "library")
 		add_library("${_SETUP_TARGET_NAME}" ${lib_mode} ${SRCS})
     else()
@@ -101,7 +110,7 @@ macro(STORM_SETUP)
     )
 
     if(_SETUP_DEPENDENCIES)
-	    target_link_libraries("${_SETUP_TARGET_NAME}" PUBLIC ${_SETUP_DEPENDENCIES})
+	    target_link_libraries("${_SETUP_TARGET_NAME}" ${lib_scope} ${_SETUP_DEPENDENCIES})
     endif()
 
     if(_SETUP_LINKER_FLAGS)
@@ -115,7 +124,7 @@ macro(STORM_SETUP)
     # install public headers
     foreach(dir ${PUBLIC_INCLUDE_DIRS})
         target_include_directories(
-            "${_SETUP_TARGET_NAME}" PUBLIC
+            "${_SETUP_TARGET_NAME}" ${lib_scope}
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${dir}>
             $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${dir}>
         )

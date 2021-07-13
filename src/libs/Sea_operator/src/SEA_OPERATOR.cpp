@@ -7,6 +7,8 @@
 #include "entity.h"
 #include "rands.h"
 
+CREATE_CLASS(SEA_OPERATOR)
+
 char dbgs[1024];
 static const float MIN_TIME_DELTA = 0.05f;
 CVECTOR lastCP;

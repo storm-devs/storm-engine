@@ -2,10 +2,11 @@
 
 #include "core.h"
 
-#include "../Animation/ActionInfo.h"
 #include "vfile_service.h"
 
 #include <Input.hpp>
+
+CREATE_SERVICE(PCS_CONTROLS)
 
 using namespace storm;
 

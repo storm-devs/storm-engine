@@ -2,7 +2,8 @@
 #include <vector>
 
 /* TODO: REMOVE THIS.... */
-constexpr uint32_t MakeHashValue(const char *string)
+constexpr uint32_t
+MakeHashValue(const char *string)
 {
     uint32_t hval = 0;
 
@@ -24,7 +25,10 @@ constexpr uint32_t MakeHashValue(const char *string)
 }
 
 class VMA;
+
+// extern VMA* _pModuleClassRoot;
 inline std::vector<VMA *> GP_CLASSES_STACK;
+// extern VSYSTEM_API* _VSYSTEM_API;
 
 class VMA
 {
@@ -39,6 +43,8 @@ class VMA
         nReference = 0;
         nHash = 0;
         GP_CLASSES_STACK.push_back(this);
+        // pNext = _pModuleClassRoot;
+        //_pModuleClassRoot = this;
     };
     VMA *Next() const
     {
@@ -92,6 +98,8 @@ class VMA
     }
 };
 
+#define STORM_KEEP_SYMBOL(x) __pragma(optimize("", off)) static volatile x; __pragma(optimize("", on))
+
 #define CREATE_CLASS(a)                                                                                                \
     class a##vmacd : public VMA                                                                                        \
     {                                                                                                                  \
@@ -105,7 +113,7 @@ class VMA
             nReference++;                                                                                              \
             return new a;                                                                                              \
         }                                                                                                              \
-    } a##vmaci;
+    } STORM_KEEP_SYMBOL(a##vmaci)
 #define CREATE_SERVICE(a)                                                                                              \
     class a##vmacd : public VMA                                                                                        \
     {                                                                                                                  \
@@ -133,7 +141,7 @@ class VMA
                 delete pService;                                                                                       \
             pService = 0;                                                                                              \
         };                                                                                                             \
-    } a##vmaci;
+    } STORM_KEEP_SYMBOL(a##vmaci)
 #define CREATE_SCRIPTLIBRIARY(a)                                                                                       \
     class a##vmacd : public VMA                                                                                        \
     {                                                                                                                  \
@@ -150,4 +158,4 @@ class VMA
         {                                                                                                              \
             return true;                                                                                               \
         } /*void Clear(){nReference = 0; if(pLibraryInitClass) delete pLibraryInitClass; pLibraryInitClass = 0;}*/;    \
-    } a##vmaci;
+    } STORM_KEEP_SYMBOL(a##vmaci)

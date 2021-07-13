@@ -3,6 +3,8 @@
 #include "shared/messages.h"
 #include "shared/sea_ai/Script_defines.h"
 
+CREATE_CLASS(SailorsEditor)
+
 SailorsEditor::SailorsEditor() : rs(nullptr), model(nullptr)
 {
     cameraAng = 0.0f;

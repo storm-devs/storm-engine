@@ -3,10 +3,12 @@ STORM_SETUP(
     TYPE executable
     DEPENDENCIES     
 	
+    # internal
     common
     util
     window
 
+    # VM
     animals
     animation
     ball_splash
@@ -47,6 +49,13 @@ STORM_SETUP(
     worldmap
     xinterface
 	
+    # external
     sentry-native
+    sdl2
     zlib
+
+    # system
+    comctl32
+    dbghelp
+    winhttp
 )

@@ -5,6 +5,8 @@
 
 #include "vfile_service.h"
 
+CREATE_CLASS(DIALOG)
+
 #define CNORMAL 0xFFFFFFFF
 #define UNFADE_TIME 1000
 

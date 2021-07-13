@@ -5,6 +5,8 @@
 #include "core.h"
 #include "defines.h"
 
+CREATE_CLASS(SEAFOAM)
+
 // entid_t arrowModel;
 
 #define U_SPEED_K 24e-4f

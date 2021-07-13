@@ -1,6 +1,8 @@
 #include "AISeaGoods.h"
 #include "shared/sea_ai/Script_defines.h"
 
+CREATE_CLASS(AISeaGoods)
+
 AISeaGoods::AISeaGoods()
 {
     pSea = nullptr;
