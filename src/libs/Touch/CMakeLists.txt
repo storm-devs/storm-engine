@@ -1,8 +1,5 @@
-project(touch)
-
-add_library(${PROJECT_NAME} STATIC
-    touch.cpp
-    touch.h
+STORM_SETUP(
+    TARGET_NAME touch
+    TYPE library
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

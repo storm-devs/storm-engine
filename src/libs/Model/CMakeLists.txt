@@ -1,9 +1,5 @@
-project(model)
-
-add_library(${PROJECT_NAME} STATIC
-    model.cpp
-    modelr.h
-    node.cpp
+STORM_SETUP(
+    TARGET_NAME model
+    TYPE library
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

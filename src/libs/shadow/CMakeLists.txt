@@ -1,8 +1,5 @@
-project(shadow)
-
-add_library(${PROJECT_NAME} STATIC
-    shadow.cpp
-    shadow.h
+STORM_SETUP(
+    TARGET_NAME shadow
+    TYPE library
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

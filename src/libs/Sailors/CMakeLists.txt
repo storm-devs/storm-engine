@@ -1,14 +1,5 @@
-project(sailors)
-
-add_library(${PROJECT_NAME} STATIC
-    Sailors.cpp
-    Sailors.h
-    SailorsEditor.cpp
-    SailorsEditor.h
-    SailorsMenu.cpp
-    SailorsMenu.h
-    SailorsWayPoints.cpp
-    SailorsWayPoints.h
+STORM_SETUP(
+    TARGET_NAME sailors
+    TYPE library
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

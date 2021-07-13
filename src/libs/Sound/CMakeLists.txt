@@ -1,8 +1,5 @@
-project(sound)
-
-add_library(${PROJECT_NAME} STATIC
-    Sound.cpp
-    Sound.h
+STORM_SETUP(
+    TARGET_NAME sound
+    TYPE library
+    DEPENDENCIES common sound_service
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

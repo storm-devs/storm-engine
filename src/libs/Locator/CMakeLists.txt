@@ -1,10 +1,5 @@
-project(locator)
-
-add_library(${PROJECT_NAME} STATIC
-    blast.cpp
-    blast.h
-    locator.cpp
-    locator.h
+STORM_SETUP(
+    TARGET_NAME locator
+    TYPE library
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

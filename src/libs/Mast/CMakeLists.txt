@@ -1,8 +1,5 @@
-project(mast)
-
-add_library(${PROJECT_NAME} STATIC
-    mast.cpp
-    mast.h
+STORM_SETUP(
+    TARGET_NAME mast
+    TYPE library
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

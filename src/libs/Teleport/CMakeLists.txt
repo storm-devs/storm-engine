@@ -1,8 +1,5 @@
-project(teleport)
-
-add_library(${PROJECT_NAME} STATIC
-    teleport.cpp
-    teleport.h
+STORM_SETUP(
+    TARGET_NAME teleport
+    TYPE library
+    DEPENDENCIES common pcs_controls
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

@@ -3,7 +3,12 @@ zlib/1.2.11
 spdlog/1.8.2
 
 sdl2/2.0.14@bincrafters/stable
+
 sentry-native/0.4.9@storm/src
+
+directx/9.0@storm/prebuilt
+fmod/2.1.7@storm/prebuilt
+steam/1.5.1@storm/prebuilt
 
 # Development dependencies
 catch2/2.13.4

@@ -1,12 +1,5 @@
-project(pcs_controls)
-
-add_library(${PROJECT_NAME} STATIC
-    ControlTree.cpp
-    ControlTree.h
-    KeyBuffer.cpp
-    KeyBuffer.h
-    pcs_controls.cpp
-    pcs_controls.h
+STORM_SETUP(
+    TARGET_NAME pcs_controls
+    TYPE library
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h input)

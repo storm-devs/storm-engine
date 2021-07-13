@@ -1,9 +1,5 @@
-project(collide)
-
-add_library(${PROJECT_NAME} STATIC
-    coll.cpp
-    local_collide.cpp
-    vcollide.h
+STORM_SETUP(
+    TARGET_NAME collide
+    TYPE library
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

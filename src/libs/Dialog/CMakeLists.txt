@@ -1,8 +1,5 @@
-project(dialog)
-
-add_library(${PROJECT_NAME} STATIC
-    dialog.cpp
-    dialog.h
+STORM_SETUP(
+    TARGET_NAME dialog
+    TYPE library
+    DEPENDENCIES common sound_service
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

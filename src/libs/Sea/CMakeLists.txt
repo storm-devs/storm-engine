@@ -1,12 +1,5 @@
-project(sea)
-
-add_library(${PROJECT_NAME} STATIC
-    EnvMap.cpp
-    SEA.cpp
-    SEA.h
-    sea_defines.h
-    sea_struct.h
-    SSE.h
+STORM_SETUP(
+    TARGET_NAME sea
+    TYPE library
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)
