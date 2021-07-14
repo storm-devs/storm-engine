@@ -47,9 +47,10 @@ class S_CLASSTAB
     std::vector<CLASSINFO> pTable;
     VIRTUAL_COMPILER *pVCompiler;
 
-  public:
+public:
     S_CLASSTAB();
     ~S_CLASSTAB();
+
     uint32_t GetClassesNum()
     {
         return nClassesNum;
@@ -62,10 +63,12 @@ class S_CLASSTAB
     void Release();
     void InvalidateBySegmentID(uint32_t segment_id);
     uint32_t FindClass(const char *class_name);
+
     void SetVCompiler(VIRTUAL_COMPILER *pvc)
     {
         pVCompiler = pvc;
     }
+
     void InitSystemClasses();
     bool IsClassDataSet(uint32_t class_id);
 };

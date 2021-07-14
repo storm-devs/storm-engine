@@ -8,11 +8,12 @@ class SSTRING
 {
     char *pDataPointer;
 
-  public:
+public:
     SSTRING()
     {
         pDataPointer = nullptr;
     };
+
     SSTRING(const char *p)
     {
         if (!p)
@@ -21,18 +22,22 @@ class SSTRING
         pDataPointer = new char[len];
         strcpy_s(pDataPointer, len, p);
     }
-    SSTRING(const SSTRING &ss) : pDataPointer(nullptr)
+
+    SSTRING(const SSTRING &ss)
+        : pDataPointer(nullptr)
     {
         const auto len = strlen(ss.pDataPointer) + 1;
         pDataPointer = new char[len];
         strcpy_s(pDataPointer, len, ss.pDataPointer);
     }
+
     ~SSTRING()
     {
         if (pDataPointer)
             delete pDataPointer;
         pDataPointer = nullptr;
     };
+
     SSTRING &operator=(const SSTRING &ss)
     {
         if (this == &ss)
@@ -44,6 +49,7 @@ class SSTRING
         strcpy_s(pDataPointer, len, ss.pDataPointer);
         return *this;
     }
+
     SSTRING &operator=(const char sym)
     {
         if (pDataPointer)
@@ -53,10 +59,12 @@ class SSTRING
         pDataPointer[1] = 0;
         return *this;
     }
+
     operator const char *()
     {
         return pDataPointer;
     };
+
     bool operator==(const char *p)
     {
         if (pDataPointer == p)
@@ -67,6 +75,7 @@ class SSTRING
             return true;
         return false;
     };
+
     bool operator!=(const char *p)
     {
         if (pDataPointer == p)
@@ -77,6 +86,7 @@ class SSTRING
             return false;
         return true;
     };
+
     void operator+=(const char *p)
     {
         if (p == nullptr)
@@ -95,6 +105,7 @@ class SSTRING
         delete pDataPointer;
         pDataPointer = pp;
     };
+
     void operator+=(const char sym)
     {
         if (pDataPointer == nullptr)
@@ -112,6 +123,7 @@ class SSTRING
         delete[] pDataPointer;
         pDataPointer = pp;
     };
+
     SSTRING &format(const char *format_string, ...)
     {
         char buffer[256];

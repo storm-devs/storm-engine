@@ -46,7 +46,7 @@ rec_loop:;
     dist = ssrc / d;
 
     if ((diss > EPSILON && dist <= diss - EPSILON) || d == 0.0 || dist <= 0.0)
-    // if(dist<=diss)
+        // if(dist<=diss)
     {
         if (sdst < 0.0)
         {
@@ -62,7 +62,7 @@ rec_loop:;
     }
 
     if ((dise < 1.0 - EPSILON && dist >= dise + EPSILON) || dist >= 1.0)
-    // if(dist>=dise)
+        // if(dist>=dise)
     {
         if (ssrc < 0.0) // left
         {
@@ -72,9 +72,9 @@ rec_loop:;
         }
         else // right
             if (node->right == 0)
-            goto rec_avoid;
-        else
-            node = &sroot[node->node + node->right];
+                goto rec_avoid;
+            else
+                node = &sroot[node->node + node->right];
         goto rec_loop;
     }
     //----------first test----------
@@ -229,7 +229,7 @@ long ClipByPlane(const GEOS::PLANE &plane, long n)
             if (ii >= n)
                 ii = 0;
             if (plane.nrm.x * poly[ii].x + plane.nrm.y * poly[ii].y + plane.nrm.z * poly[ii].z - plane.d <= 0.0)
-            // inside!
+                // inside!
             {
                 for (i3 = n; i3 > ii; i3--)
                     poly[i3] = poly[i3 - 1];

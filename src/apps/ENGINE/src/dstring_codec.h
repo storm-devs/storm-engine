@@ -36,14 +36,17 @@ class DSTRING_CODEC
     uint32_t nHTEIndex;
     char pSymbol[2];
 
-  public:
+public:
     HTDELEMENT HTable[DHASH_TABLE_SIZE];
-    DSTRING_CODEC() : nHTIndex(0), nHTEIndex(0)
+
+    DSTRING_CODEC()
+        : nHTIndex(0), nHTEIndex(0)
     {
         nStringsNum = 0;
         pSymbol[0] = 0;
         pSymbol[1] = 0;
     };
+
     ~DSTRING_CODEC()
     {
         Release();
@@ -123,6 +126,7 @@ class DSTRING_CODEC
         bNew = true;
         return nStringCode;
     }
+
     char *Convert(uint32_t code, uint32_t &nSize)
     {
         // nTableIndex = code>>16;
@@ -147,6 +151,7 @@ class DSTRING_CODEC
         nSize = HTable[nTableIndex].ppDat[n].nSize;
         return HTable[nTableIndex].ppDat[n].pDString;
     }
+
     uint32_t MakeHashValue(const char *ps, uint32_t nSize)
     {
         uint32_t hval = 0;
@@ -165,6 +170,7 @@ class DSTRING_CODEC
         }
         return hval;
     }
+
     /*char * Get()
     {
         nHTIndex = 0;

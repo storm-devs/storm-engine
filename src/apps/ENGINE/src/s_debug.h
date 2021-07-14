@@ -28,9 +28,9 @@ enum DBG_DISPLAY_MODE
 };
 
 class COMPILER;
+
 class S_DEBUG
 {
-
     friend LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
     friend LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
     friend DWORD WINAPI BackgroundThreadProc(LPVOID lpParameter);
@@ -55,7 +55,7 @@ class S_DEBUG
     uint32_t nRecentFilesIndex;
     uint32_t nRFMOffset;
 
-  public:
+public:
     HWND hMain;
     BREAKPOINTS_TABLE Breaks;
     SOURCE_VIEW *SourceView;
@@ -63,6 +63,7 @@ class S_DEBUG
 
     S_DEBUG() = default;
     ~S_DEBUG();
+
     HWND GetWindowHandle()
     {
         return hMain;
@@ -86,6 +87,7 @@ class S_DEBUG
     uint32_t GetTraceMode();
     void SetTraceMode(uint32_t tmode);
     void BreakOn(const char *filename, uint32_t line);
+
     void SetTraceLine(uint32_t l)
     {
         nTraceLine = l;

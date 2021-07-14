@@ -25,17 +25,20 @@ class TM_LIST
     uint32_t EditMask;
     HFONT hFont;
 
-  public:
+public:
     TM_LIST();
     virtual ~TM_LIST();
+
     HWND GetWindowHandle()
     {
         return hOwn;
     };
+
     HWND GetMainWindowHandle()
     {
         return hMain;
     };
+
     HINSTANCE GetInstance()
     {
         return hInst;
@@ -43,6 +46,7 @@ class TM_LIST
     void Initialize(HWND hwnd, HINSTANCE hinst, uint32_t style, uint32_t style_ex);
     void Initialize(HWND hwnd, HINSTANCE hinst, uint32_t style, uint32_t style_ex, uint32_t icon_rid);
     void SetPosition(RECT pos);
+
     RECT GetPosition()
     {
         return Pos;
@@ -53,6 +57,7 @@ class TM_LIST
     void SetItemText(long Item_index, long Subitem_index, const char *text);
     void GetItemText(long Item_index, long Subitem_index, const char *text, long max_size);
     void SetItemImage(long Item_index, long Subitem_index, long image_code);
+
     void SetBindMask(uint32_t bind_mask)
     {
         Bind_Mask = bind_mask;
@@ -63,13 +68,21 @@ class TM_LIST
     void SetCharID(const char *text);
     char *GetCharID();
     void SelectItem(const char *name);
+
     void SetEditMask(uint32_t mask)
     {
         EditMask = mask;
     }
-    virtual void ProcessMessage(uint32_t, uint32_t, uint32_t){};
+
+    virtual void ProcessMessage(uint32_t, uint32_t, uint32_t)
+    {
+    };
     virtual void ItemChanged(long Item_index, long Subitem_index) = 0;
-    virtual void PostProcess(){};
+
+    virtual void PostProcess()
+    {
+    };
+
     virtual void SetFont(HFONT _hfont)
     {
         hFont = _hfont;

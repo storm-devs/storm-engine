@@ -43,7 +43,7 @@ class SOURCE_VIEW
 
     void DoStep(long iCount);
 
-  public:
+public:
     std::vector<std::string> aStrings;
     HWND hOwn;
     RECT CopyPasteRect;

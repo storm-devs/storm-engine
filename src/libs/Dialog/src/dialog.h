@@ -36,7 +36,7 @@ class DIALOG final : public Entity
 {
     static VDX9RENDER *RenderService;
 
-  public:
+public:
     DIALOG(DIALOG &&) = delete;
     DIALOG(const DIALOG &) = delete;
     DIALOG();
@@ -46,12 +46,13 @@ class DIALOG final : public Entity
     void Realize(uint32_t Delta_Time);
     uint32_t AttributeChanged(ATTRIBUTES *pA);
     uint64_t ProcessMessage(MESSAGE &message);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
         {
-        // case Stage::execute:
-        //    Execute(delta); break;
+            // case Stage::execute:
+            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -66,7 +67,7 @@ class DIALOG final : public Entity
                                                std::vector<std::string> &asOutTextList,
                                                std::vector<long> *panPageIndices, long nPageSize);
 
-  private:
+private:
     void EmergencyExit();
 
     // Nikita data
@@ -92,10 +93,12 @@ class DIALOG final : public Entity
             rs = nullptr;
             nFontID = -1;
         }
+
         ~TextDescribe()
         {
             Release();
         }
+
         void Release()
         {
             if (rs && nFontID >= 0)
@@ -114,7 +117,8 @@ class DIALOG final : public Entity
         float fScrollTime;
         std::vector<long> anPageEndIndex;
 
-        DlgTextDescribe() : TextDescribe(), fScrollTime(0)
+        DlgTextDescribe()
+            : TextDescribe(), fScrollTime(0)
         {
         }
 
@@ -122,10 +126,12 @@ class DIALOG final : public Entity
         {
             Release();
         }
+
         virtual void Release()
         {
             TextDescribe::Release();
         }
+
         void ChangeText(const char *pcText);
         void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
         long GetShowHeight();
@@ -134,6 +140,7 @@ class DIALOG final : public Entity
         void PrevPage();
         void NextPage();
     };
+
     DlgTextDescribe m_DlgText;
 
     struct DlgLinkDescribe : public TextDescribe
@@ -146,28 +153,34 @@ class DIALOG final : public Entity
         float fCursorCurrentTime, fCursorVisibleTime, fCursorInvisibleTime;
         DIALOG *pDlg;
 
-        DlgLinkDescribe() : TextDescribe()
+        DlgLinkDescribe()
+            : TextDescribe()
         {
             pDlg = nullptr;
         }
+
         virtual ~DlgLinkDescribe()
         {
             Release();
         }
+
         virtual void Release()
         {
             TextDescribe::Release();
         }
+
         void ChangeText(ATTRIBUTES *pALinks);
         void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
         long GetShowHeight();
         void Show(long nY);
         void ShowEditMode(long nX, long nY, long nTextIdx);
+
         void SetDlg(DIALOG *_pDlg)
         {
             pDlg = _pDlg;
         }
     };
+
     DlgLinkDescribe m_DlgLinks;
 
     struct BackParameters
@@ -203,6 +216,7 @@ class DIALOG final : public Entity
         float nDividerOffsetX;
         long nDividerOffsetY;
     };
+
     BackParameters m_BackParams;
     long m_idVBufBack;
     long m_idIBufBack;
@@ -224,6 +238,7 @@ class DIALOG final : public Entity
         float fTopOffset;
         float fBottomOffset;
     };
+
     ButtonParameters m_ButtonParams;
     long m_idVBufButton;
     long m_idIBufButton;
@@ -244,14 +259,17 @@ class DIALOG final : public Entity
     {
         return fX * m_frScreenData.right + m_frScreenData.left;
     }
+
     static float GetScrY(float fY)
     {
         return fY * m_frScreenData.bottom + m_frScreenData.top;
     }
+
     static float GetScrWidth(float fX)
     {
         return fX * m_frScreenData.right;
     }
+
     static float GetScrHeight(float fY)
     {
         return fY * m_frScreenData.bottom;

@@ -21,7 +21,6 @@
 
 class Blots : public Entity
 {
-
 #pragma pack(push, 1)
 
     struct Blot
@@ -47,7 +46,7 @@ class Blots : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Blots();
     virtual ~Blots();
 
@@ -60,8 +59,8 @@ class Blots : public Entity
     {
         switch (stage)
         {
-        // case Stage::execute:
-        //    Execute(delta); break;
+            // case Stage::execute:
+            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -78,7 +77,7 @@ class Blots : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Register a hit
     void Hit(MESSAGE &message);
     // Add a blot
@@ -90,7 +89,7 @@ class Blots : public Entity
     // Load blot parameters
     void LoadBlot(long i);
 
-  private:
+private:
     VDX9RENDER *rs;
     entid_t model;
     long textureID;

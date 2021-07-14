@@ -148,14 +148,14 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
                     if (CDebug.SourceView->nEndSelection > CDebug.SourceView->nStartSelection)
                         memcpy(lptstrCopy,
                                CDebug.SourceView->pSourceFile +
-                                   CDebug.SourceView->pLineOffset[CDebug.SourceView->nActiveLine] +
-                                   CDebug.SourceView->nStartSelection,
+                               CDebug.SourceView->pLineOffset[CDebug.SourceView->nActiveLine] +
+                               CDebug.SourceView->nStartSelection,
                                dwBytes - 1);
                     else
                         memcpy(lptstrCopy,
                                CDebug.SourceView->pSourceFile +
-                                   CDebug.SourceView->pLineOffset[CDebug.SourceView->nActiveLine] +
-                                   CDebug.SourceView->nEndSelection,
+                               CDebug.SourceView->pLineOffset[CDebug.SourceView->nActiveLine] +
+                               CDebug.SourceView->nEndSelection,
                                dwBytes - 1);
                     lptstrCopy[dwBytes - 1] = 0;
                     GlobalUnlock(hMem);
@@ -470,7 +470,8 @@ SOURCE_VIEW::SOURCE_VIEW(HWND _hMain, HINSTANCE _hInst)
             do
             {
                 htBookmarks[buffer] = static_cast<uint32_t>(0);
-            } while (pI->ReadStringNext("bookmarks", "BM", buffer, sizeof(buffer)));
+            }
+            while (pI->ReadStringNext("bookmarks", "BM", buffer, sizeof(buffer)));
     }
 }
 
@@ -678,7 +679,7 @@ void SOURCE_VIEW::OnPaint()
                         nControlLine = n;
                     }
                 }
-                // else if (htBookmarks.Find(sSourceFileName + "," + n, dwTmpFind)) //;CDebug.SourceView->pBookmarks[n])
+                    // else if (htBookmarks.Find(sSourceFileName + "," + n, dwTmpFind)) //;CDebug.SourceView->pBookmarks[n])
                 else if (htBookmarks.count(sSourceFileName + "," + std::to_string(n)) > 0)
                     FillRect(dc, &SelectionRect, hBookmarkBrush);
 

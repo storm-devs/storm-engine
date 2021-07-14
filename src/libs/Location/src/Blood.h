@@ -39,7 +39,7 @@ class Blood : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Blood();
     virtual ~Blood();
 
@@ -70,7 +70,7 @@ class Blood : public Entity
 
     static bool AddClipPoligon(const CVECTOR *v, long nv);
 
-  protected:
+protected:
     VDX9RENDER *pRS;
     COLLIDE *pCol;
     long texID;

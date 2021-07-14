@@ -339,7 +339,7 @@ void DIALOG::DlgLinkDescribe::ShowEditMode(long nX, long nY, long nTextIdx)
 
                 std::string tmp(pKeys[n].ucVKey.b, pKeys[n].ucVKey.l);
                 if (rs->StringWidth((char *)asText[nTextIdx].c_str(), nFontID, fScale, 0) +
-                        rs->CharWidth(pKeys[n].ucVKey, nFontID, fScale) <=
+                    rs->CharWidth(pKeys[n].ucVKey, nFontID, fScale) <=
                     nWindowWidth)
                 {
                     int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);

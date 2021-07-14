@@ -51,6 +51,7 @@ struct EXTDATA_HEADER
     uint32_t dwExtDataOffset;
     uint32_t dwExtDataSize;
 };
+
 /*struct DEFINE_INFO
 {
     uint32_t deftype;
@@ -65,15 +66,18 @@ struct DOUBLE_DWORD
 
 class SLIBHOLDER
 {
-  public:
+public:
     HINSTANCE hInst;
     SCRIPT_LIBRIARY *pLib;
     char *pName;
-    SLIBHOLDER() : hInst(nullptr)
+
+    SLIBHOLDER()
+        : hInst(nullptr)
     {
         pLib = nullptr;
         pName = nullptr;
     };
+
     ~SLIBHOLDER()
     {
         if (pLib)
@@ -81,6 +85,7 @@ class SLIBHOLDER
         if (pName)
             delete pName;
     };
+
     void SetName(const char *pFileName)
     {
         if (pName)
@@ -99,7 +104,9 @@ enum COMPILER_STAGE
     CS_COMPILATION,
     CS_RUNTIME
 };
+
 class CORE;
+
 class COMPILER : public VIRTUAL_COMPILER
 {
     friend CORE;
@@ -173,7 +180,7 @@ class COMPILER : public VIRTUAL_COMPILER
     DATA ExpressionResult;
     ATTRIBUTES *rAP;
 
-  public:
+public:
     std::shared_ptr<spdlog::logger> tracelog;
     std::shared_ptr<spdlog::logger> errorlog;
     std::shared_ptr<spdlog::logger> warninglog;
@@ -212,10 +219,12 @@ class COMPILER : public VIRTUAL_COMPILER
     VDATA *ProcessEvent(const char *event_name);
     void SetEventHandler(const char *event_name, const char *func_name, long flag, bool bStatic = false);
     void DelEventHandler(const char *event_name, const char *func_name);
+
     bool Completed()
     {
         return bCompleted;
     }
+
     char *GetName();
     void ExitProgram();
     void ClearEvents();
@@ -244,10 +253,12 @@ class COMPILER : public VIRTUAL_COMPILER
     uint32_t TLR_DataOffset;
     const char *pRunCodeBase;
     bool TokenIs(S_TOKEN_TYPE test);
+
     S_TOKEN_TYPE TokenType()
     {
         return TokenLastReadResult;
     }
+
     S_TOKEN_TYPE NextTokenType();
     S_TOKEN_TYPE SkipAuxiliaryTokens();
 

@@ -8,7 +8,6 @@
 
 namespace storm::except
 {
-
 ExecutableLifecycleService::~ExecutableLifecycleService()
 {
     if (initialized_)
@@ -42,5 +41,4 @@ void ExecutableLifecycleService::addAttachment(const std::filesystem::path &path
 {
     attachments_.insert(path.string());
 }
-
 } // namespace storm::except

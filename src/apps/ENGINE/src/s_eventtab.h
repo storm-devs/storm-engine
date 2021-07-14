@@ -34,7 +34,7 @@ class S_EVENTTAB
     uint32_t Event_num[HASHTABLE_SIZE];
     std::vector<EVENTINFO> pTable[HASHTABLE_SIZE];
     // bool bKeepName;
-  public:
+public:
     S_EVENTTAB();
     ~S_EVENTTAB();
     // uint32_t GetEventNum(){return Event_num;};

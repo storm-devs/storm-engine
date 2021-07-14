@@ -32,7 +32,7 @@ class COMPRESS
     std::vector<BITSCHANGE> pBTCompressionTable;
     uint32_t dwBTCompressionTableSize;
 
-  public:
+public:
     COMPRESS();
     ~COMPRESS();
     void Release();

@@ -88,6 +88,7 @@ enum RDF_TEXTURE_TYPE
     TEXTURE_NORMAL,
     TEXTURE_FORCE_DWORD = 0x7FFFFFFF
 };
+
 struct RDF_MATERIAL
 {
     long group_name;
@@ -109,11 +110,13 @@ enum RDF_LIGHT_TYPE
     LIGHT_DIRECTIONAL,
     LIGHT_FORCE_DWORD = 0x7FFFFFFF
 };
+
 enum RDF_LIGHT_FLAGS
 {
     LIGHT_SHADOW = 1,
     LIGHT_FORCEDWORD = 0x7FFFFFFF
 };
+
 struct RDF_LIGHT
 {
     long flags;
@@ -135,6 +138,7 @@ enum RDF_LABEL_FLAGS
 {
     LABEL_FORCEDWORD = 0x7FFFFFFF
 };
+
 struct RDF_LABEL
 {
     long group_name;
@@ -151,15 +155,23 @@ struct RDF_LABEL
 enum RDF_OBJECT_FLAGS
 {
     VISIBLE = (1 << 0),
-    STATIC_LIGHT_ENABLE = (1 << 1),  // if no - object will not be lited
-    DINAMIC_LIGHT_ENABLE = (1 << 2), // if no - no dynamic lighting perfomed
-    CAST_SHADOWS_ENABLE = (1 << 3),  // if material makes shadows
-    COLLISION_ENABLE = (1 << 4),     // if yes - object will be stored to BSP
-    VERTEX_WEIGHT = (1 << 5),        // animation
-    MERGE = (1 << 6),                // object is "merged"-type
-    CULLENABLE = (1 << 7),           // single-sided object
+    STATIC_LIGHT_ENABLE = (1 << 1),
+    // if no - object will not be lited
+    DINAMIC_LIGHT_ENABLE = (1 << 2),
+    // if no - no dynamic lighting perfomed
+    CAST_SHADOWS_ENABLE = (1 << 3),
+    // if material makes shadows
+    COLLISION_ENABLE = (1 << 4),
+    // if yes - object will be stored to BSP
+    VERTEX_WEIGHT = (1 << 5),
+    // animation
+    MERGE = (1 << 6),
+    // object is "merged"-type
+    CULLENABLE = (1 << 7),
+    // single-sided object
     OBJECT_FORCEDWORD = 0x7FFFFFFF
 };
+
 struct RDF_OBJECT
 {
     long group_name;

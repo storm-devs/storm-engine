@@ -2610,35 +2610,35 @@ void Character::ActionEvent(Animation *animation, long playerIndex, const char *
           PlaySound("sword_wind_feintend");
         }else*/
         if (_stricmp(eventName, "Resact") == 0)
-    {
-        fgtSetType = fgt_none;
-        fgtSetIndex = -1;
-    }
-    else if (_stricmp(eventName, "Attack") == 0)
-    {
-        CheckAttackHit();
-    }
-    else if (_stricmp(eventName, "Parry start") == 0)
-    {
-        isParryState = true;
-        isFeintState = false;
-    }
-    else if (_stricmp(eventName, "Parry end") == 0)
-    {
-        isParryState = false;
-        isFeintState = false;
-    }
-    else if (_stricmp(eventName, "Feint start") == 0)
-    {
-        isParryState = false;
-        isFeintState = true;
-    }
-    else if (_stricmp(eventName, "Feint end") == 0)
-    {
-        isParryState = false;
-        isFeintState = false;
-    }
-    else /*
+        {
+            fgtSetType = fgt_none;
+            fgtSetIndex = -1;
+        }
+        else if (_stricmp(eventName, "Attack") == 0)
+        {
+            CheckAttackHit();
+        }
+        else if (_stricmp(eventName, "Parry start") == 0)
+        {
+            isParryState = true;
+            isFeintState = false;
+        }
+        else if (_stricmp(eventName, "Parry end") == 0)
+        {
+            isParryState = false;
+            isFeintState = false;
+        }
+        else if (_stricmp(eventName, "Feint start") == 0)
+        {
+            isParryState = false;
+            isFeintState = true;
+        }
+        else if (_stricmp(eventName, "Feint end") == 0)
+        {
+            isParryState = false;
+            isFeintState = false;
+        }
+        else /*
     if(_stricmp(eventName, "sound_pistol") == 0)
     {
         PlaySound("pistol_out");
@@ -2659,103 +2659,103 @@ void Character::ActionEvent(Animation *animation, long playerIndex, const char *
             if(pos < 0.99f) PlaySound("sword_out");
         }
     }else */
-        if (_stricmp(eventName, "Death sound") == 0)
-    {
-        core.Event("Event_ChrSnd_Body", "i", GetId());
-    }
-    else if ((alliace = GetValueByPrefix(eventName, "itemaction_")) != nullptr)
-    {
-        const char *pcActionName = nullptr;
-        long nIdx = -1;
-        if (_strnicmp(alliace, "set", 3) == 0)
-        {
-            pcActionName = "set";
-            if (alliace[3] >= '0' && alliace[3] <= '9')
-                nIdx = atoi(&alliace[3]);
-        }
-        else if (_strnicmp(alliace, "reset", 5) == 0)
-        {
-            pcActionName = "reset";
-            if (alliace[5] >= '0' && alliace[5] <= '9')
-                nIdx = atoi(&alliace[5]);
-        }
-        if (pcActionName)
-            core.Event("Location_CharacterItemAction", "isl", GetId(), pcActionName, nIdx);
-    }
-    else if (priorityAction.name && _stricmp(actionName, priorityAction.name) == 0)
-    {
-        if (_stricmp(priorityAction.name, CHARACTER_NORM_TO_FIGHT) == 0)
-        {
-            core.Send_Message(blade, "ll", MSG_BLADE_HAND, 0);
-            core.Send_Message(blade, "ll", MSG_BLADE_HAND, 1);
-        }
-        else if (_stricmp(priorityAction.name, CHARACTER_FIGHT_TO_NORM) == 0)
-        {
-            core.Send_Message(blade, "ll", MSG_BLADE_BELT, 0);
-            core.Send_Message(blade, "ll", MSG_BLADE_BELT, 1);
-        }
-        else if (shot.name && _stricmp(priorityAction.name, shot.name) == 0)
-        {
-            if (eventName)
+            if (_stricmp(eventName, "Death sound") == 0)
             {
-                if (_stricmp(eventName, CHARACTER_FIGHT_GUNBELT) == 0)
-                {
-                    core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
-                }
-                else if (_stricmp(eventName, CHARACTER_FIGHT_GUNHAND) == 0)
-                {
-                    core.Send_Message(blade, "l", MSG_BLADE_GUNHAND);
-                }
-                else if (_stricmp(eventName, CHARACTER_FIGHT_GUNFIRE) == 0)
-                {
-                    core.Send_Message(blade, "l", MSG_BLADE_GUNFIRE);
-                    // PlaySound("pistol_shot");
-                    isFired = true;
-                    float kDist;
-                    Character *chr = FindGunTarget(kDist);
-                    entid_t enemy{};
-                    if (chr)
-                    {
-                        enemy = chr->GetId();
-                        chr->Hit(fgt_hit_fire);
-                    }
-                    core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, chr != nullptr);
-                }
+                core.Event("Event_ChrSnd_Body", "i", GetId());
             }
-        }
-        else if (isJump && PriorityActionIsJump())
-        {
-            if (eventName && _stricmp("Jump pause", eventName) == 0)
+            else if ((alliace = GetValueByPrefix(eventName, "itemaction_")) != nullptr)
             {
-                animation->Player(playerIndex).Pause();
-            }
-        }
-    }
-    else if (userIdle.name)
-    {
-        if (_stricmp(actionName, userIdle.name) == 0)
-        {
-            if (shot.name && _stricmp(actionName, shot.name) == 0)
-            {
-                if (eventName)
+                const char *pcActionName = nullptr;
+                long nIdx = -1;
+                if (_strnicmp(alliace, "set", 3) == 0)
                 {
-                    if (_stricmp(eventName, CHARACTER_FIGHT_GUNBELT) == 0)
+                    pcActionName = "set";
+                    if (alliace[3] >= '0' && alliace[3] <= '9')
+                        nIdx = atoi(&alliace[3]);
+                }
+                else if (_strnicmp(alliace, "reset", 5) == 0)
+                {
+                    pcActionName = "reset";
+                    if (alliace[5] >= '0' && alliace[5] <= '9')
+                        nIdx = atoi(&alliace[5]);
+                }
+                if (pcActionName)
+                    core.Event("Location_CharacterItemAction", "isl", GetId(), pcActionName, nIdx);
+            }
+            else if (priorityAction.name && _stricmp(actionName, priorityAction.name) == 0)
+            {
+                if (_stricmp(priorityAction.name, CHARACTER_NORM_TO_FIGHT) == 0)
+                {
+                    core.Send_Message(blade, "ll", MSG_BLADE_HAND, 0);
+                    core.Send_Message(blade, "ll", MSG_BLADE_HAND, 1);
+                }
+                else if (_stricmp(priorityAction.name, CHARACTER_FIGHT_TO_NORM) == 0)
+                {
+                    core.Send_Message(blade, "ll", MSG_BLADE_BELT, 0);
+                    core.Send_Message(blade, "ll", MSG_BLADE_BELT, 1);
+                }
+                else if (shot.name && _stricmp(priorityAction.name, shot.name) == 0)
+                {
+                    if (eventName)
                     {
-                        core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
+                        if (_stricmp(eventName, CHARACTER_FIGHT_GUNBELT) == 0)
+                        {
+                            core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
+                        }
+                        else if (_stricmp(eventName, CHARACTER_FIGHT_GUNHAND) == 0)
+                        {
+                            core.Send_Message(blade, "l", MSG_BLADE_GUNHAND);
+                        }
+                        else if (_stricmp(eventName, CHARACTER_FIGHT_GUNFIRE) == 0)
+                        {
+                            core.Send_Message(blade, "l", MSG_BLADE_GUNFIRE);
+                            // PlaySound("pistol_shot");
+                            isFired = true;
+                            float kDist;
+                            Character *chr = FindGunTarget(kDist);
+                            entid_t enemy{};
+                            if (chr)
+                            {
+                                enemy = chr->GetId();
+                                chr->Hit(fgt_hit_fire);
+                            }
+                            core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, chr != nullptr);
+                        }
                     }
-                    else if (_stricmp(eventName, CHARACTER_FIGHT_GUNHAND) == 0)
+                }
+                else if (isJump && PriorityActionIsJump())
+                {
+                    if (eventName && _stricmp("Jump pause", eventName) == 0)
                     {
-                        core.Send_Message(blade, "l", MSG_BLADE_GUNHAND);
-                    }
-                    else if (_stricmp(eventName, CHARACTER_FIGHT_GUNFIRE) == 0)
-                    {
-                        core.Send_Message(blade, "l", MSG_BLADE_GUNFIRE);
-                        core.Event("ActorMakeShot", "i", GetId());
+                        animation->Player(playerIndex).Pause();
                     }
                 }
             }
-        }
-    }
+            else if (userIdle.name)
+            {
+                if (_stricmp(actionName, userIdle.name) == 0)
+                {
+                    if (shot.name && _stricmp(actionName, shot.name) == 0)
+                    {
+                        if (eventName)
+                        {
+                            if (_stricmp(eventName, CHARACTER_FIGHT_GUNBELT) == 0)
+                            {
+                                core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
+                            }
+                            else if (_stricmp(eventName, CHARACTER_FIGHT_GUNHAND) == 0)
+                            {
+                                core.Send_Message(blade, "l", MSG_BLADE_GUNHAND);
+                            }
+                            else if (_stricmp(eventName, CHARACTER_FIGHT_GUNFIRE) == 0)
+                            {
+                                core.Send_Message(blade, "l", MSG_BLADE_GUNFIRE);
+                                core.Event("ActorMakeShot", "i", GetId());
+                            }
+                        }
+                    }
+                }
+            }
 }
 
 long Character::PlaySound(const char *soundName, bool isLoop, bool isCached)
@@ -4127,7 +4127,7 @@ void Character::UpdateAnimation()
                         fgtSetIndex = rand() % 2;
                     }
                     if (!(isSet =
-                              SetAction(attackForce[fgtSetIndex].name, attackForce[fgtSetIndex].tblend, 0.0f, 4.0f)))
+                          SetAction(attackForce[fgtSetIndex].name, attackForce[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
                         core.Trace("Character animation: not set force attack action: \"%s\"",
                                    attackForce[fgtSetIndex].name);
@@ -4144,7 +4144,7 @@ void Character::UpdateAnimation()
                     break;
                 case fgt_attack_round: // Circular blow
                     if (!(isSet =
-                              SetAction(attackRound[fgtSetIndex].name, attackRound[fgtSetIndex].tblend, 0.0f, 4.0f)))
+                          SetAction(attackRound[fgtSetIndex].name, attackRound[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
                         core.Trace("Character animation: not set round attack action: \"%s\"",
                                    attackRound[fgtSetIndex].name);
@@ -4160,7 +4160,7 @@ void Character::UpdateAnimation()
                     break;
                 case fgt_attack_break: // Piercing blow
                     if (!(isSet =
-                              SetAction(attackBreak[fgtSetIndex].name, attackBreak[fgtSetIndex].tblend, 0.0f, 4.0f)))
+                          SetAction(attackBreak[fgtSetIndex].name, attackBreak[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
                         core.Trace("Character animation: not set break attack action: \"%s\"",
                                    attackBreak[fgtSetIndex].name);
@@ -4177,7 +4177,7 @@ void Character::UpdateAnimation()
                     break;
                 case fgt_attack_feint: // Feint - special trick
                     if (!(isSet =
-                              SetAction(attackFeint[fgtSetIndex].name, attackFeint[fgtSetIndex].tblend, 0.0f, 4.0f)))
+                          SetAction(attackFeint[fgtSetIndex].name, attackFeint[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
                         core.Trace("Character animation: not set feint action: \"%s\"", attackFeint[fgtSetIndex].name);
                     }
@@ -4191,7 +4191,7 @@ void Character::UpdateAnimation()
                     break;
                 case fgt_attack_feintc: // Attacking continuation of the feint
                     if (!(isSet =
-                              SetAction(attackFeintC[fgtSetIndex].name, attackFeintC[fgtSetIndex].tblend, 0.0f, 4.0f)))
+                          SetAction(attackFeintC[fgtSetIndex].name, attackFeintC[fgtSetIndex].tblend, 0.0f, 4.0f)))
                     {
                         core.Trace("Character animation: not set feint action: \"%s\"", attackFeintC[fgtSetIndex].name);
                     }
@@ -4215,7 +4215,7 @@ void Character::UpdateAnimation()
                     break;
                 case fgt_hit_attack: // The reaction of hitting a character putting him into the stall
                     if (IsPlayer() && !isStunEnable)
-                    // boal did not find a better one, but ours always has this ID, it will work
+                        // boal did not find a better one, but ours always has this ID, it will work
                     {
                         if (rand() % 100 >= 50)
                             break; // boal doesn't always break into animation
@@ -4296,7 +4296,7 @@ void Character::UpdateAnimation()
                     break;
                 case fgt_blockhit: // Saber protection
                     if (_stricmp(characterID, "Blaze") == 0)
-                    // boal did not find a better one, but ours always has this ID, it will work
+                        // boal did not find a better one, but ours always has this ID, it will work
                     {
                         if (rand() % 100 >= 65)
                             break; // boal doesn't always break into animation
@@ -4791,7 +4791,7 @@ inline void Character::CheckAttackHit()
             // boal <--
             fc.c->Attack(this, fgt_attack_feintc);
             fc.c->UpdateAnimation(); // boal
-                                     // fc.c->PlaySound("fgt_feint");
+            // fc.c->PlaySound("fgt_feint");
         }
         else
         {

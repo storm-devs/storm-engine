@@ -61,7 +61,7 @@ class Window
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Window(Window &&) = delete;
     Window(const Window &) = delete;
     Window();
@@ -103,7 +103,7 @@ class Window
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     void DrawRect(float x1, float y1, float x2, float y2, uint32_t color);
     void DrawLine(float x1, float y1, float x2, float y2, uint32_t color);
     void DrawLRect(float x1, float y1, float x2, float y2, uint32_t bkgColor, uint32_t lnColor);
@@ -125,7 +125,7 @@ class Window
     void UpdateColors();
     void UpdateLight(long idxLight, bool isCos, bool isAtt, bool isSdw);
 
-  private:
+private:
     //
     VDX9RENDER *rs;
     // Screen size

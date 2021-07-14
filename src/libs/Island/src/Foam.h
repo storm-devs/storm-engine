@@ -17,7 +17,7 @@ enum FOAMTYPE
 
 class CoastFoam : public Entity
 {
-  public:
+public:
     CoastFoam();
     ~CoastFoam();
 
@@ -25,6 +25,7 @@ class CoastFoam : public Entity
     void Realize(uint32_t Delta_Time);
     void Execute(uint32_t Delta_Time);
     uint32_t AttributeChanged(ATTRIBUTES *pA);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -42,7 +43,7 @@ class CoastFoam : public Entity
         }
     }
 
-  private:
+private:
     struct FoamVertex
     {
         CVECTOR vPos;

@@ -8,7 +8,7 @@
 
 class INIFILE_T : public INIFILE
 {
-  public:
+public:
     INIFILE_T(IFS *iR)
     {
         ifs_PTR = iR;
@@ -78,13 +78,13 @@ class INIFILE_T : public INIFILE
 
 class FILE_SERVICE : public VFILE_SERVICE
 {
-  protected:
+protected:
     // INIFILE_R * OpenFiles[_MAX_OPEN_INI_FILES];
     IFS *OpenFiles[_MAX_OPEN_INI_FILES];
     uint32_t Files_Num;
     uint32_t Max_File_Index;
 
-  public:
+public:
     FILE_SERVICE();
     ~FILE_SERVICE();
     std::fstream _CreateFile(const char *filename, std::ios::openmode mode) override;

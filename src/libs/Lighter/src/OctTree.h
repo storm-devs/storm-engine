@@ -14,7 +14,6 @@
 
 class OctTree
 {
-
     struct OTNode
     {
         OTNode(const CVECTOR &_min, const CVECTOR &_max);
@@ -29,7 +28,7 @@ class OctTree
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     OctTree();
     virtual ~OctTree();
 
@@ -45,7 +44,7 @@ class OctTree
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Adding vertices
     bool AddVertex(OTNode *node, Vertex *v);
     // Optimizing the tree
@@ -55,7 +54,7 @@ class OctTree
 
     long Check(OTNode *node, Vertex *v, long num);
 
-  private:
+private:
     Vertex *vrt;
     long numVrt;
     OTNode *root;

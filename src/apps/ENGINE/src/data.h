@@ -5,9 +5,15 @@
 
 class VIRTUAL_COMPILER
 {
-  public:
-    virtual void SetError(const char *data_PTR, ...){};
-    virtual void SetWarning(const char *data_PTR, ...){};
+public:
+    virtual void SetError(const char *data_PTR, ...)
+    {
+    };
+
+    virtual void SetWarning(const char *data_PTR, ...)
+    {
+    };
+
     virtual VSTRING_CODEC *GetVSC()
     {
         return nullptr;
@@ -47,7 +53,7 @@ class DATA : public VDATA
     std::vector<DATA> ArrayPTR;
     uint32_t nGlobalVarTableIndex;
 
-  public:
+public:
     ATTRIBUTES *AttributesClass;
     // ATTRIBUTES Attributes;
     DATA *GetReference();
@@ -58,6 +64,7 @@ class DATA : public VDATA
     {
         Segment_id = id;
     };
+
     uint32_t GetSegmentID()
     {
         return Segment_id;
@@ -113,6 +120,7 @@ class DATA : public VDATA
     };
     uint32_t GetElementsNum();
     void SetElementsNum(uint32_t asize);
+
     bool IsArray()
     {
         return bArray;
@@ -155,6 +163,7 @@ class DATA : public VDATA
     float GetFloat();
     char *GetString();
     entid_t GetEntityID();
+
     void SetGlobalVarTableIndex(uint32_t index)
     {
         nGlobalVarTableIndex = index;

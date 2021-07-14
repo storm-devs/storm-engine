@@ -576,7 +576,8 @@ void COMPILER::FindErrorSource()
             break;
         }
         ip += token_data_size; // step to next instruction
-    } while (Token_type != END_OF_PROGRAMM);
+    }
+    while (Token_type != END_OF_PROGRAMM);
 }
 
 void COMPILER::SetEventHandler(const char *event_name, const char *func_name, long flag, bool bStatic)
@@ -1006,7 +1007,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
     {
         bRes = BC_Execute(INVALID_FUNC_CODE, pResult, Segment.pCode);
     }
-    // old_data_num = SStack.GetDataNum(); trace("new_data_num: %d",old_data_num);
+        // old_data_num = SStack.GetDataNum(); trace("new_data_num: %d",old_data_num);
 
     catch (...)
     {
@@ -1449,7 +1450,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     break;
                 case STRING: {
                     const auto len = strlen(Token.GetData()) + 1;
-                    di.data4b = (uintptr_t) new char[len];
+                    di.data4b = (uintptr_t)new char[len];
                     memcpy((void *)di.data4b, Token.GetData(), len);
                     break;
                 }
@@ -1764,7 +1765,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 Token.Get();
                             }
                         }
-                    } while (Token.GetType() == COMMA);
+                    }
+                    while (Token.GetType() == COMMA);
                     Token.StepBack();
                     break;
                 }
@@ -1839,7 +1841,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         SetError("Duplicate variable name: %s", lvi.name.c_str());
                         return false;
                     }
-                } while (Token.GetType() == COMMA);
+                }
+                while (Token.GetType() == COMMA);
                 Token.StepBack();
             }
             break;
@@ -1980,7 +1983,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     default:
                         break;
                     }
-                } while (Token.GetType() != SEPARATOR);
+                }
+                while (Token.GetType() != SEPARATOR);
             }
 
             if (SkipAuxiliaryTokens() != SEPARATOR)
@@ -2007,7 +2011,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
         default:
             break;
         }
-    } while (Token_type != END_OF_PROGRAMM);
+    }
+    while (Token_type != END_OF_PROGRAMM);
 
     if (inout != 0)
     {
@@ -2092,7 +2097,8 @@ S_TOKEN_TYPE COMPILER::SkipAuxiliaryTokens()
         default:
             return Token_type;
         }
-    } while (Token_type != END_OF_PROGRAMM);
+    }
+    while (Token_type != END_OF_PROGRAMM);
     return Token_type;
 }
 
@@ -2137,7 +2143,8 @@ S_TOKEN_TYPE COMPILER::CompileAuxiliaryTokens(SEGMENT_DESC &Segment) //, bool & 
         default:
             return Token_type;
         }
-    } while (Token_type != END_OF_PROGRAMM);
+    }
+    while (Token_type != END_OF_PROGRAMM);
     return Token_type;
 }
 
@@ -2943,7 +2950,8 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                         SetError("invalid syntax");
                         return false;
                     }
-                } while (bNext);
+                }
+                while (bNext);
             }
             // CompileToken(Segment,CALL_FUNCTION,1,(char *)&func_code,sizeof(uint32_t));
             // CompileToken(Segment,ARGS_NUM,1,(char *)&func_args,sizeof(DWORD));
@@ -2996,7 +3004,8 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                             SetError("invalid syntax");
                             return false;
                         }
-                    } while (bNext);
+                    }
+                    while (bNext);
                 }
 
                 if (!FuncTab.GetFuncX(fi, func_code))
@@ -3124,7 +3133,8 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                         SetError("Invalid function declaration");
                         return false;
                     }
-                } while (Token_type != CLOSE_BRACKET);
+                }
+                while (Token_type != CLOSE_BRACKET);
             }
             else
             {
@@ -3519,7 +3529,8 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                 sttResult = Token.Get();
                 if (sttResult == DOT)
                     Token.Get(); // get next token (after dot)
-            } while (sttResult == DOT);
+            }
+            while (sttResult == DOT);
 
             CompileToken(Segment, SETAREF);
             CompileToken(Segment, STACK_TOP);
@@ -3634,7 +3645,8 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
 
             break;
         }
-    } while (Token_type != END_OF_PROGRAMM);
+    }
+    while (Token_type != END_OF_PROGRAMM);
 
     return true;
 }
@@ -5854,7 +5866,8 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             //*/
             //----------------------------------------------
         }
-    } while (Token_type != END_OF_PROGRAMM && bExit != true);
+    }
+    while (Token_type != END_OF_PROGRAMM && bExit != true);
 
     if (Token_type == END_OF_PROGRAMM && inout != 0)
         SetError("Unexpected end of programm");
@@ -7412,7 +7425,8 @@ void COMPILER::FormatDialog(char *file_name)
                             {
                                 break;
                             }
-                        } while (Token_type != SEPARATOR);
+                        }
+                        while (Token_type != SEPARATOR);
                         break;
                     }
                 }
@@ -7494,7 +7508,8 @@ void COMPILER::FormatDialog(char *file_name)
                                     {
                                         break;
                                     }
-                                } while (Token_type != SEPARATOR);
+                                }
+                                while (Token_type != SEPARATOR);
                                 break;
                             }
                         }
@@ -7509,7 +7524,8 @@ void COMPILER::FormatDialog(char *file_name)
             }
             break;
         }
-    } while (Token_type != END_OF_PROGRAMM);
+    }
+    while (Token_type != END_OF_PROGRAMM);
 
     delete[] pFileData;
 

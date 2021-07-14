@@ -32,7 +32,7 @@ struct VarInfo
 
 class VarTable
 {
-  public:
+public:
     VarTable() = default;
     ~VarTable();
 
@@ -61,9 +61,9 @@ class VarTable
         vc_ = vc;
     }
 
-  private:
+private:
     std::vector<VarInfo> vars_;
     std::unordered_map<std::string, size_t, storm::iStrHasher, storm::iStrComparator>
-        hash_table_; // name to index mapping
+    hash_table_; // name to index mapping
     VIRTUAL_COMPILER *vc_;
 };

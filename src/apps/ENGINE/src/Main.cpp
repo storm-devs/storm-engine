@@ -9,7 +9,7 @@
 #include <spdlog/spdlog.h>
 
 #include <OSWindow.hpp>
-#include <SDL.h> 
+#include <SDL.h>
 
 VFILE_SERVICE *fio = nullptr;
 CORE core;
@@ -19,11 +19,9 @@ using namespace storm;
 
 namespace
 {
-
 bool isHold = false;
 bool isRunning = false;
 bool bActive = true;
-
 } // namespace
 
 void HandleWindowEvent(const OSWindow::Event &event)

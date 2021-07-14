@@ -119,7 +119,7 @@ void KEY_NODE::AttachTo(KEY_NODE *node, KEY_NODE **Top)
     // if there is node from the right - set left link for it
     if (RNode != nullptr)
         RNode->SetLeftNode(this);
-    // else this is new top node
+        // else this is new top node
     else
         *Top = this;
 }

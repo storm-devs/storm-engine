@@ -12,7 +12,7 @@ class S_TSTACK
     unsigned long Data_num;
     unsigned long Unit_size;
 
-  public:
+public:
     S_TSTACK();
     ~S_TSTACK();
     void SetUnitSize(unsigned long unit_size);

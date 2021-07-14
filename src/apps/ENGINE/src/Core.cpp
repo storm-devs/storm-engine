@@ -10,10 +10,8 @@
 
 namespace storm
 {
-
 namespace
 {
-
 ENGINE_VERSION getTargetEngineVersion(const std::string_view &version)
 {
     using namespace std::string_view_literals;
@@ -45,9 +43,7 @@ ENGINE_VERSION getTargetEngineVersion(const std::string_view &version)
 
     return ENGINE_VERSION::UNKNOWN;
 }
-
 } // namespace
-
 } // namespace storm
 
 uint32_t dwNumberScriptCommandsExecuted = 0;
@@ -320,6 +316,7 @@ HWND CORE::GetAppHWND()
 {
     return App_Hwnd;
 }
+
 HINSTANCE CORE::GetAppInstance()
 {
     return hInstance;
@@ -917,6 +914,7 @@ void CORE::Start_CriticalSection()
 {
     EnterCriticalSection(&lock);
 };
+
 void CORE::Leave_CriticalSection()
 {
     LeaveCriticalSection(&lock);

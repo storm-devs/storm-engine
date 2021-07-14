@@ -19,11 +19,13 @@ model binded to an animated locator
 class BLADE : public Entity
 {
 #define FVF (D3DFVF_XYZ | D3DFVF_DIFFUSE)
+
     struct VERTEX
     {
         CVECTOR pos;
         unsigned long diffuse;
     };
+
 #define WAY_LENGTH 64
 
     struct BLADE_INFO
@@ -54,10 +56,12 @@ class BLADE : public Entity
             nItemIndex = -1;
             locatorName = nullptr;
         }
+
         ~TIEITEM_INFO()
         {
             Release();
         }
+
         void Release();
         void DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode);
         bool LoadItemModel(const char *mdlName, const char *locName);
@@ -84,17 +88,18 @@ class BLADE : public Entity
     void DelAllTieItem();
     long FindTieItemByIndex(long n);
 
-  public:
+public:
     BLADE();
     ~BLADE();
     bool Init() override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
         {
-        // case Stage::execute:
-        //    Execute(delta);
-        //    break;
+            // case Stage::execute:
+            //    Execute(delta);
+            //    break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -106,6 +111,7 @@ class BLADE : public Entity
             //    break;
         }
     }
+
     void Realize(uint32_t Delta_Time);
     uint64_t ProcessMessage(MESSAGE &message) override;
 };

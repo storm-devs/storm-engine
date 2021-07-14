@@ -15,7 +15,6 @@ Import library main file
 
 namespace
 {
-
 std::vector<uint32_t> getColData(GEOM_SERVICE &srv, const std::string_view &file_name)
 {
     std::vector<uint32_t> result;
@@ -34,7 +33,6 @@ std::vector<uint32_t> getColData(GEOM_SERVICE &srv, const std::string_view &file
 
     return result;
 }
-
 } // namespace
 
 // create geometry func
@@ -44,7 +42,8 @@ GEOS *CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv
 }
 
 // geometry constructor does all init
-GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long flags) : srv(_srv)
+GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long flags)
+    : srv(_srv)
 {
     std::vector<uint32_t> colData;
     if (lightname != nullptr)

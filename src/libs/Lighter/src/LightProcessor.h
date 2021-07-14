@@ -22,7 +22,7 @@ class LightProcessor
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     LightProcessor();
     virtual ~LightProcessor();
     void SetParams(LGeometry *g, Window *win, LighterLights *lit, OctTree *ot, VDX9RENDER *_rs);
@@ -34,7 +34,7 @@ class LightProcessor
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Calculate shading
     void CalcShadows();
     // Smooth shading
@@ -46,7 +46,7 @@ class LightProcessor
     // Distribute shading from triangle to vertices
     void ApplyTriangleShadows(Triangle &t);
 
-  private:
+private:
     LGeometry *geometry;
     Window *window;
     LighterLights *lights;

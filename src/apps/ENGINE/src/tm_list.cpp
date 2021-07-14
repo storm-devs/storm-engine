@@ -289,7 +289,7 @@ void TM_LIST::ProcessMessageBase(uint64_t iMsg, uint64_t wParam, uint64_t lParam
                             PZERO(&TextEditBuffer[0], MAX_STR_SIZE);
                             *(uint16_t *)TextEditBuffer = MAX_STR_SIZE - 2;
                             const long chars =
-                                SendMessage(hEdit, EM_GETLINE, i, (LPARAM) static_cast<LPCSTR>(TextEditBuffer));
+                                SendMessage(hEdit, EM_GETLINE, i, (LPARAM)static_cast<LPCSTR>(TextEditBuffer));
                             TextEditBuffer[chars] = 0;
                             if (chars)
                                 sTmpBuffer += TextEditBuffer;

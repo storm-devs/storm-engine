@@ -10,7 +10,7 @@
 
 class MapZipper
 {
-  private:
+private:
     uint32_t dwSizeX;
     uint32_t dwDX;
     uint32_t dwBlockSize, dwBlockShift;
@@ -20,7 +20,7 @@ class MapZipper
     uint16_t *pWordTable;
     uint8_t *pRealData;
 
-  public:
+public:
     MapZipper();
     ~MapZipper();
 
@@ -44,7 +44,7 @@ class MapZipper
 
 class ISLAND : public ISLAND_BASE
 {
-  private:
+private:
     std::string sIslandName;
     std::vector<entid_t> aSpheres;
     std::vector<entid_t> aForts;
@@ -101,6 +101,7 @@ class ISLAND : public ISLAND_BASE
     {
         sIslandName = pIslandName;
     };
+
     char *GetName()
     {
         return (char *)sIslandName.c_str();
@@ -114,18 +115,19 @@ class ISLAND : public ISLAND_BASE
     void DoZapSuperGeneratorInnerDecodeFiles(const char *sub_dir, const char *mask);
     bool DoZapSuperGeneratorDecodeFile(const char *sname);*/
 
-  public:
+public:
     ISLAND();
     ~ISLAND();
     bool Init();
     void Realize(uint32_t Delta_Time);
     uint64_t ProcessMessage(MESSAGE &message);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
         {
-        // case Stage::execute:
-        //    Execute(delta); break;
+            // case Stage::execute:
+            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -141,6 +143,7 @@ class ISLAND : public ISLAND_BASE
 
     // inherit functions COLLISION_OBJECT
     float Trace(const CVECTOR &src, const CVECTOR &dst);
+
     bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
     {
         return false;
@@ -150,6 +153,7 @@ class ISLAND : public ISLAND_BASE
     {
         return nullptr;
     };
+
     bool GetCollideTriangle(TRIANGLE &triangle)
     {
         return false;
@@ -165,6 +169,7 @@ class ISLAND : public ISLAND_BASE
     {
         return model_id;
     };
+
     entid_t GetSeabedEID()
     {
         return seabed_id;

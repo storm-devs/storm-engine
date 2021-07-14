@@ -14,7 +14,7 @@
 
 class AICharacter : public Character
 {
-  protected:
+protected:
     enum AICommand
     {
         aicmd_unknow = 0,
@@ -59,14 +59,14 @@ class AICharacter : public Character
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     AICharacter();
     virtual ~AICharacter();
 
     //--------------------------------------------------------------------------------------------
     // Character
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Move the character to the desired position
     void Move(float dltTime) override;
     // Carry out additional calculations
@@ -79,7 +79,7 @@ class AICharacter : public Character
     //--------------------------------------------------------------------------------------------
     // AICharacter
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Nothing to do
     bool CmdNone();
     // To stand
@@ -94,13 +94,21 @@ class AICharacter : public Character
     // Events
 
     // Cannot further execute the command
-    virtual void FailureCommand(){};
+    virtual void FailureCommand()
+    {
+    };
     // The character arrived at the point
-    virtual void EndGotoCommand(){};
+    virtual void EndGotoCommand()
+    {
+    };
     // The character moved away from the point to the required radius
-    virtual void EndEscapeCommand(){};
+    virtual void EndEscapeCommand()
+    {
+    };
     // if colliding with a character too often
-    virtual void CollisionThreshold(){};
+    virtual void CollisionThreshold()
+    {
+    };
 
     static const char *GetCommandName(AICommand cmd);
 
@@ -108,7 +116,7 @@ class AICharacter : public Character
     // Encapsulation
     // --------------------------------------------------------------------------------------------
     // private:
-  protected:
+protected:
     // Go to the point
     void CmdProcessGotoPoint(float dltTime);
     void CmdUpdateGotoPoint(float dltTime);
@@ -128,7 +136,7 @@ class AICharacter : public Character
     // Calculate angle from direction vector
     static float Angle(double vx, double vz, float defAy);
 
-  protected:
+protected:
     // Current command
     Command command;
     PathNode path[2];

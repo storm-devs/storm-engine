@@ -14,7 +14,7 @@
 
 class STRINGS_LIST
 {
-  protected:
+protected:
     uint32_t List_size;
     uint32_t Strings;
     char **String_Table_PTR;
@@ -22,7 +22,7 @@ class STRINGS_LIST
     uint32_t Cache[CACHE_SIZE];
     uint32_t Cache_Pos;
 
-  public:
+public:
     STRINGS_LIST();
     ~STRINGS_LIST();
 

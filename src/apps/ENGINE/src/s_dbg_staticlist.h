@@ -9,13 +9,17 @@ class SDBG_STATICLIST
     HWND hMain;
     long nLines;
 
-  public:
+public:
     SDBG_STATICLIST()
     {
         hMain = nullptr;
         nLines = 0;
     };
-    ~SDBG_STATICLIST(){};
+
+    ~SDBG_STATICLIST()
+    {
+    };
+
     bool Init(long lines, RECT rParent, RECT rChild, HINSTANCE hInstance, HWND _hmain)
     {
         if (lines == 0)
@@ -41,6 +45,7 @@ class SDBG_STATICLIST
         nLines = lines;
         return true;
     };
+
     void SetText(long n, const char *pText)
     {
         if (n >= nLines)

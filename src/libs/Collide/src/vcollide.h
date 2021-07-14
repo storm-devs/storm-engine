@@ -13,7 +13,7 @@ class LCOLL : public LOCAL_COLLIDE
     float boxRadius;
     COLLIDE *col;
 
-  public:
+public:
     LCOLL(EntityManager::layer_index_t idx);
     virtual ~LCOLL();
     virtual long SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOnly = false);
@@ -23,7 +23,7 @@ class LCOLL : public LOCAL_COLLIDE
 
 class COLL : public COLLIDE
 {
-  public:
+public:
     COLL() = default;
     virtual ~COLL() = default;
     virtual LOCAL_COLLIDE *CreateLocalCollide(EntityManager::layer_index_t idx);

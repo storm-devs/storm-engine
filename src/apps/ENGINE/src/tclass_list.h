@@ -5,16 +5,18 @@ template <class ClassType> class TCLASS_LIST
     ClassType **pTable;
     uint32_t nClassesNum;
 
-  public:
+public:
     TCLASS_LIST()
     {
         nClassesNum = 0;
         pTable = 0;
     };
+
     ~TCLASS_LIST()
     {
         Release();
     };
+
     void Release()
     {
         if (pTable)
@@ -26,6 +28,7 @@ template <class ClassType> class TCLASS_LIST
         }
         nClassesNum = 0;
     };
+
     void Add(ClassType *pClass)
     {
         uint32_t n = nClassesNum;
@@ -33,6 +36,7 @@ template <class ClassType> class TCLASS_LIST
         pTable = (ClassType **)realloc(pTable, nClassesNum * sizeof(ClassType *));
         pTable[n] = pClass;
     };
+
     void Del(uint32_t _n)
     {
         if (_n >= nClassesNum)
@@ -42,12 +46,14 @@ template <class ClassType> class TCLASS_LIST
             pTable[n] = pTable[n + 1];
         nClassesNum--;
     }
+
     ClassType *Read(uint32_t _n)
     {
         if (_n >= nClassesNum)
             return nullptr;
         return pTable[_n];
     };
+
     uint32_t GetClassesNum()
     {
         return nClassesNum;

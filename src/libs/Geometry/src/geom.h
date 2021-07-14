@@ -13,6 +13,7 @@ Import library class
 #include "geos.h"
 
 #define EPSILON 4e-7
+
 struct SAVAGE
 {
     double dist, dise;
@@ -57,7 +58,7 @@ class GEOM : public GEOS
     long traceid;
     DVECTOR src, dst;
 
-  public:
+public:
     GEOM(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags);
     virtual ~GEOM();
 

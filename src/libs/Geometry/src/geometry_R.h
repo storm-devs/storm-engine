@@ -11,7 +11,7 @@ class GEOMETRY final : public VGEOMETRY
 {
     VDX9RENDER *RenderService;
 
-  public:
+public:
     GEOMETRY();
     bool Init();
     bool LoadState(ENTITY_STATE *state);
@@ -38,7 +38,7 @@ class GEOM_SERVICE_R final : public GEOM_SERVICE
     uint32_t CurentVertexBufferSize;
     bool bCaustic;
 
-  public:
+public:
     void SetRenderService(VDX9RENDER *render_service);
 
     std::fstream OpenFile(const char *fname);

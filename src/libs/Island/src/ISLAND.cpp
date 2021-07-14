@@ -9,6 +9,7 @@
 #include <cstdio>
 
 CREATE_CLASS(ISLAND)
+
 CREATE_CLASS(CoastFoam)
 
 #define TGA_DATA_CHUNK 0xC001F00D
@@ -245,7 +246,8 @@ uint64_t ISLAND::ProcessMessage(MESSAGE &message)
         AddLocationModel(eID, idstr, str);
         break;
     }
-    case MSG_ISLAND_LOAD_GEO: { // from sea
+    case MSG_ISLAND_LOAD_GEO: {
+        // from sea
         cFoamDir = message.String();
         cModelsDir = message.String();
         cModelsID = message.String();
@@ -338,7 +340,7 @@ bool ISLAND::GetDepthFast(float x, float z, float *fRes)
     x -= vBoxCenter.x;
     z -= vBoxCenter.z;
     if (fabsf(x) >= vRealBoxSize.x || fabsf(z) >= vRealBoxSize.z)
-    // if (x < -vRealBoxSize.x || z < -vRealBoxSize.z || x > vRealBoxSize.x || z > vRealBoxSize.z)
+        // if (x < -vRealBoxSize.x || z < -vRealBoxSize.z || x > vRealBoxSize.x || z > vRealBoxSize.z)
     {
         *fRes = -50.0f;
         return false;
@@ -357,7 +359,7 @@ bool ISLAND::GetDepth(float x, float z, float *fRes)
     x -= vBoxCenter.x;
     z -= vBoxCenter.z;
     if (fabsf(x) >= vRealBoxSize.x || fabsf(z) >= vRealBoxSize.z)
-    // if (x < -vRealBoxSize.x || z < -vRealBoxSize.z || x > vRealBoxSize.x || z > vRealBoxSize.z)
+        // if (x < -vRealBoxSize.x || z < -vRealBoxSize.z || x > vRealBoxSize.x || z > vRealBoxSize.z)
     {
         *fRes = -50.0f;
         return false;

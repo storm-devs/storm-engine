@@ -1,6 +1,7 @@
 #include "s_vartab.h"
 
-VarInfo::VarInfo() : name(), type(TVOID), value(), elements(0), segment_id(INVALID_SEGMENT_ID)
+VarInfo::VarInfo()
+    : name(), type(TVOID), value(), elements(0), segment_id(INVALID_SEGMENT_ID)
 {
 }
 

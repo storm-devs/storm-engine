@@ -503,7 +503,8 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
                     local_in--;
                     break;
                 }
-            } while (local_in > 0);
+            }
+            while (local_in > 0);
             BC_TokenGet();
             return;
         }
@@ -579,7 +580,8 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
                     local_in--;
                     break;
                 }
-            } while (local_in > 0);
+            }
+            while (local_in > 0);
             BC_TokenGet();
             // while(BC_TokenGet() == DEBUG_LINE_CODE){};
             return;
@@ -1420,7 +1422,8 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
                         }
                     }
                     func_args++;
-                } while (Token.GetType() == COMMA);
+                }
+                while (Token.GetType() == COMMA);
             }
 
             /*
@@ -1626,7 +1629,8 @@ bool COMPILER::CompileExpression_L7(SEGMENT_DESC &Segment)
                 sttResult = Token.Get();
                 if (sttResult == DOT)
                     Token.Get(); // get next token (after dot)
-            } while (sttResult == DOT);
+            }
+            while (sttResult == DOT);
 
             // write attribute string to stack top
             CompileToken(Segment, STACK_WRITE);

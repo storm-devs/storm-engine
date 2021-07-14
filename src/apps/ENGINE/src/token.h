@@ -171,7 +171,7 @@ class TOKEN
     char *ProgramBase;
     uint32_t dwKeywordsNum;
 
-  public:
+public:
     TOKEN();
     ~TOKEN();
     void Release();
@@ -179,6 +179,7 @@ class TOKEN
     void SetProgram(char *pProgramBase, char *pProgramControl);
     void SetProgramControl(char *pProgramControl);
     char *GetProgramControl();
+
     char *GetProgramBase()
     {
         return ProgramBase;

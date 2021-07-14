@@ -13,7 +13,7 @@ class S_STACK : public VS_STACK
     uint32_t Data_num;
     VIRTUAL_COMPILER *pVCompiler;
 
-  public:
+public:
     S_STACK();
     ~S_STACK();
     void Release();
@@ -21,13 +21,16 @@ class S_STACK : public VS_STACK
     DATA *Pop();
     DATA *Read(uint32_t offset, uint32_t index);
     DATA *Read();
+
     uint32_t GetDataNum()
     {
         return Data_num;
     };
+
     void SetVCompiler(VIRTUAL_COMPILER *pvc)
     {
         pVCompiler = pvc;
     }
+
     void InvalidateFrom(uint32_t index);
 };

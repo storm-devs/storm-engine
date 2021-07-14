@@ -17,7 +17,7 @@ class Lighter : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Lighter();
     virtual ~Lighter();
 
@@ -28,6 +28,7 @@ class Lighter : public Entity
     void Realize(uint32_t delta_time);
     // Messages
     uint64_t ProcessMessage(MESSAGE &message);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -48,14 +49,14 @@ class Lighter : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     void MsgAddModel(MESSAGE &message);
     void MsgModelsPath(MESSAGE &message);
     void MsgLightPath(MESSAGE &message);
     void MsgAddLight(MESSAGE &message);
     void PreparingData();
 
-  private:
+private:
     VDX9RENDER *rs;
 
     LGeometry geometry;

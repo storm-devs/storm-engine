@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "Matrix.h"
@@ -57,10 +56,14 @@ struct Vertex
 {
     enum Flag
     {
-        f_zero = 0, // Initialization
-        f_inv = 1,  // Is the normal inverted
-        f_set = 2,  // Has the normal been amended
-        f_bug = 4,  // There was a mistake
+        f_zero = 0,
+        // Initialization
+        f_inv = 1,
+        // Is the normal inverted
+        f_set = 2,
+        // Has the normal been amended
+        f_bug = 4,
+        // There was a mistake
     };
 
     CVECTOR p;               // Position

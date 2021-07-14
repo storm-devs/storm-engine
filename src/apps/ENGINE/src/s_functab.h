@@ -61,7 +61,7 @@ struct FuncInfo
 
 class FuncTable
 {
-  public:
+public:
     FuncTable() = default;
     ~FuncTable();
 
@@ -92,7 +92,7 @@ class FuncTable
 
     void Release(); // clear table
 
-  private:
+private:
     std::vector<FuncInfo> funcs_;
     storm::iStrHasher hasher_;
     std::unordered_map<std::string, size_t, storm::iStrHasher, storm::iStrComparator> hash_table_;

@@ -18,7 +18,7 @@ class LighterLights
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     LighterLights();
     virtual ~LighterLights();
 
@@ -35,10 +35,10 @@ class LighterLights
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     void SetDefLightParam(long i);
 
-  private:
+private:
     std::vector<Light> light;
     long numLights;
     long maxLights;

@@ -23,8 +23,9 @@ class STRING_CODEC : public VSTRING_CODEC
 
     HTELEMENT HTable[HASH_TABLE_SIZE];
 
-  public:
-    STRING_CODEC() : nHTIndex(0), nHTEIndex(0)
+public:
+    STRING_CODEC()
+        : nHTIndex(0), nHTEIndex(0)
     {
         nStringsNum = 0;
         PZERO(HTable, sizeof(HTable));
@@ -183,5 +184,6 @@ class STRING_CODEC : public VSTRING_CODEC
         }
         return nullptr;
     }
+
     //*/
 };

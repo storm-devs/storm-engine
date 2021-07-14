@@ -25,7 +25,7 @@ class DataCache
 
     void CreateDataSource(void *pBuffer, uint32_t BufferSize, const char *SourceFileName);
 
-  public:
+public:
     // Constructor / destructor
     DataCache(IParticleManager *pManager);
     ~DataCache();

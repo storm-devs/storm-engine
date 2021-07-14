@@ -4,15 +4,16 @@
 
 class S_EVENTMSG
 {
-  public:
+public:
     uint32_t nTime;
     uint32_t nPeriod;
 
-  public:
+public:
     MESSAGE *pMessageClass;
     char *pEventName;
     bool bProcess;
     bool bInvalide;
+
     S_EVENTMSG()
     {
         bInvalide = false;
@@ -22,6 +23,7 @@ class S_EVENTMSG
         nPeriod = 0;
         pEventName = nullptr;
     };
+
     S_EVENTMSG(const char *_name, MESSAGE *_pc, uint32_t _period)
     {
         bInvalide = false;
@@ -34,6 +36,7 @@ class S_EVENTMSG
         pEventName = new char[len];
         strcpy_s(pEventName, len, _name);
     };
+
     ~S_EVENTMSG()
     {
         if (pMessageClass)
@@ -41,6 +44,7 @@ class S_EVENTMSG
         if (pEventName)
             delete pEventName;
     };
+
     bool ProcessTime(uint32_t _DeltaTime)
     {
         nTime += _DeltaTime;
@@ -51,6 +55,7 @@ class S_EVENTMSG
             return true;
         return false;
     };
+
     void Invalidate()
     {
         bInvalide = true;

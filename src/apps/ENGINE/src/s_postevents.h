@@ -7,16 +7,18 @@ class POSTEVENTS_LIST
     S_EVENTMSG **pTable;
     uint32_t nClassesNum;
 
-  public:
+public:
     POSTEVENTS_LIST()
     {
         nClassesNum = 0;
         pTable = nullptr;
     };
+
     ~POSTEVENTS_LIST()
     {
         Release();
     };
+
     void Release()
     {
         if (pTable)
@@ -28,6 +30,7 @@ class POSTEVENTS_LIST
         }
         nClassesNum = 0;
     };
+
     void Add(S_EVENTMSG *pClass)
     {
         uint32_t n = nClassesNum;
@@ -35,6 +38,7 @@ class POSTEVENTS_LIST
         pTable = (S_EVENTMSG **)realloc(pTable, nClassesNum * sizeof(S_EVENTMSG *));
         pTable[n] = pClass;
     };
+
     void Del(uint32_t _n)
     {
         if (_n >= nClassesNum)
@@ -44,16 +48,19 @@ class POSTEVENTS_LIST
             pTable[n] = pTable[n + 1];
         nClassesNum--;
     }
+
     S_EVENTMSG *Read(uint32_t _n)
     {
         if (_n >= nClassesNum)
             return nullptr;
         return pTable[_n];
     };
+
     uint32_t GetClassesNum()
     {
         return nClassesNum;
     }
+
     void InvalidateAll()
     {
         if (pTable)
@@ -62,6 +69,7 @@ class POSTEVENTS_LIST
                 pTable[n]->Invalidate();
         }
     };
+
     void RemoveInvalidated()
     {
         if (pTable)

@@ -16,7 +16,7 @@ class BREAKPOINTS_TABLE
     char ProjectName[MAX_PATH];
     bool bReleased;
 
-  public:
+public:
     BREAKPOINTS_TABLE();
     ~BREAKPOINTS_TABLE();
     bool ReadProject(const char *filename);
@@ -25,6 +25,7 @@ class BREAKPOINTS_TABLE
     bool Find(const char *filename, uint32_t line);
     void FlipBreakPoint(const char *filename, uint32_t line);
     void Release();
+
     bool CanBreak()
     {
         if (nPoints > 0)

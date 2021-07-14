@@ -28,13 +28,13 @@ class CameraFollow
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     CameraFollow();
     virtual ~CameraFollow();
     void SetLocationCamera(LocationCamera *locCamera);
 
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Make calculations
     void Update(float dltTime);
 
@@ -62,7 +62,7 @@ class CameraFollow
     void DrawDebug();
 
     // private:
-  public:
+public:
     LocationCamera *lc;
 
     CVECTOR camPos, lookTo;
