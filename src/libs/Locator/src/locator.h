@@ -18,6 +18,7 @@ class LOCATOR : public Entity
         _AZ_ = 32,
         _XYZ_ = _X_ | _Y_ | _Z_
     };
+
     VGEOMETRY *gs;
     VDX9RENDER *rs;
     GEOS *geo;
@@ -29,14 +30,16 @@ class LOCATOR : public Entity
     void LocateForI_L2(ATTRIBUTES *pA, GEOS *g, GEOS::LABEL &label);
     void LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, uint32_t dwFlags);
 
-  public:
-    ~LOCATOR();
+public:
+    ~LOCATOR() override;
     LOCATOR();
-    bool Init();
-    uint64_t ProcessMessage(MESSAGE &message);
-    uint32_t AttributeChanged(ATTRIBUTES *);
+    bool Init() override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
+    uint32_t AttributeChanged(ATTRIBUTES *) override;
+
     void ProcessStage(Stage, uint32_t) override
     {
     }
+
     bool VerifyParticles();
 };

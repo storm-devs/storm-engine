@@ -51,8 +51,8 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
         } */
     }
     else
-    // if (! bActive) // boal if not already
-    // if the control has not been activated, then check it for activation
+        // if (! bActive) // boal if not already
+        // if the control has not been activated, then check it for activation
     {
         // nothing is pressed - leave
         if (cs.state == CST_INACTIVATED || cs.state == CST_INACTIVE)

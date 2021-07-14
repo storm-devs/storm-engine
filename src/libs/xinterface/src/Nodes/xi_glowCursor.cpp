@@ -237,13 +237,13 @@ void CXI_GLOWCURSOR::SetRectanglesToPosition(const XYRECT &rectXY)
     m_pTexVert[8].pos.y = m_pTexVert[10].pos.y = rectXY.bottom + fyOffset;
 
     m_pTexVert[0].pos.x = m_pTexVert[2].pos.x = m_pTexVert[5].pos.x = m_pTexVert[11].pos.x = m_pTexVert[13].pos.x =
-        static_cast<float>(rectXY.left);
+                                                                          static_cast<float>(rectXY.left);
     m_pTexVert[0].pos.y = m_pTexVert[1].pos.y = m_pTexVert[5].pos.y = m_pTexVert[7].pos.y = m_pTexVert[13].pos.y =
-        static_cast<float>(rectXY.top);
+                                                                          static_cast<float>(rectXY.top);
     m_pTexVert[1].pos.x = m_pTexVert[3].pos.x = m_pTexVert[7].pos.x = m_pTexVert[9].pos.x =
-        static_cast<float>(rectXY.right);
+                                                                      static_cast<float>(rectXY.right);
     m_pTexVert[2].pos.y = m_pTexVert[3].pos.y = m_pTexVert[9].pos.y = m_pTexVert[11].pos.y =
-        static_cast<float>(rectXY.bottom);
+                                                                      static_cast<float>(rectXY.bottom);
 
     m_pTexVert[0].tu = m_pTexVert[2].tu = m_pTexVert[5].tu = m_pTexVert[11].tu = m_pTexVert[13].tu = (1.f - fW) * .5f;
     m_pTexVert[0].tv = m_pTexVert[1].tv = m_pTexVert[5].tv = m_pTexVert[7].tv = m_pTexVert[13].tv = (1.f - fH) * .5f;

@@ -7,14 +7,15 @@
 
 class ShipTracks : public Entity
 {
-  public:
+public:
     ShipTracks() = default;
-    ~ShipTracks();
+    ~ShipTracks() override;
 
-    bool Init();
+    bool Init() override;
 
     void Execute(uint32_t dwDeltaTime);
     void Realize(uint32_t dwDeltaTime);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -31,16 +32,17 @@ class ShipTracks : public Entity
                 RestoreRender(delta); break;*/
         }
     }
+
     void AddShip(SHIP_BASE *pShip);
     void DelShip(SHIP_BASE *pShip);
     void ResetTrack(SHIP_BASE *pShip);
 
-    uint32_t AttributeChanged(ATTRIBUTES *pA);
+    uint32_t AttributeChanged(ATTRIBUTES *pA) override;
 
-  private:
+private:
     class ShipTrack
     {
-      public:
+    public:
         static VDX9RENDER *pRS;
         static SEA_BASE *pSea;
         static long iVTmpBuffer1, iVTmpBuffer2;
@@ -59,7 +61,7 @@ class ShipTracks : public Entity
         void Execute(float fDeltaTime);
         void Realize(float fDeltaTime);
 
-      private:
+    private:
         struct Track
         {
             CVECTOR vPos;

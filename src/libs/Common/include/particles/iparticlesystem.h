@@ -7,12 +7,16 @@ class Matrix;
 
 class IParticleSystem
 {
-  protected:
-    virtual ~IParticleSystem(){};
+protected:
+    virtual ~IParticleSystem()
+    {
+    };
 
-  public:
+public:
     // Create / delete
-    IParticleSystem(){};
+    IParticleSystem()
+    {
+    };
     virtual bool Release() = 0;
 
     // Update all particles

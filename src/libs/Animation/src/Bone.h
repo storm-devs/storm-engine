@@ -24,7 +24,6 @@
 
 class Bone
 {
-
 #pragma pack(push, 1)
 
     struct COMP_QUATERNION
@@ -38,7 +37,7 @@ class Bone
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Bone();
     virtual ~Bone();
     // Set parent
@@ -55,7 +54,7 @@ class Bone
     // --------------------------------------------------------------------------------------------
     // Working with a bone
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     // Add animation frames
     void BlendFrame(long frame, float kBlend, D3DXQUATERNION &res);
     // void BlendFrame(float frame);
@@ -71,7 +70,7 @@ class Bone
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     void GetFrame(long f, D3DXQUATERNION &qt);
     float Clamp(float v, const char *str);
     // Linear position interpolation
@@ -79,7 +78,7 @@ class Bone
     // Linear Angle Interpolation
     float LerpAng(float a, float b, float k);
 
-  public:
+public:
     Bone *parent; // Parent bone
 
 #ifdef ANI_COMPRESS_ENABLE

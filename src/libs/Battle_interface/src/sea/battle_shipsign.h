@@ -11,7 +11,7 @@ class BIShipCommandList;
 
 class BIShipIcon
 {
-  public:
+public:
     enum CommandType
     {
         Command_confirm,
@@ -35,16 +35,18 @@ class BIShipIcon
     size_t AddTexture(const char *pcTextureName, long nCols, long nRows) const;
 
     void Recollect();
+
     void SetUpdate()
     {
         m_bMakeUpdate = true;
     }
+
     bool IsActive() const;
     void SetActive(bool bActive);
     void MakeControl();
     void ExecuteCommand(CommandType command);
 
-  protected:
+protected:
     void Release();
     long CalculateShipQuantity();
     void UpdateBuffers(long nShipQ);

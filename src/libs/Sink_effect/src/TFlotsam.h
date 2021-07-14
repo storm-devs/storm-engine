@@ -17,7 +17,7 @@ enum tFlotsamState
 ///////////////////////////////////////////////////////////////////
 class TFlotsam
 {
-  public:
+public:
     TFlotsam();
     virtual ~TFlotsam();
 
@@ -27,7 +27,7 @@ class TFlotsam
     void Realize(uint32_t dTime);
     bool Enabled();
 
-  private:
+private:
     SEA_BASE *sea;
 
     float x, z, y, vX, vZ, vY, turnY, angY;

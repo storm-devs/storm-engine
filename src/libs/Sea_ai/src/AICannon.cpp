@@ -28,8 +28,7 @@ void AICannon::Execute(float fDeltaTime)
 {
     if (fTime2Action >= 0.0f)
     {
-        if (isRecharged() && (!bCanRecharge || isEmpty()))
-            ;
+        if (isRecharged() && (!bCanRecharge || isEmpty()));
         else
             fTime2Action -= fDeltaTime;
     }

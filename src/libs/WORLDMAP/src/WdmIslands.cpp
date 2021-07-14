@@ -914,7 +914,7 @@ void WdmIslands::GetNearPointToArea(const char *islandName, float &x, float &z)
     v.z = 0.0f;
     islands[i].area->geo->Clip(nullptr, 0, v,
                                wdmObjects->worldSizeX * wdmObjects->worldSizeX +
-                                   wdmObjects->worldSizeZ * wdmObjects->worldSizeZ,
+                               wdmObjects->worldSizeZ * wdmObjects->worldSizeZ,
                                FindNearPoint);
     if (checkMode)
     {

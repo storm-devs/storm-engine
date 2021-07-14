@@ -6,7 +6,7 @@
 
 class FREE_CAMERA : public COMMON_CAMERA
 {
-  private:
+private:
     VDX9RENDER *pRS;
     CVECTOR vPos, vAng;
     float fFov;
@@ -16,9 +16,9 @@ class FREE_CAMERA : public COMMON_CAMERA
     BOOL bCameraOnEarth;
     float fCameraOnEarthHeight;
 
-  public:
+public:
     FREE_CAMERA();
-    virtual ~FREE_CAMERA();
+    ~FREE_CAMERA() override;
 
     void SetDevice();
     bool Init() override;

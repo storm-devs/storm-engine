@@ -62,13 +62,15 @@ void AIGroup::AddShip(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pASh
     CVECTOR vShipPos, vTmpPos;
 
     if (isWarShip)
-    { // war
+    {
+        // war
         vTmpPos = ((iWarShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
                   CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
         vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos;
     }
     else
-    { // trade
+    {
+        // trade
         vTmpPos = ((iTradeShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
                   CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
         vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos -

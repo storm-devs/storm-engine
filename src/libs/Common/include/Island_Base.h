@@ -5,7 +5,7 @@
 
 class ISLAND_BASE : public CANNON_TRACE_BASE
 {
-  public:
+public:
     virtual entid_t GetModelEID() = 0;
 
     virtual bool Check2DBoxDepth(CVECTOR vPos, CVECTOR vSize, float fAngY, float fMinDepth) = 0;

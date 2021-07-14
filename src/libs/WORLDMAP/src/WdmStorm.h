@@ -20,9 +20,9 @@ class WdmStorm : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmStorm();
-    virtual ~WdmStorm();
+    ~WdmStorm() override;
 
     void SetLiveTime(float t);
     float GetLiveTime() const;
@@ -37,7 +37,7 @@ class WdmStorm : public WdmRenderObject
 
     const char *GetId() const;
 
-  public:
+public:
     // Setting parameters
     void SetSaveAttribute(ATTRIBUTES *save);
     void DeleteUpdate();
@@ -47,11 +47,11 @@ class WdmStorm : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Updating stored data
     void UpdateSaveData();
 
-  private:
+private:
     CVECTOR pos, dir;
 
     float isActiveTime;

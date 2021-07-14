@@ -8,7 +8,7 @@
 
 class WEATHER : public WEATHER_BASE
 {
-  private:
+private:
     VDX9RENDER *pRS;
 
     float fFloats[MAX_FLOAT_PARAMS];
@@ -42,24 +42,25 @@ class WEATHER : public WEATHER_BASE
     void CleanUP();
 
     // Weather_Base function
-    long GetLong(uint32_t dwCode);
-    uint32_t GetColor(uint32_t, CVECTOR *);
-    uint32_t GetColor(uint32_t);
-    float GetFloat(uint32_t);
-    void GetVector(uint32_t, CVECTOR *);
+    long GetLong(uint32_t dwCode) override;
+    uint32_t GetColor(uint32_t, CVECTOR *) override;
+    uint32_t GetColor(uint32_t) override;
+    float GetFloat(uint32_t) override;
+    void GetVector(uint32_t, CVECTOR *) override;
 
-  public:
+public:
     WEATHER();
-    virtual ~WEATHER();
+    ~WEATHER() override;
 
     void SetDevice();
-    bool Init();
+    bool Init() override;
     void Move();
     void Execute(uint32_t Delta_Time);
     void Realize(uint32_t Delta_Time);
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)

@@ -88,7 +88,7 @@ void BIImageMaterial::SetTexture(const char *pcTextureName)
 void BIImageMaterial::ReleaseAllImages()
 {
     m_bDeleteEverything = true;
-    for (auto const &image : m_apImage)
+    for (const auto &image : m_apImage)
         delete image;
     m_apImage.clear();
     // m_apImage.DelAllWithPointers();
@@ -100,7 +100,7 @@ void BIImageMaterial::Release()
 {
     m_bDeleteEverything = true;
     m_pImageRender->DeleteMaterial(this);
-    for (auto const &image : m_apImage)
+    for (const auto &image : m_apImage)
         delete image;
     // m_apImage.DelAllWithPointers();
     TEXTURE_RELEASE(m_pRS, m_nTextureID);

@@ -109,7 +109,8 @@ void CXI_IMGCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
         {
             if (_strnicmp(param, "editsection:", 12) != 0)
                 imgQuantity++;
-        } while (ini1->ReadStringNext(name1, "picture", param, sizeof(param) - 1));
+        }
+        while (ini1->ReadStringNext(name1, "picture", param, sizeof(param) - 1));
 
     m_bRelativeRect = !GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
 

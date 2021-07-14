@@ -38,13 +38,14 @@ struct tButterflyVertex
 //--------------------------------------------------------------------
 class TButterfly
 {
-  public:
+public:
     TButterfly();
     virtual ~TButterfly();
 
     void Initialize(const CVECTOR &_center, float _radius, long _bufferIndex, int _tI, int _tJ);
     void Calculate(long _dTime, COLLIDE *_collide, EntityManager::LayerIterators its);
     void Effect(const CVECTOR &_position);
+
     static void SetCenter(const CVECTOR &_center)
     {
         center = _center;
@@ -54,10 +55,12 @@ class TButterfly
     {
         return centerVelocity;
     }
+
     const CVECTOR GetPosition()
     {
         return centerPosition;
     }
+
     void SetMinY(float _minY)
     {
         minY = _minY;
@@ -68,7 +71,7 @@ class TButterfly
     void Draw(IVBufferManager *_ivManager);
     void Draw(VDX9RENDER *_renderer, MODEL *_model);
 
-  private:
+private:
     CVECTOR centerPosition, centerVelocity, oldPos;
     CVECTOR displaceVector;
     long timeToNextDisplace;
@@ -83,4 +86,5 @@ class TButterfly
 
     float tI, tJ;
 };
+
 //--------------------------------------------------------------------

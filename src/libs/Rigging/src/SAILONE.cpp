@@ -94,7 +94,7 @@ void SAILONE::goWave(SAILVERTEX *pv, uint32_t Delta_Time)
         // triangular sails rolled on the yard
         if (bRolling)
             DoTRollSail(pv);
-        // free-hanging sails
+            // free-hanging sails
         else if (bFreeSail)
             DoTFreeSail(pv);
         else
@@ -113,11 +113,11 @@ void SAILONE::goWave(SAILVERTEX *pv, uint32_t Delta_Time)
         if (bRolling)
             DoSRollSail(pv);
 
-        // free-hanging sails
+            // free-hanging sails
         else if (bFreeSail)
             DoSFreeSail(pv);
 
-        // fluttering rectangular sails
+            // fluttering rectangular sails
         else
         {
             // sway sails
@@ -306,7 +306,7 @@ void SAILONE::FillIndex(uint16_t *pt)
                 v2 += ix * 12 + 22;
             }
         }
-        // Fill indexes for triangle sail
+            // Fill indexes for triangle sail
         else if (ss.eSailType == SAIL_TREANGLE)
         {
             // Fill 2x2
@@ -314,17 +314,18 @@ void SAILONE::FillIndex(uint16_t *pt)
             {
                 pt[noholeStart] = idx;
                 pt[noholeStart + 7] = pt[noholeStart + 3] = pt[noholeStart + 1] =
-                    idx + SAIL_ROW_MAX / 2 * (SAIL_ROW_MAX / 2 + 1) / 2;
+                                                            idx + SAIL_ROW_MAX / 2 * (SAIL_ROW_MAX / 2 + 1) / 2;
                 pt[noholeStart + 9] = pt[noholeStart + 6] = pt[noholeStart + 2] =
-                    idx + SAIL_ROW_MAX / 2 * (SAIL_ROW_MAX / 2 + 3) / 2;
+                                                            idx + SAIL_ROW_MAX / 2 * (SAIL_ROW_MAX / 2 + 3) / 2;
                 pt[noholeStart + 4] = idx + SAIL_ROW_MAX * (SAIL_ROW_MAX - 1) / 2;
                 pt[noholeStart + 10] = pt[noholeStart + 8] = pt[noholeStart + 5] =
-                    idx + SAIL_ROW_MAX * (SAIL_ROW_MAX - 1) / 2 + SAIL_ROW_MAX / 2;
+                                                             idx + SAIL_ROW_MAX * (SAIL_ROW_MAX - 1) / 2 + SAIL_ROW_MAX
+                                                             / 2;
                 pt[noholeStart + 11] = idx + (SAIL_ROW_MAX - 1) * (SAIL_ROW_MAX + 2) / 2;
 
                 noholeStart += 12;
             }
-            // Fill from 4x4
+                // Fill from 4x4
             else
             {
                 for (ix = 0; ix < 4; ix++)
@@ -390,7 +391,7 @@ void SAILONE::FillIndex(uint16_t *pt)
                 }
             }
         }
-        // Fill indexes for square sail
+            // Fill indexes for square sail
         else
         {
             // Fill ?x2
@@ -402,7 +403,8 @@ void SAILONE::FillIndex(uint16_t *pt)
                     pt[noholeStart + 3] = pt[noholeStart + 1] = idx + SAIL_ROW_MAX * (SAIL_COL_MAX / 3);
                     pt[noholeStart + 6] = pt[noholeStart + 5] = pt[noholeStart + 2] = idx + SAIL_ROW_MAX / 2;
                     pt[noholeStart + 9] = pt[noholeStart + 7] = pt[noholeStart + 4] =
-                        idx + SAIL_ROW_MAX * (SAIL_COL_MAX / 3) + SAIL_ROW_MAX / 2;
+                                                                idx + SAIL_ROW_MAX * (SAIL_COL_MAX / 3) + SAIL_ROW_MAX /
+                                                                2;
                     pt[noholeStart + 11] = pt[noholeStart + 8] = idx + SAIL_ROW_MAX - 1;
                     pt[noholeStart + 10] = idx + SAIL_ROW_MAX * (SAIL_COL_MAX / 3) + SAIL_ROW_MAX - 1;
 
@@ -410,7 +412,7 @@ void SAILONE::FillIndex(uint16_t *pt)
                     noholeStart += 12;
                 }
             }
-            // Fill from 3x4
+                // Fill from 3x4
             else
             {
                 for (ix = 0; ix < 3; ix++)
@@ -585,7 +587,7 @@ void SAILONE::SetTexGrid(SAILVERTEX *pv) const
             }
         }
     }
-    // rig for rectangular sail
+        // rig for rectangular sail
     else
     {
         kx1 = 1.f / static_cast<float>((SAIL_COL_MAX - 1));
@@ -1154,7 +1156,7 @@ void SAILONE::DoRollingStep(uint32_t Delta_Time)
             return; // no more sail folding
         }
     }
-    // unfold sail
+        // unfold sail
     else
     {
         delta += static_cast<float>(Delta_Time) * pp->gdata[HostNum].fRollingSpeed;

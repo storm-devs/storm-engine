@@ -4,11 +4,9 @@
 
 namespace steamapi
 {
-
 class SteamApiScriptLib : public SCRIPT_LIBRIARY
 {
-  public:
+public:
     bool Init() override;
 };
-
 } // namespace steamapi

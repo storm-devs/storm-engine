@@ -24,17 +24,17 @@ class AnimationServiceImp final : public AnimationService
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     AnimationServiceImp();
-    ~AnimationServiceImp();
+    ~AnimationServiceImp() override;
 
     // Phase for running the animation
-    virtual uint32_t RunSection();
+    uint32_t RunSection() override;
     // Execution functions
-    virtual void RunStart();
-    virtual void RunEnd();
+    void RunStart() override;
+    void RunEnd() override;
     // Create animation for the model, delete using "delete"
-    virtual Animation *CreateAnimation(const char *animationName);
+    Animation *CreateAnimation(const char *animationName) override;
 
     // --------------------------------------------------------------------------------------------
     // Functions for Animation
@@ -47,7 +47,7 @@ class AnimationServiceImp final : public AnimationService
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // load animation
     long LoadAnimation(const char *animationName);
     // Load user data from the current section

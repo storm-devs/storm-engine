@@ -542,7 +542,7 @@ void DIALOG::FillDivider()
     if (!m_BackParams.bShowDivider)
         return;
 
-    XI_TEX_VERTEX *pV = static_cast<XI_TEX_VERTEX *>(RenderService->LockVertexBuffer(m_idVBufBack));
+    auto pV = static_cast<XI_TEX_VERTEX *>(RenderService->LockVertexBuffer(m_idVBufBack));
     const auto fDividerY = static_cast<float>(textViewport.Y + m_BackParams.nDividerOffsetY);
     SetVerticesForSquare(&pV[m_nVQntBack - 4], m_BackParams.m_frDividerUV,
                          m_BackParams.m_frBorderInt.left + m_BackParams.nDividerOffsetX, fDividerY,
@@ -605,7 +605,7 @@ void DIALOG::FillButtons()
     if (m_DlgText.nStartIndex > 0)
         m_dwButtonState |= BUTTON_STATE_UPENABLE;
 
-    XI_TEX_VERTEX *pV = static_cast<XI_TEX_VERTEX *>(RenderService->LockVertexBuffer(m_idVBufButton));
+    auto pV = static_cast<XI_TEX_VERTEX *>(RenderService->LockVertexBuffer(m_idVBufButton));
     if (m_dwButtonState & BUTTON_STATE_UPLIGHT)
     {
         SetVerticesForSquare(

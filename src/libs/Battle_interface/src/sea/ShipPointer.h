@@ -6,9 +6,9 @@ class SHIPPOINTER : public Entity
 {
     VDX9RENDER *rs;
 
-  public:
+public:
     SHIPPOINTER();
-    ~SHIPPOINTER();
+    ~SHIPPOINTER() override;
     bool Init() override;
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time) const;
@@ -31,7 +31,7 @@ class SHIPPOINTER : public Entity
         }
     }
 
-  protected:
+protected:
     void UpdateShipPointer() const;
     VAI_OBJBASE *FindShipByChrIndex(long chrIdx) const;
 

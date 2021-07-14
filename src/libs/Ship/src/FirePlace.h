@@ -10,7 +10,7 @@
 
 class FirePlace
 {
-  public:
+public:
     FirePlace();
     ~FirePlace();
 
@@ -19,10 +19,12 @@ class FirePlace
         Assert(GetShip());
         return *GetShip()->GetMatrix() * vOrigPos;
     };
+
     void SetPos(CVECTOR &vPos)
     {
         vOrigPos = vPos;
     };
+
     float GetDistance(CVECTOR &vOtherPos)
     {
         return sqrtf(~(GetPos() - vOtherPos));
@@ -32,6 +34,7 @@ class FirePlace
     {
         pShip = _pShip;
     }
+
     SHIP_BASE *GetShip()
     {
         return pShip;
@@ -42,14 +45,17 @@ class FirePlace
              const char *pSoundName, float _fRunTime);
     void Stop();
     void StopSound(long _iSoundID);
+
     bool isActive()
     {
         return bActive;
     }
+
     float GetRunTime()
     {
         return fRunTime;
     }
+
     long GetBallCharacterIndex()
     {
         return iBallCharacterIndex;
@@ -62,7 +68,7 @@ class FirePlace
 
     static entid_t eidSound;
 
-  private:
+private:
     bool CreateParticle(const char *pParticleSmokeName, const char *pParticleFireName);
     void DeleteParticle();
 

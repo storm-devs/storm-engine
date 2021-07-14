@@ -106,7 +106,7 @@ void RAIN::GenerateRain()
 
     dwRainR = (dwRainColor >> 0x10) & 0xFF;
     dwRainG = (dwRainColor >> 0x8) & 0xFF;
-    dwRainB = (dwRainColor)&0xFF;
+    dwRainB = (dwRainColor) & 0xFF;
 
     fWindPower = pWeather->GetFloat(whf_wind_speed) / 18.0f;
     fWindAngle = pWeather->GetFloat(whf_wind_angle);
@@ -382,7 +382,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
     rs->SetWorld(IMatrix);
     rs->TextureSet(0, iSeaDropTex);
 
-    SEADROPVERTEX *pVSeaDropBuffer = static_cast<SEADROPVERTEX *>(rs->LockVertexBuffer(iVBSeaDrops, D3DLOCK_DISCARD));
+    auto pVSeaDropBuffer = static_cast<SEADROPVERTEX *>(rs->LockVertexBuffer(iVBSeaDrops, D3DLOCK_DISCARD));
     long n = 0;
     if (pVSeaDropBuffer)
         for (long i = 0; i < aSeaDrops.size(); i++)

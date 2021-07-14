@@ -9,7 +9,7 @@
 // ============================================================================
 class AIGroup
 {
-  private:
+private:
     DTimer dtCheckTask;
     std::string sCommand, sCommandGroup;
     std::string sGroupName;
@@ -24,8 +24,10 @@ class AIGroup
     // ship container for this group
     std::vector<AIShip *> aGroupShips;
 
-  public:
-    AIGroup(){};
+public:
+    AIGroup()
+    {
+    };
     AIGroup(const char *pGroupName);
     virtual ~AIGroup();
 
@@ -77,7 +79,9 @@ class AIGroup
     AIShip *GetMainShip();
     void AddShip(entid_t _eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip);
 
-    void Unload(){};
+    void Unload()
+    {
+    };
 
     // execute/realize function (on each frame)
     void Realize(float fDeltaTime);

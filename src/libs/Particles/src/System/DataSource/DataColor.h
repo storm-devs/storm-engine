@@ -13,7 +13,7 @@ class DataColor
 
     std::vector<ColorVertex> ColorGraph;
 
-  public:
+public:
     // constructor / destructor
     DataColor();
     virtual ~DataColor();

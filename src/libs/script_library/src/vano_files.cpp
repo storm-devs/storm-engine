@@ -59,7 +59,7 @@ uint32_t _Bring2Range(VS_STACK *pS)
     auto *pMax2 = (VDATA *)pS->Pop();
     auto *pMin2 = (VDATA *)pS->Pop();
     auto *pMax1 = (VDATA *)pS->Pop();
-    VDATA *pMin1 = (VDATA *)pS->Pop();
+    auto pMin1 = (VDATA *)pS->Pop();
 
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
@@ -74,7 +74,7 @@ uint32_t _Bring2RangeNoCheck(VS_STACK *pS)
 {
     auto *pValue = (VDATA *)pS->Pop();
     auto *pMax2 = (VDATA *)pS->Pop();
-    VDATA *pMin2 = (VDATA *)pS->Pop();
+    auto pMin2 = (VDATA *)pS->Pop();
     auto *pMax1 = (VDATA *)pS->Pop();
     auto *pMin1 = (VDATA *)pS->Pop();
 

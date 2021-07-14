@@ -8,7 +8,7 @@
 
 class ShipLights : public IShipLights
 {
-  private:
+private:
     struct Color
     {
         float r, g, b, a;
@@ -118,28 +118,29 @@ class ShipLights : public IShipLights
     void AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, const GEOS::LABEL &label);
     bool SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr);
 
-  public:
+public:
     static VDX9RENDER *pRS;
     static COLLIDE *pCollide;
 
     ShipLights();
-    virtual ~ShipLights();
+    ~ShipLights() override;
 
-    virtual void Release(VAI_OBJBASE *pObject);
+    void Release(VAI_OBJBASE *pObject) override;
 
-    virtual void AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bool bFlares);
-    virtual void SetLightsOff(VAI_OBJBASE *pObject, float fTime, bool bLights, bool bFlares, bool bNow);
-    virtual void KillMast(VAI_OBJBASE *pObject, NODE *pNode, bool bNow);
-    virtual void AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos);
-    virtual void SetLights(VAI_OBJBASE *pObject);
-    virtual void UnSetLights(VAI_OBJBASE *pObject);
+    void AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bool bFlares) override;
+    void SetLightsOff(VAI_OBJBASE *pObject, float fTime, bool bLights, bool bFlares, bool bNow) override;
+    void KillMast(VAI_OBJBASE *pObject, NODE *pNode, bool bNow) override;
+    void AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos) override;
+    void SetLights(VAI_OBJBASE *pObject) override;
+    void UnSetLights(VAI_OBJBASE *pObject) override;
 
-    virtual void SetDead(VAI_OBJBASE *pObject);
+    void SetDead(VAI_OBJBASE *pObject) override;
 
-    bool Init();
+    bool Init() override;
     void Execute(uint32_t dwDeltaTime);
     void Realize(uint32_t dwDeltaTime);
-    uint64_t ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)

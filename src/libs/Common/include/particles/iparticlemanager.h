@@ -21,12 +21,16 @@ class IParticleSystem;
 // Particle Systems Manager
 class IParticleManager
 {
-  protected:
-    virtual ~IParticleManager(){};
+protected:
+    virtual ~IParticleManager()
+    {
+    };
 
-  public:
+public:
     // Create / delete
-    IParticleManager(ParticleService *service){};
+    IParticleManager(ParticleService *service)
+    {
+    };
     virtual bool Release() = 0;
 
     // Get a pointer to Render / FileService

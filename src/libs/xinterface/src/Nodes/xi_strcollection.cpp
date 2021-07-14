@@ -70,7 +70,9 @@ void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
     m_nStr = 0;
     if (ini && ini->ReadString(name, "string", param, sizeof(param) - 1, ""))
         do
+        {
             m_nStr++;
+        }
         while (ini->ReadStringNext(name, "string", param, sizeof(param) - 1));
 
     if (m_nStr)

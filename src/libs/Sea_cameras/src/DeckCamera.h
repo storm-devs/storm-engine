@@ -55,9 +55,9 @@ class DECK_CAMERA : public COMMON_CAMERA
     void SetViewPoint(CVECTOR &cViewPoint);
     float MultiTrace(const CVECTOR &cvBase, const CVECTOR &cvDown, float fHBase);
 
-  public:
+public:
     DECK_CAMERA();
-    ~DECK_CAMERA();
+    ~DECK_CAMERA() override;
 
     void SetCharacter(ATTRIBUTES *_pACharacter) override;
 

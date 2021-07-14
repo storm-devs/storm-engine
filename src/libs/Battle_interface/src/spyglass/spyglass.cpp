@@ -550,12 +550,12 @@ void ISPYGLASS::UpdateCamera()
         if (m_Camera.bIsGrow)
         {
             fPerspect = m_Camera.fOldPerspective + (m_Camera.fSpyGlassPerspective - m_Camera.fOldPerspective) *
-                                                       (m_Camera.fCurActivateTime / m_Camera.fActivateTime);
+                        (m_Camera.fCurActivateTime / m_Camera.fActivateTime);
         }
         else
         {
             fPerspect = m_Camera.fOldPerspective - (m_Camera.fSpyGlassPerspective - m_Camera.fOldPerspective) *
-                                                       (1.f - m_Camera.fCurActivateTime / m_Camera.fActivateTime);
+                        (1.f - m_Camera.fCurActivateTime / m_Camera.fActivateTime);
         }
         rs->SetPerspective(fPerspect);
     }

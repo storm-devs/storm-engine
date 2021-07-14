@@ -19,7 +19,8 @@ CREATE_CLASS(Tornado)
 // Construction, destruction
 // ============================================================================================
 
-Tornado::Tornado() : particles(pillar), noiseCloud(pillar), debris(pillar)
+Tornado::Tornado()
+    : particles(pillar), noiseCloud(pillar), debris(pillar)
 {
     ib = -1;
     vb = -1;

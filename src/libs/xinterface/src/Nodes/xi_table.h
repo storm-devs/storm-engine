@@ -32,7 +32,7 @@ class XI_TableCellDescribe
         }
     };
 
-  public:
+public:
     XI_TableCellDescribe(CXI_TABLE *pTable, XI_TableLineDescribe *pLine);
     ~XI_TableCellDescribe();
 
@@ -46,7 +46,7 @@ class XI_TableCellDescribe
     void SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHeader);
     void LoadImageParam(ImgDescribe *pImg, ATTRIBUTES *pA) const;
 
-  protected:
+protected:
     CXI_TABLE *m_pTable;
     XI_TableLineDescribe *m_pLine;
 
@@ -64,15 +64,16 @@ class XI_TableCellDescribe
     std::vector<StrDescribe> m_aStrings;
     std::vector<ImgDescribe> m_aImage;
 
-  public:
+public:
     long m_nColIndex;
 };
 
 class XI_TableLineDescribe
 {
-  public:
+public:
     XI_TableLineDescribe(CXI_TABLE *pTable);
     ~XI_TableLineDescribe();
+
     void SetOwners(CXI_TABLE *pTable)
     {
         m_pTable = pTable;
@@ -83,12 +84,13 @@ class XI_TableLineDescribe
     void SetData(long nRowIndex, ATTRIBUTES *pLA, bool bHeader);
 
     long GetLineHeight() const;
+
     void SetLineHeight(long nHeight)
     {
         m_nHeight = nHeight;
     }
 
-  protected:
+protected:
     CXI_TABLE *m_pTable;
     std::vector<XI_TableCellDescribe *> m_aCell;
 
@@ -96,7 +98,7 @@ class XI_TableLineDescribe
     uint32_t m_dwSpecColor;
     long m_nHeight;
 
-  public:
+public:
     long m_nRowIndex;
 };
 
@@ -106,11 +108,11 @@ class CXI_TABLE : public CINODE
     friend XI_TableLineDescribe;
     friend XI_TableCellDescribe;
 
-  public:
+public:
     CXI_TABLE(CXI_TABLE &&) = delete;
     CXI_TABLE(const CXI_TABLE &) = delete;
     CXI_TABLE();
-    ~CXI_TABLE();
+    ~CXI_TABLE() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -141,7 +143,7 @@ class CXI_TABLE : public CINODE
         return 1.f;
     }
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateBorders();
     void WriteSquare(XI_ONETEX_VERTEX *pV, long nImgID, uint32_t dwCol, long nX, long nY, long nW, long nH) const;

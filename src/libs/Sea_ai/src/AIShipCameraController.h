@@ -4,7 +4,7 @@ class AIShip;
 
 class AIShipCameraController
 {
-  private:
+private:
     ATTRIBUTES *pTargetAPointer;
     uint32_t dwTarget;
     float fDelta;
@@ -23,7 +23,7 @@ class AIShipCameraController
         return bCameraOutside;
     };
 
-  public:
+public:
     void Realize(float fDeltaTime);
     void Execute(float fDeltaTime);
 
@@ -37,6 +37,7 @@ class AIShipCameraController
     {
         pOurAIShip = pShip;
     }
+
     AIShip *GetAIShip() const
     {
         return pOurAIShip;

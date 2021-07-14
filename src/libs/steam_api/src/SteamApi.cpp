@@ -166,7 +166,6 @@ void SteamApiImpl::RunCallbacks()
 
 namespace steamapi::detail
 {
-
 std::unique_ptr<SteamApi> factory(const bool mock)
 {
 #ifdef STORM_ENABLE_STEAM
@@ -177,5 +176,4 @@ std::unique_ptr<SteamApi> factory(const bool mock)
 #endif
     return std::make_unique<SteamApi>();
 }
-
 } // namespace steamapi::detail

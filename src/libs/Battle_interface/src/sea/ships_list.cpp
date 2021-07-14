@@ -18,7 +18,7 @@ class TMP_LONG_STACK
     long curidx;
     long defReturn;
 
-  public:
+public:
     TMP_LONG_STACK()
     {
         sizeIncr = 100;
@@ -37,10 +37,12 @@ class TMP_LONG_STACK
     void Push(long data);
     long Pop();
     long GetFore();
+
     void SetSizeIncrement(long sizeinc)
     {
         sizeIncr = sizeinc;
     }
+
     void SetDefReturn(long defRet)
     {
         defReturn = defRet;

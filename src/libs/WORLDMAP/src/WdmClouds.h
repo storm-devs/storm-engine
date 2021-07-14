@@ -50,7 +50,7 @@ class WdmClouds : public WdmRenderObject
         // Run the cloud removal mechanism if there is an intersection
         void Kill(const Cloud &cld);
 
-      private:
+    private:
         Cld cloud[WDMCLOUDSMAX]; // Positions
         long count;              // amount
         float alpha;             // Overall transparency
@@ -62,9 +62,9 @@ class WdmClouds : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmClouds();
-    virtual ~WdmClouds();
+    ~WdmClouds() override;
 
     // Calculations
     void Update(float dltTime) override;

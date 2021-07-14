@@ -17,9 +17,9 @@
 
 class Lizards : public Entity
 {
-  public:
+public:
     Lizards();
-    virtual ~Lizards();
+    ~Lizards() override;
 
     // Initialization
     bool Init() override;

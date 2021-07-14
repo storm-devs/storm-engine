@@ -5,7 +5,7 @@
 
 class xiBaseVideo : public Entity
 {
-  public:
+public:
     virtual void SetShowVideo(bool bShowVideo)
     {
     }

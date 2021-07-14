@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////
 class TSink
 {
-  public:
+public:
     TSink();
     virtual ~TSink();
 
@@ -23,7 +23,7 @@ class TSink
     void Realize(uint32_t dTime);
     bool Enabled();
 
-  private:
+private:
     bool enabled;
 
     VDX9RENDER *renderer;

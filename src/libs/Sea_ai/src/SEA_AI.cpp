@@ -3,7 +3,9 @@
 #include "AIGroup.h"
 
 CREATE_CLASS(SEA_AI)
+
 CREATE_CLASS(AIFort)
+
 CREATE_CLASS(AIBalls)
 
 SEA_AI::SEA_AI()

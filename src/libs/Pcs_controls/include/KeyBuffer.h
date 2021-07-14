@@ -6,7 +6,7 @@
 
 struct ControlKeyBuffer
 {
-  public:
+public:
     ControlKeyBuffer();
     ~ControlKeyBuffer();
 

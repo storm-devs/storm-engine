@@ -6,9 +6,9 @@ class InfoHandler : public Entity
 {
     VDX9RENDER *m_rs;
 
-  public:
+public:
     InfoHandler();
-    ~InfoHandler();
+    ~InfoHandler() override;
     bool Init() override;
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time) const;
@@ -31,7 +31,7 @@ class InfoHandler : public Entity
         }
     }
 
-  protected:
+protected:
     void StringToBufer(char *outStr, int sizeBuf, char *inStr, int copySize) const;
     char *GetCutString(char *pstr, int nOutWidth, float fScale) const;
     bool DoPreOut();

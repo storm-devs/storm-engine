@@ -164,9 +164,9 @@ class SoundService : public VSoundService
     float fMusicVolume;
     float fSpeechVolume;
 
-  public:
+public:
     SoundService();
-    virtual ~SoundService();
+    ~SoundService() override;
     bool SFLB_SetScheme(const char *_schemeName);
     bool Init() override;
 

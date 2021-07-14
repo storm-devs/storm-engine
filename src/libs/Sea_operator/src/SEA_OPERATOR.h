@@ -11,6 +11,7 @@
 #define IDLE_ACTION_SEED 500
 
 class SEA_OPERATOR;
+
 //--------------------------------------------------------------------
 struct tAction
 {
@@ -25,7 +26,7 @@ struct tAction
 
 // typedef TFIFOBuffer<tAction> TActionBuffer;
 
-typedef std::queue<tAction> TActionBuffer;
+using TActionBuffer = std::queue<tAction>;
 
 enum BORT_TYPE
 {
@@ -38,15 +39,16 @@ enum BORT_TYPE
 //--------------------------------------------------------------------
 class SEA_OPERATOR : public Entity
 {
-  public:
+public:
     SEA_OPERATOR();
-    virtual ~SEA_OPERATOR();
+    ~SEA_OPERATOR() override;
 
-    virtual bool Init();
-    virtual uint64_t ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
     virtual void Realize(uint32_t dTime);
     virtual void Execute(uint32_t dTime);
-    virtual uint32_t AttributeChanged(ATTRIBUTES *_newAttr);
+    uint32_t AttributeChanged(ATTRIBUTES *_newAttr) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -64,14 +66,14 @@ class SEA_OPERATOR : public Entity
         }
     }
 
-  protected:
+protected:
     void ShowAttackerBort(tAction *_action);
     void ShowFromBall(tAction *_action);
     void ShowAroundPoint(tAction *_action);
     void ShowBallAtMyShip(tAction *_action);
     void ShowMyShipFromPoint(tAction *_action);
 
-  private:
+private:
     void FirstInit();
     bool IsTimeToActivate(bool _testControls = true);
     void SetIfMyShip(entid_t _shipID);

@@ -23,22 +23,22 @@ class WdmStormCloud : public WdmCloud
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmStormCloud();
-    virtual ~WdmStormCloud();
+    ~WdmStormCloud() override;
 
     // Calculations
-    virtual void Update(float dltTime);
+    void Update(float dltTime) override;
 
     // Rendering
-    virtual void PRender(VDX9RENDER *rs);
-    virtual void LRender(VDX9RENDER *rs);
+    void PRender(VDX9RENDER *rs) override;
+    void LRender(VDX9RENDER *rs) override;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
-    virtual void BuildCloud(long n);
+private:
+    void BuildCloud(long n) override;
     void FillRects();
 
     // Lightning parameters

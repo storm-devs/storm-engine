@@ -20,20 +20,37 @@
 
 
 CREATE_CLASS(Location)
+
 CREATE_CLASS(NPCharacter)
+
 CREATE_CLASS(Player)
+
 CREATE_CLASS(LocationCamera)
+
 CREATE_CLASS(Fader)
+
 CREATE_CLASS(Grass)
+
 CREATE_CLASS(Lights)
+
 CREATE_CLASS(WideScreen)
+
 CREATE_CLASS(CharacterAnimationKipper)
+
 CREATE_CLASS(LocationEffects)
+
 CREATE_CLASS(CharactersGroups)
+
 CREATE_CLASS(LocEagle)
+
 CREATE_CLASS(Lizards)
+
 CREATE_CLASS(LocRats)
+
 CREATE_CLASS(LocCrabs)
+
 CREATE_CLASS(LocModelRealizer)
+
 CREATE_CLASS(Blood)
+
 CREATE_SCRIPTLIBRIARY(ScriptLocationLibrary)

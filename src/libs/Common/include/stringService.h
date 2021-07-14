@@ -5,7 +5,7 @@
 
 class VSTRSERVICE : public SERVICE
 {
-  public:
+public:
     bool Init() override = 0;
     bool LoadState(ENTITY_STATE *state) override = 0;
     bool CreateState(ENTITY_STATE_GEN *state_gen) override = 0;

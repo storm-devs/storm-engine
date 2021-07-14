@@ -9,7 +9,7 @@ namespace storm
 {
 class QuestFileReader
 {
-  public:
+public:
     struct UserData
     {
         /// @note Constructor is needed for emplace_back
@@ -60,7 +60,8 @@ class QuestFileReader
     std::optional<size_t> FindQuestByID(const std::string_view &questID);
     std::optional<size_t> FindTextByID(QuestDescribe &nQuest, const std::string_view &textID);
 
-  private:
+<<<<<<< HEAD
+private:
     std::vector<std::string> questFileNames_;
 
     std::vector<QuestDescribe> quests_;

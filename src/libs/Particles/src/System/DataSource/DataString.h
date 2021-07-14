@@ -10,7 +10,7 @@ class DataString
 
     std::string Value;
 
-  public:
+public:
     // constructor / destructor
     DataString();
     virtual ~DataString();

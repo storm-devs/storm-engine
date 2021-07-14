@@ -57,9 +57,9 @@ class Location : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Location();
-    virtual ~Location();
+    ~Location() override;
 
     // Initialization
     bool Init() override;
@@ -89,7 +89,7 @@ class Location : public Entity
     //--------------------------------------------------------------------------------------------
     // Location
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Find locator group
     LocatorArray *FindLocatorsGroup(const char *gName);
 
@@ -126,14 +126,14 @@ class Location : public Entity
     // Draw bars above the enemy in this frame
     void DrawEnemyBars(const CVECTOR &pos, float hp, float energy, float alpha);
 
-  public:
+public:
     // The object that controls the repulsion of characters
     Supervisor supervisor;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     void Update(uint32_t delta_time);
     long LoadStaticModel(const char *modelName, const char *tech, long level, bool useDynamicLights);
     bool LoadCharacterPatch(const char *ptcName);
@@ -150,7 +150,7 @@ class Location : public Entity
     void DrawBar(const MTX_PRJ_VECTOR &vrt, uint32_t color, float hp, float energy);
     void CorrectBar(float v, float start, float end, BarVertex *vrt);
 
-  private:
+private:
     PtcData ptc;
     long patchJump;
 

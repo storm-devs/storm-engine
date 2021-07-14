@@ -93,9 +93,9 @@ void IBoardingStatus::Create()
     m_EnemyChar[0].w = m_EnemyChar[1].w = m_EnemyChar[2].w = m_EnemyChar[3].w = .5f;
     m_EnemyChar[0].pos.z = m_EnemyChar[1].pos.z = m_EnemyChar[2].pos.z = m_EnemyChar[3].pos.z = 1.f;
     m_EnemyChar[2].pos.x = m_EnemyChar[3].pos.x =
-        m_Width + (m_EnemyChar[0].pos.x = m_EnemyChar[1].pos.x = m_enemyPos.x);
+                           m_Width + (m_EnemyChar[0].pos.x = m_EnemyChar[1].pos.x = m_enemyPos.x);
     m_EnemyChar[1].pos.y = m_EnemyChar[3].pos.y =
-        m_Height + (m_EnemyChar[0].pos.y = m_EnemyChar[2].pos.y = m_enemyPos.y);
+                           m_Height + (m_EnemyChar[0].pos.y = m_EnemyChar[2].pos.y = m_enemyPos.y);
 }
 
 void IBoardingStatus::SetCharactersHP(float myHP, float enemyHP)

@@ -10,9 +10,9 @@ class NODE;
 
 class ItemEntity : public Entity
 {
-  public:
+public:
     ItemEntity();
-    ~ItemEntity();
+    ~ItemEntity() override;
 
     bool Init() override;
     void Realize(uint32_t delta_time);
@@ -34,7 +34,7 @@ class ItemEntity : public Entity
         }
     }
 
-  protected:
+protected:
     bool ReadAndCreate();
     void SetBeginData();
     void Release();
@@ -51,7 +51,7 @@ class ItemEntity : public Entity
                           const char *pcEndEvent);
     entid_t GetModelEIDFromCharacterEID(entid_t chrEID);
 
-  protected: // data
+protected: // data
     bool m_bVisible;
     entid_t m_eidModel;
     MODEL *m_pModel;
@@ -64,7 +64,7 @@ class ItemEntity : public Entity
 
     class EventListener : public AnimationEventListener
     {
-      public:
+    public:
         // Accept event
         void Event(Animation *animation, long playerIndex, const char *eventName) override;
 

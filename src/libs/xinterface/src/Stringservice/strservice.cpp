@@ -319,7 +319,9 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     auto newSize = 0;
     if (ini->ReadString(nullptr, "string", param, sizeof(param) - 1, ""))
         do
+        {
             newSize++;
+        }
         while (ini->ReadStringNext(nullptr, "string", param, sizeof(param) - 1));
 
     // check to right of ini files
@@ -606,7 +608,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
         return -1;
     }
 
-    char *fileBuf = new char[filesize + 1];
+    auto fileBuf = new char[filesize + 1];
     if (fileBuf == nullptr)
     {
         throw std::runtime_error("Allocate memory error");
@@ -799,7 +801,8 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
                 break;
             nameBeg = nameEnd;
             nameEnd = tmpStr;
-        } while ((tmpStr = strchr(nameEnd + 2, '\n')) < dataBeg);
+        }
+        while ((tmpStr = strchr(nameEnd + 2, '\n')) < dataBeg);
     idx = dataEnd - src + 2;
 
     // get rid of the spaces on the left
@@ -923,7 +926,7 @@ uint32_t _Language_GetLanguage(VS_STACK *pS)
 {
     char *strLangName = g_StringServicePointer->GetLanguage();
 
-    VDATA *pVR = (VDATA *)pS->Push();
+    auto pVR = (VDATA *)pS->Push();
     if (!pVR)
         return IFUNCRESULT_FAILED;
     pVR->Set(strLangName);
@@ -934,7 +937,7 @@ uint32_t _Language_GetLanguage(VS_STACK *pS)
 // Open language file
 uint32_t _Language_OpenFile(VS_STACK *pS)
 {
-    VDATA *pLngFileName = (VDATA *)pS->Pop();
+    auto pLngFileName = (VDATA *)pS->Pop();
     if (!pLngFileName)
         return IFUNCRESULT_FAILED;
     const char *strLngFileName = nullptr;
@@ -954,7 +957,7 @@ uint32_t _Language_OpenFile(VS_STACK *pS)
 // Close language file
 uint32_t _Language_CloseFile(VS_STACK *pS)
 {
-    VDATA *pLngFileID = (VDATA *)pS->Pop();
+    auto pLngFileID = (VDATA *)pS->Pop();
     if (!pLngFileID)
         return IFUNCRESULT_FAILED;
     long nLngFileID = -1;
@@ -968,7 +971,7 @@ uint32_t _Language_CloseFile(VS_STACK *pS)
 // Interpret a string using a language file
 uint32_t _Language_ConvertString(VS_STACK *pS)
 {
-    VDATA *pInStr = (VDATA *)pS->Pop();
+    auto pInStr = (VDATA *)pS->Pop();
     if (!pInStr)
         return IFUNCRESULT_FAILED;
     const char *strInStr = nullptr;
@@ -982,7 +985,7 @@ uint32_t _Language_ConvertString(VS_STACK *pS)
 
     char *strOutStr = g_StringServicePointer->TranslateFromUsers(nLngFileID, strInStr);
 
-    VDATA *pVR = (VDATA *)pS->Push();
+    auto pVR = (VDATA *)pS->Push();
     if (!pVR)
         return IFUNCRESULT_FAILED;
     if (strOutStr)
@@ -1018,7 +1021,7 @@ uint32_t _XI_ConvertString(VS_STACK *pS)
 // Set language
 uint32_t _Language_SetLanguage(VS_STACK *pS)
 {
-    VDATA *pLngName = (VDATA *)pS->Pop();
+    auto pLngName = (VDATA *)pS->Pop();
     if (!pLngName)
         return IFUNCRESULT_FAILED;
     const char *strLngName = nullptr;
@@ -1043,7 +1046,7 @@ uint32_t _GlobalLngFileID(VS_STACK *pS)
 // Get the ID of the Global Language File
 uint32_t _LanguageGetFaderPic(VS_STACK *pS)
 {
-    VDATA *pPicName = (VDATA *)pS->Pop();
+    auto pPicName = (VDATA *)pS->Pop();
     if (!pPicName)
         return IFUNCRESULT_FAILED;
     const char *strPicName = nullptr;
@@ -1088,13 +1091,13 @@ uint32_t _LanguageGetFaderPic(VS_STACK *pS)
 // Set color grading for the game
 uint32_t _SetColorCorrection(VS_STACK *pS)
 {
-    VDATA *pBright = (VDATA *)pS->Pop();
+    auto pBright = (VDATA *)pS->Pop();
     if (!pBright)
         return IFUNCRESULT_FAILED;
     float fBright = 1.f;
     pBright->Get(fBright);
 
-    VDATA *pGamma = (VDATA *)pS->Pop();
+    auto pGamma = (VDATA *)pS->Pop();
     if (!pGamma)
         return IFUNCRESULT_FAILED;
     float fGamma = 1.f;
@@ -1106,7 +1109,7 @@ uint32_t _SetColorCorrection(VS_STACK *pS)
     float fContrast = 1.f;
     pContrast->Get(fContrast);
 
-    VDX9RENDER *pVR = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    auto pVR = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!pVR)
         return IFUNCRESULT_FAILED;
 
@@ -1129,7 +1132,7 @@ uint32_t _SetMouseSensitivity(VS_STACK *pS)
     float fXSens = 1.f;
     pXSens->Get(fXSens);
 
-    CONTROLS *pCntrl = static_cast<CONTROLS *>(core.CreateService("PCS_CONTROLS"));
+    auto pCntrl = static_cast<CONTROLS *>(core.CreateService("PCS_CONTROLS"));
     if (!pCntrl)
         return IFUNCRESULT_FAILED;
 
@@ -1148,7 +1151,7 @@ uint32_t _ControlMakeInvert(VS_STACK *pS)
     long nControlFlag = 0;
     pControlFlag->Get(nControlFlag);
 
-    VDATA *pControlName = (VDATA *)pS->Pop();
+    auto pControlName = (VDATA *)pS->Pop();
     if (!pControlName)
         return IFUNCRESULT_FAILED;
     const char *sCntrlName = nullptr;
@@ -1156,7 +1159,7 @@ uint32_t _ControlMakeInvert(VS_STACK *pS)
     if (!sCntrlName)
         return IFUNCRESULT_FAILED;
 
-    CONTROLS *pCntrl = static_cast<CONTROLS *>(core.CreateService("PCS_CONTROLS"));
+    auto pCntrl = static_cast<CONTROLS *>(core.CreateService("PCS_CONTROLS"));
     if (!pCntrl)
         return IFUNCRESULT_FAILED;
 
@@ -1205,7 +1208,7 @@ uint32_t _InterfaceMakeNode(VS_STACK *pS)
 
 uint32_t _InterfaceDeleteNode(VS_STACK *pS)
 {
-    VDATA *pDat = (VDATA *)pS->Pop();
+    auto pDat = (VDATA *)pS->Pop();
     if (!pDat)
         return IFUNCRESULT_FAILED;
     char *pcNodeName = pDat->GetString();
@@ -1486,7 +1489,7 @@ uint32_t _StoreNodeLocksWithOff(VS_STACK *pS)
     long nStoreIndex = -1;
     if (XINTERFACE::pThis != nullptr)
         nStoreIndex = XINTERFACE::pThis->StoreNodeLocksWithOff();
-    VDATA *pDat = (VDATA *)pS->Push();
+    auto pDat = (VDATA *)pS->Push();
     if (!pDat)
         return IFUNCRESULT_FAILED;
     pDat->Set(nStoreIndex);
@@ -1495,7 +1498,7 @@ uint32_t _StoreNodeLocksWithOff(VS_STACK *pS)
 
 uint32_t _RestoreNodeLocks(VS_STACK *pS)
 {
-    VDATA *pDat = (VDATA *)pS->Pop();
+    auto pDat = (VDATA *)pS->Pop();
     if (!pDat)
         return IFUNCRESULT_FAILED;
     const long nStoreIndex = pDat->GetLong();
@@ -1507,7 +1510,7 @@ uint32_t _RestoreNodeLocks(VS_STACK *pS)
 uint32_t _IsKeyPressed(VS_STACK *pS)
 {
     // get input data
-    VDATA *pDat = (VDATA *)pS->Pop();
+    auto pDat = (VDATA *)pS->Pop();
     if (!pDat)
         return IFUNCRESULT_FAILED;
     const char *strKeyName = nullptr;
@@ -1552,7 +1555,7 @@ uint32_t _RegistryExitKey(VS_STACK *pS)
 
 uint32_t _AddControlTreeNode(VS_STACK *pS)
 {
-    VDATA *pDat = (VDATA *)pS->Pop();
+    auto pDat = (VDATA *)pS->Pop();
     if (!pDat)
         return IFUNCRESULT_FAILED;
     const float fTimeOut = pDat->GetFloat();

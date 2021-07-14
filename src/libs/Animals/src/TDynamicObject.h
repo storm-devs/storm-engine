@@ -10,28 +10,32 @@
 //--------------------------------------------------------------------
 class TDynamicObject
 {
-  public:
+public:
     TDynamicObject();
     virtual ~TDynamicObject();
     void Initialize(const CVECTOR &_center, float _radius);
     void Calculate(TDynamicObject **a, int aCount, TDynamicObject **d, int dCount, float _k = 1.0f);
     void SetXYZ(const CVECTOR &_pos);
+
     float GetAngle()
     {
         return (float)atan2(velocity.z, velocity.x);
     }
+
     CVECTOR GetDirection()
     {
         return velocity;
     }
+
     CVECTOR GetXYZ()
     {
         return pos;
     }
 
     // void Draw(HDC _dc, DWORD _color);
-  private:
+private:
     CVECTOR pos, velocity;
     // float ang;
 };
+
 //--------------------------------------------------------------------

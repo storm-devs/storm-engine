@@ -846,8 +846,7 @@ long WorldMap::GetObject(long &first, long level)
         if (level >= object[first].level)
         {
             long j;
-            for (j = first; object[j].next >= 0 && level >= object[object[j].next].level; j = object[j].next)
-                ;
+            for (j = first; object[j].next >= 0 && level >= object[object[j].next].level; j = object[j].next);
             object[i].prev = j;
             object[i].next = object[j].next;
             object[j].next = i;

@@ -366,7 +366,7 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES *pA, int qn)
             for (long i = 0; i < asStringList.size(); i++)
             {
                 // decompose the resulting string into lines that fit into the output area
-                char *pcStrPtr = (char *)asStringList[i].c_str();
+                auto pcStrPtr = (char *)asStringList[i].c_str();
                 char newStr[512];
                 while (GetLineNext(m_idFont, pcStrPtr, newStr, sizeof(newStr)))
                 {
@@ -449,7 +449,7 @@ void CXI_QUESTTEXTS::GetStringListForQuestRecord(std::vector<std::string> &strin
     char pcTextID[1024];
     char pcDate[256];
 
-    char *pcTmp = (char *)recText;
+    auto pcTmp = (char *)recText;
 
     if (GetNextIdFromList(pcTmp, pcQuestID, sizeof(pcQuestID), pcTextID, sizeof(pcTextID) - 1, pcDate))
     {

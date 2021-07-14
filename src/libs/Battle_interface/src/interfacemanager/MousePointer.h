@@ -10,13 +10,13 @@ class IBIImage;
 
 class MousePointer : public BI_MousePointerBase
 {
-  public:
+public:
     MousePointer(BI_ManagerBase *pManager, ATTRIBUTES *pARoot);
-    ~MousePointer();
+    ~MousePointer() override;
 
     void Update() override;
 
-  protected:
+protected:
     BI_ManagerBase *m_pManager;
     ATTRIBUTES *m_pARoot;
 

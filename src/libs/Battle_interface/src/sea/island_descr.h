@@ -17,7 +17,7 @@
 
 class ISLAND_DESCRIBER
 {
-  public:
+public:
     ISLAND_DESCRIBER();
     ~ISLAND_DESCRIBER();
 
@@ -36,10 +36,12 @@ class ISLAND_DESCRIBER
     };
 
     void ReleaseAll();
+
     bool YesIsland() const
     {
         return m_bYesIsland;
     }
+
     void SetIsland(ATTRIBUTES *pAIsland);
     LOCATOR_DESCR *GetFirstLocator();
     LOCATOR_DESCR *GetFirstLand();
@@ -53,7 +55,7 @@ class ISLAND_DESCRIBER
 
     void Refresh() const;
 
-  protected:
+protected:
     LOCATOR_DESCR *FindLocator(LOCATOR_DESCR *p, size_t nMax);
 
     bool m_bYesIsland;

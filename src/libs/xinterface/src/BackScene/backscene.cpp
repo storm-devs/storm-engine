@@ -310,19 +310,22 @@ uint64_t InterfaceBackScene::ProcessMessage(MESSAGE &message)
     const auto nMsgCode = message.Long();
     switch (nMsgCode)
     {
-    case 0: { // load model
+    case 0: {
+        // load model
         const std::string &param = message.String();
         LoadModel(param.c_str());
         break;
     }
 
-    case 1: { // set camera
+    case 1: {
+        // set camera
         const std::string &param = message.String();
         SetCameraPosition(param.c_str());
         break;
     }
 
-    case 2: { // set ship position by locator
+    case 2: {
+        // set ship position by locator
         const std::string &param = message.String();
         SetShipPosition(param.c_str(), message.AttributePointer());
         break;
@@ -696,7 +699,7 @@ void InterfaceBackScene::InitLight(ATTRIBUTES *pAParam)
     char *pcFonarModel = pAParam->GetAttribute("model");
     if (pcFonarModel)
     {
-        VGEOMETRY *pGeo = static_cast<VGEOMETRY *>(core.CreateService("Geometry"));
+        auto pGeo = static_cast<VGEOMETRY *>(core.CreateService("Geometry"));
         if (pGeo)
             pGeo->SetTexturePath("MainMenu\\");
         // create model

@@ -322,7 +322,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
     case MSG_MODEL_LOAD_ANI: // set animation
     {
         str = message.String();
-        AnimationService *asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
+        auto asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
         ani = asr->CreateAnimation(str.c_str());
         if (ani)
             return 1;

@@ -5,7 +5,8 @@
 #include "shared/battle_interface/msg_control.h"
 #include "model.h"
 
-ISLAND_DESCRIBER::ISLAND_DESCRIBER() : m_lastFindIdx(0), m_nFindType(0)
+ISLAND_DESCRIBER::ISLAND_DESCRIBER()
+    : m_lastFindIdx(0), m_nFindType(0)
 {
     m_bYesIsland = false;
     m_pIslandAttributes = nullptr;

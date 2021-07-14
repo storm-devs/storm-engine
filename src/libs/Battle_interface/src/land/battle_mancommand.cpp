@@ -3,7 +3,8 @@
 #include "core.h"
 #include "vmodule_api.h"
 
-BIManCommandList::BIManCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs) : BICommandList(eid, pA, rs)
+BIManCommandList::BIManCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs)
+    : BICommandList(eid, pA, rs)
 {
     Init();
 }

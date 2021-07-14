@@ -6,9 +6,9 @@ class CXI_IMAGE;
 
 class CXI_BORDER : public CINODE
 {
-  public:
+public:
     CXI_BORDER();
-    ~CXI_BORDER();
+    ~CXI_BORDER() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -26,14 +26,14 @@ class CXI_BORDER : public CINODE
 
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void FillIndexBuffers() const;
     void FillVertexBuffers();
     void WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, uint32_t dwColor, long left, long top, long right,
                               long bottom);
 
-  protected:
+protected:
     // back picture
     CXI_IMAGE *m_pBackImage;
 

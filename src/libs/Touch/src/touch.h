@@ -7,12 +7,12 @@
 
 #define D3DTLVERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
 
-typedef struct
+using D3DTLVERTEX = struct
 {
     CVECTOR vPos;
     float fRHW;
     uint32_t dwDiffuse;
-} D3DTLVERTEX;
+};
 
 struct TOUCH_SHIP
 {
@@ -29,7 +29,7 @@ struct TOUCH_SHIP
 
 class TOUCH : public Entity
 {
-  protected:
+protected:
     VDX9RENDER *pRS;
     ISLAND_BASE *pIslandBase;
 
@@ -66,15 +66,16 @@ class TOUCH : public Entity
 
     void SetDevices();
 
-  public:
-    virtual ~TOUCH();
+public:
+    ~TOUCH() override;
     TOUCH();
     void LoadServices();
-    bool Init();
+    bool Init() override;
     void Realize(uint32_t Delta_Time);
     void Execute(uint32_t Delta_Time);
-    uint64_t ProcessMessage(MESSAGE &message);
-    uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)

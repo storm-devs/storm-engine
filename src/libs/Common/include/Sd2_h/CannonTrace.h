@@ -4,8 +4,8 @@
 
 class CANNON_TRACE_BASE : public COLLISION_OBJECT
 {
-  public:
-    virtual ~CANNON_TRACE_BASE() = default;
+public:
+    ~CANNON_TRACE_BASE() override = default;
 
     virtual float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) = 0;
 };

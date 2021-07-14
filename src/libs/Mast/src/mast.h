@@ -18,6 +18,7 @@ class MAST : public Entity
         entid_t shipEI;
         entid_t modelEI;
     } m_mount_param;
+
     bool bUse;
     bool bFallUnderWater;
     int wMoveCounter;
@@ -29,14 +30,15 @@ class MAST : public Entity
     std::filesystem::file_time_type ft_old;
     NODE *m_pMastNode;
 
-  public:
+public:
     MAST();
-    ~MAST();
+    ~MAST() override;
     void SetDevice();
-    bool Init();
+    bool Init() override;
     void Move();
     void Execute(uint32_t Delta_Time);
     void Realize(uint32_t Delta_Time);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -56,14 +58,15 @@ class MAST : public Entity
 
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    uint64_t ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
-  protected:
+protected:
     void AllRelease();
     void Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer);
     void LoadIni();
     void doMove(uint32_t DeltaTime);
     int GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECTOR &lrey, CVECTOR &rrey, float &angl);
+
     struct MASTMOVE
     {
         CVECTOR bp, ep;     // mast coordinates
@@ -72,6 +75,7 @@ class MAST : public Entity
         CVECTOR ang, dang, sdang;
         CVECTOR mov, dmov, sdmov;
     };
+
     MASTMOVE mm;
 };
 
@@ -95,17 +99,18 @@ class HULL : public Entity
     entid_t model_id, oldmodel_id;
     entid_t ship_id;
 
-  public:
+public:
     HULL();
-    ~HULL();
+    ~HULL() override;
     void SetDevice();
-    bool Init();
+    bool Init() override;
     bool CreateState(ENTITY_STATE_GEN *state_gen);
     bool LoadState(ENTITY_STATE *state);
-    uint64_t ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
     void Execute(uint32_t Delta_Time);
     void Realize(uint32_t Delta_Time);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -119,7 +124,7 @@ class HULL : public Entity
         }
     }
 
-  protected:
+protected:
     void AllRelease();
     void Mount(entid_t modelEI, entid_t shipEI, NODE *hullNodePointer);
 };

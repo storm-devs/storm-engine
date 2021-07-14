@@ -23,9 +23,9 @@ class WdmRenderModel : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmRenderModel();
-    virtual ~WdmRenderModel();
+    ~WdmRenderModel() override;
 
     virtual bool Load(const char *modelName);
 
@@ -40,7 +40,7 @@ class WdmRenderModel : public WdmRenderObject
     CMatrix mtx;
     float alpha;
 
-  public:
+public:
     void Render(VDX9RENDER *rs) const;
 
     GEOS *geo;

@@ -19,7 +19,7 @@ class GeomCache
 
     std::vector<CachedGeometry> Cache;
 
-  public:
+public:
     // Constructor / destructor
     GeomCache();
     ~GeomCache();

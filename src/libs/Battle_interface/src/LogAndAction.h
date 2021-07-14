@@ -15,11 +15,11 @@ class ILogAndActions : public Entity
         STRING_DESCR *next;
     };
 
-  public:
+public:
     ILogAndActions(ILogAndActions &&) = delete;
     ILogAndActions(const ILogAndActions &) = delete;
     ILogAndActions();
-    ~ILogAndActions();
+    ~ILogAndActions() override;
     bool Init() override;
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time);
@@ -42,7 +42,7 @@ class ILogAndActions : public Entity
         }
     }
 
-  protected:
+protected:
     void Create(bool bFastComShow, bool bLogStringShow);
     void ActionChange(bool bFastComShow, bool bLogStringShow);
     void Release();
@@ -50,7 +50,7 @@ class ILogAndActions : public Entity
     void SetString(const char *str, bool immortal);
     void SetAction(const char *actionName);
 
-  protected:
+protected:
     // log stings parameters
     // -----------------------
     long m_nWindowWidth;  // X window size

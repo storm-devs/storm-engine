@@ -9,7 +9,7 @@ class DataBool
 
     bool Value;
 
-  public:
+public:
     // constructor / destructor
     DataBool();
     virtual ~DataBool();

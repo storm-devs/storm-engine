@@ -5,7 +5,7 @@
 
 class ENTITY_STATE_GEN
 {
-  public:
+public:
     virtual ~ENTITY_STATE_GEN() = default;
 
     virtual void _cdecl SetState(const char *Format, ...) = 0;
@@ -13,10 +13,14 @@ class ENTITY_STATE_GEN
 
 class ENTITY_STATE
 {
-  public:
-    ENTITY_STATE(){};
+public:
+    ENTITY_STATE()
+    {
+    };
 
-    virtual ~ENTITY_STATE(){};
+    virtual ~ENTITY_STATE()
+    {
+    };
     virtual uint8_t Byte() = 0;
     virtual uint16_t Word() = 0;
     virtual long Long() = 0;

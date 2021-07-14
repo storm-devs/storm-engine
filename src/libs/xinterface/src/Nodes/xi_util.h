@@ -57,7 +57,7 @@ class CXI_UTILS
         long nPressedState;
     };
 
-  public:
+public:
     CXI_UTILS();
     ~CXI_UTILS();
 
@@ -109,7 +109,7 @@ class CXI_UTILS
                                     float fScale, long scrWidth, long scrHeight, long x, long y, const char *pcString,
                                     long left, long top, long width, long height);
 
-  protected:
+protected:
     static CXI_UTILS *pThis;
 
     bool m_bIsKeyPressed;

@@ -7,13 +7,13 @@ class IBIImage;
 
 class BI_ImageNode : public BI_BaseNode
 {
-  public:
+public:
     BI_ImageNode(BI_ManagerBase *pManager, const char *texture, const FRECT &uv, const RECT &pos, uint32_t color,
                  long nPrioritet);
-    virtual ~BI_ImageNode();
+    ~BI_ImageNode() override;
 
     void Update() override;
 
-  protected:
+protected:
     IBIImage *m_pImage;
 };

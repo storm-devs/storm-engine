@@ -19,6 +19,7 @@ struct COMMANDDESCR
     const char *sName;
     int code;
 };
+
 extern COMMANDDESCR pCommandsList[COMMAND_QUANTITY];
 extern int FindCommand(const char *comName);
 extern int FindCommand(int comID);
@@ -32,28 +33,34 @@ struct SAVE_DATA_HANDLE
 struct XYPOINT
 {
     long x, y;
+
     XYPOINT()
     {
         x = y = 0;
     }
+
     XYPOINT(long ix, long iy)
     {
         x = ix;
         y = iy;
     }
+
     void operator=(const XYPOINT &lp)
     {
         this->x = lp.x;
         this->y = lp.y;
     }
 };
+
 struct XYRECT
 {
     long left, top, right, bottom;
+
     XYRECT()
     {
         left = top = right = bottom = 0;
     }
+
     XYRECT(long ileft, long itop, long iright, long ibottom)
     {
         left = ileft;
@@ -61,6 +68,7 @@ struct XYRECT
         right = iright;
         bottom = ibottom;
     }
+
     void operator=(const XYRECT &ir)
     {
         this->left = ir.left;
@@ -69,6 +77,7 @@ struct XYRECT
         this->bottom = ir.bottom;
     }
 };
+
 struct FXYPOINT
 {
     float x, y;
@@ -77,11 +86,13 @@ struct FXYPOINT
     {
         x = y = 0.f;
     }
+
     FXYPOINT(const FXYPOINT &fp)
     {
         x = fp.x;
         y = fp.y;
     }
+
     FXYPOINT(float fx, float fy)
     {
         this->x = fx;
@@ -94,6 +105,7 @@ struct FXYPOINT
         this->y = fp.y;
         return (*this);
     }
+
     FXYPOINT operator+(FXYPOINT &fp)
     {
         FXYPOINT np;
@@ -101,6 +113,7 @@ struct FXYPOINT
         np.y = this->y + fp.y;
         return np;
     }
+
     FXYPOINT operator-(FXYPOINT &fp)
     {
         FXYPOINT np;
@@ -109,13 +122,16 @@ struct FXYPOINT
         return np;
     }
 };
+
 struct FXYRECT
 {
     float left, top, right, bottom;
+
     FXYRECT()
     {
         left = top = right = bottom = 0.f;
     }
+
     FXYRECT(float fleft, float ftop, float fright, float fbottom)
     {
         left = fleft;
@@ -123,6 +139,7 @@ struct FXYRECT
         right = fright;
         bottom = fbottom;
     }
+
     void operator=(const FXYRECT &fr)
     {
         this->left = fr.left;
@@ -130,6 +147,7 @@ struct FXYRECT
         this->right = fr.right;
         this->bottom = fr.bottom;
     }
+
     void operator+=(const FXYRECT &fr)
     {
         this->left += fr.left;
@@ -137,6 +155,7 @@ struct FXYRECT
         this->right += fr.right;
         this->bottom += fr.bottom;
     }
+
     void operator-=(const FXYRECT &fr)
     {
         this->left -= fr.left;
@@ -144,6 +163,7 @@ struct FXYRECT
         this->right -= fr.right;
         this->bottom -= fr.bottom;
     }
+
     FXYRECT operator+(const FXYRECT &fr)
     {
         FXYRECT tmp;
@@ -153,6 +173,7 @@ struct FXYRECT
         tmp.bottom = this->bottom + fr.bottom;
         return tmp;
     }
+
     FXYRECT operator-(const FXYRECT &fr)
     {
         FXYRECT tmp;
@@ -162,6 +183,7 @@ struct FXYRECT
         tmp.bottom = this->bottom - fr.bottom;
         return tmp;
     }
+
     FXYRECT operator+(const FXYPOINT &fp)
     {
         FXYRECT tmp;
@@ -171,6 +193,7 @@ struct FXYRECT
         tmp.bottom = this->bottom + fp.y;
         return tmp;
     }
+
     FXYRECT operator-(const FXYPOINT &fp)
     {
         FXYRECT tmp;
@@ -184,25 +207,32 @@ struct FXYRECT
 
 // vertex formates
 #define XI_NOTEX_FVF (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX0)
+
 struct XI_NOTEX_VERTEX
 {
     CVECTOR pos;
     uint32_t color;
 };
+
 #define XI_ONLYONETEX_FVF (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
+
 struct XI_ONLYONETEX_VERTEX
 {
     CVECTOR pos;
     float tu, tv;
 };
+
 #define XI_ONETEX_FVF (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
+
 struct XI_ONETEX_VERTEX
 {
     CVECTOR pos;
     uint32_t color;
     float tu, tv;
 };
+
 #define XI_TWOTEX_FVF (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX2 | D3DFVF_TEXTUREFORMAT2)
+
 struct XI_TWOTEX_VERTEX
 {
     CVECTOR pos;
@@ -210,7 +240,9 @@ struct XI_TWOTEX_VERTEX
     float tu1, tv1;
     float tu2, tv2;
 };
+
 #define XI_THREETEX_FVF (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX3 | D3DFVF_TEXTUREFORMAT2)
+
 struct XI_THREETEX_VERTEX
 {
     CVECTOR pos;

@@ -7,13 +7,13 @@
 
 class WMShipIcon : public BISignIcon
 {
-  public:
+public:
     WMShipIcon(entid_t BIEntityID, VDX9RENDER *pRS);
-    ~WMShipIcon();
+    ~WMShipIcon() override;
 
     void ExecuteCommand(CommandType command) override;
 
-  protected:
+protected:
     long CalculateSignQuantity() override;
     void UpdateChildrens() override;
 };

@@ -16,7 +16,7 @@
 
 class NPCharacter : public AICharacter
 {
-  protected:
+protected:
     enum NPCTask
     {
         npct_unknow = 0,
@@ -45,7 +45,8 @@ class NPCharacter : public AICharacter
         CVECTOR to;
         entid_t target;
 
-        union {
+        union
+        {
             uint32_t flags;
 
             struct
@@ -68,9 +69,9 @@ class NPCharacter : public AICharacter
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     NPCharacter();
-    virtual ~NPCharacter();
+    ~NPCharacter() override;
 
     bool PostInit() override;
 
@@ -81,7 +82,7 @@ class NPCharacter : public AICharacter
     //--------------------------------------------------------------------------------------------
     //
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Get attacking character
     Character *GetAttackedCharacter() const;
 
@@ -98,7 +99,7 @@ class NPCharacter : public AICharacter
     // --------------------------------------------------------------------------------------------
     // Executing tasks
     // --------------------------------------------------------------------------------------------
-  protected:
+protected:
     // Completing the task of following a character
     void UpdateFollowCharacter(float dltTime);
     // Execution of the escape task
@@ -142,7 +143,7 @@ class NPCharacter : public AICharacter
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Cannot further execute the command
     void FailureCommand(NPCTask task) const;
     // Making decisions
@@ -155,10 +156,10 @@ class NPCharacter : public AICharacter
     static bool PrTest(float probability, float &testTime);
     static bool PrTest(float probability);
 
-  protected:
+protected:
     Task task;           // The task to be performed
     NPCTask lastSetTask; // Last task set
-  private:
+private:
     Task taskstack[16]; // Task stack
     long stackPointer;  // Stack pointer
 

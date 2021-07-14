@@ -18,7 +18,7 @@ class Entity
 {
     friend class EntityManager;
 
-  public:
+public:
     struct EntitySelfData
     {
         // const char* name;
@@ -54,15 +54,17 @@ class Entity
 
     virtual bool Init() = 0;
     virtual void ProcessStage(Stage stage, uint32_t delta = 0) = 0;
+
     virtual uint64_t ProcessMessage(MESSAGE &msg)
     {
         return {};
     }
+
     virtual uint32_t AttributeChanged(ATTRIBUTES *)
     {
         return {};
     }
 
-  private:
+private:
     EntitySelfData data_{};
 };

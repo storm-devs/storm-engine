@@ -26,9 +26,9 @@ class TextureSequence : public CVideoTexture
 
     void ToTextureRender(float blendValue) const;
 
-  public:
+public:
     TextureSequence();
-    ~TextureSequence();
+    ~TextureSequence() override;
 
     IDirect3DTexture9 *Initialize(VDX9RENDER *pRS, const char *cTSfileName, bool bCicled) override;
     bool FrameUpdate() override;

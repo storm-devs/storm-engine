@@ -31,11 +31,11 @@ class CXI_SCROLLIMAGE : public CINODE
         void Clear(int nQnt);
     };
 
-  public:
+public:
     CXI_SCROLLIMAGE(CXI_SCROLLIMAGE &&) = delete;
     CXI_SCROLLIMAGE(const CXI_SCROLLIMAGE &) = delete;
     CXI_SCROLLIMAGE();
-    ~CXI_SCROLLIMAGE();
+    ~CXI_SCROLLIMAGE() override;
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
               XYPOINT &ScreenSize) override;
@@ -56,7 +56,7 @@ class CXI_SCROLLIMAGE : public CINODE
     void DeleteImage(int imgNum);
     void RefreshScroll();
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     float ChangeDinamicParameters(float fXDelta);
     int FindClickedImageNum() const;
@@ -67,7 +67,7 @@ class CXI_SCROLLIMAGE : public CINODE
     int FindTexGroupFromOld(char **pGroupList, char *groupName, int listSize);
     long GetMousePointedPictureNum() const;
 
-  protected:
+protected:
     // parameters for moving to scrolling
     bool m_bDoMove;
     float m_fDeltaMove;

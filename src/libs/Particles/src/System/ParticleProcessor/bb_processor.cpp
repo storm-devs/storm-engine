@@ -115,7 +115,7 @@ void BillBoardProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velo
     // It will work if there are particles > MAX_BILLBOARDS, there should not be so many of them
     if (!pData)
     {
-        *(pActiveCount) = (*(pActiveCount)-1);
+        *(pActiveCount) = (*(pActiveCount) - 1);
         return;
     }
 

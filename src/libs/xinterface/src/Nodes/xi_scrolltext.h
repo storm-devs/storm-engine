@@ -12,7 +12,8 @@ struct STRING_PICE
 {
     long type;
 
-    union {
+    union
+    {
         struct
         {
             long startOffset;
@@ -26,9 +27,9 @@ struct STRING_PICE
 
 class CXI_SCROLLTEXT : public CINODE
 {
-  public:
+public:
     CXI_SCROLLTEXT();
-    ~CXI_SCROLLTEXT();
+    ~CXI_SCROLLTEXT() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -46,7 +47,7 @@ class CXI_SCROLLTEXT : public CINODE
 
     void SetText(const char *newText);
 
-  protected:
+protected:
     void ClearText();
     long FillPices(char *pt, size_t beg, size_t size, long &idx, STRING_PICE *spl, long wid);
 
@@ -55,7 +56,7 @@ class CXI_SCROLLTEXT : public CINODE
     void TextDownShift(float);
     void TextUpShift();
 
-  protected:
+protected:
     CINODE *m_pScroller; // link to the scroller (!!! must be registered beforehand)
     long m_nMaxStringes; // the number of lines in the displayed window
 

@@ -85,7 +85,7 @@ enum AnimationEvent
 
 class ActionPlayer
 {
-  public:
+public:
     ~ActionPlayer()
     {
     }
@@ -133,7 +133,7 @@ class ActionPlayer
 
 class AnimationTimer
 {
-  public:
+public:
     virtual ~AnimationTimer()
     {
     }
@@ -168,8 +168,10 @@ class AnimationTimer
 
 class Animation
 {
-  public:
-    virtual ~Animation(){};
+public:
+    virtual ~Animation()
+    {
+    };
     // Access the action player
     virtual ActionPlayer &Player(long index) = 0;
     // Access the animation timer
@@ -208,8 +210,10 @@ class Animation
 
 class AnimationEventListener
 {
-  public:
-    virtual ~AnimationEventListener(){};
+public:
+    virtual ~AnimationEventListener()
+    {
+    };
     // Accept event
     virtual void Event(Animation *animation, long index, long eventID, AnimationEvent event)
     {
@@ -227,8 +231,8 @@ class AnimationEventListener
 
 class AnimationService : public SERVICE
 {
-  public:
-    virtual ~AnimationService()
+public:
+    ~AnimationService() override
     {
     }
 

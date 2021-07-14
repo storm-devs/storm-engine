@@ -11,15 +11,16 @@ class TMPTELEPORT : public Entity
     {
         int num;
         char *name;
-    } * m_descrArray;
+    } *m_descrArray;
 
-  public:
+public:
     TMPTELEPORT();
-    ~TMPTELEPORT();
-    bool Init();
+    ~TMPTELEPORT() override;
+    bool Init() override;
     void Execute(uint32_t Delta_Time);
     void Realize(uint32_t Delta_Time);
-    uint64_t ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -37,13 +38,13 @@ class TMPTELEPORT : public Entity
         }
     }
 
-  protected:
+protected:
     void ReleaseAll();
     void SetShowData(ATTRIBUTES *pA);
     void SortShowData();
     void XChange(TELEPORT_DESCR &d1, TELEPORT_DESCR &d2);
 
-  protected:
+protected:
     long m_leftPos;
     long m_topPos;
     long m_deltaPos;
@@ -58,14 +59,17 @@ class TMPTELEPORT : public Entity
 
 class FINDFILESINTODIRECTORY : public Entity
 {
-  public:
+public:
     FINDFILESINTODIRECTORY()
     {
     }
-    ~FINDFILESINTODIRECTORY()
+
+    ~FINDFILESINTODIRECTORY() override
     {
     }
-    bool Init();
+
+    bool Init() override;
+
     void ProcessStage(Stage, uint32_t) override
     {
     }
@@ -73,14 +77,17 @@ class FINDFILESINTODIRECTORY : public Entity
 
 class FINDDIALOGNODES : public Entity
 {
-  public:
+public:
     FINDDIALOGNODES()
     {
     }
-    ~FINDDIALOGNODES()
+
+    ~FINDDIALOGNODES() override
     {
     }
-    bool Init();
+
+    bool Init() override;
+
     void ProcessStage(Stage, uint32_t) override
     {
     }

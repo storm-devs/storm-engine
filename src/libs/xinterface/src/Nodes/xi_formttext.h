@@ -29,11 +29,11 @@ class CXI_FORMATEDTEXT : public CINODE
         }
     };
 
-  public:
+public:
     CXI_FORMATEDTEXT(CXI_FORMATEDTEXT &&) = delete;
     CXI_FORMATEDTEXT(const CXI_FORMATEDTEXT &) = delete;
     CXI_FORMATEDTEXT();
-    ~CXI_FORMATEDTEXT();
+    ~CXI_FORMATEDTEXT() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -46,6 +46,7 @@ class CXI_FORMATEDTEXT : public CINODE
     void SaveParametersToIni() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
     XYRECT GetCursorRect() override;
+
     bool IsGlowChanged() override
     {
         return true;
@@ -59,7 +60,7 @@ class CXI_FORMATEDTEXT : public CINODE
 
     long GetAllHeight();
 
-  protected:
+protected:
     bool GetLineNext(int fontNum, char *&pInStr, char *buf, int bufSize) const;
     void GetOneLine(int fontNum, char *pStr, char *buf, int bufSize) const;
     void MakeTagChecking(bool &tagState, uint32_t &tagColor, uint32_t normColor, STRING_DESCRIBER *pStrDescr);
@@ -80,7 +81,7 @@ class CXI_FORMATEDTEXT : public CINODE
     void RecalculateStringNumber();
     void VAlignment(long nAlign);
 
-  protected:
+protected:
     long m_idFont;
     uint32_t m_dwColor;
     float m_fFontScale;

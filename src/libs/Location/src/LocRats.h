@@ -17,12 +17,12 @@
 
 class LocRats : public Entity
 {
-  public:
+public:
     LocRats();
-    virtual ~LocRats();
+    ~LocRats() override;
 
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Initialization
     bool Init() override;
     // Execution
@@ -51,7 +51,7 @@ class LocRats : public Entity
     uint64_t ProcessMessage(MESSAGE &message) override;
 
     //--------------------------------------------------------------------------------------------
-  private:
+private:
     LocRat rat[32];
     long num;
 };

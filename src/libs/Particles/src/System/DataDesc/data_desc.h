@@ -16,7 +16,7 @@ class DataDescripion
     uint32_t ItemsCount;
     DescItem Fields[MAX_DESC_COUNT];
 
-  public:
+public:
     DataDescripion();
     ~DataDescripion();
 

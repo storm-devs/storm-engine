@@ -59,7 +59,6 @@ void Player::Reset()
 // Move the character to the desired position
 void Player::Move(float dltTime)
 {
-
     kSMReload += dltTime * 0.7f;
     if (kSMReload > 1.0f)
         kSMReload = 1.0f;

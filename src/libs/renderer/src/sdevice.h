@@ -82,18 +82,22 @@ extern uint32_t dwSoundBytesCached;
 
 class DX9RENDER_SCRIPT_LIBRIARY : public SCRIPT_LIBRIARY
 {
-  public:
-    DX9RENDER_SCRIPT_LIBRIARY(){};
+public:
+    DX9RENDER_SCRIPT_LIBRIARY()
+    {
+    };
 
-    ~DX9RENDER_SCRIPT_LIBRIARY(){};
+    ~DX9RENDER_SCRIPT_LIBRIARY() override
+    {
+    };
     bool Init() override;
 };
 
 //-----------SDEVICE-----------
 class DX9RENDER : public VDX9RENDER
 {
-
 #define RS_RECT_VERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
+
     struct RECT_VERTEX
     {
         CVECTOR pos;
@@ -256,11 +260,11 @@ class DX9RENDER : public VDX9RENDER
     void SaveCaptureBuffers();
     void PrepareCapture();
 
-  public:
+public:
     static DX9RENDER *pRS;
 
     DX9RENDER();
-    ~DX9RENDER();
+    ~DX9RENDER() override;
 
     // DX9Render: Init/Release
     bool InitDevice(bool windowed, HWND hwnd, long width, long height) override;
@@ -275,6 +279,7 @@ class DX9RENDER : public VDX9RENDER
     {
         return d3d9;
     };
+
     void *GetD3DDevice() override
     {
         return d3d9;
@@ -391,10 +396,12 @@ class DX9RENDER : public VDX9RENDER
     {
         return m_fHeightDeformator;
     }
+
     POINT GetScreenSize() override
     {
         return screen_size;
     }
+
     // ===============================================================================================
     // --------------------===================== D3D SECTION =====================--------------------
     // ===============================================================================================
@@ -484,6 +491,7 @@ class DX9RENDER : public VDX9RENDER
     bool Init() override;
     void RunStart() override;
     void RunEnd() override;
+
     uint32_t RunSection() override
     {
         return SECTION_REALIZE;

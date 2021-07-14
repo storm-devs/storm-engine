@@ -25,9 +25,9 @@ class WdmWarringShip : public WdmEnemyShip
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmWarringShip();
-    virtual ~WdmWarringShip();
+    ~WdmWarringShip() override;
 
     // Calculations
     void Update(float dltTime) override;
@@ -35,14 +35,16 @@ class WdmWarringShip : public WdmEnemyShip
     // Rendering
     void LRender(VDX9RENDER *rs) override;
 
-  protected:
+protected:
     // All move calculations together
-    void Move(float dltTime) override{};
+    void Move(float dltTime) override
+    {
+    };
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Particles for cannon smoke
     RS_RECT rect[24];
     MoveInfo move[24];

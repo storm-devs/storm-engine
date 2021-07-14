@@ -16,7 +16,8 @@
 
 uint32_t GraphRead = 0;
 
-ParticleManager::ParticleManager(ParticleService *service) : IParticleManager(service)
+ParticleManager::ParticleManager(ParticleService *service)
+    : IParticleManager(service)
 {
     pService = service;
     ShowStat = false;

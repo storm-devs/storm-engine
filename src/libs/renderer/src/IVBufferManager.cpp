@@ -3,11 +3,12 @@
 //--------------------------------------------------------------------
 IVBufferManager::IVBufferManager(VDX9RENDER *renderer_, long vertex_type, int vertex_size, size_t index_count,
                                  size_t vertex_count, size_t max_size)
-    : renderer_(renderer_), max_size_(max_size), vertex_type_(vertex_type), vertex_size_(vertex_size),
-      index_count_(index_count), vertex_count_(vertex_count),
-      index_buffer_(renderer_->CreateIndexBuffer(max_size * index_count * sizeof(uint16_t))),
-      vertex_buffer_(
+    : renderer_(renderer_), max_size_(max_size),
+      index_buffer_(renderer_->CreateIndexBuffer(max_size * index_count * sizeof(uint16_t))), vertex_buffer_(
           renderer_->CreateVertexBuffer(vertex_type, max_size * vertex_count * vertex_size, D3DUSAGE_WRITEONLY)),
+      vertex_type_(vertex_type), vertex_size_(vertex_size),
+      index_count_(index_count),
+      vertex_count_(vertex_count),
       actual_size_(0)
 {
     used_.resize(max_size, false);

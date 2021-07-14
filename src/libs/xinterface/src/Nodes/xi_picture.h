@@ -10,9 +10,9 @@ class CXI_PICTURE : public CINODE
 {
     friend XINTERFACE;
 
-  public:
+public:
     CXI_PICTURE();
-    ~CXI_PICTURE();
+    ~CXI_PICTURE() override;
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
               XYPOINT &ScreenSize) override;
@@ -31,7 +31,7 @@ class CXI_PICTURE : public CINODE
     void ChangeColor(uint32_t dwColor);
     void SetPictureSize(long &nWidth, long &nHeight);
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void SetNewPicture(bool video, const char *sNewTexName);
     void SetNewPictureFromDir(const char *dirName);

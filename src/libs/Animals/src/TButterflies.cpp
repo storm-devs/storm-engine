@@ -7,7 +7,8 @@
 #pragma warning(disable : 4244)
 
 //--------------------------------------------------------------------
-TButterflies::TButterflies() : enabled(false), yDefineTime(0)
+TButterflies::TButterflies()
+    : enabled(false), yDefineTime(0)
 {
 }
 

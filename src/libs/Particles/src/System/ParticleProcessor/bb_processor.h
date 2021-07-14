@@ -64,7 +64,7 @@ class BillBoardProcessor
     BB_ParticleData *AllocParticle() const;
     void FreeParticle(BB_ParticleData *pItem) const;
 
-  public:
+public:
     BillBoardProcessor();
     ~BillBoardProcessor();
 

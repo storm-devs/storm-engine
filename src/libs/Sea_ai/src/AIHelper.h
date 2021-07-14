@@ -9,14 +9,15 @@
 
 class AIAttributesHolder
 {
-  protected:
+protected:
     ATTRIBUTES *pACharacter;
 
-  public:
+public:
     virtual void SetACharacter(ATTRIBUTES *pAP)
     {
         pACharacter = pAP;
     };
+
     virtual ATTRIBUTES *GetACharacter() const
     {
         return pACharacter;
@@ -27,7 +28,7 @@ class VAI_INNEROBJ;
 
 class AIHelper
 {
-  public:
+public:
     AIHelper();
     ~AIHelper();
 
@@ -61,7 +62,7 @@ class AIHelper
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);
 
-  private:
+private:
     uint32_t *pRelations, dwRelationSize;
     std::vector<ATTRIBUTES *> aCharacters, aMainCharacters;
 

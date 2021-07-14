@@ -23,7 +23,7 @@ class ModelArray
 {
     class UVSlider : public MODEL::RenderTuner
     {
-      public:
+    public:
         void Set(MODEL *model, VDX9RENDER *rs) override;
         void Restore(MODEL *model, VDX9RENDER *rs) override;
 
@@ -35,7 +35,7 @@ class ModelArray
 
     class Relection : public MODEL::RenderTuner
     {
-      public:
+    public:
         void Set(MODEL *model, VDX9RENDER *rs) override;
         void Restore(MODEL *model, VDX9RENDER *rs) override;
         uint32_t tfactor;
@@ -51,7 +51,8 @@ class ModelArray
         entid_t modelrealizer; // Model renderer
         entid_t id;            // Model
         uint32_t hash;         // Hash value for quick search
-        union {
+        union
+        {
             uint32_t flags;
 
             struct
@@ -69,7 +70,7 @@ class ModelArray
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     ModelArray();
     virtual ~ModelArray();
 
@@ -124,11 +125,11 @@ class ModelArray
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     uint32_t CalcHashString(const char *str);
     static void UpdatePath(std::string &path);
 
-  private:
+private:
     // Location models
     std::vector<LocationModel> model;
     long numModels;
@@ -136,7 +137,7 @@ class ModelArray
     TRIANGLE ctrg;
     bool isHavecTrg;
 
-  public:
+public:
     std::string modelspath;
     std::string texturespath;
     std::string lightpath;

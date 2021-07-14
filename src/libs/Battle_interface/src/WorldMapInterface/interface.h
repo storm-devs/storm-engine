@@ -9,9 +9,9 @@ class WM_INTERFACE : public Entity
 {
     VDX9RENDER *rs;
 
-  public:
+public:
     WM_INTERFACE();
-    ~WM_INTERFACE();
+    ~WM_INTERFACE() override;
     bool Init() override;
     void Realize(uint32_t delta_time);
     uint64_t ProcessMessage(MESSAGE &message) override;
@@ -33,7 +33,7 @@ class WM_INTERFACE : public Entity
         }
     }
 
-  protected:
+protected:
     WMShipIcon *m_pShipIcon; // icons for commands and targeting in the combat menu
     WMShipCommandList *m_pCommandList;
     bool m_bVisible;
@@ -41,7 +41,7 @@ class WM_INTERFACE : public Entity
     long m_nMainCharIndex;
     long m_nCommandMode;
 
-  protected:
+protected:
     void LoadIniFile();
 
     void MakeControl();

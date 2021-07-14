@@ -149,7 +149,8 @@ void CXI_WINDOW::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
                 pcStr = GetSubStr(pcStr, subparam, sizeof(subparam));
                 m_aNodeNameList.push_back(subparam);
             }
-        } while (ini1->ReadStringNext(name1, "nodelist", param, sizeof(param)));
+        }
+        while (ini1->ReadStringNext(name1, "nodelist", param, sizeof(param)));
 
     // get active value
     SetActive(GetIniBool(ini1, name1, ini2, name2, "active", true));

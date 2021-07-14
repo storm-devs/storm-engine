@@ -26,7 +26,7 @@ struct ScreenSize
 
 class CORE
 {
-  public:
+public:
     CONTROLS *Controls;
 
     std::shared_ptr<spdlog::logger> tracelog;
@@ -40,6 +40,7 @@ class CORE
     void ReleaseBase();
 
     void CleanUp();
+
     void Set_Hwnd(HWND _hwnd)
     {
         App_Hwnd = _hwnd;
@@ -159,10 +160,11 @@ class CORE
 
     [[nodiscard]] ScreenSize GetScreenSize() const noexcept;
 
-  private:
+private:
     void loadCompatibilitySettings(INIFILE &inifile);
 
     storm::ENGINE_VERSION targetVersion_ = storm::ENGINE_VERSION::LATEST;
 };
+
 // core instance
 extern CORE core;

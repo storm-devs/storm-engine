@@ -38,13 +38,13 @@ struct tShipFoamInfo
 
 class SEAFOAM : public Entity
 {
-  public:
+public:
     SEAFOAM();
-    virtual ~SEAFOAM();
+    ~SEAFOAM() override;
 
-    virtual bool Init();
-    uint32_t AttributeChanged(ATTRIBUTES *pA);
-    virtual uint64_t ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    uint32_t AttributeChanged(ATTRIBUTES *pA) override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
     virtual void Realize(uint32_t dTime);
     virtual void Execute(uint32_t dTime);
 
@@ -65,7 +65,7 @@ class SEAFOAM : public Entity
         }
     }
 
-  private:
+private:
     void InitializeShipFoam();
     void ReleaseShipFoam();
     void RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, uint32_t dTime);

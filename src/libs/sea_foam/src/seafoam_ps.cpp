@@ -5,7 +5,8 @@
 #include "Entity.h"
 #include "object.h"
 
-SEAFOAM_PS::SEAFOAM_PS() : enableEmit(true)
+SEAFOAM_PS::SEAFOAM_PS()
+    : enableEmit(true)
 {
     TechniqueName = nullptr;
 
@@ -81,14 +82,17 @@ SEAFOAM_PS *SEAFOAM_PS::GetLeftNode()
 {
     return l_PTR;
 }
+
 SEAFOAM_PS *SEAFOAM_PS::GetRightNode()
 {
     return r_PTR;
 }
+
 void SEAFOAM_PS::SetLeftNode(SEAFOAM_PS *node)
 {
     l_PTR = node;
 }
+
 void SEAFOAM_PS::SetRightNode(SEAFOAM_PS *node)
 {
     r_PTR = node;

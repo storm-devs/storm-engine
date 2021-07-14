@@ -62,8 +62,8 @@ void CXI_PCEDITBOX::Draw(bool bSelected, uint32_t Delta_Time)
     std::string sString;
     UpdateString(sString);
     if (!sString.empty())
-    // m_rs->ExtPrint(
-    // m_nFontID,m_dwFontColor,0,m_nStringAlign,true,m_fFontScale,m_screenSize.x,m_screenSize.y,m_rect.left+m_pntFontOffset.x,m_rect.top+m_pntFontOffset.y,"%s",sString.c_str()+m_nFirstShowCharacterIndex);
+        // m_rs->ExtPrint(
+        // m_nFontID,m_dwFontColor,0,m_nStringAlign,true,m_fFontScale,m_screenSize.x,m_screenSize.y,m_rect.left+m_pntFontOffset.x,m_rect.top+m_pntFontOffset.y,"%s",sString.c_str()+m_nFirstShowCharacterIndex);
     {
         int offset = utf8::u8_offset(sString.c_str(), m_nFirstShowCharacterIndex);
         CXI_UTILS::PrintTextIntoWindow(m_rs, m_nFontID, m_dwFontColor, m_nStringAlign, true, m_fFontScale,

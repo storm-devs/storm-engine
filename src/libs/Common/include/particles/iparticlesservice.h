@@ -16,11 +16,15 @@ class IParticleManager;
 // Particle service, creates particle managers
 class IParticleService : public SERVICE
 {
-  public:
+public:
     // Constructor / destructor
-    IParticleService(){};
+    IParticleService()
+    {
+    };
 
-    virtual ~IParticleService(){};
+    ~IParticleService() override
+    {
+    };
 
     // As a file name, you need to pass the name of the project
     // in which we want to work at the moment

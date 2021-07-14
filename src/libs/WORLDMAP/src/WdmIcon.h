@@ -25,9 +25,9 @@ class WdmIcon : public WdmInterfaceObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmIcon();
-    virtual ~WdmIcon();
+    ~WdmIcon() override;
 
     // Calculations
     void Update(float dltTime) override;
@@ -37,7 +37,7 @@ class WdmIcon : public WdmInterfaceObject
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     WdmEnemyShip *lastShip;
     long texture;
     Icon icon[2];

@@ -28,7 +28,7 @@ class DataGraph
     bool bRelative;
     bool bNegative;
 
-  public:
+public:
     // constructor / destructor
     DataGraph();
     virtual ~DataGraph();

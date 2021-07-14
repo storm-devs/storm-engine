@@ -291,8 +291,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                 }
                 // End of name
                 long p;
-                for (p = 1; key[p] && key[p] != '"'; p++)
-                    ;
+                for (p = 1; key[p] && key[p] != '"'; p++);
                 if (!key[p])
                 {
                     core.Trace(
@@ -316,8 +315,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                 key[p++] = 0;
                 // determine the time
                 // First digit
-                for (; key[p] && (key[p] < '0' || key[p] > '9'); p++)
-                    ;
+                for (; key[p] && (key[p] < '0' || key[p] > '9'); p++);
                 if (!key[p])
                 {
                     core.Trace("Incorrect %s <%s> in action [%s] of animation file %s.ani\nNo found time\n", ASKW_EVENT,
@@ -326,8 +324,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                 }
                 auto *em = key + p;
                 // Looking for the end of the number
-                for (; key[p] >= '0' && key[p] <= '9'; p++)
-                    ;
+                for (; key[p] >= '0' && key[p] <= '9'; p++);
                 float tm = 0;
                 if (key[p] != '%')
                 {
@@ -395,7 +392,8 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                                "-> ignory it\n",
                                ASKW_EVENT, key + 257, path, animationName);
                 }
-            } while (ani->ReadStringNext(path, ASKW_EVENT, key, 256));
+            }
+            while (ani->ReadStringNext(path, ASKW_EVENT, key, 256));
         }
         // Bones
 
@@ -438,8 +436,7 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
             }
             // End of name
             long p;
-            for (p = 1; key[p] && key[p] != '"'; p++)
-                ;
+            for (p = 1; key[p] && key[p] != '"'; p++);
             if (!key[p])
             {
                 if (sectionName)
@@ -476,8 +473,7 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
                 continue;
             }
             // looking for a string with data
-            for (; key[p] && key[p] != '"'; p++)
-                ;
+            for (; key[p] && key[p] != '"'; p++);
             if (!key[p])
             {
                 if (sectionName)
@@ -490,13 +486,13 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
             }
             // Looking for the end of the data string
             auto *const uds = key + ++p;
-            for (; key[p] && key[p] != '"'; p++)
-                ;
+            for (; key[p] && key[p] != '"'; p++);
             key[p] = 0;
             // Add data
             // core.Trace("Add user data \"%s\", \"%s\" of \"%s\"", key + 1, uds, sectionName);
             data[key + 1] = uds;
-        } while (ani->ReadStringNext((char *)sectionName, ASKW_DATA, key, 1023));
+        }
+        while (ani->ReadStringNext((char *)sectionName, ASKW_DATA, key, 1023));
     }
 }
 

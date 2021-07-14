@@ -278,7 +278,7 @@ uint64_t VANT_BASE::ProcessMessage(MESSAGE &message)
 
     case MSG_VANT_DEL_MAST: {
         const entid_t tmp_id = message.EntityID();
-        NODE *mastNode = (NODE *)message.Pointer();
+        auto mastNode = (NODE *)message.Pointer();
         if (mastNode == nullptr)
             break;
         for (int i = 0; i < groupQuantity; i++)
@@ -304,7 +304,7 @@ void VANT_BASE::SetIndex() const
     int i, j;
     int ti, vi;
 
-    uint16_t *pt = static_cast<uint16_t *>(RenderService->LockIndexBuffer(iBuf));
+    auto pt = static_cast<uint16_t *>(RenderService->LockIndexBuffer(iBuf));
     if (pt)
     {
         for (int vn = 0; vn < vantQuantity; vn++)
@@ -408,9 +408,9 @@ void VANT_BASE::SetVertexes() const
             // Set angles point
             pv[iv].pos = uPos;
             pv[iv + 3].pos = pv[iv + 1].pos =
-                uPos - horzDirect * (upWidth * .5f) + vertDirect * upHeight * (1.f - fBalkHeight);
+                             uPos - horzDirect * (upWidth * .5f) + vertDirect * upHeight * (1.f - fBalkHeight);
             pv[iv + 4].pos = pv[iv + 2].pos =
-                uPos + horzDirect * (upWidth * .5f) + vertDirect * upHeight * (1.f - fBalkHeight);
+                             uPos + horzDirect * (upWidth * .5f) + vertDirect * upHeight * (1.f - fBalkHeight);
             pv[iv + 5].pos = lPos;
             pv[iv + 6].pos = rPos;
             //

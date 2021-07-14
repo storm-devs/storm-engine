@@ -2,7 +2,7 @@
 
 #include "service.h"
 
-typedef struct
+using SERVICE_NODE = struct
 {
     uint32_t reference;
     uint32_t module_code;
@@ -10,7 +10,7 @@ typedef struct
     SERVICE *pointer;
     void *linkL;
     void *linkR;
-} SERVICE_NODE;
+};
 
 class SERVICES_LIST
 {
@@ -18,7 +18,7 @@ class SERVICES_LIST
     uint32_t Objects;
     uint32_t Search_module_code;
 
-  public:
+public:
     SERVICES_LIST();
     ~SERVICES_LIST();
 
@@ -35,6 +35,7 @@ class SERVICES_LIST
 
     SERVICE *GetService(uint32_t &class_code);
     SERVICE *GetServiceNext(uint32_t &class_code);
+
     uint32_t GetCount()
     {
         return Objects;

@@ -28,7 +28,7 @@ struct GRID_VERTEX2
 
 class TSplash
 {
-  public:
+public:
     TSplash();
     virtual ~TSplash();
 
@@ -47,7 +47,7 @@ class TSplash
     static uint64_t lockTicks, fillTicks, unlockTicks, realizeTicks;
     static uint32_t processCount, topIndex, topIndex2;
 
-  private:
+private:
     float HeightF(uint32_t time, float _r, float _k);
 
     bool enabled;

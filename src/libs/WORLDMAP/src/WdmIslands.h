@@ -16,14 +16,14 @@
 
 class WdmIslandWaves : public WdmRenderModel
 {
-  public:
+public:
     WdmIslandWaves();
 
     void Update(float dltTime) override;
     void LRender(VDX9RENDER *rs) override;
     void Render(VDX9RENDER *rs, float k);
 
-  private:
+private:
     float phase;
 };
 
@@ -87,11 +87,11 @@ class WdmIslands : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmIslands(WdmIslands &&) = delete;
     WdmIslands(const WdmIslands &) = delete;
     WdmIslands();
-    virtual ~WdmIslands();
+    ~WdmIslands() override;
 
     // Check for possible collision
     bool CollisionTest(CMatrix &objMtx, float length, float width, bool heighTest = true);
@@ -121,7 +121,7 @@ class WdmIslands : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     bool IsShipInArea(long islIndex, const CVECTOR &pos);
     static bool AddEdges(const GEOS::VERTEX *vrt, long numVrt);
     static bool FindNearPoint(const GEOS::VERTEX *vrt, long numVrt);
@@ -132,7 +132,7 @@ class WdmIslands : public WdmRenderObject
     void LabelsRelease();
     static CVECTOR Norm2D(const CVECTOR &ret);
 
-  private:
+private:
     // Model containing all locators
     WdmRenderModel *baseModel;
     // Pathfinder patch
@@ -160,7 +160,7 @@ class WdmIslands : public WdmRenderObject
     static CVECTOR curPos;
     static bool checkMode;
 
-  public:
+public:
     static CVECTOR centPos;
 };
 

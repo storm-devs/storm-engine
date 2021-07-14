@@ -16,24 +16,27 @@ class Shadow : public Entity
     float shading;
     unsigned long blendValue;
 
-  public:
+public:
 #define SHADOW_FVF (D3DFVF_XYZ | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1)
+
     struct SHADOW_VERTEX
     {
         CVECTOR pos;
         float tu, tv;
     };
+
     Shadow();
-    ~Shadow();
-    bool Init();
+    ~Shadow() override;
+    bool Init() override;
     void Realize(uint32_t Delta_Time);
-    uint64_t ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
         {
-        // case Stage::execute:
-        //    Execute(delta); break;
+            // case Stage::execute:
+            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -45,6 +48,7 @@ class Shadow : public Entity
             break;
         }
     }
+
     void LostRender();
     void RestoreRender();
 };

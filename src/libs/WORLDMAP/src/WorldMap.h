@@ -38,14 +38,14 @@ class WorldMap : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WorldMap();
-    virtual ~WorldMap();
+    ~WorldMap() override;
 
     //--------------------------------------------------------------------------------------------
     // Entity
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Initialization
     bool Init() override;
     // Execution
@@ -76,7 +76,7 @@ class WorldMap : public Entity
     // --------------------------------------------------------------------------------------------
     // Objects management
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     // Add object
     WdmRenderObject *AddObject(WdmRenderObject *obj, long level = 0);
     // Add object to render list before reflection
@@ -99,7 +99,7 @@ class WorldMap : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Objects management
     // Include a record about an object in the list with the required level
     long GetObject(long &first, long level);
@@ -130,7 +130,7 @@ class WorldMap : public Entity
 
     void ResetScriptInterfaces() const;
 
-  private:
+private:
     // Render service
     VDX9RENDER *rs;
     WdmCamera *camera;
@@ -159,7 +159,7 @@ class WorldMap : public Entity
 
     std::string bufForSave;
 
-  public:
+public:
     uint32_t encCounter;
 
     float hour;

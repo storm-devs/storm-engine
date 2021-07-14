@@ -1372,7 +1372,7 @@ void CXI_TABLE::SetTopIndexForSelect(long nSelIndex)
         UpdateTableCells();
     }
     else if (nSelIndex >= m_nTopIndex + static_cast<long>(m_anRowsHeights.size()) - (m_pHeader ? 1 : 0))
-    // after the last line - then put the selection down
+        // after the last line - then put the selection down
     {
         nSelIndex = nSelIndex - m_anRowsHeights.size() + (m_pHeader ? 1 : 0) + 1;
         if (nSelIndex < 0)

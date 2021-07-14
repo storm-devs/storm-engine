@@ -61,9 +61,9 @@ class FLAG : public Entity
     WIND globalWind;
     std::filesystem::file_time_type ft_old;
 
-  public:
+public:
     FLAG();
-    ~FLAG();
+    ~FLAG() override;
     void SetDevice();
     bool Init() override;
     void Execute(uint32_t Delta_Time);
@@ -89,7 +89,7 @@ class FLAG : public Entity
         }
     }
 
-  private:
+private:
     struct FLAGDATA
     {
         uint16_t vectQuant; // number of segmentes(square) into flags

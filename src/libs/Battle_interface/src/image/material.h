@@ -9,7 +9,7 @@ class BIImageRender;
 
 class BIImageMaterial
 {
-  public:
+public:
     BIImageMaterial(VDX9RENDER *pRS, BIImageRender *pImgRender);
     ~BIImageMaterial();
 
@@ -19,6 +19,7 @@ class BIImageMaterial
     {
         return (m_sTextureName == pcTextureName);
     }
+
     bool IsUseTechnique(const char *pcTechniqueName) const
     {
         return (m_sTechniqueName == pcTechniqueName);
@@ -29,6 +30,7 @@ class BIImageMaterial
     void DeleteImage(const BIImage *pImg);
 
     void SetTexture(const char *pcTextureName);
+
     void SetTechnique(const char *pcTechniqueName)
     {
         if (pcTechniqueName)
@@ -44,12 +46,14 @@ class BIImageMaterial
     {
         return m_apImage.size();
     }
+
     void ReleaseAllImages();
 
     long GetMinPriority() const
     {
         return m_nMinPriority;
     }
+
     long GetMaxPriority() const
     {
         return m_nMaxPriority;
@@ -60,7 +64,7 @@ class BIImageMaterial
         return m_pImageRender;
     }
 
-  protected:
+protected:
     void Release();
     void UpdateImageBuffers(long nStartIdx, size_t nEndIdx);
     void RemakeBuffers();

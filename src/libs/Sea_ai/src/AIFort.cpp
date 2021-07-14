@@ -165,6 +165,7 @@ bool AIFort::CreateState(ENTITY_STATE_GEN *state_gen)
 {
     return true;
 }
+
 bool AIFort::LoadState(ENTITY_STATE *state)
 {
     return true;

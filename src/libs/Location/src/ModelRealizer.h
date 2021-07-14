@@ -17,9 +17,9 @@ class LocModelRealizer : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     LocModelRealizer();
-    ~LocModelRealizer();
+    ~LocModelRealizer() override;
 
     // Initialization
     bool Init() override;

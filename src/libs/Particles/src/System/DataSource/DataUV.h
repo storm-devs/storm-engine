@@ -12,7 +12,7 @@ class DataUV
 
     std::vector<Vector4> Frames;
 
-  public:
+public:
     // constructor / destructor
     DataUV();
     virtual ~DataUV();

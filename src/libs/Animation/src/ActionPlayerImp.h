@@ -22,7 +22,7 @@ class ActionPlayerImp : public ActionPlayer
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     ActionPlayerImp();
     virtual ~ActionPlayerImp();
 
@@ -32,42 +32,42 @@ class ActionPlayerImp : public ActionPlayer
     //--------------------------------------------------------------------------------------------
     // ActionPlayer
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Set current action
-    virtual bool SetAction(const char *actionName);
-    virtual const char *GetAction() const;
+    bool SetAction(const char *actionName) override;
+    const char *GetAction() const override;
     // Play control
-    virtual bool Play();
-    virtual void Pause();
-    virtual void Stop();
-    virtual bool IsPlaying() const;
-    virtual bool IsPause() const;
+    bool Play() override;
+    void Pause() override;
+    void Stop() override;
+    bool IsPlaying() const override;
+    bool IsPause() const override;
     // Auto stop when timer expires
-    virtual bool SetAutoStop(bool isStop);
-    virtual bool IsAutoStop() const;
+    bool SetAutoStop(bool isStop) override;
+    bool IsAutoStop() const override;
     // Current playing position
-    virtual float SetPosition(float position);
-    virtual float GetPosition() const;
+    float SetPosition(float position) override;
+    float GetPosition() const override;
     // Play type
-    virtual void SetType(AnimationType atype);
-    virtual AnimationType GetType() const;
+    void SetType(AnimationType atype) override;
+    AnimationType GetType() const override;
     // Playback speed coefficient
-    virtual float SetSpeed(float kSpeed = 1.0f);
-    virtual float GetSpeed() const;
-    virtual float GetDefSpeed() const;
+    float SetSpeed(float kSpeed = 1.0f) override;
+    float GetSpeed() const override;
+    float GetDefSpeed() const override;
     // Get duration of action in frames
-    virtual long GetFrames() const;
+    long GetFrames() const override;
     // Set blending coefficient 0..1
-    virtual void SetBlend(float k);
+    void SetBlend(float k) override;
     // Get a blending coefficient 0..1
-    virtual float GetBlend();
+    float GetBlend() override;
     // Get user data for this action
-    virtual const char *GetData(const char *dataName) const;
+    const char *GetData(const char *dataName) const override;
 
     //--------------------------------------------------------------------------------------------
     // ActionPlayerImp
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Take a step in time
     void Execute(long dltTime);
     // Set position to the very beginning
@@ -80,14 +80,14 @@ class ActionPlayerImp : public ActionPlayer
     // Copy the state of another player
     void CopyState(ActionPlayerImp &from);
 
-  public:
+public:
     // Current blending ratio
     float kBlendCurrent;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Position movement
     void MoveNormal(float dlt);
     void MoveReverse(float dlt);
@@ -100,7 +100,7 @@ class ActionPlayerImp : public ActionPlayer
     // System stop
     void SysStop();
 
-  private:
+private:
     // Animation for this action
     AnimationImp *ani;
     // Index of this player

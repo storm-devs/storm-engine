@@ -372,7 +372,7 @@ void CXI_CHECKBUTTONS::SetInternalName(std::string &sName)
 
 void CXI_CHECKBUTTONS::AddButton(const char *pcText, bool bDisable, bool bSelect)
 {
-    ButtonDescribe *pBD = new ButtonDescribe;
+    auto pBD = new ButtonDescribe;
     Assert(pBD);
     // pBD->aStr.Add();
     ButtonDescribe::StrDescribe strDescribe;

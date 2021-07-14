@@ -190,7 +190,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                 else
                 {
                     if (m_idBadPic[n] != -1 && m_idBadTexture[n] != -1)
-                    // partial use of texture for a "bad" picture
+                        // partial use of texture for a "bad" picture
                     {
                         m_rs->TextureSet(0, m_nGroupTex[m_idBadTexture[n]]);
                         pPictureService->GetTexturePos(m_idBadPic[n], rectTex);

@@ -9,7 +9,7 @@ class BI_ManagerBase;
 
 class BI_BaseGroup
 {
-  public:
+public:
     BI_BaseGroup(BI_ManagerBase *pManager);
     virtual ~BI_BaseGroup();
 
@@ -27,12 +27,13 @@ class BI_BaseGroup
     {
         return m_pManager;
     }
+
     const std::vector<BI_ManagerNodeBase *> &Nodes() const
     {
         return m_aNodes;
     }
 
-  protected:
+protected:
     BI_ManagerBase *m_pManager;
     std::vector<BI_ManagerNodeBase *> m_aNodes;
 };

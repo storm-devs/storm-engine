@@ -1,10 +1,10 @@
 #pragma once
 
-#include "..\\common_h\\attributes.h"
+#include "..//common_h//attributes.h"
 
 class CXPICTURES
 {
-  public:
+public:
     CXPICTURES();
     ~CXPICTURES();
 

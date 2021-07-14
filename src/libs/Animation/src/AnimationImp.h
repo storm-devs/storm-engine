@@ -24,9 +24,9 @@ class AnimationImp final : public Animation
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     AnimationImp(long id, AnimationInfo *animationInfo);
-    ~AnimationImp();
+    ~AnimationImp() override;
 
     // Set pointer to animation service
     static void SetAnimationService(AnimationServiceImp *animationService);
@@ -34,42 +34,42 @@ class AnimationImp final : public Animation
     //--------------------------------------------------------------------------------------------
     // Animation
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Access the action player
-    virtual ActionPlayer &Player(long index);
+    ActionPlayer &Player(long index) override;
     // Access the animation timer
-    virtual AnimationTimer &Timer(long index);
+    AnimationTimer &Timer(long index) override;
     // Events
     // Set internal event
-    virtual long SetEvent(AnimationEvent event, long index, AnimationEventListener *ael);
+    long SetEvent(AnimationEvent event, long index, AnimationEventListener *ael) override;
     // Delete internal event
-    virtual void DelEvent(long eventID);
+    void DelEvent(long eventID) override;
     // Set an external event handler
-    virtual void SetEventListener(AnimationEventListener *ael);
+    void SetEventListener(AnimationEventListener *ael) override;
     // Access to bones
     // Get the number of bones in a skeleton
-    virtual long GetNumBones() const;
+    long GetNumBones() const override;
     // Get animation matrix for bone
-    virtual CMatrix &GetAnimationMatrix(long iBone) const;
+    CMatrix &GetAnimationMatrix(long iBone) const override;
     // misc
     // Get custom data for animation
-    virtual const char *GetData(const char *dataName) const;
+    const char *GetData(const char *dataName) const override;
     // Copy the state of one player to another
-    virtual void CopyPlayerState(long indexSrc, long indexDst, bool copyTimerState = false);
+    void CopyPlayerState(long indexSrc, long indexDst, bool copyTimerState = false) override;
     // Get animation speed
-    virtual float GetFPS();
+    float GetFPS() override;
     // Set blending modes
     // Automatic normalization of blending coefficients
-    virtual bool SetAutoNormalize(bool isNormalize = true);
-    virtual bool GetAutoNormalize();
+    bool SetAutoNormalize(bool isNormalize = true) override;
+    bool GetAutoNormalize() override;
     // Allow custom blending coefficients in ActionPlayer
-    virtual bool UserBlend(bool isBlend = true);
-    virtual bool IsUserBlend();
+    bool UserBlend(bool isBlend = true) override;
+    bool IsUserBlend() override;
 
     //--------------------------------------------------------------------------------------------
     // AnimationImp
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Get thisID
     long GetThisID();
     // Get pointer to AnimationInfo
@@ -107,14 +107,14 @@ class AnimationImp final : public Animation
     // External event
     void AteExtern(long plIndex, const char *evt);
 
-  private:
+private:
     // Send events
     void SendEvent(AnimationEvent event, long index);
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // identifier
     long thisID;
     // Animation pointer

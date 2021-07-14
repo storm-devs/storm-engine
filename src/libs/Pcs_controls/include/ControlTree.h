@@ -7,7 +7,7 @@
 
 struct ControlTree
 {
-  public:
+public:
     struct ControlChild
     {
         ControlChild();
@@ -33,7 +33,7 @@ struct ControlTree
         CONTROL_STATE_TYPE state;
     };
 
-  public:
+public:
     ControlTree();
     ~ControlTree();
 
@@ -46,13 +46,13 @@ struct ControlTree
     void ControlInAction(const char *pcControlName, long nLayer);
     bool ExcludeControlFromActive(const char *pcControlName);
 
-  protected:
+protected:
     void Init();
     void Release();
     ControlChild *FindControlChild(long idx);
     ControlChild *FindControlChild(long idx, ControlChild *pParent);
 
-  protected:
+protected:
     long m_nControlsNum;
     ControlChild m_RootControl;
 

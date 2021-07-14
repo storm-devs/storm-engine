@@ -18,7 +18,8 @@
 // Construction, destruction
 // ============================================================================================
 
-NoiseCloud::NoiseCloud(Pillar &_pillar) : pillar(_pillar)
+NoiseCloud::NoiseCloud(Pillar &_pillar)
+    : pillar(_pillar)
 {
     for (long i = 0; i < sizeof(rect) / sizeof(Rect); i++)
     {

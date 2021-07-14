@@ -15,8 +15,8 @@ Import library main header
 
 class GEOS
 {
-  public:
-    typedef long ID; // this used w/o any checking
+public:
+    using ID = long; // this used w/o any checking
 
     struct VERTEX
     {
@@ -139,7 +139,7 @@ class GEOS
     virtual long FindMaterialG(long start_index, long group_name_id) = 0;
     virtual void GetMaterial(long m, MATERIAL &mt) const = 0;
     virtual void SetMaterial(long m, const MATERIAL &mt) = 0;
-    typedef void (*MATERIAL_FUNC)(const MATERIAL &mt);
+    using MATERIAL_FUNC = void(*)(const MATERIAL &mt);
 
     //-----------------------------------------
     // object
@@ -247,7 +247,7 @@ class GEOS
     virtual float Trace(VERTEX &src, VERTEX &dst) = 0;
 
     // clip in local coord-system
-    typedef bool (*ADD_POLYGON_FUNC)(const VERTEX *v, long nv);
+    using ADD_POLYGON_FUNC = bool(*)(const VERTEX *v, long nv);
     virtual bool Clip(const PLANE *planes, long nplanes, const VERTEX &center, float radius,
                       ADD_POLYGON_FUNC addpoly) = 0;
 
@@ -272,13 +272,17 @@ class GEOS
     //-----------------------------------------
     // unused
     //-----------------------------------------
-    virtual ~GEOS(){};
+    virtual ~GEOS()
+    {
+    };
 };
 
 class GEOM_SERVICE
 {
-  public:
-    virtual ~GEOM_SERVICE(){};
+public:
+    virtual ~GEOM_SERVICE()
+    {
+    };
     virtual std::fstream OpenFile(const char *fname) = 0;
     virtual bool ReadFile(std::fstream &fileS, void *data, long bytes) = 0;
     virtual int FileSize(const char *fname) = 0;

@@ -5,6 +5,7 @@
 #include "ship_base.h"
 
 CREATE_CLASS(MAST)
+
 CREATE_CLASS(HULL)
 
 #define DELTA_TIME(x) ((x)*0.001f)
@@ -240,7 +241,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         // go through all the ropes of this mast and turn them off
         if (vantEI)
             core.Send_Message(vantEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
-        MODEL *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
+        auto mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
         if (mdl != nullptr)
             for (i = 0; i < 10000; i++)
             {
@@ -494,7 +495,7 @@ void MAST::doMove(uint32_t DeltaTime)
             // reached the depth where we destroy the mast
             if (mdl->mtx.Pos().y < -DESTRUCT_MAST_DEEP)
                 bUse = false;
-            // move the mast lower into the depths of the sea
+                // move the mast lower into the depths of the sea
             else
                 mdl->mtx.Move(0.f, -DEEP_FALL_STEP * dtime, 0.f);
         }
@@ -512,10 +513,10 @@ void MAST::doMove(uint32_t DeltaTime)
             mtx.SetPosition(mm.mov);
             mtx = mdl->GetNode(0)->loc_mtx * mtx;
 
-            CVECTOR bp;                                          // mast top end coordinate
-            CVECTOR ep;                                          // coordinate of the lower end of the mast
-            CVECTOR lp;                                          // coordinate of the left point of the yard (total)
-            CVECTOR rp;                                          // coordinate of the right point of the yard (total)
+            CVECTOR bp; // mast top end coordinate
+            CVECTOR ep; // coordinate of the lower end of the mast
+            CVECTOR lp; // coordinate of the left point of the yard (total)
+            CVECTOR rp; // coordinate of the right point of the yard (total)
             bool bNextClass = (wMoveCounter <= MAX_MOVE_CICLES); // continue the collision a certain number of times
             bool bStopRotate = false; // by default do not stop the rotation of the mast when it falls
 
@@ -697,7 +698,8 @@ int MAST::GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECT
                 vb.y += TRACE_ADDING;
                 ve.y += TRACE_ADDING;
             }
-        } while ((tmp = pCollide->Trace(mod, ve, vb)) <= 1.f);
+        }
+        while ((tmp = pCollide->Trace(mod, ve, vb)) <= 1.f);
     }
     else
         return retVal;
@@ -851,7 +853,7 @@ void HULL::Mount(entid_t modelEI, entid_t shipEI, NODE *hullNodePointer)
         // create new model
         bModel = true;
         model_id = hullNodePointer->Unlink2Model();
-        MODEL *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
+        auto mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
 
         if (mdl != nullptr)
             for (i = 0; i < 10000; i++)

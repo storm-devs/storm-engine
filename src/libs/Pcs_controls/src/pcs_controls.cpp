@@ -36,7 +36,9 @@ PCS_CONTROLS::PCS_CONTROLS()
     }
 
     input_ = Input::Create();
-    inputHandlerID_ = input_->Subscribe([this](const InputEvent &evt) { HandleEvent(evt); });
+    inputHandlerID_ = input_->Subscribe([this](const InputEvent &evt) {
+        HandleEvent(evt);
+    });
 
     // RECT r;
     // GetWindowRect(core.GetAppHWND(),&r);
@@ -613,18 +615,18 @@ void PCS_CONTROLS::HandleEvent(const InputEvent &evt)
     }
     else if (evt.type == InputEvent::KeyboardText)
     {
-        std::string text = std::get<std::string>(evt.data);
+        auto text = std::get<std::string>(evt.data);
         m_KeyBuffer.AddKey((char *)text.c_str(), text.length(), false);
     }
     else if (evt.type == InputEvent::MouseMove)
     {
-        MousePos dxdy = std::get<MousePos>(evt.data);
+        auto dxdy = std::get<MousePos>(evt.data);
         nMouseDx += dxdy.x;
         nMouseDy += dxdy.y;
     }
     else if (evt.type == InputEvent::MouseWheel)
     {
-        MousePos dxdy = std::get<MousePos>(evt.data);
+        auto dxdy = std::get<MousePos>(evt.data);
         nMouseWheel += dxdy.y;
         core.Event("evMouseWeel", "l", static_cast<short>(dxdy.y));
     }

@@ -16,7 +16,8 @@
 // Construction, destruction
 // ============================================================================================
 
-TornadoParticles::TornadoParticles(Pillar &_pillar) : pillar(_pillar)
+TornadoParticles::TornadoParticles(Pillar &_pillar)
+    : pillar(_pillar)
 {
     for (long i = 0; i < sizeof(groundPrt) / sizeof(GroundParticle); i++)
     {

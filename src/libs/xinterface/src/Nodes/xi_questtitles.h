@@ -4,11 +4,11 @@
 
 class CXI_QUESTTITLE : public CINODE
 {
-  public:
+public:
     CXI_QUESTTITLE(CXI_QUESTTITLE &&) = delete;
     CXI_QUESTTITLE(const CXI_QUESTTITLE &) = delete;
     CXI_QUESTTITLE();
-    ~CXI_QUESTTITLE();
+    ~CXI_QUESTTITLE() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -25,7 +25,7 @@ class CXI_QUESTTITLE : public CINODE
     float GetLineStep() const;
     void ScrollerChanged(float fPos);
 
-  protected:
+protected:
     bool GetLineNext(int fontNum, char *&pInStr, char *buf, int bufSize) const;
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 

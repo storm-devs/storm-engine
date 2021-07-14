@@ -42,7 +42,7 @@ const struct
     {13, 13, 20.f}, {13, 10, 30.f}, {13, 7, 50.f}, {9, 7, 200.f}, // 6x8
     {5, 7, 250.f},                                                // 6x4
     {5, 4, 600.f},                                                // 3x4
-                                                                  //    {3, 4, 10000.f} // 3x2
+    //    {3, 4, 10000.f} // 3x2
 };
 
 struct WIND
@@ -76,7 +76,8 @@ struct TEXTURESLIST
 
 struct SAILGEOMETRY
 {
-    union {
+    union
+    {
         struct
         {
             float x, y, z;
@@ -126,6 +127,7 @@ enum SAIL_TYPE
     SAIL_ROLLING,
     SAIL_SPECIAL
 };
+
 struct SAILSTATE
 {
     uint32_t holeCount;
@@ -175,7 +177,7 @@ class SAILONE : public SAILONE_BASE
 {
     friend SAIL;
 
-  public:
+public:
     VDX9RENDER *RenderService;
     SAILONE();
     ~SAILONE();
@@ -204,7 +206,7 @@ class SAILONE : public SAILONE_BASE
     uint32_t m_dwRow, m_dwCol;
     float sailWidth, sailHeight;
 
-  private:
+private:
     SAILGEOMETRY sgeo;
     void GoVWave(SAILVERTEX *pv);
     void GoTWave(SAILVERTEX *pv);

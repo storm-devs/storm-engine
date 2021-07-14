@@ -48,9 +48,9 @@ class LIGHTNING : public Entity
     void Release() const;
     void CalcFlashPower(lightning_t *pL) const;
 
-  public:
+public:
     LIGHTNING();
-    ~LIGHTNING();
+    ~LIGHTNING() override;
 
     void SetDevice();
     bool Init() override;

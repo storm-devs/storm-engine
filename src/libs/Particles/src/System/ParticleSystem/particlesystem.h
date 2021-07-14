@@ -28,8 +28,8 @@ class ParticleSystem : public IParticleSystem
 
     std::string SystemName;
 
-  protected:
-    virtual ~ParticleSystem();
+protected:
+    ~ParticleSystem() override;
 
     IEmitter *CreatePointEmitter(DataSource::EmitterDesc *pEmitter);
 
@@ -39,7 +39,7 @@ class ParticleSystem : public IParticleSystem
 
     Matrix matWorld;
 
-  public:
+public:
     // Create / delete
     ParticleSystem(ParticleManager *serv);
     bool Release() override;
@@ -79,7 +79,7 @@ class ParticleSystem : public IParticleSystem
     const char *GetName() override;
     void SetName(const char *Name);
 
-  public:
+public:
     uint32_t GetEmittersCount() const;
     IEmitter *GetEmitterByIndex(uint32_t Index);
     EmitterType GetEmitterTypeByIndex(uint32_t Index);

@@ -11,7 +11,7 @@ class VAI_INNEROBJ;
 // ============================================================================
 class AIShipCannonController
 {
-  private:
+private:
     AIShip *pOurAIShip;
 
     ATTRIBUTES *pAShip;
@@ -22,7 +22,7 @@ class AIShipCannonController
 
     RS_RECT rs;
 
-  private:
+private:
     struct AISHIP_BORT
     {
         std::string sName;              // bort name(for compare with label name)
@@ -47,10 +47,12 @@ class AIShipCannonController
         {
             fChargePercent = 0.0f;
         };
+
         bool isCharged() const
         {
             return fChargePercent >= 1.0f;
         };
+
         bool isBortDamaged() const
         {
             return dwNumDamagedCannons == aCannons.size();
@@ -81,7 +83,7 @@ class AIShipCannonController
 
     float GetSpeedV0();
 
-  public:
+public:
     uint32_t GetCannonsNum();
 
     float GetFireDistance(bool bMaxFireDistance);
@@ -132,6 +134,7 @@ class AIShipCannonController
     {
         pOurAIShip = pShip;
     }
+
     AIShip *GetAIShip() const
     {
         return pOurAIShip;

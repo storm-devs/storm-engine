@@ -7,7 +7,7 @@
 //--------------------------------------------------------------------
 class TDynamicSystem
 {
-  public:
+public:
     TDynamicSystem();
     virtual ~TDynamicSystem();
 
@@ -17,8 +17,9 @@ class TDynamicSystem
 
     // void Draw(HDC _dc);
 
-  protected:
+protected:
     TDynamicObject *attractors[MAX_DYNAMIC_OBJECTS];
     TDynamicObject *deflectors[MAX_DYNAMIC_OBJECTS];
 };
+
 //--------------------------------------------------------------------

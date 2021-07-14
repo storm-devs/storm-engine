@@ -27,9 +27,9 @@ void CXI_RECTANGLE::Draw(bool bSelected, uint32_t Delta_Time)
             pLines[0].vPos.x = pLines[1].vPos.x = pLines[2].vPos.x = pLines[7].vPos.x = static_cast<float>(m_rect.left);
             pLines[1].vPos.y = pLines[2].vPos.y = pLines[3].vPos.y = pLines[4].vPos.y = static_cast<float>(m_rect.top);
             pLines[3].vPos.x = pLines[4].vPos.x = pLines[5].vPos.x = pLines[6].vPos.x =
-                static_cast<float>(m_rect.right);
+                                                                     static_cast<float>(m_rect.right);
             pLines[0].vPos.y = pLines[5].vPos.y = pLines[6].vPos.y = pLines[7].vPos.y =
-                static_cast<float>(m_rect.bottom);
+                                                                     static_cast<float>(m_rect.bottom);
             m_rs->DrawLines(pLines, 4, "iRectangle");
         }
     }

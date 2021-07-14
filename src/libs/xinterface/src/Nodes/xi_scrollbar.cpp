@@ -504,7 +504,7 @@ void CXI_SCROLLBAR::UpdatePosition() const
     pVert[idx + 2].tv = pVert[idx + 3].tv = m_frLeftTex.bottom;
     pVert[idx].pos.x = pVert[idx + 2].pos.x = static_cast<float>(m_rect.left) + m_fXDeltaPress + m_fXShadowPress;
     pVert[idx + 1].pos.x = pVert[idx + 3].pos.x =
-        static_cast<float>(m_rect.left + sideWidth) + m_fXDeltaPress + m_fXShadowPress;
+                           static_cast<float>(m_rect.left + sideWidth) + m_fXDeltaPress + m_fXShadowPress;
     pVert[idx].pos.y = pVert[idx + 1].pos.y = static_cast<float>(m_rect.top) + m_fYDeltaPress + m_fYShadowPress;
     pVert[idx + 2].pos.y = pVert[idx + 3].pos.y = static_cast<float>(m_rect.bottom) + m_fYDeltaPress + m_fYShadowPress;
     pVert[idx + 4].tu = pVert[idx + 6].tu = m_rectCenterTex.left;
@@ -575,11 +575,11 @@ void CXI_SCROLLBAR::UpdatePosition() const
     pVert[idx + 8].tv = pVert[idx + 9].tv = m_frRightTex.top;
     pVert[idx + 10].tv = pVert[idx + 11].tv = m_frRightTex.bottom;
     pVert[idx + 8].pos.x = pVert[idx + 10].pos.x =
-        static_cast<float>(m_rect.right - sideWidth) + m_fXDeltaPress + m_fXShadowPress;
+                           static_cast<float>(m_rect.right - sideWidth) + m_fXDeltaPress + m_fXShadowPress;
     pVert[idx + 9].pos.x = pVert[idx + 11].pos.x = static_cast<float>(m_rect.right) + m_fXDeltaPress + m_fXShadowPress;
     pVert[idx + 8].pos.y = pVert[idx + 9].pos.y = static_cast<float>(m_rect.top) + m_fYDeltaPress + m_fYShadowPress;
     pVert[idx + 10].pos.y = pVert[idx + 11].pos.y =
-        static_cast<float>(m_rect.bottom) + m_fYDeltaPress + m_fYShadowPress;
+                            static_cast<float>(m_rect.bottom) + m_fYDeltaPress + m_fYShadowPress;
     idx += 12;
 
     m_rs->UnLockVertexBuffer(m_idVBuf);

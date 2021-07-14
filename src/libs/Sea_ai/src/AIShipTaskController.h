@@ -13,8 +13,9 @@ class AITask
 {
     bool bActive;
 
-  public:
-    AITask() : bActive(false)
+public:
+    AITask()
+        : bActive(false)
     {
         dwTaskType = AITASK_NONE;
         pATaskCharacter = nullptr;
@@ -30,6 +31,7 @@ class AITask
     {
         bActive = _bActive;
     };
+
     bool isActive() const
     {
         return bActive;
@@ -54,7 +56,7 @@ class AITask
 
 class AIShipTaskController
 {
-  private:
+private:
     float fZapasDistance;
 
     AITask Primary, Secondary;
@@ -63,14 +65,17 @@ class AIShipTaskController
     {
         return (dwPriority == PRIMARY_TASK) ? &Primary : &Secondary;
     };
+
     VAI_INNEROBJ *GetCurrentTaskAIObj()
     {
         return AIHelper::FindAIInnerObj(GetCurrentTask()->pATaskCharacter);
     };
+
     bool isCurrentTaskSecondary() const
     {
         return Secondary.isActive();
     };
+
     bool isCurrentTaskPrimary() const
     {
         return !Secondary.isActive();
@@ -84,7 +89,7 @@ class AIShipTaskController
     void SetDestinationPoint(CVECTOR vDestPnt);
     void FindRunAwayPoint();
 
-  public:
+public:
     bool isAttack(ATTRIBUTES *pAOtherCharacter);
 
     bool Init()
@@ -108,6 +113,7 @@ class AIShipTaskController
     {
         pOurAIShip = pShip;
     };
+
     AIShip *GetAIShip() const
     {
         return pOurAIShip;

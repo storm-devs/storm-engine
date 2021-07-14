@@ -5,11 +5,11 @@
 // edit box
 class CXI_EDITBOX : public CINODE
 {
-  public:
+public:
     CXI_EDITBOX(CXI_EDITBOX &&) = delete;
     CXI_EDITBOX(const CXI_EDITBOX &) = delete;
     CXI_EDITBOX();
-    ~CXI_EDITBOX();
+    ~CXI_EDITBOX() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -21,11 +21,11 @@ class CXI_EDITBOX : public CINODE
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void SetNewCurSymbol(int h, int v);
 
-  protected:
+protected:
     char m_alpha[512];
     int m_nAlphaQuantity;
     int m_nCurAlphaNum;

@@ -90,7 +90,7 @@ class BLADE : public Entity
 
 public:
     BLADE();
-    ~BLADE();
+    ~BLADE() override;
     bool Init() override;
 
     void ProcessStage(Stage stage, uint32_t delta) override

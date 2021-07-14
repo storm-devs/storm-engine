@@ -11,11 +11,11 @@ struct HELPEntity
 
 class CXI_CONTEXTHELP : public CINODE
 {
-  public:
+public:
     CXI_CONTEXTHELP(CXI_CONTEXTHELP &&) = delete;
     CXI_CONTEXTHELP(const CXI_CONTEXTHELP &) = delete;
     CXI_CONTEXTHELP();
-    ~CXI_CONTEXTHELP();
+    ~CXI_CONTEXTHELP() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -37,7 +37,7 @@ class CXI_CONTEXTHELP : public CINODE
     long m_helpQuantity;
     HELPEntity *m_pHelpList;
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     char *GetCurrentHelpString(uint32_t deltaTime);
 

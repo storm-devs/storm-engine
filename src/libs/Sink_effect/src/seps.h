@@ -191,7 +191,7 @@ class SEPS_PS
     long EmitIndex;
     long EmitTimeDelta;
 
-  public:
+public:
     SEPS_PS();
     ~SEPS_PS();
     bool Init(INIFILE *ini, char *psname);

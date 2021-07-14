@@ -242,7 +242,8 @@ void XSERVICE::LoadAllPicturesInfo()
         do
         {
             m_dwListQuantity++;
-        } while (ini->GetSectionNameNext(section, sizeof(section) - 1));
+        }
+        while (ini->GetSectionNameNext(section, sizeof(section) - 1));
     }
     // create list pointers array
     if (m_dwListQuantity > 0)
@@ -279,7 +280,9 @@ void XSERVICE::LoadAllPicturesInfo()
             m_pList[i].pictureQuantity = 0;
             if (ini->ReadString(section, "picture", param, sizeof(param) - 1, ""))
                 do
+                {
                     m_pList[i].pictureQuantity++;
+                }
                 while (ini->ReadStringNext(section, "picture", param, sizeof(param) - 1));
 
             // resize image list

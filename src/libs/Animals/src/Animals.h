@@ -14,15 +14,15 @@
 ///////////////////////////////////////////////////////////////////
 class ANIMALS : public Entity
 {
-  public:
+public:
     ANIMALS();
-    virtual ~ANIMALS();
+    ~ANIMALS() override;
 
-    virtual bool Init();
-    virtual uint64_t ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
     virtual void Realize(uint32_t dTime);
     virtual void Execute(uint32_t dTime);
-    uint32_t AttributeChanged(ATTRIBUTES *pA);
+    uint32_t AttributeChanged(ATTRIBUTES *pA) override;
 
     void ProcessStage(Stage stage, uint32_t delta) override
     {
@@ -41,7 +41,7 @@ class ANIMALS : public Entity
         }
     }
 
-  private:
+private:
     TSeagulls *seagulls;
     // TSharks      *sharks;
     TFishSchools *fishSchools;

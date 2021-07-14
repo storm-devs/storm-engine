@@ -21,7 +21,7 @@ class Character;
 
 class CharactersGroups : public Entity
 {
-  public:
+public:
     struct String
     {
         String();
@@ -33,6 +33,7 @@ class CharactersGroups : public Entity
         long hash;
 
         void operator=(const char *str);
+
         operator const char *() const
         {
             return name;
@@ -79,9 +80,9 @@ class CharactersGroups : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     CharactersGroups();
-    virtual ~CharactersGroups();
+    ~CharactersGroups() override;
 
     // Initialization
     bool Init() override;
@@ -111,7 +112,7 @@ class CharactersGroups : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Checking the character detects others
     void CharacterVisibleCheck(Character *chr);
     // Check found characters for enemies
@@ -123,7 +124,7 @@ class CharactersGroups : public Entity
     // Remove inactive or invalid targets
     bool RemoveInvalidTargets(Character *chr, Character *check = nullptr);
 
-  private:
+private:
     // Check target for validity
     bool MsgIsValidateTarget(MESSAGE &message);
     // Find the optimal goal
@@ -174,7 +175,7 @@ class CharactersGroups : public Entity
     // Remove all empty groups
     void DeleteEmptyGroups();
 
-  public:
+public:
     // Get group from message
     Group *GetGroup(MESSAGE &message, bool isRegistry = true);
     // Find a group by name
@@ -204,7 +205,7 @@ class CharactersGroups : public Entity
     // Get the state as a string
     const char *GetTextState(RelState state);
 
-  private:
+private:
     std::vector<Group *> groups; // Groups
     long numGroups;              // Number of groups
     long maxGroups;              // Number of groups

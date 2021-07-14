@@ -4,14 +4,14 @@
 
 class BIShipCommandList : public BICommandList
 {
-  public:
+public:
     BIShipCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs);
-    virtual ~BIShipCommandList();
+    ~BIShipCommandList() override;
 
     void FillIcons() override;
     void Init() override;
 
-  protected:
+protected:
     void Release();
 
     long ShipAdding(bool allLabel, bool bMyShip, bool bEnemy, bool bNeutral, bool bFriend);

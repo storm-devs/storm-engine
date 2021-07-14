@@ -120,8 +120,8 @@ void TCarcass::RebuildLevels(tCarcassVertex *_vBuffer, bool _firstDraw, uint32_t
             // WIDEN_K*levelK)*measure.deltaPointX[measurePoint],
             // heightK*measure.deltaPointY[measurePoint], 0.f));
             tempVertex->pos =
-                (levelStarts[level] + CVECTOR((1.f + WIDEN_K * levelK) * measure.deltaPointX[measurePoint],
-                                              heightK * measure.deltaPointY[measurePoint], 0.f));
+            (levelStarts[level] + CVECTOR((1.f + WIDEN_K * levelK) * measure.deltaPointX[measurePoint],
+                                          heightK * measure.deltaPointY[measurePoint], 0.f));
             tempVertex->pos.y += .01f;
 
             auto measureK = 0.f;

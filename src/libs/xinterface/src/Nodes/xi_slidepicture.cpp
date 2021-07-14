@@ -141,7 +141,9 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     if (ini1->ReadString(name1, "speed", param, sizeof(param) - 1, ""))
     {
         do
+        {
             nSlideListSize++;
+        }
         while (ini1->ReadStringNext(name1, "speed", param, sizeof(param) - 1));
     }
     else
@@ -150,7 +152,9 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         {
             bUse1Ini = false;
             do
+            {
                 nSlideListSize++;
+            }
             while (ini2->ReadStringNext(name2, "speed", param, sizeof(param) - 1));
         }
     }

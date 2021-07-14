@@ -8,9 +8,9 @@
 
 class SailorsEditor : public Entity
 {
-  public:
+public:
     SailorsEditor();
-    virtual ~SailorsEditor();
+    ~SailorsEditor() override;
 
     bool Init() override;
     virtual void Execute(uint32_t dltTime);

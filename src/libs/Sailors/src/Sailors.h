@@ -58,7 +58,7 @@ struct ShipState
 
 class ShipMan
 {
-  public:
+public:
     entid_t modelID;
     MODEL *model;
 
@@ -108,7 +108,7 @@ class ShipMan
 
 class ShipWalk
 {
-  public:
+public:
     // ShipWalk() shipMan(_FL_) {}
 
     SHIP_BASE *ship;
@@ -139,7 +139,7 @@ class ShipWalk
 
 class Sailors : public Entity
 {
-  public:
+public:
     VDX9RENDER *rs;
 
     std::vector<ShipWalk> shipWalk;
@@ -148,7 +148,7 @@ class Sailors : public Entity
     bool disabled;
 
     Sailors();
-    virtual ~Sailors();
+    ~Sailors() override;
 
     bool Init() override;
     virtual void Realize(uint32_t dltTime);

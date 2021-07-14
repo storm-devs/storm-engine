@@ -48,12 +48,12 @@ class Blots : public Entity
     // --------------------------------------------------------------------------------------------
 public:
     Blots();
-    virtual ~Blots();
+    ~Blots() override;
 
     // Initialization
-    bool Init();
+    bool Init() override;
     // Messages
-    uint64_t ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
     void ProcessStage(Stage stage, uint32_t delta) override
     {

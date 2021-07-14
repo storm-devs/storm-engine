@@ -176,7 +176,7 @@ uint32_t _RandomHole2Sail(VS_STACK *pS)
     if (const auto ei = EntityManager::GetEntityId("sail"))
     {
         pSail = static_cast<SAIL_BASE *>(EntityManager::GetEntityPointer(ei))
-                    ->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
+            ->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
     }
 
     int holeArraySize = 0;
@@ -238,7 +238,7 @@ uint32_t _DeleteOneSailHole(VS_STACK *pS)
     if (const auto ei = EntityManager::GetEntityId("sail"))
     {
         pSail = static_cast<SAIL_BASE *>(EntityManager::GetEntityPointer(ei))
-                    ->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
+            ->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
     }
 
     int holeArraySize = 0;

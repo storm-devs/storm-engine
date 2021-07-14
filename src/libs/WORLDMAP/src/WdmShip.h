@@ -42,9 +42,9 @@ class WdmShip : public WdmRenderModel
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmShip();
-    virtual ~WdmShip();
+    ~WdmShip() override;
 
     void Teleport(float x, float z, float ay);
     void GetPosition(float &x, float &z, float &ay) const;
@@ -64,20 +64,22 @@ class WdmShip : public WdmRenderModel
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  protected:
+protected:
     void ShipUpdate(float dltTime);
     void UpdateWaterMark(float dltTime);
 
-    virtual void Collide(){};
+    virtual void Collide()
+    {
+    };
 
-  public:
+public:
     // Model sizes relative to 0
     float modelL05;     // Half the length of the model relative to 0
     float modelW05;     // Half the width of the model relative to 0
     float modelRadius;  // sqrtf(shipModelL*shipModelL + shipModelW*shipModelW)
     float modelRadius2; // shipModelL*shipModelL + shipModelW*shipModelW
 
-  protected:
+protected:
     float ax, ay, az;
     float dltAx, dltAz;
     float speed, turnspd;

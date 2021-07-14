@@ -73,7 +73,7 @@ void WdmEnemyShip::Update(float dltTime)
     // Visibility
     // depending on the distance from player
     alpha = 1.0f - (d - wdmObjects->enemyshipViewDistMin) /
-                       (wdmObjects->enemyshipViewDistMax - wdmObjects->enemyshipViewDistMin);
+            (wdmObjects->enemyshipViewDistMax - wdmObjects->enemyshipViewDistMin);
     // depending on the time of appearance
     brnAlpha += WDM_ENEMYSHIP_BRNSPD * dltTime;
     if (brnAlpha > 1.0f)
@@ -385,8 +385,7 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float &x, 
             const auto angle = psay + brnDltAng * (0.5f - ang / 31.0f);
             // Determine the radius
             long rad;
-            for (rad = rand() & 7; field[ang] & (1 << rad); rad = rand() & 7)
-                ;
+            for (rad = rand() & 7; field[ang] & (1 << rad); rad = rand() & 7);
             const auto radius = wdmObjects->enemyshipBrnDistMin +
                                 (wdmObjects->enemyshipBrnDistMax - wdmObjects->enemyshipBrnDistMin) * rad / 7.0f;
             // Coordinates
@@ -399,8 +398,7 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float &x, 
         }
         // Checking for the possibility of continuing
         long i;
-        for (i = 0; i < 32 && field[i] == 0xff; i++)
-            ;
+        for (i = 0; i < 32 && field[i] == 0xff; i++);
         if (i == 32)
             return false;
     }

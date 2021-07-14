@@ -17,14 +17,14 @@ class WdmCameraStdCtrl : public WdmCamera
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmCameraStdCtrl();
-    virtual ~WdmCameraStdCtrl();
+    ~WdmCameraStdCtrl() override;
 
     // --------------------------------------------------------------------------------------------
     // Functions that return key reactions
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     void CtrlProcess(float dltTime) override;
     float MoveLeftRight(float dltTime) override;
     float MoveUpDown(float dltTime) override;
@@ -36,10 +36,10 @@ class WdmCameraStdCtrl : public WdmCamera
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     bool GetCurFreeMode() const;
 
-  private:
+private:
     bool isFree;
     float mdx, mdy, mzoom;
     bool lastFreeMode;

@@ -10,16 +10,19 @@ class CSaveLoad;
 
 class VAI_OBJBASE : public CANNON_TRACE_BASE
 {
-  private:
+private:
     ATTRIBUTES *pACharacter;
 
-  public:
-    virtual ~VAI_OBJBASE(){};
+public:
+    ~VAI_OBJBASE() override
+    {
+    };
 
     virtual void SetACharacter(ATTRIBUTES *pAP)
     {
         pACharacter = pAP;
     };
+
     virtual ATTRIBUTES *GetACharacter()
     {
         return pACharacter;

@@ -18,7 +18,8 @@ inline bool Effects::ErrorHandler(HRESULT hr, const char *file, unsigned line, c
     return false;
 }
 
-Effects::Effects(IDirect3DDevice9 *d3dDevice) : device_(d3dDevice), currentTechnique_(nullptr), currentPass_(0u)
+Effects::Effects(IDirect3DDevice9 *d3dDevice)
+    : device_(d3dDevice), currentTechnique_(nullptr), currentPass_(0u)
 {
 }
 
@@ -39,7 +40,7 @@ void Effects::compile(const char *fxPath)
     ID3DXBuffer *errors = nullptr;
     std::wstring _fxPath = utf8::ConvertUtf8ToWide(fxPath);
     CHECKD3DERR(D3DXCreateEffectFromFile(device_, _fxPath.c_str(), nullptr, nullptr, D3DXSHADER_OPTIMIZATION_LEVEL3,
-                                         nullptr, &fx, &errors));
+        nullptr, &fx, &errors));
 
     if (errors)
     {

@@ -26,14 +26,14 @@ class LocatorArray
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     LocatorArray(const char *groupName);
     virtual ~LocatorArray();
 
     // --------------------------------------------------------------------------------------------
     // Working with an array
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     // Add locator
     void AddLocator(CMatrix &mtx, const char *name = nullptr);
     // Change locator matrix
@@ -69,10 +69,10 @@ class LocatorArray
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     static long CalcHashString(const char *str);
 
-  private:
+private:
     // Group name
     char *group;
     long hash;
@@ -83,7 +83,7 @@ class LocatorArray
     char *locatorNames;
     long bytesInLNArray;
 
-  public:
+public:
     bool isVisible;
     float radius;
     float kViewRadius;

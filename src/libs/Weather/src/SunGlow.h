@@ -9,9 +9,9 @@ class SKY;
 
 class SUNGLOW : public Entity
 {
-  public:
+public:
     SUNGLOW();
-    ~SUNGLOW();
+    ~SUNGLOW() override;
 
     void SetDevice();
     bool Init() override;
@@ -39,7 +39,7 @@ class SUNGLOW : public Entity
 
     void DrawSunMoon();
 
-  private:
+private:
     enum
     {
         SUNGLOWVERTEX_FORMAT = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1,

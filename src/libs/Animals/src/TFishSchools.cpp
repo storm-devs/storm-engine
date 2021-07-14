@@ -7,7 +7,8 @@
 #include "vfile_service.h"
 
 //--------------------------------------------------------------------
-TFishSchools::TFishSchools() : enabled(false)
+TFishSchools::TFishSchools()
+    : enabled(false)
 {
     memset(fishSchools, 0, sizeof(fishSchools));
 }

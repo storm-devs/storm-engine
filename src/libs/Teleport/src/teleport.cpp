@@ -7,7 +7,9 @@
 #include "vfile_service.h"
 
 CREATE_CLASS(TMPTELEPORT)
+
 CREATE_CLASS(FINDFILESINTODIRECTORY)
+
 CREATE_CLASS(FINDDIALOGNODES)
 
 #define DELETE_PTR(x)                                                                                                  \
@@ -265,7 +267,8 @@ void TMPTELEPORT::SortShowData()
                 bContinueSort = true;
             }
         }
-    } while (bContinueSort);
+    }
+    while (bContinueSort);
 }
 
 void TMPTELEPORT::XChange(TELEPORT_DESCR &d1, TELEPORT_DESCR &d2)

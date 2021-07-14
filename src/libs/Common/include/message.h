@@ -11,15 +11,13 @@ class VDATA;
 
 namespace storm
 {
-
 using MessageParam = std::variant<uint8_t, uint16_t, uint32_t, long, float, double, ATTRIBUTES *, entid_t, VDATA *,
                                   CVECTOR, std::string>;
-
 } // namespace storm
 
 class MESSAGE final
 {
-  public:
+public:
     void Move2Start()
     {
         index = 0;
@@ -168,7 +166,9 @@ class MESSAGE final
         format_ = _format;
         params_.resize(format_.size());
         std::transform(format_.begin(), format_.end(), params_.begin(),
-                       [&](const char c) { return GetParamValue(c, args); });
+                       [&](const char c) {
+                           return GetParamValue(c, args);
+                       });
     }
 
     char GetCurrentFormatType()
@@ -186,7 +186,7 @@ class MESSAGE final
         return format_;
     }
 
-  private:
+private:
     static storm::MessageParam GetParamValue(const char c, va_list &args)
     {
         switch (c)

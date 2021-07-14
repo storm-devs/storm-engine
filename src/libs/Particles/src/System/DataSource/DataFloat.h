@@ -9,7 +9,7 @@ class DataFloat
 
     float Value;
 
-  public:
+public:
     // constructor / destructor
     DataFloat();
     virtual ~DataFloat();

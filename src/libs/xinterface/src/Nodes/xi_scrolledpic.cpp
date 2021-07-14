@@ -228,9 +228,9 @@ void CXI_SCROLLEDPICTURE::ChangeUV(FXYRECT &frNewUV)
         if (pA)
         {
             pA->SetAttributeUseFloat("x", (frNewUV.right - frNewUV.left) * m_fpBaseSize.x /
-                                              static_cast<float>(m_rect.right - m_rect.left));
+                                          static_cast<float>(m_rect.right - m_rect.left));
             pA->SetAttributeUseFloat("y", (frNewUV.bottom - frNewUV.top) * m_fpBaseSize.y /
-                                              static_cast<float>(m_rect.bottom - m_rect.top));
+                                          static_cast<float>(m_rect.bottom - m_rect.top));
         }
     }
 }

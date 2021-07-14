@@ -10,16 +10,16 @@ class TIMER
     using TimePoint = std::chrono::time_point<Clock>;          // Time Point used to get time deltas.
     using Duration = std::chrono::duration<float, std::milli>; // Time difference between time points.
 
-  public:
-    bool Ring = false;            // If true, COMPILER::ProcessFrame adds a runtime event.
-    bool FixedDelta = false;      // Is the time delta between frames constant
+public:
+    bool Ring = false; // If true, COMPILER::ProcessFrame adds a runtime event.
+    bool FixedDelta = false; // Is the time delta between frames constant
     uint32_t FixedDeltaValue = 0; // Value of constant time delta between frames
     uint32_t Delta_Time = 20; // The time difference between current and last frame in milliseconds, as an unsigned int.
-    float fDeltaTime = 0.0f;  // The time difference between current and last frame, as a float
+    float fDeltaTime = 0.0f; // The time difference between current and last frame, as a float
     uint32_t rDelta_Time = Delta_Time;
-    uint32_t fps = 0;            // Frames per second based on the last second.
-    uint32_t fps_count = 0;      // Running total of frames rendered in the last second, which resets to 0 every second.
-    uint32_t fps_time = 0;       // A one-second timer which is used to update the FPS counter on the screen.
+    uint32_t fps = 0; // Frames per second based on the last second.
+    uint32_t fps_count = 0; // Running total of frames rendered in the last second, which resets to 0 every second.
+    uint32_t fps_time = 0; // A one-second timer which is used to update the FPS counter on the screen.
     TimePoint Current, Previous; // Timepoints of when each iteration of the timer has started and finished.
     static constexpr Milliseconds kMaxDelta = Milliseconds{100}; // Maximum time delta per frame.
     static constexpr Milliseconds kFPSUpdateInterval =

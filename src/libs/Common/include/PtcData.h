@@ -20,7 +20,7 @@ class VDX9RENDER;
 
 class PtcData
 {
-  public:
+public:
     struct Triangle
     {
         long index;
@@ -37,7 +37,7 @@ class PtcData
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     PtcData();
     virtual ~PtcData();
 
@@ -78,7 +78,7 @@ class PtcData
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Protection function
     void SFLB_PotectionLoad();
 
@@ -95,7 +95,7 @@ class PtcData
     // void AddClTriangle(long i);
 
     // private:
-  public:
+public:
     // Data block
     void *data;
 

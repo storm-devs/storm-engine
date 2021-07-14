@@ -27,10 +27,10 @@ class ParticleService : public IParticleService
     bool sysDelete;
     std::vector<CreatedManager> CreatedManagers;
 
-  public:
+public:
     // Constructor / destructor
     ParticleService();
-    virtual ~ParticleService();
+    ~ParticleService() override;
 
     bool Init() override;
 

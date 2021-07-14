@@ -266,7 +266,8 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
             do
             {
                 m_aChargeProgress.push_back(BIUtils::GetFromStr_Float(pcTmp, 0.f));
-            } while (pcTmp[0]);
+            }
+            while (pcTmp[0]);
         }
 
         m_dwManFaceColor = pA->GetAttributeAsDword("manfacecolor", m_dwManFaceColor);

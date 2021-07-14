@@ -181,7 +181,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     m_nTiledQuantity = 0;
     if (m_tRect.right != m_tRect.left)
         m_nTiledQuantity = ((m_StringCenter.x - m_rect.left) - m_nStringWidth / 2 - (m_mRect.right - m_mRect.left)) /
-                               (m_tRect.right - m_tRect.left) +
+                           (m_tRect.right - m_tRect.left) +
                            1;
     if (m_nTiledQuantity < 0)
         m_nTiledQuantity = 0;

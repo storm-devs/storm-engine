@@ -11,14 +11,14 @@ class AIShip;
 
 class AIShipSpeedController
 {
-  private:
+private:
     AIShip *pOurAIShip; // our AI ship pointer
 
     uint32_t dwSpeedNum;
     float fSpeedSmooth, fSpeed, fSpeedTime, fTopSpeed;
     float fGlobalMultiply;
 
-  public:
+public:
     void TopSpeed(float _fSpeed);
     void MulSpeed(float _fSpeed);
     void AddSpeed(float _fSpeed);
@@ -34,6 +34,7 @@ class AIShipSpeedController
     {
         pOurAIShip = pShip;
     }
+
     AIShip *GetAIShip() const
     {
         return pOurAIShip;

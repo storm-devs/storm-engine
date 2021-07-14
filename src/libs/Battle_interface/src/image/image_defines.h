@@ -4,6 +4,7 @@
 #include "dx9render.h"
 
 #define BI_IMAGE_VERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
+
 struct BI_IMAGE_VERTEX
 {
     CVECTOR pos;
@@ -22,15 +23,16 @@ enum BIImageType
 
 class IBIImage
 {
-  protected:
+protected:
     IBIImage()
     {
     }
 
-  public:
+public:
     virtual ~IBIImage()
     {
     }
+
     virtual void SetColor(uint32_t color) = 0;
     virtual void SetPosition(long nLeft, long nTop, long nRight, long nBottom) = 0;
     virtual void Set3DPosition(const CVECTOR &vPos, float fWidth, float fHeight) = 0;
@@ -42,12 +44,12 @@ class IBIImage
 
 class IBIString
 {
-  protected:
+protected:
     IBIString()
     {
     }
 
-  public:
+public:
     virtual ~IBIString()
     {
     }

@@ -10,7 +10,7 @@ class BIManCommandList;
 
 class BIManSign
 {
-  public:
+public:
     BIManSign(entid_t BIEntityID, VDX9RENDER *pRS);
     ~BIManSign();
 
@@ -20,16 +20,18 @@ class BIManSign
     size_t AddTexture(const char *pcTextureName, long nCols, long nRows) const;
 
     void Recollect();
+
     void SetUpdate()
     {
         m_bMakeUpdate = true;
     }
+
     bool IsActive() const;
     void SetActive(bool bActive);
     void MakeControl();
     void ExecuteCommand(long command);
 
-  protected:
+protected:
     void Release();
     long CalculateManQuantity();
     void UpdateBuffers(long nShipQ);

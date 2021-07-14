@@ -884,7 +884,7 @@ void PtcData::DebugDraw(VDX9RENDER *rs, float dltTime)
             }
         }
     }
-    const char *tech = "DbgPatchViewZ";
+    auto tech = "DbgPatchViewZ";
     rs->SetTransform(D3DTS_WORLD, CMatrix());
     rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, numTriangles, dbgTriangles, sizeof(DbgVertex),
                         tech);

@@ -66,7 +66,7 @@ bool PathTracks::Load(const char *fileName)
     const long nBoneCount = ((AntFileHeader *)data)->bonesCount;
     // Checking file sizes
     if (size < sizeof(AntFileHeader) + sizeof(char) * nStringSize + sizeof(AntFileBone) * nBoneCount +
-                   sizeof(AntFileTrackElement) * nPoints)
+        sizeof(AntFileTrackElement) * nPoints)
     {
         core.Trace("Camera tracks file %s is invalidate...", fileName);
         delete data;

@@ -14,11 +14,11 @@
 
 class LocRat : public LocLife
 {
-  public:
+public:
     LocRat();
-    virtual ~LocRat();
+    ~LocRat() override;
 
-  private:
+private:
     const char *GetModelName() override;
     const char *GetAniName() override;
     bool PostInit(Animation *ani) override;
@@ -32,7 +32,7 @@ class LocRat : public LocLife
 
     void StartNewAction(Animation *ani);
 
-  private:
+private:
     float nextActionTime;
     float timeout;
     float moveTime;

@@ -12,7 +12,7 @@ struct XYPOINT;
 
 class VXSERVICE
 {
-  public:
+public:
     virtual ~VXSERVICE() = default;
     virtual void Init(VDX9RENDER *pRS, long lWidth, long lHight) = 0;
 

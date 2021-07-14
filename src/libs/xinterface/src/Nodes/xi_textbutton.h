@@ -5,11 +5,11 @@
 // picture
 class CXI_TEXTBUTTON : public CINODE
 {
-  public:
+public:
     CXI_TEXTBUTTON(CXI_TEXTBUTTON &&) = delete;
     CXI_TEXTBUTTON(const CXI_TEXTBUTTON &) = delete;
     CXI_TEXTBUTTON();
-    ~CXI_TEXTBUTTON();
+    ~CXI_TEXTBUTTON() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -25,18 +25,20 @@ class CXI_TEXTBUTTON : public CINODE
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+
     void NotUsingTime(uint32_t Delta_Time)
     {
         m_nPressedDelay = 0;
     }
+
     void SetUsing(bool bUsing) override;
     void MakeLClickPreaction() override;
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void FillPositionIntoVertices();
 
-  protected:
+protected:
     char *m_sGroupName;
     long m_idTex;            // texture identity
     long m_idShadowTex;      // shadow texture

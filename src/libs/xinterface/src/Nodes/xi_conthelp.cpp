@@ -102,7 +102,9 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
     m_helpQuantity = 0;
     if (ini1->ReadString(name1, "helpstr", param, sizeof(param) - 1, ""))
         do
+        {
             m_helpQuantity++;
+        }
         while (ini1->ReadStringNext(name1, "helpstr", param, sizeof(param) - 1));
 
     // Get default help string
@@ -162,13 +164,13 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
             m_pLines[i].dwColor = m_dwBorderColor;
         }
         m_pLines[0].vPos.x = m_pLines[1].vPos.x = m_pLines[2].vPos.x = m_pLines[7].vPos.x =
-            static_cast<float>(m_rect.left);
+                                                                       static_cast<float>(m_rect.left);
         m_pLines[1].vPos.y = m_pLines[2].vPos.y = m_pLines[3].vPos.y = m_pLines[4].vPos.y =
-            static_cast<float>(m_rect.top);
+                                                                       static_cast<float>(m_rect.top);
         m_pLines[3].vPos.x = m_pLines[4].vPos.x = m_pLines[5].vPos.x = m_pLines[6].vPos.x =
-            static_cast<float>(m_rect.right);
+                                                                       static_cast<float>(m_rect.right);
         m_pLines[0].vPos.y = m_pLines[5].vPos.y = m_pLines[6].vPos.y = m_pLines[7].vPos.y =
-            static_cast<float>(m_rect.bottom);
+                                                                       static_cast<float>(m_rect.bottom);
     }
 }
 
@@ -194,13 +196,13 @@ void CXI_CONTEXTHELP::ChangePosition(XYRECT &rNewPos)
     if (m_bBorder)
     {
         m_pLines[0].vPos.x = m_pLines[1].vPos.x = m_pLines[2].vPos.x = m_pLines[7].vPos.x =
-            static_cast<float>(m_rect.left);
+                                                                       static_cast<float>(m_rect.left);
         m_pLines[1].vPos.y = m_pLines[2].vPos.y = m_pLines[3].vPos.y = m_pLines[4].vPos.y =
-            static_cast<float>(m_rect.top);
+                                                                       static_cast<float>(m_rect.top);
         m_pLines[3].vPos.x = m_pLines[4].vPos.x = m_pLines[5].vPos.x = m_pLines[6].vPos.x =
-            static_cast<float>(m_rect.right);
+                                                                       static_cast<float>(m_rect.right);
         m_pLines[0].vPos.y = m_pLines[5].vPos.y = m_pLines[6].vPos.y = m_pLines[7].vPos.y =
-            static_cast<float>(m_rect.bottom);
+                                                                       static_cast<float>(m_rect.bottom);
     }
 }
 

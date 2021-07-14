@@ -9,7 +9,7 @@ class GeomNameParser
     std::vector<char *> Tokens;
     char NamesString[MAX_STRING_SIZE];
 
-  public:
+public:
     // GeomNameParser () : Tokens(_FL_) {};
     //~GeomNameParser () {};
 

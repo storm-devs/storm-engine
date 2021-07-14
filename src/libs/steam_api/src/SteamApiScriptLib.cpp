@@ -8,7 +8,6 @@
 
 namespace steamapi
 {
-
 CREATE_SCRIPTLIBRIARY(SteamApiScriptLib)
 
 namespace
@@ -98,14 +97,14 @@ uint32_t activateGameOverlayDlc(VS_STACK *pS)
 
 uint32_t slSetAchievement(VS_STACK *pS)
 {
-    VDATA *pStr = (VDATA *)pS->Pop();
+    auto pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     long ret = 0;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
     if (nm && nm[0])
     {
-        VDATA *pReturn = (VDATA *)pS->Push();
+        auto pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
@@ -119,7 +118,7 @@ uint32_t slSetAchievement(VS_STACK *pS)
 
 uint32_t slGetAchievement(VS_STACK *pS)
 {
-    VDATA *pStr = (VDATA *)pS->Pop();
+    auto pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     long ret = 0;
     if (!pStr->Get(nm))
@@ -127,7 +126,7 @@ uint32_t slGetAchievement(VS_STACK *pS)
 
     if (nm && nm[0])
     {
-        VDATA *pReturn = (VDATA *)pS->Push();
+        auto pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
@@ -141,20 +140,20 @@ uint32_t slGetAchievement(VS_STACK *pS)
 
 uint32_t slSetStat(VS_STACK *pS)
 {
-    VDATA *pInt = (VDATA *)pS->Pop();
+    auto pInt = (VDATA *)pS->Pop();
     long val = 0;
     long ret = 0;
     if (!pInt->Get(val))
         return IFUNCRESULT_FAILED;
 
-    VDATA *pStr = (VDATA *)pS->Pop();
+    auto pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
 
     if (nm && nm[0])
     {
-        VDATA *pReturn = (VDATA *)pS->Push();
+        auto pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
@@ -168,14 +167,14 @@ uint32_t slSetStat(VS_STACK *pS)
 
 uint32_t slGetStat(VS_STACK *pS)
 {
-    VDATA *pStr = (VDATA *)pS->Pop();
+    auto pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     long ret = 0;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
     if (nm && nm[0])
     {
-        VDATA *pReturn = (VDATA *)pS->Push();
+        auto pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
@@ -190,7 +189,7 @@ uint32_t slGetStat(VS_STACK *pS)
 uint32_t slStoreStats(VS_STACK *pS)
 {
     long ret = 0;
-    VDATA *pReturn = (VDATA *)pS->Push();
+    auto pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
 
@@ -202,7 +201,7 @@ uint32_t slStoreStats(VS_STACK *pS)
 
 uint32_t slClearAchievement(VS_STACK *pS)
 {
-    VDATA *pStr = (VDATA *)pS->Pop();
+    auto pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     long ret = 0;
     if (!pStr->Get(nm))
@@ -210,7 +209,7 @@ uint32_t slClearAchievement(VS_STACK *pS)
 
     if (nm && nm[0])
     {
-        VDATA *pReturn = (VDATA *)pS->Push();
+        auto pReturn = (VDATA *)pS->Push();
         if (!pReturn)
             return IFUNCRESULT_FAILED;
 
@@ -224,13 +223,13 @@ uint32_t slClearAchievement(VS_STACK *pS)
 
 uint32_t slResetStats(VS_STACK *pS)
 {
-    VDATA *pInt = (VDATA *)pS->Pop();
+    auto pInt = (VDATA *)pS->Pop();
     long val = 0;
     long ret = 0;
     if (!pInt->Get(val))
         return IFUNCRESULT_FAILED;
 
-    VDATA *pReturn = (VDATA *)pS->Push();
+    auto pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
 
@@ -322,5 +321,4 @@ bool SteamApiScriptLib::Init()
 
     return true;
 }
-
 } // namespace steamapi

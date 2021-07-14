@@ -7,9 +7,9 @@ class HELPCHOOSER : public Entity
 {
     VDX9RENDER *rs;
 
-  public:
+public:
     HELPCHOOSER();
-    ~HELPCHOOSER();
+    ~HELPCHOOSER() override;
     void SetDevice();
     bool Init() override;
     void Execute(uint32_t Delta_Time);
@@ -33,7 +33,7 @@ class HELPCHOOSER : public Entity
         }
     }
 
-  protected:
+protected:
     void AllRelease();
     bool RunChooser(const char *ChooserGroup);
     void SetRectangle(long newRectNum);
@@ -44,7 +44,7 @@ class HELPCHOOSER : public Entity
     bool MouseMove();
     long GetRectangleFromPos(float x, float y) const;
 
-  protected:
+protected:
     long m_idMouseTexture;
     long m_idPicTexture;
     long m_idBackTexture;

@@ -164,7 +164,7 @@ bool SEA::EnvMap_Render2()
 
     rs->SetView(mViewNew);
 
-    CMatrix _mWorld = CMatrix();
+    auto _mWorld = CMatrix();
     CMatrix _mView = rs->GetView();
     CMatrix _mProj = rs->GetProjection();
     CMatrix _mWorldView = _mWorld * _mView;

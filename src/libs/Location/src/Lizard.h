@@ -14,11 +14,11 @@
 
 class Lizard : public LocLife
 {
-  public:
+public:
     Lizard();
-    virtual ~Lizard();
+    ~Lizard() override;
 
-  private:
+private:
     const char *GetModelName() override;
     const char *GetAniName() override;
     bool PostInit(Animation *ani) override;
@@ -28,6 +28,6 @@ class Lizard : public LocLife
     void IsStartMove(Animation *ani) override;
     void IsStopMove(Animation *ani) override;
 
-  private:
+private:
     float lastMove;
 };

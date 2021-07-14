@@ -13,14 +13,15 @@
 
 class SINKEFFECT : public Entity
 {
-  public:
+public:
     SINKEFFECT();
-    virtual ~SINKEFFECT();
+    ~SINKEFFECT() override;
 
-    virtual bool Init();
-    virtual uint64_t ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
     virtual void Realize(uint32_t dTime);
     virtual void Execute(uint32_t dTime);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -38,7 +39,7 @@ class SINKEFFECT : public Entity
         }
     }
 
-  private:
+private:
     void InitializeSinks();
     TSink *TryToAddSink(const CVECTOR &_pos, float _r);
 

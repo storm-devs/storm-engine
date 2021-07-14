@@ -8,7 +8,7 @@ class VXSERVICE;
 
 class CXI_ToolTip
 {
-  public:
+public:
     CXI_ToolTip(CXI_ToolTip &&) = delete;
     CXI_ToolTip(const CXI_ToolTip &) = delete;
     CXI_ToolTip(VXSERVICE *pPicService, VSTRSERVICE *pStrService, XYPOINT &pntScrSize);
@@ -19,7 +19,7 @@ class CXI_ToolTip
 
     void MousePos(float fDeltaTime, long nX, long nY);
 
-  protected:
+protected:
     void ReleaseAll();
 
     void CreateIndexBuffer();
@@ -29,7 +29,7 @@ class CXI_ToolTip
 
     void ReplaceRectangle(long x, long y);
 
-  protected:
+protected:
     VDX9RENDER *m_rs;
     XI_ONETEX_VERTEX *m_pV;
     uint16_t *m_pI;

@@ -115,7 +115,7 @@ void ROPE::Execute(uint32_t Delta_Time)
             {
                 if (rlist[i]->bUse && !gdata[rlist[i]->HostGroup].bDeleted)
                     SetVertexes(rlist[i], dtime);
-                // DoMove(rlist[i]);
+                    // DoMove(rlist[i]);
                 else if (rlist[i]->len != 0.f) // set all vertex to point(0,0,0)
                 {
                     const auto nulVect = CVECTOR(0.f, 0.f, 0.f);
@@ -158,7 +158,7 @@ void ROPE::Realize(uint32_t Delta_Time)
                 for (auto i = 0; i < groupQuantity; i++)
                     if (!gdata[i].bDeleted && gdata[i].nt != 0 && nVert != 0)
                         if ((~(gdata[i].pMatWorld->Pos() - cp)) * pr < fMaxRopeDist)
-                        // if the distance to the ship is not more than the maximum
+                            // if the distance to the ship is not more than the maximum
                         {
                             static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))
                                 ->SetLightAndFog(true);

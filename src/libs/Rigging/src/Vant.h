@@ -21,10 +21,9 @@ struct VANTVERTEX
 
 class VANT_BASE : public Entity
 {
-
-  public:
+public:
     VANT_BASE();
-    virtual ~VANT_BASE();
+    ~VANT_BASE() override;
     void SetDevice();
     bool Init() override;
     void Realize(uint32_t Delta_Time);
@@ -53,7 +52,7 @@ class VANT_BASE : public Entity
 
     VDX9RENDER *RenderService;
 
-  protected:
+protected:
     // parameters obtained from INI file //
     // -------------------------------------
     int ROPE_QUANT;        // number of ropes
@@ -139,27 +138,42 @@ class VANT_BASE : public Entity
 
 class VANT : public VANT_BASE
 {
-  public:
-    VANT(){};
-    virtual ~VANT(){};
+public:
+    VANT()
+    {
+    };
 
-    virtual void LoadIni();
+    ~VANT() override
+    {
+    };
+
+    void LoadIni() override;
 };
 
 class VANTL : public VANT_BASE
 {
-  public:
-    VANTL(){};
-    virtual ~VANTL(){};
+public:
+    VANTL()
+    {
+    };
 
-    virtual void LoadIni();
+    ~VANTL() override
+    {
+    };
+
+    void LoadIni() override;
 };
 
 class VANTZ : public VANT_BASE
 {
-  public:
-    VANTZ(){};
-    virtual ~VANTZ(){};
+public:
+    VANTZ()
+    {
+    };
 
-    virtual void LoadIni();
+    ~VANTZ() override
+    {
+    };
+
+    void LoadIni() override;
 };

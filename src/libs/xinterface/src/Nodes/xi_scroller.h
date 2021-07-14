@@ -5,9 +5,9 @@
 // static inactive images into one object
 class CXI_SCROLLER : public CINODE
 {
-  public:
+public:
     CXI_SCROLLER();
-    ~CXI_SCROLLER();
+    ~CXI_SCROLLER() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -28,7 +28,7 @@ class CXI_SCROLLER : public CINODE
 
     std::vector<std::string> m_asOwnedNodes;
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void MakeOwnedControl();
     void UpPress();
@@ -38,7 +38,7 @@ class CXI_SCROLLER : public CINODE
     void FillVertexBuffer();
     void MouseMove();
 
-  protected:
+protected:
     FXYRECT m_upButtonPos;
     FXYRECT m_downButtonPos;
     FXYPOINT m_pressOffset;

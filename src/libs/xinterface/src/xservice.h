@@ -24,9 +24,9 @@ class XSERVICE : public VXSERVICE
         XYRECT pTextureRect;
     };
 
-  public:
+public:
     XSERVICE();
-    ~XSERVICE();
+    ~XSERVICE() override;
 
     // initialization of service
     void Init(VDX9RENDER *pRS, long lWidth, long lHight) override;
@@ -52,10 +52,10 @@ class XSERVICE : public VXSERVICE
 
     void ReleaseAll() override;
 
-  protected:
+protected:
     void LoadAllPicturesInfo();
 
-  protected:
+protected:
     VDX9RENDER *m_pRS;
 
     long m_dwListQuantity;
@@ -106,7 +106,7 @@ class ComboString
     void AddToCombo(char *fontName, const XYPOINT &posStrStart, char *str);
     void AddToCombo(XYRECT posPic, char *picTexName, FXYRECT picUV);
 
-  public:
+public:
     ComboString();
     ~ComboString();
 

@@ -1,4 +1,3 @@
-
 #pragma once
 
 // ANIMATION_HEADER
@@ -19,7 +18,6 @@ struct HEADER
     long nJoints;
     float framesPerSec;
 };
-
 }; // namespace ANFILE
 
 #pragma pack(pop)

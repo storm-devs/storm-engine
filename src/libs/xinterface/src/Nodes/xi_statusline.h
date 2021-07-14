@@ -5,9 +5,9 @@
 // static inactive images into one object
 class CXI_STATUSLINE : public CINODE
 {
-  public:
+public:
     CXI_STATUSLINE();
-    ~CXI_STATUSLINE();
+    ~CXI_STATUSLINE() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -24,11 +24,11 @@ class CXI_STATUSLINE : public CINODE
     void SaveParametersToIni() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void Refresh() const;
 
-  protected:
+protected:
     char *m_sGroupName;  // image list name
     long m_idTex;        // texture identificator
     long m_vBuf;         // vertex buffer identificator

@@ -18,9 +18,9 @@ class CAviPlayer : public xiBaseVideo
     VDX9RENDER *rs;
     bool m_bShowVideo;
 
-  public:
+public:
     CAviPlayer();
-    ~CAviPlayer();
+    ~CAviPlayer() override;
     bool Init() override;
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time);
@@ -47,12 +47,13 @@ class CAviPlayer : public xiBaseVideo
     {
         m_bShowVideo = bShowVideo;
     }
+
     IDirect3DTexture9 *GetCurrentVideoTexture() override
     {
         return pTex;
     }
 
-  protected:
+protected:
     bool m_bContinue;
 
     IDirectDraw *pDD;

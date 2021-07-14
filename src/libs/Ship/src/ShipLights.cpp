@@ -141,7 +141,7 @@ void ShipLights::AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos)
         return;
     }
 
-    ShipLight light = ShipLight{};
+    auto light = ShipLight{};
     light.bDynamicLight = true;
     light.pObject = pObject;
     light.vPos = vPos;

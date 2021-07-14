@@ -11,14 +11,14 @@ class AIShip;
 
 class AIShipRotateController
 {
-  private:
+private:
     AIShip *pOurAIShip; // our AI ship pointer
 
     uint32_t dwRotateNum;
     float fRotateMode, fRotateTime, fRotateSmooth, fRotate;
     float fGlobalMultiply;
 
-  public:
+public:
     void AddRotate(float _fRotate);
     void SetGlobalMultiply(float _fGlobalMul);
 
@@ -32,6 +32,7 @@ class AIShipRotateController
     {
         pOurAIShip = pShip;
     }
+
     AIShip *GetAIShip() const
     {
         return pOurAIShip;

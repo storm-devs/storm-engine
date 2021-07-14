@@ -30,9 +30,9 @@ class Sharks : public Entity
     {
         static uint16_t indeces[];
 
-      public:
+    public:
         Shark();
-        ~Shark();
+        ~Shark() override;
 
         bool Init(float vp_x, float vp_z, bool isLoadModel = true);
 
@@ -82,15 +82,16 @@ class Sharks : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Sharks();
-    virtual ~Sharks();
+    ~Sharks() override;
 
     // Initialization
-    bool Init();
+    bool Init() override;
     // Execution
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -111,10 +112,10 @@ class Sharks : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     bool LoadPeriscopeModel();
 
-  private:
+private:
     VDX9RENDER *rs;
     Shark shark[6];
     long numShakes;

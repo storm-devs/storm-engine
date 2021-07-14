@@ -6,9 +6,9 @@ class IBoardingStatus : public Entity
 {
     VDX9RENDER *rs;
 
-  public:
+public:
     IBoardingStatus();
-    ~IBoardingStatus();
+    ~IBoardingStatus() override;
     bool Init() override;
     void Realize(uint32_t delta_time);
     uint64_t ProcessMessage(MESSAGE &message) override;
@@ -29,11 +29,11 @@ class IBoardingStatus : public Entity
         }
     }
 
-  protected:
+protected:
     void Create();
     void SetCharactersHP(float myHP, float enemyHP);
 
-  protected:
+protected:
     // show parameters
     //-----------------------
     long m_Width;

@@ -83,9 +83,9 @@ class SAIL : public SAIL_BASE
     long texl;
     long m_nEmptyGerbTex;
 
-  public:
+public:
     SAIL();
-    ~SAIL();
+    ~SAIL() override;
     // Entity func
     bool Init() override;
     void Realize(uint32_t Delta_Time);
@@ -102,10 +102,12 @@ class SAIL : public SAIL_BASE
     bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
               ADD_POLYGON_FUNC addpoly) override;
     float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
+
     entid_t GetShipID() override
     {
         return gdata[LastTraceGroup].shipEI;
     }
+
     SAILONE_BASE *FindSailForCharacter(int chrIdx, char *nodeName, int grNum) override;
     uint32_t AttributeChanged(ATTRIBUTES *pAttr) override;
 
@@ -135,7 +137,7 @@ class SAIL : public SAIL_BASE
 
     SAILGROUP sg;
 
-  private:
+private:
     SAILTIME tm;
     // list of all sails
     int sailQuantity;

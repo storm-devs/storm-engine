@@ -10,26 +10,26 @@
 // DEFINES & TYPES
 ///////////////////////////////////////////////////////////////////
 
-typedef struct
+using tSoundDriverDescriptor = struct
 {
     LPGUID guid;
     char description[COMMON_STRING_LENGTH];
     char driverName[COMMON_STRING_LENGTH];
-} tSoundDriverDescriptor;
+};
 
-typedef uint32_t TSD_ID;
+using TSD_ID = uint32_t;
 
-typedef struct
+using tSoundStatistics = struct
 {
     long soundsCount, maxSoundsCount, bytesInBuffers, maxBytesInBuffers, bytesCached, maxBytesCached, totalMem, freeMem;
-} tSoundStatistics;
+};
 
 ///////////////////////////////////////////////////////////////////
 // INTERFACE DEFINITION
 ///////////////////////////////////////////////////////////////////
 class VSoundService : public SERVICE
 {
-  public:
+public:
     bool Init() override = 0;
     uint32_t RunSection() override = 0;
     void RunStart() override = 0;

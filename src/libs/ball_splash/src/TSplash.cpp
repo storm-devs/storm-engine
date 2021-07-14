@@ -34,7 +34,7 @@ uint32_t Desaturate(uint32_t _color, float _k)
 {
     auto r = (_color >> 16) & 0xFF;
     auto g = (_color >> 8) & 0xFF;
-    auto b = (_color)&0xFF;
+    auto b = (_color) & 0xFF;
     const auto grayed = (r + g + b) / 3;
 
     r = static_cast<uint32_t>(grayed * _k + r * (1.f - _k));
@@ -44,7 +44,8 @@ uint32_t Desaturate(uint32_t _color, float _k)
 }
 
 //--------------------------------------------------------------------
-TSplash::TSplash() : enabled(false), time(0)
+TSplash::TSplash()
+    : enabled(false), time(0)
 {
 }
 

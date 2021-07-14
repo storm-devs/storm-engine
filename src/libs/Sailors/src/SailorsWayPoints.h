@@ -56,7 +56,7 @@ struct Link
 
 class Links
 {
-  public:
+public:
     std::vector<Link> link;
     int selected;
     int count;
@@ -124,13 +124,13 @@ struct Points
 
 class SailorsPoints
 {
-  private:
+private:
     bool PointsPassed[MAX_POINTS];        // tmp mark of passed points (for finding a path)
     float matrix[MAX_POINTS][MAX_POINTS]; // Matrix for fast path finding
 
     Path getPath(int src, int dst, int l); // Finding a way
 
-  public:
+public:
     Points points;
     Links links;
 

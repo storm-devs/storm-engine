@@ -17,21 +17,21 @@ class WdmCamera
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmCamera();
     virtual ~WdmCamera();
 
     // --------------------------------------------------------------------------------------------
     // Moving the camera
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     void Init(float defAy, float defHeight = -1.0f);
     void Move(float dltTime, VDX9RENDER *rs);
 
     // --------------------------------------------------------------------------------------------
     // Control functions
     // --------------------------------------------------------------------------------------------
-  protected:
+protected:
     virtual void CtrlProcess(float dltTime) = 0;
     virtual float MoveLeftRight(float dltTime) = 0;
     virtual float MoveUpDown(float dltTime) = 0;
@@ -43,7 +43,7 @@ class WdmCamera
     //--------------------------------------------------------------------------------------------
     //
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     CVECTOR pos;
     CVECTOR ang;
     float realHeight;
@@ -54,10 +54,10 @@ class WdmCamera
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     void CheckRange();
 
-  private:
+private:
     float scrollSpeed;
     float rotateSpeed;
     float elasticAy;

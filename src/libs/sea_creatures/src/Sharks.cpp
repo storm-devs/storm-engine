@@ -44,7 +44,8 @@ uint16_t Sharks::Shark::indeces[] = {
     0, 1, 2, 0, 2, 3, 1, 4, 2, 2, 4, 5, 2, 5, 6, 2, 6, 3, 4, 7, 8, 4, 8, 5, 5, 8, 6, 6, 8, 9,
 };
 
-Sharks::Shark::Shark() : fforce(), spos(), angs(), vBase(0), model(0)
+Sharks::Shark::Shark()
+    : fforce(), spos(), angs(), vBase(0), model(0)
 {
     pos = 0.0f;
     vel = 0.0f;
@@ -508,7 +509,8 @@ long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SE
 // Construction, destruction
 // ============================================================================================
 
-Sharks::Sharks() : sea(0), island(0), indeces{}, vrt{}
+Sharks::Sharks()
+    : sea(0), island(0), indeces{}, vrt{}
 {
     rs = nullptr;
     camPos = 0.0f;

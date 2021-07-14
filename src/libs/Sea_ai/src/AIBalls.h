@@ -49,7 +49,7 @@ struct BALL_TYPE
 // ============================================================================
 class AIBalls : public Entity
 {
-  private:
+private:
     CANNON_TRACE_BASE *pSail, *pSea, *pFort, *pIsland;
 
     float fDeltaTimeMultiplyer;
@@ -98,11 +98,11 @@ class AIBalls : public Entity
         }
     }
 
-  public:
+public:
     static AIBalls *pAIBalls;
 
     AIBalls();
-    ~AIBalls();
+    ~AIBalls() override;
 
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);

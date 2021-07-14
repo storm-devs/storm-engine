@@ -5,7 +5,7 @@
 
 class SHIP_DESCRIBE_LIST
 {
-  public:
+public:
     struct SHIP_DESCR
     {
         bool isMyShip;
@@ -25,31 +25,36 @@ class SHIP_DESCRIBE_LIST
         SHIP_DESCR *next;
     };
 
-  public:
+public:
     SHIP_DESCRIBE_LIST();
     ~SHIP_DESCRIBE_LIST();
 
     void Add(long mainChrIndex, long chIdx, ATTRIBUTES *pChAttr, ATTRIBUTES *pShipAttr, bool bMyShip, long relation,
              uint32_t dwShipColor);
+
     SHIP_DESCR *GetMainCharacterShip() const
     {
         return mainCharacter;
     }
+
     ATTRIBUTES *GetMainCharacterShipAttr() const
     {
         return pMainShipAttr;
     }
+
     void Release(long charIdx);
     void ShipSink(long charIdx);
     void ReleaseAll();
     SHIP_DESCR *FindShip(long idxCharacter) const;
+
     SHIP_DESCR *GetShipRoot() const
     {
         return root;
     }
+
     void Refresh();
 
-  protected:
+protected:
     SHIP_DESCR *root;
     SHIP_DESCR *mainCharacter;
     ATTRIBUTES *pMainShipAttr;

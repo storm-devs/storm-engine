@@ -8,9 +8,9 @@ class BIManSign;
 class BATTLE_LAND_INTERFACE : public Entity
 {
     // metods
-  public:
+public:
     BATTLE_LAND_INTERFACE();
-    ~BATTLE_LAND_INTERFACE();
+    ~BATTLE_LAND_INTERFACE() override;
     bool Init() override;
     void Execute(uint32_t delta_time) const;
     void Realize(uint32_t delta_time);
@@ -33,7 +33,7 @@ class BATTLE_LAND_INTERFACE : public Entity
         }
     }
 
-  protected:
+protected:
     void SetShowParameters();
     void SetParameters();
     void UpdateCommandos() const;
@@ -45,7 +45,7 @@ class BATTLE_LAND_INTERFACE : public Entity
     void SetTextData();
 
     // data
-  protected:
+protected:
     VDX9RENDER *m_pRS;
     bool m_bShowCommandos;
 

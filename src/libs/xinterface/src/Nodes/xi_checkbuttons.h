@@ -36,11 +36,11 @@ struct ButtonDescribe
 // picture
 class CXI_CHECKBUTTONS : public CINODE
 {
-  public:
+public:
     CXI_CHECKBUTTONS(CXI_CHECKBUTTONS &&) = delete;
     CXI_CHECKBUTTONS(const CXI_CHECKBUTTONS &) = delete;
     CXI_CHECKBUTTONS();
-    ~CXI_CHECKBUTTONS();
+    ~CXI_CHECKBUTTONS() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -60,7 +60,7 @@ class CXI_CHECKBUTTONS : public CINODE
     bool GetInternalNameList(std::vector<std::string> &aStr) override;
     void SetInternalName(std::string &sName) override;
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void AddButton(const char *pcText, bool bDisable, bool bSelect);
     void ChangeText(long nButtonNum, const char *pcText);

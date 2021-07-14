@@ -6,9 +6,9 @@ class BI_ManagerBase;
 
 class BI_BaseNode : public BI_ManagerNodeBase
 {
-  public:
+public:
     BI_BaseNode(BI_ManagerBase *pManager);
-    virtual ~BI_BaseNode();
+    ~BI_BaseNode() override;
 
     void Update() override;
 
@@ -21,10 +21,12 @@ class BI_BaseNode : public BI_ManagerNodeBase
     {
         return false;
     }
+
     bool IsMouseClickReaction() override
     {
         return false;
     }
+
     bool IsMouseMoveReaction() override
     {
         return false;
@@ -34,12 +36,13 @@ class BI_BaseNode : public BI_ManagerNodeBase
     {
         return m_pManager;
     }
+
     VDX9RENDER *Render() const
     {
         return m_pRS;
     }
 
-  protected:
+protected:
     BI_ManagerBase *m_pManager;
     VDX9RENDER *m_pRS;
 };

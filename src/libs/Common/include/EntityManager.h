@@ -23,7 +23,7 @@ class EntityManager final
 
     using hash_t = uint32_t;
 
-  public: // TODO: this is a workaround. i need to implement specific iterator returning only id
+public: // TODO: this is a workaround. i need to implement specific iterator returning only id
     /* entity structure */
     struct EntityInternalData
     {
@@ -37,7 +37,7 @@ class EntityManager final
         hash_t hash;
     };
 
-  public:
+public:
     using layer_index_t = uint8_t;
 
     /* layer structure */
@@ -56,7 +56,7 @@ class EntityManager final
         bool frozen;
     };
 
-  private:
+private:
     /* static array of layers */
     static inline std::array<Layer, max_layers_num> layers_;
 
@@ -100,12 +100,12 @@ class EntityManager final
         deletedArr[deletedSize++] = index;
     }
 
-  public:
+public:
     using EntityVector = const std::vector<entid_t>;
     using LayerIterators =
-        std::pair<decltype(Layer::entities)::const_iterator, decltype(Layer::entities)::const_iterator>;
+    std::pair<decltype(Layer::entities)::const_iterator, decltype(Layer::entities)::const_iterator>;
     using AllEntIterators =
-        std::pair<decltype(entities_.first)::const_iterator, decltype(entities_.first)::const_iterator>;
+    std::pair<decltype(entities_.first)::const_iterator, decltype(entities_.first)::const_iterator>;
 
     /* fully static constexpr class */
     EntityManager() = delete;
@@ -142,7 +142,9 @@ class EntityManager final
 
         const auto targetIdx =
             std::upper_bound(std::begin(arr), std::begin(arr) + size, std::pair<priority_t, entid_t>{priority, {}},
-                             [](auto &lhs, auto &rhs) { return lhs.first < rhs.first; }) -
+                             [](auto &lhs, auto &rhs) {
+                                 return lhs.first < rhs.first;
+                             }) -
             std::begin(arr);
 
         // if this is not last element
@@ -185,7 +187,9 @@ class EntityManager final
 
         const auto lowerIdx =
             std::lower_bound(std::begin(arr), std::begin(arr) + size, std::pair<priority_t, entid_t>{priority, {}},
-                             [](auto &lhs, auto &rhs) { return lhs.first < rhs.first; }) -
+                             [](auto &lhs, auto &rhs) {
+                                 return lhs.first < rhs.first;
+                             }) -
             std::begin(arr);
 
         assert(lowerIdx < size); // is this ok?
@@ -290,7 +294,7 @@ class EntityManager final
         return entData.deleted ? nullptr : entData.ptr;
     }
 
-    static auto GetEntityIdVector(const Layer::Type type) -> EntityVector
+    static EntityVector GetEntityIdVector(const Layer::Type type)
     {
         std::vector<entid_t> result;
         // should be vector of layer iterators actually... special iterator would be cool here too.
@@ -313,12 +317,12 @@ class EntityManager final
     }
 
     // TODO: hash...
-    static auto GetEntityIdVector(const char *name) -> EntityVector
+    static EntityVector GetEntityIdVector(const char *name)
     {
         return GetEntityIdVector(MakeHashValue(name));
     }
 
-    static auto GetEntityIdVector(const uint32_t hash) -> EntityVector
+    static EntityVector GetEntityIdVector(const uint32_t hash)
     {
         std::vector<entid_t> result;
         result.reserve(max_ent_num); // TODO: investigate memory consumption
@@ -337,7 +341,7 @@ class EntityManager final
         return result;
     }
 
-    static constexpr auto GetEntityIdIterators(const layer_index_t index) -> LayerIterators
+    static constexpr LayerIterators GetEntityIdIterators(const layer_index_t index)
     {
         assert(index < max_layers_num);
 
@@ -347,17 +351,17 @@ class EntityManager final
     }
 
     /* this is (temporary) workaround solution */
-    static constexpr auto GetEntityIdIterators() -> AllEntIterators
+    static constexpr AllEntIterators GetEntityIdIterators()
     {
         return std::pair{std::begin(entities_.first), std::begin(entities_.first) + entities_.second};
     }
 
-    static auto GetEntityId(const char *name) -> entid_t
+    static entid_t GetEntityId(const char *name)
     {
         return GetEntityId(MakeHashValue(name));
     }
 
-    static auto GetEntityId(const uint32_t hash) -> entid_t
+    static entid_t GetEntityId(const uint32_t hash)
     {
         const auto &arr = entities_.first;
         const auto size = entities_.second;

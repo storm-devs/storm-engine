@@ -9,7 +9,7 @@
 
 template <class TYPE> class GMXQSort
 {
-  public:
+public:
     void QSort(int (*compare_f)(TYPE, TYPE), TYPE *ArrayToSort, int uCount)
     {
         if (uCount <= 0)
@@ -17,7 +17,7 @@ template <class TYPE> class GMXQSort
         QSortRecursive(compare_f, ArrayToSort, 0, (uCount - 1));
     }
 
-  protected:
+protected:
     void QSortRecursive(int (*compare_func)(TYPE, TYPE), TYPE *pArr, int d, int h)
     {
         int i, j;
@@ -49,7 +49,8 @@ template <class TYPE> class GMXQSort
                 i--;
                 j++;
             }
-        } while (j <= i);
+        }
+        while (j <= i);
 
         if (d < i)
         {

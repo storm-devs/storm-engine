@@ -22,10 +22,12 @@ class ISPYGLASS : public Entity
         {
             pImage = nullptr;
         };
+
         ~ImageParam()
         {
             Release();
         }
+
         void Release();
         void LoadFromAttr(BIImageRender *pImgRender, ATTRIBUTES *pA, const char *pcDefName, long nDefLeftPos,
                           long nDefTopPos, long nDefRightPos, long nDefBottomPos, long nPrior);
@@ -82,9 +84,9 @@ class ISPYGLASS : public Entity
         float fCurActivateTime;
     };
 
-  public:
+public:
     ISPYGLASS();
-    ~ISPYGLASS();
+    ~ISPYGLASS() override;
     bool Init() override;
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time) const;
@@ -107,7 +109,7 @@ class ISPYGLASS : public Entity
         }
     }
 
-  protected:
+protected:
     VDX9RENDER *rs;
     BIImageRender *m_pImgRender;
 
@@ -170,7 +172,7 @@ class ISPYGLASS : public Entity
     float m_fInfoKeepDelay;
     float m_fMaxInfoKeepDelay;
 
-  protected:
+protected:
     void Release();
     ATTRIBUTES *GetAttr(const char *pcAttrName) const;
     void TurnOnTelescope(bool bTurnOn);

@@ -60,14 +60,14 @@ class BaseEmitter : public IEmitter
 
     void IncreaseTime(float DeltaTime);
 
-  protected:
+protected:
     std::string Name;
     ParticleSystem *pMaster;
 
-  public:
+public:
     // Constructor / destructor
     BaseEmitter(ParticleSystem *pSystem);
-    virtual ~BaseEmitter();
+    ~BaseEmitter() override;
 
     // Get a position for the emission of new particles
     virtual Vector GetNewParticlePosition(float DeltaTime) = 0;

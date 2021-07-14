@@ -6,7 +6,7 @@
 
 class BITextInfo final
 {
-  public:
+public:
     BITextInfo(BITextInfo &&text_info) noexcept;
 
     BITextInfo(const BITextInfo &text_info);
@@ -30,7 +30,7 @@ class BITextInfo final
 
 class BILinesInfo
 {
-  public:
+public:
     BILinesInfo();
     ~BILinesInfo();
     void Release();
@@ -46,7 +46,7 @@ class BIImageRender;
 
 class BIImagesInfo
 {
-  public:
+public:
     BIImagesInfo();
     ~BIImagesInfo();
     void Release();
@@ -60,7 +60,7 @@ class BIImagesInfo
 
 class BIBorderInfo
 {
-  public:
+public:
     BIBorderInfo();
     ~BIBorderInfo();
     void Release();
@@ -84,7 +84,7 @@ class BIBorderInfo
 class BIUtils
 {
     //---------------------------------------
-  public: // functions
+public: // functions
     static long GetLongFromAttr(ATTRIBUTES *pA, const char *name, long defVal);
     static float GetFloatFromAttr(ATTRIBUTES *pA, const char *name, float defVal);
     static bool ReadStringFromAttr(ATTRIBUTES *pA, const char *name, char *buf, long bufSize, const char *defVal);
@@ -113,7 +113,7 @@ class BIUtils
     static void PrintTextInfoArray(std::vector<BITextInfo> &tia);
     //---------------------------------------
     //---------------------------------------
-  public: // data
+public: // data
     static entid_t idBattleInterface;
     static uint32_t g_dwBlinkColor;
     //---------------------------------------

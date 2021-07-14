@@ -25,8 +25,9 @@ struct MTX_PRJ_VECTOR
 
 class CMatrix
 {
-  public:
-    union {
+public:
+    union
+    {
         alignas(16) float matrix[16]; // espkk # remove inline asm # 30/Dec/2017
         float m[4][4];
 

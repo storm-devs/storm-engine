@@ -10,8 +10,10 @@
 
 class LOCAL_COLLIDE
 {
-  public:
-    virtual ~LOCAL_COLLIDE(){};
+public:
+    virtual ~LOCAL_COLLIDE()
+    {
+    };
 
     // clip faces into the box and returns num of faces
     virtual long SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOnly = false) = 0;
@@ -25,8 +27,8 @@ class LOCAL_COLLIDE
 
 class COLLIDE : public SERVICE
 {
-  public:
-    virtual ~COLLIDE() = default;
+public:
+    ~COLLIDE() override = default;
 
     // creates LocalCollide object which must be deleted after use
     virtual LOCAL_COLLIDE *CreateLocalCollide(EntityManager::layer_index_t idx) = 0;

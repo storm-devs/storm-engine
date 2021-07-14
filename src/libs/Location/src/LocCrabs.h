@@ -11,11 +11,11 @@
 
 class LocCrabs : public Entity
 {
-  public:
+public:
     LocCrabs();
-    virtual ~LocCrabs();
+    ~LocCrabs() override;
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Initialization
     bool Init() override;
     // Execution
@@ -44,7 +44,7 @@ class LocCrabs : public Entity
     uint64_t ProcessMessage(MESSAGE &message) override;
 
     //--------------------------------------------------------------------------------------------
-  private:
+private:
     LocCrab crab[32];
     long num;
 };

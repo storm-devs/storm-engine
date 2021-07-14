@@ -7,16 +7,17 @@ class BIImageRender;
 
 class BIString : public IBIString
 {
-  public:
+public:
     BIString(BIString &&) = delete;
     BIString(const BIString &) = delete;
     BIString(BIImageRender *pImgRender, VDX9RENDER *rs);
-    ~BIString();
+    ~BIString() override;
 
     long GetPrioritet() const
     {
         return m_nPrioritet;
     }
+
     void SetPrioritet(long nPrior)
     {
         m_nPrioritet = nPrior;
@@ -34,16 +35,18 @@ class BIString : public IBIString
     {
         m_dwColor = color;
     }
+
     void SetScale(float fScale) override
     {
         m_fScale = fScale;
     }
+
     void SetFont(const char *pcFontName) override;
     void SetAlign(long nHorzAlign, long nVertAlign) override;
     void SetPosition(long nLeft, long nTop, long nRight, long nBottom) override;
     void SetString(const char *pcStr) override;
 
-  protected:
+protected:
     void Release();
     void UpdateString();
 

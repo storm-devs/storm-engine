@@ -72,7 +72,7 @@ void AIShipCameraController::Execute(float fDeltaTime)
                 if (GetAIShip() != AIShip::AIShips[i])
                 {
                     auto vFakeShipPos = AIShip::AIShips[i]->GetPos() + (!(AIShip::AIShips[i]->GetPos() - vOurPos)) *
-                                                                           AIShip::AIShips[i]->GetBoxsize().z * 0.8f;
+                                        AIShip::AIShips[i]->GetBoxsize().z * 0.8f;
                     AIHelper::pRS->DrawSphere(vFakeShipPos, 2.0f, 0xFF00FF00);
                     const auto fDistance = (vFakeShipPos - vFirePos).GetLength2D();
                     // AIShip::AIShips[i]->GetDistance(vFirePos);

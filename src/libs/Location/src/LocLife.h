@@ -18,17 +18,17 @@ class Animation;
 
 class LocLife : public AnimationEventListener
 {
-  public:
+public:
     LocLife();
-    virtual ~LocLife();
+    ~LocLife() override;
 
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     bool Init(Location *loc);
     void Update(float dltTime);
 
     //--------------------------------------------------------------------------------------------
-  protected:
+protected:
     virtual const char *GetModelName() = 0;
     virtual const char *GetAniName() = 0;
     virtual bool PostInit(Animation *ani) = 0;
@@ -39,21 +39,21 @@ class LocLife : public AnimationEventListener
     virtual void IsStopMove(Animation *ani) = 0;
 
     //--------------------------------------------------------------------------------------------
-  protected:
+protected:
     void StartMove();
     void StopMove();
     bool IsNearPlayer(float radius) const;
 
-  private:
+private:
     long FindPos();
     long FindRandomPos(CVECTOR &pos) const;
 
     //--------------------------------------------------------------------------------------------
-  protected:
+protected:
     float kSpeed;
     float speed;
 
-  private:
+private:
     Location *location;
     entid_t model;
     long node;

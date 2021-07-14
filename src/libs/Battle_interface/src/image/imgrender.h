@@ -4,7 +4,7 @@
 
 class BIImageRender
 {
-  public:
+public:
     BIImageRender(VDX9RENDER *pRS);
     ~BIImageRender();
 
@@ -39,7 +39,7 @@ class BIImageRender
 
     void SetBaseScreenSize(long nHSize, long nVSize, long nHOffset, long nVOffset);
 
-  protected:
+protected:
     void Release();
     bool GetFirstPrioritetRange();
     bool GetNextPrioritetRange();

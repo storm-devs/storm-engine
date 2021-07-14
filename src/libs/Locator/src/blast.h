@@ -7,7 +7,7 @@
 #include "geometry.h"
 #include "vmodule_api.h"
 
-typedef struct
+using GEOPARTICLE = struct
 {
     CVECTOR pos;
     CVECTOR ang;
@@ -17,7 +17,7 @@ typedef struct
     float speed;
     bool bDouble;
     bool bEffect;
-} GEOPARTICLE;
+};
 
 class BLAST : public Entity
 {
@@ -31,22 +31,23 @@ class BLAST : public Entity
     CMatrix Center;
     entid_t Splash;
 
-  public:
-    ~BLAST();
+public:
+    ~BLAST() override;
     BLAST();
-    bool Init();
-    uint64_t ProcessMessage(MESSAGE &message);
-    uint32_t AttributeChanged(ATTRIBUTES *);
+    bool Init() override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
+    uint32_t AttributeChanged(ATTRIBUTES *) override;
     void Realize(uint32_t Delta_Time);
     void ProcessTime(uint32_t Delta_Time);
     void SetBlastCenter(CVECTOR pos, CVECTOR ang);
     void AddGeometry(char *name, long num);
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
         {
-        // case Stage::execute:
-        //    Execute(delta); break;
+            // case Stage::execute:
+            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;

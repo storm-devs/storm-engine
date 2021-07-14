@@ -4,14 +4,14 @@
 
 class BIManCommandList : public BICommandList
 {
-  public:
+public:
     BIManCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs);
-    virtual ~BIManCommandList();
+    ~BIManCommandList() override;
 
     void FillIcons() override;
     void Init() override;
 
-  protected:
+protected:
     void Release();
 
     long CommandAdding();

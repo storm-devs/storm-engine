@@ -6,9 +6,9 @@
 // static inactive images into one object
 class CXI_IMGCOLLECTION : public CINODE
 {
-  public:
+public:
     CXI_IMGCOLLECTION();
-    ~CXI_IMGCOLLECTION();
+    ~CXI_IMGCOLLECTION() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -29,14 +29,14 @@ class CXI_IMGCOLLECTION : public CINODE
 
     void AddImage(const char *pcPicName, uint32_t dwColor, XYRECT pos);
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     // set into vertex&index buffers value for image number <rectNum> : screen&texture position
     void SetBuffers(XI_ONETEX_VERTEX *pVBuf, uint16_t *pIBuf, int rectNum, XYRECT &scrRect, FXYRECT &texRect,
                     uint32_t dwColor);
     void UpdateBuffers();
 
-  protected:
+protected:
     bool m_bRelativeRect;
     char *sGroupName; // image list name
     long texl;        // texture identificator

@@ -2,7 +2,7 @@
 
 class SCRIPT_LIBRIARY
 {
-  public:
+public:
     virtual ~SCRIPT_LIBRIARY() = default;
     virtual bool Init() = 0;
 };

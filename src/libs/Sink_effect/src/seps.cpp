@@ -143,14 +143,17 @@ SEPS_PS *SEPS_PS::GetLeftNode()
 {
     return l_PTR;
 }
+
 SEPS_PS *SEPS_PS::GetRightNode()
 {
     return r_PTR;
 }
+
 void SEPS_PS::SetLeftNode(SEPS_PS *node)
 {
     l_PTR = node;
 }
+
 void SEPS_PS::SetRightNode(SEPS_PS *node)
 {
     r_PTR = node;

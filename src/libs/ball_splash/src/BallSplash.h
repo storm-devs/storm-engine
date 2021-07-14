@@ -13,14 +13,15 @@
 
 class BALLSPLASH : public Entity
 {
-  public:
+public:
     BALLSPLASH();
-    virtual ~BALLSPLASH();
+    ~BALLSPLASH() override;
 
-    virtual bool Init();
-    virtual uint64_t ProcessMessage(MESSAGE &message);
+    bool Init() override;
+    uint64_t ProcessMessage(MESSAGE &message) override;
     virtual void Realize(uint32_t dTime);
     virtual void Execute(uint32_t dTime);
+
     void BALLSPLASH::ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -38,7 +39,7 @@ class BALLSPLASH : public Entity
         }
     }
 
-  private:
+private:
     void InitializeSplashes();
     TSplash *TryToAddSplash(const CVECTOR &_pos, const CVECTOR &_dir);
 

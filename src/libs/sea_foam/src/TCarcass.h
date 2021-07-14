@@ -12,6 +12,7 @@
 #define BOUND_UPPER(a, b)                                                                                              \
     if ((a) > (b))                                                                                                     \
         (a) = (b);
+
 //--------------------------------------------------------------------
 struct tCarcassVertex
 {
@@ -32,7 +33,7 @@ struct tMeasure
 ///////////////////////////////////////////////////////////////////
 class TCarcass
 {
-  public:
+public:
     TCarcass(int _levelsCount, int _measurePointsCount, VDX9RENDER *_renderer, bool _normalsInverted = false);
     virtual ~TCarcass();
 
@@ -44,7 +45,7 @@ class TCarcass
 
     void SetSpeed(float _uSpeed, float _vSpeed, float _speedA);
 
-  private:
+private:
     void RebuildLevels(tCarcassVertex *_vBuffer, bool _firstDraw, uint32_t dTime);
     void RebuildIndexes(uint16_t *_iBuffer);
 

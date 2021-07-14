@@ -8,7 +8,7 @@ namespace storm
 {
 class SDLWindow : public OSWindow
 {
-  public:
+public:
     SDLWindow(int width, int height, bool fullscreen);
     ~SDLWindow() override;
 
@@ -33,7 +33,7 @@ class SDLWindow : public OSWindow
     SDL_Window *SDLHandle();
     void ProcessEvent(const SDL_WindowEvent &evt);
 
-  private:
+private:
     static int SDLEventHandler(void *userdata, SDL_Event *evt);
 
     std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>> window_ = nullptr;

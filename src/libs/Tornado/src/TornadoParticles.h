@@ -50,7 +50,7 @@ class TornadoParticles
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     TornadoParticles(Pillar &_pillar);
     virtual ~TornadoParticles();
 
@@ -67,11 +67,11 @@ class TornadoParticles
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     void DrawParticles(VDX9RENDER *rs, void *prts, long num, long size, long texture, const char *tech);
     static float GetRand(float r, float dev = 0.5f); // dev = 0..1, return 0..r
 
-  private:
+private:
     Pillar &pillar;
     entid_t seaID;
     float galpha;

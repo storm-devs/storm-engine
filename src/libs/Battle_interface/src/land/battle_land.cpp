@@ -4,7 +4,8 @@
 #include "core.h"
 #include "message.h"
 
-BATTLE_LAND_INTERFACE::BATTLE_LAND_INTERFACE() : m_bShowCommandos(false)
+BATTLE_LAND_INTERFACE::BATTLE_LAND_INTERFACE()
+    : m_bShowCommandos(false)
 {
     m_pRS = nullptr;
     m_pManSign = nullptr;

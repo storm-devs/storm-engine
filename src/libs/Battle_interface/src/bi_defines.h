@@ -43,6 +43,7 @@
 #define BI_COMMANDS_CANCEL "BICommandsCancel"
 
 #define BI_ONETEX_VERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
+
 struct BI_ONETEXTURE_VERTEX
 {
     CVECTOR pos;
@@ -57,6 +58,7 @@ struct BIFPOINT
     BIFPOINT()
     {
     }
+
     BIFPOINT(const BIFPOINT &bp)
     {
         x = bp.x;
@@ -69,18 +71,21 @@ struct BIFPOINT
         y += bp.y;
         return *this;
     }
+
     const BIFPOINT &operator-=(const BIFPOINT &bp)
     {
         x -= bp.x;
         y -= bp.y;
         return *this;
     }
+
     friend BIFPOINT operator+(const BIFPOINT &p1, const BIFPOINT &p2)
     {
         BIFPOINT bp(p1);
         bp += p2;
         return bp;
     }
+
     friend BIFPOINT operator+(const FPOINT &p1, const BIFPOINT &p2)
     {
         BIFPOINT bp(p2);
@@ -88,6 +93,7 @@ struct BIFPOINT
         bp.y += p1.y;
         return bp;
     }
+
     friend BIFPOINT operator+(const BIFPOINT &p1, const FPOINT &p2)
     {
         BIFPOINT bp(p1);
@@ -95,10 +101,12 @@ struct BIFPOINT
         bp.y += p2.y;
         return bp;
     }
+
     // FPOINT operator FPOINT() {return *(FPOINT*)this;}
 };
 
 #define BI_COLOR_VERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
+
 struct BI_COLOR_VERTEX
 {
     CVECTOR pos;
@@ -108,6 +116,7 @@ struct BI_COLOR_VERTEX
 };
 
 #define BI_NOTEX_VERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_TEX0)
+
 struct BI_NOTEXTURE_VERTEX
 {
     CVECTOR pos;
@@ -115,6 +124,7 @@ struct BI_NOTEXTURE_VERTEX
 };
 
 #define BI_COLORONLY_VERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX0)
+
 struct BI_COLORONLY_VERTEX
 {
     CVECTOR pos;
@@ -123,6 +133,7 @@ struct BI_COLORONLY_VERTEX
 };
 
 #define BI_3D_VERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
+
 struct BI_3D_VERTEX
 {
     CVECTOR pos;
@@ -148,6 +159,7 @@ inline FRECT &GetTexRectFromPosition(FRECT &fr, int posNum, int hq, int vq)
     fr.bottom = fr.top + 1.f / vq;
     return fr;
 }
+
 inline FRECT &GetTexRectFromPosition(FRECT &fr, int posNum, int hq, int vq, bool bSelected)
 {
     int py = posNum / hq;
@@ -172,6 +184,7 @@ inline void SetRectanglePos(BI_ONETEXTURE_VERTEX *pv, FRECT &tr)
     pv[2].pos.x = pv[3].pos.x = tr.right;
     pv[1].pos.y = pv[3].pos.y = tr.bottom;
 }
+
 inline void SetRectangleTexture(BI_ONETEXTURE_VERTEX *pv, FRECT &tr)
 {
     Assert(pv != NULL);
@@ -189,6 +202,7 @@ inline void SetRectanglePos(BI_COLOR_VERTEX *pv, FRECT &tr)
     pv[2].pos.x = pv[3].pos.x = tr.right;
     pv[1].pos.y = pv[3].pos.y = tr.bottom;
 }
+
 inline void SetRectanglePos(BI_COLOR_VERTEX *pv, float fl, float ft, float fr, float fb)
 {
     Assert(pv != NULL);
@@ -197,6 +211,7 @@ inline void SetRectanglePos(BI_COLOR_VERTEX *pv, float fl, float ft, float fr, f
     pv[2].pos.x = pv[3].pos.x = fr;
     pv[1].pos.y = pv[3].pos.y = fb;
 }
+
 inline void SetRectangleTexture(BI_COLOR_VERTEX *pv, FRECT &tr)
 {
     Assert(pv != NULL);
@@ -205,6 +220,7 @@ inline void SetRectangleTexture(BI_COLOR_VERTEX *pv, FRECT &tr)
     pv[2].tu = pv[3].tu = tr.right;
     pv[1].tv = pv[3].tv = tr.bottom;
 }
+
 inline void SetRectangleTexture(BI_COLOR_VERTEX *pv, float fl, float ft, float fr, float fb)
 {
     Assert(pv != NULL);
@@ -213,6 +229,7 @@ inline void SetRectangleTexture(BI_COLOR_VERTEX *pv, float fl, float ft, float f
     pv[2].tu = pv[3].tu = fr;
     pv[1].tv = pv[3].tv = fb;
 }
+
 inline bool GetVDATABool(VDATA *pvd, bool defVal)
 {
     long tmp = defVal;
@@ -220,6 +237,7 @@ inline bool GetVDATABool(VDATA *pvd, bool defVal)
         pvd->Get(tmp);
     return (tmp != 0);
 }
+
 inline long GetVDATALong(VDATA *pvd, long defVal)
 {
     long tmp = defVal;

@@ -41,7 +41,7 @@ class ModelProcessor
     MDL_ParticleData *AllocParticle() const;
     void FreeParticle(MDL_ParticleData *pItem) const;
 
-  public:
+public:
     ModelProcessor(ParticleManager *pManager);
     ~ModelProcessor();
 

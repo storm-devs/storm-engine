@@ -10,16 +10,20 @@ namespace utf8
 {
 struct u8_char
 {
-    u8_char() : l(0), c(0)
+    u8_char()
+        : l(0), c(0)
     {
     }
 
-    u8_char(char ch) : l(sizeof(ch)), c(ch)
+    u8_char(char ch)
+        : l(sizeof(ch)), c(ch)
     {
     }
 
     int l;
-    union {
+
+    union
+    {
         uint32_t c;
         char b[4];
     };
@@ -194,12 +198,13 @@ inline bool IsValidUtf8(const std::string &str)
             n = 2; // 1110bbbb
         else if ((c & 0xF8) == 0xF0)
             n = 3; // 11110bbb
-        // else if (($c & 0xFC) == 0xF8) n=4; // 111110bb //byte 5, unnecessary in 4 byte UTF-8
-        // else if (($c & 0xFE) == 0xFC) n=5; // 1111110b //byte 6, unnecessary in 4 byte UTF-8
+            // else if (($c & 0xFC) == 0xF8) n=4; // 111110bb //byte 5, unnecessary in 4 byte UTF-8
+            // else if (($c & 0xFE) == 0xFC) n=5; // 1111110b //byte 6, unnecessary in 4 byte UTF-8
         else
             return false;
         for (j = 0; j < n && i < ix; j++)
-        { // n bytes matching 10bbbbbb follow ?
+        {
+            // n bytes matching 10bbbbbb follow ?
             if ((++i == ix) || (((unsigned char)str[i] & 0xC0) != 0x80))
                 return false;
         }

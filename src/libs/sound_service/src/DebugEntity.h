@@ -8,9 +8,9 @@ class SoundVisualisationEntity : public Entity
 {
     SoundService *pSound;
 
-  public:
+public:
     SoundVisualisationEntity();
-    virtual ~SoundVisualisationEntity();
+    ~SoundVisualisationEntity() override;
 
     bool Init() override;
     virtual void Realize(uint32_t dTime);

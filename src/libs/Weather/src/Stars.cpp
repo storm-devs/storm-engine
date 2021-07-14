@@ -326,7 +326,8 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
         do
         {
             pRS->DrawPrimitive(D3DPT_POINTLIST, 0, aStars.size());
-        } while (pRS->TechniqueExecuteNext());
+        }
+        while (pRS->TechniqueExecuteNext());
 
     pRS->SetRenderState(D3DRS_POINTSPRITEENABLE, false);
     pRS->SetRenderState(D3DRS_POINTSCALEENABLE, false);

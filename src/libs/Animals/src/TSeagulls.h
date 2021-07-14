@@ -28,7 +28,7 @@ struct tSeagull
 ///////////////////////////////////////////////////////////////////
 class TSeagulls
 {
-  public:
+public:
     TSeagulls();
     virtual ~TSeagulls();
 
@@ -37,12 +37,13 @@ class TSeagulls
     void Add(float _x, float _y, float _z);
     void Realize(uint32_t dTime);
     void Execute(uint32_t dTime);
+
     void SetStartY(float _startY)
     {
         startY = _startY;
     }
 
-  private:
+private:
     void LoadSettings();
     void Frighten();
 

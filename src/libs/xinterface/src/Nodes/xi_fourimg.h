@@ -4,11 +4,11 @@
 
 class CXI_FOURIMAGE : public CINODE
 {
-  public:
+public:
     CXI_FOURIMAGE(CXI_FOURIMAGE &&) = delete;
     CXI_FOURIMAGE(const CXI_FOURIMAGE &) = delete;
     CXI_FOURIMAGE();
-    ~CXI_FOURIMAGE();
+    ~CXI_FOURIMAGE() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -24,6 +24,7 @@ class CXI_FOURIMAGE : public CINODE
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
     XYRECT GetCursorRect() override;
+
     bool IsGlowChanged() override
     {
         return true;
@@ -31,12 +32,12 @@ class CXI_FOURIMAGE : public CINODE
 
     void ChangeItem(int nItemNum);
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void FillVertex();
     void Update(bool bSelected, uint32_t DeltaTime);
 
-  protected:
+protected:
     bool m_bUsed[4]; // selected picture
     // images parametes
     char **m_sGroupName;

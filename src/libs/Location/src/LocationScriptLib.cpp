@@ -193,7 +193,7 @@ uint32_t slNativeFindLocation(VS_STACK *pS)
 uint32_t slNativeFindLaodLocation(VS_STACK *pS)
 {
     // Return value
-    VDATA *pReturn = (VDATA *)pS->Push();
+    auto pReturn = (VDATA *)pS->Push();
     if (!pReturn)
         return IFUNCRESULT_FAILED;
     // Looking for a location
@@ -217,12 +217,12 @@ uint32_t slNativeFindLaodLocation(VS_STACK *pS)
 uint32_t slNativeSetReloadBackImage(VS_STACK *pS)
 {
     // Get strings
-    VDATA *pStr = (VDATA *)pS->Pop();
+    auto pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
     // Setting the picture
-    VDX9RENDER *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    auto rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (rs)
     {
         rs->SetProgressImage(nm);
@@ -232,7 +232,7 @@ uint32_t slNativeSetReloadBackImage(VS_STACK *pS)
 
 uint32_t slNativeReloadProgressStart(VS_STACK *pS)
 {
-    VDX9RENDER *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    auto rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (rs)
         rs->StartProgressView();
     return IFUNCRESULT_OK;
@@ -240,7 +240,7 @@ uint32_t slNativeReloadProgressStart(VS_STACK *pS)
 
 uint32_t slNativeReloadProgressUpdate(VS_STACK *pS)
 {
-    VDX9RENDER *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    auto rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (rs)
         rs->ProgressView();
     return IFUNCRESULT_OK;
@@ -270,7 +270,7 @@ uint32_t slNativeSleep(VS_STACK *pS)
 uint32_t slNativeExecuteTechnique(VS_STACK *pS)
 {
     // Get string
-    VDATA *pStr = (VDATA *)pS->Pop();
+    auto pStr = (VDATA *)pS->Pop();
     const char *nm = nullptr;
     if (!pStr->Get(nm))
         return IFUNCRESULT_FAILED;
@@ -279,8 +279,7 @@ uint32_t slNativeExecuteTechnique(VS_STACK *pS)
     {
         auto *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
         rs->TechniqueExecuteStart(nm);
-        while (rs->TechniqueExecuteNext())
-            ;
+        while (rs->TechniqueExecuteNext());
     }
     return IFUNCRESULT_OK;
 }

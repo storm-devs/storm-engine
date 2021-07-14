@@ -11,11 +11,11 @@
 #define D3DRAINVERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_DIFFUSE)
 #define D3DSEADROPVERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 
-typedef struct
+using RAINVERTEX = struct
 {
     CVECTOR vPos;
     uint32_t dwColor;
-} RAINVERTEX;
+};
 
 struct SEADROPVERTEX
 {
@@ -24,13 +24,13 @@ struct SEADROPVERTEX
     float tu, tv;
 };
 
-typedef struct
+using rainblock_t = struct
 {
     float fWindFlaw, fWindSpeedJitter;
     uint32_t dwTime;
     CVECTOR vPos;
     CVECTOR vAng;
-} rainblock_t;
+};
 
 class RAIN : public Entity
 {
@@ -55,7 +55,7 @@ class RAIN : public Entity
         // SHIP_BASE * pShip;
     };
 
-  private:
+private:
     long iRainDropsTexture;
     float fDropsDeltaTime;
     std::vector<RS_RECT> aRects;
@@ -105,9 +105,9 @@ class RAIN : public Entity
     void Release();
     void RealizeDrops(uint32_t Delta_Time);
 
-  public:
+public:
     RAIN();
-    ~RAIN();
+    ~RAIN() override;
 
     void SetDevice();
     bool Init() override;

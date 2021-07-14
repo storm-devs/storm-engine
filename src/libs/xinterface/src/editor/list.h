@@ -10,9 +10,9 @@ class CXI_IMAGE;
 
 class GIEditorList : public GIEditorObject
 {
-  public:
+public:
     GIEditorList(GIEditor *pEditor);
-    ~GIEditorList();
+    ~GIEditorList() override;
 
     void Release();
     void Create();
@@ -26,16 +26,21 @@ class GIEditorList : public GIEditorObject
     void RemoveString(long nIndex);
     void RemoveAllStrings();
     long FindString(const std::string &sStr);
+
     long GetStringQuantity() const
     {
         return m_aStrings.size();
     }
+
     std::string &GetString(long nIndex);
+
     long GetSelectIndex() const
     {
         return m_nSelectIndex;
     }
+
     void SetSelectIndex(long nIndex);
+
     std::string &GetSelectString()
     {
         return GetString(m_nSelectIndex);
@@ -47,7 +52,7 @@ class GIEditorList : public GIEditorObject
 
     void IncrementSelectedLine(bool bIncr);
 
-  protected:
+protected:
     void UpdateSelectPosition();
 
     GIEditor *m_pEditor;
@@ -74,7 +79,7 @@ class GIEditorList : public GIEditorObject
     float m_fKeyRepeatDelay;
     float m_fKeyRepeatInterval;
 
-  public:
+public:
     uint32_t m_dwStatus;
     GIEditorEventHandler *m_pChangeSelected;
 };

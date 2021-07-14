@@ -80,7 +80,7 @@ class CINODE;
 
 class XINTERFACE_BASE : public Entity
 {
-  public:
+public:
     virtual storm::QuestFileReader *QuestFileReader() = 0;
     virtual VXSERVICE *PictureService() = 0;
     virtual VSTRSERVICE *StringService() = 0;
@@ -115,7 +115,7 @@ class CINODE
     bool m_bUseUserGlowOffset;
     FXYPOINT m_rectUserGlowOffset;
 
-  public:
+public:
     struct COMMAND_REDIRECT
     {
         char *sControlName;
@@ -166,7 +166,7 @@ class CINODE
         }
     };
 
-  public:
+public:
     CINODE();
     virtual ~CINODE();
     virtual void Draw(bool bSelected, uint32_t Delta_Time) = 0;
@@ -178,38 +178,48 @@ class CINODE
     static CINODE *FindNode(CINODE *pNod, const char *sNodName);
     static CINODE *FindNode(CINODE *pNod, int nNodType);
     static CINODE *FindNode(CINODE *pNod, float x, float y);
+
     CINODE *FindNode(const char *sNodName)
     {
         return FindNode(this, sNodName);
     }
+
     CINODE *FindNode(int nNodType)
     {
         return FindNode(this, nNodType);
     }
+
     CINODE *FindNode(float x, float y)
     {
         return FindNode(this, x, y);
     }
+
     virtual void SetUsing(bool bUsing)
     {
         m_bUse = bUsing;
     }
+
     virtual bool IsClick(int buttonID, long xPos, long yPos) = 0;
     virtual void FrameProcess(uint32_t DeltaTime);
     virtual void MouseThis(float fX, float fY) = 0;
+
     virtual long GetClickState()
     {
         return 0;
     }
+
     void SetPriority(long prior)
     {
         m_nPriority = prior;
     }
+
     long GetPriority() const
     {
         return m_nPriority;
     }
+
     bool CheckCommandUsed(int comCode) const;
+
     bool IsCurrentNode()
     {
         return ptrOwner->GetCurrentNode() == this;
@@ -230,14 +240,17 @@ class CINODE
     {
         return m_bShowGlowCursor;
     }
+
     virtual bool IsGlowCursorBack()
     {
         return m_bGlowCursorBack;
     }
+
     virtual bool IsGlowChanged()
     {
         return false;
     }
+
     virtual void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) = 0;
 
     virtual void MakeLClickPreaction()
@@ -251,6 +264,7 @@ class CINODE
 
     virtual void ChangePosition(XYRECT &rNewPos) = 0;
     virtual void SaveParametersToIni() = 0;
+
     virtual bool GetInternalNameList(std::vector<std::string> &aStr)
     {
         return false;
@@ -266,6 +280,7 @@ class CINODE
     {
         m_bShowGlowCursor = bShowFlag;
     }
+
     void SetGlowCursorToBack(bool bBackFlag)
     {
         m_bGlowCursorBack = bBackFlag;

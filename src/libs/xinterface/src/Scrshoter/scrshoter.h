@@ -14,9 +14,9 @@ class SCRSHOTER : public Entity
         SAVETEXTURES *next;
     };
 
-  public:
+public:
     SCRSHOTER();
-    ~SCRSHOTER();
+    ~SCRSHOTER() override;
     void SetDevice();
     bool Init() override;
     void Execute(uint32_t Delta_Time);
@@ -40,7 +40,7 @@ class SCRSHOTER : public Entity
         }
     }
 
-  private:
+private:
     bool MakeScreenShot();
     IDirect3DTexture9 *FindSaveTexture(const char *fileName) const;
     char *FindSaveData(const char *fileName) const;

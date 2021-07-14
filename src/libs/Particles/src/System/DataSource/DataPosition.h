@@ -11,7 +11,7 @@ class DataPosition
 
     Vector Value;
 
-  public:
+public:
     // constructor / destructor
     DataPosition();
     virtual ~DataPosition();

@@ -25,7 +25,6 @@ class Character;
 
 class Grass : public Entity
 {
-
     static inline ID3DXEffect *fx_;
     static inline IDirect3DVertexDeclaration9 *vertexDecl_;
     static inline D3DXHANDLE hgVP_;
@@ -78,7 +77,8 @@ class Grass : public Entity
     struct GRSMapElementEx
     {
         float x, y, z; // The position of a blade of grass in the world
-        union {
+        union
+        {
             struct
             {
                 uint8_t frame; // Frame
@@ -99,7 +99,7 @@ class Grass : public Entity
         rq_off = 3,
     };
 
-  public:
+public:
     struct CharacterPos
     {
         CVECTOR pos;     // Current position
@@ -111,9 +111,9 @@ class Grass : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Grass();
-    virtual ~Grass();
+    ~Grass() override;
 
     // Initialization
     bool Init() override;
@@ -151,7 +151,7 @@ class Grass : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Render block
     void RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlanes, long mx, long mz);
     // Box visibility check
@@ -165,7 +165,7 @@ class Grass : public Entity
     // Vertex declaration
     void CreateVertexDeclaration() const;
 
-  private:
+private:
     // Render service
     VDX9RENDER *rs;
     // Buffers

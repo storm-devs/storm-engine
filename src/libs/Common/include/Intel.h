@@ -27,7 +27,7 @@
 
 class Intel
 {
-  public:
+public:
     bool IsSSE();
     bool IsIntelCPU();
     uint32_t CpuIDSupported(void);

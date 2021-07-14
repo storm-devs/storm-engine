@@ -43,7 +43,7 @@ class WindField
         long i, j;
     };
 
-  public:
+public:
     // Constructing a field on a given area
     WindField()
     {
@@ -229,7 +229,7 @@ class WindField
         wz = res.z;
     }
 
-  private:
+private:
     void SubStep1()
     {
         if (steps >= WindFieldSteps)

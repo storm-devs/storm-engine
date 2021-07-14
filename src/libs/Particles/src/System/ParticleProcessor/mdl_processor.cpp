@@ -68,7 +68,7 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velocity
     // works if the number of particles > MAX_BILLBOARDS, there shouldn't be that many :))))
     if (!pData)
     {
-        *(pActiveCount) = (*(pActiveCount)-1);
+        *(pActiveCount) = (*(pActiveCount) - 1);
         return;
     }
 
@@ -79,7 +79,7 @@ void ModelProcessor::AddParticle(ParticleSystem *pSystem, const Vector &velocity
     if (!pData->pScene)
     {
         // core.Trace("Cant create particle. Reason geometry '%s', '%s' not found !!!", GeomNames, pGeomName);
-        *(pActiveCount) = (*(pActiveCount)-1);
+        *(pActiveCount) = (*(pActiveCount) - 1);
         FreeParticle(pData);
         return;
     }

@@ -17,9 +17,9 @@ class WdmWindUI : public WdmInterfaceObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmWindUI();
-    virtual ~WdmWindUI();
+    ~WdmWindUI() override;
 
     void SetAttributes(ATTRIBUTES *apnt);
     // Rendering
@@ -28,7 +28,7 @@ class WdmWindUI : public WdmInterfaceObject
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     long txBack;
     long txSky, txSkyMask;
     long txBar, txBarMask;

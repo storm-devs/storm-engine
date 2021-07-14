@@ -9,11 +9,11 @@
 entid_t g_idInterface;
 
 COMMANDDESCR pCommandsList[COMMAND_QUANTITY] = {
-    {"activate", ACTION_ACTIVATE},      {"deactivate", ACTION_DEACTIVATE}, {"select", ACTION_SELECT},
-    {"rightstep", ACTION_RIGHTSTEP},    {"leftstep", ACTION_LEFTSTEP},     {"upstep", ACTION_UPSTEP},
-    {"downstep", ACTION_DOWNSTEP},      {"speedleft", ACTION_SPEEDLEFT},   {"speedright", ACTION_SPEEDRIGHT},
-    {"speedup", ACTION_SPEEDUP},        {"speeddown", ACTION_SPEEDDOWN},   {"click", ACTION_MOUSECLICK},
-    {"dblclick", ACTION_MOUSEDBLCLICK}, {"rclick", ACTION_MOUSERCLICK},    {"dblrclick", ACTION_MOUSERDBLCLICK}};
+    {"activate", ACTION_ACTIVATE}, {"deactivate", ACTION_DEACTIVATE}, {"select", ACTION_SELECT},
+    {"rightstep", ACTION_RIGHTSTEP}, {"leftstep", ACTION_LEFTSTEP}, {"upstep", ACTION_UPSTEP},
+    {"downstep", ACTION_DOWNSTEP}, {"speedleft", ACTION_SPEEDLEFT}, {"speedright", ACTION_SPEEDRIGHT},
+    {"speedup", ACTION_SPEEDUP}, {"speeddown", ACTION_SPEEDDOWN}, {"click", ACTION_MOUSECLICK},
+    {"dblclick", ACTION_MOUSEDBLCLICK}, {"rclick", ACTION_MOUSERCLICK}, {"dblrclick", ACTION_MOUSERDBLCLICK}};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////  END GLOBAL DATA                   ////

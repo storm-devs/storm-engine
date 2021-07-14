@@ -5,7 +5,8 @@
 #include "shipcommand.h"
 #include "shipsign.h"
 
-WM_INTERFACE::WM_INTERFACE() : rs(nullptr)
+WM_INTERFACE::WM_INTERFACE()
+    : rs(nullptr)
 {
     m_pShipIcon = nullptr;
     m_pCommandList = nullptr;

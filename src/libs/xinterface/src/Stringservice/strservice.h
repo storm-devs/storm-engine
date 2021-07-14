@@ -20,9 +20,9 @@ class STRSERVICE : public VSTRSERVICE
         UsersStringBlock *next;
     };
 
-  public:
+public:
     STRSERVICE();
-    ~STRSERVICE();
+    ~STRSERVICE() override;
 
     bool Init() override;
     bool LoadState(ENTITY_STATE *state) override;
@@ -43,17 +43,18 @@ class STRSERVICE : public VSTRSERVICE
     char *TranslateFromUsers(long id, const char *inStr) override;
 
     void SetDialogSourceFile(const char *fileName);
+
     char *TranslateForDialog(const char *str)
     {
         return TranslateFromUsers(m_nDialogSourceFile, (char *)str);
     }
 
-  protected:
+protected:
     void LoadIni();
     long GetFreeUsersID() const;
     bool GetNextUsersString(char *src, long &idx, char **strName, char **strData) const;
 
-  protected:
+protected:
     char *m_sLanguage;
     char *m_sIniFileName;
     char *m_sLanguageDir;
@@ -69,9 +70,13 @@ class STRSERVICE : public VSTRSERVICE
 
 class SCRIPT_INTERFACE_FUNCTIONS : public SCRIPT_LIBRIARY
 {
-  public:
-    SCRIPT_INTERFACE_FUNCTIONS(){};
+public:
+    SCRIPT_INTERFACE_FUNCTIONS()
+    {
+    };
 
-    ~SCRIPT_INTERFACE_FUNCTIONS(){};
+    ~SCRIPT_INTERFACE_FUNCTIONS() override
+    {
+    };
     bool Init() override;
 };

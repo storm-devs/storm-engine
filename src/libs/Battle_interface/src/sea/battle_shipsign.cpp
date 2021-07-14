@@ -264,7 +264,8 @@ void BIShipIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
             do
             {
                 m_aClassProgress.push_back(BIUtils::GetFromStr_Float((const char *&)pcTmp, 0.f));
-            } while (pcTmp[0]);
+            }
+            while (pcTmp[0]);
         }
 
         m_nCommandListVerticalOffset = pA->GetAttributeAsDword("commandlistverticaloffset");

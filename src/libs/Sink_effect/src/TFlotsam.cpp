@@ -11,7 +11,8 @@ char TFlotsam::modelNames[sink_effect::FLOTSAM_MODELS_COUNT][128];
 entid_t TFlotsam::modelIDs[sink_effect::FLOTSAM_MODELS_COUNT];
 
 //--------------------------------------------------------------------
-TFlotsam::TFlotsam() : sea(nullptr), enabled(false)
+TFlotsam::TFlotsam()
+    : sea(nullptr), enabled(false)
 {
 }
 

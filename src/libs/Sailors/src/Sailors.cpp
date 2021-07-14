@@ -579,11 +579,13 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
             mode = MAN_CANNONRELOAD;
 
             ang.y = angTo.y = Vector2Angle(
-                !(CVECTOR(sailorsPoints.points.point[targetWayPoint].x, sailorsPoints.points.point[targetWayPoint].y,
-                          sailorsPoints.points.point[targetWayPoint].z) -
+                        !(CVECTOR(sailorsPoints.points.point[targetWayPoint].x,
+                                  sailorsPoints.points.point[targetWayPoint].y,
+                                  sailorsPoints.points.point[targetWayPoint].z) -
 
-                  CVECTOR(sailorsPoints.points.point[lastWayPoint].x, sailorsPoints.points.point[lastWayPoint].y,
-                          sailorsPoints.points.point[lastWayPoint].z)));
+                          CVECTOR(sailorsPoints.points.point[lastWayPoint].x,
+                                  sailorsPoints.points.point[lastWayPoint].y,
+                                  sailorsPoints.points.point[lastWayPoint].z)));
             return;
         }
 
@@ -944,25 +946,25 @@ void ShipWalk::CheckPosition(uint32_t &dltTime)
                         shipMan[i].path.point[shipMan[i].path.currentPointPosition])
                     {
                         shipMan[m].spos.x += 0.2f * (+shipMan[m].dir.z * (1 - d) - shipMan[m].spos.x) / 15.0f *
-                                             static_cast<float>(dltTime) / 20.0f;
+                            static_cast<float>(dltTime) / 20.0f;
                         shipMan[m].spos.z += 0.2f * (-shipMan[m].dir.x * (1 - d) - shipMan[m].spos.z) / 15.0f *
-                                             static_cast<float>(dltTime) / 20.0f;
+                            static_cast<float>(dltTime) / 20.0f;
                     }
                     else
                     {
                         if (m < i)
                         {
                             shipMan[m].spos.x += 0.2f * (+shipMan[m].dir.z * (1 - d) - shipMan[m].spos.x) / 15.0f *
-                                                 static_cast<float>(dltTime) / 20.0f;
+                                static_cast<float>(dltTime) / 20.0f;
                             shipMan[m].spos.z += 0.2f * (-shipMan[m].dir.x * (1 - d) - shipMan[m].spos.z) / 15.0f *
-                                                 static_cast<float>(dltTime) / 20.0f;
+                                static_cast<float>(dltTime) / 20.0f;
                         }
                         else
                         {
                             shipMan[m].spos.x += 0.2f * (-shipMan[m].dir.z * (1 - d) - shipMan[m].spos.x) / 15.0f *
-                                                 static_cast<float>(dltTime) / 20.0f;
+                                static_cast<float>(dltTime) / 20.0f;
                             shipMan[m].spos.z += 0.2f * (+shipMan[m].dir.x * (1 - d) - shipMan[m].spos.z) / 15.0f *
-                                                 static_cast<float>(dltTime) / 20.0f;
+                                static_cast<float>(dltTime) / 20.0f;
                         }
                     }
 
@@ -973,7 +975,8 @@ void ShipWalk::CheckPosition(uint32_t &dltTime)
     // UN//GUARD_SAILORS
 };
 //------------------------------------------------------------------------------------
-void ShipWalk::Reset(){
+void ShipWalk::Reset()
+{
     /*
     for(int i= 0; i< sailorsPoints.points.count; i++)
     {

@@ -21,9 +21,9 @@ class AnimationTimerImp : public AnimationTimer
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     AnimationTimerImp();
-    virtual ~AnimationTimerImp();
+    ~AnimationTimerImp() override;
 
     // Set animation
     void SetAnimation(AnimationImp *animation);
@@ -31,38 +31,38 @@ class AnimationTimerImp : public AnimationTimer
     //--------------------------------------------------------------------------------------------
     // AnimationTimer
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Start timer (time in milliseconds)
-    virtual void Start(float time, float startTime = 0.0f);
+    void Start(float time, float startTime = 0.0f) override;
     // Stop timer
-    virtual void Stop();
+    void Stop() override;
     // Reset timer state
-    virtual void ResetTimer();
+    void ResetTimer() override;
     // Find out if the timer is running
-    virtual bool IsWork();
+    bool IsWork() override;
     // Get the current value
-    virtual float GetCurrent() const;
+    float GetCurrent() const override;
     // Get the specified timer running time
-    virtual float GetTime() const;
+    float GetTime() const override;
     // Assign ActionPlayer for blending (isInverse == false -> kBlend = [0..1])
-    virtual void SetPlayer(long playerIndex, bool isInverse = false);
-    virtual void ResetPlayer(long playerIndex);
+    void SetPlayer(long playerIndex, bool isInverse = false) override;
+    void ResetPlayer(long playerIndex) override;
     // Find out if ActionPlayer is being used
-    virtual bool IsUsedPlayer(long playerIndex, bool *isInverse = nullptr);
+    bool IsUsedPlayer(long playerIndex, bool *isInverse = nullptr) override;
     // Get the blending value for the player (if not used then 1.0f)
-    virtual float GetPlayerValue(long playerIndex);
+    float GetPlayerValue(long playerIndex) override;
 
     //--------------------------------------------------------------------------------------------
     // AnimationTimerImp
     //--------------------------------------------------------------------------------------------
-  public:
+public:
     // Execute
     void Execute(long dltTime);
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Animation
     AnimationImp *ani;
     // Timer options

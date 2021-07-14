@@ -7,7 +7,7 @@
 
 class BISignIcon
 {
-  public:
+public:
     enum CommandType
     {
         Command_confirm,
@@ -29,14 +29,17 @@ class BISignIcon
     virtual void Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA);
 
     void Recollect();
+
     void SetUpdate()
     {
         m_bMakeUpdate = true;
     }
+
     bool IsActive() const
     {
         return m_bActive;
     }
+
     void SetActive(bool bActive);
 
     void MakeControl();
@@ -47,7 +50,7 @@ class BISignIcon
         return static_cast<long>(m_Sign[n].pntPos.x);
     }
 
-  protected:
+protected:
     virtual long CalculateSignQuantity();
     virtual void UpdateChildrens() = 0;
 

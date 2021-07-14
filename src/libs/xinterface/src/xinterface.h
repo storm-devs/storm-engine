@@ -14,10 +14,10 @@ class CXI_WINDOW;
 
 class XINTERFACE : public XINTERFACE_BASE
 {
-  public:
+public:
     static XINTERFACE *pThis;
 
-  protected:
+protected:
     storm::QuestFileReader *pQuestService;
     VXSERVICE *pPictureService;
     VSTRSERVICE *pStringService;
@@ -70,11 +70,11 @@ class XINTERFACE : public XINTERFACE_BASE
     // save render state parameters
     uint32_t m_dwStoreFlag_Fog;
 
-  public:
+public:
     XINTERFACE(XINTERFACE &&) = delete;
     XINTERFACE(const XINTERFACE &) = delete;
     XINTERFACE();
-    ~XINTERFACE();
+    ~XINTERFACE() override;
 
     void SetDevice();
     bool Init() override;
@@ -117,14 +117,17 @@ class XINTERFACE : public XINTERFACE_BASE
     {
         return pThis->pQuestService;
     }
+
     static VXSERVICE *GetPictureService()
     {
         return pThis->pPictureService;
     }
+
     static VSTRSERVICE *GetStringService()
     {
         return pThis->pStringService;
     }
+
     static VDX9RENDER *GetRenderService()
     {
         return pThis->pRenderService;
@@ -134,14 +137,17 @@ class XINTERFACE : public XINTERFACE_BASE
     {
         return pQuestService;
     }
+
     VXSERVICE *PictureService() override
     {
         return pPictureService;
     }
+
     VSTRSERVICE *StringService() override
     {
         return pStringService;
     }
+
     VDX9RENDER *RenderService() override
     {
         return pRenderService;
@@ -151,10 +157,12 @@ class XINTERFACE : public XINTERFACE_BASE
     {
         return m_pCurNode;
     }
+
     FXYPOINT GetMousePoint() override
     {
         return FXYPOINT(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse);
     }
+
     long PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol, uint32_t dwBCol, long align, bool shadow,
                          float scale, long sxs, long sys, long left, long top, char *str,
                          int nWidthForScaleCorrecting = -1, int nSplit = 0) override;
@@ -182,6 +190,7 @@ class XINTERFACE : public XINTERFACE_BASE
     {
         long nSaveCode;
         std::vector<CINODE *> aNode;
+
         LocksInfo()
         {
             nSaveCode = -1;
@@ -197,12 +206,13 @@ class XINTERFACE : public XINTERFACE_BASE
     {
         return dwScreenWidth;
     }
+
     long GetScreenHeight() const
     {
         return dwScreenHeight;
     }
 
-  protected:
+protected:
     // WORLD,VIEW and PROJECTION matrixes
     CMatrix matw, matv, matp;
 
@@ -270,7 +280,8 @@ class XINTERFACE : public XINTERFACE_BASE
     int m_dwGameTimeMin;
     int m_dwGameTimeHour;
 
-    union KEYSTATE {
+    union KEYSTATE
+    {
         int dwKeyCode;
 
         struct
@@ -396,16 +407,16 @@ class CONTROLS_CONTAINER : public Entity
             char *controlName;
 
             CONTROL_DESCR *next;
-        } * pControls;
+        } *pControls;
 
         CONTEINER_DESCR *next;
 
         CONTROL_DESCR *FindControl(const char *cntrlName);
-    } * pContainers;
+    } *pContainers;
 
-  public:
+public:
     CONTROLS_CONTAINER();
-    ~CONTROLS_CONTAINER();
+    ~CONTROLS_CONTAINER() override;
     bool Init() override;
     void Execute(uint32_t delta_time);
     uint64_t ProcessMessage(MESSAGE &message) override;
@@ -426,7 +437,7 @@ class CONTROLS_CONTAINER : public Entity
         }
     }
 
-  protected:
+protected:
     bool CreateConteinerList(ATTRIBUTES *pA);
     void AddContainer(const char *container);
     void SetContainerLimitVal(const char *container, float fLimitVal);

@@ -22,7 +22,7 @@
 
 class SERVICE // : public Entity
 {
-  public:
+public:
     virtual ~SERVICE() = default;
 
     virtual void RunStart()
@@ -37,14 +37,17 @@ class SERVICE // : public Entity
     {
         return SECTION_ALL;
     }
+
     virtual bool Init()
     {
         return true;
     }
+
     virtual bool LoadState(ENTITY_STATE *state)
     {
         return true;
     }
+
     virtual bool CreateState(ENTITY_STATE_GEN *state_gen)
     {
         return true;

@@ -14,6 +14,7 @@
 #include <corecrt_io.h>
 
 CREATE_SERVICE(DX9RENDER)
+
 CREATE_SCRIPTLIBRIARY(DX9RENDER_SCRIPT_LIBRIARY)
 
 #define POST_PROCESS_FVF (D3DFVF_XYZRHW | D3DFVF_TEX4)
@@ -664,7 +665,7 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     {
         // if(CHECKD3DERR(E_FAIL)==true)    return false;
         if (CHECKD3DERR(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-                                          &d3dpp, &d3d9)) == true)
+            &d3dpp, &d3d9)) == true)
             return false;
     }
     effects_.setDevice(d3d9);
@@ -1371,7 +1372,7 @@ bool DX9RENDER::TextureLoad(long t)
         // create the texture
         IDirect3DTexture9 *tex = nullptr;
         if (CHECKD3DERR(d3d9->CreateTexture(head.width, head.height, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex,
-                                            NULL)) == true ||
+            NULL)) == true ||
             !tex)
         {
             if (bTrace)
@@ -1465,7 +1466,7 @@ bool DX9RENDER::TextureLoad(long t)
         // create the texture
         IDirect3DCubeTexture9 *tex = nullptr;
         if (CHECKD3DERR(d3d9->CreateCubeTexture(head.width, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex, NULL)) ==
-                true ||
+            true ||
             !tex)
         {
             if (bTrace)
@@ -1746,7 +1747,7 @@ bool DX9RENDER::TextureRelease(long texid)
         {
             auto fileS = fio->_CreateFile("texLoad.txt", std::ios::binary | std::ios::in | std::ios::out);
             const int bytes = fio->_GetFileSize("texLoad.txt");
-            char *buf = new char[bytes + 1];
+            auto buf = new char[bytes + 1];
             fio->_ReadFile(fileS, buf, bytes);
             buf[bytes] = 0;
 
@@ -1754,7 +1755,7 @@ bool DX9RENDER::TextureRelease(long texid)
             if (str != nullptr)
             {
                 fio->_SetFilePointer(fileS, str - buf, std::ios::beg);
-                const char *s = "*";
+                auto s = "*";
                 fio->_WriteFile(fileS, s, 1);
             }
             delete[] buf;
@@ -2037,7 +2038,7 @@ long DX9RENDER::CreateIndexBuffer(size_t size, uint32_t dwUsage)
 
     // d3d9->CreateIndexBuffer(size, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16,
     if (CHECKD3DERR(
-            d3d9->CreateIndexBuffer(size, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &IndexBuffers[b].buff, NULL)))
+        d3d9->CreateIndexBuffer(size, dwUsage, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &IndexBuffers[b].buff, NULL)))
         return -1;
 
     IndexBuffers[b].size = size;
@@ -2073,7 +2074,8 @@ void DX9RENDER::DrawBuffer(long vbuff, long stride, long ibuff, long minv, size_
         {
             dwNumDrawPrimitive++;
             CHECKD3DERR(d3d9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, minv, 0, numv, startidx, numtrg));
-        } while (cBlockName && cBlockName[0] && TechniqueExecuteNext());
+        }
+        while (cBlockName && cBlockName[0] && TechniqueExecuteNext());
 }
 
 void DX9RENDER::DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iIBuff,
@@ -2098,7 +2100,8 @@ void DX9RENDER::DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, 
         {
             dwNumDrawPrimitive++;
             CHECKD3DERR(d3d9->DrawIndexedPrimitive(dwPrimitiveType, iMinV, 0, iNumV, iStartIdx, iNumTrg));
-        } while (cBlockName && TechniqueExecuteNext());
+        }
+        while (cBlockName && TechniqueExecuteNext());
 }
 
 void DX9RENDER::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwMinIndex, uint32_t dwNumVertices,
@@ -2113,8 +2116,9 @@ void DX9RENDER::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_
         {
             dwNumDrawPrimitive++;
             CHECKD3DERR(d3d9->DrawIndexedPrimitiveUP(dwPrimitiveType, dwMinIndex, dwNumVertices, dwPrimitiveCount,
-                                                     pIndexData, IndexDataFormat, pVertexData, dwVertexStride));
-        } while (cBlockName && TechniqueExecuteNext());
+                pIndexData, IndexDataFormat, pVertexData, dwVertexStride));
+        }
+        while (cBlockName && TechniqueExecuteNext());
 }
 
 void DX9RENDER::DrawPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwVertexBufferFormat, uint32_t dwNumPT,
@@ -2132,7 +2136,8 @@ void DX9RENDER::DrawPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwVer
         {
             dwNumDrawPrimitive++;
             CHECKD3DERR(d3d9->DrawPrimitiveUP(dwPrimitiveType, dwNumPT, pVerts, dwStride));
-        } while (cBlockName && TechniqueExecuteNext());
+        }
+        while (cBlockName && TechniqueExecuteNext());
 }
 
 void DX9RENDER::DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iStartV, long iNumPT,
@@ -2153,7 +2158,8 @@ void DX9RENDER::DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, lon
         {
             dwNumDrawPrimitive++;
             CHECKD3DERR(d3d9->DrawPrimitive(dwPrimitiveType, iStartV, iNumPT));
-        } while (cBlockName && TechniqueExecuteNext());
+        }
+        while (cBlockName && TechniqueExecuteNext());
 }
 
 //################################################################################
@@ -2174,7 +2180,7 @@ void DX9RENDER::RenderAnimation(long ib, void *src, long numVrts, long minv, lon
             aniVBuffer = nullptr;
             numAniVerteces = 0;
             if (CHECKD3DERR(d3d9->CreateVertexBuffer(size, D3DUSAGE_WRITEONLY, type, D3DPOOL_MANAGED, &aniVBuffer,
-                                                     NULL)) == true)
+                NULL)) == true)
                 return;
             numAniVerteces = numVrts;
         }
@@ -2397,12 +2403,12 @@ void DX9RENDER::RestoreRender()
         if (VertexBuffers[b].buff)
         {
             CHECKD3DERR(d3d9->CreateVertexBuffer(VertexBuffers[b].size, VertexBuffers[b].dwUsage, VertexBuffers[b].type,
-                                                 D3DPOOL_DEFAULT, &VertexBuffers[b].buff, NULL));
+                D3DPOOL_DEFAULT, &VertexBuffers[b].buff, NULL));
         }
         if (IndexBuffers[b].buff)
         {
             CHECKD3DERR(d3d9->CreateIndexBuffer(IndexBuffers[b].size, IndexBuffers[b].dwUsage, D3DFMT_INDEX16,
-                                                D3DPOOL_DEFAULT, &IndexBuffers[b].buff, NULL));
+                D3DPOOL_DEFAULT, &IndexBuffers[b].buff, NULL));
         }
     }
     long num_stages;
@@ -3027,7 +3033,7 @@ void DX9RENDER::GetCamera(CVECTOR &pos, CVECTOR &ang, float &perspective)
     perspective = Fov;
 }
 
-typedef struct tagTGA_H
+using TGA_H = struct tagTGA_H
 {
     uint8_t byte1; // = 0
     uint8_t byte2; // = 0
@@ -3040,7 +3046,7 @@ typedef struct tagTGA_H
     uint8_t rez : 1;
     uint8_t origin : 1;
     uint8_t storage : 2;
-} TGA_H;
+};
 
 // WORD Temp[1600*4];
 
@@ -3322,7 +3328,8 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
             {
                 CHECKD3DERR(SetStreamSource(0, rectsVBuffer, sizeof(RECT_VERTEX)));
                 CHECKD3DERR(DrawPrimitive(D3DPT_TRIANGLELIST, 0, drawCount * 2));
-            } while (cBlockName && TechniqueExecuteNext());
+            }
+            while (cBlockName && TechniqueExecuteNext());
     }
 
     d3d9->SetTransform(D3DTS_VIEW, camMtx);
@@ -3357,7 +3364,8 @@ void DX9RENDER::DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, const char *
         {
             DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, dwSpritesNum * 4, dwSpritesNum * 2, pIndices, D3DFMT_INDEX16,
                                    pRSS, sizeof(RS_SPRITE));
-        } while (cBlockName && TechniqueExecuteNext());
+        }
+        while (cBlockName && TechniqueExecuteNext());
     delete[] pIndices;
 }
 
@@ -3376,7 +3384,8 @@ void DX9RENDER::DrawLines(RS_LINE *pRSL, uint32_t dwLinesNum, const char *cBlock
         do
         {
             DrawPrimitiveUP(D3DPT_LINELIST, RS_LINE_VERTEX_FORMAT, dwLinesNum, pRSL, sizeof(RS_LINE));
-        } while (cBlockName && TechniqueExecuteNext());
+        }
+        while (cBlockName && TechniqueExecuteNext());
 }
 
 void DX9RENDER::DrawLines2D(RS_LINE2D *pRSL2D, size_t dwLinesNum, const char *cBlockName)
@@ -3394,7 +3403,8 @@ void DX9RENDER::DrawLines2D(RS_LINE2D *pRSL2D, size_t dwLinesNum, const char *cB
         do
         {
             DrawPrimitiveUP(D3DPT_LINELIST, RS_LINE2D_VERTEX_FORMAT, dwLinesNum, pRSL2D, sizeof(RS_LINE2D));
-        } while (cBlockName && TechniqueExecuteNext());
+        }
+        while (cBlockName && TechniqueExecuteNext());
 }
 
 //-----------------------
@@ -3738,7 +3748,8 @@ void DX9RENDER::ReleaseVideoTexture(CVideoTexture *pVTexture)
                 break;
             }
             prev = cur;
-        } while ((cur = cur->next) != nullptr);
+        }
+        while ((cur = cur->next) != nullptr);
 }
 
 void DX9RENDER::PlayToTexture()
@@ -3832,7 +3843,8 @@ HRESULT DX9RENDER::ImageBlt(long TextureID, RECT *pDstRect, RECT *pSrcRect)
             SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2);
             hRes = d3d9->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 2, &v, sizeof(F3DVERTEX));
             dwNumDrawPrimitive++;
-        } while (TechniqueExecuteNext());
+        }
+        while (TechniqueExecuteNext());
 
     return hRes;
 }
@@ -4302,10 +4314,12 @@ void DX9RENDER::SetView(const CMatrix &mView)
 {
     SetTransform(D3DTS_VIEW, mView);
 }
+
 void DX9RENDER::SetWorld(const CMatrix &mWorld)
 {
     SetTransform(D3DTS_WORLD, mWorld);
 }
+
 void DX9RENDER::SetProjection(const CMatrix &mProjection)
 {
     SetTransform(D3DTS_PROJECTION, mProjection);

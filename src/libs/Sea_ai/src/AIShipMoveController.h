@@ -12,7 +12,7 @@ class AIShip;
 
 class AIShipMoveController
 {
-  private:
+private:
     entid_t eidSphere;
 
     AIShip *pOurAIShip; // our AI ship pointer
@@ -27,7 +27,7 @@ class AIShipMoveController
 
     AIFlowGraph::VectorPath *pVPath;
 
-  public:
+public:
     // init/execute/realize section
     virtual bool Init();
     virtual void Execute(float);
@@ -54,6 +54,7 @@ class AIShipMoveController
     {
         pOurAIShip = pShip;
     }
+
     AIShip *GetAIShip() const
     {
         return pOurAIShip;

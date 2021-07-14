@@ -355,7 +355,7 @@ void BISignIcon::UpdateBuffers(long nQ)
         m_nVBufID =
             m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT,
                                       (m_nBackSquareQ + m_nSignStateSquareQ + m_nSignStarSquareQ + m_nSignFaceSquareQ) *
-                                          4 * sizeof(BI_COLOR_VERTEX),
+                                      4 * sizeof(BI_COLOR_VERTEX),
                                       D3DUSAGE_WRITEONLY);
     }
     FillVertexBuffer();

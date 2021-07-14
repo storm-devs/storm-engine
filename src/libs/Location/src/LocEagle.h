@@ -14,9 +14,9 @@
 
 class LocEagle : public Entity
 {
-  public:
+public:
     LocEagle();
-    virtual ~LocEagle();
+    ~LocEagle() override;
 
     // Initialization
     bool Init() override;

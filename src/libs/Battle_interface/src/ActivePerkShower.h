@@ -7,9 +7,9 @@ class ActivePerkShower : public Entity
 {
     VDX9RENDER *rs;
 
-  public:
+public:
     ActivePerkShower();
-    ~ActivePerkShower();
+    ~ActivePerkShower() override;
     bool Init() override;
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time) const;
@@ -32,7 +32,7 @@ class ActivePerkShower : public Entity
         }
     }
 
-  protected:
+protected:
     void ReleaseAll();
 
     long m_idVBuf;
@@ -51,7 +51,7 @@ class ActivePerkShower : public Entity
         long m_nPicsQ;
         long m_nVertStart;
         long m_nIndxStart;
-    } * m_pTexDescr;
+    } *m_pTexDescr;
 
     bool CreateTextures(ATTRIBUTES *pATextureRoot);
     FRECT GetTextureRect(int textIdx, int picIdx) const;
@@ -62,7 +62,7 @@ class ActivePerkShower : public Entity
     int m_nSpaceVert;
 
     int m_nShowPlaceQ;
-    typedef FRECT _SHOW_PLACE;
+    using _SHOW_PLACE = FRECT;
     _SHOW_PLACE *m_pShowPlaces;
     bool CreateShowPlaces(ATTRIBUTES *pAPlacesRoot);
     void RefreshShowPlaces(ATTRIBUTES *pAPlacesRoot);
@@ -73,7 +73,7 @@ class ActivePerkShower : public Entity
     {
         long m_nPicNum;
         long m_nPicTexIdx;
-    } * m_pIconsList;
+    } *m_pIconsList;
 
     bool InitIconsList(ATTRIBUTES *pAIconsRoot);
     void AddIconToList(ATTRIBUTES *pAIconDescr);

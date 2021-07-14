@@ -103,7 +103,8 @@ WdmStorm::WdmStorm()
             {
                 x = rand() & 7;
                 z = rand() & 7;
-            } while (((w[z] >> x) & 1) != 0);
+            }
+            while (((w[z] >> x) & 1) != 0);
             w[z] |= 1 << x;
             cloudPos[i].x = 2.0f * WDM_STORM_CLDRADIUS * (0.5f - x / 7.0f);
             cloudPos[i].y = 5.0f * (0.5f - rand() * 1.0f / RAND_MAX);

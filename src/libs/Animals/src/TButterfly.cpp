@@ -8,7 +8,8 @@
 CVECTOR TButterfly::center;
 
 //--------------------------------------------------------------------
-TButterfly::TButterfly() : minY(0.f), maxY(MAX_HEIGHT), firstDraw(true), time(0.f)
+TButterfly::TButterfly()
+    : minY(0.f), maxY(MAX_HEIGHT), firstDraw(true), time(0.f)
 {
 }
 

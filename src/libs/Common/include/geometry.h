@@ -6,27 +6,31 @@
 
 class ANIMATION
 {
-  public:
-    virtual ~ANIMATION(){};
+public:
+    virtual ~ANIMATION()
+    {
+    };
     virtual float SetTime(float time) = 0;
     virtual void SetMatrix() = 0;
 };
 
-typedef void *(*VERTEX_TRANSFORM)(void *vb, long startVrt, long nVerts, long totVerts);
+using VERTEX_TRANSFORM = void*(*)(void *vb, long startVrt, long nVerts, long totVerts);
 
 class VGEOMETRY : public SERVICE
 {
-  public:
+public:
     class ANIMATION_VB
     {
-      public:
+    public:
         long nvertices;
         long fvf;
         long stride;
         void *buff;
     };
 
-    virtual ~VGEOMETRY(){};
+    ~VGEOMETRY() override
+    {
+    };
     virtual GEOS *CreateGeometry(const char *file_name, const char *light_file_name, long flags,
                                  const char *lmPath = nullptr) = 0;
     virtual void DeleteGeometry(GEOS *) = 0;

@@ -190,16 +190,17 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
     long EmitIndex;
     long EmitTimeDelta;
 
-  public:
+public:
     SEAFOAM_PS();
-    ~SEAFOAM_PS();
+    ~SEAFOAM_PS() override;
     bool Init(INIFILE *ini, const char *psname);
     void UpdateVertexBuffer();
     void Realize(uint32_t DeltaTime);
     void Execute(uint32_t DeltaTime);
     void ProcessParticles(uint32_t DeltaTime);
     bool Complete();
-    void Stop()
+
+    void Stop() override
     {
         bComplete = true;
     };
@@ -208,9 +209,10 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
 
     float GetTrackValue(TRACK_EVENT *Track, long Time);
     bool BuildTrack(INIFILE *ini, TRACK_EVENT *Track, const char *psname, const char *key_name);
-    void SetEmitter(CVECTOR p, CVECTOR a);
-    void LinkToObject(entid_t id, CVECTOR _LinkPos);
-    void SetDelay(long _delay);
+    void SetEmitter(CVECTOR p, CVECTOR a) override;
+    void LinkToObject(entid_t id, CVECTOR _LinkPos) override;
+    void SetDelay(long _delay) override;
+
     void EnableEmit(bool _enableEmit)
     {
         enableEmit = _enableEmit;
@@ -227,7 +229,7 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
     void ProcessOrder(SEAFOAM_PS **Root, SEAFOAM_PS **Top);
     //---------------------------------------------------------------
 
-    void SetLifeTime(uint32_t time)
+    void SetLifeTime(uint32_t time) override
     {
         nSystemLifeTime = time;
     }

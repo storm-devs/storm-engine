@@ -117,14 +117,14 @@ class ISteamUtils;
 
 class CSteamStatsAchievements
 {
-  private:
+private:
     int64 m_iAppID;                 // Our current AppID
     Achievement_t *m_pAchievements; // Achievements data
     uint32_t m_iNumAchievements;    // The number of Achievements
     bool m_bInitialized;            // Have we called Request stats and received the callback?
     Stat_t *m_pStats;
 
-  public:
+public:
     CSteamStatsAchievements(int NumAchievements);
     ~CSteamStatsAchievements();
 
@@ -145,7 +145,7 @@ class CSteamStatsAchievements
 
 class CSteamDLC
 {
-  private:
+private:
     bool m_bInitialized;
     uint32_t m_DLCcount;
     char pchName[128];
@@ -153,7 +153,7 @@ class CSteamDLC
     AppId_t pAppID;
     bool isOverlayActivated;
 
-  public:
+public:
     CSteamDLC();
     ~CSteamDLC();
 

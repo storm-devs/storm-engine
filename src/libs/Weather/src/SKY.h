@@ -6,9 +6,9 @@
 
 class SKY : public Entity
 {
-  public:
+public:
     SKY();
-    ~SKY();
+    ~SKY() override;
 
     bool Init() override;
     void SetDevice();
@@ -36,7 +36,7 @@ class SKY : public Entity
 
     float CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize);
 
-  private:
+private:
     enum
     {
         FOGVERTEX_FORMAT = D3DFVF_XYZ | D3DFVF_DIFFUSE,

@@ -9,20 +9,22 @@ class MESSAGE_ICONS
     VDX9RENDER *rs;
     entid_t m_idHost;
 
-  public:
+public:
     MESSAGE_ICONS();
     ~MESSAGE_ICONS();
 
     void Update(uint32_t deltaTime);
     void Draw() const;
+
     void SetShowMsg(bool bShow)
     {
         m_bShowMsgIcon = m_vMsgIconBufID >= 0 ? bShow : false;
     }
+
     void StartData(ATTRIBUTES *pAData[MESSAGE_ICONS_COLUMN_QUANTITY], long pLeft[MESSAGE_ICONS_COLUMN_QUANTITY]);
     bool InitData(entid_t host_eid, VDX9RENDER *_rs, ATTRIBUTES *pARoot);
 
-  protected:
+protected:
     // message icons
     bool m_bShowMsgIcon;
     long m_vMsgIconBufID;

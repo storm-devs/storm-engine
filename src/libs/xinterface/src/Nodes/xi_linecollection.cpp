@@ -72,7 +72,8 @@ void CXI_LINECOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2
                 RS_LINE{CVECTOR{static_cast<float>(scrRect.right), static_cast<float>(scrRect.bottom), 1.f}, dwCol});
 
             nCurLine++;
-        } while (ini1->ReadStringNext(name1, "line", param, sizeof(param) - 1));
+        }
+        while (ini1->ReadStringNext(name1, "line", param, sizeof(param) - 1));
 }
 
 void CXI_LINECOLLECTION::ReleaseAll()

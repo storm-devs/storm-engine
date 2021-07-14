@@ -6,12 +6,12 @@
 
 class CSaveLoad
 {
-  private:
+private:
     char *pSaveBuffer;
     uint32_t dwCurSize, dwMaxSize;
     bool bSave, bLoad;
 
-  public:
+public:
     CSaveLoad()
     {
         dwCurSize = 0;

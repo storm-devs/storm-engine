@@ -14,7 +14,7 @@
 
 class SEA : public SEA_BASE
 {
-  private:
+private:
     // uint32_t dwSkyCode = MakeHashValue("sky");
     uint32_t dwIslandCode = MakeHashValue("island");
     uint32_t dwShipCode = MakeHashValue("ship");
@@ -46,6 +46,7 @@ class SEA : public SEA_BASE
         {
             return (b1.iLOD > b2.iLOD);
         }
+
         inline bool operator<(const SeaBlock &B) const
         {
             return (B.iLOD < iLOD);
@@ -194,39 +195,42 @@ class SEA : public SEA_BASE
     void SFLB_CreateBuffers();
     void CreateVertexDeclaration();
 
-  public:
+public:
     SEA();
-    virtual ~SEA();
+    ~SEA() override;
 
-    bool Init();
+    bool Init() override;
     void BuildVolumeTexture();
     void Realize(uint32_t dwDeltaTime);
 
-    float Trace(const CVECTOR &vSrc, const CVECTOR &vDst);
-    virtual float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
+    float Trace(const CVECTOR &vSrc, const CVECTOR &vDst) override;
+    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
 
-    virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
     {
         return false;
     }
-    virtual const char *GetCollideMaterialName()
+
+    const char *GetCollideMaterialName() override
     {
         return nullptr;
     };
-    virtual bool GetCollideTriangle(TRIANGLE &triangle)
+
+    bool GetCollideTriangle(TRIANGLE &triangle) override
     {
         return false;
     }
 
     bool EditMode_Update();
 
-    uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
         {
-        // case Stage::execute:
-        //    Execute(delta); break;
+            // case Stage::execute:
+            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -238,6 +242,7 @@ class SEA : public SEA_BASE
             break;
         }
     }
+
     void LostRender();
     void RestoreRender();
 

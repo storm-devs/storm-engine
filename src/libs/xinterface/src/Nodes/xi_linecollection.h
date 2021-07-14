@@ -5,9 +5,9 @@
 // text collection
 class CXI_LINECOLLECTION : public CINODE
 {
-  public:
+public:
     CXI_LINECOLLECTION();
-    ~CXI_LINECOLLECTION();
+    ~CXI_LINECOLLECTION() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -24,9 +24,9 @@ class CXI_LINECOLLECTION : public CINODE
     void SaveParametersToIni() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
-  protected:
+protected:
     std::vector<RS_LINE> m_aLines;
 };

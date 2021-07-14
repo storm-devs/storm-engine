@@ -7,7 +7,7 @@
 
 class COMMON_CAMERA : public Entity
 {
-  private:
+private:
     bool bActive;
     bool bOn;
 
@@ -16,10 +16,10 @@ class COMMON_CAMERA : public Entity
     entid_t eidObject;
     VAI_OBJBASE *pAIObj;
 
-  protected:
+protected:
     ATTRIBUTES *pACharacter;
 
-  public:
+public:
     bool FindShip()
     {
         Assert(pACharacter);
@@ -47,14 +47,17 @@ class COMMON_CAMERA : public Entity
     {
         pAIObj = _pAIObj;
     }
+
     VAI_OBJBASE *GetAIObj() const
     {
         return pAIObj;
     }
+
     void SetEID(entid_t pEID)
     {
         eidObject = pEID;
     };
+
     entid_t GetEID() const
     {
         return eidObject;
@@ -69,6 +72,7 @@ class COMMON_CAMERA : public Entity
     {
         fPerspective = _fPerspective;
     };
+
     float GetPerspective() const
     {
         return fPerspective;
@@ -78,6 +82,7 @@ class COMMON_CAMERA : public Entity
     {
         bOn = bOnOff;
     };
+
     void SetActive(bool bNewActive)
     {
         bActive = bNewActive;
@@ -87,6 +92,7 @@ class COMMON_CAMERA : public Entity
     {
         return bOn;
     };
+
     bool isActive() const
     {
         return bActive;
@@ -102,5 +108,7 @@ class COMMON_CAMERA : public Entity
         fPerspective = 1.285f;
     };
 
-    virtual ~COMMON_CAMERA(){};
+    ~COMMON_CAMERA() override
+    {
+    };
 };

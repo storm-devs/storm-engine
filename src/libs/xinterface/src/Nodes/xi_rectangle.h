@@ -4,9 +4,9 @@
 
 class CXI_RECTANGLE : public CINODE
 {
-  public:
+public:
     CXI_RECTANGLE();
-    ~CXI_RECTANGLE();
+    ~CXI_RECTANGLE() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -22,12 +22,13 @@ class CXI_RECTANGLE : public CINODE
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+
     bool IsGlowChanged() override
     {
         return true;
     }
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateColors();
 

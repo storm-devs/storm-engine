@@ -7,18 +7,20 @@ class BIImageMaterial;
 
 class BIImage : public IBIImage
 {
-  public:
+public:
     BIImage(VDX9RENDER *rs, BIImageMaterial *pMaterial);
-    ~BIImage();
+    ~BIImage() override;
 
     size_t GetVertexQuantity() const
     {
         return m_nVertexQuantity;
     }
+
     size_t GetTriangleQuantity() const
     {
         return m_nTriangleQuantity;
     }
+
     void FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, size_t &nV, size_t &nT);
 
     void SetColor(uint32_t color) override;
@@ -37,16 +39,18 @@ class BIImage : public IBIImage
     {
         return m_nPrioritet;
     }
+
     void SetPrioritet(long nPrior)
     {
         m_nPrioritet = nPrior;
     }
 
-  protected:
+protected:
     float CalculateMidPos(float fMin, float fMax, float fK)
     {
         return fMin + fK * (fMax - fMin);
     }
+
     void Release() const;
 
     VDX9RENDER *m_pRS;

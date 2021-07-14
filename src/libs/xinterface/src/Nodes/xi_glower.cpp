@@ -41,12 +41,14 @@ void CXI_GLOWER::Draw(bool bSelected, uint32_t Delta_Time)
                     m_glows[i].action = GLOW_ACTION_SHOW;
                     m_glows[i].rect.dwColor = m_dwMaxColor;
                     m_glows[i].curTime = m_glows[i].allTime =
-                        static_cast<long>(m_minShowTime + (m_maxShowTime - m_minShowTime) * rand() / RAND_MAX);
+                                         static_cast<long>(
+                                             m_minShowTime + (m_maxShowTime - m_minShowTime) * rand() / RAND_MAX);
                     break;
                 case GLOW_ACTION_SHOW:
                     m_glows[i].action = GLOW_ACTION_BLEND;
                     m_glows[i].curTime = m_glows[i].allTime = static_cast<long>(
-                        m_minGlowTime + static_cast<float>(m_maxGlowTime - m_minGlowTime) * rand() / RAND_MAX);
+                                             m_minGlowTime + static_cast<float>(m_maxGlowTime - m_minGlowTime) * rand()
+                                             / RAND_MAX);
                     break;
                 case GLOW_ACTION_BLEND:
                     m_glows[i].action = GLOW_ACTION_NONE;
@@ -62,7 +64,8 @@ void CXI_GLOWER::Draw(bool bSelected, uint32_t Delta_Time)
                 // yes! this new glow
                 m_glows[i].action = GLOW_ACTION_COLORUP;
                 m_glows[i].curTime = m_glows[i].allTime = static_cast<long>(
-                    m_minGlowTime + static_cast<float>(m_maxGlowTime - m_minGlowTime) * rand() / RAND_MAX);
+                                         m_minGlowTime + static_cast<float>(m_maxGlowTime - m_minGlowTime) * rand() /
+                                         RAND_MAX);
                 m_glows[i].angleSpeed = -(m_fAngleSpeedMin + (m_fAngleSpeedMax - m_fAngleSpeedMin) * rand() / RAND_MAX);
             }
         }
@@ -129,7 +132,9 @@ void CXI_GLOWER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
     m_nQuantity = 0;
     if (ini1->ReadString(name1, "pos", param, sizeof(param) - 1, ""))
         do
+        {
             m_nQuantity++;
+        }
         while (ini1->ReadStringNext(name1, "pos", param, sizeof(param) - 1));
     if (m_nQuantity > MAX_USED_RECTANGLE)
         m_nQuantity = MAX_USED_RECTANGLE;

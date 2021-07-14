@@ -8,12 +8,14 @@
 
 class Effects final
 {
-  private:
+private:
     struct Technique
     {
-        Technique(ID3DXEffect *fx, D3DXHANDLE handle, D3DXTECHNIQUE_DESC desc) : fx(fx), handle(handle), desc(desc)
+        Technique(ID3DXEffect *fx, D3DXHANDLE handle, D3DXTECHNIQUE_DESC desc)
+            : fx(fx), handle(handle), desc(desc)
         {
         }
+
         ID3DXEffect *fx;
         D3DXHANDLE handle;
         D3DXTECHNIQUE_DESC desc;
@@ -31,7 +33,7 @@ class Effects final
 
     inline bool ErrorHandler(HRESULT hr, const char *file, unsigned line, const char *func, const char *expr) const;
 
-  public:
+public:
     Effects(Effects &) = delete;
     Effects(Effects &&) = delete;
     Effects &operator=(Effects &) = delete;

@@ -377,7 +377,7 @@ void SEA::BuildVolumeTexture()
     aVectors.reserve(FRAMES);
     for (i = 0; i < FRAMES; i++)
     {
-        uint32_t *pBuffer = new uint32_t[XWIDTH * YWIDTH];
+        auto pBuffer = new uint32_t[XWIDTH * YWIDTH];
         aNormals.push_back(pBuffer);
 
         auto *pVectors = new CVECTOR[XWIDTH * YWIDTH];
@@ -441,11 +441,13 @@ void SEA::BuildVolumeTexture()
                 {
                     if (bSimpleSea)
                         *(uint32_t *)&(
-                            static_cast<char *>(box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) =
+                                static_cast<char *>(box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4])
+                            =
                             ARGB(0x80, blue, blue, red);
                     else
                         *(uint32_t *)&(
-                            static_cast<char *>(box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4]) =
+                                static_cast<char *>(box[0].pBits)[i * box[0].SlicePitch + y * box[0].RowPitch + x * 4])
+                            =
                             ARGB(0x80, blue, green, red);
                 }
             }
@@ -488,7 +490,7 @@ void SEA::BuildVolumeTexture()
                 }
 
                 // simple copy
-                uint8_t *pDstTemp = static_cast<uint8_t *>(d3dlr.pBits);
+                auto pDstTemp = static_cast<uint8_t *>(d3dlr.pBits);
                 for (uint32_t y = 0; y < d3dsd.Height; y++)
                 {
                     memcpy(pDstTemp, &pDst[y * d3dsd.Width * dwTexelSize], d3dsd.Width * dwTexelSize);
@@ -537,11 +539,11 @@ void SEA::BuildVolumeTexture()
 
                         if (bSimpleSea)
                             *(uint32_t *)&(static_cast<char *>(
-                                box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
+                                    box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
                                 ARGB(0x80, blue, blue, red);
                         else
                             *(uint32_t *)&(static_cast<char *>(
-                                box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
+                                    box[j].pBits)[i * box[j].SlicePitch + y * box[j].RowPitch + x * 4]) =
                                 ARGB(0x80, blue, green, red);
                     }
         }
@@ -1598,7 +1600,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
         }
     }
 
-    SeaVertex *pVSea2 =
+    auto pVSea2 =
         static_cast<SeaVertex *>(rs->LockVertexBuffer(iVSeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK));
     pTriangles = static_cast<uint16_t *>(rs->LockIndexBuffer(iISeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK));
 
@@ -1720,12 +1722,14 @@ void SEA::Realize(uint32_t dwDeltaTime)
             rs->SetVertexShaderConstantF(GC_FREE + 8, (const float *)&mTexProjection, 4); // Matrix!!
 
             // rs->SetTexture(0, pVolumeTexture);
-            rs->SetTexture(0, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
-                                               : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+            rs->SetTexture(0, (pVolumeTexture)
+                                  ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                  : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
             rs->SetTexture(1, pReflection);
             // rs->SetTexture(2, pVolumeTexture);
-            rs->SetTexture(2, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
-                                               : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+            rs->SetTexture(2, (pVolumeTexture)
+                                  ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                  : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
             rs->SetTexture(3, pReflectionSunroad);
 
             rs->SetTextureStageState(1, D3DTSS_BUMPENVMAT00, F2DW(0.08f));
@@ -1746,8 +1750,9 @@ void SEA::Realize(uint32_t dwDeltaTime)
             const auto vec1 = CMatrix(0.0f, 0.0f, PId2);
             rs->SetVertexShaderConstantF(GC_FREE + 8, (const float *)&vec1, 4); // Matrix!!
 
-            rs->SetTexture(0, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
-                                               : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+            rs->SetTexture(0, (pVolumeTexture)
+                                  ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                  : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
             rs->SetTexture(3, pEnvMap);
             rs->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
                                               iVStart, 0, iTStart, "Sea2");
@@ -1759,14 +1764,16 @@ void SEA::Realize(uint32_t dwDeltaTime)
                 rs->SetPixelShaderConstantF(0, (const float *)&vec2, 1);
 
                 rs->TextureSet(0, iFoamTexture);
-                rs->SetTexture(4, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
-                                                   : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+                rs->SetTexture(4, (pVolumeTexture)
+                                      ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                      : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
                 rs->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
                                                   iVStart, 0, iTStart, "Sea2_Foam");
             }
 
-            rs->SetTexture(0, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
-                                               : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
+            rs->SetTexture(0, (pVolumeTexture)
+                                  ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
+                                  : static_cast<IDirect3DBaseTexture9 *>(pRenderTargetBumpMap));
             rs->SetTexture(3, pSunRoadMap);
             rs->DrawIndexedPrimitiveNoVShader(D3DPT_TRIANGLELIST, iVSeaBuffer, sizeof(SeaVertex), iISeaBuffer, 0,
                                               iVStart, 0, iTStart, "Sea2_SunRoad");

@@ -20,7 +20,7 @@ class Supervisor
 {
     friend Character;
 
-  public:
+public:
     struct CharacterInfo
     {
         Character *c; // The character we interact with
@@ -46,7 +46,7 @@ class Supervisor
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Supervisor();
     virtual ~Supervisor();
 
@@ -72,7 +72,7 @@ class Supervisor
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     // Add character to location
     void AddCharacter(Character *ch);
     // Remove character from location
@@ -81,7 +81,7 @@ class Supervisor
     float time, waveTime;
     long curUpdate;
 
-  public:
+public:
     CharacterEx character[MAX_CHARACTERS];
     long numCharacters;
     CharacterInfo colchr[MAX_CHARACTERS * MAX_CHARACTERS];

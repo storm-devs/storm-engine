@@ -11,6 +11,7 @@
 
 #ifndef IMAGE_VERTEX_DEF
 #define IMAGE_VERTEX_DEF
+
 struct IMAGE_VERTEX
 {
     CVECTOR pos;
@@ -33,6 +34,7 @@ struct FLOAT_RECT
 
 #ifndef FONT_SYMBOL_DEF
 #define FONT_SYMBOL_DEF
+
 struct FONT_SYMBOL
 {
     FLOAT_RECT Pos;
@@ -68,7 +70,7 @@ class FONT
     float m_fAspectRatioH;
     float m_fAspectRatioV;
 
-  public:
+public:
     FONT();
     ~FONT();
     bool Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_device, VDX9RENDER *_render);
@@ -84,6 +86,7 @@ class FONT
     long Print(long x, long y, char *Text);
     long UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length);
     long GetStringWidth(const char *Text);
+
     long GetHeight()
     {
         return Height;
@@ -91,6 +94,7 @@ class FONT
     void Inverse(bool v);
     void SetShadowOffset(long ox, long oy);
     void GetShadowOffset(long &ox, long &oy);
+
     void StoreFontParameters()
     {
         oldColor = Color;
@@ -98,6 +102,7 @@ class FONT
         bOldShadow = bShadow;
         bOldInverse = bInverse;
     };
+
     void RestoreFontParameters()
     {
         Color = oldColor;

@@ -5,11 +5,11 @@
 // text collection
 class CXI_STRCOLLECTION : public CINODE
 {
-  public:
+public:
     CXI_STRCOLLECTION(CXI_STRCOLLECTION &&) = delete;
     CXI_STRCOLLECTION(const CXI_STRCOLLECTION &) = delete;
     CXI_STRCOLLECTION();
-    ~CXI_STRCOLLECTION();
+    ~CXI_STRCOLLECTION() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -32,7 +32,7 @@ class CXI_STRCOLLECTION : public CINODE
     void ChangeStringColor(long num, uint32_t dwColor) const;
     void ChangeStringPos(long num, XYPOINT &pntNewPos) const;
 
-  protected:
+protected:
     struct STRINGDESCR
     {
         char *sFontName;
@@ -48,11 +48,11 @@ class CXI_STRCOLLECTION : public CINODE
         float fScale;       // scale for string out
     };
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     STRINGDESCR *CreateNewDinamicString(const char *strID, const char *strStr);
 
-  protected:
+protected:
     int m_nStr;               // string quantity
     STRINGDESCR *m_pStrDescr; // pointer to array of the string descriptors
     long m_nEditIndex;

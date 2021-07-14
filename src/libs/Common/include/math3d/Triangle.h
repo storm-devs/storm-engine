@@ -14,8 +14,9 @@
 // Class for representing a triangle in 3D space
 class Triangle
 {
-  public:
-    union {
+public:
+    union
+    {
         struct
         {
             // First vertex
@@ -36,9 +37,11 @@ class Triangle
     // -----------------------------------------------------------
     // Constructors
     // -----------------------------------------------------------
-  public:
+public:
     // Empty constructor
-    Triangle(){};
+    Triangle()
+    {
+    };
     // Copy constructor
     Triangle(const Triangle &t);
     Triangle(const Vector *v);
@@ -46,14 +49,14 @@ class Triangle
     // -----------------------------------------------------------
     // Operators
     // -----------------------------------------------------------
-  public:
+public:
     // per component multiplication with assignment
     Triangle &operator*=(const Vector &v);
 
     // -----------------------------------------------------------
     // Utilities
     // -----------------------------------------------------------
-  public:
+public:
     // Get normal
     Vector GetNormal() const;
     // Get midpoint
@@ -99,7 +102,7 @@ class Triangle
     // Checking triangles for intersections in one plane
     CoIntersectionResult IsCoplanarIntersection(const Triangle &t, float intsEps = 0.0000001f) const;
 
-  private:
+private:
     static long z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], long count);
 };
 

@@ -371,7 +371,8 @@ void SKY::Realize(uint32_t Delta_Time)
                     if (Delta_Time == 0)
                         pRS->DrawBuffer(iSkyVertsID, sizeof(SKYVERTEX), iSkyIndexID, 0, 40, 30 + i * 6, 2);
                 }
-            } while (pRS->TechniqueExecuteNext());
+            }
+            while (pRS->TechniqueExecuteNext());
 
         if (Delta_Time != 0)
         {
@@ -404,7 +405,8 @@ void SKY::Realize(uint32_t Delta_Time)
                             if (Delta_Time == 0) //~!~
                                 pRS->DrawBuffer(iSkyVertsID, sizeof(SKYVERTEX), iSkyIndexID, 0, 40, 30 + i * 6, 2);
                         }
-                    } while (pRS->TechniqueExecuteNext());
+                    }
+                    while (pRS->TechniqueExecuteNext());
             }
         }
 
@@ -427,7 +429,8 @@ void SKY::Realize(uint32_t Delta_Time)
                     if (Delta_Time == 0)
                         pRS->DrawBuffer(iSkyVertsID, sizeof(SKYVERTEX), iSkyIndexID, 0, 40, 30 + i * 6, 2);
                 }
-            } while (pRS->TechniqueExecuteNext());
+            }
+            while (pRS->TechniqueExecuteNext());
     }
 
     D3DXMatrixIdentity(&pMatWorld);

@@ -7,11 +7,15 @@ class IParticleSystem;
 
 class IEmitter
 {
-  public:
+public:
     // Constructor / destructor
-    IEmitter(){};
+    IEmitter()
+    {
+    };
 
-    virtual ~IEmitter(){};
+    virtual ~IEmitter()
+    {
+    };
 
     // Spawn particles, used when the attached emitter moves
     virtual void BornParticles(float DeltaTime) = 0;

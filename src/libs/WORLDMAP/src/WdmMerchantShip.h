@@ -17,13 +17,13 @@ class WdmMerchantShip : public WdmEnemyShip
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmMerchantShip();
-    virtual ~WdmMerchantShip();
+    ~WdmMerchantShip() override;
 
     void Goto(float x, float z, float rad);
 
-  protected:
+protected:
     // Find the pulling force in the desired direction
     void FindMoveForce() override;
     // Completion check
@@ -40,7 +40,7 @@ class WdmMerchantShip : public WdmEnemyShip
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     CVECTOR gotoPos;
     float gotoRad;
     bool isEnableSetDir;

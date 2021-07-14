@@ -208,7 +208,7 @@ void CXI_TWOPICTURE::MouseThis(float fX, float fY)
         return;
     if ((fX >= (m_leftPicCenter.x - m_picSize.x / 2)) && (fX <= (m_leftPicCenter.x + m_picSize.x / 2)) &&
         (fY >= (m_leftPicCenter.y - m_picSize.y / 2)) && (fY <= (m_leftPicCenter.y + m_picSize.y / 2)))
-    // mouse pointer over the left picture
+        // mouse pointer over the left picture
     {
         if (!m_bLeftSelect)
         {
@@ -220,7 +220,7 @@ void CXI_TWOPICTURE::MouseThis(float fX, float fY)
 
     if ((fX >= (m_rightPicCenter.x - m_picSize.x / 2)) && (fX <= (m_rightPicCenter.x + m_picSize.x / 2)) &&
         (fY >= (m_rightPicCenter.y - m_picSize.y / 2)) && (fY <= (m_rightPicCenter.y + m_picSize.y / 2)))
-    // mouse pointer over the right picture
+        // mouse pointer over the right picture
     {
         if (m_bLeftSelect)
         {

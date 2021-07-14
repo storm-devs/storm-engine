@@ -19,16 +19,17 @@ class Tornado : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Tornado();
-    virtual ~Tornado();
+    ~Tornado() override;
 
     // Initialization
-    bool Init();
+    bool Init() override;
     // Execution
     void Execute(uint32_t delta_time);
     void Realize(uint32_t delta_time);
-    uint64_t ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -51,7 +52,7 @@ class Tornado : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     VDX9RENDER *rs;
 
     VSoundService *soundService;

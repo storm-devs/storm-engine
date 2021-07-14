@@ -33,7 +33,7 @@
 
 class SHIP : public SHIP_BASE
 {
-  protected:
+protected:
     // struct section
     struct mast_t
     {
@@ -153,31 +153,33 @@ class SHIP : public SHIP_BASE
     BOOL LoadShipParameters();
     void CalcRealBoxsize();
 
-    void SetDead();
-    bool isDead()
+    void SetDead() override;
+
+    bool isDead() override
     {
         return bDead;
     };
+
     bool isVisible()
     {
         return bVisible;
     };
 
-  public:
-    virtual ~SHIP();
+public:
+    ~SHIP() override;
     SHIP();
 
-    float GetMaxSpeedZ();
-    float GetMaxSpeedY();
-    float GetWindAgainst();
-    long AddStrength(STRENGTH *strength);
-    bool DelStrength(long iIdx);
+    float GetMaxSpeedZ() override;
+    float GetMaxSpeedY() override;
+    float GetWindAgainst() override;
+    long AddStrength(STRENGTH *strength) override;
+    bool DelStrength(long iIdx) override;
 
-    BOOL BuildContour(CVECTOR *vContour, long &iNumVContour);
+    BOOL BuildContour(CVECTOR *vContour, long &iNumVContour) override;
     bool BuildMasts();
     bool BuildHulls();
     BOOL Move(uint32_t DeltaTime, BOOL bCollision);
-    BOOL TouchMove(uint32_t DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew);
+    BOOL TouchMove(uint32_t DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew) override;
 
     void LoadServices();
 
@@ -186,66 +188,69 @@ class SHIP : public SHIP_BASE
     uint32_t dwSaveAmbient, dwSaveFogColor;
     D3DLIGHT9 saveLight;
 
-    virtual void SetLightAndFog(bool bSetLight);
-    virtual void RestoreLightAndFog();
+    void SetLightAndFog(bool bSetLight) override;
+    void RestoreLightAndFog() override;
 
-    virtual void SetSpeed(float fSpeed);
-    virtual float GetSpeed();
+    void SetSpeed(float fSpeed) override;
+    float GetSpeed() override;
 
-    virtual void SetRotate(float fRotSpeed);
-    virtual float GetRotate();
+    void SetRotate(float fRotSpeed) override;
+    float GetRotate() override;
 
-    virtual float GetBrakingDistance(float *pfTime = nullptr);
-    virtual float GetRotationAngle(float *pfTime = nullptr);
+    float GetBrakingDistance(float *pfTime = nullptr) override;
+    float GetRotationAngle(float *pfTime = nullptr) override;
 
-    virtual float GetCurrentSpeed();
+    float GetCurrentSpeed() override;
 
-    virtual void SetLights();
-    virtual void UnSetLights();
-    virtual void Fire(const CVECTOR &vPos);
+    void SetLights() override;
+    void UnSetLights() override;
+    void Fire(const CVECTOR &vPos) override;
 
-    virtual void SetFixedSpeed(bool bSetFixed, float fFixedSpeed);
+    void SetFixedSpeed(bool bSetFixed, float fFixedSpeed) override;
 
     // inherit functions COLLISION_OBJECT
-    virtual float Trace(const CVECTOR &src, const CVECTOR &dst);
-    virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+    float Trace(const CVECTOR &src, const CVECTOR &dst) override;
+
+    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
     {
         return false;
     };
 
-    virtual const char *GetCollideMaterialName()
+    const char *GetCollideMaterialName() override
     {
         return nullptr;
     };
-    virtual bool GetCollideTriangle(TRIANGLE &triangle)
+
+    bool GetCollideTriangle(TRIANGLE &triangle) override
     {
         return false;
     };
 
     // inherit functions CANNON_TRACE_BASE
-    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
+    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
 
     // inherit functions VAI_OBJBASE
-    void SetACharacter(ATTRIBUTES *pAP);
+    void SetACharacter(ATTRIBUTES *pAP) override;
 
-    CMatrix *GetMatrix();
+    CMatrix *GetMatrix() override;
     void SetMatrix(CMatrix &mtx);
-    MODEL *GetModel() const;
-    entid_t GetModelEID() const;
-    CVECTOR GetPos() const;
-    CVECTOR GetAng() const;
-    CVECTOR GetBoxsize() const;
+    MODEL *GetModel() const override;
+    entid_t GetModelEID() const override;
+    CVECTOR GetPos() const override;
+    CVECTOR GetAng() const override;
+    CVECTOR GetBoxsize() const override;
 
     void SetPos(const CVECTOR &vNewPos) override;
 
-    bool Mount(ATTRIBUTES *);
+    bool Mount(ATTRIBUTES *) override;
 
     // inherit functions Entity
-    bool Init();
+    bool Init() override;
     void Realize(uint32_t Delta_Time);
     void Execute(uint32_t Delta_Time);
-    uint64_t ProcessMessage(MESSAGE &message);
-    uint32_t AttributeChanged(ATTRIBUTES *pAttribute);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+    uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -262,6 +267,7 @@ class SHIP : public SHIP_BASE
                 RestoreRender(delta); break;*/
         }
     }
-    void Save(CSaveLoad *pSL);
-    void Load(CSaveLoad *pSL);
+
+    void Save(CSaveLoad *pSL) override;
+    void Load(CSaveLoad *pSL) override;
 };

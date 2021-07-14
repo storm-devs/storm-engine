@@ -14,22 +14,21 @@
 
 class WdmDateLabel : public WdmInterfaceObject
 {
-
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmDateLabel();
-    virtual ~WdmDateLabel();
+    ~WdmDateLabel() override;
 
     void SetAttributes(ATTRIBUTES *apnt);
     // Rendering
-    virtual void LRender(VDX9RENDER *rs);
+    void LRender(VDX9RENDER *rs) override;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     long txTextBar;
     long txSkyClock;
     long txSkyClockFrame;

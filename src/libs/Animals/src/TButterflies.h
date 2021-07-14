@@ -16,7 +16,7 @@
 ///////////////////////////////////////////////////////////////////
 class TButterflies
 {
-  public:
+public:
     TButterflies();
     virtual ~TButterflies();
 
@@ -25,7 +25,7 @@ class TButterflies
     void Realize(uint32_t dTime);
     void Execute(uint32_t dTime);
 
-  private:
+private:
     void LoadSettings();
 
     VDX9RENDER *renderService;

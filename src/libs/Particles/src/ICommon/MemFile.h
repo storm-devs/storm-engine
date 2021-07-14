@@ -19,7 +19,7 @@ class MemFile
     uint32_t CurPos;
     uint32_t BiggestWritePos;
 
-  public:
+public:
     MemFile()
     {
         DataIsMy = false;

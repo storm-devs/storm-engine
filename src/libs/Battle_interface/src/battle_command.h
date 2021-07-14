@@ -18,7 +18,7 @@ class BIImageRender;
 
 class BICommandList
 {
-  public:
+public:
     BICommandList(BICommandList &&) = delete;
     BICommandList(const BICommandList &) = delete;
     BICommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs);
@@ -37,6 +37,7 @@ class BICommandList
     long ExecuteCancel();
 
     void SetActive(bool bActive);
+
     bool GetActive() const
     {
         return m_bActive;
@@ -51,7 +52,7 @@ class BICommandList
                        const char *pcNoteName);
     void AddAdditiveToIconList(long nTextureNum, long nPictureNum, float fDist, float fWidth, float fHeight);
 
-  protected:
+protected:
     entid_t m_idHostObj;
     ATTRIBUTES *m_pARoot;
     VDX9RENDER *m_pRS;

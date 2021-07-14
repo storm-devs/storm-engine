@@ -52,7 +52,7 @@ bool CXI_SCROLLTEXT::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const
     if (!CINODE::Init(ini1, name1, ini2, name2, rs, hostRect, ScreenSize))
         return false;
     SetText("proba string ^fnormal continue proba string one, two, three etc. Continue next stringes from full screen "
-            "filling");
+        "filling");
     SetGlowCursor(false);
     return true;
 }

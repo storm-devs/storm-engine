@@ -76,9 +76,9 @@ class Lights : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     Lights();
-    virtual ~Lights();
+    ~Lights() override;
 
     // Initialization
     bool Init() override;
@@ -132,7 +132,7 @@ class Lights : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     VDX9RENDER *rs;
     COLLIDE *collide;
 

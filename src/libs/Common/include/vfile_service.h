@@ -11,7 +11,7 @@ class INIFILE;
 
 class VFILE_SERVICE
 {
-  public:
+public:
     // VFILE_SERVICE()= 0;
     virtual ~VFILE_SERVICE()
     {
@@ -64,7 +64,7 @@ class VFILE_SERVICE
 
 class INIFILE
 {
-  public:
+public:
     virtual ~INIFILE() = default;
 
     // add string to file

@@ -13,6 +13,7 @@
 #include "math3d/Color.h"
 
 CREATE_SERVICE(SoundService)
+
 CREATE_CLASS(SoundVisualisationEntity)
 
 #define DISTANCEFACTOR 1.0f
@@ -402,7 +403,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
             _maxDistance = 0.0f;
 
         CHECKFMODERR(PlayingSounds[SoundIdx].channel->set3DMinMaxDistance(_minDistance * DISTANCEFACTOR,
-                                                                          _maxDistance * DISTANCEFACTOR));
+            _maxDistance * DISTANCEFACTOR));
 
         FMOD_VECTOR vVelocity = {0.0f, 0.0f, 0.0f};
         FMOD_VECTOR vPosition;
@@ -1024,7 +1025,7 @@ void SoundService::DebugDraw()
     FMOD_VECTOR lpos, lvel, lforward, lup;
     system->get3DListenerAttributes(0, &lpos, &lvel, &lforward, &lup);
 
-    CVECTOR vListener = CVECTOR(lpos.x, lpos.y, lpos.z);
+    auto vListener = CVECTOR(lpos.x, lpos.y, lpos.z);
 
     float fTotal;
     system->getCPUUsage(nullptr, nullptr, nullptr, nullptr, &fTotal);
@@ -1094,7 +1095,7 @@ void SoundService::DebugDraw()
             // 0xFFFF0000 not playing
             // 0xFF00FF00 is playing
 
-            Color drawColor = Color(0xFFFF0000);
+            auto drawColor = Color(0xFFFF0000);
 
             if (!bVirtual)
             {
@@ -1256,7 +1257,7 @@ void SoundService::Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float f
     vStartPoint += center;
     for (float Angle = fDelta; Angle <= (PI * 2); Angle += fDelta)
     {
-        CVECTOR vPoint = CVECTOR(cosf(Angle) * fRadius, 0.0f, sinf(Angle) * fRadius);
+        auto vPoint = CVECTOR(cosf(Angle) * fRadius, 0.0f, sinf(Angle) * fRadius);
         vPoint += center;
 
         vStart = vStartPoint;
@@ -1285,7 +1286,7 @@ void SoundService::Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float f
     vStartPoint += center;
     for (float Angle = fDelta; Angle <= (PI * 2); Angle += fDelta)
     {
-        CVECTOR vPoint = CVECTOR(cosf(Angle) * fRadius2, 0.0f, sinf(Angle) * fRadius2);
+        auto vPoint = CVECTOR(cosf(Angle) * fRadius2, 0.0f, sinf(Angle) * fRadius2);
         vPoint += center;
 
         vStart = vStartPoint;

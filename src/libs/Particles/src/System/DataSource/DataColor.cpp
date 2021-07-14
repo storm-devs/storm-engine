@@ -5,7 +5,8 @@
 #include "vmodule_api.h"
 
 // constructor / destructor
-DataColor::DataColor() : ZeroColor(0xFFFFFFFF)
+DataColor::DataColor()
+    : ZeroColor(0xFFFFFFFF)
 {
 }
 

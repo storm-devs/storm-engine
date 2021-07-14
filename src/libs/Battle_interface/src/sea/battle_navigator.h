@@ -15,7 +15,7 @@ class BATTLE_NAVIGATOR
     VDX9RENDER *rs;
     Entity *m_pOwnerEI;
 
-  public:
+public:
     BATTLE_NAVIGATOR(BATTLE_NAVIGATOR &&) = delete;
     BATTLE_NAVIGATOR(const BATTLE_NAVIGATOR &) = delete;
     BATTLE_NAVIGATOR();
@@ -44,10 +44,11 @@ class BATTLE_NAVIGATOR
     {
         m_bNotEnoughBallFlag = notEnoughBallFlag;
     }
+
     void LostRender();
     void RestoreRender();
 
-  protected:
+protected:
     void CalculateTextureRect(FRECT &texRect, long num, long hq, long vq);
     long SetCircleVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float rad, float angle = 0) const;
     long SetCircleVertexTex(BI_ONETEXTURE_VERTEX *v, float x = .5f, float y = .5f, float rad = .5f, float angle = 0);
@@ -72,7 +73,7 @@ class BATTLE_NAVIGATOR
 
     void UpdateWindParam();
 
-  protected:
+protected:
     uint32_t m_dwBackGradColor1;
     uint32_t m_dwBackGradColor2;
     // visible horizon parameters

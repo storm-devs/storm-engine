@@ -152,6 +152,7 @@ void AIShipMoveController::AddRetardForce(CVECTOR _vRetardForce)
 {
     vRetardForce += _vRetardForce;
 }
+
 void AIShipMoveController::AddDeflectForce(CVECTOR _vDeflectForce)
 {
     vDeflectForce += _vDeflectForce;

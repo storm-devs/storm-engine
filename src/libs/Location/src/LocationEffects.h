@@ -86,9 +86,9 @@ class LocationEffects : public Entity
     // --------------------------------------------------------------------------------------------
     // construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     LocationEffects();
-    virtual ~LocationEffects();
+    ~LocationEffects() override;
 
     // Initialization
     bool Init() override;
@@ -118,11 +118,11 @@ class LocationEffects : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     void DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx = false,
                        long numU = 0);
 
-  private:
+private:
     VDX9RENDER *rs;
 
     // ---------------------------------------------------

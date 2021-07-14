@@ -582,10 +582,10 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     // get speed angles
     m_fBegAnglShipSpeed = static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "shipSpeedBegAngle", 0)) / 180.f * PI;
     m_fCurAnglShipSpeed = m_fEndAnglShipSpeed =
-        static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "shipSpeedEndAngle", 0)) / 180.f * PI;
+                          static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "shipSpeedEndAngle", 0)) / 180.f * PI;
     m_fBegAnglWindSpeed = static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "windSpeedBegAngle", 0)) / 180.f * PI;
     m_fCurAnglWindSpeed = m_fEndAnglWindSpeed =
-        static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "windSpeedEndAngle", 0)) / 180.f * PI;
+                          static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "windSpeedEndAngle", 0)) / 180.f * PI;
 
     // current charge type
     m_ChargeGreed.x = 1;
@@ -1160,16 +1160,24 @@ long BATTLE_NAVIGATOR::SetRectangleSegVertexPos(BI_ONETEXTURE_VERTEX *v, float x
 
     const auto alpha = atan2f(width / 2, height / 2);
 
-    const auto begseg = begAngle < alpha              ? 0
-                        : begAngle < (PI - alpha)     ? 1
-                        : begAngle < (PI + alpha)     ? 2
-                        : begAngle < (2 * PI - alpha) ? 3
-                                                      : 0;
-    const auto endseg = endAngle < alpha              ? 0
-                        : endAngle < (PI - alpha)     ? 1
-                        : endAngle < (PI + alpha)     ? 2
-                        : endAngle < (2 * PI - alpha) ? 3
-                                                      : 0;
+    const auto begseg = begAngle < alpha
+                            ? 0
+                            : begAngle < (PI - alpha)
+                            ? 1
+                            : begAngle < (PI + alpha)
+                            ? 2
+                            : begAngle < (2 * PI - alpha)
+                            ? 3
+                            : 0;
+    const auto endseg = endAngle < alpha
+                            ? 0
+                            : endAngle < (PI - alpha)
+                            ? 1
+                            : endAngle < (PI + alpha)
+                            ? 2
+                            : endAngle < (2 * PI - alpha)
+                            ? 3
+                            : 0;
 
     v[0].pos.x = x;
     v[0].pos.y = y;
@@ -1240,16 +1248,24 @@ long BATTLE_NAVIGATOR::SetRectangleSegVertexTex(BI_ONETEXTURE_VERTEX *v, float x
 
     const auto alpha = atan2f(width / 2, height / 2);
 
-    const auto begseg = begAngle < alpha              ? 0
-                        : begAngle < (PI - alpha)     ? 1
-                        : begAngle < (PI + alpha)     ? 2
-                        : begAngle < (2 * PI - alpha) ? 3
-                                                      : 0;
-    const auto endseg = endAngle < alpha              ? 0
-                        : endAngle < (PI - alpha)     ? 1
-                        : endAngle < (PI + alpha)     ? 2
-                        : endAngle < (2 * PI - alpha) ? 3
-                                                      : 0;
+    const auto begseg = begAngle < alpha
+                            ? 0
+                            : begAngle < (PI - alpha)
+                            ? 1
+                            : begAngle < (PI + alpha)
+                            ? 2
+                            : begAngle < (2 * PI - alpha)
+                            ? 3
+                            : 0;
+    const auto endseg = endAngle < alpha
+                            ? 0
+                            : endAngle < (PI - alpha)
+                            ? 1
+                            : endAngle < (PI + alpha)
+                            ? 2
+                            : endAngle < (2 * PI - alpha)
+                            ? 3
+                            : 0;
 
     v[0].tu = x;
     v[0].tv = y;
@@ -1379,8 +1395,7 @@ void BATTLE_NAVIGATOR::SetIsland()
                         if (rs->TechniqueExecuteStart("battle_island_gettexture"))
                         {
                             pM->ProcessStage(Entity::Stage::realize, 1);
-                            while (rs->TechniqueExecuteNext())
-                                ;
+                            while (rs->TechniqueExecuteNext());
                         }
                         rs->SetRenderTarget(pOldRenderTarg, pStencil);
                         rs->SetTransform(D3DTS_VIEW, oldmatv);

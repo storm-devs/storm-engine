@@ -9,7 +9,9 @@
 #include "inlines.h"
 
 CREATE_CLASS(SHIP)
+
 CREATE_CLASS(ShipLights)
+
 CREATE_CLASS(ShipTracks)
 
 VDX9RENDER *SHIP::pRS = nullptr;
@@ -865,6 +867,7 @@ void SHIP::Execute(uint32_t DeltaTime)
         }
     }
 }
+
 /*
 void SHIP::MastFall(mast_t* pM) {
   if (pM && pM->pNode && pM->fDamage >= 1.0f) {
@@ -1735,26 +1738,32 @@ CVECTOR SHIP::GetBoxsize() const
 {
     return State.vBoxSize;
 };
+
 entid_t SHIP::GetModelEID() const
 {
     return model_id;
 }
+
 MODEL *SHIP::GetModel() const
 {
     return static_cast<MODEL *>(EntityManager::GetEntityPointer(GetModelEID()));
 }
+
 CMatrix *SHIP::GetMatrix()
 {
     return &GetModel()->mtx;
 }
+
 void SHIP::SetMatrix(CMatrix &mtx)
 {
     GetModel()->mtx = mtx;
 }
+
 CVECTOR SHIP::GetAng() const
 {
     return State.vAng;
 }
+
 CVECTOR SHIP::GetPos() const
 {
     return CVECTOR(State.vPos.x + fXOffset, State.vPos.y, State.vPos.z + fZOffset);
@@ -1773,6 +1782,7 @@ void SHIP::SetSpeed(float fSpeed)
 {
     fSailState = fSpeed;
 }
+
 float SHIP::GetSpeed()
 {
     return fSailState;
@@ -1782,6 +1792,7 @@ void SHIP::SetRotate(float fRotSpd)
 {
     Strength[0].vRotate.y = fRotSpd;
 }
+
 float SHIP::GetRotate()
 {
     return Strength[0].vRotate.y;
@@ -1798,7 +1809,7 @@ void SHIP::SetACharacter(ATTRIBUTES *pAP)
 
     if (pAP && pAP->GetAttributeAsDword("index", -1) >= 0)
     {
-        VDATA *pVDat = static_cast<VDATA *>(core.GetScriptVariable("Characters"));
+        auto pVDat = static_cast<VDATA *>(core.GetScriptVariable("Characters"));
         if (pVDat)
             pVDat->Set(GetId(), pAP->GetAttributeAsDword("index", 0));
     }

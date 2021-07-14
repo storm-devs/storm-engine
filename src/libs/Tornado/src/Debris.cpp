@@ -19,7 +19,8 @@
 // Construction, destruction
 // ============================================================================================
 
-Debris::Debris(Pillar &_pillar) : pillar(_pillar)
+Debris::Debris(Pillar &_pillar)
+    : pillar(_pillar)
 {
     numModels = 0;
     flyCounter = 0;

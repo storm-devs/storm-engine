@@ -4,17 +4,19 @@
 #include "dx9render.h"
 #include "triangle.h"
 
-typedef bool (*ADD_POLYGON_FUNC)(const CVECTOR *v, long nv);
+using ADD_POLYGON_FUNC = bool(*)(const CVECTOR *v, long nv);
 
 class COLLISION_OBJECT : public Entity
 {
-  public:
+public:
     bool Init() override
     {
         return true;
     }
 
-    virtual ~COLLISION_OBJECT(){};
+    ~COLLISION_OBJECT() override
+    {
+    };
     CMatrix mtx;
 
     virtual float Trace(const CVECTOR &src, const CVECTOR &dst) = 0;

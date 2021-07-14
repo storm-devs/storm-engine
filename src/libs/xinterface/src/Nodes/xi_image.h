@@ -13,7 +13,7 @@ enum ImagePointType
 
 class CXI_IMAGE
 {
-  public:
+public:
     CXI_IMAGE();
     ~CXI_IMAGE();
 
@@ -32,6 +32,7 @@ class CXI_IMAGE
     void SetDifferentPosition(long nLeft, long nTop, long nWidth, long nHeight, ImagePointType ptype = IPType_LeftTop);
 
     void SetColor(uint32_t dwColor);
+
     uint32_t GetColor() const
     {
         return m_dwImageColor;
@@ -41,6 +42,7 @@ class CXI_IMAGE
     {
         return m_pntSize.x;
     }
+
     long GetHeight() const
     {
         return m_pntSize.y;
@@ -65,7 +67,7 @@ class CXI_IMAGE
         m_bDisableDraw = bDisable;
     }
 
-  protected:
+protected:
     VDX9RENDER *m_rs;
 
     bool m_bDisableDraw;

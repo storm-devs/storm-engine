@@ -6,7 +6,7 @@ class GIEditor;
 
 class GIFont
 {
-  public:
+public:
     GIFont(GIFont &&) = delete;
     GIFont(const GIFont &) = delete;
     GIFont(GIEditor *pEditor, const char *pcFontName);
@@ -18,6 +18,7 @@ class GIFont
     void PrintIntoWindow(const char *pcFormat, ...);
 
     void SetHeight(float fHeight);
+
     float GetHeight() const
     {
         return m_fHeight;
@@ -26,7 +27,7 @@ class GIFont
     void SetColor(uint32_t dwColor);
     void SetBackColor(uint32_t dwColor);
 
-  protected:
+protected:
     GIEditor *m_pEditor;
     long m_nFontID;
 

@@ -5,9 +5,9 @@
 // picture
 class CXI_LRCHANGER : public CINODE
 {
-  public:
+public:
     CXI_LRCHANGER();
-    ~CXI_LRCHANGER();
+    ~CXI_LRCHANGER() override;
 
     void Draw(bool bSelected, uint32_t Delta_Time) override;
     bool Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, VDX9RENDER *rs, XYRECT &hostRect,
@@ -24,10 +24,10 @@ class CXI_LRCHANGER : public CINODE
     void SaveParametersToIni() override;
     long GetClickState() override;
 
-  protected:
+protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
-  protected:
+protected:
     char *m_sGroupName;
     long m_idTex; // texture identity
 

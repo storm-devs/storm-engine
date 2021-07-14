@@ -21,7 +21,7 @@ class AnimationInfo final
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     AnimationInfo(const char *animationName);
     ~AnimationInfo();
     // Set the number of frames in the animation
@@ -36,7 +36,7 @@ class AnimationInfo final
     // --------------------------------------------------------------------------------------------
     // Working with animation
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     // Number of bones
     long NumBones();
     // Access to the bone
@@ -65,7 +65,7 @@ class AnimationInfo final
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     char name[64]; // Animation name
 
     long numFrames; // The number of frames in the entire animation

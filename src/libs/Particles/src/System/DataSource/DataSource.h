@@ -20,7 +20,7 @@ class IParticleManager;
 // Data source for particles ...
 class DataSource
 {
-  public:
+public:
     // Particle description (used when creating a system)
     struct ParticleDesc
     {
@@ -46,7 +46,7 @@ class DataSource
         }
     };
 
-  private:
+private:
     std::vector<EmitterDesc> Emitters;
 
     // Load point emitter
@@ -60,10 +60,10 @@ class DataSource
 
     int FindEmitter(const char *Name);
 
-  protected:
+protected:
     virtual ~DataSource();
 
-  public:
+public:
     FieldList *CreateEmptyPointEmitter(const char *EmitterName);
     FieldList *CreateBillBoardParticle(const char *ParticleName, const char *EmitterName);
     FieldList *CreateModelParticle(const char *ParticleName, const char *EmitterName);

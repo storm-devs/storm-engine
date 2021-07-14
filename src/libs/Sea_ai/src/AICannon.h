@@ -9,7 +9,7 @@
 // ============================================================================
 class AICannon
 {
-  private:
+private:
     AIAttributesHolder *pAHolder;
     entid_t eidParent;       // parent for cannon (ship, or fort entity)
     CVECTOR vPos, vDir;      // Cannon position and direction(relative to parent)
@@ -31,7 +31,7 @@ class AICannon
 
     void RealFire(); // immediatelly fire!
 
-  public:
+public:
     enum CANNONTYPE
     {
         CANNONTYPE_NORMAL = 0,
@@ -67,14 +67,17 @@ class AICannon
     void QuickRecharge(bool bHaveEnoughBalls);
 
     float GetRechargePercent();
+
     void AddDamage(float _fDamage)
     {
         fDamaged += _fDamage;
     };
+
     void SetDamage(float _fDamage)
     {
         fDamaged = _fDamage;
     };
+
     float GetDamage() const
     {
         return fDamaged;
@@ -82,6 +85,7 @@ class AICannon
     CVECTOR GetPos() const;
     CVECTOR GetDir() const;
     float GetDirY() const;
+
     float GetDistance(CVECTOR &vPos) const
     {
         return sqrtf(~(vPos - GetPos()));
@@ -96,14 +100,17 @@ class AICannon
     {
         bCanRecharge = bRechargeEnable;
     }
+
     bool isLoad() const
     {
         return bLoad;
     }
+
     bool isEmpty() const
     {
         return bEmpty;
     }
+
     bool isReady2Fire() const
     {
         return (bReady2Fire & (!isDamaged()));
@@ -112,14 +119,17 @@ class AICannon
     {
         return fDamaged >= 1.0f;
     }
+
     bool isDisabled() const
     {
         return fDamaged >= 2.0f;
     }
+
     bool isFired() const
     {
         return bFired;
     }
+
     bool isRecharged() const
     {
         return bRecharged;
@@ -128,6 +138,6 @@ class AICannon
     void Save(CSaveLoad *pSL) const;
     void Load(CSaveLoad *pSL, AIAttributesHolder *_pAHolder, entid_t eid);
 
-  private:
+private:
     CANNONTYPE CannonType;
 };

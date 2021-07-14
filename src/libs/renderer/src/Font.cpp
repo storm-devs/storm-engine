@@ -330,10 +330,11 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
         pVertex[n + 5].tv = tuv.y1;
 
         pVertex[n + 0].color = pVertex[n + 1].color = pVertex[n + 2].color = pVertex[n + 3].color =
-            pVertex[n + 4].color = pVertex[n + 5].color = Color;
+                                                                             pVertex[n + 4].color =
+                                                                             pVertex[n + 5].color = Color;
 
         pVertex[n + 0].rhw = pVertex[n + 1].rhw = pVertex[n + 2].rhw = pVertex[n + 3].rhw = pVertex[n + 4].rhw =
-            pVertex[n + 5].rhw = fScale;
+                                                                           pVertex[n + 5].rhw = fScale;
     }
     VBuffer->Unlock();
     return static_cast<long>(xoffset);
@@ -395,8 +396,7 @@ long FONT::Print(long x, long y, char *data_PTR)
 
         Device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, s_num * 2);
     }
-    while (RenderService->TechniqueExecuteNext())
-        ;
+    while (RenderService->TechniqueExecuteNext());
 
     return xoffset;
 }

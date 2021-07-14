@@ -23,7 +23,7 @@
 #define INVALID_TEXTURE_ID 0xFFFFFFFF
 #define INVALID_RS_ID 0xFFFFFFFF
 
-typedef uint32_t RS_ID;
+using RS_ID = uint32_t;
 
 using renderer_handle = uint32_t;
 
@@ -68,9 +68,11 @@ class CVideoTexture;
 
 class VDX9RENDER : public SERVICE
 {
-  public:
+public:
     // DX9Render: Construct/Destruct
-    virtual ~VDX9RENDER(){};
+    ~VDX9RENDER() override
+    {
+    };
 
     // DX9Render: Init/Release
     virtual bool InitDevice(bool windowed, HWND hwnd, long width, long height) = 0;

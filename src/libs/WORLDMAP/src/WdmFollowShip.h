@@ -17,11 +17,11 @@ class WdmFollowShip : public WdmEnemyShip
     // --------------------------------------------------------------------------------------------
     // construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmFollowShip();
-    virtual ~WdmFollowShip();
+    ~WdmFollowShip() override;
 
-  protected:
+protected:
     // Setting parameters
     bool Load(const char *modelName) override;
     // Find the force pulling in the right direction
@@ -30,5 +30,5 @@ class WdmFollowShip : public WdmEnemyShip
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
 };

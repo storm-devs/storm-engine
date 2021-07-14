@@ -466,7 +466,7 @@ bool NPCharacter::SetNewTask(NPCTask tsk, MESSAGE &message)
 bool NPCharacter::InitFollowChartacter(entid_t eid)
 {
     task.target = eid;
-    Character *c = static_cast<Character *>(EntityManager::GetEntityPointer(eid));
+    auto c = static_cast<Character *>(EntityManager::GetEntityPointer(eid));
     if (c)
     {
         const char *id = c->AttributesPointer->GetAttribute("id");
@@ -752,8 +752,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 
         if (!bFired && dst <= NPC_FIGHT_GO_DIST * NPC_FIGHT_GO_DIST)
         {
-            if (fgtCurType == fgt_none && priorityAction.name && shot.name)
-                ;
+            if (fgtCurType == fgt_none && priorityAction.name && shot.name);
             else
                 DoFightAction(dltTime, c);
         }
@@ -770,7 +769,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
         if (_stricmp(priorityAction.name, shot.name) == 0)
         {
             float kdst;
-            NPCharacter *target = static_cast<NPCharacter *>(FindGunTarget(kdst, true));
+            auto target = static_cast<NPCharacter *>(FindGunTarget(kdst, true));
             if (target)
             {
                 if (target != c)
@@ -850,7 +849,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     if (vd)
         vd->Get(isAdaptive);
     // Correcting taking into account the presence of groups
-    CharactersGroups *chrGroup = static_cast<CharactersGroups *>(EntityManager::GetEntityPointer(charactersGroups));
+    auto chrGroup = static_cast<CharactersGroups *>(EntityManager::GetEntityPointer(charactersGroups));
     if (!chrGroup)
         isAdaptive = false;
     // If we want to hit and the mode is not adaptive, then just hit
@@ -881,7 +880,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     {
         // Character
         Supervisor::FindCharacter &fc = fndCharacter[i];
-        NPCharacter *chr = static_cast<NPCharacter *>(fc.c);
+        auto chr = static_cast<NPCharacter *>(fc.c);
         if (chr->liveValue < 0 || chr->deadName || fc.d2 <= 0.0f || chr == this)
             continue;
         fc.d2 = sqrtf(fc.d2);
@@ -983,7 +982,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     {
         if (enemies[i].look >= attackAng)
         {
-            NPCharacter *chr = static_cast<NPCharacter *>(enemies[i].chr);
+            auto chr = static_cast<NPCharacter *>(enemies[i].chr);
             if (chr->fgtCurType >= fgt_attack_fast && chr->fgtCurType <= fgt_attack_feintc)
             {
                 if (chr->fgtCurType == fgt_attack_break)

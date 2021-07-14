@@ -18,9 +18,9 @@ class WdmEnemyShip : public WdmShip
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WdmEnemyShip();
-    virtual ~WdmEnemyShip();
+    ~WdmEnemyShip() override;
 
     // Calculations
     void Update(float dltTime) override;
@@ -50,7 +50,7 @@ class WdmEnemyShip : public WdmShip
     // Get attribute name
     const char *GetAttributeName() const;
 
-  protected:
+protected:
     // Find the pulling force in the desired direction
     virtual void FindMoveForce();
     // Find the force that repels from the islands
@@ -64,7 +64,7 @@ class WdmEnemyShip : public WdmShip
     // Updating stored data
     virtual void UpdateSaveData();
 
-  public:
+public:
     // Setting parameters
     virtual void SetSaveAttribute(ATTRIBUTES *save);
     void DeleteUpdate();
@@ -73,7 +73,7 @@ class WdmEnemyShip : public WdmShip
     // Encapsulation
     // --------------------------------------------------------------------------------------------
 
-  protected:
+protected:
     float mx, mz; // Direction vector where to travel
     float ix, iz; // Vector of repulsion from islands
     float sx, sz; // Vector of repulsion from ships
@@ -84,7 +84,7 @@ class WdmEnemyShip : public WdmShip
 
     ATTRIBUTES *saveAttribute;
 
-  private:
+private:
     float brnAlpha;
     float deleteAlpha;
     float liveTime;

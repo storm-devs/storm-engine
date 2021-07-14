@@ -13,9 +13,9 @@ class WATERFLARE : public Entity
 
     void GenerateFlares();
 
-  public:
+public:
     WATERFLARE();
-    ~WATERFLARE();
+    ~WATERFLARE() override;
 
     void SetDevice();
     bool Init() override;

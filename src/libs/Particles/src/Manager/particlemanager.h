@@ -71,8 +71,8 @@ class ParticleManager : public IParticleManager
 
     std::vector<ParticleSystem *> DeleteQuery;
 
-  protected:
-    virtual ~ParticleManager();
+protected:
+    ~ParticleManager() override;
 
     ParticleSystem *CreateParticleSystemFromDataSource(DataSource *pDataSource);
 
@@ -81,7 +81,7 @@ class ParticleManager : public IParticleManager
 
     bool FindInEnumUsedGeom(const char *GeomName);
 
-  public:
+public:
     // Create / delete
     ParticleManager(ParticleService *service);
     bool Release() override;

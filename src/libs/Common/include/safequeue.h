@@ -7,24 +7,31 @@ template <class Type> class _safe_queue_item
 {
     Type value;
     _safe_queue_item *next;
+
     _safe_queue_item()
     {
         next = nullptr;
     };
+
     _safe_queue_item(const Type &val)
     {
         value = val;
         next = nullptr;
     };
-    ~_safe_queue_item(){};
+
+    ~_safe_queue_item()
+    {
+    };
+
     void DeleteQueue()
-    { // delete all items
+    {
+        // delete all items
         if (next != nullptr)
             next->DeleteQueue();
         delete this;
     };
     friend class SafeQueue<Type>; // the one and the only one friend
-                                  // who can use this class
+    // who can use this class
 };
 
 template <class Type> class SafeQueue
@@ -33,7 +40,7 @@ template <class Type> class SafeQueue
     _safe_queue_item<Type> *first; // head pointer
     _safe_queue_item<Type> *last;  // Tail pointer
 
-  public:
+public:
     bool Push(const Type &item) // Add element at the end of queue
     {
         EnterCriticalSection(&lock);
@@ -48,8 +55,10 @@ template <class Type> class SafeQueue
         LeaveCriticalSection(&lock);
         return true;
     };
+
     Type Pop()
-    { // Retrieve element from the head of queue, and remove it from queue
+    {
+        // Retrieve element from the head of queue, and remove it from queue
         EnterCriticalSection(&lock);
         Type val;
         _safe_queue_item<Type> *oldFirst = first;
@@ -67,15 +76,19 @@ template <class Type> class SafeQueue
         }
         return val;
     };
+
     bool IsEmpty()
-    { // check if queue is empty
+    {
+        // check if queue is empty
         EnterCriticalSection(&lock);
         bool empty = (first == nullptr);
         LeaveCriticalSection(&lock);
         return empty;
     };
+
     void Reset()
-    { // reset contents of the queue
+    {
+        // reset contents of the queue
         EnterCriticalSection(&lock);
         if (first != nullptr)
         {
@@ -84,13 +97,16 @@ template <class Type> class SafeQueue
         }
         LeaveCriticalSection(&lock);
     };
+
     SafeQueue()
     {
         InitializeCriticalSection(&lock);
         first = last = nullptr;
     };
+
     ~SafeQueue()
-    { // destructor - deletes all
+    {
+        // destructor - deletes all
         EnterCriticalSection(&lock);
         if (first != nullptr)
             first->DeleteQueue();

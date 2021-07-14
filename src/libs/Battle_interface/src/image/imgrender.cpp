@@ -27,7 +27,8 @@ void BIImageRender::Render()
             for (long n = 0; n < m_apStrings.size(); n++)
                 static_cast<BIString *>(m_apStrings[n])
                     ->RenderPrioritetRange(m_nBeginOutputPrioritet, m_nEndOutputPrioritet);
-        } while (GetNextPrioritetRange());
+        }
+        while (GetNextPrioritetRange());
 }
 
 uint64_t BIImageRender::ProcessMessage(MESSAGE &message)

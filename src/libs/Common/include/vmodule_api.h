@@ -29,64 +29,77 @@ inline std::vector<VMA *> __STORM_CLASSES_REGISTRY;
 
 class VMA
 {
-  protected:
+protected:
     VMA *pNext;
     long nHash;
     long nReference;
 
-  public:
-    VMA() : pNext(nullptr)
+public:
+    VMA()
+        : pNext(nullptr)
     {
         nReference = 0;
         nHash = 0;
         __STORM_CLASSES_REGISTRY.push_back(this);
     }
+
     VMA *Next() const
     {
         return pNext;
     }
 
     virtual ~VMA() = default;
+
     long Build_Version()
     {
         return -1;
     }
+
     void SetHash(long _hash)
     {
         nHash = _hash;
     }
+
     long GetHash() const
     {
         return nHash;
     }
+
     void Set(VMA *_p)
     {
         pNext = _p;
     }
+
     virtual bool Service()
     {
         return false;
     }
+
     virtual const char *GetName()
     {
         return nullptr;
     }
+
     virtual void *CreateClass()
     {
         return nullptr;
     }
+
     virtual void RefDec()
     {
         nReference--;
     }
+
     virtual long GetReference()
     {
         return nReference;
     }
+
     virtual void Clear()
     {
         nReference = 0;
     }
+
     virtual bool ScriptLibriary()
     {
         return false;

@@ -170,7 +170,7 @@ VAI_OBJBASE *SHIPPOINTER::FindShipByChrIndex(long chrIdx) const
     const auto &entities = EntityManager::GetEntityIdVector("ship");
     for (auto ship : entities)
     {
-        VAI_OBJBASE *ps = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ship));
+        auto ps = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ship));
         if (ps != nullptr && ps->GetACharacter() != nullptr)
         {
             if (static_cast<long>(ps->GetACharacter()->GetAttributeAsDword("index", -2)) == chrIdx)

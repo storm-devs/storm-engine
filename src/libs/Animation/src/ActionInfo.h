@@ -17,8 +17,10 @@
 
 enum ExtAnimationEventType
 {
-    eae_always, // Always
-    eae_normal, // When playing forward
+    eae_always,
+    // Always
+    eae_normal,
+    // When playing forward
     eae_reverse // Reverse playback
 };
 
@@ -38,7 +40,7 @@ class ActionInfo final
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     ActionInfo(const char *aname, long startframe, long endframe);
     // Set playback speed ratio
     void SetRate(float rate);
@@ -52,7 +54,7 @@ class ActionInfo final
     // --------------------------------------------------------------------------------------------
     // Working with action
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     // Compare with current name
     bool operator==(const char *actionName) const;
     // Get action name
@@ -72,7 +74,7 @@ class ActionInfo final
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     char name[64]; // Action name
 
     long startFrame; // Starting position in the whole animation

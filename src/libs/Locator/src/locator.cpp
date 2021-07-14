@@ -4,6 +4,7 @@
 #include "entity.h"
 
 CREATE_CLASS(LOCATOR)
+
 CREATE_CLASS(BLAST)
 
 LOCATOR::LOCATOR()
@@ -356,9 +357,10 @@ uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
                 PS_CREATEX,"waterfall",label.m[3][0],label.m[3][1],label.m[3][2],label.m[2][0],label.m[2][1],-label.m[2][2],0);
             }
           }
-        break;*/}
-        }
-        return 0;
+        break;*/
+    }
+    }
+    return 0;
 }
 
 uint32_t LOCATOR::AttributeChanged(ATTRIBUTES *pA)

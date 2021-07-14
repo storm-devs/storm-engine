@@ -18,9 +18,9 @@ class WideScreen : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-  public:
+public:
     WideScreen();
-    virtual ~WideScreen();
+    ~WideScreen() override;
 
     // Initialization
     bool Init() override;
@@ -48,7 +48,7 @@ class WideScreen : public Entity
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-  private:
+private:
     VDX9RENDER *rs; //
     float w, h;     // Screen dimensions
     float state;    // Screen state

@@ -1,6 +1,6 @@
 #pragma once
 
-typedef struct tagTGA_H
+using TGA_H = struct tagTGA_H
 {
     uint8_t byte1; // = 0
     uint8_t byte2; // = 0
@@ -9,7 +9,8 @@ typedef struct tagTGA_H
     uint16_t width;
     uint16_t height;
     uint8_t bpp; // bit per pixel
-    union {
+    union
+    {
         uint8_t attr8;
 
         struct
@@ -20,4 +21,4 @@ typedef struct tagTGA_H
             uint8_t storage : 2;
         };
     };
-} TGA_H;
+};

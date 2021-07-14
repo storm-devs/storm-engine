@@ -5,7 +5,7 @@
 
 class Menu
 {
-  public:
+public:
     std::string line[10];
     int selected;
     int blocked;
@@ -21,7 +21,8 @@ class Menu
     std::string _fileName_save;
     std::string _fileName_load;
 
-    Menu() : dltTime(0), key(0), shiftKey(0), sailrs(nullptr)
+    Menu()
+        : dltTime(0), key(0), shiftKey(0), sailrs(nullptr)
     {
         count = 3;
         selected = 0;

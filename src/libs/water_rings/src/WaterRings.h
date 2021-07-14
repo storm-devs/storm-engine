@@ -34,6 +34,7 @@ enum tRingState
     RING_RUN,
     RING_SWIM
 };
+
 struct tRing
 {
     bool active;
@@ -47,18 +48,19 @@ struct tRing
 
 class WaterRings : public Entity
 {
-  public:
+public:
     WaterRings();
-    ~WaterRings();
-    bool Init();
+    ~WaterRings() override;
+    bool Init() override;
     void Realize(uint32_t dTime);
-    uint64_t ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
         {
-        // case Stage::execute:
-        //    Execute(delta); break;
+            // case Stage::execute:
+            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
@@ -69,7 +71,7 @@ class WaterRings : public Entity
         }
     }
 
-  private:
+private:
     void UpdateGrid(int _ringI, uint16_t *iPointer, RING_VERTEX *vPointer, long vOffset);
 
     VDX9RENDER *renderService;

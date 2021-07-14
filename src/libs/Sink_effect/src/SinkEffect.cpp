@@ -7,7 +7,8 @@
 CREATE_CLASS(SINKEFFECT)
 
 //--------------------------------------------------------------------
-SINKEFFECT::SINKEFFECT() : renderer(nullptr), sea(nullptr)
+SINKEFFECT::SINKEFFECT()
+    : renderer(nullptr), sea(nullptr)
 {
 }
 

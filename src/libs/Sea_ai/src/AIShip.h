@@ -29,11 +29,11 @@ enum AI_OBJTYPE
 
 class VAI_INNEROBJ : public AIAttributesHolder
 {
-  protected:
+protected:
     AI_OBJTYPE ObjType;
     bool bDead;
 
-  public:
+public:
     VAI_INNEROBJ()
     {
         pACharacter = nullptr;
@@ -41,18 +41,22 @@ class VAI_INNEROBJ : public AIAttributesHolder
         ObjType = AIOBJ_UNKNOWN;
     };
 
-    virtual ~VAI_INNEROBJ(){};
+    virtual ~VAI_INNEROBJ()
+    {
+    };
 
     // check for fire possibility
     virtual bool isCanFire(const CVECTOR &vFirePos) const
     {
         return false;
     }
+
     // set / get type of AI object
     virtual void SetObjType(AI_OBJTYPE _ObjType)
     {
         ObjType = _ObjType;
     };
+
     virtual AI_OBJTYPE GetObjType() const
     {
         return ObjType;
@@ -84,18 +88,22 @@ class VAI_INNEROBJ : public AIAttributesHolder
             return false;
         return Helper.isNeutral(GetACharacter(), pAOtherCharacter);
     };
+
     virtual bool isFriend(const VAI_INNEROBJ &OtherAIObj) const
     {
         return isFriend(OtherAIObj.GetACharacter());
     };
+
     virtual bool isEnemy(const VAI_INNEROBJ &OtherAIObj) const
     {
         return isEnemy(OtherAIObj.GetACharacter());
     };
+
     virtual bool isNeutral(const VAI_INNEROBJ &OtherAIObj) const
     {
         return isNeutral(OtherAIObj.GetACharacter());
     };
+
     virtual bool isDead() const
     {
         return bDead;
@@ -119,12 +127,15 @@ class VAI_INNEROBJ : public AIAttributesHolder
     {
         return (GetACharacter() == pOtherAICharacter);
     };
+
     bool operator==(const VAI_INNEROBJ &OtherAIObj) const
     {
         return GetACharacter() == OtherAIObj.GetACharacter();
     };
 
-    virtual void ReleasePoint(VAI_INNEROBJ *){};
+    virtual void ReleasePoint(VAI_INNEROBJ *)
+    {
+    };
     virtual CVECTOR GetAttackPoint(VAI_INNEROBJ *) = 0;
     virtual CVECTOR GetFollowPoint(VAI_INNEROBJ *) = 0;
     virtual CVECTOR GetAbordagePoint(VAI_INNEROBJ *pOtherObj) = 0;
@@ -136,6 +147,7 @@ class VAI_INNEROBJ : public AIAttributesHolder
     {
         return sqrtf(~(GetPos() - OtherAIObj.GetPos()));
     };
+
     virtual float GetDistance(const CVECTOR &vOtherPos) const
     {
         return sqrtf(~(GetPos() - vOtherPos));
@@ -154,7 +166,7 @@ class VAI_INNEROBJ : public AIAttributesHolder
 // ============================================================================
 class AIShip : public VAI_INNEROBJ
 {
-  private:
+private:
     struct can_fire_t
     {
         AIShip *pShip;
@@ -169,11 +181,15 @@ class AIShip : public VAI_INNEROBJ
 
     struct AI_POINT
     {
-        AI_POINT(){};
+        AI_POINT()
+        {
+        };
+
         AI_POINT(VAI_INNEROBJ *_pObj)
         {
             pObj = _pObj;
         };
+
         bool operator==(const AI_POINT &pOtherPoint) const
         {
             return pOtherPoint.pObj == pObj;
@@ -205,7 +221,7 @@ class AIShip : public VAI_INNEROBJ
 
     void SetSeaAIAttributes(ATTRIBUTES *pAAttr, VAI_INNEROBJ *pObj) const;
 
-  public:
+public:
     ATTRIBUTES *GetAShip() const
     {
         return GetACharacter()->FindAClass(GetACharacter(), "Ship");
@@ -232,6 +248,7 @@ class AIShip : public VAI_INNEROBJ
     {
         sGroupName = _sGroupName;
     };
+
     std::string &GetGroupName()
     {
         return sGroupName;
@@ -256,26 +273,32 @@ class AIShip : public VAI_INNEROBJ
     {
         return pMoveController;
     };
+
     AIShipCannonController *GetCannonController() const
     {
         return pCannonController;
     };
+
     AIShipTaskController *GetTaskController() const
     {
         return pTaskController;
     };
+
     AIShipCameraController *GetCameraController() const
     {
         return pCameraController;
     };
+
     AIShipTouchController *GetTouchController() const
     {
         return pTouchController;
     };
+
     AIShipRotateController *GetRotateController() const
     {
         return pRotateController;
     };
+
     AIShipSpeedController *GetSpeedController() const
     {
         return pSpeedController;
@@ -296,6 +319,7 @@ class AIShip : public VAI_INNEROBJ
     {
         return GetCannonController()->GetFireDistance(true);
     };
+
     float GetMinFireDistance() override
     {
         return GetCannonController()->GetFireDistance(false);
@@ -306,14 +330,17 @@ class AIShip : public VAI_INNEROBJ
     {
         return eidShip;
     };
+
     Entity *GetShipPointer() const
     {
         return EntityManager::GetEntityPointer(GetShipEID());
     };
+
     SHIP_BASE *GetShipBasePointer() const
     {
         return static_cast<SHIP_BASE *>(GetShipPointer());
     };
+
     VAI_OBJBASE *GetAIObjShipPointer() const
     {
         return static_cast<VAI_OBJBASE *>(GetShipPointer());
@@ -324,10 +351,12 @@ class AIShip : public VAI_INNEROBJ
     {
         return GetAIObjShipPointer()->GetMatrix();
     };
+
     MODEL *GetModel() const
     {
         return GetAIObjShipPointer()->GetModel();
     };
+
     entid_t GetModelEID() const
     {
         return GetAIObjShipPointer()->GetModelEID();
@@ -337,10 +366,12 @@ class AIShip : public VAI_INNEROBJ
     {
         return GetAIObjShipPointer()->GetBoxsize();
     };
+
     CVECTOR GetPos() const override
     {
         return GetAIObjShipPointer()->GetPos();
     };
+
     CVECTOR GetAng() const override
     {
         return GetAIObjShipPointer()->GetAng();
@@ -350,6 +381,7 @@ class AIShip : public VAI_INNEROBJ
     {
         GetAIObjShipPointer()->SetPos(vNewPos);
     };
+
     void SetAngleY(float fAngleY) override
     {
         GetShipBasePointer()->State.vAng.y = fAngleY;
@@ -365,7 +397,7 @@ class AIShip : public VAI_INNEROBJ
 
     // default constructor/destructor
     AIShip(AI_OBJTYPE);
-    virtual ~AIShip();
+    ~AIShip() override;
 
     void Unload() const;
     void CreateShip(entid_t _eidShip, ATTRIBUTES *_pACharacter, ATTRIBUTES *_pAShip, CVECTOR *vInitPos);
@@ -381,9 +413,9 @@ class AIShip : public VAI_INNEROBJ
 // ============================================================================
 class AIShipWar : public AIShip
 {
-  public:
+public:
     AIShipWar();
-    virtual ~AIShipWar();
+    ~AIShipWar() override;
 };
 
 // ============================================================================
@@ -391,9 +423,9 @@ class AIShipWar : public AIShip
 // ============================================================================
 class AIShipTrade : public AIShip
 {
-  public:
+public:
     AIShipTrade();
-    virtual ~AIShipTrade();
+    ~AIShipTrade() override;
 };
 
 // ============================================================================
@@ -401,7 +433,7 @@ class AIShipTrade : public AIShip
 // ============================================================================
 class AIShipBoat : public AIShip
 {
-  public:
+public:
     AIShipBoat();
-    virtual ~AIShipBoat();
+    ~AIShipBoat() override;
 };

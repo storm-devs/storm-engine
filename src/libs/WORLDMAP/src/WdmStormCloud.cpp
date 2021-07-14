@@ -138,7 +138,6 @@ void WdmStormCloud::PRender(VDX9RENDER *rs)
 
 void WdmStormCloud::LRender(VDX9RENDER *rs)
 {
-
     // draw a background of the sea
 
     // draw lightning
