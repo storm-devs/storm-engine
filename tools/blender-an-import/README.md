@@ -7,7 +7,7 @@
 In order to use this plugin you need:
 
 - [NodeJs](https://nodejs.org/en/)
-- animation in .an
+- animation in .an format
 
 ## How to
 For correct plugin work animation file must be prepared (parsed into json).
@@ -21,7 +21,7 @@ The results (``man.an.json``) will be saved in the folder with .an animation fil
 
 ### Remark about Windows
 There is an easier way for Windows users -
-you can drag file with the model to the file ``parse-an.cmd`` and results will be saved in the model folder
+you can drag file with animation to the file ``parse-an.cmd`` and results will be saved in animation folder
 
 ## Blender Plugin Installation
 ```
