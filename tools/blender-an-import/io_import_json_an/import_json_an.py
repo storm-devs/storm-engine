@@ -138,16 +138,16 @@ class ImportJsonAn(Operator, ImportHelper):
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportJsonGm.bl_idname, text="JSON AN Import(.an.json)")
+    self.layout.operator(ImportJsonAn.bl_idname, text="JSON AN Import(.an.json)")
 
 
 def register():
-    bpy.utils.register_class(ImportJsonGm)
+    bpy.utils.register_class(ImportJsonAn)
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 
 def unregister():
-    bpy.utils.unregister_class(ImportJsonGm)
+    bpy.utils.unregister_class(ImportJsonAn)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
 
 
