@@ -46,8 +46,6 @@ WdmWindUI::WdmWindUI()
     txNationFlag = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\WorldMapEnsigns.tga");
     dateFont = -1;
     morale = 0.0f;
-    food = 0;
-    rum = 0;
     resizeRatio = 1.0f;
 }
 
@@ -139,20 +137,20 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         if (data)
         {
             food = static_cast<long>(data->GetFloat() + 0.5f);
+            if (food < 0)
+                food = 0;
         }
         data = core.Event("WorldMap_GetRum");
         if (data)
         {
             rum = static_cast<long>(data->GetFloat() + 0.5f);
+            if (rum < 0)
+                rum = 0;
         }
         if (morale < -1.0f)
             morale = -1.0f;
         if (morale > 1.0f)
             morale = 1.0f;
-        if (food < 0)
-            food = 0;
-        if (rum < 0)
-            rum = 0;
     }
     // Player's wind parameters
     float x, y, ay;
@@ -258,62 +256,69 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmDrawMapBlend");
+
     // write the number of supplies
+    float foodRumSpacing = rum ? 24.0f : 0.0f;
+
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i%s", food > 99999 ? 99999 : food, food > 99999 ? "+" : "");
     tbuf[sizeof(tbuf) - 1] = 0;
     fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
 
-    // rs->Print(font, 0xffffffff, long(cx - 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx - 24.0f * resizeRatio),
-                 long(cy + 30.0f * resizeRatio), tbuf);
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0,
+                 long(cx - foodRumSpacing * resizeRatio), long(cy + 30.0f * resizeRatio), tbuf);
 
-    // write the amount of rum --> ugeen 10.29.10
-    _snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum);
-    tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
+    // write the amount of rum
+    if (rum)
+    {
+        _snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum.value());
+        tbuf[sizeof(tbuf) - 1] = 0;
+        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
 
-    // rs->Print(font, 0xffffffff, long(cx + 24.0f - fw*0.5f), long(cy + 30.0f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx + 24.0f * resizeRatio),
-                 long(cy + 30.0f * resizeRatio), tbuf);
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0,
+                     long(cx + foodRumSpacing * resizeRatio), long(cy + 30.0f * resizeRatio), tbuf);
+    }
 
-    // Coordinate frame
-    rs->TextureSet(0, txCoord);
+    if (!wdmObjects->coordinate.empty())
+    {
+        // Coordinate frame
+        rs->TextureSet(0, txCoord);
 
-    // FillRectCoord(buf, cx - 64.0f, cy + 64.0f, 128.0f, 64.0f);
-    FillRectCoord(buf, cx - 64.0f * resizeRatio, cy + 64.0f * resizeRatio, 128.0f * resizeRatio, 64.0f * resizeRatio);
+        FillRectCoord(buf, cx - 64.0f * resizeRatio, cy + 64.0f * resizeRatio, 128.0f * resizeRatio,
+                      64.0f * resizeRatio);
 
-    FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
-    FillRectColor(buf, 0xffffffff);
-    DrawRects(buf, 1, "WdmDrawMapBlend");
+        FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
+        FillRectColor(buf, 0xffffffff);
+        DrawRects(buf, 1, "WdmDrawMapBlend");
 
-    // display a line with coordinates
-    _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate.c_str());
-    tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
-    fh = rs->CharHeight(font);
+        // display a line with coordinates
+        _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate.c_str());
+        tbuf[sizeof(tbuf) - 1] = 0;
+        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
+        fh = rs->CharHeight(font);
 
-    // rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 44.0f- fh*0.5f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
-                 long(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
+                     long(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
 
-    _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
-    tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
-    fh = rs->CharHeight(font);
+        _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
+        tbuf[sizeof(tbuf) - 1] = 0;
+        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
+        fh = rs->CharHeight(font);
 
-    // rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 64.0f + 20.0f- fh*0.5f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
-                 long(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
+                     long(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
+    }
 
-    // National flag
-    float addtu = 0.125;
-    rs->TextureSet(0, txNationFlag);
+    if (wdmObjects->nationFlagIndex)
+    {
+        // National flag
+        float addtu = 0.125;
+        rs->TextureSet(0, txNationFlag);
 
-    // FillRectCoord(buf, cx - 24.0f, cy + 150.0f, 48.0f, 48.0f);
-    FillRectCoord(buf, cx - 24.0f * resizeRatio, cy + 150.0f * resizeRatio, 48.0f * resizeRatio, 48.0f * resizeRatio);
+        FillRectCoord(buf, cx - 24.0f * resizeRatio, cy + 150.0f * resizeRatio, 48.0f * resizeRatio,
+                      48.0f * resizeRatio);
 
-    FillRectUV(buf, wdmObjects->nationFlagIndex * addtu, 0.0f, addtu, 1.0f);
-    FillRectColor(buf, 0xffffffff);
-    DrawRects(buf, 1, "WdmDrawMapBlend");
-    // <-- ugeen
+        FillRectUV(buf, wdmObjects->nationFlagIndex.value() * addtu, 0.0f, addtu, 1.0f);
+        FillRectColor(buf, 0xffffffff);
+        DrawRects(buf, 1, "WdmDrawMapBlend");
+    }
 }

@@ -35,9 +35,9 @@ class WdmWindUI : public WdmInterfaceObject
     long txWindPointer;
     long txMorale, txMoraleMask, txMoraleBar;
     long dateFont;
-    float morale;
-    long food;
-    long rum;
+    float morale{};
+    long food{};
+    std::optional<long> rum;
     char month[12][128];
     long txCoord;
     long txNationFlag;

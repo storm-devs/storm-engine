@@ -42,7 +42,6 @@ WdmObjects::WdmObjects()
     {
         entryModels[i] = -1;
     }
-    coordinate = "N -- --' W -- --'";
     strcpy(stCoordinate, "Coordinates");
     resizeRatio = 1.0f;
 }
@@ -89,7 +88,7 @@ void WdmObjects::Clear()
     enableSkipEnemy = false;
     playarInStorm = false;
     isNextDayUpdate = true;
-    nationFlagIndex = 0;
+    nationFlagIndex.reset();
     SetWorldSize(2000.0f, 2000.0f);
 }
 

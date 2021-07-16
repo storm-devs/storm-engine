@@ -130,7 +130,7 @@ class WdmObjects
     char attrYear[256];   // Year at the current frame
     bool isNextDayUpdate; // Time to update next day data
 
-    long nationFlagIndex; // national flag index
+    std::optional<long> nationFlagIndex; // national flag index
 
     std::string coordinate; // to output the coordinate string
     char stCoordinate[128];
