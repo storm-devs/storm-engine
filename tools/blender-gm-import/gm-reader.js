@@ -323,7 +323,7 @@ export class GmReader {
 
       const lights = [];
       for (let j = 0; j < 8; j++) {
-        lights.push(this.readFloatLE());
+        lights.push(this.readInt32LE());
       }
 
       const bones = [];
@@ -724,7 +724,9 @@ export class GmReader {
         },
       }) => [r / 255, g / 255, b / 255, a / 255]);
 
-      const faces = this.triangles.slice(striangle, striangle + ntriangles).map(([v1, v2, v3]) => [v1, v2, v3]);
+      const faces = this.triangles
+        .slice(striangle, striangle + ntriangles)
+        .map(([v1, v2, v3]) => [v2, v1, v3]); // opposite
 
       objects.push({
         name,
