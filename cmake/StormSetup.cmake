@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.12.0)
 
 macro(_get_relative_path_folder out path)
-    list(APPEND base_folders ${PUBLIC_INCLUDE_DIRS} ${SRC_DIRS})
+    set(base_folders "${PUBLIC_INCLUDE_DIRS};${SRC_DIRS}")
     list(JOIN base_folders "|" folders_match)
     get_filename_component(dir ${path} DIRECTORY)
-    string(REGEX REPLACE "(.*${CMAKE_CURRENT_SOURCE_DIR}/(${folders_match})\/?)" "" ${out} "${dir}")
+    file(RELATIVE_PATH ${out} "${CMAKE_CURRENT_SOURCE_DIR}" "${dir}")
 endmacro()
 
 macro(_process_sources group public_header_only)

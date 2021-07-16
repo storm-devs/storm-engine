@@ -320,7 +320,7 @@ inline bool AIFlowGraph::Load(INIFILE &pIni)
     return false;
 }
 
-inline decltype(aPoints)::difference_type AIFlowGraph::AddPoint(CVECTOR vPos)
+inline decltype(AIFlowGraph::aPoints)::difference_type AIFlowGraph::AddPoint(CVECTOR vPos)
 {
     const point_t p(vPos);
 
@@ -332,7 +332,7 @@ inline decltype(aPoints)::difference_type AIFlowGraph::AddPoint(CVECTOR vPos)
     return aPoints.size() - 1;
 }
 
-inline decltype(aEdges)::difference_type AIFlowGraph::AddEdge(size_t dwEdgePnt1, size_t dwEdgePnt2)
+inline decltype(AIFlowGraph::aEdges)::difference_type AIFlowGraph::AddEdge(size_t dwEdgePnt1, size_t dwEdgePnt2)
 {
     Assert(dwEdgePnt1 < aPoints.size() && dwEdgePnt2 < aPoints.size());
 
