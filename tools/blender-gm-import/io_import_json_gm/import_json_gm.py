@@ -16,10 +16,11 @@ import time, struct, os
 import math
 import json
 
-from bpy_extras.io_utils import ImportHelper
+from bpy_extras.io_utils import ImportHelper, axis_conversion
 from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
 
+correction_matrix = axis_conversion(from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
 
 def import_json_gm(context,file_path=""):
     file_name = os.path.basename(file_path)[:-8]
@@ -154,8 +155,7 @@ def import_json_gm(context,file_path=""):
               except Exception as e:
                 print(str(e))
 
-        """ bmesh.ops.rotate(bm, verts=bm.verts, cent=(0.0, 0.0, 0.0), matrix=mathutils.Matrix.Rotation(math.radians(90.0), 3, 'X'))
-        bmesh.ops.rotate(bm, verts=bm.verts, cent=(0.0, 0.0, 0.0), matrix=mathutils.Matrix.Rotation(math.radians(90.0), 3, 'Z')) """
+        bmesh.ops.rotate(bm, verts=bm.verts, cent=(0.0, 0.0, 0.0), matrix=correction_matrix)
 
         """ TODO backface Culling """
 
@@ -187,12 +187,14 @@ def import_json_gm(context,file_path=""):
             collection.objects.link(locator)
             locator.parent = group_locator
             locator.matrix_basis = locator_m
+            locator.matrix_basis = correction_matrix.to_4x4() @ locator.matrix_basis
+            locator.empty_display_size = 0.5
 
             if xIsMirrored:
                 locator.location[0] = -locator.location[0]
 
-    root.rotation_euler[0] = math.radians(90)
-    root.rotation_euler[2] = math.radians(90)
+    """ root.rotation_euler[0] = math.radians(90)
+    root.rotation_euler[2] = math.radians(90) """
     return {'FINISHED'}
 
 

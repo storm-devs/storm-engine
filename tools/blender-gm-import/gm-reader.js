@@ -667,7 +667,9 @@ export class GmReader {
   }
 
   getLocatorsTrees() {
-    return this.labels.reduce((labels, { name, groupName, m }) => {
+    return this.labels.reduce((labels, {
+      name, groupName, m, bones,
+    }) => {
       if (!labels[groupName]) {
         // eslint-disable-next-line no-param-reassign
         labels[groupName] = [];
@@ -675,6 +677,7 @@ export class GmReader {
       labels[groupName].push({
         name,
         m,
+        boneIdx: bones[0],
       });
       return labels;
     }, {});
