@@ -288,7 +288,8 @@ inline unsigned int keyToSDL(KeyboardKey key)
 }
 } // namespace
 
-SDLInput::SDLInput() : keyStates_(nullptr)
+SDLInput::SDLInput()
+    : keyStates_(nullptr)
 {
     keyStates_ = SDL_GetKeyboardState(nullptr);
     SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -423,7 +424,7 @@ bool SDLInput::MouseKeyState(const MouseKey &key) const
 
 int SDLInput::SDLEventHandler(void *userdata, SDL_Event *evt)
 {
-    SDLInput *in = static_cast<SDLInput *>(userdata);
+    auto in = static_cast<SDLInput *>(userdata);
     in->ProcessEvent(*evt);
     return 0;
 }
@@ -444,5 +445,4 @@ std::shared_ptr<Input> Input::Create()
 {
     return std::make_shared<SDLInput>();
 }
-
 } // namespace storm

@@ -6,10 +6,8 @@
 
 namespace storm
 {
-
 namespace detail
 {
-
 struct is_iequal
 {
     template <typename T1, typename T2 = T1> bool operator()(const T1 &first, const T2 &second) const
@@ -25,7 +23,6 @@ struct is_iless
         return std::toupper(first) < std::toupper(second);
     }
 };
-
 } // namespace detail
 
 template <typename Range1T, typename Range2T = Range1T> inline bool iEquals(const Range1T &first, const Range2T &second)
@@ -142,7 +139,7 @@ inline int wildicmp(const char *wild, const char *string)
 
 class iStrHasher
 {
-  public:
+public:
     size_t operator()(const std::string &key) const
     {
         std::string lower_copy = key;
@@ -150,7 +147,7 @@ class iStrHasher
         return inner_hasher_(lower_copy);
     }
 
-  private:
+private:
     std::hash<std::string> inner_hasher_;
 };
 
@@ -161,5 +158,4 @@ struct iStrComparator
         return iEquals(left, right);
     }
 };
-
 } // namespace storm

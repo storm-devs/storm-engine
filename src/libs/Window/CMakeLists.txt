@@ -1,18 +1,5 @@
-project(window)
-
-set(PUBLIC_SRC
-    include/OSWindow.hpp
+STORM_SETUP(
+    TARGET_NAME window
+    TYPE library
+    DEPENDENCIES sdl2
 )
-
-set(PRIVATE_SRC
-    src/SDLWindow.cpp
-    src/SDLWindow.hpp
-)
-
-add_library(${PROJECT_NAME} STATIC ${PUBLIC_SRC} ${PRIVATE_SRC})
-
-target_include_directories(${PROJECT_NAME} PUBLIC
-    include
-)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE CONAN_PKG::sdl2)

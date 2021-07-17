@@ -36,5 +36,6 @@ else()
     add_link_options(-g)
 endif()
 
-add_subdirectory(apps)
+# this is crucial to include libs first
 add_subdirectory(libs)
+add_subdirectory(apps)
