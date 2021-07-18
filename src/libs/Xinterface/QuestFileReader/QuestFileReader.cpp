@@ -307,7 +307,9 @@ void QUEST_FILE_READER::GetRecordTextList(std::vector<std::string> &asStringList
     m_aQuestData.clear();
     FillUserDataList((char *)pcUserData, m_aQuestData);
 
-    char pcTmp[10240]; // boal 4096
+    /// @note If text is larger than the buffer size it can result to discarding some bytes of multibyte utf-8 symbol
+    /// that results to -1 when calling utf8::Utf8ToCodepoint on that symbol
+    char pcTmp[20480];
     AssembleStringToBuffer(m_aQuest[nQuestIndex].aText[nTextIndex].str.c_str(),
                            m_aQuest[nQuestIndex].aText[nTextIndex].str.size(), pcTmp, sizeof(pcTmp), m_aQuestData);
     asStringList.push_back(pcTmp);
