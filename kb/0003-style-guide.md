@@ -35,13 +35,13 @@ If you do, you risk colliding with names reserved for compiler and standard libr
 class MyClass
 {
   public:
-    MyClass(int data) : m_data(data)
+    MyClass(int data) : data_(data)
     {
     }
 
     int GetData() const
     {
-        return m_data;
+        return data_;
     }
 
   private:
