@@ -234,7 +234,10 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         const std::string &name = message.String();
         const std::string &tech = message.String();
         level = message.Long();
-        const auto dynamicLightsOn = message.Long();
+
+        // Dynamic lights are optional
+        const auto dynamicLightsOn = message.GetFormat().size() > 4 ? message.Long() : 0;
+        
         lastLoadStaticModel = LoadStaticModel(name.c_str(), tech.c_str(), level, dynamicLightsOn == 1);
         return lastLoadStaticModel >= 0;
     }
