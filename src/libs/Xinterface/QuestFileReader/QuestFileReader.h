@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vmodule_api.h"
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -67,8 +68,9 @@ class QUEST_FILE_READER
   private:
     void ReadUserData(const char *sQuestName, long nRecordIndex);
 
-    void AddQuestFromBuffer(const char *pcSrcBuffer);
-    void AddToQuestList(std::string &sQuestID, std::string &sTextID, std::string &sQuestText, std::string &sTextText);
-    long FindQuestByID(const char *pcQuestID);
-    long FindTextByID(long nQuest, const char *pcTextID);
+    void AddQuestsFromBuffer(const std::string_view &srcBuffer);
+    void AddQuestToList(const std::string_view &questID, const std::string_view &titleText);
+    void AddTextToQuest(const std::string_view &questID, const std::string_view &textID, const std::string_view &questText);
+    std::optional<size_t> FindQuestByID(const std::string_view &questID);
+    std::optional<size_t> FindTextByID(QuestDescribe &nQuest, const std::string_view &textID);
 };

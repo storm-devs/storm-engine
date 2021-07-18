@@ -1,206 +1,86 @@
 #include "QuestFileReader.h"
-#include <assert.h>
+
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
+#include <map>
 
 #include "core.h"
 
 #include "storm_assert.h"
 
-#define INVALID_LONG 0
+namespace {
 
-#define TOKEN_INVALID -1
-#define TOKEN_VOID 0
-#define TOKEN_QUEST 1
-#define TOKEN_QTEXT 2
-#define TOKEN_UNKNOWN 1000
+enum class Token {
+    Invalid,
+    Quest,
+    Text,
 
-#define TOKENTABLE_SIZE 2
+    Unknown,
+};
 
-static struct _TOKENTABLE
+const std::map<std::string_view, Token> kTokenMap = {
+    {"#QUEST", Token::Quest},
+    {"#TEXT", Token::Text}
+};
+
+/// @brief Read text until whitespace or newline
+/// @param[in] str Text buffer to read from
+/// @param[in,out] it An iterator pointing to place where reading needs to be started,
+///                   will be set to character right after readed text in str
+/// @return Readed text
+/// @note If there is whitespaces in the beginning, they will be trimmed before reading
+std::string_view ReadWord(const std::string_view & str, std::string_view::const_iterator &it)
 {
-    const char *token;
-    int cod;
-} TokenTable[] = {{"#QUEST", TOKEN_QUEST}, {"#TEXT", TOKEN_QTEXT}};
+    auto begin = std::find_if(it, str.cend(), [](const char ch) { return !isspace(static_cast<unsigned char>(ch)); });
+    auto end = std::find_if(begin, str.cend(), [](const char ch) { return isspace(static_cast<unsigned char>(ch)); });
 
-bool IS_DIGIT(char ch);
-long GET_DIGIT(char ch);
-long GetToken(const char *&ps);
-static long GetLongFromString(char *&pInStr);
-static void GetSubStringFromString(const char *&pInStr, char *pOutBuf, int bufSize);
-static const char *GetNextString(const char *&pInStr);
-static char *GetTitleString(char *buf, char *&ptr, size_t &slen);
+    it = end;
 
-#define DELETE_PTR(p)                                                                                                  \
-    {                                                                                                                  \
-        if (p != NULL)                                                                                                 \
-            delete p;                                                                                                  \
-        p = NULL;                                                                                                      \
-    }
-
-long GetToken(const char *&ps)
-{
-    if (ps == nullptr)
-        return TOKEN_INVALID;
-
-    // remove leading spaces and tabs
-    while (*ps == 32 || *ps == 9)
-        ps++;
-
-    // get the size of the token
-    const auto *const ptoken = ps;
-    while (*ps != 0 && static_cast<unsigned>(*ps) > 0x20 && *ps != '\r' && *ps != '\n')
-        ps++;
-    const size_t tokensize = ps - ptoken;
-    if (tokensize == 0)
-        return TOKEN_VOID;
-
-    for (auto i = 0; i < TOKENTABLE_SIZE; i++)
-        if (strncmp(TokenTable[i].token, ptoken, tokensize) == 0)
-            return TokenTable[i].cod;
-
-    // check the lexeme for compliance with certain values
-    return TOKEN_UNKNOWN;
+    return std::string_view(begin, end);
 }
 
-// Functions for working with symbols
-bool IS_SPACE(char ch)
+/// @brief Read text until new token starts ('#' symbol)
+/// @param[in] str Text buffer to read from
+/// @param[in,out] it An iterator pointing to place where reading needs to be started,
+///                   will be set to '#' character right after readed text in str
+/// @return Readed text
+/// @note If there is whitespaces in the beginning, they will be trimmed before reading. Trailing whitespaces will be trimmed too.
+std::string_view ReadText(const std::string_view &str, std::string_view::const_iterator &it)
 {
-    if (static_cast<unsigned>(ch) <= ' ')
-        return true;
-    if (ch == '\r' || ch == '\n')
-        return true;
-    return false;
+    auto begin = std::find_if(it, str.cend(), [](const char ch) { return !isspace(static_cast<unsigned char>(ch)); });
+    auto end = std::find_if(begin, str.cend(), [](const char ch) { return ch == '#'; }); ///< move until next token
+
+    it = end;
+
+    /// Trim trailing whitespaces
+    auto text = std::string_view(begin, end);
+    end = std::find_if(text.crbegin(), text.crend(), [](const char ch) {
+              return !isspace(static_cast<unsigned char>(ch));
+          }).base();
+
+    return std::string_view(text.begin(), end); ///< We must use text.begin() because end is now belongs to text
 }
 
-bool IS_DIGIT(char ch)
-{
-    if (ch >= '0' && ch <= '9')
-        return true;
-    return false;
-}
+/// @brief Read token with all related data
+/// @param[in] str Text buffer to read from
+/// @param[in,out] it An iterator pointing to place where reading needs to be started,
+///                   will be set to character right after readed text in str
+/// @return Token, id (questID or textID) and text (quest title for the QUEST token, and text for the TEXT token)
+/// @note If there is whitespaces in the beginning, they will be trimmed before reading. Trailing whitespaces will be trimmed too.
+std::tuple<Token, std::string_view, std::string_view> ReadFullToken(const std::string_view & str, std::string_view::const_iterator &it) {
+    if (str.empty() || it == str.cend())
+        return { Token::Invalid, "", "" };
 
-long GET_DIGIT(char ch)
-{
-    return static_cast<long>(ch - '0');
-}
+    const auto tokenString = ReadWord(str, it);
+    const auto token = kTokenMap.contains(tokenString) ? kTokenMap.at(tokenString) : Token::Unknown;
 
-// Functions for working with strings
-static long GetLongFromString(char *&pInStr)
-{
-    if (pInStr == nullptr)
-        return INVALID_LONG;
+    const auto id = ReadWord(str, it);
+    const auto text = ReadText(str, it);
 
-    // remove extra spaces
-    while (*pInStr <= ' ')
-        pInStr++;
-    if (!IS_DIGIT(*pInStr))
-        return INVALID_LONG;
+    return { token, id, text };
+};
 
-    auto retVal = 0;
-    while (IS_DIGIT(*pInStr))
-    {
-        retVal = retVal * 10 + GET_DIGIT(*pInStr);
-        pInStr++;
-    }
-    return retVal;
-}
-
-void GetSubStringFromString(const char *&pInStr, char *pOutBuf, int bufSize)
-{
-    if (bufSize <= 0)
-        return;
-    // remove leading spaces
-    while (IS_SPACE(*pInStr))
-        pInStr++;
-    // rewrite a line in the buffer
-    int i;
-    for (i = 0; i < bufSize - 1; i++, pInStr++)
-    {
-        if (IS_SPACE(*pInStr))
-            break;
-        pOutBuf[i] = *pInStr;
-    }
-    pOutBuf[i] = 0;
-}
-
-static const char *GetNextString(const char *&pInStr)
-{
-    if (pInStr == nullptr || pInStr[0] == 0)
-        return nullptr;
-
-    while (true)
-    {
-        auto bYesCurierReturn = false;
-        auto bEmptyString = true;
-        const char *pstart;
-        for (pstart = pInStr; *pInStr != 0; pInStr++)
-        {
-            if (IS_SPACE(*pInStr))
-                bEmptyString = false;
-            if (*pInStr == '\r')
-                bYesCurierReturn = true;
-            else if (*pInStr == '\n')
-                bYesCurierReturn = true;
-            else if (bYesCurierReturn)
-                break;
-        }
-        if (*pInStr != 0 && bEmptyString)
-            continue;
-        return pstart;
-    }
-
-    return nullptr;
-}
-
-static const char *GetTitleString(char *buf, const char *&ptr, size_t &slen)
-{
-    if (buf == nullptr)
-    {
-        slen = 0;
-        return nullptr;
-    }
-    buf[0] = 0;
-    const auto *startp = ptr;
-    while (ptr != nullptr)
-    {
-        // take another line
-        const auto *const cstr = GetNextString(ptr);
-        if (ptr != cstr && cstr != nullptr)
-        {
-            // if the resulting string is the title of the quest
-            const auto *tmpstr = cstr;
-            int tokType = GetToken(tmpstr);
-            if (tokType == TOKEN_QUEST)
-            {
-                // get the id of this quest
-                GetSubStringFromString(tmpstr, buf, 256);
-                const auto *const retVal = ptr;
-                // find the end of the quest title
-                while (ptr != nullptr)
-                {
-                    tmpstr = ptr;
-                    tokType = GetToken(tmpstr);
-                    if (tokType == TOKEN_QTEXT || tokType == TOKEN_QUEST)
-                        break;
-                    GetNextString(ptr);
-                    if (tmpstr == ptr)
-                        break;
-                }
-                if (ptr != tmpstr)
-                    slen = ptr - retVal;
-                else if (retVal != nullptr)
-                    slen = strlen(retVal);
-                else
-                    slen = 0;
-                if (retVal != nullptr)
-                    return retVal;
-            }
-        }
-        else
-            break;
-    }
-    buf[0] = 0;
-    slen = 0;
-    return nullptr;
 }
 
 QUEST_FILE_READER::QUEST_FILE_READER()
@@ -285,22 +165,27 @@ bool QUEST_FILE_READER::GetQuestTitle(const char *questId, const char *questUniq
     buffer[0] = 0;
 
     const auto n = FindQuestByID(questId);
-    if (n < 0)
+    if (!n.has_value())
     {
         core.Trace("WARNING! Can`t find title whith ID = %s", questId);
         return false;
     }
 
-    AssembleStringToBuffer(m_aQuest[n].sTitle.c_str(), m_aQuest[n].sTitle.size(), buffer, buffSize, m_aQuestData);
+    const auto & quest = m_aQuest[n.value()];
+    AssembleStringToBuffer(quest.sTitle.c_str(), quest.sTitle.size(), buffer, buffSize, m_aQuestData);
     return true;
 }
 
 void QUEST_FILE_READER::GetRecordTextList(std::vector<std::string> &asStringList, const char *pcQuestID,
                                           const char *pcTextID, const char *pcUserData)
 {
-    const auto nQuestIndex = FindQuestByID(pcQuestID);
-    const auto nTextIndex = FindTextByID(nQuestIndex, pcTextID);
-    if (nQuestIndex < 0 || nTextIndex < 0)
+    const auto questNum = FindQuestByID(pcQuestID);
+    if (!questNum.has_value())
+        return;
+
+    auto & quest = m_aQuest[questNum.value()];
+    const auto textNum = FindTextByID(quest, pcTextID);
+    if (!textNum.has_value())
         return;
 
     m_sCurQuestTitle = "";
@@ -310,8 +195,8 @@ void QUEST_FILE_READER::GetRecordTextList(std::vector<std::string> &asStringList
     /// @note If text is larger than the buffer size it can result to discarding some bytes of multibyte utf-8 symbol
     /// that results to -1 when calling utf8::Utf8ToCodepoint on that symbol
     char pcTmp[20480];
-    AssembleStringToBuffer(m_aQuest[nQuestIndex].aText[nTextIndex].str.c_str(),
-                           m_aQuest[nQuestIndex].aText[nTextIndex].str.size(), pcTmp, sizeof(pcTmp), m_aQuestData);
+    const auto & unwrappedText = quest.aText[textNum.value()];
+    AssembleStringToBuffer(unwrappedText.str.c_str(), unwrappedText.str.size(), pcTmp, sizeof(pcTmp), m_aQuestData);
     asStringList.push_back(pcTmp);
 }
 
@@ -473,9 +358,9 @@ void QUEST_FILE_READER::SetQuestTextFileName(const char *pcFileName)
     }
 
     // check for already included:
-    for (long n = 0; n < m_aQuestFileName.size(); n++)
+    for (auto & questFileName : m_aQuestFileName)
     {
-        if (m_aQuestFileName[n] == pcFileName)
+        if (questFileName == pcFileName)
         {
             return;
         }
@@ -509,75 +394,27 @@ void QUEST_FILE_READER::SetQuestTextFileName(const char *pcFileName)
     fio->_CloseFile(fileS);
     pBuf[filesize] = 0;
 
-    AddQuestFromBuffer(pBuf);
+    AddQuestsFromBuffer(pBuf);
     delete[] pBuf;
 }
 
-void QUEST_FILE_READER::AddQuestFromBuffer(const char *pcSrcBuffer)
+void QUEST_FILE_READER::AddQuestsFromBuffer(const std::string_view &srcBuffer)
 {
-    if (!pcSrcBuffer)
+    if (srcBuffer.empty())
         return;
 
-    const char *pcStr = pcSrcBuffer;
-    std::string sQuestID;
-    std::string sTextID;
-    std::string sQuestText;
-    std::string sTextText;
-    const char *pcPrev = pcStr;
-    char tmp[1024];
-    long nCurToken = TOKEN_UNKNOWN;
-
-    while (pcStr)
+    std::string_view curQuestId;
+    for (auto it = srcBuffer.cbegin(); it != srcBuffer.cend(); )
     {
-        if (!pcStr[0])
+        auto [token, id, text] = ReadFullToken(srcBuffer, it);
+        if (token == Token::Quest)
         {
-            // check for completion
-            if (nCurToken == TOKEN_QTEXT)
-            {
-                WriteToString(sTextText, pcPrev, pcStr);
-                AddToQuestList(sQuestID, sTextID, sQuestText, sTextText);
-            }
-            break;
+            AddQuestToList(id, text);
+            curQuestId = id;
         }
-        const char *pcLine = GetNextString(pcStr);
-        const char *pcToken = pcLine;
-        const long nToken = GetToken(pcToken);
-        switch (nToken)
+        else if (token == Token::Text)
         {
-        case TOKEN_QUEST: {
-            if (nCurToken == TOKEN_QTEXT)
-            {
-                WriteToString(sTextText, pcPrev, pcLine);
-                AddToQuestList(sQuestID, sTextID, sQuestText, sTextText);
-            }
-
-            GetSubStringFromString(pcToken, tmp, sizeof(tmp));
-            sQuestID = tmp;
-            sTextID.clear();
-            sQuestText.clear();
-            sTextText.clear();
-            pcPrev = pcStr;
-            nCurToken = TOKEN_QUEST;
-        }
-        break;
-
-        case TOKEN_QTEXT: {
-            if (nCurToken == TOKEN_QTEXT)
-            {
-                WriteToString(sTextText, pcPrev, pcLine);
-                AddToQuestList(sQuestID, sTextID, sQuestText, sTextText);
-            }
-            if (nCurToken == TOKEN_QUEST)
-            {
-                WriteToString(sQuestText, pcPrev, pcLine);
-            }
-            GetSubStringFromString(pcToken, tmp, sizeof(tmp));
-            sTextID = tmp;
-            sTextText.clear();
-            pcPrev = pcStr;
-            nCurToken = TOKEN_QTEXT;
-        }
-        break;
+            AddTextToQuest(curQuestId, id, text);
         }
     }
 }
@@ -600,45 +437,69 @@ void QUEST_FILE_READER::WriteToString(std::string &sDst, const char *pcStart, co
     *(char *)pcEnd = chTmp;
 }
 
-void QUEST_FILE_READER::AddToQuestList(std::string &sQuestID, std::string &sTextID, std::string &sQuestText,
-                                       std::string &sTextText)
+void QUEST_FILE_READER::AddQuestToList(const std::string_view &questID, const std::string_view &titleText)
 {
-    if (sQuestID.empty() || sTextID.empty())
+    if (questID.empty())
         return;
-    long q = FindQuestByID(sQuestID.c_str());
-    if (q < 0)
+
+    auto q = FindQuestByID(questID);
+    if (!q.has_value())
     {
-        q = m_aQuest.size();
         QuestDescribe descr;
-        descr.sHeader = sQuestID;
-        descr.sTitle = sQuestText;
+        descr.sHeader = questID;
+        descr.sTitle = titleText;
         m_aQuest.push_back(descr);
     }
-
-    const long t = FindTextByID(q, sTextID.c_str());
-    if (t < 0)
+    else
     {
-        QuestDescribe::TextDescribe descr;
-        descr.id = sTextID;
-        descr.str = sTextText;
-        m_aQuest[q].aText.push_back(descr);
+        spdlog::warn("Quest with id \"%s\" is already in list", questID);
     }
 }
 
-long QUEST_FILE_READER::FindQuestByID(const char *pcQuestID)
+void QUEST_FILE_READER::AddTextToQuest(const std::string_view &questID, const std::string_view &textID, const std::string_view &questText)
 {
-    for (long n = 0; n < m_aQuest.size(); n++)
-        if (m_aQuest[n].sHeader == pcQuestID)
-            return n;
-    return -1;
+    if (questID.empty() || textID.empty())
+        return;
+
+    auto q = FindQuestByID(questID);
+    if (!q.has_value())
+    {
+        spdlog::warn("Quest with id \"%s\" is not found in list", questID);
+        return;
+    }
+
+    auto & quest = m_aQuest[q.value()];
+    const auto t = FindTextByID(quest, textID);
+    if (!t.has_value())
+    {
+        QuestDescribe::TextDescribe descr;
+        descr.id = textID;
+        descr.str = questText;
+        quest.aText.push_back(descr);
+    }
 }
 
-long QUEST_FILE_READER::FindTextByID(long nQuest, const char *pcTextID)
+std::optional<size_t> QUEST_FILE_READER::FindQuestByID(const std::string_view &questID)
 {
-    if (nQuest < 0 || nQuest >= m_aQuest.size())
-        return -1;
-    for (long n = 0; n < m_aQuest[nQuest].aText.size(); n++)
-        if (m_aQuest[nQuest].aText[n].id == pcTextID)
-            return n;
-    return -1;
+    if (questID.empty())
+        return std::nullopt;
+
+    for (size_t i = 0; i < m_aQuest.size(); ++i)
+        if (m_aQuest[i].sHeader == questID)
+            return i;
+
+    return std::nullopt;
+}
+
+std::optional<size_t> QUEST_FILE_READER::FindTextByID(QUEST_FILE_READER::QuestDescribe &nQuest, const std::string_view &textID)
+{
+    if (textID.empty())
+        return std::nullopt;
+
+    auto & questTexts = nQuest.aText;
+    for (size_t i = 0; i < questTexts.size(); ++i)
+        if (questTexts[i].id == textID)
+            return i;
+
+    return std::nullopt;
 }
