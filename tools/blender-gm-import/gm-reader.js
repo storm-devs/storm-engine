@@ -686,8 +686,8 @@ export class GmReader {
   prepareForBlenderImport() {
     const objects = [];
 
-    let xIsMirrored;
-    let isAnimated;
+    let xIsMirrored = false;
+    let isAnimated = false;
 
     for (let i = 0; i < this.objects.length; i++) {
       const {
