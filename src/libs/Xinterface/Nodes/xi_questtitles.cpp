@@ -332,7 +332,7 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
     }
     m_nCommonQuantity = aq;
 
-    char param[256];
+    std::string param;
     // if(ptrOwner->QuestFileReader())
     {
         // ptrOwner->QuestFileReader()->InitQuestsQuery();
@@ -369,22 +369,23 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
             const char *pTmpQuestRecordID = pAttr->GetAttribute("LogName");
             if (!pTmpQuestRecordID)
                 pTmpQuestRecordID = pAttr->GetThisName();
-            if (ptrOwner->QuestFileReader()->GetQuestTitle(pTmpQuestRecordID, pAttr->GetThisName(), sizeof(param) - 1,
-                                                           param))
+            if (ptrOwner->QuestFileReader()->GetQuestTitle(pTmpQuestRecordID, pAttr->GetThisName(), param))
             {
-                const int titleSize = strlen(param);
+                const size_t titleSize = param.size();
                 if (titleSize == 0)
                     m_strList[i].lineQuantity = 0;
                 else
                 {
-                    char lineName[sizeof(param)];
-                    auto *pstr = param;
+                    std::string lineName(titleSize, '\0');
+                    auto *pstr = param.data();
                     int ln = 0;
-                    while (GetLineNext(m_idFont, pstr, lineName, sizeof(lineName)))
+                    /// @todo There is no need to get size here, instead there
+                    /// will be better to use std::vector in GetLineNext
+                    while (GetLineNext(m_idFont, pstr, lineName.data(), lineName.size()))
                     {
-                        const auto len = strlen(lineName) + 1;
+                        const auto len = lineName.size() + 1;
                         m_strList[i].name[ln] = new char[len];
-                        memcpy(m_strList[i].name[ln], lineName, len);
+                        memcpy(m_strList[i].name[ln], lineName.data(), len);
                         ln++;
                     }
                     m_strList[i].lineQuantity = ln;

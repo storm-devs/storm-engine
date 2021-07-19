@@ -81,7 +81,7 @@ class CINODE;
 class XINTERFACE_BASE : public Entity
 {
   public:
-    virtual QUEST_FILE_READER *QuestFileReader() = 0;
+    virtual storm::QuestFileReader *QuestFileReader() = 0;
     virtual VXSERVICE *PictureService() = 0;
     virtual VSTRSERVICE *StringService() = 0;
     virtual VDX9RENDER *RenderService() = 0;

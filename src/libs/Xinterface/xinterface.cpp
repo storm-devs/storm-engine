@@ -203,7 +203,7 @@ void XINTERFACE::SetDevice()
     }
     pPictureService->Init(pRenderService, dwScreenWidth, dwScreenHeight);
 
-    pQuestService = new QUEST_FILE_READER;
+    pQuestService = new storm::QuestFileReader;
     if (pQuestService == nullptr)
     {
         throw std::runtime_error("Not memory allocate");
