@@ -687,6 +687,7 @@ export class GmReader {
     const objects = [];
 
     let xIsMirrored;
+    let isAnimated;
 
     for (let i = 0; i < this.objects.length; i++) {
       const {
@@ -697,7 +698,8 @@ export class GmReader {
 
       const { type } = this.vertexBuffers[vertexBuff];
 
-      xIsMirrored = type !== 4;
+      isAnimated = type === 4;
+      xIsMirrored = !isAnimated;
 
       const material = this.materials[materialIdx];
       const { groupName: materialGroupName, name: materialName, textureNames } = material;
@@ -727,6 +729,14 @@ export class GmReader {
         },
       }) => [r / 255, g / 255, b / 255, a / 255]);
 
+      const weights = isAnimated ? vertexBuffer.map(({ weight }) => weight) : [];
+
+      const boneIds = isAnimated ? vertexBuffer.map(({ boneId }) => {
+        const firstBoneId = (boneId & 0xff) >>> 0;
+        const secondBoneId = ((boneId >>> 8) & 0xff) >>> 0;
+        return [firstBoneId, secondBoneId];
+      }) : [];
+
       const faces = this.triangles
         .slice(striangle, striangle + ntriangles)
         .map(([v1, v2, v3]) => [v2, v1, v3]); // opposite
@@ -738,6 +748,8 @@ export class GmReader {
         uv,
         uvNormals,
         colors,
+        weights,
+        boneIds,
         faces,
         material: {
           groupName: materialGroupName,
@@ -749,6 +761,8 @@ export class GmReader {
 
     const locatorsTrees = this.getLocatorsTrees();
 
-    return { objects, locatorsTrees, xIsMirrored };
+    return {
+      objects, locatorsTrees, xIsMirrored, isAnimated,
+    };
   }
 }
