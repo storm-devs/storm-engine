@@ -27,16 +27,16 @@ def get_armature_obj(file_path, collection):
     f = open(file_path,)
     data = json.load(f)
 
-    header = data['header']
-    frames_quantity = header['nFrames']
-    joints_quantity = header['nJoints']
-    fps = header['framesPerSec']
+    header = data.get('header')
+    frames_quantity = header.get('nFrames')
+    joints_quantity = header.get('nJoints')
+    fps = header.get('framesPerSec')
 
-    parent_indices = data['parentIndices']
-    start_joints_positions = data['startJointsPositions']
-    blender_start_joints_positions = data['blenderStartJointsPositions']
-    root_bone_positions = data['rootBonePositions']
-    joints_angles = data['jointsAngles']
+    parent_indices = data.get('parentIndices')
+    start_joints_positions = data.get('startJointsPositions')
+    blender_start_joints_positions = data.get('blenderStartJointsPositions')
+    root_bone_positions = data.get('rootBonePositions')
+    joints_angles = data.get('jointsAngles')
 
     bpy.context.scene.frame_set(0)
     bpy.context.scene.render.fps = fps
