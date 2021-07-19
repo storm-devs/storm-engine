@@ -22,7 +22,31 @@ from bpy.types import Operator
 
 correction_matrix = axis_conversion(from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
 
-def get_armature_obj(file_path, collection):
+# taken from Copy Attributes Menu Addon by Bassam Kurdali, Fabian Fricke, Adam Wiseman
+def getmat(bone, active, context, ignoreparent):
+    obj_bone = bone.id_data
+    obj_active = active.id_data
+    data_bone = obj_bone.data.bones[bone.name]
+
+    active_to_selected = obj_bone.matrix_world.inverted() @ obj_active.matrix_world
+    active_matrix = active_to_selected @ active.matrix
+    otherloc = active_matrix
+    bonemat_local = data_bone.matrix_local.copy()
+    if data_bone.parent:
+        parentposemat = obj_bone.pose.bones[data_bone.parent.name].matrix.copy()
+        parentbonemat = data_bone.parent.matrix_local.copy()
+    else:
+        parentposemat = parentbonemat = mathutils.Matrix()
+    if parentbonemat == parentposemat or ignoreparent:
+        newmat = bonemat_local.inverted() @ otherloc
+    else:
+        bonemat = parentbonemat.inverted() @ bonemat_local
+
+        newmat = bonemat.inverted() @ parentposemat.inverted() @ otherloc
+    return newmat
+
+
+def get_armature_obj(file_path, collection, type=''):
     file_name = os.path.basename(file_path)[:-8]
     f = open(file_path,)
     data = json.load(f)
@@ -85,6 +109,18 @@ def get_armature_obj(file_path, collection):
 
     bpy.ops.object.mode_set(mode='POSE', toggle=False)
 
+    if type == 'POSE_SOURCE':
+        return armature_obj
+
+    if type == 'POSE':
+        for bone_idx in range(joints_quantity):
+            bone = armature_obj.pose.bones["Bone" + str(bone_idx)]
+
+            if bone_idx == 0:
+                bone.location = root_bone_positions[0]
+            bone.rotation_quaternion = joints_angles[bone_idx][0]
+        return armature_obj
+
     for bone_idx in range(joints_quantity):
         bone_name = "Bone" + str(bone_idx)
 
@@ -136,6 +172,9 @@ def import_json_gm(context,file_path="",an_path=""):
     if has_animation:
         armature_obj = get_armature_obj(an_path, collection)
         armature_obj.parent = root
+
+        armature_obj_pose = get_armature_obj(an_path, collection, 'POSE')
+        armature_obj_pose_source = get_armature_obj(an_path, collection, 'POSE_SOURCE')
 
     for object in data['objects']:
         name = object.get('name')
@@ -290,44 +329,70 @@ def import_json_gm(context,file_path="",an_path=""):
                 col.data[loop_index].color = colors[index]
 
         if has_animation:
+            ob.parent = armature_obj_pose
+            modifier = ob.modifiers.new(type='ARMATURE', name="Armature")
+            modifier.object = armature_obj_pose
+            bpy.context.view_layer.objects.active = armature_obj_pose
+
+            bpy.ops.pose.armature_apply(selected=False)
+
+            bpy.ops.object.mode_set(mode='POSE', toggle=False)
+
+            for pbone in armature_obj.data.bones:
+                bone_name = pbone.name
+
+                bone = armature_obj_pose.pose.bones[bone_name]
+                active = armature_obj_pose_source.pose.bones[bone_name]
+
+                bone.location = getmat(bone, active, context, False).to_translation()
+                bone.rotation_quaternion = getmat(bone, active, context, not bone.id_data.data.bones[bone.name].use_inherit_rotation).to_3x3().to_quaternion()
+
+                """ hack """
+                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+            bpy.context.view_layer.objects.active = ob
+            bpy.ops.object.modifier_apply(modifier="Armature")
+
+            bpy.data.objects.remove(armature_obj_pose_source, do_unlink=True)
+            bpy.data.objects.remove(armature_obj_pose, do_unlink=True)
+
             ob.parent = armature_obj
             modifier = ob.modifiers.new(type='ARMATURE', name="Armature")
             modifier.object = armature_obj
-            """ bpy.context.view_layer.objects.active = armature_obj
-            bpy.ops.pose.armature_apply(selected=False)
-            bpy.context.view_layer.objects.active = ob """
 
-        """ hack, texture is too dark without it """
-        bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-        bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+            """ hack, texture is too dark without it """
+            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
-    for locators_tree in data['locatorsTrees']:
-        group_locator_name = locators_tree
-        group_locator = bpy.data.objects.new( group_locator_name, None )
-        collection.objects.link(group_locator)
-        group_locator.parent = root
+        for locators_tree in data['locatorsTrees']:
+            group_locator_name = locators_tree
+            group_locator = bpy.data.objects.new( group_locator_name, None )
+            collection.objects.link(group_locator)
+            group_locator.parent = root
 
-        for locator_data in data['locatorsTrees'][locators_tree]:
-            locator_name = locator_data.get('name')
-            locator_m = locator_data.get('m')
-            locator_bone_idx = locator_data.get('boneIdx')
-            locator = bpy.data.objects.new( locator_name, None )
-            collection.objects.link(locator)
-            locator.parent = group_locator
-            locator.matrix_basis = locator_m
-            locator.matrix_basis = correction_matrix.to_4x4() @ locator.matrix_basis
-            locator.empty_display_size = 0.5
-            if has_animation and locator_bone_idx > 0:
-                locator.parent = armature_obj
-                bone = armature_obj.pose.bones["Bone" + str(locator_bone_idx)]
-                locator.parent_bone = bone.name
-                locator.parent_type = 'BONE'
-                locator.matrix_parent_inverse = bone.matrix.inverted()
-            else:
+            for locator_data in data['locatorsTrees'][locators_tree]:
+                locator_name = locator_data.get('name')
+                locator_m = locator_data.get('m')
+                locator_bone_idx = locator_data.get('boneIdx')
+                locator = bpy.data.objects.new( locator_name, None )
+                collection.objects.link(locator)
                 locator.parent = group_locator
+                locator.matrix_basis = locator_m
+                locator.matrix_basis = correction_matrix.to_4x4() @ locator.matrix_basis
+                locator.empty_display_size = 0.5
+                if has_animation and locator_bone_idx > 0:
+                    locator.parent = armature_obj
+                    bone = armature_obj.pose.bones["Bone" + str(locator_bone_idx)]
+                    locator.parent_bone = bone.name
+                    locator.parent_type = 'BONE'
+                    locator.matrix_parent_inverse = bone.matrix.inverted()
+                else:
+                    locator.parent = group_locator
 
-            if xIsMirrored:
-                locator.location[0] = -locator.location[0]
+                if xIsMirrored:
+                    locator.location[0] = -locator.location[0]
+
 
     """ root.rotation_euler[0] = math.radians(90)
     root.rotation_euler[2] = math.radians(90) """
