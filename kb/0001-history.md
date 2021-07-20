@@ -51,7 +51,7 @@ In 2005, with the _Age of Pirates: Caribbean Tales_, we've got:
 
 ## Storm 2.6-7
 
-More work on the Storm Engine was done for the AoP expansion _Dead Man's Chest_. 
+More work on the Storm Engine was done for the CT expansion _Dead Man's Chest_. 
 
 * Dynamic day/night cycle (with stellar object movement)
 * Procedural island generation with jungle sprites
@@ -61,6 +61,10 @@ More work on the Storm Engine was done for the AoP expansion _Dead Man's Chest_.
 * Dynamic lighting
 * Landscape and town reflections on sea
 * More optimizations
+
+![Dead Man's Chest](../media/0001/dmc_fight.png)
+
+_Dead Man's Chest_ was developed by Akella separately from City of Abandoned Ships (built by Seaward). While it was the most unusual addon of the series, for multiple reasons it wasn't successful, and the sources of its engine are likely lost. 
 
 ## Storm 3.0
 

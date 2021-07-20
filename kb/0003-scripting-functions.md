@@ -7,12 +7,132 @@ _[back to Index](../index.md)_
 
 Here you will find the list of the built-in and some game-level useful functions for the game scripting.
 
-
 ## Built-In Functions
 
 Below are the functions which make part of the compiler API. Each function has its own unique identifier token that's also listed below.
 
+### Core Engine Interaction
+
+* **SaveEngineState**: Save game state with a specific name.
+    * **Compiler Token**: `FUNC_SAVEENGINESTATE`
+    * `saveName`: name of the save. 
+    ``` C++
+    syntax:
+        void SaveEngineState(string saveName);
+    ```
+
+* **LoadEngineState**: Load game state from a specific filename.
+    * **Compiler Token**: `FUNC_LOADENGINESTATE`
+    * `saveName`: name of the save. 
+    ``` C++
+    syntax:
+        void LoadEngineState(string saveName);
+    ```
+
+* **LoadSegment**: Load a script file.
+    * **Compiler Token**: `FUNC_LOAD_SEGMENT`
+    * `filename`: relative path to the file to load
+    ``` C++
+    syntax:
+        bool LoadSegment(string filename);
+    example: 
+        if (LoadSegment("interface\alchemy.c"))
+        {
+            // ...
+            // do necessary work
+            // ...
+            UnloadSegment("interface\alchemy.c");
+        }
+    ```
+
+* **UnloadSegment**: Unload a script file if loaded.
+    * **Compiler Token**: `FUNC_UNLOAD_SEGMENT`
+    * `filename`: relative path to the file to unload
+    ``` C++
+    syntax:
+        void UnloadSegment(string fileName); // unload segment (delayed)
+    example: 
+        if (LoadSegment("interface\alchemy.c"))
+        {
+            // ...
+            // do necessary work
+            // ...
+            UnloadSegment("interface\alchemy.c");
+        }
+    ```
+
+* **GetDeltaTime**: Get the expected length of the frame (in seconds?)
+    * **Compiler Token**: `FUNC_GETDELTATIME`
+    ``` C++
+    syntax:
+        int GetDeltaTime(0); 
+    ```
+    
+* **GetTargetPlatform**: Returns the string of the target platform of the engine
+    * **Compiler Token**: `FUNC_GETTARGETPLATFORM`
+    * Currently this function always returns "pc"
+    ``` C++
+    syntax:
+        string GetTargetPlatform(); 
+    example:
+        GetTargetPlatform(); // "pc"
+    ```
+
+* **SetTimeScale**: Set the speed of the game simulation for the whole engine. For your epic slo-mo moments.
+    * **Compiler Token**: `FUNC_SETTIMESCALE`
+    * `value`: time scale, from 0 to 1.
+    * Internally, time scale is stored as a `float`, so passing both `float` and `int` values is allowed. 
+    * Because the value affects the whole game, make sure you don't forget to return the time scale back to normal! 
+    ``` C++
+    syntax:
+        void SetTimeScale(int value);
+        void SetTimeScale(float value);
+    example: 
+        SetTimeScale(0.0);
+    ```
+
+* **Trace**: Send a trace (small log message) to `system.log` file.
+    * **Compiler Token**: `FUNC_TRACE`
+    ``` C++
+    syntax:
+        void Trace(int message);
+        void Trace(float message);
+        void Trace(string message);
+    example:
+        int n = LocationInitAntigua(n);
+        Trace("Antigua locations " + n);
+    ```
+
+* **Breakpoint**: If the engine is compiled in debug mode, trigger a breakpoint in the its execution.
+    * **Compiler Token**: `FUNC_BREAKPOINT`
+    ``` C++
+    syntax:
+        void Breakpoint();
+    ```
+
+* **Stop**: Stop executing current thread.
+    * **Compiler Token**: `FUNC_STOP`
+    ``` C++
+    syntax:
+        void Stop(); 
+    ```
+
+* **ExitProgram**: Run `ExitMain` function if it's defined in the loaded segments and exit the game.
+    * **Compiler Token**: `FUNC_EXIT_PROGRAM`
+    ``` C++
+    syntax:
+        void ExitProgram();
+    ```
+
 ### Validation
+
+* **SegmentIsLoaded**: Verify whether a specific script file is loaded
+    * **Compiler Token**: `FUNC_SEGMENT_IS_LOADED`
+    * `filename`: relative path of the file to test
+    ``` C++
+    syntax:
+        bool SegmentIsLoaded(string filename);
+    ```
 
 * **GetEngineVersion**: Return `ENGINE_SCRIPT_VERSION` constant (defined in `core.h`). 
     * **Compiler Token**: `FUNC_GETENGINEVERSION`
@@ -20,7 +140,7 @@ Below are the functions which make part of the compiler API. Each function has i
     ``` C++
     syntax:
         int GetEngineVersion();
-    usage: 
+    example: 
         GetEngineVersion();
     ```
 
@@ -30,7 +150,7 @@ Below are the functions which make part of the compiler API. Each function has i
     ``` C++
     syntax:
         bool CheckFunction(string value);
-    usage: 
+    example: 
         if (CheckFunction("ControlsTreeInit"))
         {
             ControlsTreeInit();
@@ -57,6 +177,49 @@ Below are the functions which make part of the compiler API. Each function has i
         }
     ```
 
+* **IsEntity**: Check if given object was initialized as an entity.
+    * **Compiler Token**: `FUNC_IS_Entity_LOADED`
+    * `obj`: object to test
+    ``` C++
+    syntax:
+        bool IsEntity(object obj);
+        bool IsEntity(ref obj);
+    example:
+        object torn;
+        if (!isEntity(&torn))
+        {
+            CreateEntity(&torn, "Tornado");
+        }
+    ```
+
+* **CheckAttribute**: Verify if an attribute exists.
+    * **Compiler Token**: `FUNC_CHECK_ATTRIBUTE`
+    * `obj`: address of the target object
+    * `attribute`: attribute to verify
+    ``` C++
+    syntax:
+        bool CheckAttribute(object &obj, string attribute);
+    example: 
+        if (!CheckAttribute(&Weather, "Stars.Enable"))
+        {
+            Weather.Stars.Enable = false;
+        };
+    ```
+
+* **IsDigit**: Verify whether a character in a string is a digit
+    **Compiler Token**: `FUNC_ISDIGIT`
+    * `source`: The string containing the character to verify
+    * `position`: Position of the tested character in the string
+    ``` C++
+    syntax:
+        bool IsDigit(string source, int position); 
+    example: 
+        string testString = "1ten20";
+        bool test1 = IsDigit(testString, 0); // true
+        bool test2 = IsDigit(testString, 3); // false
+        bool test1 = IsDigit(testString, 5); // true
+    ```
+
 ### Entity Manipulation
 
 * **CreateClass**: Bind an object with an entity.
@@ -71,7 +234,7 @@ Below are the functions which make part of the compiler API. Each function has i
         object obj = CreateClass("Sky");        // OK
     ```
 
-* **CreateEntity**: Similar to `CreateClass`, except it allows select attributes to be used directly by the engine. 
+* **CreateEntity**: Similar to `CreateClass`, except it allows specific attributes to be used directly by the engine. 
     * `objectReference`: Address of the object to which the new entity will be bound.
     * `entityType`: Class name, must be [predefined by the engine](0004-entity.md).
     ``` C++
@@ -90,6 +253,316 @@ Below are the functions which make part of the compiler API. Each function has i
     ``` C++
     syntax:
         void DeleteClass(object obj);
+    ```
+
+* **DeleteEntitiesByType**: delete all entities of a specific type.
+    * **Compiler Token**: `FUNC_DELETEENTITIESBYTYPE`
+    * `type`: type of the entities to delete
+    ``` C++
+    syntax:
+        void DeleteEntitiesByType(string type);
+    ```
+
+* **DeleteEntities**: Delete ALL entities.
+    * **Compiler Token**: `FUNC_DELETE_ENTITIES`
+    ``` C++
+    syntax:
+        void DeleteEntities();
+    example: 
+        DeleteEntities();
+    ```
+
+* **GetEntity**: Get an entity of a specific type
+    * **Compiler Token**: `FUNC_FINDENTITY`
+    * `entityPointer`: Address of the ref to contain the entity reference, if found.
+    * `name`: Name of the entity type
+    * Result is `false` if no entities are found
+    * Only the first entity found is returned, the rest are discarded. If you're interested in iterating on the entities of a specific name, please use `FindEntity`.
+    ``` C++
+    syntax:
+        bool GetEntity(ref &entityPointer, string name); 
+    example: 
+        ref location;
+        if (GetEntity(&location, "Location"))
+        {
+            // Do something with the entity
+        }
+    ```
+
+* **FindEntity**: Find an entity of a specific type
+    * **Compiler Token**: `FUNC_FINDENTITY`
+    * `entityPointer`: Address of the ref to contain the entity reference, if found.
+    * `name`: Name of the entity type
+    * Result is `false` if no entities are found
+    * If one or more entities of this type are found, further entities may be accessed by calling `FindEntityNext`.
+    ``` C++
+    syntax:
+        bool FindEntity(ref &entityPointer, string name); 
+    example: 
+        ref location;
+        if (FindEntity(&location, "Location"))
+        {
+            // Do something with the found entity
+        }
+    ```
+
+* **FindEntityNext**: Find the next entity if any
+    * **Compiler Token**: `FUNC_FINDENTITYNEXT`
+    * `entityPointer`: Address of the ref to contain the entity reference, if found.
+    * Result is `false` if no other entities are found
+    * `FindEntity` must be called to initialize the search first.
+    ``` C++
+    syntax:
+        bool FindEntityNext(ref &entityPointer); 
+    example: 
+        ref location;
+        if (FindEntity(&location, "Location"))
+        {
+            // Do something with the found entity
+            while (FindEntityNext(&location))
+            {
+                // Iterate of the rest
+            }
+        }
+    ```
+
+* **EntityUpdate**: Toggle entity update on attribute change.
+    * **Compiler Token**: `FUNC_Entity_UPDATE`
+    * `isEnabled`: if set to `false`, entity will not receive attribute updates.
+    ``` C++
+    syntax:
+        void EntityUpdate(bool isEnabled);
+    example:
+        EntityUpdate(false);
+        // ...
+        // Update the object
+        // ...
+        EntityUpdate(true);
+    ```
+
+* **DeleteAttribute**: Remove an attribute (field and data) from given object.
+    * **Compiler Token**: `FUNC_DELETE_ATTRIBUTE`
+    * `obj`: Object to remove attribute from
+    * `attribute`: attribute to remove.
+    * If you pass `""` as `attribute`, all the attributes of the object are cleared.
+    ``` C++
+    syntax:
+        void DeleteAttribute(object obj, string attribute); 
+    example:
+        DeleteAttribute(&Sky, "");        // clear the object
+        DeleteAttribute(pchar, "Items"); // remove all collected items 
+        string sQuest2 = "quest.Deposits." + city + "_Type2";
+        DeleteAttribute(pchar, sQuest2);
+    ```
+
+* **GetAttributesNum**: Count how many child attributes an object has (non-recursive).
+    * **Compiler Token**: `FUNC_GET_ATTRIBUTES_NUM`
+    * `obj/attribute`: object to count child attributes of.
+    * This function is often used in conjunction with `GetAttributeN` for iteration on attributes.
+    ``` C++
+    syntax:
+        int GetAttributesNum(object obj);
+        int GetAttributesNum(ref obj);
+        int GetAttributesNum(aref attribute);
+    example: 
+        int count = GetAttributesNum(arRoot);
+        for (i = 0; i < count; i++)
+        {
+            aref attribute = GetAttributeN(arRoot, i);
+            // ... 
+            // Do some work on attribute
+            // ... 
+        }
+    ```
+
+* **GetAttributeN**: Access child attribute by index.
+    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_BYN`
+    * `obj/attribute`: object to count child attributes of.
+    * `index`: Sequential number of the attribute inside the object.
+    * This function is often used in conjunction with `GetAttributeNum` for iteration on attributes.
+    ``` C++
+    syntax:
+        aref GetAttributeN(object obj, int index);
+        aref GetAttributeN(ref obj, int index);
+        aref GetAttributeN(aref attribute, int index);
+    example: 
+        int count = GetAttributesNum(arRoot);
+        for (i = 0; i < count; i++)
+        {
+            aref attribute = GetAttributeN(arRoot, i);
+            // ... 
+            // Do some work on attribute
+            // ... 
+        }
+    ```
+
+* **GetAttributeName**: Retrieve the name of a given attribute or object. 
+    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_NAME`
+    * `obj/attribute`: target object or attribute.
+    ``` C++
+    syntax:
+        string GetAttributeName(object obj);
+        string GetAttributeName(ref obj);
+        string GetAttributeName(aref attribute);
+    example:
+        object Test;
+        Test.value = "hello";
+        string attrName = GetAttributeName(Test.value); // "value"
+    ```
+
+* **GetAttributeValue**: Retrieve the stored value of a given attribute or object.
+    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_VALUE`
+    * `obj/attribute`: target object or attribute.
+    * Every value is stored as a string! Stored `object`s, `float`s and `int`s need to be converted accordingly before use.
+    ``` C++
+    syntax:
+        string GetAttributeValue(object obj);
+        string GetAttributeValue(ref obj);
+        string GetAttributeValue(aref attribute);
+    example:
+        object Test;
+        Test.value = "hello";
+        string attrValue = GetAttributeValue(Test.value); // "hello"
+    ```
+    
+* **CopyAttributes**: Copy all the object's attributes to a new object.
+    * **Compiler Token**: `FUNC_COPYATTRIBUTES`
+    * `destination`: address of the object to receive attributes
+    * `source`: object to copy
+    ``` C++
+    syntax:
+        void CopyAttributes(object &destination, object source);
+    example: 
+        object Tmp;
+        CopyAttributes(&Tmp, CargoOne);
+    ```
+
+* **DumpAttributes**: Trace (log) all the attribute data of a given object.
+    * **Compiler Token**: `FUNC_DUMP_ATTRIBUTES`
+    * `obj/attribute`: target object or attribute.
+    ``` C++
+    syntax:
+        void DumpAttributes(object obj);
+        void DumpAttributes(ref obj);
+        void DumpAttributes(aref attribute);
+    example: 
+        trace("nConditionsNum : " + nConditionsNum);
+        DumpAttributes(conditions);
+    ```
+
+### Messages
+
+* **SendMessage**: Send a message to an entity
+    * **Compiler Token**: `FUNC_SEND_MESSAGE`
+    * `obj`: address of the recipient (or its reference)
+    * `stringFormat`: the types of the passed arguments arranged in a string: 
+        * `l`: int/bool
+        * `f`: float
+        * `s`: string
+        * `a`, `i`: object or aref
+        * `e`: ref
+    * `msg`: the arguments passed to the handlers.
+    * An object should be registered as an entity for the message to have an effect.
+    * Each entity has its own way dealing with the messages it receives. 
+    ``` C++
+    syntax:
+        void SendMessage(ref obj, string stringFormat, msg...); 
+    example:
+       SendMessage(&Dialog, "lii", 0, Character, &persRef); // pass an int and two objects to "Dialog" object
+       SendMessage(&AIBalls, "l", MSG_MODEL_RELEASE); // pass a single int to "AIBalls" object
+    ```
+
+### Event Management
+
+* **Event**: Trigger and and call all its event handlers.
+    * **Compiler Token**: `FUNC_EVENT`
+    * Message is optional, see Messages subsection for syntax. 
+    ``` C++
+    syntax:
+        void Event(string eventName, [MSG]); 
+    example: 
+        Event("NextDay");                               // no message
+        Event("ControlActivation", "s", "ChrAction");   // pass trigger type
+    ```
+* **PostEvent**: Trigger event's post phase with given delay.
+    * **Compiler Token**: `FUNC_POSTEVENT`
+    * `eventName`: Name of the event to trigger.
+    * `delay`: Delay, in milliseconds.
+    * Message is optional, see Messages subsection for syntax. 
+    ``` C++
+    syntax:
+        void PostEvent(string eventName, int delay, [MSG]);
+    example:
+        PostEvent("My_eventMoveImg", 100);               // no message
+        int charIndex = sti(CharacterRef.index);
+        PostEvent("eventDialogExit", 1, "l", charIndex); // pass character ID
+    ```
+
+* **SetEventHandler**: Add an event handler to the given event.
+    * **Compiler Token**: `FUNC_SET_EVENT_HANDLER`
+    * `eventName`: name of the event.
+    * `functionName`: name of the function to call when the event triggers.
+    * `post`: `true` for events to be processed with a delay.
+    * If an event with the given name doesn't exist, it will be created.
+    ``` C++
+    syntax:
+        void SetEventHandler(string eventName, string functionName, bool post);
+        #event_handler(string eventName, string functionName, bool post);
+    example: 
+        SetEventHandler("frame", "RefreshTableByFrameEvent", false); // execute when "Event()" is called
+        SetEventHandler("frame", "ProcessFrame", true); // execute when "PostEvent()" is called
+    ```
+
+* **DelEventHandler**: Remove given event handler from the event.
+    * **Compiler Token**: `FUNC_DEL_EVENT_HANDLER`
+    * `eventName`: name of the event.
+    * `functionName`: name of the function to remove.
+    ``` C++
+    syntax:
+        void DelEventHandler(string eventName, string functionName);
+    example:
+        DelEventHandler("frame", "RefreshTableByFrameEvent");
+    ```
+
+* **GetEventData**: Retrieve an argument from the event message.
+    * **Compiler Token**: `FUNC_GET_EVENTDATA`
+    * This function is usually called from the function which was registered as an event handler.
+    * Arguments are provided in order as they were passed to the message.
+    ``` C++
+    syntax:
+        [any type] GetEventData(); 
+    example:
+        SetEventHandler("Control Activation", "InfoShow_Control", 0);
+        Event("Control Activation", "s", "ChrAction");
+        void InfoShow_Control()
+        {
+            string controlName = GetEventData(); // "ChrAction"
+            // ...
+        }
+    ```
+
+* **ClearEvents**: Remove all the normal event handlers from all the events.
+    * **Compiler Token**: `FUNC_CLEAR_EVENTS`
+    * Doesn't affect "post" event handlers.
+    ``` C++
+    syntax:
+        void ClearEvents(); 
+    ```
+
+* **ClearPostEvents**: Remove all the post event handlers from all the events.
+    * **Compiler Token**: `FUNC_CLEAR_POST_EVENTS`
+    * Doesn't affect normal event handlers.
+    ``` C++
+    syntax:
+        void ClearPostEvents();
+    ```
+
+* **EventsBreak**: Stop executing all the events for the remainder of the frame.
+    * NOTE: Currently this function has no effect whatsoever as `bEventsBreak` is always false coming into the event loop.
+    * **Compiler Token**: `FUNC_EVENTSBREAK`
+    ``` C++
+    syntax:
+        void EventsBreak();
     ```
 
 ### Layer Manipulation
@@ -184,22 +657,6 @@ Currently disabled/not implemented functions:
         void LayerSetMessages(int layerID, bool isEnabled); 
     ```
 
-
-### Utility
-
-* **SetTimeScale**: Set the speed of the game simulation for the whole engine. For your epic slo-mo moments.
-    * **Compiler Token**: `FUNC_SETTIMESCALE`
-    * `value`: time scale, from 0 to 1.
-    * Internally, time scale is stored as a `float`, so passing both `float` and `int` values is allowed. 
-    * Because the value affects the whole game, make sure you don't forget to return the time scale back to normal! 
-    ``` C++
-    syntax:
-        void SetTimeScale(int value);
-        void SetTimeScale(float value);
-    usage: 
-        SetTimeScale(0.0);
-    ```
-
 ### Math
 
 * **Rand**: Generate a random positive number from 0 to `range`.
@@ -208,7 +665,7 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         int Rand(int range);
-    usage: 
+    example: 
         ref ch = GetCharacter(NPC_GenerateCharacter(...));
         ch.Nation = rand(4); // random nation
     ```
@@ -218,7 +675,7 @@ Currently disabled/not implemented functions:
     ``` C++
     syntax:
         float frnd(); 
-    usage: 
+    example: 
         float fChecker = frand();
         if (fChecker < 0.8) {...}
     ```
@@ -262,7 +719,6 @@ Currently disabled/not implemented functions:
         Log_Info("" + pow(10.0, 3.0)); // 10^3, 1000
         Log_Info("" + pow(10.0, -3.0)); // 10^3, 0.001
     ```
-
 
 * **sqrt**: Extract the square root of the given value.
     * **Compiler Token**: `FUNC_SQRT`
@@ -344,235 +800,194 @@ Currently disabled/not implemented functions:
         float acos(float value);
     ```
 
+### Conversions
 
-
-
-* **SetEventHandler**
-    * **Compiler Token**: `FUNC_SET_EVENT_HANDLER`
-    ``` C++
-    syntax:
-        void SetEventHandler(string eventName, string functionName, int post);
-    ```
-    
-* **ExitProgram**
-    * **Compiler Token**: `FUNC_EXIT_PROGRAM`
-    ``` C++
-    syntax:
-        void ExitProgram(); // quit to desktop
-    ```
-
-* **GetEventData**
-    * **Compiler Token**: `FUNC_GET_EVENTDATA`
-    ``` C++
-    syntax:
-        0, GetEventData(); UNKNOWN,
-
-    // Code send entity id "i" to script and it comes as aref variable into script (GetEventData())
-    ```
-
-* **Stop**
-    * **Compiler Token**: `FUNC_STOP`
-    ``` C++
-    syntax:
-        void Stop(); // stop executing (thread like)
-    ```
-
-* **SendMessage**
-    * **Compiler Token**: `FUNC_SEND_MESSAGE`
-    ``` C++
-    syntax:
-        void SendMessage(object to, string formatStrinf,...); // Send a message to an object
-    ```
-
-* **LoadSegment**
-    * **Compiler Token**: `FUNC_LOAD_SEGMENT`
-    ``` C++
-    syntax:
-        int LoadSegment(string fileName); // load program into current space, return zero if failed
-    ```
-
-* **UnloadSegment**
-    * **Compiler Token**: `FUNC_UNLOAD_SEGMENT`
-    ``` C++
-    syntax:
-        void UnloadSegment(string fileName); // unload segment (delayed)
-    ```
-
-* **Trace**
-    * **Compiler Token**: `FUNC_TRACE`
-    ``` C++
-    syntax:
-        void Trace(int message);
-        void Trace(float message);
-        void Trace(string message);
-        // send a trace to system.log
-    ```
-
-* **MakeInt**
+* **MakeInt**: Convert value to an `int`.
     * **Compiler Token**: `FUNC_MAKE_INT`
+    * `value` may be a string or an int
+    * Returns the converted integer value
     ``` C++
     syntax:
         int MakeInt(string value);
         int MakeInt(float value);
-        // convert to int
     ```
 
-* **MakeFloat**
+* **MakeFloat**: Convert value to an `float`.
     * **Compiler Token**: `FUNC_MAKE_FLOAT`
+    * `value` may be a string or an int
+    * Returns the converted real value
     ``` C++
     syntax:
         float MakeFloat(string value);
         float MakeFloat(int value);
     ```
 
-* **DeleteAttribute**
-    * **Compiler Token**: `FUNC_DELETE_ATTRIBUTE`
-    ``` C++
-    syntax:
-        void DeleteAttribute(object obj, string attributeAccessString); 
-    ```
-
-* **SegmentIsLoaded**
-    * **Compiler Token**: `FUNC_SEGMENT_IS_LOADED`
-    ``` C++
-    syntax:
-        int SegmentIsLoaded(1); // string segmentName?
-    ```
-
-* **GetAttributesNum**
-    * **Compiler Token**: `FUNC_GET_ATTRIBUTES_NUM`
-    ``` C++
-    syntax:
-        int GetAttributesNum(object obj);
-        int GetAttributesNum(aref attribute);
-    ```
-
-* **GetAttributeN**
-    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_BYN`
-    ``` C++
-    syntax:
-        aref GetAttributeN(object obj, int index);
-        aref GetAttributeN(aref attribute, int index);
-    ```
-
-* **GetAttributeName**
-    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_NAME`
-    ``` C++
-    syntax:
-        string GetAttributeName(object obj);
-        string GetAttributeName(aref attribute);
-    ```
-
-* **DelEventHandler**
-    * **Compiler Token**: `FUNC_DEL_EVENT_HANDLER`
-    ``` C++
-    syntax:
-        void DelEventHandler(string eventName, string functionName);
-    ```
-
-* **EntityUpdate**
-    * **Compiler Token**: `FUNC_Entity_UPDATE`
-    ``` C++
-    syntax:
-        void EntityUpdate(bool isEnabled);
-    ```
-
-* **IsEntity**
-    * **Compiler Token**: `FUNC_IS_Entity_LOADED`
-    ``` C++
-    syntax:
-        int IsEntity(object obj);
-    ```
-
-* **DumpAttributes**
-    * **Compiler Token**: `FUNC_DUMP_ATTRIBUTES`
-    ``` C++
-    syntax:
-        void DumpAttributes(ref objRef);
-    ```
-
-* **sti**
+* **sti**: Convert a `string` to `int`
     * **Compiler Token**: `FUNC_STI`
+    * `value` can only be a `string`
     ``` C++
     syntax:
         int sti(string value);
     ```
 
-* **stf**
+* **stf**: Convert a `string` to a `float`
     * **Compiler Token**: `FUNC_STF`
+    * `value` can only be a `string`
     ``` C++
     syntax:
         float stf(string value);
     ```
 
-* **CheckAttribute**
-    * **Compiler Token**: `FUNC_CHECK_ATTRIBUTE`
+* **fts**: Parse a float to string
+    * **Compiler Token**: `FUNC_FTS`
+    `value`: value to be converted.
+    `digits`: Number of significant digits stored.
     ``` C++
     syntax:
-        bool CheckAttribute(object &obj, string attribute);
+        string fts(float value, int digits); 
+    example: 
+        float pi = 3.141526535
+        string pi2 = fts(pi, 3); // 3.14
+        string pi4 = fts(pi, 5); // 3.1415
     ```
 
-* **argb**
+* **argb**: Pack a color into a single value
     * **Compiler Token**: `FUNC_ARGB`
+    * `a`, `r`, `g`, `b`: alpha and color channels from 0 to 255.
+    * The resulting integer is coded as `0xAARRGGBB`
     ``` C++
     syntax:
         int argb(int a, int r, int g, int b);
     ```
 
-* **DeleteEntities**
-    * **Compiler Token**: `FUNC_DELETE_ENTITIES`
+### Bitwise Operations
+
+* **shl**: Shift the bits of the integer `value` to `n` bits to the left
+    * **Compiler Token**: `FUNC_SHL`
+    * `value`: The value containing the bits
+    * `n`: By how many bits to shift
+    * This function is effectively the same as `value << n;`
     ``` C++
     syntax:
-        void DeleteEntities();
+        int shl(int value, int n); 
     ```
 
-* **ClearEvents**
-    * **Compiler Token**: `FUNC_CLEAR_EVENTS`
+* **shr**: Shift the bits of the integer `value` to `n` bits to the right
+    * **Compiler Token**: `FUNC_SHR`
+    * `value`: The value containing the bits
+    * `n`: By how many bits to shift
+    * This function is effectively the same as `value >> n;`
     ``` C++
     syntax:
-        void ClearEvents(); 
+        int shr(int value, int n); 
     ```
 
-* **SaveEngineState**
-    * **Compiler Token**: `FUNC_SAVEENGINESTATE`
+* **and**: Bitwise AND
+    * **Compiler Token**: `FUNC_AND`
+    * `value`: The value containing the bits
+    * `mask`: Mask containing the bits to compare
+    * The resulting value contains all the bits if they're set in the value AND the mask
+    * This function is effectively the same as `value & mask;`
     ``` C++
     syntax:
-        void SaveEngineState(1);
+        int and(int value, int mask); 
     ```
 
-* **LoadEngineState**
-    * **Compiler Token**: `FUNC_LOADENGINESTATE`
+* **or**: Bitwise OR
+    * **Compiler Token**: `FUNC_OR`
+    * `value`: The value containing the bits
+    * `mask`: Mask containing the bits to compare
+    * The resulting value contains all the bits if they're set in the value OR the mask
+    * This function is effectively the same as `value | mask;`
     ``` C++
     syntax:
-        void LoadEngineState(); /1/?
+        int or(int value, int mask); 
     ```
 
-* **Event**
-    * **Compiler Token**: `FUNC_EVENT`
+### Controls
+
+* **CreateControl**: Create a new control type.
+    * **Compiler Token**: `FUNC_CREATE_CONTROL`
+    * `controlName`: Unique identifier for the control.
+    * If the function succeeds in creation, it returns control's ID. 
+    * If there already exists a control with the given name, its ID is returned instead.
+    * If the function fails, it returns -1.
     ``` C++
     syntax:
-        void Event(); 
+        int CreateControl(string controlName); 
     ```
 
-* **PostEvent**
-    * **Compiler Token**: `FUNC_POSTEVENT`
+* **DeleteControl**: Currently does nothing.
+    * **Compiler Token**: `FUNC_DELETE_CONTROL`
     ``` C++
     syntax:
-        void PostEvent(); 
+        void DeleteControl(string controlName);
     ```
 
-* **fts**
-    * **Compiler Token**: `FUNC_FTS`
+* **MapControl**: Set a specific keybind on a control.
+    * **Compiler Token**: `FUNC_MAP_CONTROL`
+    * `ControlID`: ID of the control to set.
+    * `key`: ID of the key to bind. 
     ``` C++
     syntax:
-        string fts(float, int); 
+        void MapControl(int controlID, int key);
     ```
 
-* **ClearPostEvents**
-    * **Compiler Token**: `FUNC_CLEAR_POST_EVENTS`
+* **SetControlTreshold**: Currently does nothing.
+    * **Compiler Token**: `FUNC_SET_CONTROL_TRESHOLD`
     ``` C++
     syntax:
-        void ClearPostEvents();
+        void SetControlTreshold(int controlID, float thresholdValue);
+    ```
+
+* **SetControlFlags**: Set bitwise flags for the control.
+    * **Compiler Token**: `FUNC_SET_CONTROL_FLAGS`
+    * `ControlID`: ID of the control to set.
+    * `flags`: Set of flags to apply to the control
+    * Currently the only flag supported (besides from 0) is `USE_AXIS_AS_BUTTON` or 1
+    * Returns `false` if incorrect control ID has been provided.
+    ``` C++
+    syntax:
+        bool SetControlFlags(int controlID, int flags);
+    ```
+
+* **LockControl**: Toggle a specific control on or off.
+    * **Compiler Token**: `FUNC_LOCK_CONTROL`
+    * `controlName`: Unique identifier for the control.
+    * `isLocked`: `true` to disable the control.
+    ``` C++
+    syntax:
+        void LockControl(string controlName, bool isLocked);
+    ```
+
+
+
+* **ClearEntityAP**
+    * **Compiler Token**: `FUNC_CLEAR_Entity_AP`
+    ``` C++
+    syntax:
+        void ClearEntityAP(1);
+    ```
+
+* **Vartype**
+    * **Compiler Token**: `FUNC_VARTYPE`
+    ``` C++
+    syntax:
+        string Vartype(ref attribute);
+    ```
+
+* **ClearRef**
+    * **Compiler Token**: `FUNC_CLEARREF`
+    ``` C++
+    syntax:
+        void ClearRef(1);
+    ```
+
+* **GetArraySize**
+    * **Compiler Token**: `FUNC_GET_ARRAY_SIZE`
+    ``` C++
+    syntax:
+        int GetArraySize(1); 
     ```
 
 * **SetArraySize**
@@ -582,32 +997,7 @@ Currently disabled/not implemented functions:
         void SetArraySize(2); 
     ```
 
-* **GetAttributeValue**
-    * **Compiler Token**: `FUNC_GET_ATTRIBUTE_VALUE`
-    ``` C++
-    syntax:
-        string GetAttributeValue(aref attribute);
-    ```
-
-* **Vartype**
-    * **Compiler Token**: `FUNC_VARTYPE`
-    ``` C++
-    syntax:
-        string Vartype(ref attribute);
-
-* **Breakpoint**
-    * **Compiler Token**: `FUNC_BREAKPOINT`
-    ``` C++
-    syntax:
-        void Breakpoint();
-    ```
-
-* **CopyAttributes**
-    * **Compiler Token**: `FUNC_COPYATTRIBUTES`
-    ``` C++
-    syntax:
-        void CopyAttributes(2);
-    ```
+### String Manipulation
 
 * **strcut**
     * **Compiler Token**: `FUNC_STRCUT`
@@ -623,13 +1013,6 @@ Currently disabled/not implemented functions:
         string findSubStr(3)
     ```
 
-* **ClearRef**
-    * **Compiler Token**: `FUNC_CLEARREF`
-    ``` C++
-    syntax:
-        void ClearRef(1);
-    ```
-
 * **strlen**
     * **Compiler Token**: `FUNC_STRLEN`
     ``` C++
@@ -637,165 +1020,11 @@ Currently disabled/not implemented functions:
         int strlen(1); 
     ```
 
-* **GetDeltaTime**
-    * **Compiler Token**: `FUNC_GETDELTATIME`
-    ``` C++
-    syntax:
-        int GetDeltaTime(0); 
-    ```
-
-* **EventsBreak**
-    * **Compiler Token**: `FUNC_EVENTSBREAK`
-    ``` C++
-    syntax:
-        void EventsBreak(0);
-    ```
-
-* **shl**
-    * **Compiler Token**: `FUNC_SHL`
-    ``` C++
-    syntax:
-        int shl(2); 
-    ```
-
-* **shr**
-    * **Compiler Token**: `FUNC_SHR`
-    ``` C++
-    syntax:
-        int shr(2); 
-    ```
-
-* **and**
-    * **Compiler Token**: `FUNC_AND`
-    ``` C++
-    syntax:
-        int and(2); 
-    ```
-
-* **or**
-    * **Compiler Token**: `FUNC_OR`
-    ``` C++
-    syntax:
-        int or(2); 
-    ```
-
-* **DeleteEntitiesByType**
-    * **Compiler Token**: `FUNC_DELETEENTITIESBYTYPE`
-    ``` C++
-    syntax:
-        void DeleteEntitiesByType(1);
-    ```
-
-* **CreateControl**
-    * **Compiler Token**: `FUNC_CREATE_CONTROL`
-    ``` C++
-    syntax:
-        int CreateControl(1); 
-    ```
-
-* **DeleteControl**
-    * **Compiler Token**: `FUNC_DELETE_CONTROL`
-    ``` C++
-    syntax:
-        void DeleteControl(1);
-    ```
-
-* **MapControl**
-    * **Compiler Token**: `FUNC_MAP_CONTROL`
-    ``` C++
-    syntax:
-        void MapControl(2);
-    ```
-
-* **SetControlFlags**
-    * **Compiler Token**: `FUNC_SET_CONTROL_FLAGS`
-    ``` C++
-    syntax:
-        void SetControlFlags(2);
-    ```
-
-* **ClearEntityAP**
-    * **Compiler Token**: `FUNC_CLEAR_Entity_AP`
-    ``` C++
-    syntax:
-        void ClearEntityAP(1);
-    ```
-
-* **GetArraySize**
-    * **Compiler Token**: `FUNC_GET_ARRAY_SIZE`
-    ``` C++
-    syntax:
-        int GetArraySize(1); 
-    ```
-
-* **GetTargetPlatform**
-    * **Compiler Token**: `FUNC_GETTARGETPLATFORM`
-    ``` C++
-    syntax:
-        string GetTargetPlatform(); 
-    ```
-
-* **GetEntity**
-    * **Compiler Token**: `FUNC_GETENTITY`
-    ``` C++
-    syntax:
-        int GetEntity(2); 
-    ```
-
-* **FindEntity**
-    * **Compiler Token**: `FUNC_FINDENTITY`
-    ``` C++
-    syntax:
-        int FindEntity(2); 
-    ```
-
-* **FindEntityNext**
-    * **Compiler Token**: `FUNC_FINDENTITYNEXT`
-    ``` C++
-    syntax:
-        int FindEntityNext(1); 
-    ```
-
 * **GetSymbol**
     * **Compiler Token**: `FUNC_GETSYMBOL`
     ``` C++
     syntax:
         string GetSymbol(2); 
-    ```
-
-* **IsDigit**
-    **Compiler Token**: `FUNC_ISDIGIT`
-    ``` C++
-    syntax:
-        int IsDigit(2); 
-    ```
-
-* **SaveVariable**
-    * **Compiler Token**: `FUNC_SAVEVARIABLE`
-    ``` C++
-    syntax:
-        int SaveVariable(2); 
-    ```
-
-* **LoadVariable**
-    * **Compiler Token**: `FUNC_LOADVARIABLE`
-    ``` C++
-    syntax:
-        int LoadVariable(2); 
-    ```
-
-* **SetControlTreshold**
-    * **Compiler Token**: `FUNC_SET_CONTROL_TRESHOLD`
-    ``` C++
-    syntax:
-        void SetControlTreshold(2);
-    ```
-
-* **LockControl**
-    * **Compiler Token**: `FUNC_LOCK_CONTROL`
-    ``` C++
-    syntax:
-        void LockControl(2);
     ```
 
 ---
