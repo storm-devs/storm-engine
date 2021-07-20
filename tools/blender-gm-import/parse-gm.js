@@ -26,10 +26,6 @@ const modelBuffer = fs.readFileSync(preparedPath);
 
 const gmReader = new GmReader(modelBuffer);
 
-/* Array.from(bonesIDs).forEach((el) => {
-  console.log((el & 0xff) >>> 0, ((el >>> 8) & 0xff) >>> 0);
-}); */
-
 console.log(`Used textures: \n\n${gmReader.textureNames.join('\n')}`);
 
 if (isDevMode) {

@@ -16,27 +16,29 @@ import time, struct, os
 import math
 import json
 
-from bpy_extras.io_utils import ImportHelper
+from bpy_extras.io_utils import ImportHelper, axis_conversion
 from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
 
+correction_matrix = axis_conversion(from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
 
 def import_json_an(context,file_path=""):
     file_name = os.path.basename(file_path)[:-8]
     f = open(file_path,)
     data = json.load(f)
 
-    header = data['header']
-    frames_quantity = header['nFrames']
-    joints_quantity = header['nJoints']
-    fps = header['framesPerSec']
+    header = data.get('header')
+    frames_quantity = header.get('nFrames')
+    joints_quantity = header.get('nJoints')
+    fps = header.get('framesPerSec')
 
-    parent_indices = data['parentIndices']
-    start_joints_positions = data['startJointsPositions']
-    blender_start_joints_positions = data['blenderStartJointsPositions']
-    root_bone_positions = data['rootBonePositions']
-    joints_angles = data['jointsAngles']
+    parent_indices = data.get('parentIndices')
+    start_joints_positions = data.get('startJointsPositions')
+    blender_start_joints_positions = data.get('blenderStartJointsPositions')
+    root_bone_positions = data.get('rootBonePositions')
+    joints_angles = data.get('jointsAngles')
 
+    bpy.context.scene.frame_set(0)
     bpy.context.scene.render.fps = fps
     bpy.context.scene.frame_start = 0
     bpy.context.scene.frame_end = frames_quantity - 1
@@ -80,6 +82,8 @@ def import_json_an(context,file_path=""):
         bone.head = (prepared_pos[0], prepared_pos[1] - 0.00001, prepared_pos[2])
         bone.tail = (prepared_pos[0], prepared_pos[1] + 0.00001, prepared_pos[2])
 
+        bone.matrix = correction_matrix.to_4x4() @ bone.matrix
+
         bones_arr.append(bone)
 
     bpy.ops.object.mode_set(mode='POSE', toggle=False)
@@ -112,8 +116,8 @@ def import_json_an(context,file_path=""):
 
             fc.update()
 
-    armature_obj.rotation_euler[0] = math.radians(90)
-    armature_obj.rotation_euler[2] = math.radians(90)
+    """ armature_obj.rotation_euler[0] = math.radians(90)
+    armature_obj.rotation_euler[2] = math.radians(90) """
 
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
     return {'FINISHED'}
