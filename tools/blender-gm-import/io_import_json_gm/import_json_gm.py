@@ -318,8 +318,8 @@ def import_json_gm(context,file_path="",an_path=""):
                 if ob.vertex_groups.get(second_bone_name) is None:
                     ob.vertex_groups.new(name=second_bone_name)
 
-                ob.vertex_groups[first_bone_name].add([x], weight, 'REPLACE')
-                ob.vertex_groups[second_bone_name].add([x], 1.0 - weight, 'REPLACE')
+                ob.vertex_groups[first_bone_name].add([x], weight, 'ADD')
+                ob.vertex_groups[second_bone_name].add([x], 1.0 - weight, 'ADD')
 
         col = me.vertex_colors.new()
 
