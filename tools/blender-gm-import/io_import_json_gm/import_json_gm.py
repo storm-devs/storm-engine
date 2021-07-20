@@ -360,6 +360,7 @@ def import_json_gm(context,file_path="",an_path=""):
             ob.parent = armature_obj
             modifier = ob.modifiers.new(type='ARMATURE', name="Armature")
             modifier.object = armature_obj
+            modifier.use_deform_preserve_volume = True
 
             """ hack, texture is too dark without it """
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
