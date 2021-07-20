@@ -60,7 +60,6 @@ public:
     std::optional<size_t> FindQuestByID(const std::string_view &questID);
     std::optional<size_t> FindTextByID(QuestDescribe &nQuest, const std::string_view &textID);
 
-<<<<<<< HEAD
 private:
     std::vector<std::string> questFileNames_;
 
