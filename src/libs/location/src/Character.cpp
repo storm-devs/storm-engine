@@ -3088,7 +3088,8 @@ bool Character::zEntry(MESSAGE &message)
 bool Character::zSetBlade(MESSAGE &message)
 {
     long nBladeIdx = 0;
-    if (message.GetFormat() == "llsfll") {
+    if (message.GetFormat() == "llsfll")
+    {
         nBladeIdx = message.Long();
     } // else "lsfll"
 
