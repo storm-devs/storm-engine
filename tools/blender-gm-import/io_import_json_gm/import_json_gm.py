@@ -152,7 +152,7 @@ coas_to_potc_man = {
     '122': '78'
 }
 
-potc_to_coas_man = {value:key for key, value in coas_to_potc_man.items()}
+potc_to_coas_man = { value:key for key, value in coas_to_potc_man.items() }
 
 # taken from Copy Attributes Menu Addon by Bassam Kurdali, Fabian Fricke, Adam Wiseman
 def getmat(bone, active, context, ignoreparent):
@@ -288,7 +288,8 @@ def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
 
 
 def import_json_gm(
-        context,file_path="",
+        context,
+        file_path="",
         an_path="",
         fix_coas_man_head=False,
         convert_coas_to_potc_man=False,
@@ -600,7 +601,8 @@ class ImportJsonGm(Operator, ImportHelper):
     def execute(self, context):
         an_path = os.path.join(os.path.dirname(self.filepath), self.an_name)
         if os.path.isfile(an_path):
-            return import_json_gm(context,
+            return import_json_gm(
+                context,
                 self.filepath,
                 an_path=an_path,
                 fix_coas_man_head=self.fix_coas_man_head,
