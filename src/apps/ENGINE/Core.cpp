@@ -922,6 +922,19 @@ void CORE::Leave_CriticalSection()
     LeaveCriticalSection(&lock);
 };
 
+ScreenSize CORE::GetScreenSize() const noexcept
+{
+    switch (targetVersion_)
+    {
+    case storm::ENGINE_VERSION::PIRATES_OF_THE_CARIBBEAN: {
+        return {640, 480};
+    }
+    default: {
+        return {800, 600};
+    }
+    }
+}
+
 void CORE::loadCompatibilitySettings(INIFILE &inifile)
 {
     using namespace storm;

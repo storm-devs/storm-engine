@@ -24,6 +24,12 @@ class VDATA;
 class CSteamStatsAchievements;
 class CSteamDLC;
 
+struct ScreenSize
+{
+    size_t width{};
+    size_t height{};
+};
+
 class CORE
 {
   public:
@@ -156,6 +162,8 @@ class CORE
     void *GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex = nullptr);
 
     [[nodiscard]] storm::ENGINE_VERSION GetTargetEngineVersion() const noexcept;
+
+    [[nodiscard]] ScreenSize GetScreenSize() const noexcept;
 
   private:
     void loadCompatibilitySettings(INIFILE &inifile);
