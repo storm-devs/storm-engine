@@ -81,7 +81,7 @@ bool FILE_SERVICE::_WriteFile(std::fstream &fileS, const void *s, std::streamsiz
     }
 }
 
-bool FILE_SERVICE::_STDReadFile(std::filesystem::path path, void *buffer, uint32_t bytes_to_read, uint32_t *bytes_read, uint32_t seek_to)
+bool FILE_SERVICE::_OldReadFile(std::filesystem::path path, void *buffer, uint32_t bytes_to_read, uint32_t *bytes_read, uint32_t seek_to)
 {
     std::basic_ifstream<unsigned char> fh;
 

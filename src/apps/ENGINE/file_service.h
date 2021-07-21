@@ -103,7 +103,7 @@ class FILE_SERVICE : public VFILE_SERVICE
     void _FlushFileBuffers(std::fstream &fileS) override;
     std::string _GetCurrentDirectory() override;
 
-    bool _STDReadFile(std::filesystem::path path, void *buffer, uint32_t bytes_to_read, uint32_t *bytes_read, uint32_t seek_to) override;
+    bool _OldReadFile(std::filesystem::path path, void *buffer, uint32_t bytes_to_read, uint32_t *bytes_read, uint32_t seek_to = 0) override;
 
     std::string _GetExecutableDirectory() override;
     std::uintmax_t _GetFileSize(const char *filename) override;

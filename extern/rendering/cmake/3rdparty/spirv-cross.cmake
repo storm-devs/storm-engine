@@ -20,7 +20,17 @@ set( SPIRV_CROSS_INCLUDES
 file(
 	GLOB
 	SPIRV_CROSS_SOURCES
-	${BGFX_DIR}/3rdparty/spirv-cross/*.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_cfg.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_cpp.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_cross.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_cross_c.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_cross_parsed_ir.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_cross_util.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_glsl.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_hlsl.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_msl.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_parser.cpp
+	${BGFX_DIR}/3rdparty/spirv-cross/spirv_reflect.cpp
 	${BGFX_DIR}/3rdparty/spirv-cross/*.h
 )
 

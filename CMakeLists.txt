@@ -73,7 +73,7 @@ include_directories(${STORM_EXTERN_MATH_DIR}/glm/glm)
 
 
 
-add_definitions("-D_CRT_SECURE_NO_WARNINGS" "-D__STDC_FORMAT_MACROS" "-DENTRY_CONFIG_IMPLEMENT_MAIN=1")
+add_definitions("-D_CRT_SECURE_NO_WARNINGS" "-D__STDC_FORMAT_MACROS")
 
 
 add_subdirectory(src)

@@ -32,9 +32,6 @@ PCS_CONTROLS::PCS_CONTROLS()
     POINT p;
     GetCursorPos(&p);
 
-    nMouseXPrev = p.x;
-    nMouseYPrev = p.y;
-
     nLastControlTime = 0;
 
     nMouseWheel = 0;
@@ -523,8 +520,6 @@ void PCS_CONTROLS::Update(uint32_t DeltaTime)
     GetCursorPos(&p);
 
 
-    nMouseXPrev = p.x;
-    nMouseYPrev = p.y;
     //SetCursorPos(nMouseXPrev, nMouseYPrev);
     nLastControlTime += DeltaTime;
 }

@@ -24,6 +24,10 @@ class VFILE_SERVICE
     virtual bool _WriteFile(std::fstream &fileS, const void *s, std::streamsize count) = 0;
     virtual bool _ReadFile(std::fstream &fileS, void *s, std::streamsize count) = 0;
     virtual bool _FileOrDirectoryExists(const char *p) = 0;
+
+    virtual bool _OldReadFile(std::filesystem::path path, void *buffer, uint32_t bytes_to_read, uint32_t *bytes_read,
+                      uint32_t seek_to = 0) = 0;
+
     virtual std::vector<std::string> _GetPathsOrFilenamesByMask(const char *sourcePath, const char *mask, bool getPaths,
                                                                 bool onlyDirs = false, bool onlyFiles = true) = 0;
     virtual std::vector<std::filesystem::path> _GetFsPathsByMask(const char *sourcePath, const char *mask,

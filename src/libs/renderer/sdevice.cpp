@@ -24,6 +24,9 @@
 #include <deque>
 #include <bitset>
 
+#include <algorithm>
+
+
 #define POST_PROCESS_FVF (D3DFVF_XYZRHW | D3DFVF_TEX4)
 
 #define S_RELEASE(a, b)                                                                                                \
@@ -1378,7 +1381,6 @@ long DX9RENDER::TextureCreate(const char *fname)
     }
     return -1;
 }
-#include <algorithm>
 
 bool find_file(const std::filesystem::path &dir_path, // in this directory,
               const std::wstring &file_name, // search for this name,
@@ -1593,7 +1595,7 @@ bool DX9RENDER::BGFXTextureLoad(long t)
     TX_FILE_HEADER head;
     uint32_t readingBytes = 0;
 
-    if (!fio->_STDReadFile(origPath.wstring(), &head, sizeof(head), &readingBytes) || readingBytes != sizeof(head))
+    if (!fio->_OldReadFile(origPath.wstring(), &head, sizeof(head), &readingBytes) || readingBytes != sizeof(head))
     {
         if (bTrace)
         {
@@ -1680,7 +1682,7 @@ bool DX9RENDER::BGFXTextureLoad(long t)
                 byteOutput.resize(head.mip_size);
 
                 isError =
-                    !fio->_STDReadFile(origPath.wstring(), byteOutput.data(), head.mip_size, &readingBytes, seekposition);
+                    !fio->_OldReadFile(origPath.wstring(), byteOutput.data(), head.mip_size, &readingBytes, seekposition);
 
                 switch (textureFormats[textureFI].txFormat)
                 {
@@ -2015,15 +2017,16 @@ bool DX9RENDER::BGFXTextureLoad(long t)
     {
         char s[256];
         if (totSize == 0)
+        {
             fio->_DeleteFile("texLoad.txt");
-        HANDLE fh = fio->_CreateFile("texLoad.txt", GENERIC_WRITE, FILE_SHARE_WRITE, OPEN_ALWAYS);
-        fio->_SetFilePointer(fh, 0, nullptr, FILE_END);
-        totSize += BGFXTextures[t].dwSize;
-        sprintf_s(s, "%.2f, size: %d, %d * %d, %s\n", totSize / 1024.0f / 1024.0f, BGFXTextures[t].dwSize, head.width,
-                  head.height, BGFXTextures[t].name);
-        fio->_WriteFile(fh, s, strlen(s), nullptr);
-        fio->_FlushFileBuffers(fh);
-        fio->_CloseHandle(fh);
+        }
+        auto fileS2 = fio->_CreateFile("texLoad.txt", std::ios::binary | std::ios::out | std::ios::app);
+        totSize += Textures[t].dwSize;
+        sprintf_s(s, "%.2f, size: %d, %d * %d, %s\n", totSize / 1024.0f / 1024.0f, Textures[t].dwSize, head.width,
+                  head.height, Textures[t].name);
+        fio->_WriteFile(fileS2, s, strlen(s));
+        fio->_FlushFileBuffers(fileS2);
+        fio->_CloseFile(fileS2);
     }
     dwTotalSize += BGFXTextures[t].dwSize;
     //---------------------------------------------------------------
@@ -2459,7 +2462,7 @@ bool DX9RENDER::BGFXLoadTextureSurface(std::filesystem::path file, IDirect3DSurf
         return false;
     // Reading out
     uint32_t readingBytes = 0;
-    if (!fio->_STDReadFile(file.wstring(), lock.pBits, mipSize, &readingBytes, seek_to) || readingBytes != mipSize)
+    if (!fio->_OldReadFile(file.wstring(), lock.pBits, mipSize, &readingBytes, seek_to) || readingBytes != mipSize)
     {
         if (CHECKD3DERR(suface->UnlockRect()) == true)
             return false;
@@ -2635,25 +2638,23 @@ bool DX9RENDER::BGFXTextureRelease(long texid)
     {
         if (texLog)
         {
-            const HANDLE fh =
-                fio->_CreateFile("texLoad.txt", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, OPEN_ALWAYS);
+            auto fh = fio->_CreateFile("texLoad.txt", std::ios::binary | std::ios::in | std::ios::out);
 
             totSize -= BGFXTextures[texid].dwSize;
-            const int bytes = fio->_GetFileSize(fh, nullptr);
+            const int bytes = fio->_GetFileSize("texLoad.txt");
             char *buf = new char[bytes + 1];
-            fio->_ReadFile(fh, buf, bytes, nullptr);
+            fio->_ReadFile(fh, buf, bytes);
             buf[bytes] = 0;
 
             char *str = strstr(buf, BGFXTextures[texid].name);
             if (str != nullptr)
             {
-                fio->_SetFilePointer(fh, str - buf, nullptr, FILE_BEGIN);
+                fio->_SetFilePointer(fh, str - buf, std::ios::beg);
                 const char *s = "*";
-                fio->_WriteFile(fh, s, 1, nullptr);
+                fio->_WriteFile(fh, s, 1);
             }
             delete[] buf;
             fio->_FlushFileBuffers(fh);
-            fio->_CloseHandle(fh);
         }
 
         delete BGFXTextures[texid].name;

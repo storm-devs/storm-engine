@@ -216,7 +216,6 @@ add_example(
 	COMMON
 	DIRECTORIES
 	${BGFX_DIR}/examples/common/debugdraw
-	${BGFX_DIR}/examples/common/entry
 	${BGFX_DIR}/examples/common/font
 	${BGFX_DIR}/examples/common/imgui
 	${BGFX_DIR}/examples/common/nanovg

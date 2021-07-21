@@ -499,98 +499,98 @@ void XSERVICE::LoadAllPicturesInfo()
                 break;
         }
 
-    delete ini;
+        ini.reset();
 
+        // BGFX
+        memset(section, 0, sizeof(section));
+        memset(param, 0, sizeof(param));
 
-    // BGFX
-    memset(section, 0, sizeof(section));
-    memset(param, 0, sizeof(param));
+        ini = fio->OpenIniFile((char *)LISTS_INIFILE);
+        if (!ini)
+            throw std::exception("ini file not found!");
 
-    ini = fio->OpenIniFile((char *)LISTS_INIFILE);
-    if (!ini)
-        throw std::exception("ini file not found!");
+        m_BGFXdwListQuantity = 0;
+        m_BGFXdwImageQuantity = 0;
 
-    m_BGFXdwListQuantity = 0;
-    m_BGFXdwImageQuantity = 0;
-
-    // calculate lists quantity
-    if (ini->GetSectionName(section, sizeof(section) - 1))
-        do
-            m_BGFXdwListQuantity++;
-        while (ini->GetSectionNameNext(section, sizeof(section) - 1));
-    // create list pointers array
-    if (m_BGFXdwListQuantity > 0)
-    {
-        m_BGFXpList = new IMAGELISTDESCR[m_BGFXdwListQuantity];
-        if (m_BGFXpList == nullptr)
-            throw std::exception("memory allocate error");
-    }
-
-    // fill lists
-    if (ini->GetSectionName(section, sizeof(section) - 1))
-        for (auto i = 0; true; i++)
+        // calculate lists quantity
+        if (ini->GetSectionName(section, sizeof(section) - 1))
+            do
+                m_BGFXdwListQuantity++;
+            while (ini->GetSectionNameNext(section, sizeof(section) - 1));
+        // create list pointers array
+        if (m_BGFXdwListQuantity > 0)
         {
-            m_BGFXpList[i].textureQuantity = 0;
-            m_BGFXpList[i].textureID = -1L;
-
-            // get list name
-            m_BGFXpList[i].sImageListName = new char[sizeof section];
-            strcpy_s(m_BGFXpList[i].sImageListName, sizeof section, section);
-            // get texture name
-            ini->ReadString(section, "sTextureName", param, sizeof(param) - 1, "");
-            m_BGFXpList[i].sTextureName = new char[sizeof param];
-            strcpy_s(m_BGFXpList[i].sTextureName, sizeof param, param);
-
-            // get texture width & height
-            m_BGFXpList[i].textureWidth = ini->GetLong(section, "wTextureWidth", 1024);
-            m_BGFXpList[i].textureHeight = ini->GetLong(section, "wTextureHeight", 1024);
-
-            m_BGFXpList[i].pictureStart = m_BGFXdwImageQuantity;
-            // get pictures quantity
-            m_BGFXpList[i].pictureQuantity = 0;
-            if (ini->ReadString(section, "picture", param, sizeof(param) - 1, ""))
-                do
-                    m_BGFXpList[i].pictureQuantity++;
-                while (ini->ReadStringNext(section, "picture", param, sizeof(param) - 1));
-
-            // resize image list
-            auto *const oldpImage = m_BGFXpImage;
-            m_BGFXpImage = new PICTUREDESCR[m_BGFXdwImageQuantity + m_BGFXpList[i].pictureQuantity];
-            if (m_BGFXpImage == nullptr)
-                throw std::exception("allocate memory error");
-            if (oldpImage != nullptr)
-            {
-                memcpy(m_BGFXpImage, oldpImage, m_BGFXdwImageQuantity * sizeof(PICTUREDESCR));
-                delete oldpImage;
-            }
-            m_BGFXdwImageQuantity += m_BGFXpList[i].pictureQuantity;
-
-            // set pictures
-            char picName[sizeof(param)];
-            ini->ReadString(section, "picture", param, sizeof(param) - 1, "");
-            for (int j = m_BGFXpList[i].pictureStart; j < m_BGFXdwImageQuantity; j++)
-            {
-                // get texture coordinates
-                int nLeft, nTop, nRight, nBottom;
-
-                sscanf(param, "%[^,],%d,%d,%d,%d", picName, &nLeft, &nTop, &nRight, &nBottom);
-                m_BGFXpImage[j].pTextureRect.left = nLeft;
-                m_BGFXpImage[j].pTextureRect.top = nTop;
-                m_BGFXpImage[j].pTextureRect.right = nRight;
-                m_BGFXpImage[j].pTextureRect.bottom = nBottom;
-
-                const auto len = strlen(picName) + 1;
-                m_BGFXpImage[j].sPictureName = new char[len];
-                memcpy(m_BGFXpImage[j].sPictureName, picName, len);
-
-                ini->ReadStringNext(section, "picture", param, sizeof(param) - 1);
-            }
-
-            if (!ini->GetSectionNameNext(section, sizeof(section) - 1))
-                break;
+            m_BGFXpList = new IMAGELISTDESCR[m_BGFXdwListQuantity];
+            if (m_BGFXpList == nullptr)
+                throw std::exception("memory allocate error");
         }
 
-    delete ini;
+        // fill lists
+        if (ini->GetSectionName(section, sizeof(section) - 1))
+            for (auto i = 0; true; i++)
+            {
+                m_BGFXpList[i].textureQuantity = 0;
+                m_BGFXpList[i].textureID = -1L;
+
+                // get list name
+                m_BGFXpList[i].sImageListName = new char[sizeof section];
+                strcpy_s(m_BGFXpList[i].sImageListName, sizeof section, section);
+                // get texture name
+                ini->ReadString(section, "sTextureName", param, sizeof(param) - 1, "");
+                m_BGFXpList[i].sTextureName = new char[sizeof param];
+                strcpy_s(m_BGFXpList[i].sTextureName, sizeof param, param);
+
+                // get texture width & height
+                m_BGFXpList[i].textureWidth = ini->GetLong(section, "wTextureWidth", 1024);
+                m_BGFXpList[i].textureHeight = ini->GetLong(section, "wTextureHeight", 1024);
+
+                m_BGFXpList[i].pictureStart = m_BGFXdwImageQuantity;
+                // get pictures quantity
+                m_BGFXpList[i].pictureQuantity = 0;
+                if (ini->ReadString(section, "picture", param, sizeof(param) - 1, ""))
+                    do
+                        m_BGFXpList[i].pictureQuantity++;
+                    while (ini->ReadStringNext(section, "picture", param, sizeof(param) - 1));
+
+                // resize image list
+                auto *const oldpImage = m_BGFXpImage;
+                m_BGFXpImage = new PICTUREDESCR[m_BGFXdwImageQuantity + m_BGFXpList[i].pictureQuantity];
+                if (m_BGFXpImage == nullptr)
+                    throw std::exception("allocate memory error");
+                if (oldpImage != nullptr)
+                {
+                    memcpy(m_BGFXpImage, oldpImage, m_BGFXdwImageQuantity * sizeof(PICTUREDESCR));
+                    delete oldpImage;
+                }
+                m_BGFXdwImageQuantity += m_BGFXpList[i].pictureQuantity;
+
+                // set pictures
+                char picName[sizeof(param)];
+                ini->ReadString(section, "picture", param, sizeof(param) - 1, "");
+                for (int j = m_BGFXpList[i].pictureStart; j < m_BGFXdwImageQuantity; j++)
+                {
+                    // get texture coordinates
+                    int nLeft, nTop, nRight, nBottom;
+
+                    sscanf(param, "%[^,],%d,%d,%d,%d", picName, &nLeft, &nTop, &nRight, &nBottom);
+                    m_BGFXpImage[j].pTextureRect.left = nLeft;
+                    m_BGFXpImage[j].pTextureRect.top = nTop;
+                    m_BGFXpImage[j].pTextureRect.right = nRight;
+                    m_BGFXpImage[j].pTextureRect.bottom = nBottom;
+
+                    const auto len = strlen(picName) + 1;
+                    m_BGFXpImage[j].sPictureName = new char[len];
+                    memcpy(m_BGFXpImage[j].sPictureName, picName, len);
+
+                    ini->ReadStringNext(section, "picture", param, sizeof(param) - 1);
+                }
+
+                if (!ini->GetSectionNameNext(section, sizeof(section) - 1))
+                    break;
+            }
+
+        ini.reset();
+    }
 
 }
 

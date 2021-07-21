@@ -1,16 +1,15 @@
-#include "externs.h"
-#include "fs.h"
-#include "s_debug.h"
+#include "ExecutableLifecycleService.hpp"
 #include "SteamApi.hpp"
 #include "compiler.h"
+#include "file_service.h"
+#include "fs.h"
+#include "s_debug.h"
 
-#include <crtdbg.h>
-#include <dbghelp.h>
-#include <tchar.h>
-
-#include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
+#include <OSWindow.hpp>
+#include <SDL.h>
 
 #include "bx/bx.h"
 #include "bgfx/bgfx.h"
@@ -22,211 +21,111 @@
 
 #include "dx9render.h"
 
-constexpr auto DUMP_FILENAME = "engine_dump.dmp";
 
+VFILE_SERVICE *fio = nullptr;
+CORE core;
 S_DEBUG CDebug;
+
+VDX9RENDER *renderService;
+
+std::shared_ptr<TextureResource> texture;
+std::shared_ptr<TextureResource> texture2;
+
+long PortraitID;
+
+
+using namespace storm;
+
+namespace
+{
+
 bool isHold = false;
-// LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-int Alert(const char *lpCaption, const char *lpText);
-void CreateMiniDump(EXCEPTION_POINTERS *pep);
-bool _loopMain();
-
-bool _loopMain()
-{
-    bool runResult = false;
-
-    __try
-    {
-        runResult = core.Run();
-    }
-    __except (CreateMiniDump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
-    {
-    }
-
-    return runResult;
-}
-
-bgfx::PlatformData *platformData;
-
-namespace bgfx
-    {
-    extern bgfx::PlatformData g_platformData;
-
-    void LoadPlatformData() // because outside the namespace will generate link errors;
-    {
-        platformData = &g_platformData;
-    }
-}
-
-
-
-namespace storm
-{
-
-#define MAX_WINDOWS 1
-
-
-class Application : public entry::AppI
-{
-  public:
-    Application(const char *_name, const char *_description, const char *_url, long screen_x, long screen_y)
-        : entry::AppI(_name, _description, _url)
-    {
-        m_width = screen_x;
-        m_height = screen_y;
-
-    }
-
-    void init(int32_t _argc, const char *const *_argv, uint32_t _width, uint32_t _height) override
-    {
-        bgfx::LoadPlatformData();
-
-        core.Set_Hwnd((HWND)platformData->nwh);
-
-        Args args(_argc, _argv);
-
-        m_debug = BGFX_DEBUG_TEXT;
-        m_reset = BGFX_RESET_VSYNC;
-
-        bgfx::Init init;
-        init.type = bgfx::RendererType::Direct3D11;
-        init.vendorId = args.m_pciId;
-        init.resolution.width = m_width;
-        init.resolution.height = m_height;
-        init.resolution.reset = m_reset;
-
-        bgfx::init(init);
-
-        const bgfx::Caps *caps = bgfx::getCaps();
-        //bool swapChainSupported = 0 != (caps->supported & BGFX_CAPS_SWAP_CHAIN);
-
-
-        // Enable m_debug text.
-        bgfx::setDebug(m_debug);
-
-        // Set view 0 clear state.
-        bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
-        //bgfx::setViewClear(0, BGFX_CLEAR_NONE, 0x303030ff, 1.0f, 0);
-
-        // Init stuff
-        core.InitBase();
-
-        core.AppState(true);
-
-        _loopMain(); // to allow service initialization, remove/comment after tests
-
-        m_renderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
-        if (m_renderService == nullptr)
-            throw std::exception("!Butterflies: No service 'dx9render'");
-
-    }
-
-
-    bool update() override
-    {
-        if (!entry::processWindowEvents(m_state, m_debug, m_reset))
-        {
-            entry::MouseState mouseState = m_state.m_mouse;          
-
-            bgfx::touch(0);
-
-            
-            bgfx::setViewRect(0, 0, 0, uint16_t(1920), uint16_t(1080));
-            bgfx::setViewRect(1, 0, 0, uint16_t(1920), uint16_t(1080));
-            bgfx::setViewRect(2, 0, 0, uint16_t(1920), uint16_t(1080));
-
-            //m_renderService->DrawSprite(m_texture, 1, glm::vec2(0, 0), -1);
-            //m_renderService->DrawSprite(m_texture2, 1, glm::vec2(0, 0));
-            
-            _loopMain();
-
-            m_renderService->GetSpriteRenderer()->Submit();
-
-            bgfx::frame();
-
-            return true;
-        }
-
-        return false;
-    }
-
-    virtual int shutdown() override
-    {
-
-        // Release
-        core.ReleaseBase();
-        ClipCursor(nullptr);
-
-
-        // Shutdown bgfx.
-        bgfx::shutdown();
-
-        return 0;
-    }
-
-    entry::WindowState m_state;
-
-    uint32_t m_width;
-    uint32_t m_height;
-    uint32_t m_debug;
-    uint32_t m_reset;
-
-    //SpriteRenderer m_spriteRenderer;
-
-    std::shared_ptr<TextureResource> m_texture;
-    std::shared_ptr<TextureResource> m_texture2;
-
-    long PortraitID;
-
-    VDX9RENDER *m_renderService;
-};
+bool isRunning = false;
+bool bActive = true;
 
 } // namespace
 
-/*ENTRY_IMPLEMENT_MAIN(bgfx::ExampleWindows, "Sea Dogs", "Rendering test",
-                     "https://github.com/storm-devs/storm-engine");*/
-
-int _main_(int _argc, char **_argv)
+void HandleWindowEvent(const OSWindow::Event &event)
 {
-    
+    if (event == OSWindow::Closed)
+    {
+        isRunning = false;
+        core.Event("DestroyWindow", nullptr);
+    }
+    else if (event == OSWindow::FocusGained)
+    {
+        bActive = true;
+        core.AppState(bActive);
+    }
+    else if (event == OSWindow::FocusLost)
+    {
+        bActive = false;
+        core.AppState(bActive);
+    }
+}
+
+
+int main(int argc, char **argv)
+{
+    // Prevent multiple instances
+    if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
+        GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        MessageBoxA(nullptr, "Another instance is already running!", "Error", MB_ICONERROR);
+        return 0;
+    }
+
+    SDL_InitSubSystem(SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
+
+    // Init FS
+    FILE_SERVICE File_Service;
     fio = &File_Service;
-    //_VSYSTEM_API = &System_Api;
 
     // Init stash
     create_directories(fs::GetLogsPath());
     create_directories(fs::GetSaveDataPath());
 
-    // Delete old dump file
-    std::filesystem::path log_path = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
-    fio->_DeleteFile(log_path.string().c_str());
+    // Init logging
+    auto systemLogPath = fs::GetLogsPath() / u8"system.log";
+    auto systemLog = spdlog::basic_logger_st("system", systemLogPath.string(), true);
+    systemLog->flush_on(spdlog::level::critical);
+    set_default_logger(systemLog);
 
-    // Init system log
-    log_path = fs::GetLogsPath() / std::filesystem::u8path("system.log");
-    fio->_DeleteFile(log_path.string().c_str());
-    core.tracelog = spdlog::basic_logger_mt("system", log_path.string(), true);
-    spdlog::set_default_logger(core.tracelog);
-    core.tracelog->set_level(spdlog::level::trace);
+    auto compileLogPath = fs::GetLogsPath() / COMPILER_LOG_FILENAME;
+    auto compileLog = spdlog::basic_logger_st("compile", compileLogPath.string(), true);
 
-    // Init compile and error/warning logs
-    log_path = fs::GetLogsPath() / std::filesystem::u8path(COMPILER_LOG_FILENAME);
-    fio->_DeleteFile(log_path.string().c_str());
-    core.Compiler->tracelog = spdlog::basic_logger_mt("compile", log_path.string(), true);
-    core.Compiler->tracelog->set_level(spdlog::level::trace);
-    log_path = fs::GetLogsPath() / std::filesystem::u8path(COMPILER_ERRORLOG_FILENAME);
-    fio->_DeleteFile(log_path.string().c_str());
-    core.Compiler->error_warning_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_path.string());
-    core.Compiler->errorlog = std::make_shared<spdlog::logger>("error", core.Compiler->error_warning_sink);
-    core.Compiler->errorlog->set_level(spdlog::level::trace);
-    core.Compiler->warninglog = std::make_shared<spdlog::logger>("warning", core.Compiler->error_warning_sink);
-    core.Compiler->warninglog->set_level(spdlog::level::trace);
+    auto errorLogPath = fs::GetLogsPath() / COMPILER_ERRORLOG_FILENAME;
+    auto errorLog = spdlog::basic_logger_st("error", errorLogPath.string(), true);
 
-    // Read config
+    std::set_terminate(spdlog::shutdown);
+    std::atexit(spdlog::shutdown);
+
+    // Init executable lifecycle manager
+    storm::except::ExecutableLifecycleService lifecycleService;
+    lifecycleService.addAttachment(systemLogPath);
+    lifecycleService.addAttachment(compileLogPath);
+    lifecycleService.addAttachment(errorLogPath);
+    if (!lifecycleService.initialize(true))
+    {
+        spdlog::error("Unable to initialize crash handler");
+    }
+
+    // Init core
+    core.Init();
+    core.tracelog = systemLog;
+    core.Compiler->tracelog = compileLog;
+    core.Compiler->errorlog = errorLog;
+    core.Compiler->warninglog = errorLog;
+
+    // Init script debugger
+    CDebug.Init();
+
+    /* Read config */
     uint32_t dwMaxFPS = 0;
-    auto *ini = File_Service.OpenIniFile(ENGINE_INI_FILE_NAME);
+    auto ini = fio->OpenIniFile(fs::ENGINE_INI_FILE_NAME);
     bool bSteam = false;
-
-    long screen_x = 1920;
-    long screen_y = 1080;
+    int width = 1024, height = 768;
+    bool fullscreen = false;
 
     if (ini)
     {
@@ -245,67 +144,104 @@ int _main_(int _argc, char **_argv)
         {
             bSteam = false;
         }
-
-        screen_x = ini->GetLong(nullptr, "screen_x", 1);
-        screen_y = ini->GetLong(nullptr, "screen_y", 1);
-        delete ini;
+        width = ini->GetLong(nullptr, "screen_x", 1024);
+        height = ini->GetLong(nullptr, "screen_y", 768);
+        fullscreen = ini->GetLong(nullptr, "full_screen", false) ? true : false;
     }
 
     // evaluate SteamApi singleton
     steamapi::SteamApi::getInstance(!bSteam);
 
+    std::shared_ptr<storm::OSWindow> window = storm::OSWindow::Create(width, height, fullscreen);
+    window->SetTitle("Sea Dogs");
+    core.Set_Hwnd(static_cast<HWND>(window->OSHandle()));
+    window->Subscribe(HandleWindowEvent);
+    window->Show();
+
     
-    entry::s_width = screen_x;
-    entry::s_height = screen_y;
+    // Init bgfx
+    bgfx::Init init;
+    init.type = bgfx::RendererType::Direct3D11;
+    init.vendorId = BGFX_PCI_ID_NONE;
+    init.resolution.width = width;
+    init.resolution.height = height;
+    init.resolution.reset = BGFX_RESET_VSYNC;
+
+    bgfx::init(init);
+
+    const bgfx::Caps *caps = bgfx::getCaps();
+    // bool swapChainSupported = 0 != (caps->supported & BGFX_CAPS_SWAP_CHAIN);
+
+    // Enable m_debug text.
+    bgfx::setDebug(BGFX_DEBUG_TEXT);
+
+    // Set view 0 clear state.
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+    // bgfx::setViewClear(0, BGFX_CLEAR_NONE, 0x303030ff, 1.0f, 0);
+
+    bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
+    bgfx::setViewRect(1, 0, 0, uint16_t(width), uint16_t(height));
+    bgfx::setViewRect(2, 0, 0, uint16_t(width), uint16_t(height));
 
 
+    /* Init stuff */
+    core.InitBase();
 
-    storm::Application app("Sea Dogs", "Rendering test", "https://github.com/storm-devs/storm-engine", screen_x, screen_y);
+    core.Run(); // to allow service initialization, remove/comment after tests
 
-    return entry::runApp(&app, _argc, _argv);
-}
+    renderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
 
+    /* Message loop */
+    auto dwOldTime = GetTickCount64();
 
-void CreateMiniDump(EXCEPTION_POINTERS *pep)
-{
-    std::filesystem::path dmpfile = fs::GetStashPath() / std::filesystem::u8path(DUMP_FILENAME);
-    // Open the file
-    HANDLE hFile =
-        CreateFile(dmpfile.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-    if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
+    isRunning = renderService != nullptr;
+    while (isRunning)
     {
-        // Create the minidump
-        MINIDUMP_EXCEPTION_INFORMATION mdei;
+        SDL_PumpEvents();
+        SDL_FlushEvents(0, SDL_LASTEVENT);
 
-        mdei.ThreadId = GetCurrentThreadId();
-        mdei.ExceptionPointers = pep;
-        mdei.ClientPointers = FALSE;
+        if (bActive)
+        {
+            if (dwMaxFPS)
+            {
+                const auto dwMS = 1000u / dwMaxFPS;
+                const auto dwNewTime = GetTickCount64();
+                if (dwNewTime - dwOldTime < dwMS)
+                    continue;
+                dwOldTime = dwNewTime;
+            }
 
-        MINIDUMP_TYPE mdt =
-            (MINIDUMP_TYPE)(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo | MiniDumpWithHandleData |
-                            MiniDumpWithThreadInfo | MiniDumpWithUnloadedModules);
+            const auto runResult = core.Run();
 
-        BOOL rv =
-            MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, mdt, (pep != 0) ? &mdei : 0, 0, 0);
+            renderService->GetSpriteRenderer()->Submit();
 
-        if (!rv)
-            _tprintf(_T("MiniDumpWriteDump failed. Error: %u \n"), GetLastError());
+            bgfx::frame();
+
+            if (!isHold && !runResult)
+            {
+                isHold = true;
+                isRunning = false;
+            }
+        }
         else
-            _tprintf(_T("Minidump created.\n"));
-
-        // Close the file
-        CloseHandle(hFile);
+        {
+            Sleep(50);
+        }
     }
-    else
-    {
-        _tprintf(_T("CreateFile failed. Error: %u \n"), GetLastError());
-    }
-}
+    core.Event("ExitApplication", nullptr);
+    CDebug.Release();
+    core.CleanUp();
+    CDebug.CloseDebugWindow();
 
-int Alert(const char *lpCaption, const char *lpText)
-{
-    std::wstring CaptionW = utf8::ConvertUtf8ToWide(lpCaption);
-    std::wstring TextW = utf8::ConvertUtf8ToWide(lpText);
-    return ::MessageBox(NULL, TextW.c_str(), CaptionW.c_str(), MB_OK);
+    /* Release */
+    core.ReleaseBase();
+    ClipCursor(nullptr);
+
+    // Shutdown bgfx.
+    bgfx::shutdown();
+
+
+    SDL_Quit();
+
+    return 0;
 }
