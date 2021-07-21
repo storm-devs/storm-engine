@@ -677,10 +677,11 @@ void DIALOG::LoadFromIni()
     FPOINT fpScrSize, fpScrOffset;
     GetPointFromIni(pIni.get(), "BACKPARAM", "baseScreenSize", fpScrSize);
     GetPointFromIni(pIni.get(), "BACKPARAM", "baseScreenOffset", fpScrOffset);
+    const auto &screenSize = core.GetScreenSize();
     if (fpScrSize.x <= 0)
-        fpScrSize.x = 800.f;
+        fpScrSize.x = static_cast<float>(screenSize.width);
     if (fpScrSize.y <= 0)
-        fpScrSize.y = 600.f;
+        fpScrSize.y = static_cast<float>(screenSize.height);
     m_nScrBaseWidth = static_cast<long>(fpScrSize.x);
     m_nScrBaseHeight = static_cast<long>(fpScrSize.y);
     D3DVIEWPORT9 vp;

@@ -19,10 +19,11 @@ MousePointer::MousePointer(BI_ManagerBase *pManager, ATTRIBUTES *pARoot)
     m_mousesensivity.x = 1.f;
     m_mousesensivity.y = 1.f;
 
+    const auto screenSize = core.GetScreenSize();
     m_cursorzone.left = 0;
     m_cursorzone.top = 0;
-    m_cursorzone.right = 800;
-    m_cursorzone.bottom = 600;
+    m_cursorzone.right = screenSize.width;
+    m_cursorzone.bottom = screenSize.height;
 
     InitMouseCursors();
 }
