@@ -70,6 +70,90 @@ fixed_coas_man_head_pos = {
   '74': [ -0.010538881528191268, 1.6360301873646677, 0.10186888324096799 ]
 }
 
+coas_to_potc_man = {
+    '0': '0',
+    '1': '1',
+    '2': '2',
+    '3': '3',
+    '4': '4',
+    '5': '5',
+    '6': '6',
+    '7': '7',
+    '8': '8',
+    '9': '9',
+    '10': '10',
+    '11': '11',
+    '12': '12',
+    '13': '13',
+    '14': '14',
+    '15': '15',
+    '16': '16',
+    '17': '17',
+    '18': '18',
+    '19': '19',
+    '20': '20',
+    '22': '21',
+    '23': '22',
+    '24': '23',
+    '25': '24',
+    '37': '25',
+    '38': '26',
+    '53': '27',
+    '54': '28',
+    '65': '29',
+    '66': '30',
+    '75': '31',
+    '76': '32',
+    '77': '33',
+    '78': '34',
+    '79': '35',
+    '80': '36',
+    '81': '37',
+    '82': '38',
+    '83': '39',
+    '84': '40',
+    '85': '41',
+    '86': '42',
+    '87': '43',
+    '88': '44',
+    '89': '45',
+    '90': '46',
+    '91': '47',
+    '92': '48',
+    '93': '49',
+    '94': '50',
+    '95': '51',
+    '96': '52',
+    '97': '53',
+    '98': '54',
+    '99': '55',
+    '100': '56',
+    '101': '57',
+    '102': '58',
+    '103': '59',
+    '104': '60',
+    '105': '61',
+    '106': '62',
+    '107': '63',
+    '108': '64',
+    '109': '65',
+    '110': '66',
+    '111': '67',
+    '112': '68',
+    '113': '69',
+    '114': '70',
+    '115': '71',
+    '116': '72',
+    '117': '73',
+    '118': '74',
+    '119': '75',
+    '120': '76',
+    '121': '77',
+    '122': '78'
+}
+
+potc_to_coas_man = {value:key for key, value in coas_to_potc_man.items()}
+
 # taken from Copy Attributes Menu Addon by Bassam Kurdali, Fabian Fricke, Adam Wiseman
 def getmat(bone, active, context, ignoreparent):
     obj_bone = bone.id_data
@@ -203,7 +287,13 @@ def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
     return armature_obj
 
 
-def import_json_gm(context,file_path="",an_path="",fix_coas_man_head=False):
+def import_json_gm(
+        context,file_path="",
+        an_path="",
+        fix_coas_man_head=False,
+        convert_coas_to_potc_man=False,
+        convert_potc_to_coas_man=False,
+    ):
     file_name = os.path.basename(file_path)[:-8]
     textures_path = os.path.join(os.path.dirname(file_path),'textures')
     f = open(file_path,)
@@ -361,6 +451,23 @@ def import_json_gm(context,file_path="",an_path="",fix_coas_man_head=False):
                 weight = weights[x]
                 first_bone_idx = bone_ids[x][0]
                 second_bone_idx = bone_ids[x][1]
+
+                if convert_coas_to_potc_man:
+                    converted_first_bone_idx = coas_to_potc_man.get(str(bone_ids[x][0]))
+                    converted_second_bone_idx = coas_to_potc_man.get(str(bone_ids[x][1]))
+
+                    if converted_first_bone_idx is None:
+                        converted_first_bone_idx = 16
+                    if converted_second_bone_idx is None:
+                        converted_second_bone_idx = 16
+
+                    first_bone_idx = converted_first_bone_idx
+                    second_bone_idx = converted_second_bone_idx
+
+                if convert_potc_to_coas_man:
+                    first_bone_idx = potc_to_coas_man.get(str(bone_ids[x][0]))
+                    second_bone_idx = potc_to_coas_man.get(str(bone_ids[x][1]))
+
                 first_bone_name = "Bone" + str(first_bone_idx)
                 second_bone_name = "Bone" + str(second_bone_idx)
 
@@ -476,10 +583,26 @@ class ImportJsonGm(Operator, ImportHelper):
         default=False,
     )
 
+    convert_coas_to_potc_man: BoolProperty(
+        name="Convert CoAS man skeleton to PotC",
+        default=False,
+    )
+
+    convert_potc_to_coas_man: BoolProperty(
+        name="Convert PotC man skeleton to CoAS",
+        default=False,
+    )
+
     def execute(self, context):
         an_path = os.path.join(os.path.dirname(self.filepath), self.an_name)
         if os.path.isfile(an_path):
-            return import_json_gm(context, self.filepath, an_path=an_path, fix_coas_man_head=self.fix_coas_man_head)
+            return import_json_gm(context,
+                self.filepath,
+                an_path=an_path,
+                fix_coas_man_head=self.fix_coas_man_head,
+                convert_coas_to_potc_man=self.convert_coas_to_potc_man,
+                convert_potc_to_coas_man=self.convert_potc_to_coas_man
+            )
 
         return import_json_gm(context, self.filepath)
 
