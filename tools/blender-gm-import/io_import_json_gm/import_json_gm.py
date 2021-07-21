@@ -22,6 +22,54 @@ from bpy.types import Operator
 
 correction_matrix = axis_conversion(from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
 
+fixed_coas_man_head_pos = {
+  '16': [ 0.0032584953587507497, 1.6475999020040035, -0.011722753755748272 ],
+  '21': [ 0.0032584953587506994, 1.734414953738451, -0.017260584514588118 ],
+  '26': [ 0.0032584953587502237, 1.7189353285357356, 0.0032311086542904377 ],
+  '27': [ 0.03225849452428567, 1.7078742664307356, 0.06422260822728276 ],
+  '28': [ -0.025741503806784274, 1.7078742664307356, 0.06422260822728276 ],
+  '29': [ 0.0032584953587502237, 1.714992631226778, 0.06417078943923116 ],
+  '30': [ 0.0032584953587502237, 1.71595567651093, 0.06417078943923116 ],
+  '31': [ 0.0032584953587502237, 1.670038390904665, 0.017052501905709505 ],
+  '32': [ 0.0032584953587502237, 1.666005652397871, 0.0289492798037827 ],
+  '33': [ 0.04005750524811494, 1.6590940840542316, 0.043188605923205614 ],
+  '34': [ 0.010431578150019525, 1.7059485670179129, 0.09411628963425756 ],
+  '35': [ -0.03376904618926299, 1.6590893976390362, 0.043188624549657106 ],
+  '36': [ -0.00436244835145724, 1.705950003117323, 0.09411628963425756 ],
+  '39': [ 0.014712675241753459, 1.7155753958504647, 0.017472744453698397 ],
+  '40': [ -0.00819568452425301, 1.7155732766259462, 0.017472758423537016 ],
+  '41': [ 0.003258495358750247, 1.6719406803604215, 0.07180523918941617 ],
+  '42': [ 0.014147192006930709, 1.6719406803604215, 0.07180523918941617 ],
+  '43': [ -0.007630198495462537, 1.6719442555913702, 0.07180526526644826 ],
+  '44': [ 0.02245222474448383, 1.6453957352787256, 0.056133848149329424 ],
+  '45': [ -0.014557642163708806, 1.645408296957612, 0.05640476243570447 ],
+  '46': [ 0.0032584953587502558, 1.6316347122192383, 0.06349346833303571 ],
+  '47': [ 0.01994910533539951, 1.6316347122192383, 0.06349346833303571 ],
+  '48': [ -0.013432058738544583, 1.6316353976726532, 0.06349343480542302 ],
+  '49': [ 0.040822318522260065, 1.6185563057661057, 0.04033719236031175 ],
+  '50': [ 0.05190535425208556, 1.7011534315533936, 0.08644563751295209 ],
+  '51': [ -0.03362681638100137, 1.6185519061982632, 0.04056849470362067 ],
+  '52': [ -0.045069209532811766, 1.70209743315354, 0.0862667472101748 ],
+  '55': [ 0.01744386600330472, 1.7159136612899601, 0.10848532663658261 ],
+  '56': [ -0.010926909511908889, 1.7159103897283785, 0.10848526610061526 ],
+  '57': [ 0.003258495358750256, 1.6672005250584334, 0.10340505512431264 ],
+  '58': [ 0.02708967193029821, 1.663889413466677, 0.10081649431958795 ],
+  '59': [ -0.020572699839249253, 1.6638930957997218, 0.10081647569313645 ],
+  '60': [ 0.02944240369834006, 1.6386494464240968, 0.08547264384105802 ],
+  '61': [ -0.02311395318247378, 1.6386494473554194, 0.08547264384105802 ],
+  '62': [ 0.003258495358750243, 1.624780164565891, 0.09175814734771848 ],
+  '63': [ 0.020785945875104517, 1.6249020621180534, 0.0917750527150929 ],
+  '64': [ -0.014268974424339831, 1.624906247947365, 0.09177503967657685 ],
+  '67': [ 0.048700828570872545, 1.7250176309607923, 0.09955776995047927 ],
+  '68': [ -0.042183868354186416, 1.725021539896261, 0.09955776808783412 ],
+  '69': [ 0.0032584953587502276, 1.6471846054773778, 0.10507304838392884 ],
+  '70': [ 0.018761535873636603, 1.6457710040267557, 0.10322161880321801 ],
+  '71': [ -0.012244513491168618, 1.6457660753512755, 0.10322158108465374 ],
+  '72': [ 0.003258495358750234, 1.6364505612291396, 0.10192738147452474 ],
+  '73': [ 0.01705583737930283, 1.6360291168093681, 0.10186893353238702 ],
+  '74': [ -0.010538881528191268, 1.6360301873646677, 0.10186888324096799 ]
+}
+
 # taken from Copy Attributes Menu Addon by Bassam Kurdali, Fabian Fricke, Adam Wiseman
 def getmat(bone, active, context, ignoreparent):
     obj_bone = bone.id_data
@@ -46,7 +94,7 @@ def getmat(bone, active, context, ignoreparent):
     return newmat
 
 
-def get_armature_obj(file_path, collection, type=''):
+def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
     file_name = os.path.basename(file_path)[:-8]
     f = open(file_path,)
     data = json.load(f)
@@ -100,6 +148,9 @@ def get_armature_obj(file_path, collection, type=''):
         else:
             child_pos = mathutils.Vector(prepared_pos) + mathutils.Vector([0,0.00001,0])
 
+        if fix_coas_man_head and str(idx) in fixed_coas_man_head_pos:
+            prepared_pos = mathutils.Vector(fixed_coas_man_head_pos[str(idx)])
+
         bone.head = (prepared_pos[0], prepared_pos[1] - 0.00001, prepared_pos[2])
         bone.tail = (prepared_pos[0], prepared_pos[1] + 0.00001, prepared_pos[2])
 
@@ -152,7 +203,7 @@ def get_armature_obj(file_path, collection, type=''):
     return armature_obj
 
 
-def import_json_gm(context,file_path="",an_path=""):
+def import_json_gm(context,file_path="",an_path="",fix_coas_man_head=False):
     file_name = os.path.basename(file_path)[:-8]
     textures_path = os.path.join(os.path.dirname(file_path),'textures')
     f = open(file_path,)
@@ -170,11 +221,11 @@ def import_json_gm(context,file_path="",an_path=""):
     collection.objects.link(root)
 
     if has_animation:
-        armature_obj = get_armature_obj(an_path, collection)
+        armature_obj = get_armature_obj(an_path, collection,fix_coas_man_head=fix_coas_man_head)
         armature_obj.parent = root
 
-        armature_obj_pose = get_armature_obj(an_path, collection, 'POSE')
-        armature_obj_pose_source = get_armature_obj(an_path, collection, 'POSE_SOURCE')
+        armature_obj_pose = get_armature_obj(an_path, collection, 'POSE',fix_coas_man_head=fix_coas_man_head)
+        armature_obj_pose_source = get_armature_obj(an_path, collection, 'POSE_SOURCE',fix_coas_man_head=fix_coas_man_head)
 
     for object in data['objects']:
         name = object.get('name')
@@ -360,6 +411,7 @@ def import_json_gm(context,file_path="",an_path=""):
             ob.parent = armature_obj
             modifier = ob.modifiers.new(type='ARMATURE', name="Armature")
             modifier.object = armature_obj
+            modifier.use_deform_preserve_volume = True
 
             """ hack, texture is too dark without it """
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
@@ -419,10 +471,15 @@ class ImportJsonGm(Operator, ImportHelper):
         default="man.an.json",
     )
 
+    fix_coas_man_head: BoolProperty(
+        name="Fix CoAS man skeleton head",
+        default=False,
+    )
+
     def execute(self, context):
         an_path = os.path.join(os.path.dirname(self.filepath), self.an_name)
         if os.path.isfile(an_path):
-            return import_json_gm(context, self.filepath, an_path)
+            return import_json_gm(context, self.filepath, an_path=an_path, fix_coas_man_head=self.fix_coas_man_head)
 
         return import_json_gm(context, self.filepath)
 
