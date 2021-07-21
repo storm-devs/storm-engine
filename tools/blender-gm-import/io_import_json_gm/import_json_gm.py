@@ -543,6 +543,10 @@ def import_json_gm(
                 if has_animation and locator_bone_idx > 0:
                     locator.parent = armature_obj
                     bone = armature_obj.pose.bones["Bone" + str(locator_bone_idx)]
+
+                    if convert_potc_to_coas_man:
+                        bone = armature_obj.pose.bones["Bone" + potc_to_coas_man.get(str(locator_bone_idx))]
+
                     locator.parent_bone = bone.name
                     locator.parent_type = 'BONE'
                     locator.matrix_parent_inverse = bone.matrix.inverted()
