@@ -442,20 +442,20 @@ uint32_t CXI_QUESTTEXTS::MessageProc(long msgcode, MESSAGE &message)
     return -1;
 }
 
-void CXI_QUESTTEXTS::GetStringListForQuestRecord(std::vector<std::string> &asStringList, const char *pcRecText,
-                                                 const char *pcUserData) const
+void CXI_QUESTTEXTS::GetStringListForQuestRecord(std::vector<std::string> &stringList, const char *recText,
+                                                 const char *userData) const
 {
     char pcQuestID[1024];
     char pcTextID[1024];
     char pcDate[256];
 
-    char *pcTmp = (char *)pcRecText;
+    char *pcTmp = (char *)recText;
 
     if (GetNextIdFromList(pcTmp, pcQuestID, sizeof(pcQuestID), pcTextID, sizeof(pcTextID) - 1, pcDate))
     {
-        asStringList.clear();
+        stringList.clear();
         if (pcDate[0])
-            asStringList.push_back(pcDate);
-        ptrOwner->QuestFileReader()->GetRecordTextList(asStringList, pcQuestID, pcTextID, pcUserData);
+            stringList.push_back(pcDate);
+        stringList.push_back(ptrOwner->QuestFileReader()->GetRecordText(pcQuestID, pcTextID, userData ? userData : ""));
     }
 }

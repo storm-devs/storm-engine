@@ -18,7 +18,7 @@ class XINTERFACE : public XINTERFACE_BASE
     static XINTERFACE *pThis;
 
   protected:
-    QUEST_FILE_READER *pQuestService;
+    storm::QuestFileReader *pQuestService;
     VXSERVICE *pPictureService;
     VSTRSERVICE *pStringService;
     VDX9RENDER *pRenderService;
@@ -113,7 +113,7 @@ class XINTERFACE : public XINTERFACE_BASE
                     uint32_t dwTextColor4, const char *pcPicTextureName, const char *pcPicGroupName,
                     const char *pcPicImageName, long nPicWidth, long nPicHeight);
 
-    static QUEST_FILE_READER *GetQuestFileReader()
+    static storm::QuestFileReader *GetQuestFileReader()
     {
         return pThis->pQuestService;
     }
@@ -130,7 +130,7 @@ class XINTERFACE : public XINTERFACE_BASE
         return pThis->pRenderService;
     }
 
-    QUEST_FILE_READER *QuestFileReader() override
+    storm::QuestFileReader *QuestFileReader() override
     {
         return pQuestService;
     }
