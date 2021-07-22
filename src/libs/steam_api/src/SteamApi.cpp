@@ -3,7 +3,7 @@
 #ifdef STORM_ENABLE_STEAM
 #include <stdexcept>
 
-#include <steam_api.h>
+#include <steam/steam_api.h>
 
 #include "achievements.hpp"
 #include "core.h"
