@@ -297,11 +297,13 @@ void GIEditor::DrawSizeBox() const
         // boal -->
         // idFont, dwFCol, dwBCol, align, shadow, scale, sxs, sys,
         // left, top, "%s", str
+        const auto &screenSize = core.GetScreenSize();
         const auto m_fontID = m_pGIOwner->GetRenderService()->LoadFont("interface_normal");
         m_pGIOwner->GetRenderService()->ExtPrint(
-            m_fontID, 0xFFFFFFFF, 0, PR_ALIGN_LEFT, false, 1.0, 800, 600, 10, 10, "(%d, %d) - (%d, %d) W - %d H - %d",
-            static_cast<int>(m_pEditableNode->m_rect.left), static_cast<int>(m_pEditableNode->m_rect.top),
-            static_cast<int>(m_pEditableNode->m_rect.right), static_cast<int>(m_pEditableNode->m_rect.bottom),
+            m_fontID, 0xFFFFFFFF, 0, PR_ALIGN_LEFT, false, 1.0, screenSize.width, screenSize.height, 10, 10,
+            "(%d, %d) - (%d, %d) W - %d H - %d", static_cast<int>(m_pEditableNode->m_rect.left),
+            static_cast<int>(m_pEditableNode->m_rect.top), static_cast<int>(m_pEditableNode->m_rect.right),
+            static_cast<int>(m_pEditableNode->m_rect.bottom),
             (static_cast<int>(m_pEditableNode->m_rect.right) - static_cast<int>(m_pEditableNode->m_rect.left)),
             (static_cast<int>(m_pEditableNode->m_rect.bottom) - static_cast<int>(m_pEditableNode->m_rect.top)));
         m_pGIOwner->GetRenderService()->UnloadFont(m_fontID);

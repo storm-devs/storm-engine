@@ -1066,14 +1066,15 @@ void XINTERFACE::LoadIni()
     GetWindowRect(core.GetAppHWND(), &Screen_Rect);
 
     fScale = 1.0f;
-    dwScreenHeight = 600;
+    const auto screenSize = core.GetScreenSize();
+    dwScreenHeight = screenSize.height;
     dwScreenWidth = (Screen_Rect.right - Screen_Rect.left) * dwScreenHeight / (Screen_Rect.bottom - Screen_Rect.top);
-    if (dwScreenWidth < 800)
-        dwScreenWidth = 800;
+    if (dwScreenWidth < screenSize.width)
+        dwScreenWidth = screenSize.width;
     GlobalScreenRect.top = 0;
-    GlobalScreenRect.bottom = 600;
-    GlobalScreenRect.left = (dwScreenWidth - 800) / 2;
-    GlobalScreenRect.right = 800 + GlobalScreenRect.left;
+    GlobalScreenRect.bottom = screenSize.height;
+    GlobalScreenRect.left = (dwScreenWidth - screenSize.width) / 2;
+    GlobalScreenRect.right = screenSize.width + GlobalScreenRect.left;
 
     sprintf_s(section, "COMMON");
     /*
