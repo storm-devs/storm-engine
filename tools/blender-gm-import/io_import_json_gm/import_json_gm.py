@@ -525,37 +525,37 @@ def import_json_gm(
             bpy.ops.object.mode_set(mode='EDIT', toggle=False)
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
-        for locators_tree in data['locatorsTrees']:
-            group_locator_name = locators_tree
-            group_locator = bpy.data.objects.new( group_locator_name, None )
-            collection.objects.link(group_locator)
-            group_locator.parent = root
+    for locators_tree in data['locatorsTrees']:
+        group_locator_name = locators_tree
+        group_locator = bpy.data.objects.new( group_locator_name, None )
+        collection.objects.link(group_locator)
+        group_locator.parent = root
 
-            for locator_data in data['locatorsTrees'][locators_tree]:
-                locator_name = locator_data.get('name')
-                locator_m = locator_data.get('m')
-                locator_bone_idx = locator_data.get('boneIdx')
-                locator = bpy.data.objects.new( locator_name, None )
-                collection.objects.link(locator)
+        for locator_data in data['locatorsTrees'][locators_tree]:
+            locator_name = locator_data.get('name')
+            locator_m = locator_data.get('m')
+            locator_bone_idx = locator_data.get('boneIdx')
+            locator = bpy.data.objects.new( locator_name, None )
+            collection.objects.link(locator)
+            locator.parent = group_locator
+            locator.matrix_basis = locator_m
+            locator.matrix_basis = correction_matrix.to_4x4() @ locator.matrix_basis
+            locator.empty_display_size = 0.5
+            if has_animation and locator_bone_idx > 0:
+                locator.parent = armature_obj
+                bone = armature_obj.pose.bones["Bone" + str(locator_bone_idx)]
+
+                if convert_potc_to_coas_man:
+                    bone = armature_obj.pose.bones["Bone" + potc_to_coas_man.get(str(locator_bone_idx))]
+
+                locator.parent_bone = bone.name
+                locator.parent_type = 'BONE'
+                locator.matrix_parent_inverse = bone.matrix.inverted()
+            else:
                 locator.parent = group_locator
-                locator.matrix_basis = locator_m
-                locator.matrix_basis = correction_matrix.to_4x4() @ locator.matrix_basis
-                locator.empty_display_size = 0.5
-                if has_animation and locator_bone_idx > 0:
-                    locator.parent = armature_obj
-                    bone = armature_obj.pose.bones["Bone" + str(locator_bone_idx)]
 
-                    if convert_potc_to_coas_man:
-                        bone = armature_obj.pose.bones["Bone" + potc_to_coas_man.get(str(locator_bone_idx))]
-
-                    locator.parent_bone = bone.name
-                    locator.parent_type = 'BONE'
-                    locator.matrix_parent_inverse = bone.matrix.inverted()
-                else:
-                    locator.parent = group_locator
-
-                if xIsMirrored:
-                    locator.location[0] = -locator.location[0]
+            if xIsMirrored:
+                locator.location[0] = -locator.location[0]
 
 
     """ root.rotation_euler[0] = math.radians(90)
