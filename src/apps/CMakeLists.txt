@@ -1,2 +1,15 @@
-add_subdirectory(ENGINE)
-add_subdirectory(config)
+macro(subdirlist out)
+    file(GLOB glob_result RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
+    foreach(path ${glob_result})
+        if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${path})
+            list(APPEND dirs ${path})
+        endif()
+    endforeach()
+    set(${out} ${dirs})
+endmacro()
+
+subdirlist(dirs)
+
+foreach(dir ${dirs})
+    add_subdirectory(${dir})
+endforeach()

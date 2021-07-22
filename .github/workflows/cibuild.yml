@@ -47,5 +47,3 @@ jobs:
       with:
         name: storm-engine.${{ matrix.configuration }}-steam-${{ matrix.enable_steam}}
         path: build\${{ matrix.configuration }}\bin
-    - name: Run tests
-      run: '${{ github.workspace }}/build/${{ matrix.configuration }}/bin/test-all.exe'
