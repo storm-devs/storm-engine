@@ -33,7 +33,7 @@
 
 class SHIP : public SHIP_BASE
 {
-protected:
+  protected:
     // struct section
     struct mast_t
     {
@@ -165,7 +165,7 @@ protected:
         return bVisible;
     };
 
-public:
+  public:
     ~SHIP() override;
     SHIP();
 

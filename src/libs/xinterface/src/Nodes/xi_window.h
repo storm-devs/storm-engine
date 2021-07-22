@@ -4,7 +4,7 @@
 
 class CXI_WINDOW : public CINODE
 {
-public:
+  public:
     CXI_WINDOW();
     ~CXI_WINDOW() override;
 
@@ -34,27 +34,21 @@ public:
         return -1;
     };
 
-    void Draw(bool bSelected, uint32_t Delta_Time) override
-    {
-    };
+    void Draw(bool bSelected, uint32_t Delta_Time) override{};
 
-    void ReleaseAll() override
-    {
-    };
+    void ReleaseAll() override{};
 
     bool IsClick(int buttonID, long xPos, long yPos) override
     {
         return false;
     };
 
-    void MouseThis(float fX, float fY) override
-    {
-    };
+    void MouseThis(float fX, float fY) override{};
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
-protected:
+  protected:
     std::vector<std::string> m_aNodeNameList;
 
     bool m_bShow;

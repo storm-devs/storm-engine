@@ -1,8 +1,7 @@
 #include "SeaGroup.h"
 #include "../../Utils.h"
 
-BI_SeaGroup::BI_SeaGroup(BI_ManagerBase *pManager)
-    : BI_BaseGroup(pManager)
+BI_SeaGroup::BI_SeaGroup(BI_ManagerBase *pManager) : BI_BaseGroup(pManager)
 {
 }
 

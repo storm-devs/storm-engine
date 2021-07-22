@@ -4,7 +4,7 @@
 
 class CXI_FOURIMAGE : public CINODE
 {
-public:
+  public:
     CXI_FOURIMAGE(CXI_FOURIMAGE &&) = delete;
     CXI_FOURIMAGE(const CXI_FOURIMAGE &) = delete;
     CXI_FOURIMAGE();
@@ -32,12 +32,12 @@ public:
 
     void ChangeItem(int nItemNum);
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void FillVertex();
     void Update(bool bSelected, uint32_t DeltaTime);
 
-protected:
+  protected:
     bool m_bUsed[4]; // selected picture
     // images parametes
     char **m_sGroupName;

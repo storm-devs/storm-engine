@@ -39,7 +39,7 @@ class S_DEFTAB
     // bool bKeepName;
     DTHASHLINE HashLine[DTHASHT_SIZE];
 
-public:
+  public:
     S_DEFTAB();
     ~S_DEFTAB();
 

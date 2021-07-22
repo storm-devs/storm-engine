@@ -38,7 +38,7 @@ struct tButterflyVertex
 //--------------------------------------------------------------------
 class TButterfly
 {
-public:
+  public:
     TButterfly();
     virtual ~TButterfly();
 
@@ -71,7 +71,7 @@ public:
     void Draw(IVBufferManager *_ivManager);
     void Draw(VDX9RENDER *_renderer, MODEL *_model);
 
-private:
+  private:
     CVECTOR centerPosition, centerVelocity, oldPos;
     CVECTOR displaceVector;
     long timeToNextDisplace;

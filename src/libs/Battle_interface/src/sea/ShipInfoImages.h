@@ -10,7 +10,7 @@ struct SII_VERTEX
 
 class ShipInfoImages
 {
-public:
+  public:
     ShipInfoImages(VDX9RENDER *rs, ATTRIBUTES *pAttr);
     ~ShipInfoImages();
 
@@ -21,7 +21,7 @@ public:
         m_bVisible = bVisible;
     }
 
-protected:
+  protected:
     void Release();
     void Init(ATTRIBUTES *pAttr);
     void CheckAndRecreateBuffers(long nShipQ);
@@ -38,7 +38,7 @@ protected:
     void WriteSquareVertex(SII_VERTEX *pV, const CVECTOR &center, const CVECTOR &offset, const FPOINT &size,
                            const FRECT &uv, float fProgress) const;
 
-protected:
+  protected:
     VDX9RENDER *pRS;
     bool m_bVisible;
 

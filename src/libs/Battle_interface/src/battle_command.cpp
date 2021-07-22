@@ -1,9 +1,9 @@
 #include "battle_command.h"
-#include "shared/battle_interface/msg_control.h"
 #include "Utils.h"
 #include "core.h"
 #include "image/imgrender.h"
 #include "sea/ships_list.h"
+#include "shared/battle_interface/msg_control.h"
 
 BICommandList::BICommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs)
 {

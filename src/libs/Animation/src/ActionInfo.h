@@ -40,7 +40,7 @@ class ActionInfo final
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     ActionInfo(const char *aname, long startframe, long endframe);
     // Set playback speed ratio
     void SetRate(float rate);
@@ -54,7 +54,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Working with action
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     // Compare with current name
     bool operator==(const char *actionName) const;
     // Get action name
@@ -74,7 +74,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     char name[64]; // Action name
 
     long startFrame; // Starting position in the whole animation

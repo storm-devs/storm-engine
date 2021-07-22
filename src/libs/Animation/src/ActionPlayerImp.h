@@ -22,7 +22,7 @@ class ActionPlayerImp : public ActionPlayer
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     ActionPlayerImp();
     virtual ~ActionPlayerImp();
 
@@ -32,7 +32,7 @@ public:
     //--------------------------------------------------------------------------------------------
     // ActionPlayer
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     // Set current action
     bool SetAction(const char *actionName) override;
     const char *GetAction() const override;
@@ -67,7 +67,7 @@ public:
     //--------------------------------------------------------------------------------------------
     // ActionPlayerImp
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     // Take a step in time
     void Execute(long dltTime);
     // Set position to the very beginning
@@ -80,14 +80,14 @@ public:
     // Copy the state of another player
     void CopyState(ActionPlayerImp &from);
 
-public:
+  public:
     // Current blending ratio
     float kBlendCurrent;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // Position movement
     void MoveNormal(float dlt);
     void MoveReverse(float dlt);
@@ -100,7 +100,7 @@ private:
     // System stop
     void SysStop();
 
-private:
+  private:
     // Animation for this action
     AnimationImp *ani;
     // Index of this player

@@ -6,7 +6,7 @@ class INIFILE;
 
 class CXI_KEYCHANGER : public CINODE
 {
-public:
+  public:
     CXI_KEYCHANGER();
     ~CXI_KEYCHANGER() override;
 
@@ -37,10 +37,10 @@ public:
     {
     }
 
-protected:
+  protected:
     void SetChoosingControls(ATTRIBUTES *pA);
 
-protected:
+  protected:
     long *m_pControlsID;
     bool *m_pbControlsStick;
     long m_keysQuantity;

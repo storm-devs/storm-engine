@@ -14,10 +14,10 @@ class CXI_WINDOW;
 
 class XINTERFACE : public XINTERFACE_BASE
 {
-public:
+  public:
     static XINTERFACE *pThis;
 
-protected:
+  protected:
     storm::QuestFileReader *pQuestService;
     VXSERVICE *pPictureService;
     VSTRSERVICE *pStringService;
@@ -70,7 +70,7 @@ protected:
     // save render state parameters
     uint32_t m_dwStoreFlag_Fog;
 
-public:
+  public:
     XINTERFACE(XINTERFACE &&) = delete;
     XINTERFACE(const XINTERFACE &) = delete;
     XINTERFACE();
@@ -212,7 +212,7 @@ public:
         return dwScreenHeight;
     }
 
-protected:
+  protected:
     // WORLD,VIEW and PROJECTION matrixes
     CMatrix matw, matv, matp;
 
@@ -280,8 +280,7 @@ protected:
     int m_dwGameTimeMin;
     int m_dwGameTimeHour;
 
-    union KEYSTATE
-    {
+    union KEYSTATE {
         int dwKeyCode;
 
         struct
@@ -407,14 +406,14 @@ class CONTROLS_CONTAINER : public Entity
             char *controlName;
 
             CONTROL_DESCR *next;
-        } *pControls;
+        } * pControls;
 
         CONTEINER_DESCR *next;
 
         CONTROL_DESCR *FindControl(const char *cntrlName);
-    } *pContainers;
+    } * pContainers;
 
-public:
+  public:
     CONTROLS_CONTAINER();
     ~CONTROLS_CONTAINER() override;
     bool Init() override;
@@ -437,7 +436,7 @@ public:
         }
     }
 
-protected:
+  protected:
     bool CreateConteinerList(ATTRIBUTES *pA);
     void AddContainer(const char *container);
     void SetContainerLimitVal(const char *container, float fLimitVal);

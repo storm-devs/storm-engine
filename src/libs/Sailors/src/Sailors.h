@@ -15,8 +15,8 @@ const float CLIMB_SPEED = 0.065f;
 const float JUMP_SPEED_X_MASTFALL = 3.0f;
 const float JUMP_SPEED_Y_EXPLOSION = 30.0f;
 
-#include "shared/SEA_AI/seaPeople.h"
 #include "SailorsWayPoints.h"
+#include "shared/SEA_AI/seaPeople.h"
 
 #define CREW2VISIBLE(n) 5.0f * logf(n) //???
 #define SHIP_BLACK_PEARL 164
@@ -58,7 +58,7 @@ struct ShipState
 
 class ShipMan
 {
-public:
+  public:
     entid_t modelID;
     MODEL *model;
 
@@ -108,7 +108,7 @@ public:
 
 class ShipWalk
 {
-public:
+  public:
     // ShipWalk() shipMan(_FL_) {}
 
     SHIP_BASE *ship;
@@ -139,7 +139,7 @@ public:
 
 class Sailors : public Entity
 {
-public:
+  public:
     VDX9RENDER *rs;
 
     std::vector<ShipWalk> shipWalk;

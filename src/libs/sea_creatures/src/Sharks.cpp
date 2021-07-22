@@ -9,10 +9,10 @@
 //============================================================================================
 
 #include "Sharks.h"
-#include "shared/messages.h"
 #include "Entity.h"
 #include "core.h"
 #include "geometry.h"
+#include "shared/messages.h"
 
 CREATE_CLASS(Sharks)
 
@@ -21,20 +21,20 @@ CREATE_CLASS(Sharks)
 //============================================================================================
 
 #define SHARK_PI 3.14159265f
-#define SHARK_REPULSION 80.0f      // Coefficient of shark repulsion
+#define SHARK_REPULSION 80.0f // Coefficient of shark repulsion
 #define SHARK_REPULSION_DIST 90.0f // Distance of shark repulsion
-#define SHARK_MAX_RSPEED 8.1f      // Maximum speed of movement of the follow point
-#define SHARK_PULL_DIST 100.0f     // Pull distance
-#define SHARK_REPPUL_DIST 10.0f    // Repulsion distance
-#define SHARK_MAX_Y 0.01f          // Upper swimming limit
-#define SHARK_MIN_Y -20.0f         // Lower swimming limit
-#define SHARK_MAX_TURN 0.2f        // Maximum turn speed
-#define SHARK_KROW_TURN 2.0f       // Tilt factor when turning max = turn * SHARK_MAX_TURN
-#define SHARK_IMSPD_ACC 0.1f       // Dive acceleration
-#define SHARK_MAX_IMSPD 1.0f       // Maximum dive speed
-#define SHARK_KAX_IMSPD 0.3f       // Angle versus dive speed
-#define SHARK_MAX_SPEED 8.0f       // Shark top speed
-#define SHARK_MIN_SPEED 5.0f       // Minimum shark speed
+#define SHARK_MAX_RSPEED 8.1f // Maximum speed of movement of the follow point
+#define SHARK_PULL_DIST 100.0f // Pull distance
+#define SHARK_REPPUL_DIST 10.0f // Repulsion distance
+#define SHARK_MAX_Y 0.01f // Upper swimming limit
+#define SHARK_MIN_Y -20.0f // Lower swimming limit
+#define SHARK_MAX_TURN 0.2f // Maximum turn speed
+#define SHARK_KROW_TURN 2.0f // Tilt factor when turning max = turn * SHARK_MAX_TURN
+#define SHARK_IMSPD_ACC 0.1f // Dive acceleration
+#define SHARK_MAX_IMSPD 1.0f // Maximum dive speed
+#define SHARK_KAX_IMSPD 0.3f // Angle versus dive speed
+#define SHARK_MAX_SPEED 8.0f // Shark top speed
+#define SHARK_MIN_SPEED 5.0f // Minimum shark speed
 
 //============================================================================================
 // Shark
@@ -44,8 +44,7 @@ uint16_t Sharks::Shark::indeces[] = {
     0, 1, 2, 0, 2, 3, 1, 4, 2, 2, 4, 5, 2, 5, 6, 2, 6, 3, 4, 7, 8, 4, 8, 5, 5, 8, 6, 6, 8, 9,
 };
 
-Sharks::Shark::Shark()
-    : fforce(), spos(), angs(), vBase(0), model(0)
+Sharks::Shark::Shark() : fforce(), spos(), angs(), vBase(0), model(0)
 {
     pos = 0.0f;
     vel = 0.0f;
@@ -509,8 +508,7 @@ long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SE
 // Construction, destruction
 // ============================================================================================
 
-Sharks::Sharks()
-    : sea(0), island(0), indeces{}, vrt{}
+Sharks::Sharks() : sea(0), island(0), indeces{}, vrt{}
 {
     rs = nullptr;
     camPos = 0.0f;

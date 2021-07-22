@@ -170,7 +170,8 @@ GEOS *WdmObjects::CreateGeometry(const char *path)
     }
     else
     {
-        for (index = entryModels[index]; models[index].next >= 0; index = models[index].next);
+        for (index = entryModels[index]; models[index].next >= 0; index = models[index].next)
+            ;
         models[index].next = i;
     }
     return geo;

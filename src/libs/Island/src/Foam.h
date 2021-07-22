@@ -17,7 +17,7 @@ enum FOAMTYPE
 
 class CoastFoam : public Entity
 {
-public:
+  public:
     CoastFoam();
     ~CoastFoam();
 
@@ -43,7 +43,7 @@ public:
         }
     }
 
-private:
+  private:
     struct FoamVertex
     {
         CVECTOR vPos;

@@ -1,7 +1,6 @@
 #include "vcollide.h"
 
-LCOLL::LCOLL(EntityManager::layer_index_t idx)
-    : boxRadius(0)
+LCOLL::LCOLL(EntityManager::layer_index_t idx) : boxRadius(0)
 {
     layerIndex_ = idx;
     col = static_cast<COLLIDE *>(core.CreateService("coll"));

@@ -490,8 +490,7 @@ void BIImagesInfo::Draw() const
         pImgRender->Render();
 }
 
-BIBorderInfo::BIBorderInfo()
-    : dwColor1(0), dwColor2(0), fCur(0), fSpeed(0)
+BIBorderInfo::BIBorderInfo() : dwColor1(0), dwColor2(0), fCur(0), fSpeed(0)
 {
     pRS = nullptr;
     nVBuf = -1;

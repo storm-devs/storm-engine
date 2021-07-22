@@ -8,7 +8,7 @@
 
 class WEATHER : public WEATHER_BASE
 {
-private:
+  private:
     VDX9RENDER *pRS;
 
     float fFloats[MAX_FLOAT_PARAMS];
@@ -48,7 +48,7 @@ private:
     float GetFloat(uint32_t) override;
     void GetVector(uint32_t, CVECTOR *) override;
 
-public:
+  public:
     WEATHER();
     ~WEATHER() override;
 

@@ -21,8 +21,7 @@ static void SubRightWord(char *buf, int fontNum, int width, VDX9RENDER *rs)
     }
 }
 
-CXI_FORMATEDTEXT::STRING_DESCRIBER::STRING_DESCRIBER(char *ls)
-    : color(0)
+CXI_FORMATEDTEXT::STRING_DESCRIBER::STRING_DESCRIBER(char *ls) : color(0)
 {
     const auto len = strlen(ls) + 1;
     if (len == 1)
@@ -619,8 +618,7 @@ void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
                 char param2[2048];
                 AddFormatedText(pStringService->GetString(param, param2, sizeof(param2)));
             }
-        }
-        while (ini1->ReadStringNext(name1, "string", param, sizeof(param) - 1));
+        } while (ini1->ReadStringNext(name1, "string", param, sizeof(param) - 1));
 
     //
     VAlignment(GetIniLong(ini1, name1, ini2, name2, "valignment", 0));
@@ -864,7 +862,8 @@ void CXI_FORMATEDTEXT::SetColor(uint32_t dwCol) const
 long CXI_FORMATEDTEXT::GetAllHeight()
 {
     long n = 0;
-    for (STRING_DESCRIBER *sd = m_listRoot; sd; sd = sd->next, n++);
+    for (STRING_DESCRIBER *sd = m_listRoot; sd; sd = sd->next, n++)
+        ;
     return m_vertOffset * n;
 }
 
@@ -878,7 +877,8 @@ long CXI_FORMATEDTEXT::AddFormatedText(const char *str)
 
     // find last string
     if (m_listRoot != nullptr)
-        for (dscrTmp = m_listRoot; dscrTmp->next != nullptr; dscrTmp = dscrTmp->next);
+        for (dscrTmp = m_listRoot; dscrTmp->next != nullptr; dscrTmp = dscrTmp->next)
+            ;
 
     char newStr[512];
     auto pstr = (char *)str;
@@ -1156,7 +1156,8 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
             char *tmpStr = pvdat->GetString();
             char buf[512];
             int n;
-            for (n = 0; GetLineNext(m_idFont, tmpStr, buf, sizeof(buf)); n++);
+            for (n = 0; GetLineNext(m_idFont, tmpStr, buf, sizeof(buf)); n++)
+                ;
             return n;
         }
     }
@@ -1303,8 +1304,7 @@ void CXI_FORMATEDTEXT::SetVertexToNewGroup(bool bUpDirect, long upIdx, long down
         if (m_bBackRectangle)
         {
             pv[12].pos.y = pv[14].pos.y =
-                           static_cast<float>(m_rect.top - m_nUpRectOffset - m_rBorderOffset.top + m_vertOffset *
-                                              upIdx);
+                static_cast<float>(m_rect.top - m_nUpRectOffset - m_rBorderOffset.top + m_vertOffset * upIdx);
             pv[13].pos.y = pv[15].pos.y = static_cast<float>(m_rect.top - m_nUpRectOffset + m_rBorderOffset.bottom +
                                                              m_vertOffset * (downIdx + 1));
         }
@@ -1354,7 +1354,8 @@ void CXI_FORMATEDTEXT::CheckScrollButtons()
     {
         m_bUpEnable = m_listCur->prev != nullptr;
         STRING_DESCRIBER *psd = m_listCur;
-        for (int i = 0; i < m_allStrings && psd != nullptr; i++, psd = psd->next);
+        for (int i = 0; i < m_allStrings && psd != nullptr; i++, psd = psd->next)
+            ;
         m_bDownEnable = psd != nullptr;
     }
 
@@ -1456,7 +1457,7 @@ void CXI_FORMATEDTEXT::ControlSyncronouseNodes()
     for (long n = 0; n < static_cast<long>(m_asSyncNodes.size()); n++)
     {
         CINODE *pNode = static_cast<XINTERFACE *>(EntityManager::GetEntityPointer(g_idInterface))
-            ->FindNode(m_asSyncNodes[n].c_str(), nullptr);
+                            ->FindNode(m_asSyncNodes[n].c_str(), nullptr);
         if (!pNode)
             continue;
         switch (pNode->m_nNodeType)

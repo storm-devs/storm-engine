@@ -5,7 +5,7 @@
 // picture
 class CXI_TEXTBUTTON : public CINODE
 {
-public:
+  public:
     CXI_TEXTBUTTON(CXI_TEXTBUTTON &&) = delete;
     CXI_TEXTBUTTON(const CXI_TEXTBUTTON &) = delete;
     CXI_TEXTBUTTON();
@@ -34,11 +34,11 @@ public:
     void SetUsing(bool bUsing) override;
     void MakeLClickPreaction() override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void FillPositionIntoVertices();
 
-protected:
+  protected:
     char *m_sGroupName;
     long m_idTex;            // texture identity
     long m_idShadowTex;      // shadow texture

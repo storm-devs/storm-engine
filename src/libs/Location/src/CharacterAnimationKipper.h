@@ -21,7 +21,7 @@ class CharacterAnimationKipper : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     CharacterAnimationKipper();
     virtual ~CharacterAnimationKipper();
 
@@ -36,7 +36,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     VDX9RENDER *rs;
 
     AnimationService *asr;

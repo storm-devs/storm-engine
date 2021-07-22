@@ -10,10 +10,10 @@
 
 #include "geometry.h"
 
-#include "shared/messages.h"
 #include "ModelArray.h"
 #include "core.h"
 #include "entity.h"
+#include "shared/messages.h"
 
 // ============================================================================================
 // Construction, destruction

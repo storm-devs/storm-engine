@@ -9,9 +9,9 @@
 //============================================================================================
 
 #include "NPCharacter.h"
-#include "shared/messages.h"
 #include "CharactersGroups.h"
 #include "defines.h"
+#include "shared/messages.h"
 
 //============================================================================================
 
@@ -752,7 +752,8 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
 
         if (!bFired && dst <= NPC_FIGHT_GO_DIST * NPC_FIGHT_GO_DIST)
         {
-            if (fgtCurType == fgt_none && priorityAction.name && shot.name);
+            if (fgtCurType == fgt_none && priorityAction.name && shot.name)
+                ;
             else
                 DoFightAction(dltTime, c);
         }

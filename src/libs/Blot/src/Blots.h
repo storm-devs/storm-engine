@@ -46,7 +46,7 @@ class Blots : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     Blots();
     ~Blots() override;
 
@@ -77,7 +77,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // Register a hit
     void Hit(MESSAGE &message);
     // Add a blot
@@ -89,7 +89,7 @@ private:
     // Load blot parameters
     void LoadBlot(long i);
 
-private:
+  private:
     VDX9RENDER *rs;
     entid_t model;
     long textureID;

@@ -6,7 +6,7 @@ class BI_ManagerBase;
 
 class BI_BaseNode : public BI_ManagerNodeBase
 {
-public:
+  public:
     BI_BaseNode(BI_ManagerBase *pManager);
     ~BI_BaseNode() override;
 
@@ -42,7 +42,7 @@ public:
         return m_pRS;
     }
 
-protected:
+  protected:
     BI_ManagerBase *m_pManager;
     VDX9RENDER *m_pRS;
 };

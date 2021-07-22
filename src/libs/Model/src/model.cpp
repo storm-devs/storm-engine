@@ -1,8 +1,8 @@
-#include "shared/messages.h"
 #include "core.h"
 #include "defines.h"
 #include "entity.h"
 #include "modelr.h"
+#include "shared/messages.h"
 
 CREATE_CLASS(MODELR)
 

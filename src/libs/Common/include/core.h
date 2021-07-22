@@ -26,7 +26,7 @@ struct ScreenSize
 
 class CORE
 {
-public:
+  public:
     CONTROLS *Controls;
 
     std::shared_ptr<spdlog::logger> tracelog;
@@ -160,7 +160,7 @@ public:
 
     [[nodiscard]] ScreenSize GetScreenSize() const noexcept;
 
-private:
+  private:
     void loadCompatibilitySettings(INIFILE &inifile);
 
     storm::ENGINE_VERSION targetVersion_ = storm::ENGINE_VERSION::LATEST;

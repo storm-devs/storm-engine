@@ -7,7 +7,7 @@
 
 class COMMON_CAMERA : public Entity
 {
-private:
+  private:
     bool bActive;
     bool bOn;
 
@@ -16,10 +16,10 @@ private:
     entid_t eidObject;
     VAI_OBJBASE *pAIObj;
 
-protected:
+  protected:
     ATTRIBUTES *pACharacter;
 
-public:
+  public:
     bool FindShip()
     {
         Assert(pACharacter);
@@ -108,7 +108,5 @@ public:
         fPerspective = 1.285f;
     };
 
-    ~COMMON_CAMERA() override
-    {
-    };
+    ~COMMON_CAMERA() override{};
 };

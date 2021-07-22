@@ -7,7 +7,7 @@ class NODE;
 
 class EnemyStatShower : public Entity
 {
-public:
+  public:
     EnemyStatShower();
     ~EnemyStatShower() override;
 
@@ -31,14 +31,14 @@ public:
         }
     }
 
-protected:
+  protected:
     bool ReadAndCreate();
     void SetBeginData();
     void Release();
 
     entid_t GetModelEIDFromCharacterEID(entid_t chrEID);
 
-protected: // data
+  protected: // data
     bool m_bVisible;
     entid_t m_eidChrEID;
     MODEL *m_pModel;

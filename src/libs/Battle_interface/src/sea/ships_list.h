@@ -5,7 +5,7 @@
 
 class SHIP_DESCRIBE_LIST
 {
-public:
+  public:
     struct SHIP_DESCR
     {
         bool isMyShip;
@@ -25,7 +25,7 @@ public:
         SHIP_DESCR *next;
     };
 
-public:
+  public:
     SHIP_DESCRIBE_LIST();
     ~SHIP_DESCRIBE_LIST();
 
@@ -54,7 +54,7 @@ public:
 
     void Refresh();
 
-protected:
+  protected:
     SHIP_DESCR *root;
     SHIP_DESCR *mainCharacter;
     ATTRIBUTES *pMainShipAttr;

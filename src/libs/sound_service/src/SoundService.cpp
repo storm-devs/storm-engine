@@ -403,7 +403,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
             _maxDistance = 0.0f;
 
         CHECKFMODERR(PlayingSounds[SoundIdx].channel->set3DMinMaxDistance(_minDistance * DISTANCEFACTOR,
-            _maxDistance * DISTANCEFACTOR));
+                                                                          _maxDistance * DISTANCEFACTOR));
 
         FMOD_VECTOR vVelocity = {0.0f, 0.0f, 0.0f};
         FMOD_VECTOR vPosition;

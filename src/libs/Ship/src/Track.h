@@ -7,7 +7,7 @@
 
 class ShipTracks : public Entity
 {
-public:
+  public:
     ShipTracks() = default;
     ~ShipTracks() override;
 
@@ -39,10 +39,10 @@ public:
 
     uint32_t AttributeChanged(ATTRIBUTES *pA) override;
 
-private:
+  private:
     class ShipTrack
     {
-    public:
+      public:
         static VDX9RENDER *pRS;
         static SEA_BASE *pSea;
         static long iVTmpBuffer1, iVTmpBuffer2;
@@ -61,7 +61,7 @@ private:
         void Execute(float fDeltaTime);
         void Realize(float fDeltaTime);
 
-    private:
+      private:
         struct Track
         {
             CVECTOR vPos;

@@ -9,13 +9,13 @@
 //============================================================================================
 
 #include "LocLife.h"
-#include "shared/messages.h"
 #include "Character.h"
 #include "Entity.h"
 #include "Location.h"
 #include "core.h"
 #include "geometry.h"
 #include "model.h"
+#include "shared/messages.h"
 
 //============================================================================================
 

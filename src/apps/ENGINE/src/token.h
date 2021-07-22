@@ -171,7 +171,7 @@ class TOKEN
     char *ProgramBase;
     uint32_t dwKeywordsNum;
 
-public:
+  public:
     TOKEN();
     ~TOKEN();
     void Release();

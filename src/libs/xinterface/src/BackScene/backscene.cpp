@@ -1,9 +1,9 @@
 #include "backscene.h"
-#include "shared/messages.h"
 #include "../xinterface.h"
 #include "geometry.h"
 #include "math3d/Matrix.h"
 #include "model.h"
+#include "shared/messages.h"
 
 InterfaceBackScene::LightParam::~LightParam()
 {

@@ -22,7 +22,7 @@ class AIFlowGraph
         AIFLOWGRAPH_UNKNOWN = 0x7FFFFFFF
     };
 
-public:
+  public:
     struct edge_t
     {
         uint32_t dw1, dw2; // first and second point index
@@ -80,7 +80,7 @@ public:
 
     class VectorPath
     {
-    public:
+      public:
         std::vector<CVECTOR> aPoints;
 
         VectorPath()
@@ -99,7 +99,7 @@ public:
 
     class Path
     {
-    private:
+      private:
         struct point_t
         {
             uint32_t dwPnt;
@@ -108,7 +108,7 @@ public:
 
         float fDistance;
 
-    public:
+      public:
         std::vector<point_t> aPoints;
 
         float GetPathDistance()
@@ -167,12 +167,12 @@ public:
         }
     };
 
-private:
+  private:
     std::vector<Path *> aPaths;
 
     bool FindPath(Path *pPath, uint32_t dwP1, uint32_t dwP2);
 
-protected:
+  protected:
     uint32_t dwIteration;
 
     std::vector<edge_t> aEdges;
@@ -188,7 +188,7 @@ protected:
 
     table_t *pTable;
 
-public:
+  public:
     AIFlowGraph() //: aPaths(_FL_, 64), aEdges(_FL_), aPoints(_FL_)//, aNearestPoints(200)
     {
         pTable = nullptr;
@@ -237,7 +237,7 @@ public:
 
     void BuildTable();
 
-private:
+  private:
 };
 
 inline void AIFlowGraph::ReleaseAll()
@@ -311,7 +311,8 @@ inline bool AIFlowGraph::Load(INIFILE &pIni)
         for (uint32_t j = 0; j < dwNum; j++)
         {
             uint32_t dw1, dw2;
-            sscanf(buf, "%d,%d,%n", &dw1, &dw2, &offset);;
+            sscanf(buf, "%d,%d,%n", &dw1, &dw2, &offset);
+            ;
             buf += offset;
             aPoints[i].aEdges.push_back(AddEdge(dw1, dw2));
         }

@@ -8,7 +8,7 @@
 
 class AISeaGoods : public Entity
 {
-private:
+  private:
     struct item_t
     {
         char sGoodName[48];
@@ -23,9 +23,7 @@ private:
         std::vector<item_t> aItems;
         GEOS *pGeo;
 
-        goods_t()
-        {
-        };
+        goods_t(){};
     };
 
     std::vector<goods_t *> aGoods;
@@ -39,7 +37,7 @@ private:
     bool bDeleteGoodAnyway;
     float fDistanceMultiply;
 
-public:
+  public:
     AISeaGoods();
     ~AISeaGoods() override;
 

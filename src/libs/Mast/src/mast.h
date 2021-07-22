@@ -30,7 +30,7 @@ class MAST : public Entity
     std::filesystem::file_time_type ft_old;
     NODE *m_pMastNode;
 
-public:
+  public:
     MAST();
     ~MAST() override;
     void SetDevice();
@@ -60,7 +60,7 @@ public:
     bool LoadState(ENTITY_STATE *state);
     uint64_t ProcessMessage(MESSAGE &message) override;
 
-protected:
+  protected:
     void AllRelease();
     void Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer);
     void LoadIni();
@@ -99,7 +99,7 @@ class HULL : public Entity
     entid_t model_id, oldmodel_id;
     entid_t ship_id;
 
-public:
+  public:
     HULL();
     ~HULL() override;
     void SetDevice();
@@ -124,7 +124,7 @@ public:
         }
     }
 
-protected:
+  protected:
     void AllRelease();
     void Mount(entid_t modelEI, entid_t shipEI, NODE *hullNodePointer);
 };

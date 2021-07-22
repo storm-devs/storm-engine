@@ -8,8 +8,7 @@
 CREATE_CLASS(WaterRings)
 
 //------------------------------------------------------------------------------------
-WaterRings::WaterRings()
-    : ivManager(nullptr)
+WaterRings::WaterRings() : ivManager(nullptr)
 {
 }
 

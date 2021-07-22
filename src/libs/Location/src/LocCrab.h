@@ -8,11 +8,11 @@
 
 class LocCrab : public LocLife
 {
-public:
+  public:
     LocCrab();
     ~LocCrab() override;
 
-private:
+  private:
     const char *GetModelName() override;
     const char *GetAniName() override;
     bool PostInit(Animation *ani) override;
@@ -26,7 +26,7 @@ private:
 
     void StartNewAction(Animation *ani);
 
-private:
+  private:
     float nextActionTime;
     float timeout;
     float moveTime;

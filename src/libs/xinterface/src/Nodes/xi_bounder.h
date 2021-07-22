@@ -4,7 +4,7 @@
 
 class CXI_BOUNDER : public CINODE
 {
-public:
+  public:
     CXI_BOUNDER();
     ~CXI_BOUNDER() override;
 
@@ -22,10 +22,10 @@ public:
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
-protected:
+  protected:
     // texture parameters
     char *m_sGroupName;
     long m_idTex;

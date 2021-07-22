@@ -23,12 +23,12 @@ enum BIImageType
 
 class IBIImage
 {
-protected:
+  protected:
     IBIImage()
     {
     }
 
-public:
+  public:
     virtual ~IBIImage()
     {
     }
@@ -44,12 +44,12 @@ public:
 
 class IBIString
 {
-protected:
+  protected:
     IBIString()
     {
     }
 
-public:
+  public:
     virtual ~IBIString()
     {
     }

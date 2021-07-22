@@ -7,7 +7,7 @@ class ActivePerkShower : public Entity
 {
     VDX9RENDER *rs;
 
-public:
+  public:
     ActivePerkShower();
     ~ActivePerkShower() override;
     bool Init() override;
@@ -32,7 +32,7 @@ public:
         }
     }
 
-protected:
+  protected:
     void ReleaseAll();
 
     long m_idVBuf;
@@ -51,7 +51,7 @@ protected:
         long m_nPicsQ;
         long m_nVertStart;
         long m_nIndxStart;
-    } *m_pTexDescr;
+    } * m_pTexDescr;
 
     bool CreateTextures(ATTRIBUTES *pATextureRoot);
     FRECT GetTextureRect(int textIdx, int picIdx) const;
@@ -73,7 +73,7 @@ protected:
     {
         long m_nPicNum;
         long m_nPicTexIdx;
-    } *m_pIconsList;
+    } * m_pIconsList;
 
     bool InitIconsList(ATTRIBUTES *pAIconsRoot);
     void AddIconToList(ATTRIBUTES *pAIconDescr);

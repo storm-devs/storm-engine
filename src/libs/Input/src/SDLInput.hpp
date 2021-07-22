@@ -8,7 +8,7 @@ namespace storm
 {
 class SDLInput : public Input
 {
-public:
+  public:
     SDLInput();
     ~SDLInput() override;
 
@@ -21,7 +21,7 @@ public:
     bool ControllerButtonState(const ControllerButton &button) const override;
     int ControllerAxisValue(const ControllerAxis &axis) const override;
 
-private:
+  private:
     static int SDLEventHandler(void *userdata, SDL_Event *evt);
     void ProcessEvent(const SDL_Event &event);
     void OpenController();

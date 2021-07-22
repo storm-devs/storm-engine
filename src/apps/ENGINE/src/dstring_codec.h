@@ -36,11 +36,10 @@ class DSTRING_CODEC
     uint32_t nHTEIndex;
     char pSymbol[2];
 
-public:
+  public:
     HTDELEMENT HTable[DHASH_TABLE_SIZE];
 
-    DSTRING_CODEC()
-        : nHTIndex(0), nHTEIndex(0)
+    DSTRING_CODEC() : nHTIndex(0), nHTEIndex(0)
     {
         nStringsNum = 0;
         pSymbol[0] = 0;

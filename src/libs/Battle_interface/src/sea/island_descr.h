@@ -17,7 +17,7 @@
 
 class ISLAND_DESCRIBER
 {
-public:
+  public:
     ISLAND_DESCRIBER();
     ~ISLAND_DESCRIBER();
 
@@ -55,7 +55,7 @@ public:
 
     void Refresh() const;
 
-protected:
+  protected:
     LOCATOR_DESCR *FindLocator(LOCATOR_DESCR *p, size_t nMax);
 
     bool m_bYesIsland;

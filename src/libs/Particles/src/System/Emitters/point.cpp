@@ -1,8 +1,7 @@
 #include "point.h"
 
 // Constructor / destructor
-PointEmitter::PointEmitter(ParticleSystem *pSystem)
-    : BaseEmitter(pSystem)
+PointEmitter::PointEmitter(ParticleSystem *pSystem) : BaseEmitter(pSystem)
 {
 }
 

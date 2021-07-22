@@ -1,7 +1,7 @@
 #include "ActivePerkShower.h"
-#include "shared/battle_interface/msg_control.h"
 #include "bi_defines.h"
 #include "core.h"
+#include "shared/battle_interface/msg_control.h"
 #include "vmodule_api.h"
 #include <exception>
 

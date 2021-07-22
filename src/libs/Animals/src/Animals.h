@@ -14,7 +14,7 @@
 ///////////////////////////////////////////////////////////////////
 class ANIMALS : public Entity
 {
-public:
+  public:
     ANIMALS();
     ~ANIMALS() override;
 
@@ -41,7 +41,7 @@ public:
         }
     }
 
-private:
+  private:
     TSeagulls *seagulls;
     // TSharks      *sharks;
     TFishSchools *fishSchools;

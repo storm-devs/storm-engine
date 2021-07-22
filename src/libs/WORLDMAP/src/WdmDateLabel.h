@@ -17,7 +17,7 @@ class WdmDateLabel : public WdmInterfaceObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmDateLabel();
     ~WdmDateLabel() override;
 
@@ -28,7 +28,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     long txTextBar;
     long txSkyClock;
     long txSkyClockFrame;

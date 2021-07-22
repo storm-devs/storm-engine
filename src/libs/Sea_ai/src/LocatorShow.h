@@ -33,7 +33,7 @@ class SeaLocatorShow : public Entity
     void PrintLocator(ATTRIBUTES *pA);
     void ProcessLocators(ATTRIBUTES *pA);
 
-public:
+  public:
     SeaLocatorShow();
     ~SeaLocatorShow() override;
 

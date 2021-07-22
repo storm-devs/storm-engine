@@ -12,8 +12,7 @@ struct STRING_PICE
 {
     long type;
 
-    union
-    {
+    union {
         struct
         {
             long startOffset;
@@ -27,7 +26,7 @@ struct STRING_PICE
 
 class CXI_SCROLLTEXT : public CINODE
 {
-public:
+  public:
     CXI_SCROLLTEXT();
     ~CXI_SCROLLTEXT() override;
 
@@ -47,7 +46,7 @@ public:
 
     void SetText(const char *newText);
 
-protected:
+  protected:
     void ClearText();
     long FillPices(char *pt, size_t beg, size_t size, long &idx, STRING_PICE *spl, long wid);
 
@@ -56,7 +55,7 @@ protected:
     void TextDownShift(float);
     void TextUpShift();
 
-protected:
+  protected:
     CINODE *m_pScroller; // link to the scroller (!!! must be registered beforehand)
     long m_nMaxStringes; // the number of lines in the displayed window
 

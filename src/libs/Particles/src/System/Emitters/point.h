@@ -4,11 +4,11 @@
 
 class PointEmitter : public BaseEmitter
 {
-protected:
+  protected:
     // Get a position for emission of new particles
     Vector GetNewParticlePosition(float DeltaTime) override;
 
-public:
+  public:
     // Constructor / destructor
     PointEmitter(ParticleSystem *pSystem);
     ~PointEmitter() override;

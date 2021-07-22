@@ -4,7 +4,7 @@
 
 class CXI_TITLE : public CINODE
 {
-public:
+  public:
     CXI_TITLE(CXI_TITLE &&) = delete;
     CXI_TITLE(const CXI_TITLE &) = delete;
     CXI_TITLE();
@@ -23,11 +23,11 @@ public:
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void FillVertexBuffer() const;
 
-protected:
+  protected:
     char *m_sGroupName;
     long m_idTex; // texture identity
 

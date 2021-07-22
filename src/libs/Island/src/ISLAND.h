@@ -10,7 +10,7 @@
 
 class MapZipper
 {
-private:
+  private:
     uint32_t dwSizeX;
     uint32_t dwDX;
     uint32_t dwBlockSize, dwBlockShift;
@@ -20,7 +20,7 @@ private:
     uint16_t *pWordTable;
     uint8_t *pRealData;
 
-public:
+  public:
     MapZipper();
     ~MapZipper();
 
@@ -44,7 +44,7 @@ public:
 
 class ISLAND : public ISLAND_BASE
 {
-private:
+  private:
     std::string sIslandName;
     std::vector<entid_t> aSpheres;
     std::vector<entid_t> aForts;
@@ -115,7 +115,7 @@ private:
     void DoZapSuperGeneratorInnerDecodeFiles(const char *sub_dir, const char *mask);
     bool DoZapSuperGeneratorDecodeFile(const char *sname);*/
 
-public:
+  public:
     ISLAND();
     ~ISLAND();
     bool Init();

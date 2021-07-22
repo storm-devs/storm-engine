@@ -8,7 +8,7 @@ class BI_ManagerBase;
 
 class BI_MousePointerBase
 {
-public:
+  public:
     BI_MousePointerBase() = default;
     virtual ~BI_MousePointerBase() = default;
 
@@ -17,7 +17,7 @@ public:
 
 class BI_ManagerNodeBase
 {
-public:
+  public:
     BI_ManagerNodeBase()
     {
     }
@@ -37,7 +37,7 @@ public:
 
 class BI_ManagerBase : public Entity
 {
-public:
+  public:
     BI_ManagerBase()
     {
     }
@@ -67,7 +67,7 @@ public:
                                                  const RECT &pos, long nHAlign, long nVAlign, long prioritet) = 0;
     virtual void DeleteNode(BI_ManagerNodeBase *pNod) = 0;
 
-protected:
+  protected:
     VDX9RENDER *m_pRS;
     BIImageRender *m_pImgRender;
     BI_MousePointerBase *m_pMouse;

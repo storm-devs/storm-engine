@@ -14,13 +14,13 @@ class AIGroup;
 
 class AIFort : public VAI_OBJBASE
 {
-public:
+  public:
     class AI_FORT : public VAI_INNEROBJ
     {
-    private:
+      private:
         class TmpVAI_OBJBASE : public VAI_OBJBASE
         {
-        public:
+          public:
             TmpVAI_OBJBASE()
             {
                 mTmp.SetIdentity();
@@ -44,17 +44,11 @@ public:
                 return pFort->GetModelEID();
             };
 
-            void Save(CSaveLoad *pSL) override
-            {
-            };
+            void Save(CSaveLoad *pSL) override{};
 
-            void Load(CSaveLoad *pSL) override
-            {
-            };
+            void Load(CSaveLoad *pSL) override{};
 
-            void Fire(const CVECTOR &vPos) override
-            {
-            };
+            void Fire(const CVECTOR &vPos) override{};
 
             float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override
             {
@@ -114,7 +108,7 @@ public:
         entid_t eidModel;
         entid_t eidBlot;
 
-    public:
+      public:
         CMatrix mOldMatrix;
         CVECTOR vPos;
         ATTRIBUTES *pFortLabelAP;
@@ -251,13 +245,9 @@ public:
             return {};
         }
 
-        void SetPos(const CVECTOR &vNewPos) override
-        {
-        };
+        void SetPos(const CVECTOR &vNewPos) override{};
 
-        void SetAngleY(float fAngleY) override
-        {
-        };
+        void SetAngleY(float fAngleY) override{};
     };
 
     uint32_t GetNumForts() const
@@ -273,7 +263,7 @@ public:
         return aForts[k];
     }
 
-private:
+  private:
     CMatrix mtxFort;
 
     DTimer dtFiredTimer;
@@ -292,7 +282,7 @@ private:
                  entid_t eidBlot);
     AI_FORT *FindFort(entid_t eidModel);
 
-public:
+  public:
     static AIFort *pAIFort;
 
     AIFort();
@@ -391,9 +381,7 @@ public:
 
     void Fire(const CVECTOR &vPos) override;
 
-    void SetPos(const CVECTOR &vNewPos) override
-    {
-    };
+    void SetPos(const CVECTOR &vNewPos) override{};
 
     CVECTOR GetBoxsize() const override
     {

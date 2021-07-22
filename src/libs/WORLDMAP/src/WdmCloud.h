@@ -49,7 +49,7 @@ class WdmCloud : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmCloud();
     ~WdmCloud() override;
 
@@ -71,7 +71,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-protected:
+  protected:
     virtual void BuildCloud(long n);
     RS_RECT rect[8];
     long texture;
@@ -93,7 +93,7 @@ protected:
     Rain rain[48];
     float rainBurnTime;
 
-private:
+  private:
     void Render(VDX9RENDER *rs);
     void FindPartPos(CVECTOR &v);
     float Rnd();

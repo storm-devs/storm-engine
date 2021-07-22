@@ -59,8 +59,7 @@ using COLORA = struct
 
 using MATRIX = struct
 {
-    union
-    {
+    union {
         float matrix[16];
         float m[4][4];
     };

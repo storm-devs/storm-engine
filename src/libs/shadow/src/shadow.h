@@ -16,7 +16,7 @@ class Shadow : public Entity
     float shading;
     unsigned long blendValue;
 
-public:
+  public:
 #define SHADOW_FVF (D3DFVF_XYZ | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1)
 
     struct SHADOW_VERTEX

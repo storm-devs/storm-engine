@@ -11,9 +11,9 @@ class TMPTELEPORT : public Entity
     {
         int num;
         char *name;
-    } *m_descrArray;
+    } * m_descrArray;
 
-public:
+  public:
     TMPTELEPORT();
     ~TMPTELEPORT() override;
     bool Init() override;
@@ -38,13 +38,13 @@ public:
         }
     }
 
-protected:
+  protected:
     void ReleaseAll();
     void SetShowData(ATTRIBUTES *pA);
     void SortShowData();
     void XChange(TELEPORT_DESCR &d1, TELEPORT_DESCR &d2);
 
-protected:
+  protected:
     long m_leftPos;
     long m_topPos;
     long m_deltaPos;
@@ -59,7 +59,7 @@ protected:
 
 class FINDFILESINTODIRECTORY : public Entity
 {
-public:
+  public:
     FINDFILESINTODIRECTORY()
     {
     }
@@ -77,7 +77,7 @@ public:
 
 class FINDDIALOGNODES : public Entity
 {
-public:
+  public:
     FINDDIALOGNODES()
     {
     }

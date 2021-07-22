@@ -1,8 +1,8 @@
 #include "LogAndAction.h"
-#include "shared/battle_interface/log_msg.h"
 #include "controls.h"
 #include "core.h"
 #include "message.h"
+#include "shared/battle_interface/log_msg.h"
 #include <stdio.h>
 
 static entid_t g_ILogAndActions;
@@ -458,7 +458,7 @@ void ILogAndActions::SetString(const char *str, bool immortal)
         newDescr->offset = static_cast<float>(m_nStringBegin);
         m_sRoot = newDescr;
     }
-        // otherwise add it to the end of the list
+    // otherwise add it to the end of the list
     else
     {
         newDescr->offset = last->offset + m_nStringOffset;

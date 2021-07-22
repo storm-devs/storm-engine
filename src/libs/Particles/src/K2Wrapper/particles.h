@@ -44,10 +44,10 @@ class PARTICLES : public Entity
 
     void DeleteCaptured();
 
-public:
+  public:
     void DeleteResource(PARTICLE_SYSTEM *pResource);
 
-public:
+  public:
     PARTICLES();
     ~PARTICLES() override;
 

@@ -1,6 +1,6 @@
 #include "AIHelper.h"
-#include "shared/events.h"
 #include "AIFort.h"
+#include "shared/events.h"
 
 AIHelper Helper;
 

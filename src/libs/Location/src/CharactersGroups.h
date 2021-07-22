@@ -21,7 +21,7 @@ class Character;
 
 class CharactersGroups : public Entity
 {
-public:
+  public:
     struct String
     {
         String();
@@ -80,7 +80,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     CharactersGroups();
     ~CharactersGroups() override;
 
@@ -112,7 +112,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // Checking the character detects others
     void CharacterVisibleCheck(Character *chr);
     // Check found characters for enemies
@@ -124,7 +124,7 @@ private:
     // Remove inactive or invalid targets
     bool RemoveInvalidTargets(Character *chr, Character *check = nullptr);
 
-private:
+  private:
     // Check target for validity
     bool MsgIsValidateTarget(MESSAGE &message);
     // Find the optimal goal
@@ -175,7 +175,7 @@ private:
     // Remove all empty groups
     void DeleteEmptyGroups();
 
-public:
+  public:
     // Get group from message
     Group *GetGroup(MESSAGE &message, bool isRegistry = true);
     // Find a group by name
@@ -205,7 +205,7 @@ public:
     // Get the state as a string
     const char *GetTextState(RelState state);
 
-private:
+  private:
     std::vector<Group *> groups; // Groups
     long numGroups;              // Number of groups
     long maxGroups;              // Number of groups

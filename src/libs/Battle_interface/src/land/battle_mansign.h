@@ -10,7 +10,7 @@ class BIManCommandList;
 
 class BIManSign
 {
-public:
+  public:
     BIManSign(entid_t BIEntityID, VDX9RENDER *pRS);
     ~BIManSign();
 
@@ -31,7 +31,7 @@ public:
     void MakeControl();
     void ExecuteCommand(long command);
 
-protected:
+  protected:
     void Release();
     long CalculateManQuantity();
     void UpdateBuffers(long nShipQ);

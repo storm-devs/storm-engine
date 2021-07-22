@@ -10,7 +10,7 @@
 //--------------------------------------------------------------------
 class TDynamicObject
 {
-public:
+  public:
     TDynamicObject();
     virtual ~TDynamicObject();
     void Initialize(const CVECTOR &_center, float _radius);
@@ -33,7 +33,7 @@ public:
     }
 
     // void Draw(HDC _dc, DWORD _color);
-private:
+  private:
     CVECTOR pos, velocity;
     // float ang;
 };

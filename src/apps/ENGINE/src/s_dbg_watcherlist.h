@@ -9,7 +9,7 @@ class WATCHER_LIST : public TM_LIST
     HMENU hMenu;
     std::unique_ptr<INIFILE> ini;
 
-public:
+  public:
     WATCHER_LIST(HWND hwnd, HINSTANCE hinst);
     ~WATCHER_LIST();
     void ProcessMessage(uint64_t, uint64_t, uint64_t);

@@ -18,7 +18,7 @@ class Fader : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     Fader();
     ~Fader() override;
 
@@ -51,7 +51,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     VDX9RENDER *rs;
     IDirect3DSurface9 *renderTarget;
     IDirect3DSurface9 *surface;
@@ -74,7 +74,7 @@ private:
     long textureBackID;
     long tipsID;
 
-public:
+  public:
     static long numberOfTips;
     static long currentTips;
 };

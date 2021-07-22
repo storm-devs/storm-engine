@@ -1,10 +1,9 @@
 #include "battle_mancommand.h"
-#include "shared/battle_interface/msg_control.h"
 #include "core.h"
+#include "shared/battle_interface/msg_control.h"
 #include "vmodule_api.h"
 
-BIManCommandList::BIManCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs)
-    : BICommandList(eid, pA, rs)
+BIManCommandList::BIManCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs) : BICommandList(eid, pA, rs)
 {
     Init();
 }

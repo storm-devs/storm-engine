@@ -9,8 +9,7 @@
 CREATE_CLASS(BALLSPLASH)
 
 //--------------------------------------------------------------------
-BALLSPLASH::BALLSPLASH()
-    : renderer(nullptr), sea(nullptr)
+BALLSPLASH::BALLSPLASH() : renderer(nullptr), sea(nullptr)
 {
 }
 
@@ -111,7 +110,8 @@ void BALLSPLASH::Realize(uint32_t _dTime)
     splashes[lastProcessed].PostProcess2();
     splashes[lastProcessed].Realize2(_dTime);
     if (techniqueStarted)
-        while (renderer->TechniqueExecuteNext());
+        while (renderer->TechniqueExecuteNext())
+            ;
 
     RDTSC_E(ticks);
     /*

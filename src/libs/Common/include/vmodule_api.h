@@ -2,8 +2,7 @@
 #include <vector>
 
 /* TODO: REMOVE THIS.... */
-constexpr uint32_t
-MakeHashValue(const char *string)
+constexpr uint32_t MakeHashValue(const char *string)
 {
     uint32_t hval = 0;
 
@@ -29,14 +28,13 @@ inline std::vector<VMA *> __STORM_CLASSES_REGISTRY;
 
 class VMA
 {
-protected:
+  protected:
     VMA *pNext;
     long nHash;
     long nReference;
 
-public:
-    VMA()
-        : pNext(nullptr)
+  public:
+    VMA() : pNext(nullptr)
     {
         nReference = 0;
         nHash = 0;

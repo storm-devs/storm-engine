@@ -5,7 +5,7 @@
 // picture
 class CXI_BUTTON : public CINODE
 {
-public:
+  public:
     CXI_BUTTON(CXI_BUTTON &&) = delete;
     CXI_BUTTON(const CXI_BUTTON &) = delete;
     CXI_BUTTON();
@@ -33,10 +33,10 @@ public:
     void SetUsing(bool bUsing) override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
-protected:
+  protected:
     char *m_sGroupName;
     long m_idTex; // texture identity
     CVideoTexture *m_pTex;

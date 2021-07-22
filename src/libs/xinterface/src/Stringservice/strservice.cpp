@@ -321,8 +321,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         do
         {
             newSize++;
-        }
-        while (ini->ReadStringNext(nullptr, "string", param, sizeof(param) - 1));
+        } while (ini->ReadStringNext(nullptr, "string", param, sizeof(param) - 1));
 
     // check to right of ini files
     if (newSize != m_nStringQuantity && m_nStringQuantity != 0)
@@ -801,8 +800,7 @@ bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char *
                 break;
             nameBeg = nameEnd;
             nameEnd = tmpStr;
-        }
-        while ((tmpStr = strchr(nameEnd + 2, '\n')) < dataBeg);
+        } while ((tmpStr = strchr(nameEnd + 2, '\n')) < dataBeg);
     idx = dataEnd - src + 2;
 
     // get rid of the spaces on the left

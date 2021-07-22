@@ -1,7 +1,7 @@
 #pragma once
 
-#include "VSoundService.h"
 #include "Cvector.h"
+#include "VSoundService.h"
 #include "dx9render.h"
 #include "sea_base.h"
 #include "seps.h"
@@ -18,7 +18,7 @@ struct SINK_VERTEX
 
 class TSinkSplash
 {
-public:
+  public:
     TSinkSplash();
     virtual ~TSinkSplash();
 
@@ -30,7 +30,7 @@ public:
     void Reset(uint16_t *_indexes, SINK_VERTEX *_vertexes);
     void AdditionalRealize(uint32_t dTime);
 
-private:
+  private:
     float HeightF(uint32_t time, float _r, float _k);
 
     SEPS_PS *ps;

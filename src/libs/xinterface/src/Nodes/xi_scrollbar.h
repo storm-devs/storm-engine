@@ -5,7 +5,7 @@
 // picture
 class CXI_SCROLLBAR : public CINODE
 {
-public:
+  public:
     CXI_SCROLLBAR(CXI_SCROLLBAR &&) = delete;
     CXI_SCROLLBAR(const CXI_SCROLLBAR &) = delete;
     CXI_SCROLLBAR();
@@ -27,14 +27,14 @@ public:
     XYRECT GetCursorRect() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdatePosition() const;
 
     void WriteDataToAttribute() const;
     void ChangeValue(bool bGrowing, bool bMultiply);
 
-protected:
+  protected:
     char *m_sGroupName;
     long m_idTex; // texture identity
 

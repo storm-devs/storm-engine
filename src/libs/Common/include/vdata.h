@@ -6,14 +6,10 @@ class DATA;
 
 class VDATA
 {
-public:
-    VDATA()
-    {
-    };
+  public:
+    VDATA(){};
 
-    virtual ~VDATA()
-    {
-    };
+    virtual ~VDATA(){};
 
     virtual DATA *GetReference() = 0;
     virtual void SetReference(DATA *pRef) = 0;

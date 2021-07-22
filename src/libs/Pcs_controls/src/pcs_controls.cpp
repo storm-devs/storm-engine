@@ -36,9 +36,7 @@ PCS_CONTROLS::PCS_CONTROLS()
     }
 
     input_ = Input::Create();
-    inputHandlerID_ = input_->Subscribe([this](const InputEvent &evt) {
-        HandleEvent(evt);
-    });
+    inputHandlerID_ = input_->Subscribe([this](const InputEvent &evt) { HandleEvent(evt); });
 
     // RECT r;
     // GetWindowRect(core.GetAppHWND(),&r);

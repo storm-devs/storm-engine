@@ -2,10 +2,10 @@
 
 #include "core.h"
 
-#include "shared/messages.h"
 #include "Sd2_h/SaveLoad.h"
 #include "controls.h"
 #include "defines.h"
+#include "shared/messages.h"
 
 #define DISCR_F_VAL 0.00001f
 #define EQU_FLOAT(x, y) (x) - (y) > DISCR_F_VAL ? false : (y) - (x) > DISCR_F_VAL ? false : true

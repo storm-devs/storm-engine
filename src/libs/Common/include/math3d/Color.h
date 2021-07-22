@@ -17,13 +17,11 @@
 // Color representation class (float)
 class Color
 {
-public:
-    union
-    {
+  public:
+    union {
         struct
         {
-            union
-            {
+            union {
                 struct
                 {
                     // Red
@@ -34,8 +32,7 @@ public:
                     float b;
                 };
 
-                union
-                {
+                union {
                     struct
                     {
                         // rgb in vector
@@ -50,8 +47,7 @@ public:
                 };
             };
 
-            union
-            {
+            union {
                 // Transparency
                 float a;
                 // Transparency
@@ -69,7 +65,7 @@ public:
     // -----------------------------------------------------------
     // Constructors
     // -----------------------------------------------------------
-public:
+  public:
     // Empty constructor
     Color();
     // Fill with rgb number
@@ -92,7 +88,7 @@ public:
     // -----------------------------------------------------------
     // Operators
     // -----------------------------------------------------------
-public:
+  public:
     // Get rgb intensity
     float operator~() const;
     // Return color with constrained components 0..1
@@ -161,7 +157,7 @@ public:
     // -----------------------------------------------------------
     // Transformation
     // -----------------------------------------------------------
-public:
+  public:
     // Limit to range 0..1
     void Clamp();
     // Limit to range
@@ -184,7 +180,7 @@ public:
     // -----------------------------------------------------------
     // Utilities
     // -----------------------------------------------------------
-public:
+  public:
     // Get intensity
     float GetIntensity() const;
     // Normalize rgb
@@ -223,9 +219,8 @@ public:
 // Integer color representation
 class DColor
 {
-public:
-    union
-    {
+  public:
+    union {
         struct
         {
             // Blue
@@ -238,8 +233,7 @@ public:
             unsigned char a;
         };
 
-        union
-        {
+        union {
             // Packed color
             uint32_t c;
             // Packed color
@@ -250,7 +244,7 @@ public:
     // -----------------------------------------------------------
     // Operators
     // -----------------------------------------------------------
-public:
+  public:
     // Assign
     DColor &operator=(uint32_t color);
     // Assign

@@ -3,11 +3,11 @@
 
 #include "core.h"
 
-#include "shared/messages.h"
-#include "shared/sea_ai/Script_defines.h"
 #include "Character.h"
 #include "Entity.h"
 #include "inlines.h"
+#include "shared/messages.h"
+#include "shared/sea_ai/Script_defines.h"
 
 #define ISLAND_CODE -1
 #define INVALID_SHIP_IDX 0xACACAC
@@ -366,7 +366,7 @@ BOOL TOUCH::IsIntersectShipsReal(long idx, long cidx, CVECTOR *vPos, CVECTOR *vA
     // calculate intersection point
     for (i = 0; i < pS1->iNumVContour; i++)
         if (IsPointInContour(&pS1->vContourTemp[1][i], &pS2->vContourTemp[1][0], pS2->iNumVContour))
-            // FIX ME and pS2->vContourTemp[1][0]!!!
+        // FIX ME and pS2->vContourTemp[1][0]!!!
         {
             auto min_dist = 10000.0f;
             CVECTOR vIP; // intersection point

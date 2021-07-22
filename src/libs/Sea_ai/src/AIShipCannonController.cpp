@@ -87,8 +87,7 @@ bool AIShipCannonController::Fire(const CVECTOR &vFireCamPos, const CVECTOR &vFi
             vFirePos.y = 0.0f;
 
             Fire2Position(dwBort, vFirePos, 0.0f);
-        }
-        while ((dwBort = GetNextFireBort(dwBort, vTempFirePos)) != INVALID_BORT_INDEX);
+        } while ((dwBort = GetNextFireBort(dwBort, vTempFirePos)) != INVALID_BORT_INDEX);
 
     return true;
 }
@@ -100,8 +99,7 @@ bool AIShipCannonController::Fire(const CVECTOR &vFirePos)
         do
         {
             Fire2Position(dwBort, vFirePos, -1.0f);
-        }
-        while ((dwBort = GetNextFireBort(dwBort, vFirePos)) != INVALID_BORT_INDEX);
+        } while ((dwBort = GetNextFireBort(dwBort, vFirePos)) != INVALID_BORT_INDEX);
     return true;
 }
 
@@ -128,8 +126,7 @@ bool AIShipCannonController::Fire(AIShip *pEnemy)
         do
         {
             Fire2Position(dwBort, vFirePos, fFireHeight);
-        }
-        while ((dwBort = GetNextFireBort(dwBort, vFirePos)) != INVALID_BORT_INDEX);
+        } while ((dwBort = GetNextFireBort(dwBort, vFirePos)) != INVALID_BORT_INDEX);
     return true;
 }
 
@@ -221,7 +218,7 @@ void AIShipCannonController::Execute(float fDeltaTime)
             }
 
             if (dwReadyCannonsBefore != dwReadyCannonsAfter && dwReadyCannonsAfter == GetBortIntactCannonsNum(i))
-                // pBort->fChargePercent >= 0.999f)
+            // pBort->fChargePercent >= 0.999f)
             {
                 core.Event(SHIP_BORT_RELOADED, "as", GetAIShip()->GetACharacter(), pBort->sName.c_str());
                 // core.Trace("%s bort is reloaded", pBort->sName.c_str());
@@ -242,7 +239,7 @@ void AIShipCannonController::Execute(float fDeltaTime)
                 pACurBort->SetAttributeUseFloat("DamageRatio",
                                                 1.0f - (static_cast<float>(GetBortIntactCannonsNum(i)) +
                                                         static_cast<float>(GetBortDisabledCannonsNum(i))) /
-                                                static_cast<float>(pBort->aCannons.size()));
+                                                           static_cast<float>(pBort->aCannons.size()));
                 //        pACurBort->SetAttributeUseFloat("DamageRatio",
                 //                                        1.0f - static_cast<float>(GetBortIntactCannonsNum(i)) /
                 //                                        static_cast<float>(pBort
@@ -850,7 +847,7 @@ void AIShipCannonController::CheckCannonsBoom(float fTmpCannonDamage, const CVEC
                 pACurBort->SetAttributeUseFloat("DamageRatio",
                                                 1.0f - (static_cast<float>(GetBortIntactCannonsNum(i)) +
                                                         static_cast<float>(GetBortDisabledCannonsNum(i))) /
-                                                static_cast<float>(pBort->aCannons.size()));
+                                                           static_cast<float>(pBort->aCannons.size()));
                 // pBort->dwNumDamagedCannons++;
                 // pACurBort->SetAttributeUseFloat("DamageRatio",
                 //                                1.0f - static_cast<float>(GetBortIntactCannonsNum(i)) /
@@ -893,7 +890,7 @@ void AIShipCannonController::ResearchCannons()
             {
                 pBort->dwNumDamagedCannons++;
                 pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - static_cast<float>(GetBortIntactCannonsNum(i)) /
-                                                               static_cast<float>(pBort->aCannons.size()));
+                                                                          static_cast<float>(pBort->aCannons.size()));
             }
         }
     }

@@ -13,9 +13,8 @@ class AITask
 {
     bool bActive;
 
-public:
-    AITask()
-        : bActive(false)
+  public:
+    AITask() : bActive(false)
     {
         dwTaskType = AITASK_NONE;
         pATaskCharacter = nullptr;
@@ -56,7 +55,7 @@ public:
 
 class AIShipTaskController
 {
-private:
+  private:
     float fZapasDistance;
 
     AITask Primary, Secondary;
@@ -89,7 +88,7 @@ private:
     void SetDestinationPoint(CVECTOR vDestPnt);
     void FindRunAwayPoint();
 
-public:
+  public:
     bool isAttack(ATTRIBUTES *pAOtherCharacter);
 
     bool Init()

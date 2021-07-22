@@ -279,7 +279,8 @@ uint32_t slNativeExecuteTechnique(VS_STACK *pS)
     {
         auto *rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
         rs->TechniqueExecuteStart(nm);
-        while (rs->TechniqueExecuteNext());
+        while (rs->TechniqueExecuteNext())
+            ;
     }
     return IFUNCRESULT_OK;
 }

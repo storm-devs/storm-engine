@@ -24,7 +24,7 @@ class VSoundService;
 
 #define CHARACTER_ATTACK_DIST 2.4f // Maximum attack distance (m)
 #define CHARACTER_ATTACK_ANG 60.0f // Maximum angle of attack (degrees)
-#define CHARACTER_BLOCK_ANG 50.0f  // Maximum angle of block (degrees)
+#define CHARACTER_BLOCK_ANG 50.0f // Maximum angle of block (degrees)
 #define CHARACTER_MAX_JMP_STEPS 50
 
 class Character : public Entity
@@ -107,7 +107,7 @@ class Character : public Entity
         void Set(MODEL *model, VDX9RENDER *rs) override;
         void Restore(MODEL *model, VDX9RENDER *rs) override;
 
-    public:
+      public:
         RTuner();
         float alpha;
         float chrAlpha;
@@ -121,7 +121,7 @@ class Character : public Entity
 
     class EventListener : public AnimationEventListener
     {
-    public:
+      public:
         Character *character;
         // Accept event
         void Event(Animation *animation, long index, long eventID, AnimationEvent event) override;
@@ -139,7 +139,7 @@ class Character : public Entity
         bool use;
     };
 
-protected:
+  protected:
     enum FightAction
     {
         fgt_none = 0,
@@ -188,7 +188,7 @@ protected:
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     Character();
     virtual ~Character();
 
@@ -222,7 +222,7 @@ public:
     //--------------------------------------------------------------------------------------------
     // Character model
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     // Get a character model
     MODEL *Model() const;
 
@@ -238,23 +238,15 @@ public:
     // Delete loading positions
     void DelSavePosition(bool isTeleport);
     // Save parameters
-    virtual void SetSaveData(ATTRIBUTES *sdata)
-    {
-    };
+    virtual void SetSaveData(ATTRIBUTES *sdata){};
     // Restore parameters
-    virtual void GetSaveData(ATTRIBUTES *sdata)
-    {
-    };
+    virtual void GetSaveData(ATTRIBUTES *sdata){};
     void StopFightAnimation(); // boal
 
-protected:
-    virtual void CharacterTeleport()
-    {
-    };
+  protected:
+    virtual void CharacterTeleport(){};
 
-    virtual void HitChild(bool isInBlock)
-    {
-    };
+    virtual void HitChild(bool isInBlock){};
 
     //--------------------------------------------------------------------------------------------
     // Character animation
@@ -263,7 +255,7 @@ protected:
     //--------------------------------------------------------------------------------------------
     // Character commands
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     // To go
     void StartMove(bool isBack = false);
     // Stay
@@ -353,15 +345,13 @@ public:
     //--------------------------------------------------------------------------------------------
     // Character
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     // Reset state
     virtual void Reset();
     // Move the character to the desired position
     virtual void Move(float dltTime);
     // Carry out additional calculations
-    virtual void Calculate(float dltTime)
-    {
-    };
+    virtual void Calculate(float dltTime){};
     // Update character position
     virtual void Update(float dltTime);
 
@@ -383,7 +373,7 @@ public:
         return false;
     }
 
-protected:
+  protected:
     // Find a character for dialogue
     Character *FindDialogCharacter();
 
@@ -395,7 +385,7 @@ protected:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     bool zLoadModel(MESSAGE &message);
     bool zTeleport(MESSAGE &message, bool isAy);
     bool zTeleportL(MESSAGE &message);
@@ -436,7 +426,7 @@ private:
 
     bool PriorityActionIsJump() const;
 
-protected:
+  protected:
     // Find a character who was hit by a pistol kDist = 1..0
     Character *FindGunTarget(float &kDist, bool bOnlyEnemyTest = false, bool bAbortIfFriend = false);
     // Find characters "eeffffll"
@@ -444,13 +434,13 @@ protected:
     // Check visibility
     bool CharactersVisibleTest(MESSAGE &message);
 
-public:
+  public:
     // Checking the visibility of two characters
     bool VisibleTest(Character *chr);
     // Get postfix
     static const char *GetValueByPrefix(const char *str, const char *pref);
 
-protected:
+  protected:
     //
     VSoundService *soundService;
     // Character sizes
@@ -682,7 +672,7 @@ protected:
 
     long eventId = {};
 
-public:
+  public:
     bool isPlayerEnemy;
     float enemyBarsAlpha;
 
@@ -699,7 +689,7 @@ public:
     long groupID;             // Group index for faster search
     char group[128];          // Current group name
 
-private:
+  private:
     // The location the character is in
     entid_t loc_id;
 };

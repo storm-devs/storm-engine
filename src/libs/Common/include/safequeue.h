@@ -19,9 +19,7 @@ template <class Type> class _safe_queue_item
         next = nullptr;
     };
 
-    ~_safe_queue_item()
-    {
-    };
+    ~_safe_queue_item(){};
 
     void DeleteQueue()
     {
@@ -40,7 +38,7 @@ template <class Type> class SafeQueue
     _safe_queue_item<Type> *first; // head pointer
     _safe_queue_item<Type> *last;  // Tail pointer
 
-public:
+  public:
     bool Push(const Type &item) // Add element at the end of queue
     {
         EnterCriticalSection(&lock);

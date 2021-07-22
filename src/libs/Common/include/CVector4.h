@@ -2,9 +2,8 @@
 
 struct CVECTOR4
 {
-public:
-    union
-    {
+  public:
+    union {
         struct
         {
             float x, y, z, w;
@@ -13,9 +12,7 @@ public:
         float v[4];
     };
 
-    CVECTOR4()
-    {
-    };
+    CVECTOR4(){};
 
     CVECTOR4(float a)
     {

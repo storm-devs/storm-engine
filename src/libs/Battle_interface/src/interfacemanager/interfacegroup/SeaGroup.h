@@ -4,7 +4,7 @@
 
 class BI_SeaGroup : public BI_BaseGroup
 {
-public:
+  public:
     BI_SeaGroup(BI_ManagerBase *pManager);
     ~BI_SeaGroup() override;
 
@@ -19,5 +19,5 @@ public:
         return 0;
     }
 
-protected:
+  protected:
 };

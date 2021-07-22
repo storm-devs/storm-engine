@@ -36,7 +36,7 @@ class DIALOG final : public Entity
 {
     static VDX9RENDER *RenderService;
 
-public:
+  public:
     DIALOG(DIALOG &&) = delete;
     DIALOG(const DIALOG &) = delete;
     DIALOG();
@@ -67,7 +67,7 @@ public:
                                                std::vector<std::string> &asOutTextList,
                                                std::vector<long> *panPageIndices, long nPageSize);
 
-private:
+  private:
     void EmergencyExit();
 
     // Nikita data
@@ -117,8 +117,7 @@ private:
         float fScrollTime;
         std::vector<long> anPageEndIndex;
 
-        DlgTextDescribe()
-            : TextDescribe(), fScrollTime(0)
+        DlgTextDescribe() : TextDescribe(), fScrollTime(0)
         {
         }
 
@@ -153,8 +152,7 @@ private:
         float fCursorCurrentTime, fCursorVisibleTime, fCursorInvisibleTime;
         DIALOG *pDlg;
 
-        DlgLinkDescribe()
-            : TextDescribe()
+        DlgLinkDescribe() : TextDescribe()
         {
             pDlg = nullptr;
         }

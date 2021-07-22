@@ -22,7 +22,7 @@
 
 class SERVICE // : public Entity
 {
-public:
+  public:
     virtual ~SERVICE() = default;
 
     virtual void RunStart()

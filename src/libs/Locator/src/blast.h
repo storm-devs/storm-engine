@@ -31,7 +31,7 @@ class BLAST : public Entity
     CMatrix Center;
     entid_t Splash;
 
-public:
+  public:
     ~BLAST() override;
     BLAST();
     bool Init() override;

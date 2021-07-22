@@ -5,7 +5,7 @@ template <class ClassType> class TCLASS_LIST
     ClassType **pTable;
     uint32_t nClassesNum;
 
-public:
+  public:
     TCLASS_LIST()
     {
         nClassesNum = 0;

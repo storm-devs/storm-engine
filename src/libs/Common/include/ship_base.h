@@ -38,10 +38,10 @@ struct TOUCH_PARAMS
 
 class SHIP_BASE : public VAI_OBJBASE
 {
-protected:
+  protected:
     ATTRIBUTES *pAShip;
 
-public:
+  public:
     SHIP_STATE State;
 
     ~SHIP_BASE() override = default;

@@ -16,12 +16,12 @@ class PathTracks
 #pragma pack(pop)
 
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     PathTracks();
     virtual ~PathTracks();
 
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     // Upload track to PathTracks
     bool Load(const char *fileName);
     // Draw track
@@ -30,7 +30,7 @@ public:
     bool GetPoint(float index, Vector &cp, Quaternion &cq) const;
 
     //--------------------------------------------------------------------------------------------
-private:
+  private:
     Point *point;
     long numPoints;
 };

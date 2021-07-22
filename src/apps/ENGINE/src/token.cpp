@@ -470,8 +470,7 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
                 }
             }
             Program++;
-        }
-        while (sym != 0);
+        } while (sym != 0);
         counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
             counter = INVALID_ARG_DCHARS;
@@ -492,8 +491,7 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
                 return eTokenType;
             }
             Program++;
-        }
-        while (sym != 0);
+        } while (sym != 0);
         counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
             counter = INVALID_ARG_DCHARS;
@@ -608,8 +606,7 @@ S_TOKEN_TYPE TOKEN::FormatGet()
                 }
             }
             Program++;
-        }
-        while (sym != 0);
+        } while (sym != 0);
         counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
             counter = INVALID_ARG_DCHARS;
@@ -632,8 +629,7 @@ S_TOKEN_TYPE TOKEN::FormatGet()
                 return eTokenType;
             }
             Program++;
-        }
-        while (sym != 0);
+        } while (sym != 0);
         counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
             counter = INVALID_ARG_DCHARS;
@@ -899,8 +895,7 @@ long TOKEN::StopArgument(const char *pointer, bool bKeepControlSymbols)
         // if(IsOperator(pointer)) return size;
         pointer++;
         size++;
-    }
-    while (true);
+    } while (true);
 }
 
 // advance program pointer until not found significant argument symbol
@@ -922,8 +917,7 @@ void TOKEN::StartArgument(char *&pointer, bool bKeepControlSymbols)
             pointer++;
         else
             return;
-    }
-    while (true);
+    } while (true);
 }
 
 bool TOKEN::IsNumber(const char *pointer)
@@ -1123,8 +1117,7 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
             Program++;
             if (sym == 0xd || sym == 0xa)
                 break;
-        }
-        while (sym != 0);
+        } while (sym != 0);
         SetNTokenData(pBase, Program - pBase);
         break;
     case CALL:

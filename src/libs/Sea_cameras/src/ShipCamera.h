@@ -15,7 +15,7 @@
 
 class SHIP_CAMERA : public COMMON_CAMERA
 {
-private:
+  private:
     long iLockX, iLockY;
 
     float fMinHeightOnSea, fMaxHeightOnShip;
@@ -32,7 +32,7 @@ private:
 
     // long minHeightOnSea,maxHeightOnSea;
 
-private:
+  private:
     SEA_BASE *pSea;
     ISLAND_BASE *pIsland;
     long lIlsInitCnt;
@@ -68,7 +68,7 @@ private:
     void ShipsCollision(CVECTOR &pos);
     bool IslandCollision(CVECTOR &pos);
 
-public:
+  public:
     SHIP_CAMERA();
     ~SHIP_CAMERA() override;
 

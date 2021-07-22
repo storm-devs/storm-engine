@@ -8,7 +8,7 @@ class SEA_CAMERAS : public Entity
     std::vector<COMMON_CAMERA *> CamerasArray;
     bool bActive;
 
-public:
+  public:
     SEA_CAMERAS();
     ~SEA_CAMERAS() override;
 

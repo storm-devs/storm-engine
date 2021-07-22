@@ -1,7 +1,5 @@
 #include "vmodule_api.h"
 
-#include "xinterface.h"
-#include "aviplayer/aviplayer.h"
 #include "BackScene/backscene.h"
 #include "HelpChooser/HelpChooser.h"
 #include "InfoHandler.h"
@@ -9,6 +7,8 @@
 #include "Stringservice/obj_strservice.h"
 #include "Stringservice/strservice.h"
 #include "TextureSequence/TextureSequence.h"
+#include "aviplayer/aviplayer.h"
+#include "xinterface.h"
 
 CREATE_SERVICE(STRSERVICE)
 

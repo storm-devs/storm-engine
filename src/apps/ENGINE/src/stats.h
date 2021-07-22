@@ -2,13 +2,9 @@
 
 class STATS
 {
-public:
-    STATS()
-    {
-    };
+  public:
+    STATS(){};
 
-    ~STATS()
-    {
-    };
+    ~STATS(){};
     void DumpMemState();
 };

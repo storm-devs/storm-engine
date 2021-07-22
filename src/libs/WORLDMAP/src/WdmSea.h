@@ -53,7 +53,7 @@ class WdmSea : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmSea();
     ~WdmSea() override;
 
@@ -65,13 +65,13 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // Draw
     void Render(VDX9RENDER *rs, const char *tech = nullptr) const;
     // Adjust texture coordinate transformations
     void PresetMain(VDX9RENDER *rs) const;
 
-private:
+  private:
     // Geometry buffers
     long vb, ib;
     // Waves

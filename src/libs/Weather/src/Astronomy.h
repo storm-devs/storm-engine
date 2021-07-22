@@ -5,7 +5,7 @@
 
 class Astronomy : public Entity
 {
-public:
+  public:
     static VDX9RENDER *pRS;
     static VGEOMETRY *pGS;
 
@@ -35,10 +35,10 @@ public:
 
     ATTRIBUTES *GetRoot(ATTRIBUTES *pA);
 
-private:
+  private:
     class PLANETS
     {
-    public:
+      public:
         struct Planet
         {
             GEOS *pGeo;
@@ -72,7 +72,7 @@ private:
 
     class STARS
     {
-    public:
+      public:
         STARS();
         ~STARS();
 
@@ -88,7 +88,7 @@ private:
             return bEnable;
         };
 
-    private:
+      private:
         const char *sCatalog, *sTexture;
         float fRadius, fSize, fHeightFade, fSunFade;
         float fVisualMagnitude, fTelescopeMagnitude;

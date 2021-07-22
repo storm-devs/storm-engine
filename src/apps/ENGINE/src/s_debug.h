@@ -55,7 +55,7 @@ class S_DEBUG
     uint32_t nRecentFilesIndex;
     uint32_t nRFMOffset;
 
-public:
+  public:
     HWND hMain;
     BREAKPOINTS_TABLE Breaks;
     SOURCE_VIEW *SourceView;

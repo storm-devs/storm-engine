@@ -41,7 +41,7 @@ class LocationCamera : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     LocationCamera();
     ~LocationCamera() override;
 
@@ -78,7 +78,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // Prepare data
     bool Set();
     // Change camera mode
@@ -100,7 +100,7 @@ private:
     bool GetCollideTriangle(TRIANGLE &trg) const;
     void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num)) const;
 
-private:
+  private:
     VDX9RENDER *rs;
     // The sea
     entid_t sea;

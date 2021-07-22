@@ -5,8 +5,7 @@
 #include "Entity.h"
 #include "object.h"
 
-SEAFOAM_PS::SEAFOAM_PS()
-    : enableEmit(true)
+SEAFOAM_PS::SEAFOAM_PS() : enableEmit(true)
 {
     TechniqueName = nullptr;
 

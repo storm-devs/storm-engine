@@ -358,8 +358,7 @@ void Shadow::Realize(uint32_t Delta_Time)
         do
         {
             rs->DrawPrimitive(D3DPT_TRIANGLELIST, 0, tot_verts / 3);
-        }
-        while (rs->TechniqueExecuteNext());
+        } while (rs->TechniqueExecuteNext());
     rs->SetViewport(&vp);
 }
 
@@ -500,8 +499,7 @@ void Shadow::Smooth()
                                         D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2, 2, &vrt,
                                         sizeof(SMOOTHVRT));
                 }
-        }
-        while (rs->TechniqueExecuteNext());
+        } while (rs->TechniqueExecuteNext());
 
     rs->EndScene();
 }

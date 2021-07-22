@@ -1,16 +1,15 @@
 #include "TSeagulls.h"
-#include "shared/messages.h"
 #include "Entity.h"
 #include "core.h"
 #include "defines.h"
 #include "model.h"
 #include "rands.h"
+#include "shared/messages.h"
 #include "vfile_service.h"
 //#pragma warning (disable : 4244)
 
 //--------------------------------------------------------------------
-TSeagulls::TSeagulls()
-    : enabled(true), count(0), frightened(false)
+TSeagulls::TSeagulls() : enabled(true), count(0), frightened(false)
 {
 }
 

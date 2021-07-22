@@ -5,7 +5,7 @@
 // video
 class CXI_VIDEORECT : public CINODE
 {
-public:
+  public:
     CXI_VIDEORECT();
     ~CXI_VIDEORECT() override;
     void Draw(bool bSelected, uint32_t Delta_Time) override;
@@ -27,7 +27,7 @@ public:
     void SaveParametersToIni() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void StartVideoPlay(const char *videoFile);
 

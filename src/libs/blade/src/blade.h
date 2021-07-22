@@ -88,7 +88,7 @@ class BLADE : public Entity
     void DelAllTieItem();
     long FindTieItemByIndex(long n);
 
-public:
+  public:
     BLADE();
     ~BLADE() override;
     bool Init() override;

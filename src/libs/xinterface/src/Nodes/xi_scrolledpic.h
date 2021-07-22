@@ -5,7 +5,7 @@
 
 class CXI_SCROLLEDPICTURE : public CXI_PICTURE
 {
-public:
+  public:
     CXI_SCROLLEDPICTURE();
     ~CXI_SCROLLEDPICTURE() override;
     void Draw(bool bSelected, uint32_t Delta_Time) override;
@@ -25,7 +25,7 @@ public:
     void MoveMouseOutScreen(float fX, float fY) override;
     void ChangeUV(FXYRECT &frNewUV) override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void SetNewPicture(bool video, char *sNewTexName);
     void SetNewPictureFromDir(char *dirName);

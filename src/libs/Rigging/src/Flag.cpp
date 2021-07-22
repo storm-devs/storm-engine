@@ -1,9 +1,9 @@
 #include "Flag.h"
-#include "shared/sail_msg.h"
 #include "Entity.h"
 #include "Weather_Base.h"
 #include "core.h"
 #include "defines.h"
+#include "shared/sail_msg.h"
 #include "ship_base.h"
 #include "vfile_service.h"
 

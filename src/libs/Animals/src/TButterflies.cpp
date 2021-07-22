@@ -1,14 +1,13 @@
 #include "TButterflies.h"
 
-#include "shared/messages.h"
 #include "core.h"
+#include "shared/messages.h"
 #include "vfile_service.h"
 
 #pragma warning(disable : 4244)
 
 //--------------------------------------------------------------------
-TButterflies::TButterflies()
-    : enabled(false), yDefineTime(0)
+TButterflies::TButterflies() : enabled(false), yDefineTime(0)
 {
 }
 

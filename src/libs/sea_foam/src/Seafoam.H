@@ -1,8 +1,8 @@
 #pragma once
 
-#include "VSoundService.h"
 #include "SeafoamDefines.h"
 #include "TCarcass.h"
+#include "VSoundService.h"
 #include "dx9render.h"
 #include "geos.h"
 #include "model.h"
@@ -38,7 +38,7 @@ struct tShipFoamInfo
 
 class SEAFOAM : public Entity
 {
-public:
+  public:
     SEAFOAM();
     ~SEAFOAM() override;
 
@@ -65,7 +65,7 @@ public:
         }
     }
 
-private:
+  private:
     void InitializeShipFoam();
     void ReleaseShipFoam();
     void RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, uint32_t dTime);

@@ -72,7 +72,7 @@ enum AnimationEvent
 };
 
 #define ANI_MAX_ACTIONS 8 // Number of ActionPlayers and AnimationTimers for one model
-#define ANI_MAX_EVENTS 8  // Number of events per action
+#define ANI_MAX_EVENTS 8 // Number of events per action
 
 // ============================================================================================
 // The class that plays the action
@@ -85,7 +85,7 @@ enum AnimationEvent
 
 class ActionPlayer
 {
-public:
+  public:
     ~ActionPlayer()
     {
     }
@@ -133,7 +133,7 @@ public:
 
 class AnimationTimer
 {
-public:
+  public:
     virtual ~AnimationTimer()
     {
     }
@@ -168,10 +168,8 @@ public:
 
 class Animation
 {
-public:
-    virtual ~Animation()
-    {
-    };
+  public:
+    virtual ~Animation(){};
     // Access the action player
     virtual ActionPlayer &Player(long index) = 0;
     // Access the animation timer
@@ -210,10 +208,8 @@ public:
 
 class AnimationEventListener
 {
-public:
-    virtual ~AnimationEventListener()
-    {
-    };
+  public:
+    virtual ~AnimationEventListener(){};
     // Accept event
     virtual void Event(Animation *animation, long index, long eventID, AnimationEvent event)
     {
@@ -231,7 +227,7 @@ public:
 
 class AnimationService : public SERVICE
 {
-public:
+  public:
     ~AnimationService() override
     {
     }

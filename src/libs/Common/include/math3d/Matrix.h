@@ -31,9 +31,8 @@ Linear representation         2D array
 
 class Matrix
 {
-public:
-    union
-    {
+  public:
+    union {
         // Linear array
         alignas(16) float matrix[16]; // espkk # remove inline asm # 30/Dec/2017
         // Two-dimensional array
@@ -63,7 +62,7 @@ public:
     // -----------------------------------------------------------
     // Constructors
     // -----------------------------------------------------------
-public:
+  public:
     // Construct the identity matrix
     Matrix();
     // Construct matrix without filling
@@ -84,7 +83,7 @@ public:
     // -----------------------------------------------------------
     // Operators
     // -----------------------------------------------------------
-public:
+  public:
     // Assign another matrix to a matrix
     Matrix &operator=(const Matrix &mtx);
     // Assign a number to matrix values
@@ -100,7 +99,7 @@ public:
     // -----------------------------------------------------------
     // Matrix filling
     // -----------------------------------------------------------
-public:
+  public:
     // Set identity matrix
     Matrix &SetIdentity();
 
@@ -156,7 +155,7 @@ public:
     // -----------------------------------------------------------
     // Matrix transformation
     // -----------------------------------------------------------
-public:
+  public:
     // Rotate X
     Matrix &RotateX(float ang);
     // Rotate around Y
@@ -200,7 +199,7 @@ public:
     // -----------------------------------------------------------
     // Utilities
     // -----------------------------------------------------------
-public:
+  public:
     // Count rotation only
     Matrix &SetRotate(const Matrix &mtr);
     // Multiply matrices and place the result into the current one

@@ -8,7 +8,7 @@ class BIManSign;
 class BATTLE_LAND_INTERFACE : public Entity
 {
     // metods
-public:
+  public:
     BATTLE_LAND_INTERFACE();
     ~BATTLE_LAND_INTERFACE() override;
     bool Init() override;
@@ -33,7 +33,7 @@ public:
         }
     }
 
-protected:
+  protected:
     void SetShowParameters();
     void SetParameters();
     void UpdateCommandos() const;
@@ -45,7 +45,7 @@ protected:
     void SetTextData();
 
     // data
-protected:
+  protected:
     VDX9RENDER *m_pRS;
     bool m_bShowCommandos;
 

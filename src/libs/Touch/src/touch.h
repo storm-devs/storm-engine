@@ -29,7 +29,7 @@ struct TOUCH_SHIP
 
 class TOUCH : public Entity
 {
-protected:
+  protected:
     VDX9RENDER *pRS;
     ISLAND_BASE *pIslandBase;
 
@@ -66,7 +66,7 @@ protected:
 
     void SetDevices();
 
-public:
+  public:
     ~TOUCH() override;
     TOUCH();
     void LoadServices();

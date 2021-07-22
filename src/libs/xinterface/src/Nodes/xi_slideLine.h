@@ -5,7 +5,7 @@
 // video
 class CXI_SLIDELINE : public CINODE
 {
-public:
+  public:
     CXI_SLIDELINE();
     ~CXI_SLIDELINE() override;
     void Draw(bool bSelected, uint32_t Delta_Time) override;
@@ -19,7 +19,7 @@ public:
     void SaveParametersToIni() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void SetNewValue(long newValue);
     void DoMouseControl();

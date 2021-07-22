@@ -2,10 +2,10 @@
 
 #include "core.h"
 
-#include "shared/messages.h"
 #include "defines.h"
 #include "entity.h"
 #include "rands.h"
+#include "shared/messages.h"
 
 CREATE_CLASS(SEA_OPERATOR)
 

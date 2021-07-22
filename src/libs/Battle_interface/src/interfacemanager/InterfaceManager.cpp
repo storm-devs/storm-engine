@@ -5,8 +5,8 @@
 
 #include "interfacegroup/SeaGroup.h"
 
-#include "shared/bimanager/messages.h"
 #include "core.h"
+#include "shared/bimanager/messages.h"
 #include "vmodule_api.h"
 
 BI_InterfaceManager::BI_InterfaceManager()

@@ -7,7 +7,7 @@ class AIShip;
 
 class AIShipTouchController
 {
-private:
+  private:
     struct ray_t
     {
         float fMinDist;
@@ -22,7 +22,7 @@ private:
     float fSpeedFactor, fRotateFactor;
     CVECTOR vBox[5];
 
-public:
+  public:
     virtual void TestCollision(AIShip *pOtherShip);
 
     // init/execute/realize section

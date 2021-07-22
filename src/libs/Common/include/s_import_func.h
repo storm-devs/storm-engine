@@ -13,12 +13,11 @@ enum FuncResult : uint32_t
 #include <cstdint>
 
 class VS_STACK;
-using SIMPORTFUNC = uint32_t(*)(VS_STACK *);
+using SIMPORTFUNC = uint32_t (*)(VS_STACK *);
 
 struct IFUNCINFO
 {
-    IFUNCINFO()
-        : nArguments(0)
+    IFUNCINFO() : nArguments(0)
     {
         pFuncName = nullptr;
         pReturnValueName = nullptr;

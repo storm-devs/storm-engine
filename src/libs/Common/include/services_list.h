@@ -18,7 +18,7 @@ class SERVICES_LIST
     uint32_t Objects;
     uint32_t Search_module_code;
 
-public:
+  public:
     SERVICES_LIST();
     ~SERVICES_LIST();
 

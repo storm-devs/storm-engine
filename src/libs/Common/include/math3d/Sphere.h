@@ -14,13 +14,11 @@
 // Class for representing a sphere in 3D space
 class Sphere
 {
-public:
-    union
-    {
+  public:
+    union {
         struct
         {
-            union
-            {
+            union {
                 struct
                 {
                     // X Position
@@ -31,8 +29,7 @@ public:
                     float z;
                 };
 
-                union
-                {
+                union {
                     struct
                     {
                         // Position
@@ -47,8 +44,7 @@ public:
                 };
             };
 
-            union
-            {
+            union {
                 // Radius
                 float r;
                 // Radius
@@ -66,7 +62,7 @@ public:
     // -----------------------------------------------------------
     // Constructors
     // -----------------------------------------------------------
-public:
+  public:
     // Empty constructor
     Sphere();
     // Copy constructor
@@ -74,7 +70,7 @@ public:
     // -----------------------------------------------------------
     // Utilities
     // -----------------------------------------------------------
-public:
+  public:
     // Point in sphere
     bool Intersection(const Vector &p);
     // Check intersection of line and sphere

@@ -2,12 +2,11 @@
 
 #include "core.h"
 
-#include "shared/battle_interface/msg_control.h"
 #include "island_descr.h"
+#include "shared/battle_interface/msg_control.h"
 #include "ships_list.h"
 
-BIShipCommandList::BIShipCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs)
-    : BICommandList(eid, pA, rs)
+BIShipCommandList::BIShipCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs) : BICommandList(eid, pA, rs)
 {
     Init();
 }
@@ -227,8 +226,7 @@ long BIShipCommandList::FortAdding(bool allLabel, bool bFriend, bool bNeutral, b
             retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1,
                                     pL->pA->GetAttribute("name"), pL->pchr_note);
         }
-    }
-    while ((pL = g_IslandDescr.GetNext()) != nullptr);
+    } while ((pL = g_IslandDescr.GetNext()) != nullptr);
 
     return retVal;
 
@@ -279,8 +277,7 @@ long BIShipCommandList::LandAdding(bool allLabel)
             pLocName = pL->pA->GetAttribute("name");
         retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1, pLocName,
                                 pL->pchr_note);
-    }
-    while ((pL = g_IslandDescr.GetNext()) != nullptr);
+    } while ((pL = g_IslandDescr.GetNext()) != nullptr);
     return retVal;
 }
 
@@ -470,8 +467,7 @@ long BIShipCommandList::TownAdding(bool allLabel, bool bDiseased, bool bNotDisea
             pLocName = pL->pA->GetAttribute("name");
         retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1, pLocName,
                                 pL->pchr_note);
-    }
-    while ((pL = g_IslandDescr.GetNext()) != nullptr);
+    } while ((pL = g_IslandDescr.GetNext()) != nullptr);
     return retVal;
 }
 

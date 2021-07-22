@@ -8,7 +8,7 @@ class IBIImage;
 
 class BITimer : public Entity
 {
-public:
+  public:
     BITimer();
     ~BITimer() override;
 
@@ -32,7 +32,7 @@ public:
         }
     }
 
-protected:
+  protected:
     bool ReadAndCreate();
     void SetBeginData();
     void Release();
@@ -40,7 +40,7 @@ protected:
     void OpenTimer(float fTime, const char *pcEventName);
     void CloseTimer(bool bTimeOut);
 
-protected: // data
+  protected: // data
     float m_fCurTimerCounter;
     float m_fMaxTimerCounter;
     std::string m_sEventName;

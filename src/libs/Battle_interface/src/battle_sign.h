@@ -7,7 +7,7 @@
 
 class BISignIcon
 {
-public:
+  public:
     enum CommandType
     {
         Command_confirm,
@@ -50,7 +50,7 @@ public:
         return static_cast<long>(m_Sign[n].pntPos.x);
     }
 
-protected:
+  protected:
     virtual long CalculateSignQuantity();
     virtual void UpdateChildrens() = 0;
 

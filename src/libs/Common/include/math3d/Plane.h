@@ -13,9 +13,8 @@
 // Class for representing a plane in 3D space
 class Plane
 {
-public:
-    union
-    {
+  public:
+    union {
         struct
         {
             // Normal
@@ -35,8 +34,7 @@ public:
         };
     };
 
-    union
-    {
+    union {
         // Distance from center
         float d;
         // Distance from center
@@ -48,7 +46,7 @@ public:
     // -----------------------------------------------------------
     // Constructors
     // -----------------------------------------------------------
-public:
+  public:
     // Empty constructor
     Plane();
     // Set direction
@@ -63,7 +61,7 @@ public:
     // -----------------------------------------------------------
     // Transformation
     // -----------------------------------------------------------
-public:
+  public:
     // Normalize
     Plane &Normalize();
     // Move plane to specified point
@@ -72,7 +70,7 @@ public:
     // -----------------------------------------------------------
     // Utilities
     // -----------------------------------------------------------
-public:
+  public:
     // Find distance to plane (*)
     float Dist(const Vector &point) const;
     // Check for intersection of line and plane

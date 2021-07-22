@@ -1,11 +1,10 @@
 #include "battle_land.h"
-#include "shared/battle_interface/msg_control.h"
 #include "battle_mansign.h"
 #include "core.h"
 #include "message.h"
+#include "shared/battle_interface/msg_control.h"
 
-BATTLE_LAND_INTERFACE::BATTLE_LAND_INTERFACE()
-    : m_bShowCommandos(false)
+BATTLE_LAND_INTERFACE::BATTLE_LAND_INTERFACE() : m_bShowCommandos(false)
 {
     m_pRS = nullptr;
     m_pManSign = nullptr;

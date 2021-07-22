@@ -1,5 +1,4 @@
 #include "particles.h"
-#include "shared/messages.h"
 #include "core.h"
 #include "defines.h"
 #include "entity.h"
@@ -8,6 +7,7 @@
 #include "particles/iparticlesservice.h"
 #include "particles/iparticlesystem.h"
 #include "psystem.h"
+#include "shared/messages.h"
 
 PARTICLES::PARTICLES()
 {

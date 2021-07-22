@@ -5,7 +5,7 @@
 // picture
 class CXI_GLOWCURSOR : public CINODE
 {
-public:
+  public:
     CXI_GLOWCURSOR();
     ~CXI_GLOWCURSOR() override;
 
@@ -31,7 +31,7 @@ public:
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void SetRectanglesToPosition(const XYRECT &rectXY);
 

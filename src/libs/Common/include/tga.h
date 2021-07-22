@@ -9,8 +9,7 @@ using TGA_H = struct tagTGA_H
     uint16_t width;
     uint16_t height;
     uint8_t bpp; // bit per pixel
-    union
-    {
+    union {
         uint8_t attr8;
 
         struct

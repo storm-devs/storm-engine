@@ -10,7 +10,7 @@ namespace storm::except
 {
 class ExecutableLifecycleService
 {
-public:
+  public:
     ~ExecutableLifecycleService();
 
     bool initialize(bool enableCrashReports);
@@ -18,7 +18,7 @@ public:
     // all attachments should be specified before calling `initialize()`
     void addAttachment(const std::filesystem::path &path);
 
-protected:
+  protected:
     bool initialized_{false};
     std::set<std::string> attachments_;
 };

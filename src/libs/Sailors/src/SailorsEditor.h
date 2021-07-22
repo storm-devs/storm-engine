@@ -8,7 +8,7 @@
 
 class SailorsEditor : public Entity
 {
-public:
+  public:
     SailorsEditor();
     ~SailorsEditor() override;
 

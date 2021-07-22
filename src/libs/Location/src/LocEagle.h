@@ -14,7 +14,7 @@
 
 class LocEagle : public Entity
 {
-public:
+  public:
     LocEagle();
     ~LocEagle() override;
 

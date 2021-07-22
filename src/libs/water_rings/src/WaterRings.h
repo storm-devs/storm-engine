@@ -48,7 +48,7 @@ struct tRing
 
 class WaterRings : public Entity
 {
-public:
+  public:
     WaterRings();
     ~WaterRings() override;
     bool Init() override;
@@ -71,7 +71,7 @@ public:
         }
     }
 
-private:
+  private:
     void UpdateGrid(int _ringI, uint16_t *iPointer, RING_VERTEX *vPointer, long vOffset);
 
     VDX9RENDER *renderService;

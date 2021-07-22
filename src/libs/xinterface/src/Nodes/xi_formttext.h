@@ -29,7 +29,7 @@ class CXI_FORMATEDTEXT : public CINODE
         }
     };
 
-public:
+  public:
     CXI_FORMATEDTEXT(CXI_FORMATEDTEXT &&) = delete;
     CXI_FORMATEDTEXT(const CXI_FORMATEDTEXT &) = delete;
     CXI_FORMATEDTEXT();
@@ -60,7 +60,7 @@ public:
 
     long GetAllHeight();
 
-protected:
+  protected:
     bool GetLineNext(int fontNum, char *&pInStr, char *buf, int bufSize) const;
     void GetOneLine(int fontNum, char *pStr, char *buf, int bufSize) const;
     void MakeTagChecking(bool &tagState, uint32_t &tagColor, uint32_t normColor, STRING_DESCRIBER *pStrDescr);
@@ -81,7 +81,7 @@ protected:
     void RecalculateStringNumber();
     void VAlignment(long nAlign);
 
-protected:
+  protected:
     long m_idFont;
     uint32_t m_dwColor;
     float m_fFontScale;

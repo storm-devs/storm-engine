@@ -5,19 +5,18 @@
 #include "Grass.h"
 #include "Lights.h"
 #include "Lizards.h"
+#include "LocCrabs.h"
+#include "LocEagle.h"
+#include "LocRats.h"
 #include "Location.h"
 #include "LocationCamera.h"
 #include "LocationEffects.h"
 #include "LocationScriptLib.h"
-#include "LocCrabs.h"
-#include "LocEagle.h"
-#include "LocRats.h"
 #include "ModelRealizer.h"
 #include "NPCharacter.h"
 #include "Player.h"
-#include "vmodule_api.h"
 #include "WideScreen.h"
-
+#include "vmodule_api.h"
 
 CREATE_CLASS(Location)
 

@@ -5,7 +5,7 @@
 // video
 class CXI_TWOPICTURE : public CINODE
 {
-public:
+  public:
     CXI_TWOPICTURE();
     ~CXI_TWOPICTURE() override;
     void Draw(bool bSelected, uint32_t Delta_Time) override;
@@ -21,7 +21,7 @@ public:
 
     void SetNewPicture(char *sNewTexName);
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateRectangles();
 

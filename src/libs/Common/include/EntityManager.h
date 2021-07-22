@@ -1,7 +1,7 @@
 #pragma once
 
-#include "shared/layers.h"
 #include "Entity.h"
+#include "shared/layers.h"
 #include "vmodule_api.h"
 
 #include <algorithm>
@@ -23,7 +23,7 @@ class EntityManager final
 
     using hash_t = uint32_t;
 
-public: // TODO: this is a workaround. i need to implement specific iterator returning only id
+  public: // TODO: this is a workaround. i need to implement specific iterator returning only id
     /* entity structure */
     struct EntityInternalData
     {
@@ -37,7 +37,7 @@ public: // TODO: this is a workaround. i need to implement specific iterator ret
         hash_t hash;
     };
 
-public:
+  public:
     using layer_index_t = uint8_t;
 
     /* layer structure */
@@ -56,7 +56,7 @@ public:
         bool frozen;
     };
 
-private:
+  private:
     /* static array of layers */
     static inline std::array<Layer, max_layers_num> layers_;
 
@@ -100,12 +100,12 @@ private:
         deletedArr[deletedSize++] = index;
     }
 
-public:
+  public:
     using EntityVector = const std::vector<entid_t>;
     using LayerIterators =
-    std::pair<decltype(Layer::entities)::const_iterator, decltype(Layer::entities)::const_iterator>;
+        std::pair<decltype(Layer::entities)::const_iterator, decltype(Layer::entities)::const_iterator>;
     using AllEntIterators =
-    std::pair<decltype(entities_.first)::const_iterator, decltype(entities_.first)::const_iterator>;
+        std::pair<decltype(entities_.first)::const_iterator, decltype(entities_.first)::const_iterator>;
 
     /* fully static constexpr class */
     EntityManager() = delete;
@@ -142,9 +142,7 @@ public:
 
         const auto targetIdx =
             std::upper_bound(std::begin(arr), std::begin(arr) + size, std::pair<priority_t, entid_t>{priority, {}},
-                             [](auto &lhs, auto &rhs) {
-                                 return lhs.first < rhs.first;
-                             }) -
+                             [](auto &lhs, auto &rhs) { return lhs.first < rhs.first; }) -
             std::begin(arr);
 
         // if this is not last element
@@ -187,9 +185,7 @@ public:
 
         const auto lowerIdx =
             std::lower_bound(std::begin(arr), std::begin(arr) + size, std::pair<priority_t, entid_t>{priority, {}},
-                             [](auto &lhs, auto &rhs) {
-                                 return lhs.first < rhs.first;
-                             }) -
+                             [](auto &lhs, auto &rhs) { return lhs.first < rhs.first; }) -
             std::begin(arr);
 
         assert(lowerIdx < size); // is this ok?

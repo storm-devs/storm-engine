@@ -77,8 +77,7 @@ class Grass : public Entity
     struct GRSMapElementEx
     {
         float x, y, z; // The position of a blade of grass in the world
-        union
-        {
+        union {
             struct
             {
                 uint8_t frame; // Frame
@@ -99,7 +98,7 @@ class Grass : public Entity
         rq_off = 3,
     };
 
-public:
+  public:
     struct CharacterPos
     {
         CVECTOR pos;     // Current position
@@ -111,7 +110,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     Grass();
     ~Grass() override;
 
@@ -151,7 +150,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // Render block
     void RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlanes, long mx, long mz);
     // Box visibility check
@@ -165,7 +164,7 @@ private:
     // Vertex declaration
     void CreateVertexDeclaration() const;
 
-private:
+  private:
     // Render service
     VDX9RENDER *rs;
     // Buffers

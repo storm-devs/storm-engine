@@ -1,6 +1,6 @@
 #include "SEA_AI.h"
-#include "shared/messages.h"
 #include "AIGroup.h"
+#include "shared/messages.h"
 
 CREATE_CLASS(SEA_AI)
 

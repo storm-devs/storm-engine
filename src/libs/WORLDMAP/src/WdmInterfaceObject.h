@@ -14,7 +14,7 @@
 
 class WdmInterfaceObject : public WdmRenderObject
 {
-protected:
+  protected:
     struct Vertex
     {
         float x, y, z, rhw;
@@ -26,14 +26,14 @@ protected:
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmInterfaceObject();
     ~WdmInterfaceObject() override;
 
     // --------------------------------------------------------------------------------------------
     // Interface for Inherited Classes
     // --------------------------------------------------------------------------------------------
-protected:
+  protected:
     // Fill 6 vertices with rectangle coordinates
     static void FillRectCoord(Vertex *vrt, float x, float y, float w, float h, float ang = 0.0f);
     // Fill 6 vertices with rectangle texture coordinates
@@ -58,8 +58,8 @@ protected:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-protected:
+  protected:
     static char stringBuffer[1024];
 
-private:
+  private:
 };

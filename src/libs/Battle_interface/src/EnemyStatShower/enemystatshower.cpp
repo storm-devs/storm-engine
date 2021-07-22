@@ -1,7 +1,7 @@
 #include "enemystatshower.h"
-#include "shared/messages.h"
 #include "core.h"
 #include "model.h"
+#include "shared/messages.h"
 
 EnemyStatShower::EnemyStatShower()
 {

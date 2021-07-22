@@ -6,9 +6,8 @@
 
 template <class tEType> class TFIFOBuffer
 {
-public:
-    TFIFOBuffer()
-        : firstElement(0), elementsCount(0)
+  public:
+    TFIFOBuffer() : firstElement(0), elementsCount(0)
     {
     }
 
@@ -65,7 +64,7 @@ public:
         return &elements[firstElement];
     }
 
-private:
+  private:
     int firstElement, elementsCount;
     tEType elements[FIFO_BUFFER_MAX_ELEMENTS];
 };

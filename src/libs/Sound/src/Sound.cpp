@@ -1,5 +1,5 @@
-#include "shared/messages.h"
 #include "VSoundService.h"
+#include "shared/messages.h"
 
 #include "Sound.h"
 
@@ -10,8 +10,7 @@ CREATE_CLASS(SOUND)
 #define MSG_SOUND_ALIAS_ADD 77017 //"s"          alias_name
 
 //--------------------------------------------------------------------
-SOUND::SOUND()
-    : soundService(nullptr)
+SOUND::SOUND() : soundService(nullptr)
 {
 }
 

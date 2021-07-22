@@ -9,7 +9,7 @@ class MESSAGE_ICONS
     VDX9RENDER *rs;
     entid_t m_idHost;
 
-public:
+  public:
     MESSAGE_ICONS();
     ~MESSAGE_ICONS();
 
@@ -24,7 +24,7 @@ public:
     void StartData(ATTRIBUTES *pAData[MESSAGE_ICONS_COLUMN_QUANTITY], long pLeft[MESSAGE_ICONS_COLUMN_QUANTITY]);
     bool InitData(entid_t host_eid, VDX9RENDER *_rs, ATTRIBUTES *pARoot);
 
-protected:
+  protected:
     // message icons
     bool m_bShowMsgIcon;
     long m_vMsgIconBufID;

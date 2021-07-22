@@ -32,7 +32,7 @@ class XI_TableCellDescribe
         }
     };
 
-public:
+  public:
     XI_TableCellDescribe(CXI_TABLE *pTable, XI_TableLineDescribe *pLine);
     ~XI_TableCellDescribe();
 
@@ -46,7 +46,7 @@ public:
     void SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHeader);
     void LoadImageParam(ImgDescribe *pImg, ATTRIBUTES *pA) const;
 
-protected:
+  protected:
     CXI_TABLE *m_pTable;
     XI_TableLineDescribe *m_pLine;
 
@@ -64,13 +64,13 @@ protected:
     std::vector<StrDescribe> m_aStrings;
     std::vector<ImgDescribe> m_aImage;
 
-public:
+  public:
     long m_nColIndex;
 };
 
 class XI_TableLineDescribe
 {
-public:
+  public:
     XI_TableLineDescribe(CXI_TABLE *pTable);
     ~XI_TableLineDescribe();
 
@@ -90,7 +90,7 @@ public:
         m_nHeight = nHeight;
     }
 
-protected:
+  protected:
     CXI_TABLE *m_pTable;
     std::vector<XI_TableCellDescribe *> m_aCell;
 
@@ -98,7 +98,7 @@ protected:
     uint32_t m_dwSpecColor;
     long m_nHeight;
 
-public:
+  public:
     long m_nRowIndex;
 };
 
@@ -108,7 +108,7 @@ class CXI_TABLE : public CINODE
     friend XI_TableLineDescribe;
     friend XI_TableCellDescribe;
 
-public:
+  public:
     CXI_TABLE(CXI_TABLE &&) = delete;
     CXI_TABLE(const CXI_TABLE &) = delete;
     CXI_TABLE();
@@ -143,7 +143,7 @@ public:
         return 1.f;
     }
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateBorders();
     void WriteSquare(XI_ONETEX_VERTEX *pV, long nImgID, uint32_t dwCol, long nX, long nY, long nW, long nH) const;

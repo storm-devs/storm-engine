@@ -23,7 +23,7 @@ class WdmRenderModel : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmRenderModel();
     ~WdmRenderModel() override;
 
@@ -40,7 +40,7 @@ public:
     CMatrix mtx;
     float alpha;
 
-public:
+  public:
     void Render(VDX9RENDER *rs) const;
 
     GEOS *geo;

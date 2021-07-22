@@ -70,7 +70,7 @@ class FONT
     float m_fAspectRatioH;
     float m_fAspectRatioV;
 
-public:
+  public:
     FONT();
     ~FONT();
     bool Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_device, VDX9RENDER *_render);

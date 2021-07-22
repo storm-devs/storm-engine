@@ -16,7 +16,7 @@
 
 class NPCharacter : public AICharacter
 {
-protected:
+  protected:
     enum NPCTask
     {
         npct_unknow = 0,
@@ -45,8 +45,7 @@ protected:
         CVECTOR to;
         entid_t target;
 
-        union
-        {
+        union {
             uint32_t flags;
 
             struct
@@ -69,7 +68,7 @@ protected:
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     NPCharacter();
     ~NPCharacter() override;
 
@@ -82,7 +81,7 @@ public:
     //--------------------------------------------------------------------------------------------
     //
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     // Get attacking character
     Character *GetAttackedCharacter() const;
 
@@ -99,7 +98,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Executing tasks
     // --------------------------------------------------------------------------------------------
-protected:
+  protected:
     // Completing the task of following a character
     void UpdateFollowCharacter(float dltTime);
     // Execution of the escape task
@@ -143,7 +142,7 @@ protected:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // Cannot further execute the command
     void FailureCommand(NPCTask task) const;
     // Making decisions
@@ -156,10 +155,10 @@ private:
     static bool PrTest(float probability, float &testTime);
     static bool PrTest(float probability);
 
-protected:
+  protected:
     Task task;           // The task to be performed
     NPCTask lastSetTask; // Last task set
-private:
+  private:
     Task taskstack[16]; // Task stack
     long stackPointer;  // Stack pointer
 

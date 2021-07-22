@@ -19,7 +19,7 @@ class WdmCounter : public WdmRenderModel
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmCounter();
     ~WdmCounter() override;
 
@@ -28,23 +28,19 @@ public:
     // Calculations
     void Update(float dltTime) override;
 
-    void PRender(VDX9RENDER *rs) override
-    {
-    };
+    void PRender(VDX9RENDER *rs) override{};
 
-    void MRender(VDX9RENDER *rs) override
-    {
-    };
+    void MRender(VDX9RENDER *rs) override{};
     void LRender(VDX9RENDER *rs) override;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     bool LoadModel(WdmRenderModel *&pnt, const char *name, const char *tech) const;
     void DrawNum(VDX9RENDER *rs, WdmRenderModel *m, float u, float v);
 
-private:
+  private:
     WdmRenderModel *sky;
     WdmRenderModel *d[2];
     WdmRenderModel *m[2];

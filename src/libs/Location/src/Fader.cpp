@@ -9,9 +9,9 @@
 //============================================================================================
 
 #include "Fader.h"
-#include "shared/messages.h"
 #include "core.h"
 #include "entity.h"
+#include "shared/messages.h"
 
 // ============================================================================================
 // Construction, destruction

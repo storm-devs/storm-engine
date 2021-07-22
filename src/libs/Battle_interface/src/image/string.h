@@ -7,7 +7,7 @@ class BIImageRender;
 
 class BIString : public IBIString
 {
-public:
+  public:
     BIString(BIString &&) = delete;
     BIString(const BIString &) = delete;
     BIString(BIImageRender *pImgRender, VDX9RENDER *rs);
@@ -46,7 +46,7 @@ public:
     void SetPosition(long nLeft, long nTop, long nRight, long nBottom) override;
     void SetString(const char *pcStr) override;
 
-protected:
+  protected:
     void Release();
     void UpdateString();
 

@@ -4,14 +4,10 @@
 
 class IShipLights : public Entity
 {
-public:
-    IShipLights()
-    {
-    };
+  public:
+    IShipLights(){};
 
-    ~IShipLights() override
-    {
-    };
+    ~IShipLights() override{};
     virtual void Release(VAI_OBJBASE *pObject) = 0;
 
     virtual void AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bool bFlares) = 0;

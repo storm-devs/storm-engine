@@ -1,10 +1,10 @@
 #include "ISLAND.h"
-#include "shared/messages.h"
-#include "shared/sea_ai/Script_defines.h"
 #include "Foam.h"
 #include "Weather_Base.h"
 #include "filesystem.h"
 #include "inlines.h"
+#include "shared/messages.h"
+#include "shared/sea_ai/Script_defines.h"
 #include "tga.h"
 #include <cstdio>
 
@@ -340,7 +340,7 @@ bool ISLAND::GetDepthFast(float x, float z, float *fRes)
     x -= vBoxCenter.x;
     z -= vBoxCenter.z;
     if (fabsf(x) >= vRealBoxSize.x || fabsf(z) >= vRealBoxSize.z)
-        // if (x < -vRealBoxSize.x || z < -vRealBoxSize.z || x > vRealBoxSize.x || z > vRealBoxSize.z)
+    // if (x < -vRealBoxSize.x || z < -vRealBoxSize.z || x > vRealBoxSize.x || z > vRealBoxSize.z)
     {
         *fRes = -50.0f;
         return false;
@@ -359,7 +359,7 @@ bool ISLAND::GetDepth(float x, float z, float *fRes)
     x -= vBoxCenter.x;
     z -= vBoxCenter.z;
     if (fabsf(x) >= vRealBoxSize.x || fabsf(z) >= vRealBoxSize.z)
-        // if (x < -vRealBoxSize.x || z < -vRealBoxSize.z || x > vRealBoxSize.x || z > vRealBoxSize.z)
+    // if (x < -vRealBoxSize.x || z < -vRealBoxSize.z || x > vRealBoxSize.x || z > vRealBoxSize.z)
     {
         *fRes = -50.0f;
         return false;

@@ -55,7 +55,7 @@ class RAIN : public Entity
         // SHIP_BASE * pShip;
     };
 
-private:
+  private:
     long iRainDropsTexture;
     float fDropsDeltaTime;
     std::vector<RS_RECT> aRects;
@@ -105,7 +105,7 @@ private:
     void Release();
     void RealizeDrops(uint32_t Delta_Time);
 
-public:
+  public:
     RAIN();
     ~RAIN() override;
 

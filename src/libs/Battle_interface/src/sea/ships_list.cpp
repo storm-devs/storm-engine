@@ -3,8 +3,8 @@
 
 #include "core.h"
 
-#include "shared/battle_interface/msg_control.h"
 #include "Entity.h"
+#include "shared/battle_interface/msg_control.h"
 //#include "battle_command.h"
 
 #define LOADING_MODE_MY_SHIP 0
@@ -18,7 +18,7 @@ class TMP_LONG_STACK
     long curidx;
     long defReturn;
 
-public:
+  public:
     TMP_LONG_STACK()
     {
         sizeIncr = 100;

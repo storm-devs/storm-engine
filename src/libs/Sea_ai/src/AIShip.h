@@ -29,11 +29,11 @@ enum AI_OBJTYPE
 
 class VAI_INNEROBJ : public AIAttributesHolder
 {
-protected:
+  protected:
     AI_OBJTYPE ObjType;
     bool bDead;
 
-public:
+  public:
     VAI_INNEROBJ()
     {
         pACharacter = nullptr;
@@ -41,9 +41,7 @@ public:
         ObjType = AIOBJ_UNKNOWN;
     };
 
-    virtual ~VAI_INNEROBJ()
-    {
-    };
+    virtual ~VAI_INNEROBJ(){};
 
     // check for fire possibility
     virtual bool isCanFire(const CVECTOR &vFirePos) const
@@ -133,9 +131,7 @@ public:
         return GetACharacter() == OtherAIObj.GetACharacter();
     };
 
-    virtual void ReleasePoint(VAI_INNEROBJ *)
-    {
-    };
+    virtual void ReleasePoint(VAI_INNEROBJ *){};
     virtual CVECTOR GetAttackPoint(VAI_INNEROBJ *) = 0;
     virtual CVECTOR GetFollowPoint(VAI_INNEROBJ *) = 0;
     virtual CVECTOR GetAbordagePoint(VAI_INNEROBJ *pOtherObj) = 0;
@@ -166,7 +162,7 @@ public:
 // ============================================================================
 class AIShip : public VAI_INNEROBJ
 {
-private:
+  private:
     struct can_fire_t
     {
         AIShip *pShip;
@@ -181,9 +177,7 @@ private:
 
     struct AI_POINT
     {
-        AI_POINT()
-        {
-        };
+        AI_POINT(){};
 
         AI_POINT(VAI_INNEROBJ *_pObj)
         {
@@ -221,7 +215,7 @@ private:
 
     void SetSeaAIAttributes(ATTRIBUTES *pAAttr, VAI_INNEROBJ *pObj) const;
 
-public:
+  public:
     ATTRIBUTES *GetAShip() const
     {
         return GetACharacter()->FindAClass(GetACharacter(), "Ship");
@@ -413,7 +407,7 @@ public:
 // ============================================================================
 class AIShipWar : public AIShip
 {
-public:
+  public:
     AIShipWar();
     ~AIShipWar() override;
 };
@@ -423,7 +417,7 @@ public:
 // ============================================================================
 class AIShipTrade : public AIShip
 {
-public:
+  public:
     AIShipTrade();
     ~AIShipTrade() override;
 };
@@ -433,7 +427,7 @@ public:
 // ============================================================================
 class AIShipBoat : public AIShip
 {
-public:
+  public:
     AIShipBoat();
     ~AIShipBoat() override;
 };

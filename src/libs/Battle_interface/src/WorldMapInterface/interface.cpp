@@ -1,12 +1,11 @@
 #include "interface.h"
-#include "shared/battle_interface/msg_control.h"
 #include "core.h"
 #include "message.h"
+#include "shared/battle_interface/msg_control.h"
 #include "shipcommand.h"
 #include "shipsign.h"
 
-WM_INTERFACE::WM_INTERFACE()
-    : rs(nullptr)
+WM_INTERFACE::WM_INTERFACE() : rs(nullptr)
 {
     m_pShipIcon = nullptr;
     m_pCommandList = nullptr;

@@ -20,7 +20,7 @@ class WdmStorm : public WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmStorm();
     ~WdmStorm() override;
 
@@ -37,7 +37,7 @@ public:
 
     const char *GetId() const;
 
-public:
+  public:
     // Setting parameters
     void SetSaveAttribute(ATTRIBUTES *save);
     void DeleteUpdate();
@@ -47,11 +47,11 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // Updating stored data
     void UpdateSaveData();
 
-private:
+  private:
     CVECTOR pos, dir;
 
     float isActiveTime;

@@ -8,7 +8,7 @@ class SSTRING
 {
     char *pDataPointer;
 
-public:
+  public:
     SSTRING()
     {
         pDataPointer = nullptr;
@@ -23,8 +23,7 @@ public:
         strcpy_s(pDataPointer, len, p);
     }
 
-    SSTRING(const SSTRING &ss)
-        : pDataPointer(nullptr)
+    SSTRING(const SSTRING &ss) : pDataPointer(nullptr)
     {
         const auto len = strlen(ss.pDataPointer) + 1;
         pDataPointer = new char[len];

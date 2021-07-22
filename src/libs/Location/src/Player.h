@@ -19,7 +19,7 @@ class Player : public NPCharacter
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     Player();
     ~Player() override;
 
@@ -64,13 +64,13 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     void FireFromShootgun();
     void ShootParticles(const CVECTOR &pos, const CVECTOR &ndir, float size, uint32_t color, long num);
 
     float GetRotateH();
 
-private:
+  private:
     float lastChange;
     bool activatedDialog;
     bool isSpecialMode;

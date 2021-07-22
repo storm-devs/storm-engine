@@ -23,16 +23,15 @@ using seaspecific_t = struct
 
 struct sea_dat
 {
-    sea_dat()
-        : aHarmonics(_FL_)
+    sea_dat() : aHarmonics(_FL_)
     {
     }
 
     string sSeaTexture;
     float fWTrans, fWRefl, fWAttn, fFCoeff, fSRefl;
     float fSunAzimuthAngle, fSunHeightAngle, fSunMult, fBumpTile, fBumpScale, fSunShadowScale, fFogStartDistance,
-          fFogDensity, fBumpAng, fBumpSpeed, fBumpAnimSpeed, fPenaDepthSmall, fPenaDepthBig, fFogSeaDensity, fRoadStart,
-          fRoadPower, fPenaSmallIslandMultiply, fPenaBigIslandMultiply;
+        fFogDensity, fBumpAng, fBumpSpeed, fBumpAnimSpeed, fPenaDepthSmall, fPenaDepthBig, fFogSeaDensity, fRoadStart,
+        fRoadPower, fPenaSmallIslandMultiply, fPenaBigIslandMultiply;
     CVECTOR vSkyColor, vWaterColor, vFogColor, vSunColor, vPenaColor, vRoadColor1, vRoadColor2;
     array<harmonic_t> aHarmonics;
     string sBumpDir;

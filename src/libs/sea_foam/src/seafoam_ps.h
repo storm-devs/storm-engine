@@ -190,7 +190,7 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
     long EmitIndex;
     long EmitTimeDelta;
 
-public:
+  public:
     SEAFOAM_PS();
     ~SEAFOAM_PS() override;
     bool Init(INIFILE *ini, const char *psname);

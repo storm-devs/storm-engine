@@ -51,7 +51,7 @@ class InterfaceBackScene : public Entity
         void UpdateParams(float fTime);
     };
 
-public:
+  public:
     InterfaceBackScene();
     ~InterfaceBackScene() override;
 
@@ -77,7 +77,7 @@ public:
         }
     }
 
-protected:
+  protected:
     VDX9RENDER *m_pRS;
 
     entid_t m_eiModel;

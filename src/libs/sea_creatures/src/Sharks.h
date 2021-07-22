@@ -30,7 +30,7 @@ class Sharks : public Entity
     {
         static uint16_t indeces[];
 
-    public:
+      public:
         Shark();
         ~Shark() override;
 
@@ -82,7 +82,7 @@ class Sharks : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     Sharks();
     ~Sharks() override;
 
@@ -112,10 +112,10 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     bool LoadPeriscopeModel();
 
-private:
+  private:
     VDX9RENDER *rs;
     Shark shark[6];
     long numShakes;

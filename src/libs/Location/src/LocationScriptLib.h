@@ -4,14 +4,10 @@
 
 class ScriptLocationLibrary : public SCRIPT_LIBRIARY
 {
-public:
-    ScriptLocationLibrary()
-    {
-    };
+  public:
+    ScriptLocationLibrary(){};
 
-    ~ScriptLocationLibrary() override
-    {
-    };
+    ~ScriptLocationLibrary() override{};
 
     bool Init() override;
 };

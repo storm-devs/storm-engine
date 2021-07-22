@@ -80,7 +80,7 @@ class CINODE;
 
 class XINTERFACE_BASE : public Entity
 {
-public:
+  public:
     virtual storm::QuestFileReader *QuestFileReader() = 0;
     virtual VXSERVICE *PictureService() = 0;
     virtual VSTRSERVICE *StringService() = 0;
@@ -115,7 +115,7 @@ class CINODE
     bool m_bUseUserGlowOffset;
     FXYPOINT m_rectUserGlowOffset;
 
-public:
+  public:
     struct COMMAND_REDIRECT
     {
         char *sControlName;
@@ -166,7 +166,7 @@ public:
         }
     };
 
-public:
+  public:
     CINODE();
     virtual ~CINODE();
     virtual void Draw(bool bSelected, uint32_t Delta_Time) = 0;

@@ -13,7 +13,7 @@ class PARTICLE_SYSTEM : public VPARTICLE_SYSTEM
     IParticleSystem *pSystem;
     PARTICLES *pManager;
 
-public:
+  public:
     PARTICLE_SYSTEM(IParticleSystem *_pSystem);
     ~PARTICLE_SYSTEM() override;
     void Stop() override;
@@ -24,7 +24,7 @@ public:
     void StopEmitter() override;
     void Pause(bool _bPause) override;
 
-public:
+  public:
     void SetManager(PARTICLES *_pManager);
     IParticleSystem *GetSystem() const;
 };

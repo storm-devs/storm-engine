@@ -1,7 +1,7 @@
 #include "AIBalls.h"
-#include "shared/messages.h"
 #include "AIFort.h"
 #include "inlines.h"
+#include "shared/messages.h"
 
 #include <algorithm>
 

@@ -1,9 +1,9 @@
 #include "TFlotsam.h"
-#include "shared/messages.h"
 #include "Entity.h"
 #include "core.h"
 #include "defines.h"
 #include "rands.h"
+#include "shared/messages.h"
 
 int TFlotsam::modelsInitialized = 0;
 MODEL *TFlotsam::models[sink_effect::FLOTSAM_MODELS_COUNT];
@@ -11,8 +11,7 @@ char TFlotsam::modelNames[sink_effect::FLOTSAM_MODELS_COUNT][128];
 entid_t TFlotsam::modelIDs[sink_effect::FLOTSAM_MODELS_COUNT];
 
 //--------------------------------------------------------------------
-TFlotsam::TFlotsam()
-    : sea(nullptr), enabled(false)
+TFlotsam::TFlotsam() : sea(nullptr), enabled(false)
 {
 }
 

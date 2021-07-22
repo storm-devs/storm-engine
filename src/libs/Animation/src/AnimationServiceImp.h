@@ -24,7 +24,7 @@ class AnimationServiceImp final : public AnimationService
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     AnimationServiceImp();
     ~AnimationServiceImp() override;
 
@@ -47,7 +47,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // load animation
     long LoadAnimation(const char *animationName);
     // Load user data from the current section

@@ -4,11 +4,11 @@
 
 class S_EVENTMSG
 {
-public:
+  public:
     uint32_t nTime;
     uint32_t nPeriod;
 
-public:
+  public:
     MESSAGE *pMessageClass;
     char *pEventName;
     bool bProcess;

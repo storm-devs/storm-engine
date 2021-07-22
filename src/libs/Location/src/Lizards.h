@@ -17,7 +17,7 @@
 
 class Lizards : public Entity
 {
-public:
+  public:
     Lizards();
     ~Lizards() override;
 

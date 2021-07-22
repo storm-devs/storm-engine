@@ -107,12 +107,10 @@ struct InputEvent
 //! Abstract input manager that handles all input events
 class Input
 {
-public:
+  public:
     using EventHandler = std::function<void(const InputEvent &)>;
 
-    virtual ~Input()
-    {
-    };
+    virtual ~Input(){};
 
     //! Subscribe for events
     //! \param handler event callback

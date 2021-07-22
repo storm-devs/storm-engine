@@ -18,7 +18,7 @@ extern long lg[100];
 
 #define MAX_SOUNDS 150
 #define MAX_QUEUE_SOUNDS 30
-#define MAX_DISTANCE 500.0f    // distance beyond which 3D-sound isn`t created
+#define MAX_DISTANCE 500.0f // distance beyond which 3D-sound isn`t created
 #define MAX_NAMES_PER_ALIAS 50 // random-chosen names within alias
 #define MAX_LOOP_PAUSE_TIME 0
 

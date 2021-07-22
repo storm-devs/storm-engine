@@ -5,7 +5,7 @@
 // text collection
 class CXI_LINECOLLECTION : public CINODE
 {
-public:
+  public:
     CXI_LINECOLLECTION();
     ~CXI_LINECOLLECTION() override;
 
@@ -24,9 +24,9 @@ public:
     void SaveParametersToIni() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
-protected:
+  protected:
     std::vector<RS_LINE> m_aLines;
 };

@@ -9,11 +9,11 @@
 //============================================================================================
 
 #include "LocEagle.h"
-#include "shared/messages.h"
 #include "Entity.h"
 #include "Location.h"
 #include "core.h"
 #include "geometry.h"
+#include "shared/messages.h"
 
 LocEagle::LocEagle()
 {

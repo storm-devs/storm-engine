@@ -16,9 +16,9 @@
 #include "Grass.h"
 #include "Lights.h"
 
-#include "shared/messages.h"
 #include "CVector4.h"
 #include "defines.h"
+#include "shared/messages.h"
 
 float fCausticScale, fCausticDelta, fFogDensity, fCausticDistance;
 CVECTOR4 v4CausticColor;

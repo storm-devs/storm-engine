@@ -4,8 +4,7 @@
 #include "rands.h"
 
 //--------------------------------------------------------------------
-TSink::TSink()
-    : enabled(false), texture(0), ivManager(nullptr), time(0)
+TSink::TSink() : enabled(false), texture(0), ivManager(nullptr), time(0)
 {
 }
 

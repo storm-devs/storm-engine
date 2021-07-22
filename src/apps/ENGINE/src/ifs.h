@@ -21,7 +21,7 @@ class KEY_NODE
 
     uint32_t flags;
 
-public:
+  public:
     KEY_NODE();
     ~KEY_NODE();
     void SetName(const char *name);
@@ -48,7 +48,7 @@ class SECTION
 
     char *Name;
 
-public:
+  public:
     SECTION();
     ~SECTION();
 
@@ -81,7 +81,7 @@ class IFS : public INIFILE
 {
     friend FILE_SERVICE;
 
-protected:
+  protected:
     SECTION *SectionSNode;
 
     SECTION *SectionRoot;
@@ -103,18 +103,18 @@ protected:
     uint32_t CompareStrings(const char *s1, const char *s2);
     bool FlushFile();
 
-public:
+  public:
 #define IFS_NOT_IMPLEMENTED(x)                                                                                         \
     x override                                                                                                         \
     {                                                                                                                  \
         throw std::logic_error("not implemented");                                                                     \
     }
     IFS_NOT_IMPLEMENTED(void ReadString(const char *section_name, const char *key_name, char *buffer,
-        size_t buffer_size))
+                                        size_t buffer_size))
     IFS_NOT_IMPLEMENTED(bool ReadString(const char *section_name, const char *key_name, char *buffer,
-        size_t buffer_size, const char *def_string))
+                                        size_t buffer_size, const char *def_string))
     IFS_NOT_IMPLEMENTED(bool ReadStringNext(const char *section_name, const char *key_name, char *buffer,
-        size_t buffer_size))
+                                            size_t buffer_size))
     IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name))
     IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name, long def_val))
     IFS_NOT_IMPLEMENTED(bool GetLongNext(const char *section_name, const char *key_name, long *val))

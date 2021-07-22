@@ -7,8 +7,8 @@ Comments:
 model binded to an animated locator
 ******************************************************************************/
 #include "blade.h"
-#include "shared/messages.h"
 #include "geometry.h"
+#include "shared/messages.h"
 
 CREATE_CLASS(BLADE)
 

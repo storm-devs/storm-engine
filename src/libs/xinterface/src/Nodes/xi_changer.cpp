@@ -91,8 +91,7 @@ void CXI_CHANGER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const
         do
         {
             m_nPlaceQuantity++;
-        }
-        while (ini1->ReadStringNext(name1, "place", param, sizeof(param) - 1));
+        } while (ini1->ReadStringNext(name1, "place", param, sizeof(param) - 1));
 
     // create position array
     if (m_nPlaceQuantity > 0)

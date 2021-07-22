@@ -49,7 +49,7 @@ struct BALL_TYPE
 // ============================================================================
 class AIBalls : public Entity
 {
-private:
+  private:
     CANNON_TRACE_BASE *pSail, *pSea, *pFort, *pIsland;
 
     float fDeltaTimeMultiplyer;
@@ -98,7 +98,7 @@ private:
         }
     }
 
-public:
+  public:
     static AIBalls *pAIBalls;
 
     AIBalls();

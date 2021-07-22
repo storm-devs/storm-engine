@@ -15,7 +15,7 @@ std::unique_ptr<SteamApi> factory(bool);
 
 class SteamApi
 {
-public:
+  public:
     static SteamApi &getInstance(const bool mock = true)
     {
         static std::unique_ptr<SteamApi> steam_api = detail::factory(mock);

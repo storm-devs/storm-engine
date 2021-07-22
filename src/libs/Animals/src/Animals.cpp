@@ -4,8 +4,7 @@
 
 CREATE_CLASS(ANIMALS)
 
-ANIMALS::ANIMALS()
-    : seagulls(nullptr), fishSchools(nullptr), butterflies(nullptr)
+ANIMALS::ANIMALS() : seagulls(nullptr), fishSchools(nullptr), butterflies(nullptr)
 {
     seagulls = new TSeagulls();
     fishSchools = new TFishSchools();

@@ -10,7 +10,7 @@ class CXI_IMAGE;
 
 class GIEditorList : public GIEditorObject
 {
-public:
+  public:
     GIEditorList(GIEditor *pEditor);
     ~GIEditorList() override;
 
@@ -52,7 +52,7 @@ public:
 
     void IncrementSelectedLine(bool bIncr);
 
-protected:
+  protected:
     void UpdateSelectPosition();
 
     GIEditor *m_pEditor;
@@ -79,7 +79,7 @@ protected:
     float m_fKeyRepeatDelay;
     float m_fKeyRepeatInterval;
 
-public:
+  public:
     uint32_t m_dwStatus;
     GIEditorEventHandler *m_pChangeSelected;
 };

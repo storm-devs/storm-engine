@@ -7,7 +7,7 @@ class CXI_IMAGE;
 // edit box
 class CXI_PCEDITBOX : public CINODE
 {
-public:
+  public:
     CXI_PCEDITBOX(CXI_PCEDITBOX &&) = delete;
     CXI_PCEDITBOX(const CXI_PCEDITBOX &) = delete;
     CXI_PCEDITBOX();
@@ -20,13 +20,11 @@ public:
     int CommandExecute(int wActCode) override;
     bool IsClick(int buttonID, long xPos, long yPos) override;
 
-    void MouseThis(float fX, float fY) override
-    {
-    };
+    void MouseThis(float fX, float fY) override{};
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateString(std::string &str);
     char GetInputSymbol();
@@ -41,7 +39,7 @@ protected:
     void DisguiseString(std::string &str);
     bool IsExcludeChar(utf8::u8_char chr) const;
 
-protected:
+  protected:
     long m_nFontID;          // font id
     uint32_t m_dwFontColor;  // color for font
     XYPOINT m_pntFontOffset; // string offset

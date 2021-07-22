@@ -7,7 +7,7 @@
 //-----------------------------------------------------------------------------
 class CVideoTexture : public Entity
 {
-public:
+  public:
     virtual IDirect3DTexture9 *Initialize(VDX9RENDER *pRS, const char *sFileName, bool bCicled) = 0;
     virtual bool FrameUpdate() = 0;
     virtual void Release() = 0;

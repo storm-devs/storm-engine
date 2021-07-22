@@ -8,7 +8,7 @@ class SoundVisualisationEntity : public Entity
 {
     SoundService *pSound;
 
-public:
+  public:
     SoundVisualisationEntity();
     ~SoundVisualisationEntity() override;
 

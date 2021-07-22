@@ -14,8 +14,7 @@ CREATE_CLASS(SEAFOAM)
 #define START_FADE_SPEED 5.f
 
 //--------------------------------------------------------------------
-SEAFOAM::SEAFOAM()
-    : sea(nullptr), shipsCount(0), carcassTexture(0), isStorm(false), soundService(nullptr)
+SEAFOAM::SEAFOAM() : sea(nullptr), shipsCount(0), carcassTexture(0), isStorm(false), soundService(nullptr)
 {
     psIni = nullptr;
     renderer = nullptr;
@@ -518,7 +517,8 @@ void SEAFOAM::Realize(uint32_t _dTime)
         RealizeShipFoam_Mesh(*foamInfo, _dTime);
     }
     if (techniqueStarted)
-        while (renderer->TechniqueExecuteNext());
+        while (renderer->TechniqueExecuteNext())
+            ;
 
     RDTSC_E(ticks)
     // core.Trace("Seafoam realize = %d", ticks);

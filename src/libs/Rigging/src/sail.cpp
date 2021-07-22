@@ -2,13 +2,13 @@
 
 #include "core.h"
 
+#include "Weather_Base.h"
+#include "defines.h"
+#include "entity.h"
 #include "shared/battle_interface/msg_control.h"
 #include "shared/mast_msg.h"
 #include "shared/sail_msg.h"
 #include "shared/sea_ai/Script_defines.h"
-#include "Weather_Base.h"
-#include "defines.h"
-#include "entity.h"
 #include "ship_base.h"
 #include "vfile_service.h"
 
@@ -1319,8 +1319,8 @@ void SAIL::SetAllSails()
         pt[2] = pt[8] = pt[9] = pt[17] = pt[18] = pt[23] = pt[26] = SAIL_ROW_MAX / 2 * (SAIL_ROW_MAX / 2 + 3) / 2; // 2
         pt[4] = pt[13] = (SAIL_ROW_MAX - 1) * SAIL_ROW_MAX / 2;                                                    // 3
         pt[5] = pt[7] = pt[10] = pt[14] = pt[19] = pt[22] =
-                                                   (SAIL_ROW_MAX - 1) * SAIL_ROW_MAX / 2 + SAIL_ROW_MAX / 2; // 4
-        pt[11] = pt[20] = (SAIL_ROW_MAX - 1) * (SAIL_ROW_MAX + 2) / 2;                                       // 5
+            (SAIL_ROW_MAX - 1) * SAIL_ROW_MAX / 2 + SAIL_ROW_MAX / 2;  // 4
+        pt[11] = pt[20] = (SAIL_ROW_MAX - 1) * (SAIL_ROW_MAX + 2) / 2; // 5
 
         // for square sail
         pt[27] = pt[42] = pt[51] = 0;                                                                             // 0
@@ -1755,7 +1755,7 @@ void SAIL::DoSailToNewHost(entid_t newModelEI, entid_t newHostEI, int grNum, NOD
 
     // remove the sail from the old group
     if (gdata[oldg].sailQuantity == 1)
-        // remove the only sail together with the group
+    // remove the only sail together with the group
     {
         // write down the value of the state of the sails = 0 for the ship
         auto *pVai = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[oldg].shipEI));
@@ -1780,9 +1780,9 @@ void SAIL::DoSailToNewHost(entid_t newModelEI, entid_t newHostEI, int grNum, NOD
     STORM_DELETE(slist[sn]->sailtrope.rrs[0]);
     STORM_DELETE(slist[sn]->sailtrope.rrs[1]);
     slist[sn]->sailtrope.pnttie[0] = slist[sn]->sailtrope.pnttie[1] = slist[sn]->sailtrope.pnttie[2] =
-                                                                      slist[sn]->sailtrope.pnttie[3] = false;
+        slist[sn]->sailtrope.pnttie[3] = false;
     slist[sn]->sailtrope.pPos[0] = slist[sn]->sailtrope.pPos[1] = slist[sn]->sailtrope.pPos[2] =
-                                                                  slist[sn]->sailtrope.pPos[3] = nullptr;
+        slist[sn]->sailtrope.pPos[3] = nullptr;
     slist[sn]->ss.turningSail = false;
 }
 
@@ -2225,8 +2225,8 @@ void SAIL::RestoreRender()
         pt[2] = pt[8] = pt[9] = pt[17] = pt[18] = pt[23] = pt[26] = SAIL_ROW_MAX / 2 * (SAIL_ROW_MAX / 2 + 3) / 2; // 2
         pt[4] = pt[13] = (SAIL_ROW_MAX - 1) * SAIL_ROW_MAX / 2;                                                    // 3
         pt[5] = pt[7] = pt[10] = pt[14] = pt[19] = pt[22] =
-                                                   (SAIL_ROW_MAX - 1) * SAIL_ROW_MAX / 2 + SAIL_ROW_MAX / 2; // 4
-        pt[11] = pt[20] = (SAIL_ROW_MAX - 1) * (SAIL_ROW_MAX + 2) / 2;                                       // 5
+            (SAIL_ROW_MAX - 1) * SAIL_ROW_MAX / 2 + SAIL_ROW_MAX / 2;  // 4
+        pt[11] = pt[20] = (SAIL_ROW_MAX - 1) * (SAIL_ROW_MAX + 2) / 2; // 5
 
         // for square sail
         pt[27] = pt[42] = pt[51] = 0;                                                                             // 0

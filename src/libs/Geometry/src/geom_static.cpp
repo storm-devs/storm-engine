@@ -42,8 +42,7 @@ GEOS *CreateGeometry(const char *fname, const char *lightname, GEOM_SERVICE &srv
 }
 
 // geometry constructor does all init
-GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long flags)
-    : srv(_srv)
+GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long flags) : srv(_srv)
 {
     std::vector<uint32_t> colData;
     if (lightname != nullptr)

@@ -47,7 +47,7 @@ class S_CLASSTAB
     std::vector<CLASSINFO> pTable;
     VIRTUAL_COMPILER *pVCompiler;
 
-public:
+  public:
     S_CLASSTAB();
     ~S_CLASSTAB();
 

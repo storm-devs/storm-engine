@@ -9,7 +9,7 @@ class BIImageRender;
 
 class BIImageMaterial
 {
-public:
+  public:
     BIImageMaterial(VDX9RENDER *pRS, BIImageRender *pImgRender);
     ~BIImageMaterial();
 
@@ -64,7 +64,7 @@ public:
         return m_pImageRender;
     }
 
-protected:
+  protected:
     void Release();
     void UpdateImageBuffers(long nStartIdx, size_t nEndIdx);
     void RemakeBuffers();

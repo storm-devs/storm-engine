@@ -10,7 +10,7 @@ class VDX9RENDER;
 
 class GIEditor : public GIEditorObject
 {
-public:
+  public:
     GIEditor(GIEditor &&) = delete;
     GIEditor(const GIEditor &) = delete;
     GIEditor(XINTERFACE *pInterface);
@@ -32,7 +32,7 @@ public:
 
     void DrawSizeBox() const;
 
-protected:
+  protected:
     bool m_bShowMode;
     CINODE *m_pEditableNode;
     float m_fLastKeyPressTime;
@@ -43,7 +43,7 @@ protected:
     bool m_bSubNameOn;
     GIEditorList *m_pSubNameList;
 
-public:
+  public:
     VDX9RENDER *m_pRS;
     XINTERFACE *m_pGIOwner;
 

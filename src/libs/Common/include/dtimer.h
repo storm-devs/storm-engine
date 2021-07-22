@@ -2,10 +2,10 @@
 
 class DTimer
 {
-private:
+  private:
     float fCurrent, fMin, fMax;
 
-public:
+  public:
     DTimer()
     {
         Setup(0.0f, 1.0f);
@@ -16,9 +16,7 @@ public:
         Setup(_fCurrent, _fMax);
     };
 
-    ~DTimer()
-    {
-    };
+    ~DTimer(){};
 
     void Setup(float _fCurrent, float _fMin, float _fMax)
     {

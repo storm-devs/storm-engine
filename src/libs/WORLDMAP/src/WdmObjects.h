@@ -54,7 +54,7 @@ class WdmObjects
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmObjects();
     virtual ~WdmObjects();
 
@@ -158,7 +158,7 @@ public:
 
     WindField windField;
 
-private:
+  private:
     struct Vertex
     {
         CVECTOR v;

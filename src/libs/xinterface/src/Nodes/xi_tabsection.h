@@ -4,7 +4,7 @@
 
 class CXI_TABSECTION : public CINODE
 {
-public:
+  public:
     CXI_TABSECTION();
     ~CXI_TABSECTION() override;
 
@@ -23,7 +23,7 @@ public:
     void SaveParametersToIni() override;
     uint32_t MessageProc(long msgcode, MESSAGE &message) override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateImage();
 

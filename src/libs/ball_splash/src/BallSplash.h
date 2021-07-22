@@ -13,7 +13,7 @@
 
 class BALLSPLASH : public Entity
 {
-public:
+  public:
     BALLSPLASH();
     ~BALLSPLASH() override;
 
@@ -39,7 +39,7 @@ public:
         }
     }
 
-private:
+  private:
     void InitializeSplashes();
     TSplash *TryToAddSplash(const CVECTOR &_pos, const CVECTOR &_dir);
 

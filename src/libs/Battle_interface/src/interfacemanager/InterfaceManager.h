@@ -8,7 +8,7 @@ class BI_BaseGroup;
 
 class BI_InterfaceManager : public BI_ManagerBase
 {
-public:
+  public:
     BI_InterfaceManager();
     ~BI_InterfaceManager() override;
 
@@ -40,7 +40,7 @@ public:
                                          const RECT &pos, long nHAlign, long nVAlign, long prioritet) override;
     void DeleteNode(BI_ManagerNodeBase *pNod) override;
 
-protected:
+  protected:
     long MsgLoadSheet(MESSAGE &message);
     long MsgCreateImage(MESSAGE &message);
     long MsgCreateString(MESSAGE &message);

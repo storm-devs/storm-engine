@@ -18,7 +18,7 @@ class Entity
 {
     friend class EntityManager;
 
-public:
+  public:
     struct EntitySelfData
     {
         // const char* name;
@@ -65,6 +65,6 @@ public:
         return {};
     }
 
-private:
+  private:
     EntitySelfData data_{};
 };

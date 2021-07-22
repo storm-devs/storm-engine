@@ -13,7 +13,7 @@
 
 class SINKEFFECT : public Entity
 {
-public:
+  public:
     SINKEFFECT();
     ~SINKEFFECT() override;
 
@@ -39,7 +39,7 @@ public:
         }
     }
 
-private:
+  private:
     void InitializeSinks();
     TSink *TryToAddSink(const CVECTOR &_pos, float _r);
 

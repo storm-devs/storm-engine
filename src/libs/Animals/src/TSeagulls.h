@@ -1,8 +1,8 @@
 #pragma once
 
-#include "VSoundService.h"
 #include "AnimalsDefines.h"
 #include "Matrix.h"
+#include "VSoundService.h"
 #include "dx9render.h"
 #include "message.h"
 
@@ -28,7 +28,7 @@ struct tSeagull
 ///////////////////////////////////////////////////////////////////
 class TSeagulls
 {
-public:
+  public:
     TSeagulls();
     virtual ~TSeagulls();
 
@@ -43,7 +43,7 @@ public:
         startY = _startY;
     }
 
-private:
+  private:
     void LoadSettings();
     void Frighten();
 

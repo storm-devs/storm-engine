@@ -29,7 +29,7 @@ using tSoundStatistics = struct
 ///////////////////////////////////////////////////////////////////
 class VSoundService : public SERVICE
 {
-public:
+  public:
     bool Init() override = 0;
     uint32_t RunSection() override = 0;
     void RunStart() override = 0;

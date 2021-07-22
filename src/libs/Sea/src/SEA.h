@@ -14,7 +14,7 @@
 
 class SEA : public SEA_BASE
 {
-private:
+  private:
     // uint32_t dwSkyCode = MakeHashValue("sky");
     uint32_t dwIslandCode = MakeHashValue("island");
     uint32_t dwShipCode = MakeHashValue("ship");
@@ -195,7 +195,7 @@ private:
     void SFLB_CreateBuffers();
     void CreateVertexDeclaration();
 
-public:
+  public:
     SEA();
     ~SEA() override;
 

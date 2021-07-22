@@ -6,13 +6,13 @@
 
 class SEA_AI : public Entity
 {
-private:
+  private:
     bool bFirstInit;
 
     void AddShip(entid_t _eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip);
     void SetCompanionEnemy(ATTRIBUTES *pACharacter);
 
-public:
+  public:
     SEA_AI();
     ~SEA_AI() override;
 

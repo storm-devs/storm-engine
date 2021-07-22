@@ -1,8 +1,8 @@
 #include "battle_mansign.h"
 #include "../Utils.h"
-#include "shared/battle_interface/msg_control.h"
 #include "battle_mancommand.h"
 #include "core.h"
+#include "shared/battle_interface/msg_control.h"
 #include "vmodule_api.h"
 
 BIManSign::BIManSign(entid_t BIEntityID, VDX9RENDER *pRS)
@@ -266,8 +266,7 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
             do
             {
                 m_aChargeProgress.push_back(BIUtils::GetFromStr_Float(pcTmp, 0.f));
-            }
-            while (pcTmp[0]);
+            } while (pcTmp[0]);
         }
 
         m_dwManFaceColor = pA->GetAttributeAsDword("manfacecolor", m_dwManFaceColor);

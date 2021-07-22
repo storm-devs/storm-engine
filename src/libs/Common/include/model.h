@@ -10,7 +10,7 @@ class NODER;
 
 class NODE
 {
-public:
+  public:
     CMatrix loc_mtx;
     CMatrix glob_mtx;
 
@@ -34,9 +34,7 @@ public:
     // 0 for root
     NODE *parent;
 
-    virtual ~NODE()
-    {
-    };
+    virtual ~NODE(){};
     // name of this node - locator's name
     virtual const char *GetName() = 0;
 
@@ -61,27 +59,19 @@ class VDX9RENDER;
 
 class MODEL : public COLLISION_OBJECT
 {
-public:
+  public:
     class RenderTuner
     {
         friend MODEL;
 
-    public:
-        RenderTuner()
-        {
-        };
+      public:
+        RenderTuner(){};
 
-        virtual ~RenderTuner()
-        {
-        };
+        virtual ~RenderTuner(){};
 
-        virtual void Set(MODEL *model, VDX9RENDER *rs)
-        {
-        };
+        virtual void Set(MODEL *model, VDX9RENDER *rs){};
 
-        virtual void Restore(MODEL *model, VDX9RENDER *rs)
-        {
-        };
+        virtual void Restore(MODEL *model, VDX9RENDER *rs){};
     };
 
     void SetRenderTuner(RenderTuner *rt)
@@ -94,11 +84,11 @@ public:
         return renderTuner;
     };
 
-protected:
+  protected:
     RenderTuner *renderTuner;
 
-public:
-public:
+  public:
+  public:
     MODEL()
     {
         renderTuner = nullptr;

@@ -28,7 +28,7 @@ class OctTree
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     OctTree();
     virtual ~OctTree();
 
@@ -44,7 +44,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // Adding vertices
     bool AddVertex(OTNode *node, Vertex *v);
     // Optimizing the tree
@@ -54,7 +54,7 @@ private:
 
     long Check(OTNode *node, Vertex *v, long num);
 
-private:
+  private:
     Vertex *vrt;
     long numVrt;
     OTNode *root;

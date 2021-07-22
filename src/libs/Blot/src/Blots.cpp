@@ -12,8 +12,8 @@
 
 #include "core.h"
 
-#include "shared/messages.h"
 #include "Entity.h"
+#include "shared/messages.h"
 
 CREATE_CLASS(Blots)
 

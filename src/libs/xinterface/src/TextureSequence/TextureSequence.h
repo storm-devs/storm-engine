@@ -26,7 +26,7 @@ class TextureSequence : public CVideoTexture
 
     void ToTextureRender(float blendValue) const;
 
-public:
+  public:
     TextureSequence();
     ~TextureSequence() override;
 

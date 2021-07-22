@@ -30,7 +30,7 @@ class LOCATOR : public Entity
     void LocateForI_L2(ATTRIBUTES *pA, GEOS *g, GEOS::LABEL &label);
     void LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, uint32_t dwFlags);
 
-public:
+  public:
     ~LOCATOR() override;
     LOCATOR();
     bool Init() override;

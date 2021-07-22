@@ -7,7 +7,7 @@ class POSTEVENTS_LIST
     S_EVENTMSG **pTable;
     uint32_t nClassesNum;
 
-public:
+  public:
     POSTEVENTS_LIST()
     {
         nClassesNum = 0;

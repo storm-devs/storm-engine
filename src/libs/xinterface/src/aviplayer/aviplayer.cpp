@@ -3,8 +3,8 @@
 
 #include "core.h"
 
-#include "shared/interface/messages.h"
 #include "entity.h"
+#include "shared/interface/messages.h"
 
 #define IRELEASE(i)                                                                                                    \
     {                                                                                                                  \

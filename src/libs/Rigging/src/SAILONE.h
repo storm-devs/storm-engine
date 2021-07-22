@@ -76,8 +76,7 @@ struct TEXTURESLIST
 
 struct SAILGEOMETRY
 {
-    union
-    {
+    union {
         struct
         {
             float x, y, z;
@@ -177,7 +176,7 @@ class SAILONE : public SAILONE_BASE
 {
     friend SAIL;
 
-public:
+  public:
     VDX9RENDER *RenderService;
     SAILONE();
     ~SAILONE();
@@ -206,7 +205,7 @@ public:
     uint32_t m_dwRow, m_dwCol;
     float sailWidth, sailHeight;
 
-private:
+  private:
     SAILGEOMETRY sgeo;
     void GoVWave(SAILVERTEX *pv);
     void GoTWave(SAILVERTEX *pv);

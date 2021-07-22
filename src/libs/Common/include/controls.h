@@ -80,18 +80,12 @@ struct KeyDescr
 
 class CONTROLS
 {
-public:
-    CONTROLS()
-    {
-    };
+  public:
+    CONTROLS(){};
 
-    virtual ~CONTROLS()
-    {
-    };
+    virtual ~CONTROLS(){};
 
-    virtual void Update(uint32_t DeltaTime)
-    {
-    };
+    virtual void Update(uint32_t DeltaTime){};
 
     virtual long GetSystemControlsNum()
     {
@@ -103,9 +97,7 @@ public:
         return false;
     };
 
-    virtual void ResetControlsMap()
-    {
-    };
+    virtual void ResetControlsMap(){};
 
     virtual long CreateControl(const char *control_name)
     {
@@ -152,22 +144,16 @@ public:
         return -1;
     }
 
-    virtual void MapControl(long control_code, long system_control_code)
-    {
-    };
+    virtual void MapControl(long control_code, long system_control_code){};
 
-    virtual void AppState(bool state)
-    {
-    };
+    virtual void AppState(bool state){};
 
     /*    virtual CONTROL_STATE_TYPE GetControlState(char * control_name, float * pvalue = 0){return CST_INACTIVE;};
       virtual CONTROL_STATE_TYPE GetControlState(long control_code, float * pvalue = 0){return CST_INACTIVE;};
       virtual float GetControlValue(char * control_name, CONTROL_STATE_TYPE * pstate = 0){return 0;};
       virtual float GetControlValue(long control_code, CONTROL_STATE_TYPE * pstate = 0){return 0;};
     */
-    virtual void SetControlEffect(FFB_EFFECT effect, long time = 0)
-    {
-    };
+    virtual void SetControlEffect(FFB_EFFECT effect, long time = 0){};
 
     virtual bool GetControlState(long control_code, CONTROL_STATE &_state_struct)
     {
@@ -198,21 +184,13 @@ public:
         return 0;
     };
 
-    virtual void SetControlTreshold(long control_code, float thval)
-    {
-    };
+    virtual void SetControlTreshold(long control_code, float thval){};
 
-    virtual void LockControl(const char *control_name, bool mode)
-    {
-    };
+    virtual void LockControl(const char *control_name, bool mode){};
 
-    virtual void SetMouseSensivityX(float)
-    {
-    };
+    virtual void SetMouseSensivityX(float){};
 
-    virtual void SetMouseSensivityY(float)
-    {
-    };
+    virtual void SetMouseSensivityY(float){};
 
     virtual short GetDebugAsyncKeyState(int vk)
     {

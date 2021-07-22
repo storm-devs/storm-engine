@@ -5,7 +5,7 @@
 // picture
 class CXI_CHANGER : public CINODE
 {
-public:
+  public:
     CXI_CHANGER();
     ~CXI_CHANGER() override;
 
@@ -30,11 +30,11 @@ public:
         return true;
     }
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void SetRectanglesToPosition(int nPos);
 
-protected:
+  protected:
     int m_nPlaceQuantity;
     XYRECT *m_pPlace;
 

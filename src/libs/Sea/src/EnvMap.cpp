@@ -1,8 +1,8 @@
 #include "core.h"
 
-#include "shared/messages.h"
 #include "Entity.h"
 #include "sea.h"
+#include "shared/messages.h"
 
 #include "shared/layers.h"
 

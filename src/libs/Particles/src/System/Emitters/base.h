@@ -60,11 +60,11 @@ class BaseEmitter : public IEmitter
 
     void IncreaseTime(float DeltaTime);
 
-protected:
+  protected:
     std::string Name;
     ParticleSystem *pMaster;
 
-public:
+  public:
     // Constructor / destructor
     BaseEmitter(ParticleSystem *pSystem);
     ~BaseEmitter() override;

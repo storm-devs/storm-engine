@@ -1,9 +1,9 @@
 #pragma once
 
-#include "shared/interface/messages.h"
 #include "Cvector.h"
 #include "QuestFileReader//QuestFileReader.h"
 #include "dx9render.h"
+#include "shared/interface/messages.h"
 #include "stringService.h"
 #include "vxservice.h"
 #include <EntityManager.h>

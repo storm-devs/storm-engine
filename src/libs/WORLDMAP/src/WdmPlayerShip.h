@@ -17,7 +17,7 @@ class WdmPlayerShip : public WdmShip
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmPlayerShip();
     ~WdmPlayerShip() override;
 
@@ -38,7 +38,7 @@ public:
 
     bool canSkip;
 
-protected:
+  protected:
     // Move the ship
     virtual void Move(float dltTime);
 
@@ -47,7 +47,7 @@ protected:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     bool goForward;
     float actionRadius;
     float stormEventTime;

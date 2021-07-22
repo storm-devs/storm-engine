@@ -139,7 +139,7 @@ inline int wildicmp(const char *wild, const char *string)
 
 class iStrHasher
 {
-public:
+  public:
     size_t operator()(const std::string &key) const
     {
         std::string lower_copy = key;
@@ -147,7 +147,7 @@ public:
         return inner_hasher_(lower_copy);
     }
 
-private:
+  private:
     std::hash<std::string> inner_hasher_;
 };
 

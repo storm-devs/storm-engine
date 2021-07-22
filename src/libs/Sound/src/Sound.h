@@ -22,7 +22,7 @@
 ///////////////////////////////////////////////////////////////////
 class SOUND : public Entity
 {
-public:
+  public:
     SOUND();
     ~SOUND() override;
 
@@ -46,7 +46,7 @@ public:
         }
     }
 
-private:
+  private:
     VSoundService *soundService;
     VDX9RENDER *renderer;
 };

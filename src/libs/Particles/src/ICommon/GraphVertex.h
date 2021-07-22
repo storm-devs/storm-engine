@@ -2,8 +2,7 @@
 
 struct GraphVertex
 {
-    union
-    {
+    union {
         struct
         {
             float Time;

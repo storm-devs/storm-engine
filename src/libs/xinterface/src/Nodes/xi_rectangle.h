@@ -4,7 +4,7 @@
 
 class CXI_RECTANGLE : public CINODE
 {
-public:
+  public:
     CXI_RECTANGLE();
     ~CXI_RECTANGLE() override;
 
@@ -28,7 +28,7 @@ public:
         return true;
     }
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateColors();
 

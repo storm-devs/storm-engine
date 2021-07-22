@@ -12,7 +12,7 @@ class BATTLE_INTERFACE : public Entity
 {
     VDX9RENDER *rs;
 
-public:
+  public:
     BATTLE_INTERFACE();
     ~BATTLE_INTERFACE() override;
     bool Init() override;
@@ -50,7 +50,7 @@ public:
         BattleNavigator.RestoreRender();
     };
 
-protected:
+  protected:
     BATTLE_NAVIGATOR BattleNavigator; // navigation icons
     // MESSAGE_ICONS *        m_pMessageIcons;
     BIShipIcon *m_pShipIcon; // icons of commands and target pointers in the combat menu
@@ -74,7 +74,7 @@ protected:
 
     ShipInfoImages *m_pShipInfoImages;
 
-protected:
+  protected:
     void LoadIniFile();
     void CheckSeaState();
     void EnableMessageIcons(VDATA *pvdat);

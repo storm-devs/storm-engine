@@ -35,7 +35,7 @@ class CXI_VIMAGESCROLL : public CINODE
         void Clear(int nQnt, int nStr) const;
     };
 
-public:
+  public:
     CXI_VIMAGESCROLL(CXI_VIMAGESCROLL &&) = delete;
     CXI_VIMAGESCROLL(const CXI_VIMAGESCROLL &) = delete;
     CXI_VIMAGESCROLL();
@@ -62,7 +62,7 @@ public:
     void DeleteImage(int imgNum);
     void RefreshScroll();
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     float ChangeDinamicParameters(float fYDelta);
     int FindClickedImageNum() const;
@@ -73,7 +73,7 @@ protected:
     int FindTexGroupFromOld(char **pGroupList, char *groupName, int listSize);
     long GetMousePointedPictureNum();
 
-protected:
+  protected:
     // parameters for moving to scrolling
     bool m_bDoMove;
     float m_fDeltaMove;

@@ -5,7 +5,7 @@
 // video
 class CXI_SLIDEPICTURE : public CINODE
 {
-public:
+  public:
     CXI_SLIDEPICTURE();
     ~CXI_SLIDEPICTURE() override;
     void Draw(bool bSelected, uint32_t Delta_Time) override;
@@ -24,7 +24,7 @@ public:
 
     void SetNewPicture(char *sNewTexName);
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void Update(uint32_t Delta_Time);
     long m_idTex;
@@ -44,7 +44,7 @@ protected:
         uint32_t time;
         float xspeed;
         float yspeed;
-    } *pSlideSpeedList;
+    } * pSlideSpeedList;
 
     long nSlideListSize;
 

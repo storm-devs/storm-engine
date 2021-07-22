@@ -8,7 +8,7 @@
 
 class ShipLights : public IShipLights
 {
-private:
+  private:
     struct Color
     {
         float r, g, b, a;
@@ -118,7 +118,7 @@ private:
     void AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, const GEOS::LABEL &label);
     bool SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr);
 
-public:
+  public:
     static VDX9RENDER *pRS;
     static COLLIDE *pCollide;
 

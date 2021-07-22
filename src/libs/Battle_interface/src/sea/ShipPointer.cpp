@@ -1,9 +1,9 @@
 #include "ShipPointer.h"
 #include "../bi_defines.h"
-#include "shared/battle_interface/msg_control.h"
 #include "Entity.h"
 #include "core.h"
 #include "message.h"
+#include "shared/battle_interface/msg_control.h"
 #include "ship_base.h"
 
 // define the vertices

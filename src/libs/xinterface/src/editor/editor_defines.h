@@ -13,22 +13,22 @@ enum GIEditorStates
 class GIEditorEventHandler;
 class GIEditorObject;
 
-using GIEditorEvent = void(GIEditorObject::*)();
+using GIEditorEvent = void (GIEditorObject::*)();
 
 class GIEditorObject
 {
-public:
+  public:
     virtual ~GIEditorObject()
     {
     }
 
-public:
+  public:
     void LinkEvent(GIEditorEventHandler *pEventHandler, const GIEditorEvent &pEventFunction);
 };
 
 class GIEditorEventHandler
 {
-public:
+  public:
     GIEditorEventHandler();
     ~GIEditorEventHandler();
 
@@ -36,7 +36,7 @@ public:
 
     void AddEventFunction(GIEditorObject *pObj, const GIEditorEvent &pEventFunction);
 
-protected:
+  protected:
     struct FuncDescr
     {
         GIEditorObject *pObj;

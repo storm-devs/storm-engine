@@ -7,7 +7,7 @@ class BIImageMaterial;
 
 class BIImage : public IBIImage
 {
-public:
+  public:
     BIImage(VDX9RENDER *rs, BIImageMaterial *pMaterial);
     ~BIImage() override;
 
@@ -45,7 +45,7 @@ public:
         m_nPrioritet = nPrior;
     }
 
-protected:
+  protected:
     float CalculateMidPos(float fMin, float fMax, float fK)
     {
         return fMin + fK * (fMax - fMin);

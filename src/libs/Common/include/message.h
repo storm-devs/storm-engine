@@ -17,7 +17,7 @@ using MessageParam = std::variant<uint8_t, uint16_t, uint32_t, long, float, doub
 
 class MESSAGE final
 {
-public:
+  public:
     void Move2Start()
     {
         index = 0;
@@ -166,9 +166,7 @@ public:
         format_ = _format;
         params_.resize(format_.size());
         std::transform(format_.begin(), format_.end(), params_.begin(),
-                       [&](const char c) {
-                           return GetParamValue(c, args);
-                       });
+                       [&](const char c) { return GetParamValue(c, args); });
     }
 
     char GetCurrentFormatType()
@@ -186,7 +184,7 @@ public:
         return format_;
     }
 
-private:
+  private:
     static storm::MessageParam GetParamValue(const char c, va_list &args)
     {
         switch (c)

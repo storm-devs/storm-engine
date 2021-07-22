@@ -9,7 +9,7 @@ namespace storm
 //! Abstract window
 class OSWindow
 {
-public:
+  public:
     // TODO: More events?
     enum Event
     {
@@ -25,9 +25,7 @@ public:
 
     using EventHandler = std::function<void(const Event &)>;
 
-    virtual ~OSWindow()
-    {
-    };
+    virtual ~OSWindow(){};
 
     //! Show window
     virtual void Show() = 0;

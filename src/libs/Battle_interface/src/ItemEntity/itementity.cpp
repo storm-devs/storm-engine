@@ -1,10 +1,10 @@
 #include "itementity.h"
 #include "../Utils.h"
-#include "shared/messages.h"
 #include "Entity.h"
 #include "core.h"
 #include "message.h"
 #include "model.h"
+#include "shared/messages.h"
 
 ItemEntity::ItemEntity()
 {

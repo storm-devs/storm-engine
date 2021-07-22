@@ -19,9 +19,8 @@ struct D3DXQUATERNION;
 // Quaternion representation class
 class Quaternion
 {
-public:
-    union
-    {
+  public:
+    union {
         struct
         {
             // X vector component
@@ -41,7 +40,7 @@ public:
     // -----------------------------------------------------------
     // Constructors
     // -----------------------------------------------------------
-public:
+  public:
     // Set identity quaternion
     Quaternion();
     // With rotation angles
@@ -56,7 +55,7 @@ public:
     // -----------------------------------------------------------
     // Operators
     // -----------------------------------------------------------
-public:
+  public:
     // Negation
     Quaternion &operator-();
     // Equate
@@ -79,7 +78,7 @@ public:
     // -----------------------------------------------------------
     // Filling
     // -----------------------------------------------------------
-public:
+  public:
     // Set identity quaternion
     void SetIdentity();
     // Set from angles of rotation
@@ -94,7 +93,7 @@ public:
     // -----------------------------------------------------------
     // Transformation
     // -----------------------------------------------------------
-public:
+  public:
     // Normalize
     Quaternion &Normalize();
     // Get coplanar quaternion
@@ -108,7 +107,7 @@ public:
     // -----------------------------------------------------------
     // Utilities
     // -----------------------------------------------------------
-public:
+  public:
     // Get a matrix from a quaternion
     void GetMatrix(Matrix &mtx) const;
     // Get the length of the quaternion

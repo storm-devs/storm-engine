@@ -333,7 +333,8 @@ void XINTERFACE::Realize(uint32_t Delta_Time)
     uint32_t dwFogFlag;
     pRenderService->GetRenderState(D3DRS_FOGENABLE, &dwFogFlag);
     if (pRenderService->TechniqueExecuteStart("iStartTechnique"))
-        while (pRenderService->TechniqueExecuteNext());
+        while (pRenderService->TechniqueExecuteNext())
+            ;
 
     // Get old transformation
     pRenderService->GetTransform(D3DTS_VIEW, moldv);
@@ -437,7 +438,8 @@ void XINTERFACE::Realize(uint32_t Delta_Time)
     ShowContextHelp();
 
     if (pRenderService->TechniqueExecuteStart("iExitTechnique"))
-        while (pRenderService->TechniqueExecuteNext());
+        while (pRenderService->TechniqueExecuteNext())
+            ;
     pRenderService->SetRenderState(D3DRS_FOGENABLE, dwFogFlag);
 
     // Restore old transformation
@@ -1452,8 +1454,7 @@ void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const ch
                         sscanf(stmp, "sound:%d", &pNewNod->m_pCommands[nComNum].nSound);
                     }
                 }
-            }
-            while (usedini->ReadStringNext(pNewNod->m_nodeName, "command", param, sizeof(param) - 1));
+            } while (usedini->ReadStringNext(pNewNod->m_nodeName, "command", param, sizeof(param) - 1));
     }
 
     if (m_pEditor && pNewNod)
@@ -1588,11 +1589,8 @@ void XINTERFACE::SetTooltip(const char *pcHeader, const char *pcText1, uint32_t 
         pTmpNod ? pTmpNod->m_nNodeType == NODETYPE_BORDER ? static_cast<CXI_BORDER *>(pTmpNod) : nullptr : nullptr;
     pTmpNod = FindNode("tooltip_titlerect", nullptr);
     CXI_RECTANGLE *pNodTitleRect =
-        pTmpNod
-            ? pTmpNod->m_nNodeType == NODETYPE_RECTANGLE
-                  ? static_cast<CXI_RECTANGLE *>(pTmpNod)
-                  : nullptr
-            : nullptr;
+        pTmpNod ? pTmpNod->m_nNodeType == NODETYPE_RECTANGLE ? static_cast<CXI_RECTANGLE *>(pTmpNod) : nullptr
+                : nullptr;
     pTmpNod = FindNode("tooltip_picture", nullptr);
     CXI_PICTURE *pNodPic =
         pTmpNod ? pTmpNod->m_nNodeType == NODETYPE_PICTURE ? static_cast<CXI_PICTURE *>(pTmpNod) : nullptr : nullptr;
@@ -1603,38 +1601,24 @@ void XINTERFACE::SetTooltip(const char *pcHeader, const char *pcText1, uint32_t 
     pTmpNod = FindNode("tooltip_titile", nullptr);
     CXI_STRCOLLECTION *pNodTitle =
         pTmpNod
-            ? pTmpNod->m_nNodeType == NODETYPE_STRINGCOLLECTION
-                  ? static_cast<CXI_STRCOLLECTION *>(pTmpNod)
-                  : nullptr
+            ? pTmpNod->m_nNodeType == NODETYPE_STRINGCOLLECTION ? static_cast<CXI_STRCOLLECTION *>(pTmpNod) : nullptr
             : nullptr;
     pTmpNod = FindNode("tooltip_text1", nullptr);
     CXI_FORMATEDTEXT *pNodText1 =
-        pTmpNod
-            ? pTmpNod->m_nNodeType == NODETYPE_FORMATEDTEXTS
-                  ? static_cast<CXI_FORMATEDTEXT *>(pTmpNod)
-                  : nullptr
-            : nullptr;
+        pTmpNod ? pTmpNod->m_nNodeType == NODETYPE_FORMATEDTEXTS ? static_cast<CXI_FORMATEDTEXT *>(pTmpNod) : nullptr
+                : nullptr;
     pTmpNod = FindNode("tooltip_text2", nullptr);
     CXI_FORMATEDTEXT *pNodText2 =
-        pTmpNod
-            ? pTmpNod->m_nNodeType == NODETYPE_FORMATEDTEXTS
-                  ? static_cast<CXI_FORMATEDTEXT *>(pTmpNod)
-                  : nullptr
-            : nullptr;
+        pTmpNod ? pTmpNod->m_nNodeType == NODETYPE_FORMATEDTEXTS ? static_cast<CXI_FORMATEDTEXT *>(pTmpNod) : nullptr
+                : nullptr;
     pTmpNod = FindNode("tooltip_text3", nullptr);
     CXI_FORMATEDTEXT *pNodText3 =
-        pTmpNod
-            ? pTmpNod->m_nNodeType == NODETYPE_FORMATEDTEXTS
-                  ? static_cast<CXI_FORMATEDTEXT *>(pTmpNod)
-                  : nullptr
-            : nullptr;
+        pTmpNod ? pTmpNod->m_nNodeType == NODETYPE_FORMATEDTEXTS ? static_cast<CXI_FORMATEDTEXT *>(pTmpNod) : nullptr
+                : nullptr;
     pTmpNod = FindNode("tooltip_text4", nullptr);
     CXI_FORMATEDTEXT *pNodText4 =
-        pTmpNod
-            ? pTmpNod->m_nNodeType == NODETYPE_FORMATEDTEXTS
-                  ? static_cast<CXI_FORMATEDTEXT *>(pTmpNod)
-                  : nullptr
-            : nullptr;
+        pTmpNod ? pTmpNod->m_nNodeType == NODETYPE_FORMATEDTEXTS ? static_cast<CXI_FORMATEDTEXT *>(pTmpNod) : nullptr
+                : nullptr;
     if (!pNodFrame || !pNodTitleRect || !pNodPic || !pNodTextFrame2 || !pNodTextFrame4 || !pNodTitle || !pNodText1 ||
         !pNodText2 || !pNodText3 || !pNodText4)
     {
@@ -3403,7 +3387,8 @@ int XINTERFACE::LoadIsExist()
         {
             int nLen = strlen(datBuf);
             int i;
-            for (i = strlen(datBuf); i >= 0 && datBuf[i] != '@'; i--);
+            for (i = strlen(datBuf); i >= 0 && datBuf[i] != '@'; i--)
+                ;
             if (i < 0)
             {
                 i = 0;

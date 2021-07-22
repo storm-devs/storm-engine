@@ -25,7 +25,7 @@ class TM_LIST
     uint32_t EditMask;
     HFONT hFont;
 
-public:
+  public:
     TM_LIST();
     virtual ~TM_LIST();
 
@@ -74,14 +74,10 @@ public:
         EditMask = mask;
     }
 
-    virtual void ProcessMessage(uint32_t, uint32_t, uint32_t)
-    {
-    };
+    virtual void ProcessMessage(uint32_t, uint32_t, uint32_t){};
     virtual void ItemChanged(long Item_index, long Subitem_index) = 0;
 
-    virtual void PostProcess()
-    {
-    };
+    virtual void PostProcess(){};
 
     virtual void SetFont(HFONT _hfont)
     {

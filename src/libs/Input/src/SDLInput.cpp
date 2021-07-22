@@ -288,8 +288,7 @@ inline unsigned int keyToSDL(KeyboardKey key)
 }
 } // namespace
 
-SDLInput::SDLInput()
-    : keyStates_(nullptr)
+SDLInput::SDLInput() : keyStates_(nullptr)
 {
     keyStates_ = SDL_GetKeyboardState(nullptr);
     SDL_SetRelativeMouseMode(SDL_TRUE);

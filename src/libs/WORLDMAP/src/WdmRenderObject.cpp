@@ -23,7 +23,8 @@ WdmRenderObject::WdmRenderObject()
     isEnablePause = true;
     if (firstObject)
     {
-        for (prevObject = firstObject; prevObject->nextObject; prevObject = prevObject->nextObject);
+        for (prevObject = firstObject; prevObject->nextObject; prevObject = prevObject->nextObject)
+            ;
         prevObject->nextObject = this;
         nextObject = nullptr;
     }

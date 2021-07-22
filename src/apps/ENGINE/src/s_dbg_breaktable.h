@@ -16,7 +16,7 @@ class BREAKPOINTS_TABLE
     char ProjectName[MAX_PATH];
     bool bReleased;
 
-public:
+  public:
     BREAKPOINTS_TABLE();
     ~BREAKPOINTS_TABLE();
     bool ReadProject(const char *filename);

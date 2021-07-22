@@ -9,14 +9,10 @@
 
 class VSTRING_CODEC
 {
-public:
-    VSTRING_CODEC()
-    {
-    };
+  public:
+    VSTRING_CODEC(){};
 
-    virtual ~VSTRING_CODEC()
-    {
-    };
+    virtual ~VSTRING_CODEC(){};
     virtual uint32_t GetNum() = 0;
     virtual uint32_t Convert(const char *pString) = 0;
     virtual uint32_t Convert(const char *pString, long iLen) = 0;
@@ -86,7 +82,7 @@ class ATTRIBUTES
         return attr;
     }
 
-public:
+  public:
     ATTRIBUTES(VSTRING_CODEC *p)
     {
         pVStringCodec = p;

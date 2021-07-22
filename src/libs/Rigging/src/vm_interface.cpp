@@ -2,9 +2,9 @@
 
 #include "Flag.h"
 #include "Rope.h"
+#include "Vant.h"
 #include "sail.h"
 #include "script_func.h"
-#include "Vant.h"
 
 CREATE_CLASS(SAIL)
 

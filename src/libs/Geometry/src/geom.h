@@ -58,7 +58,7 @@ class GEOM : public GEOS
     long traceid;
     DVECTOR src, dst;
 
-public:
+  public:
     GEOM(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags);
     virtual ~GEOM();
 

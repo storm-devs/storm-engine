@@ -3,9 +3,9 @@
 #include "core.h"
 
 #include "../Utils.h"
-#include "shared/battle_interface/msg_control.h"
 #include "battle_shipcommand.h"
 #include "controls.h"
+#include "shared/battle_interface/msg_control.h"
 
 BIShipIcon::BIShipIcon(entid_t BIEntityID, VDX9RENDER *pRS)
 {
@@ -264,8 +264,7 @@ void BIShipIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
             do
             {
                 m_aClassProgress.push_back(BIUtils::GetFromStr_Float((const char *&)pcTmp, 0.f));
-            }
-            while (pcTmp[0]);
+            } while (pcTmp[0]);
         }
 
         m_nCommandListVerticalOffset = pA->GetAttributeAsDword("commandlistverticaloffset");

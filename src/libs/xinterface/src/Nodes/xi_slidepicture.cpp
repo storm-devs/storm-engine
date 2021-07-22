@@ -143,8 +143,7 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         do
         {
             nSlideListSize++;
-        }
-        while (ini1->ReadStringNext(name1, "speed", param, sizeof(param) - 1));
+        } while (ini1->ReadStringNext(name1, "speed", param, sizeof(param) - 1));
     }
     else
     {
@@ -154,8 +153,7 @@ void CXI_SLIDEPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
             do
             {
                 nSlideListSize++;
-            }
-            while (ini2->ReadStringNext(name2, "speed", param, sizeof(param) - 1));
+            } while (ini2->ReadStringNext(name2, "speed", param, sizeof(param) - 1));
         }
     }
 

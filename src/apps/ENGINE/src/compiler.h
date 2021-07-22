@@ -66,13 +66,12 @@ struct DOUBLE_DWORD
 
 class SLIBHOLDER
 {
-public:
+  public:
     HINSTANCE hInst;
     SCRIPT_LIBRIARY *pLib;
     char *pName;
 
-    SLIBHOLDER()
-        : hInst(nullptr)
+    SLIBHOLDER() : hInst(nullptr)
     {
         pLib = nullptr;
         pName = nullptr;
@@ -180,7 +179,7 @@ class COMPILER : public VIRTUAL_COMPILER
     DATA ExpressionResult;
     ATTRIBUTES *rAP;
 
-public:
+  public:
     std::shared_ptr<spdlog::logger> tracelog;
     std::shared_ptr<spdlog::logger> errorlog;
     std::shared_ptr<spdlog::logger> warninglog;

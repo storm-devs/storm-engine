@@ -10,7 +10,7 @@
 
 class FirePlace
 {
-public:
+  public:
     FirePlace();
     ~FirePlace();
 
@@ -68,7 +68,7 @@ public:
 
     static entid_t eidSound;
 
-private:
+  private:
     bool CreateParticle(const char *pParticleSmokeName, const char *pParticleFireName);
     void DeleteParticle();
 

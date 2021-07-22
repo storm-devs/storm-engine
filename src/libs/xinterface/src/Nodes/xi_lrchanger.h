@@ -5,7 +5,7 @@
 // picture
 class CXI_LRCHANGER : public CINODE
 {
-public:
+  public:
     CXI_LRCHANGER();
     ~CXI_LRCHANGER() override;
 
@@ -24,10 +24,10 @@ public:
     void SaveParametersToIni() override;
     long GetClickState() override;
 
-protected:
+  protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
-protected:
+  protected:
     char *m_sGroupName;
     long m_idTex; // texture identity
 

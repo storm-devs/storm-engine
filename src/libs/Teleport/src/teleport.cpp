@@ -2,8 +2,8 @@
 
 #include "core.h"
 
-#include "pcs_controls.h"
 #include "defines.h"
+#include "pcs_controls.h"
 #include "vfile_service.h"
 
 CREATE_CLASS(TMPTELEPORT)
@@ -267,8 +267,7 @@ void TMPTELEPORT::SortShowData()
                 bContinueSort = true;
             }
         }
-    }
-    while (bContinueSort);
+    } while (bContinueSort);
 }
 
 void TMPTELEPORT::XChange(TELEPORT_DESCR &d1, TELEPORT_DESCR &d2)

@@ -13,7 +13,7 @@ class WATERFLARE : public Entity
 
     void GenerateFlares();
 
-public:
+  public:
     WATERFLARE();
     ~WATERFLARE() override;
 

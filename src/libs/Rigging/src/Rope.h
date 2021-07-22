@@ -49,7 +49,7 @@ class ROPE : public ROPE_BASE
 
     VDX9RENDER *RenderService;
 
-public:
+  public:
     ROPE();
     ~ROPE() override;
     // Entity Function
@@ -83,7 +83,7 @@ public:
     bool IsAbsentRope(entid_t mdl_id, int ropenum) override;
     void DoDeleteUntie(entid_t mdl_id, NODE *rnod, int gNum) override;
 
-private:
+  private:
     ROPEVERTEX *vertBuf;
 
     // ropes list

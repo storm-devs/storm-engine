@@ -13,7 +13,7 @@ class S_STACK : public VS_STACK
     uint32_t Data_num;
     VIRTUAL_COMPILER *pVCompiler;
 
-public:
+  public:
     S_STACK();
     ~S_STACK();
     void Release();

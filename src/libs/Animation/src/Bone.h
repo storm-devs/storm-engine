@@ -37,7 +37,7 @@ class Bone
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     Bone();
     virtual ~Bone();
     // Set parent
@@ -54,7 +54,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Working with a bone
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     // Add animation frames
     void BlendFrame(long frame, float kBlend, D3DXQUATERNION &res);
     // void BlendFrame(float frame);
@@ -70,7 +70,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     void GetFrame(long f, D3DXQUATERNION &qt);
     float Clamp(float v, const char *str);
     // Linear position interpolation
@@ -78,7 +78,7 @@ private:
     // Linear Angle Interpolation
     float LerpAng(float a, float b, float k);
 
-public:
+  public:
     Bone *parent; // Parent bone
 
 #ifdef ANI_COMPRESS_ENABLE

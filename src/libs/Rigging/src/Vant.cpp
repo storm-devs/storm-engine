@@ -1,8 +1,8 @@
 #include "Vant.h"
-#include "shared/sail_msg.h"
 #include "Entity.h"
 #include "core.h"
 #include "defines.h"
+#include "shared/sail_msg.h"
 #include "ship_base.h"
 #include "vfile_service.h"
 
@@ -408,9 +408,9 @@ void VANT_BASE::SetVertexes() const
             // Set angles point
             pv[iv].pos = uPos;
             pv[iv + 3].pos = pv[iv + 1].pos =
-                             uPos - horzDirect * (upWidth * .5f) + vertDirect * upHeight * (1.f - fBalkHeight);
+                uPos - horzDirect * (upWidth * .5f) + vertDirect * upHeight * (1.f - fBalkHeight);
             pv[iv + 4].pos = pv[iv + 2].pos =
-                             uPos + horzDirect * (upWidth * .5f) + vertDirect * upHeight * (1.f - fBalkHeight);
+                uPos + horzDirect * (upWidth * .5f) + vertDirect * upHeight * (1.f - fBalkHeight);
             pv[iv + 5].pos = lPos;
             pv[iv + 6].pos = rPos;
             //

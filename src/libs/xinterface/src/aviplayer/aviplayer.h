@@ -18,7 +18,7 @@ class CAviPlayer : public xiBaseVideo
     VDX9RENDER *rs;
     bool m_bShowVideo;
 
-public:
+  public:
     CAviPlayer();
     ~CAviPlayer() override;
     bool Init() override;
@@ -53,7 +53,7 @@ public:
         return pTex;
     }
 
-protected:
+  protected:
     bool m_bContinue;
 
     IDirectDraw *pDD;

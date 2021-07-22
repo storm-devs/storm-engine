@@ -14,9 +14,8 @@
 // Class for representing a vector in 3D space
 class Vector
 {
-public:
-    union
-    {
+  public:
+    union {
         struct
         {
             // The X component
@@ -34,7 +33,7 @@ public:
     // -----------------------------------------------------------
     // Constructors
     // -----------------------------------------------------------
-public:
+  public:
     // Empty constructor
     Vector();
     // Fill with number
@@ -53,7 +52,7 @@ public:
     // -----------------------------------------------------------
     // Operators
     // -----------------------------------------------------------
-public:
+  public:
     // Find the square of the length of a vector
     float operator~() const;
     // Return normalized vector
@@ -101,7 +100,7 @@ public:
     // -----------------------------------------------------------
     // Transformation
     // -----------------------------------------------------------
-public:
+  public:
     // Normalize the vector, and return it to its former length
     float Normalize();
     // Project to XZ Plane and Normalize
@@ -127,7 +126,7 @@ public:
     // -----------------------------------------------------------
     // Utilities
     // -----------------------------------------------------------
-public:
+  public:
     // Set new values
     Vector &Set(float x, float y, float z);
     // Set new values
@@ -868,7 +867,7 @@ inline float Vector::GetAngle(const Vector &v) const
     auto len = static_cast<double>(x) * static_cast<double>(x) + static_cast<double>(y) * static_cast<double>(y) +
                static_cast<double>(z) * static_cast<double>(z);
     len *= static_cast<double>(x) * static_cast<double>(x) + static_cast<double>(y) * static_cast<double>(y) +
-        static_cast<double>(z) * static_cast<double>(z);
+           static_cast<double>(z) * static_cast<double>(z);
     if (len <= 0.0)
         return 0.0f;
     auto cs = (x * v.x + y * v.y + z * v.z) / sqrt(len);

@@ -10,10 +10,10 @@
 
 #include "Player.h"
 
-#include "shared/messages.h"
 #include "Location.h"
 #include "LocationCamera.h"
 #include "collide.h"
+#include "shared/messages.h"
 
 // ============================================================================================
 // Construction, destruction

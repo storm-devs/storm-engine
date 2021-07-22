@@ -5,8 +5,7 @@
 #include "rands.h"
 
 //--------------------------------------------------------------------
-TSinkSplash::TSinkSplash()
-    : ps(nullptr), enabled(false), sea(nullptr), time(0)
+TSinkSplash::TSinkSplash() : ps(nullptr), enabled(false), sea(nullptr), time(0)
 {
 }
 

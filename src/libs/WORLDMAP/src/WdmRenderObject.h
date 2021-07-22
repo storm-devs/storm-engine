@@ -18,26 +18,18 @@ class WdmRenderObject
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     WdmRenderObject();
     virtual ~WdmRenderObject();
 
     // Calculations
-    virtual void Update(float dltTime)
-    {
-    };
+    virtual void Update(float dltTime){};
     // Rendering
-    virtual void PRender(VDX9RENDER *rs)
-    {
-    };
+    virtual void PRender(VDX9RENDER *rs){};
 
-    virtual void MRender(VDX9RENDER *rs)
-    {
-    };
+    virtual void MRender(VDX9RENDER *rs){};
 
-    virtual void LRender(VDX9RENDER *rs)
-    {
-    };
+    virtual void LRender(VDX9RENDER *rs){};
 
     static void DeleteAllObjects();
 
@@ -47,7 +39,7 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     WdmRenderObject *prevObject;
     WdmRenderObject *nextObject;
     static WdmRenderObject *firstObject;

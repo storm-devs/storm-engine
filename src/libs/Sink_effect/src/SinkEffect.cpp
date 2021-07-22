@@ -1,14 +1,13 @@
 #include "SinkEffect.H"
-#include "shared/messages.h"
 #include "Entity.h"
 #include "core.h"
+#include "shared/messages.h"
 #include "ship_base.h"
 
 CREATE_CLASS(SINKEFFECT)
 
 //--------------------------------------------------------------------
-SINKEFFECT::SINKEFFECT()
-    : renderer(nullptr), sea(nullptr)
+SINKEFFECT::SINKEFFECT() : renderer(nullptr), sea(nullptr)
 {
 }
 

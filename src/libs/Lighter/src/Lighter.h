@@ -17,7 +17,7 @@ class Lighter : public Entity
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     Lighter();
     virtual ~Lighter();
 
@@ -49,14 +49,14 @@ public:
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     void MsgAddModel(MESSAGE &message);
     void MsgModelsPath(MESSAGE &message);
     void MsgLightPath(MESSAGE &message);
     void MsgAddLight(MESSAGE &message);
     void PreparingData();
 
-private:
+  private:
     VDX9RENDER *rs;
 
     LGeometry geometry;

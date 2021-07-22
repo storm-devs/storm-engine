@@ -9,7 +9,7 @@
 // ============================================================================
 class AICannon
 {
-private:
+  private:
     AIAttributesHolder *pAHolder;
     entid_t eidParent;       // parent for cannon (ship, or fort entity)
     CVECTOR vPos, vDir;      // Cannon position and direction(relative to parent)
@@ -31,7 +31,7 @@ private:
 
     void RealFire(); // immediatelly fire!
 
-public:
+  public:
     enum CANNONTYPE
     {
         CANNONTYPE_NORMAL = 0,
@@ -138,6 +138,6 @@ public:
     void Save(CSaveLoad *pSL) const;
     void Load(CSaveLoad *pSL, AIAttributesHolder *_pAHolder, entid_t eid);
 
-private:
+  private:
     CANNONTYPE CannonType;
 };

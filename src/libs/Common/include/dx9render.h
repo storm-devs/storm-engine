@@ -68,11 +68,9 @@ class CVideoTexture;
 
 class VDX9RENDER : public SERVICE
 {
-public:
+  public:
     // DX9Render: Construct/Destruct
-    ~VDX9RENDER() override
-    {
-    };
+    ~VDX9RENDER() override{};
 
     // DX9Render: Init/Release
     virtual bool InitDevice(bool windowed, HWND hwnd, long width, long height) = 0;

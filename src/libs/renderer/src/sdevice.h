@@ -82,14 +82,10 @@ extern uint32_t dwSoundBytesCached;
 
 class DX9RENDER_SCRIPT_LIBRIARY : public SCRIPT_LIBRIARY
 {
-public:
-    DX9RENDER_SCRIPT_LIBRIARY()
-    {
-    };
+  public:
+    DX9RENDER_SCRIPT_LIBRIARY(){};
 
-    ~DX9RENDER_SCRIPT_LIBRIARY() override
-    {
-    };
+    ~DX9RENDER_SCRIPT_LIBRIARY() override{};
     bool Init() override;
 };
 
@@ -260,7 +256,7 @@ class DX9RENDER : public VDX9RENDER
     void SaveCaptureBuffers();
     void PrepareCapture();
 
-public:
+  public:
     static DX9RENDER *pRS;
 
     DX9RENDER();

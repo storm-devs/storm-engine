@@ -83,7 +83,7 @@ class SAIL : public SAIL_BASE
     long texl;
     long m_nEmptyGerbTex;
 
-public:
+  public:
     SAIL();
     ~SAIL() override;
     // Entity func
@@ -137,7 +137,7 @@ public:
 
     SAILGROUP sg;
 
-private:
+  private:
     SAILTIME tm;
     // list of all sails
     int sailQuantity;

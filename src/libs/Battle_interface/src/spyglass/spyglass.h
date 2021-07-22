@@ -84,7 +84,7 @@ class ISPYGLASS : public Entity
         float fCurActivateTime;
     };
 
-public:
+  public:
     ISPYGLASS();
     ~ISPYGLASS() override;
     bool Init() override;
@@ -109,7 +109,7 @@ public:
         }
     }
 
-protected:
+  protected:
     VDX9RENDER *rs;
     BIImageRender *m_pImgRender;
 
@@ -172,7 +172,7 @@ protected:
     float m_fInfoKeepDelay;
     float m_fMaxInfoKeepDelay;
 
-protected:
+  protected:
     void Release();
     ATTRIBUTES *GetAttr(const char *pcAttrName) const;
     void TurnOnTelescope(bool bTurnOn);

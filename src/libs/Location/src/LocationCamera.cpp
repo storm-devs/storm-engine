@@ -12,11 +12,11 @@
 
 #include "core.h"
 
-#include "shared/messages.h"
 #include "Character.h"
 #include "Location.h"
 #include "entity.h"
 #include "sea_base.h"
+#include "shared/messages.h"
 
 //#define CAMERA_VIEW_TEST_ENABLE
 #define CAMERA_VIEW_TEST_R 3

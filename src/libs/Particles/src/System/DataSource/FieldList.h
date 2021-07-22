@@ -17,7 +17,7 @@ class DataUV;
 
 class FieldList
 {
-public:
+  public:
     struct FieldDesc
     {
         // This flag is used when converting
@@ -36,7 +36,7 @@ public:
         void *pPointer;
     };
 
-private:
+  private:
     std::vector<FieldDesc> Fields;
 
     void DeleteFieldData(const FieldDesc &pData);
@@ -61,7 +61,7 @@ private:
 
     FieldDesc *FindField(const char *Name);
 
-public:
+  public:
     FieldList();
     ~FieldList();
 

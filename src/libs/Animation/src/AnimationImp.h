@@ -24,7 +24,7 @@ class AnimationImp final : public Animation
     // --------------------------------------------------------------------------------------------
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
-public:
+  public:
     AnimationImp(long id, AnimationInfo *animationInfo);
     ~AnimationImp() override;
 
@@ -34,7 +34,7 @@ public:
     //--------------------------------------------------------------------------------------------
     // Animation
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     // Access the action player
     ActionPlayer &Player(long index) override;
     // Access the animation timer
@@ -69,7 +69,7 @@ public:
     //--------------------------------------------------------------------------------------------
     // AnimationImp
     //--------------------------------------------------------------------------------------------
-public:
+  public:
     // Get thisID
     long GetThisID();
     // Get pointer to AnimationInfo
@@ -107,14 +107,14 @@ public:
     // External event
     void AteExtern(long plIndex, const char *evt);
 
-private:
+  private:
     // Send events
     void SendEvent(AnimationEvent event, long index);
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
-private:
+  private:
     // identifier
     long thisID;
     // Animation pointer

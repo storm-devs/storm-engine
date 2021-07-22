@@ -23,7 +23,7 @@ class NODER : public NODE
     float max_view_dist;
     float distance_blend;
 
-public:
+  public:
     // local radius and center of whole node with children
     float radius;
     CVECTOR center;
@@ -93,7 +93,7 @@ class MODELR : public MODEL
 
     unsigned short *idxBuff;
 
-public:
+  public:
     NODER *root;
 
     MODELR();
@@ -135,7 +135,7 @@ public:
 
     NODE *GetCollideNode() override;
 
-protected:
+  protected:
     bool useBlend;
     uint32_t blendTime, passedTime;
     std::string blendTechnique;

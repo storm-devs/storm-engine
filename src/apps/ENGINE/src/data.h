@@ -5,14 +5,10 @@
 
 class VIRTUAL_COMPILER
 {
-public:
-    virtual void SetError(const char *data_PTR, ...)
-    {
-    };
+  public:
+    virtual void SetError(const char *data_PTR, ...){};
 
-    virtual void SetWarning(const char *data_PTR, ...)
-    {
-    };
+    virtual void SetWarning(const char *data_PTR, ...){};
 
     virtual VSTRING_CODEC *GetVSC()
     {
@@ -53,7 +49,7 @@ class DATA : public VDATA
     std::vector<DATA> ArrayPTR;
     uint32_t nGlobalVarTableIndex;
 
-public:
+  public:
     ATTRIBUTES *AttributesClass;
     // ATTRIBUTES Attributes;
     DATA *GetReference();

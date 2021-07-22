@@ -249,8 +249,7 @@ bool HELPCHOOSER::RunChooser(const char *ChooserGroup)
         do
         {
             m_nRectQ++;
-        }
-        while (ini->ReadStringNext(ChooserGroup, "rect", param, sizeof(param) - 1));
+        } while (ini->ReadStringNext(ChooserGroup, "rect", param, sizeof(param) - 1));
     // create an array of coordinates of the selection rectangles
     if (m_nRectQ > 0)
     {
@@ -385,10 +384,10 @@ void HELPCHOOSER::SetRectangle(long newRectNum)
     pv[5].tv = pv[7].tv = pv[11].tv = pv[13].tv = m_pRectList[newRectNum].bottom;
 
     pv[1].pos.x = pv[7].pos.x = pv[9].pos.x = pv[10].pos.x = pv[11].pos.x =
-                                                             m_pRectList[newRectNum].left * m_fScreenWidth;
+        m_pRectList[newRectNum].left * m_fScreenWidth;
     pv[3].pos.x = pv[5].pos.x = pv[12].pos.x = pv[13].pos.x = m_pRectList[newRectNum].right * m_fScreenWidth;
     pv[1].pos.y = pv[3].pos.y = pv[9].pos.y = pv[10].pos.y = pv[12].pos.y =
-                                                             m_pRectList[newRectNum].top * m_fScreenHeight;
+        m_pRectList[newRectNum].top * m_fScreenHeight;
     pv[5].pos.y = pv[7].pos.y = pv[11].pos.y = pv[13].pos.y = m_pRectList[newRectNum].bottom * m_fScreenHeight;
 
     pv[14].pos.x = pv[15].pos.x = m_fCurMouseX - m_nMouseCornerX;

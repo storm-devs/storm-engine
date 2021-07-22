@@ -9,16 +9,14 @@ class SDBG_STATICLIST
     HWND hMain;
     long nLines;
 
-public:
+  public:
     SDBG_STATICLIST()
     {
         hMain = nullptr;
         nLines = 0;
     };
 
-    ~SDBG_STATICLIST()
-    {
-    };
+    ~SDBG_STATICLIST(){};
 
     bool Init(long lines, RECT rParent, RECT rChild, HINSTANCE hInstance, HWND _hmain)
     {

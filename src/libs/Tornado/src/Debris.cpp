@@ -9,18 +9,17 @@
 //============================================================================================
 
 #include "Debris.h"
-#include "shared/messages.h"
 #include "Entity.h"
 #include "core.h"
 #include "geometry.h"
+#include "shared/messages.h"
 #include "ship_base.h"
 
 // ============================================================================================
 // Construction, destruction
 // ============================================================================================
 
-Debris::Debris(Pillar &_pillar)
-    : pillar(_pillar)
+Debris::Debris(Pillar &_pillar) : pillar(_pillar)
 {
     numModels = 0;
     flyCounter = 0;

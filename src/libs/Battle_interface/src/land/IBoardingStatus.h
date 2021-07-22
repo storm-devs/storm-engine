@@ -6,7 +6,7 @@ class IBoardingStatus : public Entity
 {
     VDX9RENDER *rs;
 
-public:
+  public:
     IBoardingStatus();
     ~IBoardingStatus() override;
     bool Init() override;
@@ -29,11 +29,11 @@ public:
         }
     }
 
-protected:
+  protected:
     void Create();
     void SetCharactersHP(float myHP, float enemyHP);
 
-protected:
+  protected:
     // show parameters
     //-----------------------
     long m_Width;
