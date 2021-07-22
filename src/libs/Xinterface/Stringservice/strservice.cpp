@@ -1425,24 +1425,22 @@ uint32_t _DialogAssembleStr(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     const char *pcID = pDat->GetString();
 
-    char param[4096];
+    std::string param;
     const char *pcStr =
         g_StringServicePointer ? static_cast<STRSERVICE *>(g_StringServicePointer)->TranslateForDialog(pcID) : pcID;
     if (pcStr)
     {
-        std::vector<QUEST_FILE_READER::UserData> aUserData;
+        std::vector<storm::QuestFileReader::UserData> userData;
         if (pcParam)
-            QUEST_FILE_READER::FillUserDataList((char *)pcParam, aUserData);
-        QUEST_FILE_READER::AssembleStringToBuffer(pcStr, strlen(pcStr), param, sizeof(param), aUserData);
-        aUserData.clear();
+            storm::QuestFileReader::FillUserDataList((char *)pcParam, userData);
+        storm::QuestFileReader::AssembleStringToBuffer(pcStr, param, userData);
+        userData.clear();
     }
-    else
-        param[0] = 0;
 
     pDat = (VDATA *)pS->Push();
     if (!pDat)
         return IFUNCRESULT_FAILED;
-    pDat->Set(param);
+    pDat->Set(param.c_str());
     return IFUNCRESULT_OK;
 }
 
