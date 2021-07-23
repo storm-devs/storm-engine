@@ -29,6 +29,7 @@ endforeach()
 ###
 
 option(STORM_ENABLE_STEAM "Enable Steam integration" OFF)
+option(STORM_ENABLE_CRASH_REPORTS "Enable automatic crash reports" OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 

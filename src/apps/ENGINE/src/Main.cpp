@@ -65,7 +65,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     fio = &File_Service;
 
     // Init diagnostics
-    const auto lifecycleDiagnosticsGuard = lifecycleDiagnostics.initialize(true);
+    const auto lifecycleDiagnosticsGuard =
+#ifdef STORM_ENABLE_CRASH_REPORTS
+        lifecycleDiagnostics.initialize(true);
+#else
+        lifecycleDiagnostics.initialize(false);
+#endif
     if (!lifecycleDiagnosticsGuard)
     {
         spdlog::error("Unable to initialize lifecycle service");
