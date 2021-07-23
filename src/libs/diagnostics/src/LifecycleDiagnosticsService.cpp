@@ -8,12 +8,9 @@
 
 #include "storm/fs.h"
 #include "vfile_service.h"
+#include "spdlog_sinks/syncable_sink.hpp"
 
 #ifdef _UNICODE
-#if !__has_include("tchar.h")
-#error tchar.h not found
-#endif
-
 #include <tchar.h>
 #define sentry_options_set_database_path sentry_options_set_database_pathw
 #define sentry_options_set_handler_path sentry_options_set_handler_pathw
@@ -22,12 +19,6 @@
 #include <cstdlib>
 #define _T(x) x
 #define _tsystem std::system
-#define _tfopen fopen
-#endif
-
-#ifdef _WIN32
-#include <fileapi.h>
-#include <io.h>
 #endif
 
 namespace storm::diag
@@ -105,13 +96,13 @@ class LoggingService final
 
             if (doSync)
             {
-                FILE *file = _tfopen(getLogPath(l).c_str(), _T("r"));
-#ifdef _WIN32
-                FlushFileBuffers(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(file))));
-#else
-                fsync(fileno(file));
-#endif
-                fclose(file);
+                for (auto &sink : l->sinks())
+                {
+                    if (auto syncable_sink = std::dynamic_pointer_cast<spdlog_sinks::syncable_sink>(sink))
+                    {
+                        syncable_sink->sync();
+                    }
+                }
             }
         });
     }
@@ -124,6 +115,7 @@ class LoggingService final
             cv_.wait(lock, [this] { return flushRequested_; });
 
             flushAll(terminate_.load());
+
             flushRequested_ = false;
             cv_.notify_one();
         }

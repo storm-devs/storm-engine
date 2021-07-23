@@ -18,7 +18,6 @@ cmake
 sdl2:sdl2main=False
 sentry-native:backend=crashpad
 sentry-native:transport=winhttp
-spdlog:header_only=True
 
 [imports]
 bin, crashpad_handler.exe -> ./bin

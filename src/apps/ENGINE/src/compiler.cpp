@@ -5,7 +5,7 @@
 #include <zlib.h>
 
 #include "s_debug.h"
-#include "storm/logging.h"
+#include "logging.hpp"
 #include "storm_assert.h"
 
 #define SKIP_COMMENT_TRACING

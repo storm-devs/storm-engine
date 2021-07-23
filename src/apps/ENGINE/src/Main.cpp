@@ -1,10 +1,11 @@
 #include "LifecycleDiagnosticsService.hpp"
+#include "logging.hpp"
+
 #include "SteamApi.hpp"
 #include "compiler.h"
 #include "file_service.h"
 #include "s_debug.h"
 #include "storm/fs.h"
-#include "storm/logging.h"
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
@@ -15,8 +16,6 @@
 VFILE_SERVICE *fio = nullptr;
 CORE core;
 S_DEBUG CDebug;
-
-using namespace storm;
 
 namespace
 {
@@ -30,19 +29,19 @@ storm::diag::LifecycleDiagnosticsService lifecycleDiagnostics;
 
 } // namespace
 
-void HandleWindowEvent(const OSWindow::Event &event)
+void HandleWindowEvent(const storm::OSWindow::Event &event)
 {
-    if (event == OSWindow::Closed)
+    if (event == storm::OSWindow::Closed)
     {
         isRunning = false;
         core.Event("DestroyWindow", nullptr);
     }
-    else if (event == OSWindow::FocusGained)
+    else if (event == storm::OSWindow::FocusGained)
     {
         bActive = true;
         core.AppState(bActive);
     }
-    else if (event == OSWindow::FocusLost)
+    else if (event == storm::OSWindow::FocusLost)
     {
         bActive = false;
         core.AppState(bActive);
@@ -137,8 +136,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                 if (dwNewTime - dwOldTime < dwMS)
                     continue;
                 dwOldTime = dwNewTime;
-
-                lifecycleDiagnostics.notifyAfterRun();
             }
             const auto runResult = core.Run();
             if (!isHold && !runResult)
@@ -146,6 +143,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                 isHold = true;
                 isRunning = false;
             }
+
+            lifecycleDiagnostics.notifyAfterRun();
         }
         else
         {

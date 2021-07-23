@@ -5,6 +5,7 @@ STORM_SETUP(
 	
     # internal
     common
+    diagnostics
     util
     window
 
