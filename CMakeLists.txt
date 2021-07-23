@@ -37,6 +37,7 @@ include(StormSetup)
 set(SRC_DIRS "src" CACHE STRING "File locations for public header files" FORCE)
 set(PUBLIC_INCLUDE_DIRS "include" CACHE STRING "File locations for source files" FORCE)
 set(TESTSUITE_DIRS "testsuite" CACHE STRING "File locations for tests" FORCE)
+set(RESOURCE_DIRS "rsrc" CACHE STRING "File locations for tests" FORCE)
 
 set(SOURCE_FILE_EXTENSIONS "*.cpp" CACHE STRING "File extensions for source files" FORCE)
 set(HEADER_FILE_EXTENSIONS "*.h" "*.hpp" CACHE STRING "File extensions for header files" FORCE)

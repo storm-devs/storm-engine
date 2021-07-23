@@ -38,14 +38,14 @@ macro(_get_relative_path_folder out path)
   file(RELATIVE_PATH PROJECT_RELATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}"
        "${dir}")
 
-  set(base_folders "${SRC_DIRS};${PUBLIC_INCLUDE_DIRS};TESTSUITE_DIRS")
+  set(base_folders "${SRC_DIRS};${PUBLIC_INCLUDE_DIRS};${TESTSUITE_DIRS};${RESOURCE_DIRS}")
   list(JOIN base_folders "|" folders_match)
 
   string(REGEX REPLACE "((${folders_match})\/?)" "" ${out}
                        "${PROJECT_RELATIVE_PATH}")
 endmacro()
 
-macro(_process_sources group out public_header_only)
+macro(_process_sources group out only_headers)
   set(files_list "${ARGN}")
   if(files_list)
     # add to srcs list
@@ -53,10 +53,10 @@ macro(_process_sources group out public_header_only)
 
     # mark as HEADER_FILE_ONLY if specified
     set_source_files_properties(${files_list} PROPERTIES HEADER_FILE_ONLY
-                                                         ${public_header_only})
+                                                         ${only_headers})
 
     # map to source group (basically for Visual Studio)
-    if(group)
+    if(NOT group STREQUAL "")
       foreach(file ${files_list})
         _get_relative_path_folder(relative_path ${file})
         if(relative_path)
@@ -107,9 +107,16 @@ macro(_collect_sources)
     list(APPEND test_files ${glob_result})
   endforeach()
 
+  # parse resource dirs
+  foreach(dir ${RESOURCE_DIRS})
+    file(GLOB_RECURSE glob_result CONFIGURE_DEPENDS ${dir}/*)
+    list(APPEND resource_files ${glob_result})
+  endforeach()
+
   # add collected files
   _process_sources("Public Headers" SRCS YES ${public_include_files})
   _process_sources("Source Files" SRCS NO ${src_files})
+  _process_sources("Resource Files" SRCS NO ${resource_files})
   _process_sources("" TEST_SRCS NO ${test_files})
 
   list(REMOVE_DUPLICATES SRCS)
