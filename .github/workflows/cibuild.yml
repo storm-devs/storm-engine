@@ -1,6 +1,11 @@
-name: CI
+name: On pull request
 
-on: [push, pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/**'
+      - '*.md'
 
 jobs:
   build-windows:
@@ -35,3 +40,9 @@ jobs:
       with:
         name: storm-engine.${{ matrix.configuration }}-steam-${{ matrix.enable_steam}}
         path: build\${{ matrix.configuration }}\bin
+#    - name: sentry-cli
+#      uses: actions/setup-node@v2
+#      with:
+#        node-version: '12'
+#    - run: npm install @sentry/cli
+#    - run: ./node_modules/.bin/sentry-cli --auth-token ${{ secrets.SENTRY_AUTH_TOKEN }} upload-dif --org storm-devs --project storm-engine "build\${{ matrix.configuration }}\bin\engine.pdb"
