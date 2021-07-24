@@ -319,6 +319,8 @@ class DX9RENDER : public VDX9RENDER
     // DX9Render: Screenshot Section
     void SaveShoot() override;
 
+    void BGFXRenderToBackBuffer();
+
     // DX9Render: Clip Planes Section
     HRESULT SetClipPlane(uint32_t Index, CONST float *pPlane) override;
     PLANE *GetPlanes() override;

@@ -354,8 +354,8 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
 
         auto vCoordinates = glm::vec2(tuv.y1, tuv.y2);
 
-        RenderService->GetSpriteRenderer()->SetViewProjection();
-        RenderService->GetSpriteRenderer()->UpdateVertexBuffer(vertices, uCoordinates, vCoordinates, Color);
+        //RenderService->GetSpriteRenderer()->SetViewProjection();
+        //RenderService->GetSpriteRenderer()->UpdateVertexBuffer(vertices, uCoordinates, vCoordinates, Color);
 
         /*pVertex[n + 0].rhw = pVertex[n + 1].rhw = pVertex[n + 2].rhw = pVertex[n + 3].rhw = pVertex[n + 4].rhw =
             pVertex[n + 5].rhw = fScale;*/

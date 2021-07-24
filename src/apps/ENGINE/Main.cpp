@@ -20,6 +20,7 @@
 #include "common.h"
 
 #include "dx9render.h"
+#include <SDL2/SDL_syswm.h>
 
 
 VFILE_SERVICE *fio = nullptr;
@@ -152,20 +153,46 @@ int main(int argc, char **argv)
     // evaluate SteamApi singleton
     steamapi::SteamApi::getInstance(!bSteam);
 
+    // Collect information about the window from SDL
     std::shared_ptr<storm::OSWindow> window = storm::OSWindow::Create(width, height, fullscreen);
     window->SetTitle("Sea Dogs");
     core.Set_Hwnd(static_cast<HWND>(window->OSHandle()));
     window->Subscribe(HandleWindowEvent);
     window->Show();
 
-    
+    // and give the pointer to the window to pd
+    bgfx::PlatformData pd;
+    // TODO for platforms this goes inside OSWindow->OSHandle()
+#if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+    pd.ndt = wmi.info.x11.display;
+    pd.nwh = (void *)(uintptr_t)wmi.info.x11.window;
+#elif BX_PLATFORM_OSX
+    pd.ndt = NULL;
+    pd.nwh = wmi.info.cocoa.window;
+#elif BX_PLATFORM_WINDOWS
+    pd.ndt = NULL;
+    pd.nwh = static_cast<HWND>(window->OSHandle());
+#elif BX_PLATFORM_STEAMLINK
+    pd.ndt = wmi.info.vivante.display;
+    pd.nwh = wmi.info.vivante.window;
+#endif // BX_PLATFORM_
+    pd.context = NULL;
+    pd.backBuffer = NULL;
+    pd.backBufferDS = NULL;
+
+    // Tell bgfx about the platform and window
+    bgfx::setPlatformData(pd);
+
+    // Render an empty frame
+    bgfx::renderFrame();
+
     // Init bgfx
     bgfx::Init init;
-    init.type = bgfx::RendererType::Direct3D11;
+    init.type = bgfx::RendererType::Direct3D9;
     init.vendorId = BGFX_PCI_ID_NONE;
     init.resolution.width = width;
     init.resolution.height = height;
-    init.resolution.reset = BGFX_RESET_VSYNC;
+    init.resolution.reset = BGFX_RESET_NONE;
 
     bgfx::init(init);
 
@@ -176,14 +203,13 @@ int main(int argc, char **argv)
     bgfx::setDebug(BGFX_DEBUG_TEXT);
 
     // Set view 0 clear state.
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
     // bgfx::setViewClear(0, BGFX_CLEAR_NONE, 0x303030ff, 1.0f, 0);
 
     bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
-    bgfx::setViewRect(1, 0, 0, uint16_t(width), uint16_t(height));
-    bgfx::setViewRect(2, 0, 0, uint16_t(width), uint16_t(height));
+    //bgfx::setViewRect(1, 0, 0, uint16_t(width), uint16_t(height));
+    //bgfx::setViewRect(2, 0, 0, uint16_t(width), uint16_t(height));
 
-
+    
     /* Init stuff */
     core.InitBase();
 
@@ -212,10 +238,6 @@ int main(int argc, char **argv)
             }
 
             const auto runResult = core.Run();
-
-            renderService->GetSpriteRenderer()->Submit();
-
-            bgfx::frame();
 
             if (!isHold && !runResult)
             {

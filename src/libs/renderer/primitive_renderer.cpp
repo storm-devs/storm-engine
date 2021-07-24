@@ -107,7 +107,7 @@ void PrimitiveRenderer::Submit(std::vector<PRIMITIVE_SPRITE_VERTEX> &vertices)
     bgfx::allocTransientVertexBuffer(&vb, vertices.size(), PRIMITIVE_SPRITE_VERTEX::pr_layout);
     PRIMITIVE_SPRITE_VERTEX *vertex = (PRIMITIVE_SPRITE_VERTEX *)vb.data;
 
-    for (uint32_t i = 0, v = 0; i < (vertices.size() / 4); i += 4, v += 4)
+    for (uint16_t i = 0, v = 0; i < (vertices.size() / 4); i += 4, v += 4)
     {
         vertex[v + 0] = vertices[i + 0];
         vertex[v + 1] = vertices[i + 1];
@@ -115,12 +115,12 @@ void PrimitiveRenderer::Submit(std::vector<PRIMITIVE_SPRITE_VERTEX> &vertices)
         vertex[v + 3] = vertices[i + 3];
     }
 
-    const uint32_t indicesCount = (vertices.size() / 4) * 6;
+    const uint16_t indicesCount = (vertices.size() / 4) * 6;
 
     std::vector<uint16_t> indices;
     indices.reserve(indicesCount);
 
-    for (uint32_t i = 0; i < indicesCount; i += 4)
+    for (uint16_t i = 0; i < indicesCount; i += 4)
     {
         indices.push_back(i);
         indices.push_back(i + 1);
@@ -137,7 +137,10 @@ void PrimitiveRenderer::Submit(std::vector<PRIMITIVE_SPRITE_VERTEX> &vertices)
 
     auto ibPtr = reinterpret_cast<uint16_t *>(ib.data);
 
-    memcpy(ibPtr, indices.data(), indices.size());
+    for (long i = 0; i < indices.size(); ++i)
+    {
+        ibPtr[i] = indices[i];
+    }
 
     uint64_t state = BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_MSAA | BGFX_STATE_BLEND_ALPHA;
 

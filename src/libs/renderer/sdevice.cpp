@@ -36,6 +36,8 @@
         a = NULL;                                                                                                      \
     }
 
+static bool s_isDXEndScene = false;
+
 DX9RENDER *DX9RENDER::pRS = nullptr;
 
 bgfx::VertexLayout DX9RENDER::PosColorTexVertex::ms_layout;
@@ -403,6 +405,7 @@ bool DX9RENDER::Init()
     d3d = nullptr;
     d3d9 = nullptr;
 
+
     auto ini = fio->OpenIniFile(core.EngineIniFileName());
     if (ini)
     {
@@ -442,6 +445,9 @@ bool DX9RENDER::Init()
             screen_bpp = D3DFMT_R5G6B5;
             stencil_format = D3DFMT_D16;
         }
+
+        m_spriteRenderer = std::make_shared<SpriteRenderer>(screen_size.x, screen_size.y);
+        m_primitiveRenderer = std::make_shared<PrimitiveRenderer>(screen_size.x, screen_size.y);
 
         // stencil_format = D3DFMT_D24S8;
         if (!InitDevice(bWindow, core.GetAppHWND(), screen_size.x, screen_size.y))
@@ -539,9 +545,6 @@ bool DX9RENDER::Init()
             *pI++ = static_cast<uint16_t>((y + 1) * 32 + x);
         }
     }
-
-    m_spriteRenderer = std::make_shared<SpriteRenderer>(screen_size.x, screen_size.y);
-    m_primitiveRenderer = std::make_shared<PrimitiveRenderer>(screen_size.x, screen_size.y);
 
     // UNGUARD
     return true;
@@ -674,8 +677,8 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 
     if (!windowed)
     {
-        d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
-        // d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+        //d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+        d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
     }
 
     if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING, &d3dpp, &d3d9) !=
@@ -863,6 +866,10 @@ bool DX9RENDER::DX9Clear(long type)
 {
     if (CHECKD3DERR(d3d9->Clear(0L, NULL, type, dwBackColor, 1.0f, 0L)) == true)
         return false;
+
+    //bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, dwBackColor, 1.0f, 0);
+    //bgfx::setViewClear(1, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, dwBackColor, 1.0f, 0);
+
     // if(CHECKD3DERR(d3d9->Clear(0L, NULL, type, 0x0, 1.0f, 0L))==true)    return false;
     return true;
 }
@@ -1156,8 +1163,11 @@ bool DX9RENDER::DX9EndScene()
         DrawPrimitive(D3DPT_LINELIST, 0, 1);
     }
 
+    s_isDXEndScene = true;
     if (CHECKD3DERR(EndScene()))
         return false;
+
+    s_isDXEndScene = false;
 
     // boal if (bMakeShoot || core.Controls->GetDebugAsyncKeyState(VK_F8) < 0)  MakeScreenShot();
     if (bMakeShoot || GetAsyncKeyState(VK_F8) < 0)
@@ -1166,83 +1176,8 @@ bool DX9RENDER::DX9EndScene()
     if (bVideoCapture)
         MakeCapture();
 
-    // render to bgfx here
-    IDirect3DSurface9 *renderTarget = NULL;
-    IDirect3DSurface9 *destTarget = NULL;
-    HRESULT hr = d3d9->GetRenderTarget(0, &renderTarget);
-
-    D3DDISPLAYMODE *dispMode = new D3DDISPLAYMODE();
-    d3d->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, dispMode);
-
-    hr = d3d9->CreateOffscreenPlainSurface(dispMode->Width, dispMode->Height, dispMode->Format, D3DPOOL_SYSTEMMEM, &destTarget,
-                                           NULL);
-    if (FAILED(hr))
-    {
-        printf("Failed  CreateOffscreenPlainSurface!");
-    }
-    hr = d3d9->GetRenderTargetData(renderTarget, destTarget);
-    if (FAILED(hr))
-    {
-        printf("Failed  GetRenderTargetData!");
-    }
-
-    D3DLOCKED_RECT lr;
-    ZeroMemory(&lr, sizeof(D3DLOCKED_RECT));
-    hr = destTarget->LockRect(&lr, 0, D3DLOCK_READONLY);
-    if (FAILED(hr))
-    {
-        printf("Cannot lock rect!");
-    }
-
-    std::shared_ptr<TextureResource> backgroundTexture = nullptr;
-
-    if (lr.pBits)
-    {
-        /*auto memory = bgfx::alloc(dispMode->Width * dispMode->Height * 4);
-        memcpy((void *)memory->data, lr.pBits, dispMode->Width * dispMode->Height * 4);
-        bgfx::updateTexture2D(*backgroundTexture->textureHandle, 0, 1, 0, 0, dispMode->Width, dispMode->Height, memory);*/
-
-        
-
-        /*
-        std::vector<unsigned char> data;
-        data.resize(1920 * 1080 * 4);
-
-        memcpy(data.data(), lr.pBits, dispMode->Width * dispMode->Height * 4);
-        */
-        /*void *ptr = bgfx::getDirectAccessPtr(*backgroundTexture->textureHandle);
-        memcpy(ptr, lr.pBits, dispMode->Width * dispMode->Height * 4);*/
-
-        //bgfx::blit(0, *backgroundTexture->textureHandle, 0, 0, *rttTex->textureHandle);
-
-        // bgfx::destroy(*rttTex->textureHandle);
-
-        ////////////////////////////////// WORKING CODE //////////////////
-
-        auto rttTex = loadMemoryTexture("Sprite backbuffer", bgfx::TextureFormat::BGRA8, dispMode->Width,
-                                        dispMode->Height, 1, false, false, 0, (unsigned char *)lr.pBits);
-        backgroundTexture = rttTex;
-        m_spriteRenderer->SetBackbufferTexture(rttTex);
-        
-    }
-
-    hr = destTarget->UnlockRect();
-    if (FAILED(hr))
-    {
-        printf("Cannot unlock rect!");
-    }
-    renderTarget->Release();
-    destTarget->Release();
-
-    if (backgroundTexture != nullptr)
-    {
-        DrawSprite(backgroundTexture, 0, glm::vec2(0, 0), -2.0f);
-    }
-    
-
-
     const HRESULT hRes = d3d9->Present(nullptr, nullptr, nullptr, nullptr);
-
+    
     if (hRes == D3DERR_DEVICELOST)
     {
         bDeviceLost = true;
@@ -4092,6 +4027,93 @@ void DX9RENDER::SaveShoot()
     bMakeShoot = true;
 }
 
+void DX9RENDER::BGFXRenderToBackBuffer()
+{
+    
+    uint32_t *Surface;
+    RECT r;
+    D3DLOCKED_RECT lr;
+    IDirect3DSurface9 *renderTarget, *surface;
+
+    bMakeShoot = false;
+
+    if (!(screen_bpp == D3DFMT_X8R8G8B8 || screen_bpp == D3DFMT_A8R8G8B8))
+    {
+        core.Trace("Can't make screenshots in non 32bit video modes");
+        return;
+    }
+
+    r.left = 0;
+    r.right = screen_size.x;
+    r.top = 0;
+    r.bottom = screen_size.y;
+    renderTarget = nullptr;
+    surface = nullptr;
+
+    // get the picture
+    if (FAILED(GetRenderTarget(&renderTarget)))
+    {
+        core.Trace("Falure get render target for make screenshot");
+        return;
+    }
+    if (FAILED(CreateOffscreenPlainSurface(screen_size.x, screen_size.y, D3DFMT_X8R8G8B8, &surface)))
+    {
+        renderTarget->Release();
+        core.Trace("Falure create buffer for make screenshot");
+        return;
+    }
+
+    // if (FAILED(d3d9->UpdateSurface(renderTarget, null, surface, null)) ||
+    if (FAILED(D3DXLoadSurfaceFromSurface(surface, NULL, NULL, renderTarget, NULL, NULL, D3DX_DEFAULT, 0)) ||
+        FAILED(surface->LockRect(&lr, &r, 0)))
+    {
+        surface->Release();
+        renderTarget->Release();
+        core.Trace("Falure make screenshot");
+        return;
+    }
+    renderTarget->Release();
+    renderTarget = nullptr;
+
+    
+
+    LONG windowWidth = screen_size.x;
+    LONG windowHeight = screen_size.y;
+
+    std::vector<unsigned char> v;
+
+    v.resize(screen_size.x * screen_size.y * 4);
+
+    memcpy(v.data(), reinterpret_cast<unsigned char *>(lr.pBits), v.size());
+
+    /*unsigned char *bits = reinterpret_cast<unsigned char *>(lr.pBits);
+
+    for (int i = 0; i < v.size(); ++i)
+    {
+        v[i] = bits[i];
+    }*/
+
+    size_t imgdata_size = screen_size.x * screen_size.y * 4;
+
+    /* for (int i = 0; i < v.size(); i += 4)
+    {
+        v[i + 0] = 255;
+        v[i + 1] = 0;
+        v[i + 2] = 0;
+        v[i + 3] = 255;
+    }*/
+
+    auto backgroundTexture = m_spriteRenderer->GetBackBufferTexture();
+
+    m_spriteRenderer->BlitBackBuffer(v.data());
+
+    DrawSprite(backgroundTexture, 0, glm::vec2(0, 0), -2.0f);
+
+    surface->UnlockRect();
+    surface->Release();
+
+}
+
 void DX9RENDER::MakeScreenShot()
 {
     // GUARD(DX9RENDER::MakeScreenShot)
@@ -4634,7 +4656,13 @@ HRESULT DX9RENDER::BeginScene()
     if (!isInScene)
     {
         isInScene = true;
-        return CHECKD3DERR(d3d9->BeginScene());
+
+        HRESULT res = CHECKD3DERR(d3d9->BeginScene());
+
+        //bgfx::touch(0);
+        //bgfx::touch(1);
+
+        return res;
     }
 
     return D3D_OK;
@@ -4645,7 +4673,20 @@ HRESULT DX9RENDER::EndScene()
     if (isInScene)
     {
         isInScene = false;
-        return CHECKD3DERR(d3d9->EndScene());
+
+        HRESULT res = CHECKD3DERR(d3d9->EndScene());
+
+        
+        if (!s_isDXEndScene)
+        {
+            // if (bMakeShoot || GetAsyncKeyState(VK_F9) < 0)
+            BGFXRenderToBackBuffer();
+
+            GetSpriteRenderer()->Submit();
+            bgfx::frame();
+        }
+
+        return res;
     }
 
     return D3D_OK;
@@ -5257,7 +5298,9 @@ void DX9RENDER::ProgressView()
     DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]),
                     "ProgressTech");
     EndScene();
+
     d3d9->Present(nullptr, nullptr, nullptr, nullptr);
+   
     BeginScene();
     // Next frame
     loadFrame++;

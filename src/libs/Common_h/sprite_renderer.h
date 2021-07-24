@@ -58,6 +58,7 @@ class SpriteRenderer
     uint32_t m_spriteQueueSize;
     uint32_t m_spriteQueueCount;
 
+    std::vector<unsigned char> m_backbufferMemory;
     std::shared_ptr<TextureResource> m_backbufferTexture;
 
   public:
@@ -67,6 +68,10 @@ class SpriteRenderer
     //SpriteRenderer();
 
     ~SpriteRenderer();
+    std::shared_ptr<TextureResource> GetBackBufferTexture();
+
+    void BlitBackBuffer(unsigned char *data);
+
     void SetBackbufferTexture(std::shared_ptr<TextureResource> texture);
     void ReleaseTexture(std::shared_ptr<TextureResource> texture);
 

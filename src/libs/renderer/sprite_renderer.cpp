@@ -30,18 +30,38 @@ SpriteRenderer::SpriteRenderer(long m_fbWidth, long m_fbHeight)
 
     s_texColor = bgfx::createUniform("s_texColor", bgfx::UniformType::Sampler);
     // u_color = bgfx::createUniform("u_color", bgfx::UniformType::Vec4);
+
+    m_backbufferMemory.resize(m_width * m_height * 4);
+
+    auto rttTex = loadMemoryTexture("Sprite backbuffer", bgfx::TextureFormat::BGRA8, m_width, m_height, 1, false, false,
+                                    0, nullptr);
+    
+    SetBackbufferTexture(rttTex);
 }
 
 SpriteRenderer::~SpriteRenderer()
 {
     //bgfx::destroy(m_fvbh);
     //bgfx::destroy(m_fibh);
+    ReleaseTexture(this->GetBackBufferTexture());
     bgfx::destroy(m_prog);
+}
+
+std::shared_ptr<TextureResource> SpriteRenderer::GetBackBufferTexture()
+{
+    return m_backbufferTexture;
 }
 
 void SpriteRenderer::SetBackbufferTexture(std::shared_ptr<TextureResource> texture)
 {
     m_backbufferTexture = texture;
+}
+
+void SpriteRenderer::BlitBackBuffer(unsigned char *data)
+{
+    memcpy((void *)m_backbufferMemory.data(), data, m_width * m_height * 4);
+    bgfx::updateTexture2D(*m_backbufferTexture->textureHandle, 0, 0, 0, 0, m_width, m_height, bgfx::makeRef(m_backbufferMemory.data(), m_backbufferMemory.size()));
+
 }
 
 void SpriteRenderer::ReleaseTexture(std::shared_ptr<TextureResource> texture)
@@ -95,9 +115,9 @@ void SpriteRenderer::SetViewProjection()
     glm::mat4 view(1);
     bx::mtxLookAt(glm::value_ptr(view), eye, at);
     glm::mat4 proj(1);
-    bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(m_width), float(m_height), 0.0f, 0.0f, 1000.0f, 0.0f,
+    bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(m_width), float(m_height), 0.0f, 0.0f, 10.0f, 0.0f,
     bgfx::getCaps()->homogeneousDepth);
-    bgfx::setViewTransform(1, glm::value_ptr(view), glm::value_ptr(proj));
+    bgfx::setViewTransform(0, glm::value_ptr(view), glm::value_ptr(proj));
 }
 
 void SpriteRenderer::UpdateIndexBuffer(std::vector<uint16_t> indices){
@@ -233,10 +253,10 @@ void SpriteRenderer::Submit()
 
     const uint32_t indicesCount = m_spriteQueueCount * 6;
 
-    std::vector<uint32_t> indices;
+    std::vector<uint16_t> indices;
     indices.reserve(indicesCount);
 
-    for (uint32_t i = 0; i < indicesCount; i += 4)
+    for (uint16_t i = 0; i < indicesCount; i += 4)
     {
         indices.push_back(i);
         indices.push_back(i + 1);
@@ -249,9 +269,9 @@ void SpriteRenderer::Submit()
 
     bgfx::TransientIndexBuffer ib;
 
-    bgfx::allocTransientIndexBuffer(&ib, indicesCount, true);
+    bgfx::allocTransientIndexBuffer(&ib, indicesCount, false);
 
-    auto ibPtr = reinterpret_cast<uint32_t *>(ib.data);
+    auto ibPtr = reinterpret_cast<uint16_t *>(ib.data);
 
     for (long i = 0; i < indices.size(); ++i)
     {
@@ -259,44 +279,39 @@ void SpriteRenderer::Submit()
     }
 
     std::shared_ptr<TextureResource> batchTexture(nullptr);
-    uint32_t batchStart = 0;
+    uint16_t batchStart = 0;
 
-    uint64_t state = BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_MSAA | BGFX_STATE_BLEND_ALPHA;
+    uint64_t state = BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA;
 
-    for (uint32_t pos = 0; pos < m_spriteQueueCount; ++pos)
+    for (uint16_t pos = 1; pos < m_spriteQueueCount + 1; ++pos)
     {
-        auto texture = m_sortedSprites[pos]->texture;
-
+        auto texture = m_sortedSprites[pos - 1]->texture;
+        //int32_t depth = static_cast<int32_t>(m_sortedSprites[pos]->depth);
         if (texture != batchTexture)
         {
             if (pos > batchStart)
             {
                 // TODO maybe hax
                 bgfx::setState(state);
-                bgfx::setTexture(0, s_texColor, *batchTexture->textureHandle);
+                bgfx::setTexture(0, s_texColor, *texture->textureHandle);
                 bgfx::setVertexBuffer(0, &vb);
                 bgfx::setIndexBuffer(&ib, batchStart * 6, (pos - batchStart) * 6);
                 //bgfx::setIndexBuffer(m_ibh, batchStart * 6, (pos - batchStart) * 6);
-                bgfx::submit(1, m_prog);
+                bgfx::submit(0, m_prog);
+                //bgfx::submit(1, m_prog);
             }
             batchTexture = texture;
             batchStart = pos;
         }
     }
 
-    bgfx::setState(state);
-
-    bgfx::setTexture(0, s_texColor, *batchTexture->textureHandle);
-    bgfx::setVertexBuffer(0, &vb);
-    bgfx::setIndexBuffer(&ib, batchStart * 6, (m_spriteQueueCount - batchStart) * 6);
-    bgfx::submit(1, m_prog);
-
+    
     m_spriteQueueCount = 0;
 
     m_sortedSprites.clear();
 
-    if (m_backbufferTexture != nullptr)
+    /*if (m_backbufferTexture != nullptr)
     {
         ReleaseTexture(m_backbufferTexture);
-    }
+    }*/
 }
