@@ -100,8 +100,25 @@ bool SHIP::Init()
 
     LoadServices();
 
-    iShipPriorityExecute = static_cast<VDATA *>(core.GetScriptVariable("iShipPriorityExecute"))->GetLong();
-    iShipPriorityRealize = static_cast<VDATA *>(core.GetScriptVariable("iShipPriorityRealize"))->GetLong();
+    const auto priorityExecutePtr = static_cast<VDATA *>(core.GetScriptVariable("iShipPriorityExecute"));
+    if (priorityExecutePtr)
+    {
+        iShipPriorityExecute = priorityExecutePtr->GetLong();
+    }
+    else
+    {
+        iShipPriorityExecute = 2;
+    }
+
+    const auto priorityRealizePtr = static_cast<VDATA *>(core.GetScriptVariable("iShipPriorityRealize"));
+    if (priorityRealizePtr)
+    {
+        iShipPriorityRealize = priorityRealizePtr->GetLong();
+    }
+    else
+    {
+        iShipPriorityRealize = 31;
+    }
 
     return true;
 }
