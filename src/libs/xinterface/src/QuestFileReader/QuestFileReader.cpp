@@ -109,7 +109,7 @@ std::pair<std::string_view, std::string_view::const_iterator> ReadUserDataID(con
 
     if (textEnd == str.cend())
     {
-        core.tracelog->error("Quest log file parse error: the end of pattern is not found");
+        spdlog::error("Quest log file parse error: the end of pattern is not found");
         return {"", patternStart};
     }
 
@@ -138,7 +138,7 @@ bool QuestFileReader::GetQuestTitle(const std::string_view &questId, const std::
     const auto n = FindQuestByID(questId);
     if (!n.has_value())
     {
-        core.tracelog->warn("Can`t find title whith ID = %s", questId);
+        spdlog::warn("Can`t find title whith ID = %s", questId);
         return false;
     }
 

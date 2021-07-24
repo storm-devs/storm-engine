@@ -1,9 +1,15 @@
-#include "fs.h"
+#pragma once
+
+#include <filesystem>
+
 #include <ShlObj.h>
 
+/* Filesystem proxy */
 namespace fs
 {
-path GetStashPath()
+using namespace std::filesystem;
+
+inline path GetStashPath()
 {
     static path path;
     if (path.empty())
@@ -19,13 +25,15 @@ path GetStashPath()
     return path;
 }
 
-path GetLogsPath()
+inline path GetLogsPath()
 {
     return GetStashPath() / "Logs";
 }
 
-path GetSaveDataPath()
+inline path GetSaveDataPath()
 {
     return GetStashPath() / "SaveData";
 }
+
+constexpr char ENGINE_INI_FILE_NAME[] = "engine.ini";
 } // namespace fs

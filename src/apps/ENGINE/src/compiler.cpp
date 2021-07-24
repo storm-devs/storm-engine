@@ -1,6 +1,12 @@
 #include "compiler.h"
-#include "s_debug.h"
+
 #include <cstdio>
+
+#include <zlib.h>
+
+#include "s_debug.h"
+#include "logging.hpp"
+#include "storm_assert.h"
 
 #define SKIP_COMMENT_TRACING
 #define TRACE_OFF
@@ -12,9 +18,6 @@
 #define DSL_INI_VALUE 0
 #define SBUPDATE 4
 #define DEF_COMPILE_EXPRESSIONS
-
-#include "zlib.h"
-#include <storm_assert.h>
 
 // extern char * FuncNameTable[];
 extern INTFUNCDESC IntFuncTable[];
@@ -276,7 +279,7 @@ void COMPILER::Trace(const char *data_PTR, ...)
     va_start(args, data_PTR);
     _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     va_end(args);
-    tracelog->info(LogBuffer);
+    storm::logging::getOrCreateLogger(COMPILER_LOG)->trace(LogBuffer);
 }
 
 // write to compilation log file
@@ -292,7 +295,7 @@ void COMPILER::DTrace(const char *data_PTR, ...)
     va_start(args, data_PTR);
     _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     va_end(args);
-    tracelog->info(LogBuffer);
+    storm::logging::getOrCreateLogger(COMPILER_LOG)->trace(LogBuffer);
 }
 
 // append one block of code to another
@@ -381,7 +384,7 @@ void COMPILER::SetError(const char *data_PTR, ...)
     }
     va_end(args);
 
-    errorlog->error(ErrorBuffer);
+    storm::logging::getOrCreateLogger(COMPILER_ERRORLOG)->error(ErrorBuffer);
 
     if (bBreakOnError)
         CDebug.SetTraceMode(TMODE_MAKESTEP);
@@ -407,7 +410,7 @@ void COMPILER::SetWarning(const char *data_PTR, ...)
     sprintf_s(ErrorBuffer, "WARNING in %s(%d): %s", DebugSourceFileName, DebugSourceLine + 1, LogBuffer);
     va_end(args);
 
-    warninglog->warn(ErrorBuffer);
+    storm::logging::getOrCreateLogger(COMPILER_ERRORLOG)->warn(ErrorBuffer);
 }
 
 void COMPILER::LoadPreprocess()

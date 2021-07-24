@@ -1,6 +1,6 @@
 [requires]
 zlib/1.2.11
-spdlog/1.8.2
+spdlog/1.8.5
 sdl2/2.0.14@bincrafters/stable
 sentry-native/0.4.9@storm/ports
 7za/19.00@storm/bin
@@ -20,7 +20,6 @@ sentry-native:backend=crashpad
 sentry-native:transport=winhttp
 
 [imports]
-bin, crashpad_handler.exe -> ./bin
 bin, crashpad_handler.exe -> ./bin
 bin, 7za.exe -> ./bin
 lib, fmod.dll -> ./bin

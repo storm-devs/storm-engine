@@ -29,9 +29,15 @@ jobs:
         useVcpkgToolchainFile: false
         buildDirectory: '${{ github.workspace }}/build'
         configurationRegexFilter: '${{ matrix.configuration }}'
-        cmakeAppendedArgs: '-DSTORM_ENABLE_STEAM=${{ matrix.enable_steam }}'
+        cmakeAppendedArgs: '-DSTORM_ENABLE_STEAM=${{ matrix.enable_steam }} -DSTORM_ENABLE_CRASH_REPORTS=ON'
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: storm-engine.${{ matrix.configuration }}-steam-${{ matrix.enable_steam}}
         path: build\${{ matrix.configuration }}\bin
+    - name: sentry-cli
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+    - run: npm install @sentry/cli
+    - run: ./node_modules/.bin/sentry-cli --auth-token ${{ secrets.SENTRY_AUTH_TOKEN }} upload-dif --org storm-devs --project storm-engine "build\${{ matrix.configuration }}\bin\engine.pdb"

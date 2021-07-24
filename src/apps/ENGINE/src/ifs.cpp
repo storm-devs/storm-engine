@@ -367,7 +367,7 @@ bool IFS::LoadFile(const char *_file_name)
     auto fileS = fs->_CreateFile(_file_name, std::ios::binary | std::ios::in);
     if (!fileS.is_open())
     {
-        core.tracelog->trace("Unable to load file: {}", _file_name);
+        spdlog::trace("Unable to load file: {}", _file_name);
         return false;
     }
 
