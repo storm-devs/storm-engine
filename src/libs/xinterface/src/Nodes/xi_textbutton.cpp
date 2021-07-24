@@ -606,6 +606,15 @@ uint32_t CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
                 memcpy(m_sString, param.c_str() + 1, len);
             }
         }
+        else if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::PIRATES_OF_THE_CARIBBEAN)
+        {
+            const auto len = param.size();
+            if ((m_sString = new char[len + 1]) == nullptr)
+            {
+                throw std::runtime_error("allocate memory error");
+            }
+            memcpy(m_sString, param.c_str(), len + 1);
+        }
         else
         {
             m_idString = pStringService->GetStringNum(param.c_str());
