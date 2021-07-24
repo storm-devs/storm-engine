@@ -3087,7 +3087,11 @@ bool Character::zEntry(MESSAGE &message)
 
 bool Character::zSetBlade(MESSAGE &message)
 {
-    const long nBladeIdx = message.Long();
+    long nBladeIdx = 0;
+    if (message.GetFormat() == "llsfll")
+    {
+        nBladeIdx = message.Long();
+    } // else "lsfll"
 
     isBladeSet = false;
     const std::string &name = message.String();
