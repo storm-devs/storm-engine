@@ -22,34 +22,34 @@ static_assert(_UNICODE);
 #include <spdlog/common.h>
 #include <spdlog/pattern_formatter.h>
 
-storm::spdlog_sinks::syncable_sink::syncable_sink(const spdlog::filename_t &filename, bool truncate)
+storm::logging::sinks::syncable_sink::syncable_sink(const spdlog::filename_t &filename, bool truncate)
 {
     file_helper_.open(filename, truncate);
 }
 
-void storm::spdlog_sinks::syncable_sink::log(const spdlog::details::log_msg &msg)
+void storm::logging::sinks::syncable_sink::log(const spdlog::details::log_msg &msg)
 {
     spdlog::memory_buf_t formatted;
     formatter_->format(msg, formatted);
     file_helper_.write(formatted);
 }
 
-void storm::spdlog_sinks::syncable_sink::flush()
+void storm::logging::sinks::syncable_sink::flush()
 {
     file_helper_.flush();
 }
 
-void storm::spdlog_sinks::syncable_sink::set_pattern(const std::string &pattern)
+void storm::logging::sinks::syncable_sink::set_pattern(const std::string &pattern)
 {
     formatter_ = spdlog::details::make_unique<spdlog::pattern_formatter>(pattern);
 }
 
-void storm::spdlog_sinks::syncable_sink::set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter)
+void storm::logging::sinks::syncable_sink::set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter)
 {
     formatter_ = std::move(sink_formatter);
 }
 
-void storm::spdlog_sinks::syncable_sink::sync()
+void storm::logging::sinks::syncable_sink::sync() const
 {
     FILE *file = _tfopen(file_helper_.filename().c_str(), _T("r"));
 #ifdef _WIN32

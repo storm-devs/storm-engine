@@ -5,7 +5,7 @@
 #include <spdlog/details/log_msg.h>
 #include <spdlog/sinks/sink.h>
 
-namespace storm::spdlog_sinks
+namespace storm::logging::sinks
 {
 
 class syncable_sink final : public spdlog::sinks::sink
@@ -24,7 +24,7 @@ class syncable_sink final : public spdlog::sinks::sink
     void set_pattern(const std::string &pattern) override;
     void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override;
 
-    void sync();
+    void sync() const;
 
   protected:
     std::unique_ptr<spdlog::formatter> formatter_;

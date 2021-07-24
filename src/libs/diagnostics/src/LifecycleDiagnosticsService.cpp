@@ -85,20 +85,16 @@ class LoggingService final
     bool flushRequested_{false};
     std::atomic_bool terminate_{true};
 
-    void flushAll(bool doSync)
+    void flushAll(bool doSync) const
     {
-        auto getLogPath = [](std::shared_ptr<spdlog::logger> &l) {
-            return (fs::GetLogsPath() / l->name()).replace_extension(".log");
-        };
-
-        spdlog::apply_all([&getLogPath, doSync](std::shared_ptr<spdlog::logger> l) {
+        spdlog::apply_all([doSync](std::shared_ptr<spdlog::logger> l) {
             l->flush();
 
             if (doSync)
             {
                 for (auto &sink : l->sinks())
                 {
-                    if (auto syncable_sink = std::dynamic_pointer_cast<spdlog_sinks::syncable_sink>(sink))
+                    if (const auto syncable_sink = std::dynamic_pointer_cast<logging::sinks::syncable_sink>(sink))
                     {
                         syncable_sink->sync();
                     }

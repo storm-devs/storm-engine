@@ -25,7 +25,7 @@ std::shared_ptr<spdlog::logger> getOrCreateLogger(const std::string &name, const
     auto path = fs::GetLogsPath() / name;
     path += kLogExtension;
 
-    logger = spdlog::create<spdlog_sinks::syncable_sink>(name, path.string(), truncate);
+    logger = spdlog::create<sinks::syncable_sink>(name, path.string(), truncate);
     logger->set_level(level);
 
     return logger;
