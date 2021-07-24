@@ -13,12 +13,16 @@ class OSWindow
     // TODO: More events?
     enum Event
     {
-        Unknown, //!< Invalid event
+        Unknown,
+        //!< Invalid event
 
-        FocusGained, //!< Window gained focus
-        FocusLost,   //!< Window lost focus
-        Closed       //!< Window was closed by user
+        FocusGained,
+        //!< Window gained focus
+        FocusLost,
+        //!< Window lost focus
+        Closed //!< Window was closed by user
     };
+
     using EventHandler = std::function<void(const Event &)>;
 
     virtual ~OSWindow(){};

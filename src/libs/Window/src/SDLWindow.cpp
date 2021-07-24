@@ -141,7 +141,7 @@ std::shared_ptr<OSWindow> OSWindow::Create(int width, int height, bool fullscree
 
 int SDLWindow::SDLEventHandler(void *userdata, SDL_Event *evt)
 {
-    SDLWindow *w = static_cast<SDLWindow *>(userdata);
+    auto w = static_cast<SDLWindow *>(userdata);
 
     if ((evt->type != SDL_WINDOWEVENT) || (evt->window.windowID != w->sdlID_))
         return 0;

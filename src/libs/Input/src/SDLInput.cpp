@@ -423,7 +423,7 @@ bool SDLInput::MouseKeyState(const MouseKey &key) const
 
 int SDLInput::SDLEventHandler(void *userdata, SDL_Event *evt)
 {
-    SDLInput *in = static_cast<SDLInput *>(userdata);
+    auto in = static_cast<SDLInput *>(userdata);
     in->ProcessEvent(*evt);
     return 0;
 }
@@ -444,5 +444,4 @@ std::shared_ptr<Input> Input::Create()
 {
     return std::make_shared<SDLInput>();
 }
-
 } // namespace storm

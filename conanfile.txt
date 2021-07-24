@@ -1,15 +1,28 @@
 [requires]
 zlib/1.2.11
 spdlog/1.8.2
-
 sdl2/2.0.14@bincrafters/stable
-sentry-native/0.4.9@storm/src
+sentry-native/0.4.9@storm/ports
+7za/19.00@storm/bin
+directx/9.0@storm/prebuilt
+fmod/2.1.7@storm/prebuilt
+steamworks/1.5.1@storm/prebuilt
 
-# Development dependencies
+[build_requires]
 catch2/2.13.4
 
 [generators]
 cmake
 
+[options]
+sdl2:sdl2main=False
+sentry-native:backend=crashpad
+sentry-native:transport=winhttp
+
 [imports]
 bin, crashpad_handler.exe -> ./bin
+bin, crashpad_handler.exe -> ./bin
+bin, 7za.exe -> ./bin
+lib, fmod.dll -> ./bin
+lib, fmodL.dll -> ./bin
+lib, steam_api64.dll -> ./bin

@@ -27,11 +27,16 @@ enum class MouseKey
 //! Controller axes
 enum class ControllerAxis
 {
-    LeftX = 0,   //!< Left stick horizontal axis
-    LeftY,       //!< Left stick vertical axis
-    RightX,      //!< Right stick horizontal axis
-    RightY,      //!< Right stick vertical axis
-    TriggerLeft, //!< Left trigger axis
+    LeftX = 0,
+    //!< Left stick horizontal axis
+    LeftY,
+    //!< Left stick vertical axis
+    RightX,
+    //!< Right stick horizontal axis
+    RightY,
+    //!< Right stick vertical axis
+    TriggerLeft,
+    //!< Left trigger axis
     TriggerRight //!< Right trigger axis
 };
 
@@ -67,21 +72,32 @@ struct InputEvent
 {
     enum Type
     {
-        Unknown, //!< Invalid event
+        Unknown,
+        //!< Invalid event
 
-        KeyboardKeyDown, //!< Keyboard key down, data contains KeyboardKey
-        KeyboardKeyUp,   //!< Keyboard key up, data contains KeyboardKey
-        KeyboardText,    //!< Some text was entered, data contains std::string with text in utf-8 encoding
+        KeyboardKeyDown,
+        //!< Keyboard key down, data contains KeyboardKey
+        KeyboardKeyUp,
+        //!< Keyboard key up, data contains KeyboardKey
+        KeyboardText,
+        //!< Some text was entered, data contains std::string with text in utf-8 encoding
 
-        MouseMove,    //!< Mouse moved, data contains MousePos with relative mouse movement
-        MouseKeyDown, //!< Mouse key down, data contains MouseKey
-        MouseKeyUp,   //!< Mouse key up, data contains MouseKey
-        MouseWheel,   //!< Mouse wheel, data contains MousePos with relative wheel movement
+        MouseMove,
+        //!< Mouse moved, data contains MousePos with relative mouse movement
+        MouseKeyDown,
+        //!< Mouse key down, data contains MouseKey
+        MouseKeyUp,
+        //!< Mouse key up, data contains MouseKey
+        MouseWheel,
+        //!< Mouse wheel, data contains MousePos with relative wheel movement
 
-        ControllerAxis,       //!< Controller axis value changed, data contains ControllerAxisState
-        ControllerButtonDown, //!< Controller button pressed, data contains ControllerButton
-        ControllerButtonUp    //!< Controller button released, data contains ControllerButton
+        ControllerAxis,
+        //!< Controller axis value changed, data contains ControllerAxisState
+        ControllerButtonDown,
+        //!< Controller button pressed, data contains ControllerButton
+        ControllerButtonUp //!< Controller button released, data contains ControllerButton
     };
+
     //! Event type
     Type type;
     //! Data associated with event

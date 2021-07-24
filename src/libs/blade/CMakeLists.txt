@@ -1,8 +1,5 @@
-project(blade)
-
-add_library(${PROJECT_NAME} STATIC
-    blade.cpp
-    blade.h
+STORM_SETUP(
+    TARGET_NAME blade
+    TYPE storm_module
+    DEPENDENCIES common
 )
-
-target_link_libraries(${PROJECT_NAME} PRIVATE common_h)

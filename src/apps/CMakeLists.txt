@@ -1,3 +1,1 @@
-add_subdirectory(ENGINE)
-add_subdirectory(config)
-add_subdirectory(test-all)
+add_all_subdirectories()
