@@ -11,6 +11,7 @@ export class AnWriter {
     this.anJson = JSON.parse(buffer);
 
     this.buffer = Buffer.alloc(0);
+    this.bufferArray = [];
 
     this.initFields();
     this.prepareData();
@@ -27,13 +28,13 @@ export class AnWriter {
   writeInt32LE(value) {
     const buffer = Buffer.alloc(INT32_LENGTH);
     buffer.writeInt32LE(value);
-    this.buffer = Buffer.concat([this.buffer, buffer]);
+    this.bufferArray.push(buffer);
   }
 
   writeFloatLE(value) {
     const buffer = Buffer.alloc(FLOAT_LENGTH);
     buffer.writeFloatLE(value);
-    this.buffer = Buffer.concat([this.buffer, buffer]);
+    this.bufferArray.push(buffer);
   }
 
   writeVector([x, y, z]) {
@@ -86,6 +87,8 @@ export class AnWriter {
     this.writeStartJointsPositions();
     this.writeRootBonePositions();
     this.writeJointsAngles();
+
+    this.buffer = Buffer.concat(this.bufferArray);
   }
 
   getAnimationFile() {
