@@ -88,7 +88,7 @@ class XINTERFACE_BASE : public Entity
     virtual void *GetCurrentNode() = 0;
     virtual FXYPOINT GetMousePoint() = 0;
     virtual long PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol, uint32_t dwBCol, long align,
-                                 bool shadow, float scale, long sxs, long sys, long left, long top, char *str,
+                                 bool shadow, float scale, long sxs, long sys, long left, long top, const char *str,
                                  int nWidthForScaleCorrecting = -1, int nSplit = 0) = 0;
 
     virtual CINODE *FindNode(const char *sNodeName, CINODE *findRoot) = 0;

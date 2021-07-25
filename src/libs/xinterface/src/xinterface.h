@@ -164,7 +164,7 @@ class XINTERFACE : public XINTERFACE_BASE
     }
 
     long PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol, uint32_t dwBCol, long align, bool shadow,
-                         float scale, long sxs, long sys, long left, long top, char *str,
+                         float scale, long sxs, long sys, long left, long top, const char *str,
                          int nWidthForScaleCorrecting = -1, int nSplit = 0) override;
 
     CINODE *FindNode(const char *sNodeName, CINODE *findRoot) override

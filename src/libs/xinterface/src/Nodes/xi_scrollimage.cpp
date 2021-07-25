@@ -15,8 +15,6 @@ CXI_SCROLLIMAGE::CXI_SCROLLIMAGE()
 
     m_texBorder = -1;
     m_nCurImage = 0;
-    m_nListSize = 0;
-    m_Image = nullptr;
     m_pScroll = nullptr;
     m_bDoMove = false;
     m_sBorderGroupName = nullptr;
@@ -52,7 +50,7 @@ CXI_SCROLLIMAGE::~CXI_SCROLLIMAGE()
 void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     int n;
-    if (m_bUse && m_Image != nullptr)
+    if (m_bUse && !m_Image.empty())
     {
         if (m_bDoMove)
         {
@@ -173,19 +171,19 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
             {
                 FXYRECT pos;
 
-                if (m_Image[pScroll->imageNum].ptex[n] != -1)
+                if (m_Image[pScroll->imageNum].slots[n].ptex != -1)
                 {
-                    m_rs->TextureSet(0, m_Image[pScroll->imageNum].ptex[n]);
+                    m_rs->TextureSet(0, m_Image[pScroll->imageNum].slots[n].ptex);
                     rectTex.left = 0.f;
                     rectTex.top = 0.f;
                     rectTex.right = 1.f;
                     rectTex.bottom = 1.f;
                 }
-                else if (m_Image[pScroll->imageNum].img[n] != -1)
+                else if (m_Image[pScroll->imageNum].slots[n].img != -1)
                 {
                     // get texture rectangle
-                    pPictureService->GetTexturePos(m_Image[pScroll->imageNum].img[n], rectTex);
-                    m_rs->TextureSet(0, m_nGroupTex[m_Image[pScroll->imageNum].tex[n]]);
+                    pPictureService->GetTexturePos(m_Image[pScroll->imageNum].slots[n].img, rectTex);
+                    m_rs->TextureSet(0, m_nGroupTex[m_Image[pScroll->imageNum].slots[n].tex]);
                 }
                 else
                 {
@@ -249,7 +247,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                     v[0].color = v[1].color = v[2].color = v[3].color = m_dwCurColor[n];
                 else
                     v[0].color = v[1].color = v[2].color = v[3].color = m_dwNormalColor[n];
-                if (m_Image[pScroll->imageNum].bUseSpecTechnique[n])
+                if (m_Image[pScroll->imageNum].slots[n].useSpecTechnique)
                 {
                     m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwSpecTechniqueARGB);
                     m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, v, sizeof(XI_ONETEX_VERTEX),
@@ -280,12 +278,12 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                                     pStringService->GetString(m_Image[pScroll->imageNum].str1),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_nOneStrScale));
-                            else if (m_Image[pScroll->imageNum].string1 != nullptr)
+                            else if (!m_Image[pScroll->imageNum].string1.empty())
                                 ptrOwner->PrintIntoWindow(
                                     m_rect.left, m_rect.right, m_nOneStrFont, m_dwOneStrForeColor, m_dwOneStrBackColor,
                                     m_nOneStrAlign, true, m_nOneStrScale, m_screenSize.x, m_screenSize.y,
                                     static_cast<long>(pScroll->pCenter.x + m_lOneStrX), m_rect.top + m_lOneStrOffset,
-                                    m_Image[pScroll->imageNum].string1,
+                                    m_Image[pScroll->imageNum].string1.c_str(),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_nOneStrScale));
                         }
@@ -299,12 +297,12 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                                     pStringService->GetString(m_Image[pScroll->imageNum].str2),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_nTwoStrScale));
-                            if (m_Image[pScroll->imageNum].string2 != nullptr)
+                            if (!m_Image[pScroll->imageNum].string2.empty())
                                 ptrOwner->PrintIntoWindow(
                                     m_rect.left, m_rect.right, m_nTwoStrFont, m_dwTwoStrForeColor, m_dwTwoStrBackColor,
                                     m_nTwoStrAlign, true, m_nTwoStrScale, m_screenSize.x, m_screenSize.y,
                                     static_cast<long>(pScroll->pCenter.x + m_lTwoStrX), m_rect.top + m_lTwoStrOffset,
-                                    m_Image[pScroll->imageNum].string2,
+                                    m_Image[pScroll->imageNum].string2.c_str(),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_nTwoStrScale));
                         }
@@ -460,19 +458,13 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
             memcpy(m_sSpecTechniqueName, sTechnique, len);
         }
         // get images quantity
-        m_nListSize = pAttribute->GetAttributeAsDword("ListSize", 0);
+        size_t listSize = pAttribute->GetAttributeAsDword("ListSize", 0);
         m_nNotUsedQuantity = pAttribute->GetAttributeAsDword("NotUsed", 0);
-        m_nListSize += m_nNotUsedQuantity;
+        listSize += m_nNotUsedQuantity;
         // create images array
-        if (m_nListSize > 0)
-            m_Image = new IMAGEDESCRIBE[m_nListSize];
-        else
-        {
-            m_Image = nullptr;
-            return;
-        }
+        m_Image.resize(listSize);
         m_nCurImage = pAttribute->GetAttributeAsDword("current", 0);
-        if (m_nCurImage >= m_nListSize || m_nCurImage < 0)
+        if (m_nCurImage >= m_Image.size() || m_nCurImage < 0)
             m_nCurImage = 0;
         pAttribute->SetAttributeUseDword("current", m_nCurImage);
 
@@ -534,7 +526,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
         }
 
         // get all scroll entity
-        for (i = 0; i < m_nListSize; i++)
+        for (i = 0; i < m_Image.size(); i++)
         {
             char attrName[256];
             char *sStringName;
@@ -544,35 +536,13 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
             // Fill image descriptor by default value
             //------------------------------------------------------
             m_Image[i].str1 = m_Image[i].str2 = -1;
-            m_Image[i].string1 = m_Image[i].string2 = nullptr;
+            m_Image[i].string1.clear();
+            m_Image[i].string2.clear();
+
+            m_Image[i].slots.clear();
             if (m_nSlotsQnt > 0)
             {
-                m_Image[i].bUseSpecTechnique = new bool[m_nSlotsQnt];
-                m_Image[i].img = new long[m_nSlotsQnt];
-                m_Image[i].ptex = new long[m_nSlotsQnt];
-                m_Image[i].saveName = new char *[m_nSlotsQnt];
-                m_Image[i].tex = new long[m_nSlotsQnt];
-                if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
-                    !m_Image[i].tex)
-                {
-                    throw std::runtime_error("allocate memory error");
-                }
-                for (n = 0; n < m_nSlotsQnt; n++)
-                {
-                    m_Image[i].bUseSpecTechnique[n] = false;
-                    m_Image[i].img[n] = -1;
-                    m_Image[i].ptex[n] = -1;
-                    m_Image[i].saveName[n] = nullptr;
-                    m_Image[i].tex[n] = -1;
-                }
-            }
-            else
-            {
-                m_Image[i].bUseSpecTechnique = nullptr;
-                m_Image[i].img = nullptr;
-                m_Image[i].ptex = nullptr;
-                m_Image[i].saveName = nullptr;
-                m_Image[i].tex = nullptr;
+                m_Image[i].slots.resize(m_nSlotsQnt);
             }
 
             if (pListEntity != nullptr)
@@ -583,11 +553,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                     sStringName = pListEntity->GetAttribute("str1");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        const auto len = strlen(sStringName);
-                        m_Image[i].string1 = new char[len];
-                        if (m_Image[i].string1 == nullptr)
-                            throw std::runtime_error("allocate memory error");
-                        memcpy(m_Image[i].string1, &(sStringName[1]), len);
+                        m_Image[i].string1 = sStringName;
                     }
                     else
                         m_Image[i].str1 = pStringService->GetStringNum(sStringName);
@@ -599,11 +565,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                     sStringName = pListEntity->GetAttribute("str2");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        const auto len = strlen(sStringName);
-                        m_Image[i].string2 = new char[len];
-                        if (m_Image[i].string2 == nullptr)
-                            throw std::runtime_error("allocate memory error");
-                        memcpy(m_Image[i].string2, &(sStringName[1]), len);
+                        m_Image[i].string2 = sStringName;
                     }
                     else
                         m_Image[i].str2 = pStringService->GetStringNum(sStringName);
@@ -617,23 +579,22 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                     tmpStr = pListEntity->GetAttribute(param);
                     if (tmpStr != nullptr)
                     {
-                        const auto len = strlen(tmpStr) + 1;
-                        if ((m_Image[i].saveName[n] = new char[len]) == nullptr)
-                        {
-                            throw std::runtime_error("allocate memory error");
-                        }
-                        memcpy(m_Image[i].saveName[n], tmpStr, len);
+                        m_Image[i].slots[n].saveName = tmpStr;
                     }
                     sprintf_s(param, "tex%d", n + 1);
-                    m_Image[i].tex[n] = pListEntity->GetAttributeAsDword(param, -1);
+                    m_Image[i].slots[n].tex = pListEntity->GetAttributeAsDword(param, -1);
                     sprintf_s(param, "img%d", n + 1);
-                    if (m_Image[i].tex[n] != -1)
-                        m_Image[i].img[n] = pPictureService->GetImageNum(m_sGroupName[m_Image[i].tex[n]],
-                                                                         pListEntity->GetAttribute(param));
+                    if (m_Image[i].slots[n].tex != -1)
+                    {
+                        m_Image[i].slots[n].img = pPictureService->GetImageNum(m_sGroupName[m_Image[i].slots[n].tex],
+                                                                               pListEntity->GetAttribute(param));
+                    }
                     else
-                        m_Image[i].img[n] = -1;
+                    {
+                        m_Image[i].slots[n].img = -1;
+                    }
                     sprintf_s(param, "spec%d", n + 1);
-                    m_Image[i].bUseSpecTechnique[n] = pListEntity->GetAttributeAsDword(param, 0) != 0;
+                    m_Image[i].slots[n].useSpecTechnique = pListEntity->GetAttributeAsDword(param, 0) != 0;
                 }
             }
         }
@@ -665,7 +626,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
 
 float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
 {
-    if (m_Image == nullptr)
+    if (m_Image.empty())
         return 0.f;
     int n;
 
@@ -706,25 +667,22 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
             pScroll->imageNum = curImage;
             for (n = 0; n < m_nSlotsQnt; n++)
             {
-                if (m_Image[curImage].saveName[n] != nullptr)
+                if (!m_Image[curImage].slots[n].saveName.empty())
                 {
-                    if (m_Image[curImage].ptex[n] == -1)
+                    if (m_Image[curImage].slots[n].ptex == -1)
                     {
-                        m_Image[curImage].ptex[n] = GetTexFromEvent(core.Event(
-                            "GetInterfaceTexture", "sls", m_Image[curImage].saveName[n], curImage, m_nodeName));
+                        m_Image[curImage].slots[n].ptex = GetTexFromEvent(
+                            core.Event("GetInterfaceTexture", "sls", m_Image[curImage].slots[n].saveName.c_str(),
+                                       curImage, m_nodeName));
                         break;
                     }
                 }
             }
-            if (n == m_nSlotsQnt || m_Image[curImage].ptex[n] != -1)
+            if (n == m_nSlotsQnt || m_Image[curImage].slots[n].ptex != -1)
                 break;
 
             // delete current save from list
-            m_Image[curImage].Release(m_nSlotsQnt);
-            if (curImage < m_nListSize - 1)
-                memcpy(&m_Image[curImage], &m_Image[curImage + 1],
-                       sizeof(IMAGEDESCRIBE) * (m_nListSize - 1 - curImage));
-            m_nListSize--;
+            m_Image.erase(m_Image.begin() + curImage);
             // move all already used pictures
             for (SCROLLEntity *pSTmp = m_pScroll; pSTmp != nullptr && pSTmp != pScroll; pSTmp = pSTmp->next)
                 if (pSTmp->imageNum > curImage)
@@ -732,10 +690,10 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
             if (!bIncrement)
                 curImage--;
             //
-            if (curImage < 0 || curImage >= m_nListSize)
+            if (curImage < 0 || curImage >= m_Image.size())
                 break;
         }
-        if (curImage < 0 || curImage >= m_nListSize)
+        if (curImage < 0 || curImage >= m_Image.size())
             break;
 
         // Calculate color
@@ -776,7 +734,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
         {
             // remove the next (unused texture)
             curImage++;
-            if (curImage >= m_nListSize)
+            if (curImage >= m_Image.size())
                 curImage = 0;
             aDeleteImageIndex[nDeleteImageQuantity++] = curImage;
             // continue displaying the next icon from the center
@@ -798,7 +756,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
             // remove the previous (unused texture)
             curImage--;
             if (curImage < 0)
-                curImage = m_nListSize - 1;
+                curImage = m_Image.size() - 1;
             aDeleteImageIndex[nDeleteImageQuantity++] = curImage;
             break;
         }
@@ -807,7 +765,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
         if (bIncrement)
         {
             curImage++;
-            if (curImage >= m_nListSize)
+            if (curImage >= m_Image.size())
                 curImage = 0;
             curXCenter = rpos + m_lDelta + m_ImageSize.x * 0.5f;
         }
@@ -815,7 +773,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
         {
             curImage--;
             if (curImage < 0)
-                curImage = m_nListSize - 1;
+                curImage = m_Image.size() - 1;
             curXCenter = lpos - m_lDelta - m_ImageSize.x * 0.5f;
         }
 
@@ -850,10 +808,10 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
             continue;
         for (n = 0; n < m_nSlotsQnt; n++)
         {
-            if (m_Image[curImage].saveName[n] != nullptr && m_Image[curImage].ptex[n] != -1)
+            if (!m_Image[curImage].slots[n].saveName.empty() && m_Image[curImage].slots[n].ptex != -1)
             {
-                core.Event("DelInterfaceTexture", "ss", m_Image[curImage].saveName[n], m_nodeName);
-                m_Image[curImage].ptex[n] = -1;
+                core.Event("DelInterfaceTexture", "ss", m_Image[curImage].slots[n].saveName.c_str(), m_nodeName);
+                m_Image[curImage].slots[n].ptex = -1;
             }
         }
     }
@@ -889,11 +847,9 @@ void CXI_SCROLLIMAGE::ReleaseAll()
     STORM_DELETE(m_idBadPic);
     STORM_DELETE(m_idBadTexture);
 
-    if (m_Image != nullptr)
+    if (!m_Image.empty())
     {
-        for (i = 0; i < m_nListSize; i++)
-            m_Image[i].Release(m_nSlotsQnt);
-        STORM_DELETE(m_Image);
+        m_Image.clear();
     }
 
     while (m_pScroll != nullptr)
@@ -929,7 +885,7 @@ void CXI_SCROLLIMAGE::ReleaseAll()
 int CXI_SCROLLIMAGE::CommandExecute(int wActCode)
 {
     int i;
-    if (m_bUse && m_Image != nullptr && m_pScroll != nullptr)
+    if (m_bUse && !m_Image.empty() && m_pScroll != nullptr)
     {
         if (m_bLockStatus)
             return -1;
@@ -1049,8 +1005,8 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
     if (pAttr != nullptr)
     {
         // check whether the whole list needs to be changed
-        if (nScrollItemNum == -1 || m_nListSize != static_cast<long>(pAttr->GetAttributeAsDword("NotUsed", 0) +
-                                                                     pAttr->GetAttributeAsDword("ListSize", 0)))
+        if (nScrollItemNum == -1 || m_Image.size() != static_cast<long>(pAttr->GetAttributeAsDword("NotUsed", 0) +
+                                                                        pAttr->GetAttributeAsDword("ListSize", 0)))
         {
             RefreshScroll();
             return;
@@ -1058,11 +1014,8 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
 
         int nScrollLastNum;
         if (nScrollItemNum != -1)
-            nScrollLastNum = nScrollItemNum + 1;
-        else
         {
-            nScrollLastNum = m_nListSize;
-            nScrollItemNum = 0;
+            nScrollLastNum = nScrollItemNum + 1;
         }
 
         int i, n;
@@ -1072,7 +1025,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
         char *sStringName;
         for (i = nScrollItemNum; i < nScrollLastNum; i++)
         {
-            m_Image[i].Clear(m_nSlotsQnt);
+            m_Image[i].Clear();
 
             sprintf_s(sAttrName, "pic%d", i + 1);
             pAttribute = pAttr->GetAttributeClass(sAttrName);
@@ -1085,11 +1038,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                     sStringName = pAttribute->GetAttribute("str1");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        const auto len = strlen(sStringName);
-                        m_Image[i].string1 = new char[len];
-                        if (m_Image[i].string1 == nullptr)
-                            throw std::runtime_error("allocate memory error");
-                        memcpy(m_Image[i].string1, &(sStringName[1]), len);
+                        m_Image[i].string1 = sStringName;
                     }
                     else
                         m_Image[i].str1 = pStringService->GetStringNum(sStringName);
@@ -1101,11 +1050,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                     sStringName = pAttribute->GetAttribute("str2");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        const auto len = strlen(sStringName);
-                        m_Image[i].string2 = new char[len];
-                        if (m_Image[i].string2 == nullptr)
-                            throw std::runtime_error("allocate memory error");
-                        memcpy(m_Image[i].string2, &(sStringName[1]), len);
+                        m_Image[i].string2 = sStringName;
                     }
                     else
                         m_Image[i].str2 = pStringService->GetStringNum(sStringName);
@@ -1119,30 +1064,29 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                     tmpStr = pAttribute->GetAttribute(param);
                     if (tmpStr != nullptr)
                     {
-                        const auto len = strlen(tmpStr) + 1;
-                        if ((m_Image[i].saveName[n] = new char[len]) == nullptr)
-                        {
-                            throw std::runtime_error("allocate memory error");
-                        }
-                        memcpy(m_Image[i].saveName[n], tmpStr, len);
+                        m_Image[i].slots[n].saveName = tmpStr;
                     }
                     sprintf_s(param, "tex%d", n + 1);
-                    m_Image[i].tex[n] = pAttribute->GetAttributeAsDword(param, -1);
+                    m_Image[i].slots[n].tex = pAttribute->GetAttributeAsDword(param, -1);
                     sprintf_s(param, "img%d", n + 1);
-                    if (m_Image[i].tex[n] != -1)
-                        m_Image[i].img[n] = pPictureService->GetImageNum(m_sGroupName[m_Image[i].tex[n]],
-                                                                         pAttribute->GetAttribute(param));
+                    if (m_Image[i].slots[n].tex != -1)
+                    {
+                        m_Image[i].slots[n].img = pPictureService->GetImageNum(m_sGroupName[m_Image[i].slots[n].tex],
+                                                                               pAttribute->GetAttribute(param));
+                    }
                     else
-                        m_Image[i].img[n] = -1;
+                    {
+                        m_Image[i].slots[n].img = -1;
+                    }
                     sprintf_s(param, "spec%d", n + 1);
-                    m_Image[i].bUseSpecTechnique[n] = pAttribute->GetAttributeAsDword(param, 0) != 0;
+                    m_Image[i].slots[n].useSpecTechnique = pAttribute->GetAttributeAsDword(param, 0) != 0;
                 }
             }
         }
     }
 
-    if (m_nCurImage >= m_nListSize - m_nNotUsedQuantity)
-        m_nCurImage = m_nListSize - m_nNotUsedQuantity - 1;
+    if (m_nCurImage >= m_Image.size() - m_nNotUsedQuantity)
+        m_nCurImage = m_Image.size() - m_nNotUsedQuantity - 1;
     if (m_nCurImage < 0)
         m_nCurImage = 0;
     ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
@@ -1155,30 +1099,15 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
 
 void CXI_SCROLLIMAGE::DeleteImage(int imgNum)
 {
-    if (imgNum < 0 || imgNum >= m_nListSize)
+    if (imgNum < 0 || imgNum >= m_Image.size())
         return;
-    if (m_nListSize <= m_nNotUsedQuantity)
+    if (m_Image.size() <= m_nNotUsedQuantity)
         return;
-    m_Image[imgNum].Release(m_nSlotsQnt);
-    m_nListSize--;
-    if (m_nListSize <= 0)
-    {
-        STORM_DELETE(m_Image);
-        return;
-    }
 
-    IMAGEDESCRIBE *pOldImgs = m_Image;
-    m_Image = new IMAGEDESCRIBE[m_nListSize];
-    if (m_Image == nullptr)
-        throw std::runtime_error("memory allocate error");
-    if (imgNum > 0)
-        memcpy(m_Image, pOldImgs, imgNum * sizeof(IMAGEDESCRIBE));
-    if (imgNum < m_nListSize)
-        memcpy(&m_Image[imgNum], &pOldImgs[imgNum + 1], (m_nListSize - imgNum) * sizeof(IMAGEDESCRIBE));
-    delete pOldImgs;
+    m_Image.erase(m_Image.begin() + imgNum);
 
-    if (m_nCurImage >= m_nListSize - m_nNotUsedQuantity)
-        m_nCurImage = m_nListSize - m_nNotUsedQuantity - 1;
+    if (m_nCurImage >= m_Image.size() - m_nNotUsedQuantity)
+        m_nCurImage = m_Image.size() - m_nNotUsedQuantity - 1;
     if (m_nCurImage < 0)
         m_nCurImage = 0;
     ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
@@ -1208,11 +1137,9 @@ void CXI_SCROLLIMAGE::RefreshScroll()
         m_idBadPic[i] = -1;
     }
 
-    if (m_Image != nullptr)
+    if (!m_Image.empty())
     {
-        for (i = 0; i < m_nListSize; i++)
-            m_Image[i].Release(m_nSlotsQnt);
-        STORM_DELETE(m_Image);
+        m_Image.clear();
     }
 
     while (m_pScroll != nullptr)
@@ -1231,7 +1158,6 @@ void CXI_SCROLLIMAGE::RefreshScroll()
     STORM_DELETE(m_sGroupName);
     STORM_DELETE(m_nGroupTex);
 
-    m_nListSize = 0;
     m_nNotUsedQuantity = 0;
 
     ATTRIBUTES *pAttribute = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
@@ -1250,20 +1176,14 @@ void CXI_SCROLLIMAGE::RefreshScroll()
             memcpy(m_sSpecTechniqueName, sTechnique, len);
         }
         // get images quantity
-        m_nListSize = pAttribute->GetAttributeAsDword("ListSize", 0);
+        size_t listSize = pAttribute->GetAttributeAsDword("ListSize", 0);
         m_nNotUsedQuantity = pAttribute->GetAttributeAsDword("NotUsed", 0);
-        m_nListSize += m_nNotUsedQuantity;
+        listSize += m_nNotUsedQuantity;
         // create images array
-        if (m_nListSize > 0)
-            m_Image = new IMAGEDESCRIBE[m_nListSize];
-        else
-        {
-            m_Image = nullptr;
-            return;
-        }
+        m_Image.resize(listSize);
         m_nCurImage = pAttribute->GetAttributeAsDword("current", 0);
-        if (m_nCurImage >= m_nListSize)
-            m_nCurImage = m_nListSize - 1;
+        if (m_nCurImage >= m_Image.size())
+            m_nCurImage = m_Image.size() - 1;
         if (m_nCurImage < 0)
             m_nCurImage = 0;
 
@@ -1326,7 +1246,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
         }
 
         // get all scroll entity
-        for (i = 0; i < m_nListSize; i++)
+        for (i = 0; i < m_Image.size(); i++)
         {
             char attrName[256];
             char *sStringName;
@@ -1336,35 +1256,13 @@ void CXI_SCROLLIMAGE::RefreshScroll()
             // Fill image descriptor by default value
             //------------------------------------------------------
             m_Image[i].str1 = m_Image[i].str2 = -1;
-            m_Image[i].string1 = m_Image[i].string2 = nullptr;
+            m_Image[i].string1.clear();
+            m_Image[i].string2.clear();
+
+            m_Image[i].slots.clear();
             if (m_nSlotsQnt > 0)
             {
-                m_Image[i].bUseSpecTechnique = new bool[m_nSlotsQnt];
-                m_Image[i].img = new long[m_nSlotsQnt];
-                m_Image[i].ptex = new long[m_nSlotsQnt];
-                m_Image[i].saveName = new char *[m_nSlotsQnt];
-                m_Image[i].tex = new long[m_nSlotsQnt];
-                if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
-                    !m_Image[i].tex)
-                {
-                    throw std::runtime_error("allocate memory error");
-                }
-                for (n = 0; n < m_nSlotsQnt; n++)
-                {
-                    m_Image[i].bUseSpecTechnique[n] = false;
-                    m_Image[i].img[n] = -1;
-                    m_Image[i].ptex[n] = -1;
-                    m_Image[i].saveName[n] = nullptr;
-                    m_Image[i].tex[n] = -1;
-                }
-            }
-            else
-            {
-                m_Image[i].bUseSpecTechnique = nullptr;
-                m_Image[i].img = nullptr;
-                m_Image[i].ptex = nullptr;
-                m_Image[i].saveName = nullptr;
-                m_Image[i].tex = nullptr;
+                m_Image[i].slots.resize(m_nSlotsQnt);
             }
 
             if (pListEntity != nullptr)
@@ -1375,11 +1273,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                     sStringName = pListEntity->GetAttribute("str1");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        const auto len = strlen(sStringName);
-                        m_Image[i].string1 = new char[len];
-                        if (m_Image[i].string1 == nullptr)
-                            throw std::runtime_error("allocate memory error");
-                        memcpy(m_Image[i].string1, &(sStringName[1]), len);
+                        m_Image[i].string1 = sStringName;
                     }
                     else
                         m_Image[i].str1 = pStringService->GetStringNum(sStringName);
@@ -1391,11 +1285,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                     sStringName = pListEntity->GetAttribute("str2");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        const auto len = strlen(sStringName);
-                        m_Image[i].string2 = new char[len];
-                        if (m_Image[i].string2 == nullptr)
-                            throw std::runtime_error("allocate memory error");
-                        memcpy(m_Image[i].string2, &(sStringName[1]), len);
+                        m_Image[i].string2 = sStringName;
                     }
                     else
                         m_Image[i].str2 = pStringService->GetStringNum(sStringName);
@@ -1409,30 +1299,29 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                     tmpStr = pListEntity->GetAttribute(param);
                     if (tmpStr != nullptr)
                     {
-                        const auto len = strlen(tmpStr) + 1;
-                        if ((m_Image[i].saveName[n] = new char[len]) == nullptr)
-                        {
-                            throw std::runtime_error("allocate memory error");
-                        }
-                        memcpy(m_Image[i].saveName[n], tmpStr, len);
+                        m_Image[i].slots[n].saveName = tmpStr;
                     }
                     sprintf_s(param, "tex%d", n + 1);
-                    m_Image[i].tex[n] = pListEntity->GetAttributeAsDword(param, -1);
+                    m_Image[i].slots[n].tex = pListEntity->GetAttributeAsDword(param, -1);
                     sprintf_s(param, "img%d", n + 1);
-                    if (m_Image[i].tex[n] != -1)
-                        m_Image[i].img[n] = pPictureService->GetImageNum(m_sGroupName[m_Image[i].tex[n]],
-                                                                         pListEntity->GetAttribute(param));
+                    if (m_Image[i].slots[n].tex != -1)
+                    {
+                        m_Image[i].slots[n].img = pPictureService->GetImageNum(m_sGroupName[m_Image[i].slots[n].tex],
+                                                                               pListEntity->GetAttribute(param));
+                    }
                     else
-                        m_Image[i].img[n] = -1;
+                    {
+                        m_Image[i].slots[n].img = -1;
+                    }
                     sprintf_s(param, "spec%d", n + 1);
-                    m_Image[i].bUseSpecTechnique[n] = pListEntity->GetAttributeAsDword(param, 0) != 0;
+                    m_Image[i].slots[n].useSpecTechnique = pListEntity->GetAttributeAsDword(param, 0) != 0;
                 }
             }
         }
     }
 
-    if (m_nCurImage >= m_nListSize - m_nNotUsedQuantity)
-        m_nCurImage = m_nListSize - m_nNotUsedQuantity - 1;
+    if (m_nCurImage >= m_Image.size() - m_nNotUsedQuantity)
+        m_nCurImage = m_Image.size() - m_nNotUsedQuantity - 1;
     if (m_nCurImage < 0)
         m_nCurImage = 0;
     ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
@@ -1478,8 +1367,8 @@ int CXI_SCROLLIMAGE::FindClickedImageNum() const
     {
         /*        if( m_Image[pscroll->imageNum].img[n]!=-1 ||
               m_Image[pscroll->imageNum].saveName!=null ) break;*/
-        if (m_Image[pscroll->imageNum].tex[n] != -1 || m_Image[pscroll->imageNum].ptex[n] != -1 ||
-            m_Image[pscroll->imageNum].saveName[n] != nullptr)
+        if (m_Image[pscroll->imageNum].slots[n].tex != -1 || m_Image[pscroll->imageNum].slots[n].ptex != -1 ||
+            !m_Image[pscroll->imageNum].slots[n].saveName.empty())
             break;
     }
     if (n >= m_nSlotsQnt)
@@ -1493,7 +1382,7 @@ int CXI_SCROLLIMAGE::FindClickedImageNum() const
 
 int CXI_SCROLLIMAGE::GetRightQuantity() const
 {
-    if (m_pScroll == nullptr || m_Image == nullptr)
+    if (m_pScroll == nullptr || m_Image.empty())
         return 0;
     int q = 0;
     for (SCROLLEntity *pscr = m_pScroll; pscr != nullptr; pscr = pscr->next)
@@ -1506,13 +1395,13 @@ int CXI_SCROLLIMAGE::GetRightQuantity() const
         int j;
         for (j = 0; j < m_nSlotsQnt; j++)
         {
-            if (m_Image[i].img[j] != -1 || m_Image[i].saveName[j] != nullptr)
+            if (m_Image[i].slots[j].img != -1 || !m_Image[i].slots[j].saveName.empty())
                 break;
         }
         if (j >= m_nSlotsQnt)
             break;
         i++;
-        if (i >= m_nListSize)
+        if (i >= m_Image.size())
             i = 0;
         if (i == m_pScroll->imageNum)
             break;
@@ -1524,7 +1413,7 @@ int CXI_SCROLLIMAGE::GetRightQuantity() const
 
 int CXI_SCROLLIMAGE::GetLeftQuantity() const
 {
-    if (m_pScroll == nullptr || m_Image == nullptr)
+    if (m_pScroll == nullptr || m_Image.empty())
         return 0;
     int q = 0;
     for (SCROLLEntity *pscr = m_pScroll; pscr != nullptr; pscr = pscr->next)
@@ -1537,14 +1426,14 @@ int CXI_SCROLLIMAGE::GetLeftQuantity() const
         int j;
         for (j = 0; j < m_nSlotsQnt; j++)
         {
-            if (m_Image[i].img[j] != -1 || m_Image[i].saveName[j] != nullptr)
+            if (m_Image[i].slots[j].img != -1 || !m_Image[i].slots[j].saveName.empty())
                 break;
         }
         if (j >= m_nSlotsQnt)
             break;
         i--;
         if (i < 0)
-            i = m_nListSize - 1;
+            i = m_Image.size() - 1;
         if (i == m_pScroll->imageNum)
             break;
     }
@@ -1682,38 +1571,14 @@ int CXI_SCROLLIMAGE::FindTexGroupFromOld(char **pGroupList, char *groupName, int
     return -1;
 }
 
-void CXI_SCROLLIMAGE::IMAGEDESCRIBE::Release(int nQnt)
+void CXI_SCROLLIMAGE::IMAGEDESCRIBE::Clear()
 {
-    STORM_DELETE(bUseSpecTechnique);
-    STORM_DELETE(tex);
-    STORM_DELETE(ptex);
-    STORM_DELETE(img);
-
-    for (int i = 0; i < nQnt; i++)
-        STORM_DELETE(saveName[i]);
-    STORM_DELETE(saveName);
+    std::fill(slots.begin(), slots.end(), ImageSlot{});
 
     str1 = -1;
     str2 = -1;
-    STORM_DELETE(string1);
-    STORM_DELETE(string2);
-}
-
-void CXI_SCROLLIMAGE::IMAGEDESCRIBE::Clear(int nQnt)
-{
-    for (int i = 0; i < nQnt; i++)
-    {
-        bUseSpecTechnique[i] = false;
-        tex[i] = -1;
-        ptex[i] = -1;
-        img[i] = -1;
-        STORM_DELETE(saveName[i]);
-    }
-
-    str1 = -1;
-    str2 = -1;
-    STORM_DELETE(string1);
-    STORM_DELETE(string2);
+    string1.clear();
+    string2.clear();
 }
 
 uint32_t CXI_SCROLLIMAGE::MessageProc(long msgcode, MESSAGE &message)
@@ -1726,8 +1591,8 @@ uint32_t CXI_SCROLLIMAGE::MessageProc(long msgcode, MESSAGE &message)
     case 1: // set new current picture
     {
         m_nCurImage = message.Long();
-        if (m_nCurImage >= m_nListSize - m_nNotUsedQuantity)
-            m_nCurImage = m_nListSize - m_nNotUsedQuantity - 1;
+        if (m_nCurImage >= m_Image.size() - m_nNotUsedQuantity)
+            m_nCurImage = m_Image.size() - m_nNotUsedQuantity - 1;
         if (m_nCurImage < 0)
             m_nCurImage = 0;
 
@@ -1780,9 +1645,9 @@ long CXI_SCROLLIMAGE::GetMousePointedPictureNum() const
     }
 
     n += m_nCurImage;
-    if (n >= m_nListSize)
-        n -= m_nListSize;
+    if (n >= m_Image.size())
+        n -= m_Image.size();
     if (n < 0)
-        n += m_nListSize;
+        n += m_Image.size();
     return n;
 }
