@@ -158,8 +158,6 @@ coas_to_potc_man = {
 potc_to_coas_man = {value: key for key, value in coas_to_potc_man.items()}
 
 # taken from Copy Attributes Menu Addon by Bassam Kurdali, Fabian Fricke, Adam Wiseman
-
-
 def getmat(bone, active, context, ignoreparent):
     obj_bone = bone.id_data
     obj_active = active.id_data
@@ -183,11 +181,75 @@ def getmat(bone, active, context, ignoreparent):
         newmat = bonemat.inverted() @ parentposemat.inverted() @ otherloc
     return newmat
 
+def parse_an(file_path=""):
+    def read_vector(file):
+        x = struct.unpack("<f", file.read(4))[0]
+        y = struct.unpack("<f", file.read(4))[0]
+        z = struct.unpack("<f", file.read(4))[0]
+        return [x, y, z]
+
+    def read_d3dx_quaternion(file):
+        x = struct.unpack("<f", file.read(4))[0]
+        y = struct.unpack("<f", file.read(4))[0]
+        z = struct.unpack("<f", file.read(4))[0]
+        w = struct.unpack("<f", file.read(4))[0]
+        return [w, x, y, z]
+
+    with open(file_path, mode='rb') as file:
+        frames_quantity = struct.unpack("<l", file.read(4))[0]
+        joints_quantity = struct.unpack("<l", file.read(4))[0]
+        fps = struct.unpack("<f", file.read(4))[0]
+
+        parent_indices = []
+        for i in range(joints_quantity):
+            idx = struct.unpack("<l", file.read(4))[0]
+            parent_indices.append(idx)
+
+        start_joints_positions = []
+        for i in range(joints_quantity):
+            vector = read_vector(file)
+            start_joints_positions.append(vector)
+
+        blender_start_joints_positions = []
+        for i in range(joints_quantity):
+            if i == 0:
+                blender_start_joints_positions.append(
+                    start_joints_positions[0])
+            else:
+                [x, y, z] = start_joints_positions[i]
+                [dX, dY, dZ] = blender_start_joints_positions[parent_indices[i]]
+                blender_start_joints_positions.append([x + dX, y + dY, z + dZ])
+
+        root_bone_positions = []
+        [root_start_x, root_start_y, root_start_z] = start_joints_positions[0]
+        for i in range(frames_quantity):
+            [x, y, z] = read_vector(file)
+            root_bone_positions.append(
+                [x - root_start_x, y - root_start_y, z - root_start_z])
+
+        joints_angles = []
+        for i in range(joints_quantity):
+            joints_angles.append([])
+            for j in range(frames_quantity):
+                d3dx_quaternion = read_d3dx_quaternion(file)
+                joints_angles[i].append(d3dx_quaternion)
+
+    return {
+        "header": {
+            "nFrames": frames_quantity,
+            "nJoints": joints_quantity,
+            "framesPerSec": fps,
+        },
+        "parentIndices": parent_indices,
+        "startJointsPositions": start_joints_positions,
+        "blenderStartJointsPositions": blender_start_joints_positions,
+        "rootBonePositions": root_bone_positions,
+        "jointsAngles": joints_angles,
+    }
 
 def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
-    file_name = os.path.basename(file_path)[:-8]
-    f = open(file_path,)
-    data = json.load(f)
+    file_name = os.path.basename(file_path)[:-3]
+    data = parse_an(file_path)
 
     header = data.get('header')
     frames_quantity = header.get('nFrames')
@@ -615,7 +677,7 @@ class ImportJsonGm(Operator, ImportHelper):
     an_name: StringProperty(
         name="Animation name",
         description="Must be in the same folder as model",
-        default="man.an.json",
+        default="man.an",
     )
 
     fix_coas_man_head: BoolProperty(

@@ -9,9 +9,10 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy_extras.io_utils import ImportHelper, axis_conversion
 import json
 import math
+
 bl_info = {
-    "name": "JSON AN",
-    "description": "Import JSON AN files",
+    "name": "SeaDogs AN",
+    "description": "Import AN files",
     "author": "Artess999",
     "version": (0, 0, 1),
     "blender": (2, 92, 0),
@@ -25,11 +26,75 @@ bl_info = {
 correction_matrix = axis_conversion(
     from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
 
+def parse_an(file_path=""):
+    def read_vector(file):
+        x = struct.unpack("<f", file.read(4))[0]
+        y = struct.unpack("<f", file.read(4))[0]
+        z = struct.unpack("<f", file.read(4))[0]
+        return [x, y, z]
 
-def import_json_an(context, file_path=""):
-    file_name = os.path.basename(file_path)[:-8]
-    f = open(file_path,)
-    data = json.load(f)
+    def read_d3dx_quaternion(file):
+        x = struct.unpack("<f", file.read(4))[0]
+        y = struct.unpack("<f", file.read(4))[0]
+        z = struct.unpack("<f", file.read(4))[0]
+        w = struct.unpack("<f", file.read(4))[0]
+        return [w, x, y, z]
+
+    with open(file_path, mode='rb') as file:
+        frames_quantity = struct.unpack("<l", file.read(4))[0]
+        joints_quantity = struct.unpack("<l", file.read(4))[0]
+        fps = struct.unpack("<f", file.read(4))[0]
+
+        parent_indices = []
+        for i in range(joints_quantity):
+            idx = struct.unpack("<l", file.read(4))[0]
+            parent_indices.append(idx)
+
+        start_joints_positions = []
+        for i in range(joints_quantity):
+            vector = read_vector(file)
+            start_joints_positions.append(vector)
+
+        blender_start_joints_positions = []
+        for i in range(joints_quantity):
+            if i == 0:
+                blender_start_joints_positions.append(
+                    start_joints_positions[0])
+            else:
+                [x, y, z] = start_joints_positions[i]
+                [dX, dY, dZ] = blender_start_joints_positions[parent_indices[i]]
+                blender_start_joints_positions.append([x + dX, y + dY, z + dZ])
+
+        root_bone_positions = []
+        [root_start_x, root_start_y, root_start_z] = start_joints_positions[0]
+        for i in range(frames_quantity):
+            [x, y, z] = read_vector(file)
+            root_bone_positions.append(
+                [x - root_start_x, y - root_start_y, z - root_start_z])
+
+        joints_angles = []
+        for i in range(joints_quantity):
+            joints_angles.append([])
+            for j in range(frames_quantity):
+                d3dx_quaternion = read_d3dx_quaternion(file)
+                joints_angles[i].append(d3dx_quaternion)
+
+    return {
+        "header": {
+            "nFrames": frames_quantity,
+            "nJoints": joints_quantity,
+            "framesPerSec": fps,
+        },
+        "parentIndices": parent_indices,
+        "startJointsPositions": start_joints_positions,
+        "blenderStartJointsPositions": blender_start_joints_positions,
+        "rootBonePositions": root_bone_positions,
+        "jointsAngles": joints_angles,
+    }
+
+def import_an(context, file_path=""):
+    file_name = os.path.basename(file_path)[:-3]
+    data = parse_an(file_path)
 
     header = data.get('header')
     frames_quantity = header.get('nFrames')
@@ -134,36 +199,36 @@ def import_json_an(context, file_path=""):
     return {'FINISHED'}
 
 
-class ImportJsonAn(Operator, ImportHelper):
+class ImportAn(Operator, ImportHelper):
     """This appears in the tooltip of the operator and in the generated docs"""
-    bl_idname = "import_an.json"
-    bl_label = "Import JSON AN"
+    bl_idname = "import.an"
+    bl_label = "Import AN"
 
     # ImportHelper mixin class uses this
-    filename_ext = ".an.json"
+    filename_ext = ".an"
 
     filter_glob: StringProperty(
-        default="*.an.json",
+        default="*.an",
         options={'HIDDEN'},
         maxlen=255,  # Max internal buffer length, longer would be clamped.
     )
 
     def execute(self, context):
-        return import_json_an(context, self.filepath)
+        return import_an(context, self.filepath)
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportJsonAn.bl_idname,
-                         text="JSON AN Import(.an.json)")
+    self.layout.operator(ImportAn.bl_idname,
+                         text="AN Import(.an)")
 
 
 def register():
-    bpy.utils.register_class(ImportJsonAn)
+    bpy.utils.register_class(ImportAn)
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 
 def unregister():
-    bpy.utils.unregister_class(ImportJsonAn)
+    bpy.utils.unregister_class(ImportAn)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
 
 
