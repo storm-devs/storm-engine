@@ -677,8 +677,8 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
 
     if (!windowed)
     {
-        //d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
-        d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+        d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+        //d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
     }
 
     if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING, &d3dpp, &d3d9) !=
@@ -867,7 +867,7 @@ bool DX9RENDER::DX9Clear(long type)
     if (CHECKD3DERR(d3d9->Clear(0L, NULL, type, dwBackColor, 1.0f, 0L)) == true)
         return false;
 
-    //bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, dwBackColor, 1.0f, 0);
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, dwBackColor, 1.0f, 0);
     //bgfx::setViewClear(1, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, dwBackColor, 1.0f, 0);
 
     // if(CHECKD3DERR(d3d9->Clear(0L, NULL, type, 0x0, 1.0f, 0L))==true)    return false;
@@ -1175,6 +1175,13 @@ bool DX9RENDER::DX9EndScene()
 
     if (bVideoCapture)
         MakeCapture();
+
+    // if (bMakeShoot || GetAsyncKeyState(VK_F9) < 0)
+    BGFXRenderToBackBuffer();
+
+    GetSpriteRenderer()->Submit();
+    bgfx::frame();
+
 
     const HRESULT hRes = d3d9->Present(nullptr, nullptr, nullptr, nullptr);
     
@@ -2756,7 +2763,7 @@ bool DX9RENDER::SetPerspective(float perspective, float fAspectRatio)
     CMatrix transposedProj = mtx;
     transposedProj.Transposition();
 
-    bgfx::setViewTransform(0, transposedView.matrix, transposedProj.matrix);
+    bgfx::setViewTransform(1, transposedView.matrix, transposedProj.matrix);
 
     Fov = perspective;
     FindPlanes(d3d9);
@@ -3222,7 +3229,7 @@ void DX9RENDER::BGFXSetTransformUpdateViews(long type, D3DMATRIX *mtx)
 
         bgfxView = mv;
 
-        bgfx::setViewTransform(0, bgfxView.matrix, bgfxProjection.matrix);
+        bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
     }
     break;
 
@@ -3233,7 +3240,7 @@ void DX9RENDER::BGFXSetTransformUpdateViews(long type, D3DMATRIX *mtx)
 
         bgfxProjection = mp;
 
-        bgfx::setViewTransform(0, bgfxView.matrix, bgfxProjection.matrix);
+        bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
 
         // bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
     }
@@ -4056,7 +4063,7 @@ void DX9RENDER::BGFXRenderToBackBuffer()
         core.Trace("Falure get render target for make screenshot");
         return;
     }
-    if (FAILED(CreateOffscreenPlainSurface(screen_size.x, screen_size.y, D3DFMT_X8R8G8B8, &surface)))
+    if (FAILED(CreateOffscreenPlainSurface(screen_size.x, screen_size.y, D3DFMT_A8R8G8B8, &surface)))
     {
         renderTarget->Release();
         core.Trace("Falure create buffer for make screenshot");
@@ -4481,7 +4488,6 @@ void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, const glm::
 
     m_spriteRenderer->Texture = texture;
 
-
     m_spriteRenderer->SetViewProjection();
     m_spriteRenderer->UpdateVertexBuffer(points, uCoordinates, vCoordinates, colors, depth);
 
@@ -4675,17 +4681,6 @@ HRESULT DX9RENDER::EndScene()
         isInScene = false;
 
         HRESULT res = CHECKD3DERR(d3d9->EndScene());
-
-        
-        if (!s_isDXEndScene)
-        {
-            // if (bMakeShoot || GetAsyncKeyState(VK_F9) < 0)
-            BGFXRenderToBackBuffer();
-
-            GetSpriteRenderer()->Submit();
-            bgfx::frame();
-        }
-
         return res;
     }
 
@@ -5298,6 +5293,13 @@ void DX9RENDER::ProgressView()
     DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]),
                     "ProgressTech");
     EndScene();
+
+    // if (bMakeShoot || GetAsyncKeyState(VK_F9) < 0)
+    BGFXRenderToBackBuffer();
+
+    GetSpriteRenderer()->Submit();
+    bgfx::frame();
+
 
     d3d9->Present(nullptr, nullptr, nullptr, nullptr);
    

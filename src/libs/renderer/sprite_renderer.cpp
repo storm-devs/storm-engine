@@ -112,6 +112,12 @@ void SpriteRenderer::SetViewProjection()
     const bx::Vec3 at = {0.0f, 0.0f, 0.0};
     const bx::Vec3 eye = {0.0f, 0.0f, -3.0};
 
+    glm::mat4 model(1);
+
+    bx::mtxIdentity(glm::value_ptr(model));
+
+    bgfx::setTransform(glm::value_ptr(model));
+
     glm::mat4 view(1);
     bx::mtxLookAt(glm::value_ptr(view), eye, at);
     glm::mat4 proj(1);

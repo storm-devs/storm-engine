@@ -188,7 +188,7 @@ int main(int argc, char **argv)
 
     // Init bgfx
     bgfx::Init init;
-    init.type = bgfx::RendererType::Direct3D9;
+    init.type = bgfx::RendererType::Direct3D11;
     init.vendorId = BGFX_PCI_ID_NONE;
     init.resolution.width = width;
     init.resolution.height = height;
