@@ -9,6 +9,7 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy_extras.io_utils import ImportHelper, axis_conversion
 import json
 import math
+
 bl_info = {
     "name": "SeaDogs AN",
     "description": "Import AN files",
