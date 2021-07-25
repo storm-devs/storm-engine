@@ -1009,11 +1009,15 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
         {
             pvdat->Set(param2);
         }
-        std::strftime(param2, sizeof(param2), "%d.%m.%Y", locTime);
-        pvdat = message.ScriptVariablePointer();
-        if (pvdat)
+
+        if (message.GetFormat() == "lsee") 
         {
-            pvdat->Set(param2);
+            std::strftime(param2, sizeof(param2), "%d.%m.%Y", locTime);
+            pvdat = message.ScriptVariablePointer();
+            if (pvdat)
+            {
+                pvdat->Set(param2);
+            }
         }
     }
     break;
