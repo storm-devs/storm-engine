@@ -92,7 +92,7 @@ def parse_an(file_path=""):
     }
 
 def import_an(context, file_path=""):
-    file_name = os.path.basename(file_path)[:-8]
+    file_name = os.path.basename(file_path)[:-3]
     data = parse_an(file_path)
 
     header = data.get('header')
