@@ -1,3 +1,16 @@
+import os
+import struct
+import mathutils
+import bmesh
+import time
+import bpy
+from bpy_extras.io_utils import axis_conversion
+from bpy.types import Operator
+from bpy.props import StringProperty, BoolProperty, EnumProperty
+from bpy_extras.io_utils import ExportHelper
+import json
+import math
+
 bl_info = {
     "name": "JSON AN",
     "description": "Export JSON AN files",
@@ -11,20 +24,11 @@ bl_info = {
 }
 
 
-import bpy, bmesh, mathutils
-import time, struct, os
-import math
-import json
-
-from bpy_extras.io_utils import ExportHelper
-from bpy.props import StringProperty, BoolProperty, EnumProperty
-from bpy.types import Operator
-from bpy_extras.io_utils import axis_conversion
+correction_export_matrix = axis_conversion(
+    from_forward='Y', from_up='Z', to_forward='X', to_up='Y')
 
 
-correction_export_matrix = axis_conversion(from_forward='Y', from_up='Z', to_forward='X', to_up='Y')
-
-def export_json_an(context,file_path=""):
+def export_json_an(context, file_path=""):
     armature_obj = bpy.context.view_layer.objects.active
     bones = armature_obj.data.bones
     pose_bones = armature_obj.pose.bones
@@ -56,9 +60,12 @@ def export_json_an(context,file_path=""):
         if bone_idx == 0:
             parent_indices.append(-1)
 
-            location_fcu_x = fcurves.find('pose.bones["' + bone.name + '"].location', index=0)
-            location_fcu_y = fcurves.find('pose.bones["' + bone.name + '"].location', index=1)
-            location_fcu_z = fcurves.find('pose.bones["' + bone.name + '"].location', index=2)
+            location_fcu_x = fcurves.find(
+                'pose.bones["' + bone.name + '"].location', index=0)
+            location_fcu_y = fcurves.find(
+                'pose.bones["' + bone.name + '"].location', index=1)
+            location_fcu_z = fcurves.find(
+                'pose.bones["' + bone.name + '"].location', index=2)
 
             location_x = []
             location_y = []
@@ -72,7 +79,8 @@ def export_json_an(context,file_path=""):
                 location_z.append(keyframe.co[1])
 
             for idx in range(len(location_x)):
-                root_bone_positions.append([location_x[idx], location_y[idx], location_z[idx]])
+                root_bone_positions.append(
+                    [location_x[idx], location_y[idx], location_z[idx]])
 
         else:
             parent_bone = bone.parent_recursive[0]
@@ -84,20 +92,28 @@ def export_json_an(context,file_path=""):
         if bone_idx == 0:
             start_joint_position.rotate(correction_export_matrix)
 
-        start_joint_position = start_joint_position + mathutils.Vector([0,0.00001,0])
+        start_joint_position = start_joint_position + \
+            mathutils.Vector([0, 0.00001, 0])
 
         start_joints_positions.append(start_joint_position.to_tuple(21))
 
-        corrected_blender_start_joint_position = mathutils.Vector(bone.head_local)
+        corrected_blender_start_joint_position = mathutils.Vector(
+            bone.head_local)
         corrected_blender_start_joint_position.rotate(correction_export_matrix)
-        corrected_blender_start_joint_position = corrected_blender_start_joint_position + mathutils.Vector([0,0.00001,0])
+        corrected_blender_start_joint_position = corrected_blender_start_joint_position + \
+            mathutils.Vector([0, 0.00001, 0])
 
-        blender_start_joints_positions.append(corrected_blender_start_joint_position.to_tuple(21))
+        blender_start_joints_positions.append(
+            corrected_blender_start_joint_position.to_tuple(21))
 
-        rotation_quaternion_fcu_w = fcurves.find('pose.bones["' + bone.name + '"].rotation_quaternion', index=0)
-        rotation_quaternion_fcu_x = fcurves.find('pose.bones["' + bone.name + '"].rotation_quaternion', index=1)
-        rotation_quaternion_fcu_y = fcurves.find('pose.bones["' + bone.name + '"].rotation_quaternion', index=2)
-        rotation_quaternion_fcu_z = fcurves.find('pose.bones["' + bone.name + '"].rotation_quaternion', index=3)
+        rotation_quaternion_fcu_w = fcurves.find(
+            'pose.bones["' + bone.name + '"].rotation_quaternion', index=0)
+        rotation_quaternion_fcu_x = fcurves.find(
+            'pose.bones["' + bone.name + '"].rotation_quaternion', index=1)
+        rotation_quaternion_fcu_y = fcurves.find(
+            'pose.bones["' + bone.name + '"].rotation_quaternion', index=2)
+        rotation_quaternion_fcu_z = fcurves.find(
+            'pose.bones["' + bone.name + '"].rotation_quaternion', index=3)
 
         rotation_quaternion_w = []
         rotation_quaternion_x = []
@@ -114,7 +130,8 @@ def export_json_an(context,file_path=""):
             rotation_quaternion_z.append(keyframe.co[1])
 
         for idx in range(len(rotation_quaternion_w)):
-            joint_angles.append([rotation_quaternion_w[idx], rotation_quaternion_x[idx], rotation_quaternion_y[idx], rotation_quaternion_z[idx]])
+            joint_angles.append([rotation_quaternion_w[idx], rotation_quaternion_x[idx],
+                                rotation_quaternion_y[idx], rotation_quaternion_z[idx]])
 
         joints_angles.append(joint_angles)
 
@@ -131,6 +148,7 @@ def export_json_an(context,file_path=""):
         json.dump(result, f)
 
     return {'FINISHED'}
+
 
 class ExportJsonAn(Operator, ExportHelper):
     """This appears in the tooltip of the operator and in the generated docs"""
@@ -152,7 +170,8 @@ class ExportJsonAn(Operator, ExportHelper):
 
 # Only needed if you want to add into a dynamic menu
 def menu_func_export(self, context):
-    self.layout.operator(ExportJsonAn.bl_idname, text="JSON AN Export(.an.json)")
+    self.layout.operator(ExportJsonAn.bl_idname,
+                         text="JSON AN Export(.an.json)")
 
 
 def register():
