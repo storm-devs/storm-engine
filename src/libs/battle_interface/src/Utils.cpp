@@ -351,7 +351,8 @@ void BITextInfo::Init(VDX9RENDER *rs, ATTRIBUTES *pA)
         pos.x = pos.y = 0;
     }
 
-    sText = pA->GetAttribute("text");
+    char *textAttr = pA->GetAttribute("text");
+    sText = textAttr ? textAttr : "";
 
     pARefresh = nullptr;
     if (pA->GetAttributeAsDword("refreshable", 0))
@@ -363,7 +364,10 @@ void BITextInfo::Print()
     if (nFont != -1)
     {
         if (pARefresh)
-            sText = pARefresh->GetAttribute("text");
+        {
+            char *textAttr = pARefresh->GetAttribute("text");
+            sText = textAttr ? textAttr : "";
+        }
         if (!sText.empty())
             pRS->ExtPrint(nFont, dwColor, 0, PR_ALIGN_CENTER, bShadow, fScale, 0, 0, pos.x, pos.y, "%s", sText.c_str());
     }
