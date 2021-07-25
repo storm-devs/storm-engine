@@ -1,34 +1,13 @@
 # Blender AN import
 
-## Требования
-
-Для корректной работы необходимо:
-
-- [NodeJs](https://nodejs.org/ru/)
-- Анимация в формате .an
-
-## Подготовка
-Для корректной работы плагина для Blender анимацию необходимо распарсить в json.
-Чтобы это сделать, необходимо запустить консоль (терминал) в папке со скриптом ``parse-an.js`` и ввести команду
-``node parse-an.js {filepath}``
-
-Пример:
-``node parse-an.js "C:\animations\man.an"``
-
-В папке с анимацией будет сохранен файл с результатами ``man.an.json``
-
-### Примечание
-Для пользователей Windows есть более простой способ —
-можно перетащить на файл ``parse-an.cmd`` файл с анимацией и в папке с анимацией будет сохранен файл с результатами
-
 ## Установка плагина в Blender
 ```
-Edit -> Preferences... -> Add-ons -> Install... -> Выбрать import_json_an.py из папки io_import_json_an -> Включить "Import: JSON AN"
+Edit -> Preferences... -> Add-ons -> Install... -> Выбрать import_an.py из папки io_import_an -> Включить "Import: SeaDogs AN"
 ```
 
 ## Использование плагина в Blender
 ```
-File -> Import... -> JSON AN Import(.an.json)
+File -> Import... -> AN Import(.an)
 ```
 
 ## Issues
