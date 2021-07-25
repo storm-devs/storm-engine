@@ -167,7 +167,7 @@ std::string QuestFileReader::GetRecordText(const std::string_view &questID, cons
     const auto &unwrappedText = quest.texts[textNum.value()];
     AssembleStringToBuffer(unwrappedText.str.c_str(), buffer, questData_);
 
-    return std::string(buffer.data(), buffer.size());
+    return buffer;
 }
 
 bool QuestFileReader::AssembleStringToBuffer(const std::string_view &src, std::string &buffer,
@@ -220,7 +220,7 @@ void QuestFileReader::ReadUserData(const std::string_view &questID, long recordI
     if (questID.empty())
         return;
 
-    auto *vdata = core.Event("evntQuestUserData", "sl", questID, recordIndex);
+    auto *vdata = core.Event("evntQuestUserData", "sl", questID.data(), recordIndex);
     if (!vdata)
         return;
 
