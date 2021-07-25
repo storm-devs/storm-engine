@@ -1,3 +1,14 @@
+import os
+import struct
+import mathutils
+import bmesh
+import time
+import bpy
+from bpy.types import Operator
+from bpy.props import StringProperty, BoolProperty, EnumProperty
+from bpy_extras.io_utils import ImportHelper, axis_conversion
+import json
+import math
 bl_info = {
     "name": "JSON AN",
     "description": "Import JSON AN files",
@@ -11,18 +22,11 @@ bl_info = {
 }
 
 
-import bpy, bmesh, mathutils
-import time, struct, os
-import math
-import json
+correction_matrix = axis_conversion(
+    from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
 
-from bpy_extras.io_utils import ImportHelper, axis_conversion
-from bpy.props import StringProperty, BoolProperty, EnumProperty
-from bpy.types import Operator
 
-correction_matrix = axis_conversion(from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
-
-def import_json_an(context,file_path=""):
+def import_json_an(context, file_path=""):
     file_name = os.path.basename(file_path)[:-8]
     f = open(file_path,)
     data = json.load(f)
@@ -71,16 +75,21 @@ def import_json_an(context,file_path=""):
 
         pos = mathutils.Vector(start_joints_positions[idx])
         prepared_pos = mathutils.Vector(blender_start_joints_positions[idx])
-        parent_pos = mathutils.Vector(blender_start_joints_positions[parent_indices[idx]])
+        parent_pos = mathutils.Vector(
+            blender_start_joints_positions[parent_indices[idx]])
 
         if idx in parent_indices:
             child_idx = parent_indices.index(idx)
-            child_pos = mathutils.Vector(blender_start_joints_positions[child_idx])
+            child_pos = mathutils.Vector(
+                blender_start_joints_positions[child_idx])
         else:
-            child_pos = mathutils.Vector(prepared_pos) + mathutils.Vector([0,0.00001,0])
+            child_pos = mathutils.Vector(
+                prepared_pos) + mathutils.Vector([0, 0.00001, 0])
 
-        bone.head = (prepared_pos[0], prepared_pos[1] - 0.00001, prepared_pos[2])
-        bone.tail = (prepared_pos[0], prepared_pos[1] + 0.00001, prepared_pos[2])
+        bone.head = (prepared_pos[0],
+                     prepared_pos[1] - 0.00001, prepared_pos[2])
+        bone.tail = (prepared_pos[0],
+                     prepared_pos[1] + 0.00001, prepared_pos[2])
 
         bone.matrix = correction_matrix.to_4x4() @ bone.matrix
 
@@ -93,7 +102,8 @@ def import_json_an(context,file_path=""):
 
         if bone_idx == 0:
             for idx in range(3):
-                fc = actions.fcurves.new('pose.bones["' + bone_name + '"].location', index=idx)
+                fc = actions.fcurves.new(
+                    'pose.bones["' + bone_name + '"].location', index=idx)
                 fc.keyframe_points.add(count=frames_quantity)
 
                 key_values = []
@@ -105,7 +115,8 @@ def import_json_an(context,file_path=""):
                 fc.update()
 
         for idx in range(4):
-            fc = actions.fcurves.new('pose.bones["' + bone_name + '"].rotation_quaternion', index=idx)
+            fc = actions.fcurves.new(
+                'pose.bones["' + bone_name + '"].rotation_quaternion', index=idx)
             fc.keyframe_points.add(count=frames_quantity)
 
             key_values = []
@@ -142,7 +153,8 @@ class ImportJsonAn(Operator, ImportHelper):
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportJsonAn.bl_idname, text="JSON AN Import(.an.json)")
+    self.layout.operator(ImportJsonAn.bl_idname,
+                         text="JSON AN Import(.an.json)")
 
 
 def register():

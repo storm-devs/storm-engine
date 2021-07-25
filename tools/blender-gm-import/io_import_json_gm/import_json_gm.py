@@ -1,3 +1,14 @@
+import os
+import struct
+import mathutils
+import bmesh
+import time
+import bpy
+from bpy.types import Operator
+from bpy.props import StringProperty, BoolProperty, EnumProperty
+from bpy_extras.io_utils import ImportHelper, axis_conversion
+import json
+import math
 bl_info = {
     "name": "JSON GM",
     "description": "Import JSON GM files",
@@ -11,63 +22,55 @@ bl_info = {
 }
 
 
-import bpy, bmesh, mathutils
-import time, struct, os
-import math
-import json
-
-from bpy_extras.io_utils import ImportHelper, axis_conversion
-from bpy.props import StringProperty, BoolProperty, EnumProperty
-from bpy.types import Operator
-
-correction_matrix = axis_conversion(from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
+correction_matrix = axis_conversion(
+    from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
 
 fixed_coas_man_head_pos = {
-  '16': [ 0.0032584953587507497, 1.6475999020040035, -0.011722753755748272 ],
-  '21': [ 0.0032584953587506994, 1.734414953738451, -0.017260584514588118 ],
-  '26': [ 0.0032584953587502237, 1.7189353285357356, 0.0032311086542904377 ],
-  '27': [ 0.03225849452428567, 1.7078742664307356, 0.06422260822728276 ],
-  '28': [ -0.025741503806784274, 1.7078742664307356, 0.06422260822728276 ],
-  '29': [ 0.0032584953587502237, 1.714992631226778, 0.06417078943923116 ],
-  '30': [ 0.0032584953587502237, 1.71595567651093, 0.06417078943923116 ],
-  '31': [ 0.0032584953587502237, 1.670038390904665, 0.017052501905709505 ],
-  '32': [ 0.0032584953587502237, 1.666005652397871, 0.0289492798037827 ],
-  '33': [ 0.04005750524811494, 1.6590940840542316, 0.043188605923205614 ],
-  '34': [ 0.010431578150019525, 1.7059485670179129, 0.09411628963425756 ],
-  '35': [ -0.03376904618926299, 1.6590893976390362, 0.043188624549657106 ],
-  '36': [ -0.00436244835145724, 1.705950003117323, 0.09411628963425756 ],
-  '39': [ 0.014712675241753459, 1.7155753958504647, 0.017472744453698397 ],
-  '40': [ -0.00819568452425301, 1.7155732766259462, 0.017472758423537016 ],
-  '41': [ 0.003258495358750247, 1.6719406803604215, 0.07180523918941617 ],
-  '42': [ 0.014147192006930709, 1.6719406803604215, 0.07180523918941617 ],
-  '43': [ -0.007630198495462537, 1.6719442555913702, 0.07180526526644826 ],
-  '44': [ 0.02245222474448383, 1.6453957352787256, 0.056133848149329424 ],
-  '45': [ -0.014557642163708806, 1.645408296957612, 0.05640476243570447 ],
-  '46': [ 0.0032584953587502558, 1.6316347122192383, 0.06349346833303571 ],
-  '47': [ 0.01994910533539951, 1.6316347122192383, 0.06349346833303571 ],
-  '48': [ -0.013432058738544583, 1.6316353976726532, 0.06349343480542302 ],
-  '49': [ 0.040822318522260065, 1.6185563057661057, 0.04033719236031175 ],
-  '50': [ 0.05190535425208556, 1.7011534315533936, 0.08644563751295209 ],
-  '51': [ -0.03362681638100137, 1.6185519061982632, 0.04056849470362067 ],
-  '52': [ -0.045069209532811766, 1.70209743315354, 0.0862667472101748 ],
-  '55': [ 0.01744386600330472, 1.7159136612899601, 0.10848532663658261 ],
-  '56': [ -0.010926909511908889, 1.7159103897283785, 0.10848526610061526 ],
-  '57': [ 0.003258495358750256, 1.6672005250584334, 0.10340505512431264 ],
-  '58': [ 0.02708967193029821, 1.663889413466677, 0.10081649431958795 ],
-  '59': [ -0.020572699839249253, 1.6638930957997218, 0.10081647569313645 ],
-  '60': [ 0.02944240369834006, 1.6386494464240968, 0.08547264384105802 ],
-  '61': [ -0.02311395318247378, 1.6386494473554194, 0.08547264384105802 ],
-  '62': [ 0.003258495358750243, 1.624780164565891, 0.09175814734771848 ],
-  '63': [ 0.020785945875104517, 1.6249020621180534, 0.0917750527150929 ],
-  '64': [ -0.014268974424339831, 1.624906247947365, 0.09177503967657685 ],
-  '67': [ 0.048700828570872545, 1.7250176309607923, 0.09955776995047927 ],
-  '68': [ -0.042183868354186416, 1.725021539896261, 0.09955776808783412 ],
-  '69': [ 0.0032584953587502276, 1.6471846054773778, 0.10507304838392884 ],
-  '70': [ 0.018761535873636603, 1.6457710040267557, 0.10322161880321801 ],
-  '71': [ -0.012244513491168618, 1.6457660753512755, 0.10322158108465374 ],
-  '72': [ 0.003258495358750234, 1.6364505612291396, 0.10192738147452474 ],
-  '73': [ 0.01705583737930283, 1.6360291168093681, 0.10186893353238702 ],
-  '74': [ -0.010538881528191268, 1.6360301873646677, 0.10186888324096799 ]
+    '16': [0.0032584953587507497, 1.6475999020040035, -0.011722753755748272],
+    '21': [0.0032584953587506994, 1.734414953738451, -0.017260584514588118],
+    '26': [0.0032584953587502237, 1.7189353285357356, 0.0032311086542904377],
+    '27': [0.03225849452428567, 1.7078742664307356, 0.06422260822728276],
+    '28': [-0.025741503806784274, 1.7078742664307356, 0.06422260822728276],
+    '29': [0.0032584953587502237, 1.714992631226778, 0.06417078943923116],
+    '30': [0.0032584953587502237, 1.71595567651093, 0.06417078943923116],
+    '31': [0.0032584953587502237, 1.670038390904665, 0.017052501905709505],
+    '32': [0.0032584953587502237, 1.666005652397871, 0.0289492798037827],
+    '33': [0.04005750524811494, 1.6590940840542316, 0.043188605923205614],
+    '34': [0.010431578150019525, 1.7059485670179129, 0.09411628963425756],
+    '35': [-0.03376904618926299, 1.6590893976390362, 0.043188624549657106],
+    '36': [-0.00436244835145724, 1.705950003117323, 0.09411628963425756],
+    '39': [0.014712675241753459, 1.7155753958504647, 0.017472744453698397],
+    '40': [-0.00819568452425301, 1.7155732766259462, 0.017472758423537016],
+    '41': [0.003258495358750247, 1.6719406803604215, 0.07180523918941617],
+    '42': [0.014147192006930709, 1.6719406803604215, 0.07180523918941617],
+    '43': [-0.007630198495462537, 1.6719442555913702, 0.07180526526644826],
+    '44': [0.02245222474448383, 1.6453957352787256, 0.056133848149329424],
+    '45': [-0.014557642163708806, 1.645408296957612, 0.05640476243570447],
+    '46': [0.0032584953587502558, 1.6316347122192383, 0.06349346833303571],
+    '47': [0.01994910533539951, 1.6316347122192383, 0.06349346833303571],
+    '48': [-0.013432058738544583, 1.6316353976726532, 0.06349343480542302],
+    '49': [0.040822318522260065, 1.6185563057661057, 0.04033719236031175],
+    '50': [0.05190535425208556, 1.7011534315533936, 0.08644563751295209],
+    '51': [-0.03362681638100137, 1.6185519061982632, 0.04056849470362067],
+    '52': [-0.045069209532811766, 1.70209743315354, 0.0862667472101748],
+    '55': [0.01744386600330472, 1.7159136612899601, 0.10848532663658261],
+    '56': [-0.010926909511908889, 1.7159103897283785, 0.10848526610061526],
+    '57': [0.003258495358750256, 1.6672005250584334, 0.10340505512431264],
+    '58': [0.02708967193029821, 1.663889413466677, 0.10081649431958795],
+    '59': [-0.020572699839249253, 1.6638930957997218, 0.10081647569313645],
+    '60': [0.02944240369834006, 1.6386494464240968, 0.08547264384105802],
+    '61': [-0.02311395318247378, 1.6386494473554194, 0.08547264384105802],
+    '62': [0.003258495358750243, 1.624780164565891, 0.09175814734771848],
+    '63': [0.020785945875104517, 1.6249020621180534, 0.0917750527150929],
+    '64': [-0.014268974424339831, 1.624906247947365, 0.09177503967657685],
+    '67': [0.048700828570872545, 1.7250176309607923, 0.09955776995047927],
+    '68': [-0.042183868354186416, 1.725021539896261, 0.09955776808783412],
+    '69': [0.0032584953587502276, 1.6471846054773778, 0.10507304838392884],
+    '70': [0.018761535873636603, 1.6457710040267557, 0.10322161880321801],
+    '71': [-0.012244513491168618, 1.6457660753512755, 0.10322158108465374],
+    '72': [0.003258495358750234, 1.6364505612291396, 0.10192738147452474],
+    '73': [0.01705583737930283, 1.6360291168093681, 0.10186893353238702],
+    '74': [-0.010538881528191268, 1.6360301873646677, 0.10186888324096799]
 }
 
 coas_to_potc_man = {
@@ -152,9 +155,11 @@ coas_to_potc_man = {
     '122': '78'
 }
 
-potc_to_coas_man = { value:key for key, value in coas_to_potc_man.items() }
+potc_to_coas_man = {value: key for key, value in coas_to_potc_man.items()}
 
 # taken from Copy Attributes Menu Addon by Bassam Kurdali, Fabian Fricke, Adam Wiseman
+
+
 def getmat(bone, active, context, ignoreparent):
     obj_bone = bone.id_data
     obj_active = active.id_data
@@ -165,7 +170,8 @@ def getmat(bone, active, context, ignoreparent):
     otherloc = active_matrix
     bonemat_local = data_bone.matrix_local.copy()
     if data_bone.parent:
-        parentposemat = obj_bone.pose.bones[data_bone.parent.name].matrix.copy()
+        parentposemat = obj_bone.pose.bones[data_bone.parent.name].matrix.copy(
+        )
         parentbonemat = data_bone.parent.matrix_local.copy()
     else:
         parentposemat = parentbonemat = mathutils.Matrix()
@@ -224,19 +230,24 @@ def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
 
         pos = mathutils.Vector(start_joints_positions[idx])
         prepared_pos = mathutils.Vector(blender_start_joints_positions[idx])
-        parent_pos = mathutils.Vector(blender_start_joints_positions[parent_indices[idx]])
+        parent_pos = mathutils.Vector(
+            blender_start_joints_positions[parent_indices[idx]])
 
         if idx in parent_indices:
             child_idx = parent_indices.index(idx)
-            child_pos = mathutils.Vector(blender_start_joints_positions[child_idx])
+            child_pos = mathutils.Vector(
+                blender_start_joints_positions[child_idx])
         else:
-            child_pos = mathutils.Vector(prepared_pos) + mathutils.Vector([0,0.00001,0])
+            child_pos = mathutils.Vector(
+                prepared_pos) + mathutils.Vector([0, 0.00001, 0])
 
         if fix_coas_man_head and str(idx) in fixed_coas_man_head_pos:
             prepared_pos = mathutils.Vector(fixed_coas_man_head_pos[str(idx)])
 
-        bone.head = (prepared_pos[0], prepared_pos[1] - 0.00001, prepared_pos[2])
-        bone.tail = (prepared_pos[0], prepared_pos[1] + 0.00001, prepared_pos[2])
+        bone.head = (prepared_pos[0],
+                     prepared_pos[1] - 0.00001, prepared_pos[2])
+        bone.tail = (prepared_pos[0],
+                     prepared_pos[1] + 0.00001, prepared_pos[2])
 
         bone.matrix = correction_matrix.to_4x4() @ bone.matrix
 
@@ -261,7 +272,8 @@ def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
 
         if bone_idx == 0:
             for idx in range(3):
-                fc = actions.fcurves.new('pose.bones["' + bone_name + '"].location', index=idx)
+                fc = actions.fcurves.new(
+                    'pose.bones["' + bone_name + '"].location', index=idx)
                 fc.keyframe_points.add(count=frames_quantity)
 
                 key_values = []
@@ -273,7 +285,8 @@ def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
                 fc.update()
 
         for idx in range(4):
-            fc = actions.fcurves.new('pose.bones["' + bone_name + '"].rotation_quaternion', index=idx)
+            fc = actions.fcurves.new(
+                'pose.bones["' + bone_name + '"].rotation_quaternion', index=idx)
             fc.keyframe_points.add(count=frames_quantity)
 
             key_values = []
@@ -288,15 +301,15 @@ def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
 
 
 def import_json_gm(
-        context,
-        file_path="",
-        an_path="",
-        fix_coas_man_head=False,
-        convert_coas_to_potc_man=False,
-        convert_potc_to_coas_man=False,
-    ):
+    context,
+    file_path="",
+    an_path="",
+    fix_coas_man_head=False,
+    convert_coas_to_potc_man=False,
+    convert_potc_to_coas_man=False,
+):
     file_name = os.path.basename(file_path)[:-8]
-    textures_path = os.path.join(os.path.dirname(file_path),'textures')
+    textures_path = os.path.join(os.path.dirname(file_path), 'textures')
     f = open(file_path,)
     data = json.load(f)
 
@@ -308,15 +321,18 @@ def import_json_gm(
     collection = bpy.data.collections.new(file_name)
     bpy.context.scene.collection.children.link(collection)
 
-    root = bpy.data.objects.new( "root", None )
+    root = bpy.data.objects.new("root", None)
     collection.objects.link(root)
 
     if has_animation:
-        armature_obj = get_armature_obj(an_path, collection,fix_coas_man_head=fix_coas_man_head)
+        armature_obj = get_armature_obj(
+            an_path, collection, fix_coas_man_head=fix_coas_man_head)
         armature_obj.parent = root
 
-        armature_obj_pose = get_armature_obj(an_path, collection, 'POSE',fix_coas_man_head=fix_coas_man_head)
-        armature_obj_pose_source = get_armature_obj(an_path, collection, 'POSE_SOURCE',fix_coas_man_head=fix_coas_man_head)
+        armature_obj_pose = get_armature_obj(
+            an_path, collection, 'POSE', fix_coas_man_head=fix_coas_man_head)
+        armature_obj_pose_source = get_armature_obj(
+            an_path, collection, 'POSE_SOURCE', fix_coas_man_head=fix_coas_man_head)
 
     for object in data['objects']:
         name = object.get('name')
@@ -348,15 +364,19 @@ def import_json_gm(
         bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
         # setup our material
-        texture_file = None if len(material['textureNames']) == 0 else material['textureNames'][0]
-        texture_normals_file = None if len(material['textureNames']) == 1 else material['textureNames'][1]
-        material_name = None if texture_file is None else (collection.name + '_' + material['name'])
+        texture_file = None if len(
+            material['textureNames']) == 0 else material['textureNames'][0]
+        texture_normals_file = None if len(
+            material['textureNames']) == 1 else material['textureNames'][1]
+        material_name = None if texture_file is None else (
+            collection.name + '_' + material['name'])
 
         if texture_file is not None:
             texture_path = os.path.join(textures_path, texture_file)
 
         if texture_normals_file is not None:
-            texture_normals_path = os.path.join(textures_path, texture_normals_file)
+            texture_normals_path = os.path.join(
+                textures_path, texture_normals_file)
 
         #
         mtl = None
@@ -383,7 +403,8 @@ def import_json_gm(
                 else:
                     tex.image = bpy.data.images.load(texture_path)
 
-                mtl.node_tree.links.new(bsdf.inputs['Alpha'], tex.outputs['Alpha'])
+                mtl.node_tree.links.new(
+                    bsdf.inputs['Alpha'], tex.outputs['Alpha'])
 
                 if texture_normals_file is not None:
                     normalTex = mtl.node_tree.nodes.new('ShaderNodeTexImage')
@@ -391,7 +412,8 @@ def import_json_gm(
                     if texture_normals_file in bpy.data.images:
                         normalTex.image = bpy.data.images[texture_normals_file]
                     elif os.path.isfile(texture_normals_path):
-                        normalTex.image = bpy.data.images.load(texture_normals_path)
+                        normalTex.image = bpy.data.images.load(
+                            texture_normals_path)
 
                     normalUVMap = mtl.node_tree.nodes.new('ShaderNodeUVMap')
                     normalUVMap.uv_map = "UVMap_normals"
@@ -403,30 +425,37 @@ def import_json_gm(
                     gray_divider = mtl.node_tree.nodes.new('ShaderNodeMixRGB')
                     gray_divider.blend_type = 'DIVIDE'
                     gray_divider.inputs['Fac'].default_value = 1.0
-                    gray_divider.inputs['Color2'].default_value = (0.2, 0.2, 0.2, 1)
+                    gray_divider.inputs['Color2'].default_value = (
+                        0.2, 0.2, 0.2, 1)
 
-                    mtl.node_tree.links.new(mixer.inputs['Color1'], tex.outputs['Color'])
+                    mtl.node_tree.links.new(
+                        mixer.inputs['Color1'], tex.outputs['Color'])
 
-                    mtl.node_tree.links.new(gray_divider.inputs['Color1'], normalTex.outputs['Color'])
-                    mtl.node_tree.links.new(mixer.inputs['Color2'], gray_divider.outputs['Color'])
-                    mtl.node_tree.links.new(normalTex.inputs['Vector'], normalUVMap.outputs['UV'])
+                    mtl.node_tree.links.new(
+                        gray_divider.inputs['Color1'], normalTex.outputs['Color'])
+                    mtl.node_tree.links.new(
+                        mixer.inputs['Color2'], gray_divider.outputs['Color'])
+                    mtl.node_tree.links.new(
+                        normalTex.inputs['Vector'], normalUVMap.outputs['UV'])
 
-                    mtl.node_tree.links.new(bsdf.inputs['Base Color'], mixer.outputs['Color'])
+                    mtl.node_tree.links.new(
+                        bsdf.inputs['Base Color'], mixer.outputs['Color'])
                 else:
-                    mtl.node_tree.links.new(bsdf.inputs['Base Color'], tex.outputs['Color'])
-
+                    mtl.node_tree.links.new(
+                        bsdf.inputs['Base Color'], tex.outputs['Color'])
 
         if mtl is not None:
             ob.data.materials.append(mtl)
 
         for x in range(len(vertices)):
-          vtx = bm.verts.new(vertices[x])
-          vtx.normal = mathutils.Vector(normals[x])
+            vtx = bm.verts.new(vertices[x])
+            vtx.normal = mathutils.Vector(normals[x])
 
         bm.verts.ensure_lookup_table()
         for f in faces:
-              try:
-                face = bm.faces.new((bm.verts[f[0]], bm.verts[f[1]], bm.verts[f[2]]))
+            try:
+                face = bm.faces.new(
+                    (bm.verts[f[0]], bm.verts[f[1]], bm.verts[f[2]]))
                 face.smooth = True
                 face.material_index = 0
 
@@ -436,10 +465,11 @@ def import_json_gm(
                     if uv_normals_array is not None:
                         face.loops[uv_set_loop][uv_normals_layer].uv = uv_normals_array[f[uv_set_loop]]
 
-              except Exception as e:
+            except Exception as e:
                 print(str(e))
 
-        bmesh.ops.rotate(bm, verts=bm.verts, cent=(0.0, 0.0, 0.0), matrix=correction_matrix)
+        bmesh.ops.rotate(bm, verts=bm.verts, cent=(
+            0.0, 0.0, 0.0), matrix=correction_matrix)
 
         """ TODO backface Culling """
 
@@ -454,8 +484,10 @@ def import_json_gm(
                 second_bone_idx = bone_ids[x][1]
 
                 if convert_coas_to_potc_man:
-                    converted_first_bone_idx = coas_to_potc_man.get(str(bone_ids[x][0]))
-                    converted_second_bone_idx = coas_to_potc_man.get(str(bone_ids[x][1]))
+                    converted_first_bone_idx = coas_to_potc_man.get(
+                        str(bone_ids[x][0]))
+                    converted_second_bone_idx = coas_to_potc_man.get(
+                        str(bone_ids[x][1]))
 
                     if converted_first_bone_idx is None:
                         converted_first_bone_idx = 16
@@ -478,7 +510,8 @@ def import_json_gm(
                     ob.vertex_groups.new(name=second_bone_name)
 
                 ob.vertex_groups[first_bone_name].add([x], weight, 'ADD')
-                ob.vertex_groups[second_bone_name].add([x], 1.0 - weight, 'ADD')
+                ob.vertex_groups[second_bone_name].add(
+                    [x], 1.0 - weight, 'ADD')
 
         col = me.vertex_colors.new()
 
@@ -503,8 +536,10 @@ def import_json_gm(
                 bone = armature_obj_pose.pose.bones[bone_name]
                 active = armature_obj_pose_source.pose.bones[bone_name]
 
-                bone.location = getmat(bone, active, context, False).to_translation()
-                bone.rotation_quaternion = getmat(bone, active, context, not bone.id_data.data.bones[bone.name].use_inherit_rotation).to_3x3().to_quaternion()
+                bone.location = getmat(
+                    bone, active, context, False).to_translation()
+                bone.rotation_quaternion = getmat(
+                    bone, active, context, not bone.id_data.data.bones[bone.name].use_inherit_rotation).to_3x3().to_quaternion()
 
                 """ hack """
                 bpy.ops.object.mode_set(mode='EDIT', toggle=False)
@@ -527,7 +562,7 @@ def import_json_gm(
 
     for locators_tree in data['locatorsTrees']:
         group_locator_name = locators_tree
-        group_locator = bpy.data.objects.new( group_locator_name, None )
+        group_locator = bpy.data.objects.new(group_locator_name, None)
         collection.objects.link(group_locator)
         group_locator.parent = root
 
@@ -535,7 +570,7 @@ def import_json_gm(
             locator_name = locator_data.get('name')
             locator_m = locator_data.get('m')
             locator_bone_idx = locator_data.get('boneIdx')
-            locator = bpy.data.objects.new( locator_name, None )
+            locator = bpy.data.objects.new(locator_name, None)
             collection.objects.link(locator)
             locator.parent = group_locator
             locator.matrix_basis = locator_m
@@ -546,7 +581,8 @@ def import_json_gm(
                 bone = armature_obj.pose.bones["Bone" + str(locator_bone_idx)]
 
                 if convert_potc_to_coas_man:
-                    bone = armature_obj.pose.bones["Bone" + potc_to_coas_man.get(str(locator_bone_idx))]
+                    bone = armature_obj.pose.bones["Bone" +
+                                                   potc_to_coas_man.get(str(locator_bone_idx))]
 
                 locator.parent_bone = bone.name
                 locator.parent_type = 'BONE'
@@ -556,7 +592,6 @@ def import_json_gm(
 
             if xIsMirrored:
                 locator.location[0] = -locator.location[0]
-
 
     """ root.rotation_euler[0] = math.radians(90)
     root.rotation_euler[2] = math.radians(90) """
@@ -614,7 +649,8 @@ class ImportJsonGm(Operator, ImportHelper):
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportJsonGm.bl_idname, text="JSON GM Import(.gm.json)")
+    self.layout.operator(ImportJsonGm.bl_idname,
+                         text="JSON GM Import(.gm.json)")
 
 
 def register():
