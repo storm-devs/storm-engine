@@ -158,10 +158,14 @@ class CORE
 
     [[nodiscard]] ScreenSize GetScreenSize() const noexcept;
 
+    void stopFrameProcessing();
+
   private:
     void loadCompatibilitySettings(INIFILE &inifile);
 
     storm::ENGINE_VERSION targetVersion_ = storm::ENGINE_VERSION::LATEST;
+
+    bool stopFrameProcessing_ = false;
 };
 
 // core instance
