@@ -18,19 +18,18 @@ class SKY : public Entity
     uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
     uint64_t ProcessMessage(MESSAGE &message) override;
 
+    void RestoreRender();
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
         {
-            // case Stage::execute:
-            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
-            /*case Stage::lost_render:
-              LostRender(delta); break;
-            case Stage::restore_render:
-              RestoreRender(delta); break;*/
+        case Stage::restore_render:
+            RestoreRender();
+            break;
         }
     }
 
@@ -47,19 +46,12 @@ class SKY : public Entity
         ENUMSKY_FORCE_DWORD = 0x7FFFFFFF
     };
 
-    struct SKYVERTEX
-    {
-        CVECTOR pos;
-        uint32_t diffuse;
-        float tu, tv;
-        float tu2, tv2;
-    };
+    static constexpr float kR = 2000.0f;
+    static constexpr uint32_t kNumLevels = 64U;
+    static constexpr uint32_t kNumAngles = 8U;
 
-    struct FOGVERTEX
-    {
-        CVECTOR pos;
-        uint32_t diffuse;
-    };
+    static constexpr uint32_t kFogVertsNum = kNumAngles *kNumLevels + 1;
+    static constexpr uint32_t kFogTrgsNum = 3 * (kNumAngles + (kNumLevels - 1) * kNumAngles * 2);
 
     // string        sSkyDir;
     std::vector<std::string> aSkyDirArray;
@@ -75,21 +67,21 @@ class SKY : public Entity
     long TexturesNextID[SKY_NUM_TEXTURES];
     float fTimeFactor;
 
-    long iSkyVertsID, iSkyIndexID;
-    long iFogVertsID, iFogIndexID, iFogNumVerts, iFogNumTrgs;
+    long iSkyVertsID = -1;
+    long iSkyIndexID = -1;
+    long iFogVertsID = -1;
+    long iFogIndexID = -1;
 
     Entity *pAstronomy;
     Entity *pSunGlow;
 
     // sky section
-    void GenerateSky();
+    void GenerateSky(bool initialize);
     void LoadTextures();
     void Release();
 
     // fog section
-    void CreateFogSphere();
-    void UpdateFogSphere();
-    uint32_t CalcFogDiffuse(CVECTOR &vPos);
+    void UpdateFogSphere(bool initialize);
 
     void FillSkyDirArray(ATTRIBUTES *pAttribute);
     void GetSkyDirStrings(std::string &sSkyDir, std::string &sSkyDirNext);
