@@ -30,3 +30,8 @@ jobs:
         buildDirectory: '${{ github.workspace }}/build'
         configurationRegexFilter: '${{ matrix.configuration }}'
         cmakeAppendedArgs: '-DSTORM_ENABLE_STEAM=${{ matrix.enable_steam }} -DSTORM_ENABLE_CRASH_REPORTS=ON'
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: storm-engine.${{ matrix.configuration }}-steam-${{ matrix.enable_steam}}
+        path: build\${{ matrix.configuration }}\bin
