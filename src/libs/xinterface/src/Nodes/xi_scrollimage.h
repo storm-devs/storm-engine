@@ -16,19 +16,24 @@ class CXI_SCROLLIMAGE : public CINODE
 
     long m_nSlotsQnt;
 
+    struct ImageSlot
+    {
+        bool useSpecTechnique = false;
+        long tex = -1;
+        long ptex = -1;
+        long img = -1;
+        std::string saveName;
+    };
+
     struct IMAGEDESCRIBE
     {
-        bool *bUseSpecTechnique;
-        long *tex;
-        long *ptex;
-        char **saveName;
-        long *img;
+        std::vector<ImageSlot> slots;
 
         long str1, str2; // string identificators into string service
-        char *string1, *string2;
+        std::string string1;
+        std::string string2;
 
-        void Release(int nQnt);
-        void Clear(int nQnt);
+        void Clear();
     };
 
   public:
@@ -134,6 +139,5 @@ class CXI_SCROLLIMAGE : public CINODE
 
     SCROLLEntity *m_pScroll;
     int m_nCurImage;
-    int m_nListSize;
-    IMAGEDESCRIBE *m_Image;
+    std::vector<IMAGEDESCRIBE> m_Image;
 };
