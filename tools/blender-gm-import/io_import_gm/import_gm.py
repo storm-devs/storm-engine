@@ -268,7 +268,7 @@ def read_avertex0(file):
     }
 
 
-def parse_gm(file_path=""):
+def parse_gm(file_path="", report_func=None):
     with open(file_path, mode='rb') as file:
         version = struct.unpack("<l", file.read(4))[0]
         flags = struct.unpack("<l", file.read(4))[0]
@@ -307,10 +307,12 @@ def parse_gm(file_path=""):
             texture_names_offsets.append(offset)
 
         print("\nUsed textures:\n")
+        report_func({'INFO'}, "Used textures:")
         texture_names = []
         for offset in texture_names_offsets:
             texture_name = names[offset]
             print(texture_name)
+            report_func({'INFO'}, texture_name)
             texture_names.append(texture_name)
 
         materials = []
@@ -748,10 +750,11 @@ def import_gm(
     fix_coas_man_head=False,
     convert_coas_to_potc_man=False,
     convert_potc_to_coas_man=False,
+    report_func=None
 ):
     file_name = os.path.basename(file_path)[:-8]
     textures_path = os.path.join(os.path.dirname(file_path), 'textures')
-    data = parse_gm(file_path)
+    data = parse_gm(file_path, report_func)
 
     xIsMirrored = data.get('xIsMirrored')
 
@@ -1083,10 +1086,11 @@ class ImportGm(Operator, ImportHelper):
                 an_path=an_path,
                 fix_coas_man_head=self.fix_coas_man_head,
                 convert_coas_to_potc_man=self.convert_coas_to_potc_man,
-                convert_potc_to_coas_man=self.convert_potc_to_coas_man
+                convert_potc_to_coas_man=self.convert_potc_to_coas_man,
+                report_func=self.report
             )
 
-        return import_gm(context, self.filepath)
+        return import_gm(context, self.filepath, report_func=self.report)
 
 
 def menu_func_import(self, context):
