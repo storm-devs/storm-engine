@@ -306,9 +306,12 @@ def parse_gm(file_path=""):
             offset = struct.unpack("<l", file.read(4))[0]
             texture_names_offsets.append(offset)
 
+        print("\nUsed textures:\n")
         texture_names = []
         for offset in texture_names_offsets:
-            texture_names.append(names[offset])
+            texture_name = names[offset]
+            print(texture_name)
+            texture_names.append(texture_name)
 
         materials = []
         for i in range(nmaterials):
