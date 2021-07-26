@@ -1,14 +1,14 @@
+import math
 import os
 import struct
-import mathutils
-import bmesh
 import time
+
+import bmesh
 import bpy
+import mathutils
+from bpy.props import BoolProperty, EnumProperty, StringProperty
 from bpy.types import Operator
-from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy_extras.io_utils import ImportHelper, axis_conversion
-import json
-import math
 
 bl_info = {
     "name": "SeaDogs AN",
@@ -26,20 +26,20 @@ bl_info = {
 correction_matrix = axis_conversion(
     from_forward='X', from_up='Y', to_forward='Y', to_up='Z')
 
+def read_vector(file):
+    x = struct.unpack("<f", file.read(4))[0]
+    y = struct.unpack("<f", file.read(4))[0]
+    z = struct.unpack("<f", file.read(4))[0]
+    return [x, y, z]
+
+def read_d3dx_quaternion(file):
+    x = struct.unpack("<f", file.read(4))[0]
+    y = struct.unpack("<f", file.read(4))[0]
+    z = struct.unpack("<f", file.read(4))[0]
+    w = struct.unpack("<f", file.read(4))[0]
+    return [w, x, y, z]
+
 def parse_an(file_path=""):
-    def read_vector(file):
-        x = struct.unpack("<f", file.read(4))[0]
-        y = struct.unpack("<f", file.read(4))[0]
-        z = struct.unpack("<f", file.read(4))[0]
-        return [x, y, z]
-
-    def read_d3dx_quaternion(file):
-        x = struct.unpack("<f", file.read(4))[0]
-        y = struct.unpack("<f", file.read(4))[0]
-        z = struct.unpack("<f", file.read(4))[0]
-        w = struct.unpack("<f", file.read(4))[0]
-        return [w, x, y, z]
-
     with open(file_path, mode='rb') as file:
         frames_quantity = struct.unpack("<l", file.read(4))[0]
         joints_quantity = struct.unpack("<l", file.read(4))[0]
