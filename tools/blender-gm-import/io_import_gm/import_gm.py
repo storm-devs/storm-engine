@@ -838,13 +838,18 @@ def import_gm(
             if texture_file in bpy.data.textures:
                 mtex = mtl.texture_slots.add()
                 mtex.texture = bpy.data.textures[texture_file]
-            elif os.path.isfile(texture_path):
+            else:
                 tex = mtl.node_tree.nodes.new('ShaderNodeTexImage')
 
                 if texture_file in bpy.data.images:
                     tex.image = bpy.data.images[texture_file]
                 else:
-                    tex.image = bpy.data.images.load(texture_path)
+                    if os.path.isfile(texture_path):
+                        tex.image = bpy.data.images.load(texture_path)
+                    else:
+                        placeholder_image = bpy.data.images.new(texture_file, width=1, height=1)
+                        placeholder_image.pixels = [0.5,0.5,0.5,1]
+                        tex.image = placeholder_image
 
                 mtl.node_tree.links.new(
                     bsdf.inputs['Alpha'], tex.outputs['Alpha'])
@@ -854,9 +859,13 @@ def import_gm(
 
                     if texture_normals_file in bpy.data.images:
                         normalTex.image = bpy.data.images[texture_normals_file]
-                    elif os.path.isfile(texture_normals_path):
-                        normalTex.image = bpy.data.images.load(
-                            texture_normals_path)
+                    else:
+                        if os.path.isfile(texture_normals_path):
+                            normalTex.image = bpy.data.images.load(texture_normals_path)
+                        else:
+                            placeholder_image = bpy.data.images.new(texture_normals_file, width=1, height=1)
+                            placeholder_image.pixels = [0.5,0.5,0.5,1]
+                            normalTex.image = placeholder_image
 
                     normalUVMap = mtl.node_tree.nodes.new('ShaderNodeUVMap')
                     normalUVMap.uv_map = "UVMap_normals"
