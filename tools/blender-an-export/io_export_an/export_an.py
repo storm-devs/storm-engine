@@ -1,15 +1,14 @@
+import math
 import os
 import struct
-import mathutils
-import bmesh
 import time
+
+import bmesh
 import bpy
-from bpy_extras.io_utils import axis_conversion
+import mathutils
+from bpy.props import BoolProperty, EnumProperty, StringProperty
 from bpy.types import Operator
-from bpy.props import StringProperty, BoolProperty, EnumProperty
-from bpy_extras.io_utils import ExportHelper
-import json
-import math
+from bpy_extras.io_utils import ExportHelper, axis_conversion
 
 bl_info = {
     "name": "SeaDogs AN",
