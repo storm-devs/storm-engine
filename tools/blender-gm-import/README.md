@@ -19,6 +19,10 @@ C/
             texture2.tga
 ```
 
+In case of missing texture in Blender will be created gray-colored placeholder with missing texture name
+
+![placeholder.img](readme-img/placeholder.png)
+
 ## Blender Plugin Installation
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Select import_gm.py from io_import_gm folder -> Enable "Import: SeaDogs GM"

@@ -16,6 +16,12 @@ File -> Export... -> AN Export(.an)
 
 ![choose.img](readme-img/bone.png)
 
+В игре учитываются изменения location только у root кости
+
+Углы можно менять у всех костей (значения ОБЯЗАТЕЛЬНО должны быть указаны в кватернионах)
+
+![angles.img](readme-img/angles.png)
+
 ## Установка плагина в Blender
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Выбрать export_an.py из папки io_export_an -> Включить "Export: SeaDogs AN"

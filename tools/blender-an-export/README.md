@@ -18,6 +18,12 @@ Also Roll should be 90°
 
 ![choose.img](readme-img/bone.png)
 
+In animations only root bone location could be changed
+
+Angle changes will work for all bones (Angles MUST be in quaternions)
+
+![angles.img](readme-img/angles.png)
+
 ## Blender Plugin Installation
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Select export_an.py from io_export_an folder -> Enable "Export: SeaDogs AN"
