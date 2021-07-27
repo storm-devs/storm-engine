@@ -479,7 +479,7 @@ def parse_gm(file_path="", report_func=None):
             object_vertex_buffer = vertices[object_vertex_buff][object_svertex:object_svertex + object_nvertices]
             object_type = vertex_buffers[object_vertex_buff].get("type")
 
-            is_animated = type == 4
+            is_animated = object_type == 4
             x_is_mirrored = not is_animated
 
             object_material = materials[object_material_idx]
