@@ -159,8 +159,6 @@ coas_to_potc_man = {
 potc_to_coas_man = {value: key for key, value in coas_to_potc_man.items()}
 
 # taken from Copy Attributes Menu Addon by Bassam Kurdali, Fabian Fricke, Adam Wiseman
-
-
 def getmat(bone, active, context, ignoreparent):
     obj_bone = bone.id_data
     obj_active = active.id_data
@@ -270,164 +268,166 @@ def read_avertex0(file):
 
 def parse_gm(file_path="", report_func=None):
     with open(file_path, mode='rb') as file:
-        version = struct.unpack("<l", file.read(4))[0]
-        flags = struct.unpack("<l", file.read(4))[0]
-        name_size = struct.unpack("<l", file.read(4))[0]
-        names_quantity = struct.unpack("<l", file.read(4))[0]
-        ntextures = struct.unpack("<l", file.read(4))[0]
-        nmaterials = struct.unpack("<l", file.read(4))[0]
-        nlights = struct.unpack("<l", file.read(4))[0]
-        nlabels = struct.unpack("<l", file.read(4))[0]
-        nobjects = struct.unpack("<l", file.read(4))[0]
-        ntriangles = struct.unpack("<l", file.read(4))[0]
-        nvrtbuffs = struct.unpack("<l", file.read(4))[0]
-        bboxSize = read_vector(file)
-        bboxCenter = read_vector(file)
-        radius = struct.unpack("<f", file.read(4))[0]
+        header_version = struct.unpack("<l", file.read(4))[0]
+        header_flags = struct.unpack("<l", file.read(4))[0]
+        header_name_size = struct.unpack("<l", file.read(4))[0]
+        header_names_quantity = struct.unpack("<l", file.read(4))[0]
+        header_ntextures = struct.unpack("<l", file.read(4))[0]
+        header_nmaterials = struct.unpack("<l", file.read(4))[0]
+        header_nlights = struct.unpack("<l", file.read(4))[0]
+        header_nlabels = struct.unpack("<l", file.read(4))[0]
+        header_nobjects = struct.unpack("<l", file.read(4))[0]
+        header_ntriangles = struct.unpack("<l", file.read(4))[0]
+        header_nvrtbuffs = struct.unpack("<l", file.read(4))[0]
+        header_bboxSize = read_vector(file)
+        header_bboxCenter = read_vector(file)
+        header_radius = struct.unpack("<f", file.read(4))[0]
 
         globname = ''
-        for i in range(name_size):
+        for i in range(header_name_size):
             globname += (struct.unpack("<s", file.read(1))[0]).decode("utf-8")
 
         names_offsets = []
-        for i in range(names_quantity):
+        for i in range(header_names_quantity):
             offset = struct.unpack("<l", file.read(4))[0]
             names_offsets.append(offset)
 
         names = {}
-        for i in range(names_quantity):
+        for i in range(header_names_quantity):
             offset = names_offsets[i]
-            next_offset = name_size if i == names_quantity - \
+            next_offset = header_name_size if i == header_names_quantity - \
                 1 else names_offsets[i + 1]
             names[offset] = globname[offset:next_offset].replace('\0', '')
 
         texture_names_offsets = []
-        for i in range(ntextures):
+        for i in range(header_ntextures):
             offset = struct.unpack("<l", file.read(4))[0]
             texture_names_offsets.append(offset)
 
         print("\nUsed textures:\n")
-        report_func({'INFO'}, "Used textures:")
+        if report_func:
+            report_func({'INFO'}, "Used textures:")
         texture_names = []
         for offset in texture_names_offsets:
             texture_name = names[offset]
             print(texture_name)
-            report_func({'INFO'}, texture_name)
+            if report_func:
+                report_func({'INFO'}, texture_name)
             texture_names.append(texture_name)
 
         materials = []
-        for i in range(nmaterials):
-            group_name_idx = struct.unpack("<l", file.read(4))[0]
-            group_name = names.get(group_name_idx)
-            name_idx = struct.unpack("<l", file.read(4))[0]
-            name = names.get(name_idx)
-            diffuse = struct.unpack("<f", file.read(4))[0]
-            specular = struct.unpack("<f", file.read(4))[0]
-            gloss = struct.unpack("<f", file.read(4))[0]
-            selfIllum = struct.unpack("<f", file.read(4))[0]
+        for i in range(header_nmaterials):
+            material_group_name_idx = struct.unpack("<l", file.read(4))[0]
+            material_group_name = names.get(material_group_name_idx)
+            material_name_idx = struct.unpack("<l", file.read(4))[0]
+            material_name = names.get(material_name_idx)
+            material_diffuse = struct.unpack("<f", file.read(4))[0]
+            material_specular = struct.unpack("<f", file.read(4))[0]
+            material_gloss = struct.unpack("<f", file.read(4))[0]
+            material_selfIllum = struct.unpack("<f", file.read(4))[0]
 
-            texture_type = []
+            material_texture_type = []
             for i in range(4):
-                texture_type.append(struct.unpack("<l", file.read(4))[0])
+                material_texture_type.append(struct.unpack("<l", file.read(4))[0])
 
-            texture = []
+            material_texture = []
             for i in range(4):
-                texture.append(struct.unpack("<l", file.read(4))[0])
+                material_texture.append(struct.unpack("<l", file.read(4))[0])
 
             material_texture_names = []
-            for i in range(len(texture)):
-                idx = texture[i]
+            for i in range(len(material_texture)):
+                idx = material_texture[i]
                 if idx >= 0:
                     material_texture_names.append(texture_names[idx])
 
             materials.append({
-                "groupName": group_name,
-                "name": name,
-                "diffuse": diffuse,
-                "specular": specular,
-                "gloss": gloss,
-                "selfIllum": selfIllum,
-                "textureType": texture_type,
-                "texture": texture,
+                "groupName": material_group_name,
+                "name": material_name,
+                "diffuse": material_diffuse,
+                "specular": material_specular,
+                "gloss": material_gloss,
+                "selfIllum": material_selfIllum,
+                "textureType": material_texture_type,
+                "texture": material_texture,
                 "textureNames": material_texture_names,
             })
 
         labels = []
-        for i in range(nlabels):
-            group_name_idx = struct.unpack("<l", file.read(4))[0]
-            group_name = names.get(group_name_idx)
-            name_idx = struct.unpack("<l", file.read(4))[0]
-            name = names.get(name_idx)
+        for i in range(header_nlabels):
+            label_group_name_idx = struct.unpack("<l", file.read(4))[0]
+            label_group_name = names.get(label_group_name_idx)
+            label_name_idx = struct.unpack("<l", file.read(4))[0]
+            label_name = names.get(label_name_idx)
             label_flags = struct.unpack("<l", file.read(4))[0]
 
-            m = []
+            label_m = []
             for i in range(4):
-                m.append([])
+                label_m.append([])
                 for j in range(4):
-                    m[i].append(struct.unpack("<f", file.read(4))[0])
+                    label_m[i].append(struct.unpack("<f", file.read(4))[0])
 
-            bones = []
+            label_bones = []
             for i in range(4):
-                bones.append(struct.unpack("<l", file.read(4))[0])
+                label_bones.append(struct.unpack("<l", file.read(4))[0])
 
-            weight = []
+            label_weight = []
             for i in range(4):
-                weight.append(struct.unpack("<f", file.read(4))[0])
+                label_weight.append(struct.unpack("<f", file.read(4))[0])
 
             labels.append(({
-                "groupName": group_name,
-                "name": name,
+                "groupName": label_group_name,
+                "name": label_name,
                 "flags": label_flags,
-                "m": m,
-                "bones": bones,
-                "weight": weight,
+                "m": label_m,
+                "bones": label_bones,
+                "weight": label_weight,
             }))
 
         objects = []
-        for i in range(nobjects):
-            group_name_idx = struct.unpack("<l", file.read(4))[0]
-            group_name = names.get(group_name_idx)
-            name_idx = struct.unpack("<l", file.read(4))[0]
-            name = names.get(name_idx)
+        for i in range(header_nobjects):
+            object_group_name_idx = struct.unpack("<l", file.read(4))[0]
+            object_group_name = names.get(object_group_name_idx)
+            object_name_idx = struct.unpack("<l", file.read(4))[0]
+            object_name = names.get(object_name_idx)
             object_flags = struct.unpack("<l", file.read(4))[0]
-            center = read_vector(file)
+            object_center = read_vector(file)
             object_radius = struct.unpack("<f", file.read(4))[0]
-            vertex_buff = struct.unpack("<l", file.read(4))[0]
+            object_vertex_buff = struct.unpack("<l", file.read(4))[0]
             object_ntriangles = struct.unpack("<l", file.read(4))[0]
-            striangle = struct.unpack("<l", file.read(4))[0]
-            nvertices = struct.unpack("<l", file.read(4))[0]
-            svertex = struct.unpack("<l", file.read(4))[0]
-            material = struct.unpack("<l", file.read(4))[0]
+            object_striangle = struct.unpack("<l", file.read(4))[0]
+            object_nvertices = struct.unpack("<l", file.read(4))[0]
+            object_svertex = struct.unpack("<l", file.read(4))[0]
+            object_material = struct.unpack("<l", file.read(4))[0]
 
-            lights = []
+            object_lights = []
             for i in range(8):
-                lights.append(struct.unpack("<l", file.read(4))[0])
+                object_lights.append(struct.unpack("<l", file.read(4))[0])
 
-            bones = []
+            object_bones = []
             for i in range(4):
-                bones.append(struct.unpack("<l", file.read(4))[0])
+                object_bones.append(struct.unpack("<l", file.read(4))[0])
 
-            atriangles = struct.unpack("<l", file.read(4))[0]
+            object_atriangles = struct.unpack("<l", file.read(4))[0]
 
             objects.append({
-                "groupName": group_name,
-                "name": name,
+                "groupName": object_group_name,
+                "name": object_name,
                 "flags": object_flags,
-                "center": center,
+                "center": object_center,
                 "radius": object_radius,
-                "vertexBuff": vertex_buff,
+                "vertexBuff": object_vertex_buff,
                 "ntriangles": object_ntriangles,
-                "striangle": striangle,
-                "nvertices": nvertices,
-                "svertex": svertex,
-                "material": material,
-                "lights": lights,
-                "bones": bones,
-                "atriangles": atriangles,
+                "striangle": object_striangle,
+                "nvertices": object_nvertices,
+                "svertex": object_svertex,
+                "material": object_material,
+                "lights": object_lights,
+                "bones": object_bones,
+                "atriangles": object_atriangles,
             })
 
         triangles = []
-        for i in range(ntriangles):
+        for i in range(header_ntriangles):
             triangles.append([
                 struct.unpack("<H", file.read(2))[0],
                 struct.unpack("<H", file.read(2))[0],
@@ -435,22 +435,22 @@ def parse_gm(file_path="", report_func=None):
             ])
 
         vertex_buffers = []
-        for i in range(nvrtbuffs):
-            type = struct.unpack("<l", file.read(4))[0]
-            size = struct.unpack("<l", file.read(4))[0]
+        for i in range(header_nvrtbuffs):
+            vertex_buffer_type = struct.unpack("<l", file.read(4))[0]
+            vertex_buffer_size = struct.unpack("<l", file.read(4))[0]
 
-            stride = 36 + (type & 3) * 8 + (type >> 2) * 8
-            nverts = size / stride
+            vertex_buffer_stride = 36 + (vertex_buffer_type & 3) * 8 + (vertex_buffer_type >> 2) * 8
+            vertex_buffer_nverts = vertex_buffer_size / vertex_buffer_stride
 
             vertex_buffers.append({
-                "type": type,
-                "size": size,
-                "stride": stride,
-                "nverts": nverts,
+                "type": vertex_buffer_type,
+                "size": vertex_buffer_size,
+                "stride": vertex_buffer_stride,
+                "nverts": vertex_buffer_nverts,
             })
 
         vertices = []
-        for i in range(nvrtbuffs):
+        for i in range(header_nvrtbuffs):
             vertices.append([])
             current_vertex_buffer = vertex_buffers[i]
             for j in range(int(current_vertex_buffer.get("nverts"))):
@@ -468,102 +468,102 @@ def parse_gm(file_path="", report_func=None):
         is_animated = False
 
         for object in objects:
-            name = object.get("name")
-            vertex_buff = object.get("vertexBuff")
-            ntriangles = object.get("ntriangles")
-            striangle = object.get("striangle")
-            nvertices = object.get("nvertices")
-            svertex = object.get("svertex")
-            material_idx = object.get("material")
+            object_name = object.get("name")
+            object_vertex_buff = object.get("vertexBuff")
+            object_ntriangles = object.get("ntriangles")
+            object_striangle = object.get("striangle")
+            object_nvertices = object.get("nvertices")
+            object_svertex = object.get("svertex")
+            object_material_idx = object.get("material")
 
-            vertex_buffer = vertices[vertex_buff][svertex:svertex + nvertices]
-            type = vertex_buffers[vertex_buff].get("type")
+            object_vertex_buffer = vertices[object_vertex_buff][object_svertex:object_svertex + object_nvertices]
+            object_type = vertex_buffers[object_vertex_buff].get("type")
 
             is_animated = type == 4
             x_is_mirrored = not is_animated
 
-            material = materials[material_idx]
-            material_group_name = material.get("groupName")
-            material_name = material.get("name")
-            texture_names = material.get("textureNames")
+            object_material = materials[object_material_idx]
+            object_material_group_name = object_material.get("groupName")
+            object_material_name = object_material.get("name")
+            object_texture_names = object_material.get("textureNames")
 
-            prepared_vertices = []
-            for buffer in vertex_buffer:
+            object_vertices = []
+            for buffer in object_vertex_buffer:
                 [x, y, z] = buffer.get("pos")
                 x = -x if x_is_mirrored else x
-                prepared_vertices.append([x, y, z])
+                object_vertices.append([x, y, z])
 
-            normals = []
-            for buffer in vertex_buffer:
+            object_normals = []
+            for buffer in object_vertex_buffer:
                 [x, y, z] = buffer.get("norm")
                 x = -x if x_is_mirrored else x
-                normals.append([x, y, z])
+                object_normals.append([x, y, z])
 
-            uv = []
-            for buffer in vertex_buffer:
+            object_uv = []
+            for buffer in object_vertex_buffer:
                 tu0 = buffer.get("tu0")
                 tv0 = buffer.get("tv0")
-                uv.append([tu0, -tv0])
+                object_uv.append([tu0, -tv0])
 
-            uv_normals = []
-            for buffer in vertex_buffer:
+            object_uv_normals = []
+            for buffer in object_vertex_buffer:
                 tu1 = buffer.get("tu1")
                 tv1 = buffer.get("tv1")
                 if tu1:
-                    uv_normals.append([tu1, -tv1])
-            uv_normals = uv_normals if len(uv_normals) > 0 else None
+                    object_uv_normals.append([tu1, -tv1])
+            object_uv_normals = object_uv_normals if len(object_uv_normals) > 0 else None
 
-            colors = []
-            for buffer in vertex_buffer:
-                colors.append(buffer.get("color"))
+            object_colors = []
+            for buffer in object_vertex_buffer:
+                object_colors.append(buffer.get("color"))
 
-            weights = []
+            object_weights = []
             if is_animated:
-                for buffer in vertex_buffer:
-                    weights.append(buffer.get("weight"))
+                for buffer in object_vertex_buffer:
+                    object_weights.append(buffer.get("weight"))
 
-            bone_ids = []
+            object_bone_ids = []
             if is_animated:
-                for buffer in vertex_buffer:
-                    bone_id = buffer.get("boneId")
-                    firstBoneId = bone_id & 0xff
-                    secondBoneId = (bone_id >> 8) & 0xff
-                    bone_ids.append([firstBoneId, secondBoneId])
+                for buffer in object_vertex_buffer:
+                    object_bone_id = buffer.get("boneId")
+                    object_firstBoneId = object_bone_id & 0xff
+                    object_secondBoneId = (object_bone_id >> 8) & 0xff
+                    object_bone_ids.append([object_firstBoneId, object_secondBoneId])
 
-            faces = []
-            for [v1, v2, v3] in triangles[striangle:striangle + ntriangles]:
-                faces.append([v2, v1, v3])  # opposite
+            object_faces = []
+            for [v1, v2, v3] in triangles[object_striangle:object_striangle + object_ntriangles]:
+                object_faces.append([v2, v1, v3])  # opposite
 
             prepared_objects.append({
-                "name": name,
-                "verticies": prepared_vertices,
-                "normals": normals,
-                "uv": uv,
-                "uvNormals": uv_normals,
-                "colors": colors,
-                "weights": weights,
-                "boneIds": bone_ids,
-                "faces": faces,
+                "name": object_name,
+                "verticies": object_vertices,
+                "normals": object_normals,
+                "uv": object_uv,
+                "uvNormals": object_uv_normals,
+                "colors": object_colors,
+                "weights": object_weights,
+                "boneIds": object_bone_ids,
+                "faces": object_faces,
                 "material": {
-                    "groupName": material_group_name,
-                    "name": material_name,
-                    "textureNames": texture_names,
+                    "groupName": object_material_group_name,
+                    "name": object_material_name,
+                    "textureNames": object_texture_names,
                 }
             })
 
         locators_trees = {}
         for label in labels:
-            name = label.get("name")
-            group_name = label.get("groupName")
-            m = label.get("m")
-            bones = label.get("bones")
+            label_name = label.get("name")
+            label_group_name = label.get("groupName")
+            label_m = label.get("m")
+            label_bones = label.get("bones")
 
-            if not group_name in locators_trees:
-                locators_trees[group_name] = []
-            locators_trees[group_name].append({
-                "name": name,
-                "m": m,
-                "boneIdx": bones[0]
+            if not label_group_name in locators_trees:
+                locators_trees[label_group_name] = []
+            locators_trees[label_group_name].append({
+                "name": label_name,
+                "m": label_m,
+                "boneIdx": label_bones[0]
             })
 
     return {
