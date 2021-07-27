@@ -17,6 +17,10 @@ C/
             texture2.tga
 ```
 
+В случае, если текстура отсутствует, в Blender будет создана серая текстура-заглушка с именем исходной текстуры
+
+![placeholder.img](readme-img/placeholder.png)
+
 ## Установка плагина в Blender
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Выбрать import_gm.py из папки io_import_gm -> Включить "Import: SeaDogs GM"
