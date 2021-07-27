@@ -752,7 +752,7 @@ def import_gm(
     convert_potc_to_coas_man=False,
     report_func=None
 ):
-    file_name = os.path.basename(file_path)[:-8]
+    file_name = os.path.basename(file_path)[:-3]
     textures_path = os.path.join(os.path.dirname(file_path), 'textures')
     data = parse_gm(file_path, report_func)
 
