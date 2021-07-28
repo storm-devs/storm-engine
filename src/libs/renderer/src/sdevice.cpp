@@ -2444,7 +2444,7 @@ void DX9RENDER::RecompileEffects()
     effects_.release();
 
     std::filesystem::path cur_path = std::filesystem::current_path();
-    std::filesystem::current_path(fio->_GetExecutableDirectory());
+    std::filesystem::current_path(std::filesystem::u8path(fio->_GetExecutableDirectory()));
     for (const auto &p : std::filesystem::recursive_directory_iterator("resource/techniques"))
         if (is_regular_file(p) && p.path().extension() == ".fx")
         {
