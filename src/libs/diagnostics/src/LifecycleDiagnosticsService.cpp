@@ -134,7 +134,7 @@ LifecycleDiagnosticsService::Guard LifecycleDiagnosticsService::initialize(const
     if (!initialized_)
     {
         // TODO: make this crossplatform
-        const auto executableDir = std::filesystem::path{fio->_GetExecutableDirectory()};
+        const auto executableDir = std::filesystem::path{std::filesystem::u8path(fio->_GetExecutableDirectory())};
         const auto logsArchive = fs::GetLogsPath().replace_extension(".7z");
         constexpr auto archiverBin = "7za.exe";
 
