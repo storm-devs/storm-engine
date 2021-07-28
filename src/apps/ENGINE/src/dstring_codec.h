@@ -83,10 +83,6 @@ class DSTRING_CODEC
             // nStringCode = (DHASH_SINGLESYM<<16)| (pString[0] & 0xffff);
             nStringCode = ((((unsigned char)pString[0]) << 8) & 0xffffff00) | (DHASH_SINGLESYM);
             bNew = true;
-            if (nStringCode >= 0xffffff)
-            {
-                __debugbreak();
-            }
             return nStringCode;
         }
 
