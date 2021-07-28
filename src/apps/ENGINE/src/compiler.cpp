@@ -6218,7 +6218,7 @@ ATTRIBUTES *COMPILER::TraceARoot(ATTRIBUTES *pA, const char *&pAccess)
         const auto len = slen + strlen(pAccess) + 1;
         // pAS = (char *)RESIZE(pAS, len);
         auto *const newPtr = new char[len];
-        memcpy(newPtr, pAS, len);
+        memcpy(newPtr, pAS, slen);
         delete[] pAS;
         pAS = newPtr;
         strcat_s(pAS, len, ".");
