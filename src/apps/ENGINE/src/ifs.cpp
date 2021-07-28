@@ -1033,7 +1033,6 @@ void IFS::WriteString(const char *section_name, const char *key_name, const char
     {
         node->SetValue(string);
         bDataChanged = true;
-        delete snode;
         return;
     }
     AddString(section_name, key_name, string);
