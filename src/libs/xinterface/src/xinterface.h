@@ -355,6 +355,7 @@ class XINTERFACE : public XINTERFACE_BASE
         EVENT_Entity *next;
 
         EVENT_Entity()
+            : next(nullptr)
         {
             sEventName = nullptr;
             sNodeName = nullptr;

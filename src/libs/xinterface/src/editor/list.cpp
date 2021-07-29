@@ -7,6 +7,7 @@
 #include "core.h"
 
 GIEditorList::GIEditorList(GIEditor *pEditor)
+    : m_fUpPressTime(0), m_fDownPressTime(0), m_dwStatus(0)
 {
     m_pEditor = pEditor;
     Assert(m_pEditor);

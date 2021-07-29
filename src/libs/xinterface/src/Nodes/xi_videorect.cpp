@@ -3,6 +3,7 @@
 #include "entity.h"
 
 CXI_VIDEORECT::CXI_VIDEORECT()
+    : m_dwColor(0), m_eiVideo(0)
 {
     m_rs = nullptr;
     m_nNodeType = NODETYPE_VIDEORECT;

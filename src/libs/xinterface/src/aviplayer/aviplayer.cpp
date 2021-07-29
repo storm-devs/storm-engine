@@ -24,6 +24,7 @@ long AVI_GetTextureSize(long width)
 }
 
 CAviPlayer::CAviPlayer()
+    : rs(nullptr), dstPnt(), lockRect(), v{}
 {
     m_bContinue = true;
     m_bShowVideo = true;

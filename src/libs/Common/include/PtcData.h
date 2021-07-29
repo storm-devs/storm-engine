@@ -97,7 +97,7 @@ class PtcData
     // private:
   public:
     // Data block
-    void *data;
+    char *data;
 
     // Geometry
     PtcTriangle *triangle; // Geometry triangles

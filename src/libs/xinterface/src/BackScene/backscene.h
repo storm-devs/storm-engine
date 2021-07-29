@@ -102,6 +102,7 @@ class InterfaceBackScene : public Entity
         std::string sEventName;
 
         MenuDescr()
+            : eiActive(0), eiPassive(0)
         {
             pActive = nullptr;
             pPassive = nullptr;
@@ -150,6 +151,7 @@ class InterfaceBackScene : public Entity
         uint32_t dwTFactor;
 
         AniModelDescr()
+            : ei(0), dwTFactor(0)
         {
             pModel = nullptr;
             bUseTFactor = false;

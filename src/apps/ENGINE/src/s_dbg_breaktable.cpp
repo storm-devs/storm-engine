@@ -4,6 +4,7 @@
 #define SECTION_NAME "breakpoints"
 
 BREAKPOINTS_TABLE::BREAKPOINTS_TABLE()
+    : bReleased(false)
 {
     nPoints = 0;
     ProjectName[0] = 0;

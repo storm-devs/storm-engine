@@ -3,6 +3,7 @@
 CREATE_CLASS(SeaLocatorShow)
 
 SeaLocatorShow::SeaLocatorShow()
+    : fWidth(0), fHeight(0)
 {
     fScale = 0.7f;
     bShow = false;

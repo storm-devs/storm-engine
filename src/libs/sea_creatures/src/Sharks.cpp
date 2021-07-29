@@ -386,7 +386,6 @@ inline void Sharks::Shark::IslandCollision(ISLAND_BASE *ib, long numPnt, float r
             }
             else
                 h = 0.0f;
-            h = 0.0f; // TODO: figure out if this is a mistake
             vx -= x * (1.0f - h);
             vz -= z * (1.0f - h);
         }

@@ -5,6 +5,7 @@
 #include "vmodule_api.h"
 
 InfoHandler::InfoHandler()
+    : m_rs(nullptr)
 {
     m_pSurface = nullptr;
     m_pRenderTarget = nullptr;

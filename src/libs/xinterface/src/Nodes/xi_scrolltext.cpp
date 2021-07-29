@@ -4,6 +4,7 @@
 #define MAX_PICE_STRING_SIZE 256
 
 CXI_SCROLLTEXT::CXI_SCROLLTEXT()
+    : m_idFont(0)
 {
     m_pScroller = nullptr;
     m_nMaxStringes = 0;

@@ -9,6 +9,7 @@
 #define NOTUSE_OFFSET -1000.f
 
 XI_TableLineDescribe::XI_TableLineDescribe(CXI_TABLE *pTable)
+    : m_dwSpecColor(0)
 {
     m_pTable = pTable;
     m_nRowIndex = -1;

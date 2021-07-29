@@ -28,7 +28,7 @@ OctTree::OTNode::OTNode(const CVECTOR &_min, const CVECTOR &_max)
 
 OctTree::OTNode::~OTNode()
 {
-    delete vrt;
+    delete[] vrt;
     for (long i = 0; i < 8; i++)
         if (node[i])
             delete node[i];
@@ -39,6 +39,7 @@ OctTree::OTNode::~OTNode()
 // ============================================================================================
 
 OctTree::OctTree()
+    : vertsPos(), vertsPosMin(), vertsPosMax(), vertsR(0)
 {
     root = nullptr;
     numVerts = 0;

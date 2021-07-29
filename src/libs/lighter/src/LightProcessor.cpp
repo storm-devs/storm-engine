@@ -19,6 +19,7 @@
 // ============================================================================================
 
 LightProcessor::LightProcessor()
+    : lights(nullptr), rs(nullptr), octtree(nullptr)
 {
     geometry = nullptr;
     window = nullptr;

@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 CXI_VIDEO::CXI_VIDEO()
+    : m_dwColor(0)
 {
     m_rs = nullptr;
     pTex = nullptr;

@@ -124,6 +124,7 @@ class CINODE
         COMMAND_REDIRECT *next;
 
         COMMAND_REDIRECT()
+            : command(0)
         {
             sControlName = nullptr;
             next = nullptr;
@@ -146,6 +147,7 @@ class CINODE
         long nActionDelay;
 
         COMMAND_ACTION()
+            : nSound(0), nActionDelay(0)
         {
             bUse = false;
             sRetControl = nullptr;

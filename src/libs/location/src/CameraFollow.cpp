@@ -35,6 +35,7 @@ float CameraFollow::fndkAy;
 // ============================================================================================
 
 CameraFollow::CameraFollow()
+    : camPos(), lookTo(), camradius(0), rotSpd(0), rotAcc(0)
 {
     lc = nullptr;
     isBrn = true;

@@ -29,6 +29,7 @@ class ModelProcessor
         bool Free;
 
         MemArrayItem()
+            : pData()
         {
             Free = true;
         }

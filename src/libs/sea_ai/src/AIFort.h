@@ -22,6 +22,7 @@ class AIFort : public VAI_OBJBASE
         {
           public:
             TmpVAI_OBJBASE()
+                : pFort(nullptr)
             {
                 mTmp.SetIdentity();
             }

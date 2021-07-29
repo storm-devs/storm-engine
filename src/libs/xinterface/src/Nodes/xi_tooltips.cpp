@@ -71,6 +71,7 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
     m_rActiveZone = rectOwner;
 
     sprintf_s(pcToolTipType, sizeof(pcToolTipType), "ToolTip");
+    // TODO: figure out why this was done:
     long m_nMaxStrWidth = -1; //~!~
 
     for (auto *pcParam = (char *)pFmtStr; pcParam && pcParam[0];)

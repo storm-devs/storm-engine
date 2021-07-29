@@ -18,12 +18,14 @@ class LGeometry
     struct Object
     {
         Object()
+            : model(0)
         {
             name = nullptr;
             nameReal = nullptr;
             m = nullptr;
             lBufSize = 0;
-        };
+        }
+        ;
         char *name;     // The path of the .col file
         char *nameReal; // Model name
         MODEL *m;       // Pointer to the model

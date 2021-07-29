@@ -15,6 +15,7 @@
 // ============================================================================================
 
 AnimationInfo::AnimationInfo(const char *animationName)
+    : numFrames(0)
 {
     Assert(strlen(animationName) < 64);
     strcpy_s(name, animationName);

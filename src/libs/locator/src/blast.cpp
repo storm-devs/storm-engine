@@ -6,6 +6,7 @@
 #define ANGLESPEED_MUL 0.2f
 
 BLAST::BLAST()
+    : sea_eid(0), Splash(0)
 {
     rs = nullptr;
     gs = nullptr;

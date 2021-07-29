@@ -1098,7 +1098,7 @@ void VANT_BASE::DoSTORM_DELETE()
         vantQuantity = groupQuantity = 0;
         VERTEX_BUFFER_RELEASE(RenderService, vBuf);
         INDEX_BUFFER_RELEASE(RenderService, iBuf);
-        delete vlist;
+        delete[] vlist;
         vlist = nullptr;
         delete gdata;
         gdata = nullptr;

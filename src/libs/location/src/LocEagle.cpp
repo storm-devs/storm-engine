@@ -16,6 +16,7 @@
 #include "shared/messages.h"
 
 LocEagle::LocEagle()
+    : mdl(0), cnt()
 {
     time = 1.0f;
     kTime = 1.0f;

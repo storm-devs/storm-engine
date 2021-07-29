@@ -35,6 +35,7 @@ float GetSailSpeed(int holeQ, int holeMax, float maxSpeed, float fSailHoleDepend
 }
 
 SAIL::SAIL()
+    : LastTraceGroup(0), tm()
 {
     // setting all general data to initial values
     // then rewritten from INI file

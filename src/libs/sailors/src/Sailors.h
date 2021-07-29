@@ -50,10 +50,12 @@ struct ShipState
     SEA_BASE *sea;
 
     ShipState()
+        : sea(nullptr)
     {
         mode = SHIP_SAIL;
         dead = false;
-    };
+    }
+    ;
 };
 
 class ShipMan

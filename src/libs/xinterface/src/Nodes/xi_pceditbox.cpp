@@ -9,6 +9,7 @@
 #define HEIGHT_SCALE_USED 0.9f
 
 CXI_PCEDITBOX::CXI_PCEDITBOX()
+    : m_nStringAlign(0), m_nMaxSize(0), m_nMaxWidth(0)
 {
     m_nFontID = -1;
     m_dwFontColor = 0xFFFFFFFF;

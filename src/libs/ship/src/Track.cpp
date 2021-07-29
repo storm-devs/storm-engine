@@ -148,7 +148,8 @@ bool ShipTracks::ShipTrack::Update(SHIP_BASE *pShip)
     iTrackTexture2 = -1;
 
     this->pShip = pShip;
-    this->fTrackDistance = fTrackDistance; //~!~
+    // TODO: check this
+    //this->fTrackDistance = fTrackDistance; //~!~
 
     if (this->pShip)
     {

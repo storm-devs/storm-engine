@@ -12,6 +12,7 @@ ATTRIBUTES *AIHelper::pASeaCameras = nullptr;
 float AIHelper::fGravity = 9.81f;
 
 AIHelper::AIHelper()
+    : dwRelationSize(0)
 {
     pRelations = nullptr;
 }

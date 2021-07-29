@@ -337,14 +337,14 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
     }
     break;
         // boal 08.08.06 method of recounting guns on the ship <--
-    case AI_MESSAGE_SEASAVE: // ~!~
+    case AI_MESSAGE_SEASAVE: //TODO: check these two
     {
-        char str[256];
+        char str[256]{};
         Save(str);
     }
     break;
     case AI_MESSAGE_SEALOAD: {
-        char str[256];
+        char str[256]{};
         Load(str);
     }
     break;

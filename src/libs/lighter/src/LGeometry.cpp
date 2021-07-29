@@ -19,6 +19,7 @@
 // ============================================================================================
 
 LGeometry::LGeometry()
+    : min(), max(), useColor(false)
 {
     numObjects = 0;
     maxObjects = 0;

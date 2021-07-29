@@ -102,11 +102,13 @@ class COMMON_CAMERA : public Entity
     virtual void Load(CSaveLoad *pSL) = 0;
 
     COMMON_CAMERA()
+        : eidObject(0), pAIObj(nullptr), pACharacter(nullptr)
     {
         bOn = false;
         bActive = false;
         fPerspective = 1.285f;
-    };
+    }
+    ;
 
     ~COMMON_CAMERA() override{};
 };

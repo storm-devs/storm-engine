@@ -34,6 +34,7 @@ void SetTextureCoordinate(XI_ONETEX_VERTEX v[4], FXYRECT tr, float angle)
 }
 
 CXI_SLIDEPICTURE::CXI_SLIDEPICTURE()
+    : m_v{}, minRotate(0), deltaRotate(0), curRotate(0), curAngle(0), nCurSlide(0)
 {
     nLifeTime = 0;
     m_rs = nullptr;

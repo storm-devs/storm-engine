@@ -3,6 +3,7 @@
 #include "core.h"
 
 ControlTree::ControlChild::ControlChild()
+    : bWaitReleaseControl(false)
 {
     index = -1;
     sControlName = "";

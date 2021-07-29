@@ -6,6 +6,7 @@
 #include <exception>
 
 ActivePerkShower::ActivePerkShower()
+    : m_nIconWidth(0), m_nIconHeight(0), m_nSpaceHorz(0), m_nSpaceVert(0)
 {
     rs = nullptr;
 

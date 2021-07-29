@@ -2,6 +2,7 @@
 #include "imgrender.h"
 
 BIImage::BIImage(VDX9RENDER *rs, BIImageMaterial *pMaterial)
+    : m_BasePos(), m_BaseUV(), m_dwColor(0), m_eType()
 {
     m_pRS = rs;
     m_pMaterial = pMaterial;

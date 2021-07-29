@@ -8,6 +8,7 @@
 static const char *LISTS_INIFILE = "resource\\ini\\interfaces\\pictures.ini";
 
 XSERVICE::XSERVICE()
+    : m_fWScale(0), m_fHScale(0), m_fWAdd(0), m_fHAdd(0)
 {
     m_dwListQuantity = 0;
     m_dwImageQuantity = 0;

@@ -23,6 +23,7 @@
 // ============================================================================================
 
 LocationEffects::LocationEffects()
+    : rs(nullptr), smoke{}, flinders{}, blood{}, buffer{}
 {
     // Splash
     chrSplashRefCounter = 0;

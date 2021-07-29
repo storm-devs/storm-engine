@@ -363,8 +363,7 @@ long BICommandList::AddToIconList(long nTextureNum, long nNormPictureNum, long n
 
 void BICommandList::AddAdditiveToIconList(long nTextureNum, long nPictureNum, float fDist, float fWidth, float fHeight)
 {
-    const size_t n = m_aUsedCommand.size() - 1;
-    if (n < 0)
+    if (m_aUsedCommand.empty())
         return;
 
     UsedCommand::AdditiveIcon icon;
@@ -374,7 +373,7 @@ void BICommandList::AddAdditiveToIconList(long nTextureNum, long nPictureNum, fl
     icon.nPic = nPictureNum;
     icon.nTex = nTextureNum;
 
-    m_aUsedCommand[n].aAddPicList.push_back(icon);
+    m_aUsedCommand[m_aUsedCommand.size() - 1].aAddPicList.push_back(icon);
 }
 
 void BICommandList::Release()

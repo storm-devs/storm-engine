@@ -655,7 +655,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
             delete rd;
             if (ropeQuantity == 1)
             {
-                delete rlist;
+                delete[] rlist;
                 rlist = nullptr;
             }
             else
@@ -1011,14 +1011,15 @@ void ROPE::SetAdd(int firstNum)
         }
     }
 
-    if (rlist != nullptr)
+    // debug code
+    /*if (rlist != nullptr)
     {
         for (int rn = firstNum; rn < ropeQuantity; rn++)
         {
             if (rlist[rn]->segquant > 100 || rlist[rn]->segquant < 0)
                 rlist[rn]->segquant = rlist[rn]->segquant; //~!~
         }
-    }
+    }*/
 }
 
 void ROPE::DoSTORM_DELETE()

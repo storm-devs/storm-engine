@@ -44,6 +44,7 @@ class BillBoardProcessor
         bool Free;
 
         MemArrayItem()
+            : pData()
         {
             Free = true;
         }

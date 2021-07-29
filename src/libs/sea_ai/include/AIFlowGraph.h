@@ -64,10 +64,12 @@ class AIFlowGraph
         std::vector<std::size_t> aEdges;
 
         point_t()
+            : vPos(), dwFlags(0)
         {
         }
 
         point_t(CVECTOR _vPos)
+            : dwFlags(0)
         {
             vPos = _vPos;
         }
@@ -190,6 +192,7 @@ class AIFlowGraph
 
   public:
     AIFlowGraph() //: aPaths(_FL_, 64), aEdges(_FL_), aPoints(_FL_)//, aNearestPoints(200)
+        : dwIteration(0)
     {
         pTable = nullptr;
         sSectionName = "GraphPoints";

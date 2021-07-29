@@ -172,6 +172,7 @@ WdmSea::~WdmSea()
 
 void WdmSea::Update(float dltTime)
 {
+    // TODO: check this
     dltTime = 1.0f / 80.0f; // ~!~
     // Animated texture
     aniFrame += dltTime * WDM_SEA_ANIFPS;

@@ -14,8 +14,13 @@ static const float MIN_TIME_DELTA = 0.05f;
 CVECTOR lastCP;
 
 SEA_OPERATOR::SEA_OPERATOR()
-    : enabled(false), active(false), sea(nullptr), renderer(nullptr), myShip(nullptr), enemyShip(nullptr), idleTime(0),
-      sinceLastActionTime(0)
+    : enabled(false), active(false), sea(nullptr), renderer(nullptr), myShip(nullptr), enemyShip(nullptr),
+      actionTime(0),
+      ballTracked(false),
+      ballPosition(),
+      lastBallPosition(),
+      finalBallPosition(), idleTime(0),
+      sinceLastActionTime(0), cameraPos(), cameraTargetPos()
 {
 }
 

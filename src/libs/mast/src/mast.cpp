@@ -729,6 +729,7 @@ void MAST::AllRelease()
 }
 
 HULL::HULL()
+    : pCollide(nullptr), bModel(false), model_id(0), oldmodel_id(0), ship_id(0)
 {
     RenderService = nullptr;
     wMoveCounter = 0;

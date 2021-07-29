@@ -21,6 +21,7 @@
 // ============================================================================================
 
 AICharacter::AICharacter()
+    : command(), path{}, force(), goForce(), separation(), alignment(), around()
 {
     currentNode = -1;
     likeKSpd = 0.9f + rand() * 0.2f / RAND_MAX;

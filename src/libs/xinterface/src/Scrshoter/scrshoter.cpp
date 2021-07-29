@@ -26,6 +26,7 @@ uint32_t GetA8R8G8B8_FromFMT(void *p, uint32_t fmt)
 }
 
 SCRSHOTER::SCRSHOTER()
+    : rs(nullptr)
 {
     m_pScrShotTex = nullptr;
     m_list = nullptr;
@@ -109,8 +110,7 @@ bool SCRSHOTER::MakeScreenShot()
     // get data of the old render surface
     D3DSURFACE_DESC desc;
     IDirect3DSurface9 *pOldRenderTarg = nullptr;
-    if (hr == D3D_OK)
-        hr = rs->GetRenderTarget(&pOldRenderTarg);
+    hr = rs->GetRenderTarget(&pOldRenderTarg);
     if (hr == D3D_OK)
         hr = pOldRenderTarg->GetDesc(&desc);
 
@@ -120,8 +120,7 @@ bool SCRSHOTER::MakeScreenShot()
         hr = rs->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, &pRenderTarg);
     if (hr == D3D_OK)
         hr = rs->GetRenderTargetData(pOldRenderTarg, pRenderTarg);
-    if (pOldRenderTarg != nullptr)
-        pOldRenderTarg->Release();
+    pOldRenderTarg->Release();
 
     // create a new screen shot
     if (hr == D3D_OK)
@@ -193,8 +192,7 @@ bool SCRSHOTER::MakeScreenShot()
         m_pScrShotTex->UnlockRect(0);
 
     // Delete unnecessary screen copy
-    if (pRenderTarg != nullptr)
-        pRenderTarg->Release();
+    pRenderTarg->Release();
 
     // Add a texture with a frame to the shot
     const int nTextureID = rs->TextureCreate("interfaces\\EmptyBorder.tga");
@@ -415,22 +413,19 @@ IDirect3DTexture9 *SCRSHOTER::GetTexFromSave(char *fileName, char **pDatStr) con
             memcpy(outRect.pBits, &pdat[startIdx], texSize);
             pt->UnlockRect(0);
         }
-        if (pDatStr)
+        char *stringData = &pdat[sizeof(SAVE_DATA_HANDLE)];
+        if (!utf8::IsValidUtf8(stringData))
         {
-            char *stringData = &pdat[sizeof(SAVE_DATA_HANDLE)];
-            if (!utf8::IsValidUtf8(stringData))
-            {
-                utf8::FixInvalidUtf8(stringData);
-            }
-            const int strLen = ((SAVE_DATA_HANDLE *)pdat)->StringDataSize;
-            *pDatStr = new char[strLen + 1];
-            if (!*pDatStr)
-            {
-                throw std::runtime_error("allocate memory error");
-            }
-            strncpy_s(*pDatStr, strLen + 1, stringData, strLen);
-            (*pDatStr)[strLen] = 0;
+            utf8::FixInvalidUtf8(stringData);
         }
+        const int strLen = ((SAVE_DATA_HANDLE *)pdat)->StringDataSize;
+        *pDatStr = new char[strLen + 1];
+        if (!*pDatStr)
+        {
+            throw std::runtime_error("allocate memory error");
+        }
+        strncpy_s(*pDatStr, strLen + 1, stringData, strLen);
+        (*pDatStr)[strLen] = 0;
     }
     /*    else
       {

@@ -130,6 +130,7 @@ void InterfaceBackScene::MenuDescr::Set(CMatrix *pMtx, const char *pcActiveName,
 }
 
 InterfaceBackScene::InterfaceBackScene()
+    : m_pRS(nullptr), m_eiModel(0), m_eiLocators(0), m_nSelectMenuIndex(0), buffer{}, m_vFlarePos(), m_fFlareSize(0)
 {
     m_pModel = nullptr;
     m_pLocators = nullptr;

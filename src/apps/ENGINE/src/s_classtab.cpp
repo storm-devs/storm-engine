@@ -1,6 +1,7 @@
 #include "s_classtab.h"
 
 S_CLASSTAB::S_CLASSTAB()
+    : pVCompiler(nullptr)
 {
     Buffer_size = 0;
     nClassesNum = 0;
@@ -84,6 +85,9 @@ uint32_t S_CLASSTAB::AddClass(CLASSINFO &ci, bool bRegisterOnly)
             pTable[n].bClassRegistredOnly = false;
             if (ci.nComponentsNum)
             {
+                if (ci.pComponent == nullptr)
+                    return INVALID_CLASS_CODE;
+
                 pTable[n].pComponent = static_cast<CLASS_COMPONENT *>(new CLASS_COMPONENT[ci.nComponentsNum]);
                 memcpy(pTable[n].pComponent, ci.pComponent, ci.nComponentsNum * sizeof(CLASS_COMPONENT));
             }

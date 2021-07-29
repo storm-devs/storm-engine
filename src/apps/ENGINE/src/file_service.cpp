@@ -120,7 +120,7 @@ std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *s
     std::vector<std::filesystem::path> result;
 
     std::filesystem::path srcPath;
-    if (sourcePath == nullptr || sourcePath == "")
+    if (sourcePath == nullptr || sourcePath[0] =='\0')
     {
         srcPath = std::filesystem::current_path();
     }
