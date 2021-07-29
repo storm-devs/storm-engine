@@ -209,7 +209,7 @@ void FILE_SERVICE::_SetCurrentDirectory(const char *pathName)
 bool FILE_SERVICE::_CreateDirectory(const char *pathName)
 {
     std::filesystem::path path = std::filesystem::u8path(pathName);
-    return std::filesystem::create_directory(path);
+    return std::filesystem::create_directories(path);
 }
 
 std::uintmax_t FILE_SERVICE::_RemoveDirectory(const char *pathName)
