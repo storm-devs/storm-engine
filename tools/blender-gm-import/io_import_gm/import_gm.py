@@ -746,6 +746,7 @@ def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
 def import_gm(
     context,
     file_path="",
+    textures_path="",
     an_path="",
     fix_coas_man_head=False,
     convert_coas_to_potc_man=False,
@@ -753,7 +754,6 @@ def import_gm(
     report_func=None
 ):
     file_name = os.path.basename(file_path)[:-3]
-    textures_path = os.path.join(os.path.dirname(file_path), 'textures')
     data = parse_gm(file_path, report_func)
 
     xIsMirrored = data.get('xIsMirrored')
@@ -1065,6 +1065,12 @@ class ImportGm(Operator, ImportHelper):
         maxlen=255,  # Max internal buffer length, longer would be clamped.
     )
 
+    textures_path: StringProperty(
+        name="Textures path",
+        description="Path to textures (relative or absolute)",
+        default="textures",
+    )
+
     an_name: StringProperty(
         name="Animation name",
         description="Must be in the same folder as model",
@@ -1088,10 +1094,12 @@ class ImportGm(Operator, ImportHelper):
 
     def execute(self, context):
         an_path = os.path.join(os.path.dirname(self.filepath), self.an_name)
+        textures_path = os.path.join(os.path.dirname(self.filepath), self.textures_path)
         if os.path.isfile(an_path):
             return import_gm(
                 context,
                 self.filepath,
+                textures_path=textures_path,
                 an_path=an_path,
                 fix_coas_man_head=self.fix_coas_man_head,
                 convert_coas_to_potc_man=self.convert_coas_to_potc_man,
@@ -1099,7 +1107,7 @@ class ImportGm(Operator, ImportHelper):
                 report_func=self.report
             )
 
-        return import_gm(context, self.filepath, report_func=self.report)
+        return import_gm(context, self.filepath, textures_path=textures_path, report_func=self.report)
 
 
 def menu_func_import(self, context):
