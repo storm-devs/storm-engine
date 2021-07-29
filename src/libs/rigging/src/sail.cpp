@@ -2176,7 +2176,7 @@ int SAIL::GetCharacterForGroup(int grNum) const
     return -1;
 }
 
-SAILONE_BASE *SAIL::FindSailForCharacter(int chrIdx, char *nodeName, int grNum)
+SAILONE_BASE *SAIL::FindSailForCharacter(int chrIdx, const char *nodeName, int grNum)
 {
     if (nodeName == nullptr)
         return nullptr;

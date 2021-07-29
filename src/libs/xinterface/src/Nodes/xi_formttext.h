@@ -61,8 +61,8 @@ class CXI_FORMATEDTEXT : public CINODE
     long GetAllHeight();
 
   protected:
-    bool GetLineNext(int fontNum, char *&pInStr, char *buf, int bufSize) const;
-    void GetOneLine(int fontNum, char *pStr, char *buf, int bufSize) const;
+    bool GetLineNext(int fontNum, const char *&pInStr, char *buf, int bufSize) const;
+    void GetOneLine(int fontNum, const char *pStr, char *buf, int bufSize) const;
     void MakeTagChecking(bool &tagState, uint32_t &tagColor, uint32_t normColor, STRING_DESCRIBER *pStrDescr);
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void ReleaseString(STRING_DESCRIBER *pCur);

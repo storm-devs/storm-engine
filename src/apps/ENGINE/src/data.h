@@ -37,7 +37,7 @@ class DATA : public VDATA
     long lValue;
     uintptr_t pValue;
     float fValue;
-    char *sValue;
+    std::string sValue;
 
     bool bEntity;
     entid_t object_id;
@@ -67,9 +67,9 @@ class DATA : public VDATA
     };
     void SetVCompiler(VIRTUAL_COMPILER *pVC);
     DATA();
-    DATA(const DATA &) = delete;
+    DATA(const DATA &);
     DATA(DATA &&) noexcept(false);
-    DATA &operator=(const DATA &) = delete;
+    DATA &operator=(const DATA &);
     DATA(S_TOKEN_TYPE _element_type);
     DATA(uint32_t num_of_elements, S_TOKEN_TYPE _element_type);
     ~DATA();
@@ -78,7 +78,7 @@ class DATA : public VDATA
     bool GetPtr(uintptr_t &value);
 
     void Set(float value);
-    void Set(const char *value);
+    void Set(const std::string& value);
     void Set(const char *attribute_name, const char *attribute_value);
     bool Get(long &value);
     bool Get(float &value);
@@ -157,7 +157,7 @@ class DATA : public VDATA
     long GetLong();
     uintptr_t GetPtr();
     float GetFloat();
-    char *GetString();
+    const char *GetString();
     entid_t GetEntityID();
 
     void SetGlobalVarTableIndex(uint32_t index)

@@ -17,7 +17,7 @@ class SAIL_BASE : public CANNON_TRACE_BASE
   public:
     // Trace function
     virtual entid_t GetShipID() = 0;
-    virtual SAILONE_BASE *FindSailForCharacter(int chrIdx, char *nodeName, int grNum) = 0;
+    virtual SAILONE_BASE *FindSailForCharacter(int chrIdx, const char *nodeName, int grNum) = 0;
 };
 
 //==================================================

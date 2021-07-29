@@ -18,7 +18,7 @@ class VDATA
     virtual void SetPtr(uintptr_t value) = 0;
     virtual bool GetPtr(uintptr_t &value) = 0;
     virtual void Set(float value) = 0;
-    virtual void Set(const char *value) = 0;
+    virtual void Set(const std::string& value) = 0;
     virtual void Set(const char *attribute_name, const char *attribute_value) = 0;
     virtual bool Get(long &value) = 0;
     virtual bool Get(float &value) = 0;
@@ -69,6 +69,6 @@ class VDATA
     virtual long GetLong() = 0;
     virtual uintptr_t GetPtr() = 0;
     virtual float GetFloat() = 0;
-    virtual char *GetString() = 0;
+    virtual const char *GetString() = 0;
     virtual entid_t GetEntityID() = 0;
 };
