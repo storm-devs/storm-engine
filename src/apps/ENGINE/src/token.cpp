@@ -926,7 +926,7 @@ bool TOKEN::IsNumber(const char *pointer)
         return false;
     for (uint32_t n = 0; pointer[n]; n++)
     {
-        if (pointer[n] < 0x20 && n > 0)
+        if (pointer[n] < 0x20 && pointer[n] > 0)
             return true; // end on white space
         if (pointer[n] < 0x30 || pointer[n] > 0x39)
             return false; // not digit symbol

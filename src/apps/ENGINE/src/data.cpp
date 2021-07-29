@@ -14,6 +14,7 @@ const char *INVALID_STRING = {"Invalid string"};
 extern void DumpError(const char *data_PTR, ...);
 
 DATA::DATA()
+    : pValue(0), object_id(0)
 {
     Data_type = UNKNOWN;
     Number_of_elements = 0;
@@ -31,6 +32,7 @@ DATA::DATA()
 }
 
 DATA::DATA(DATA &&data) noexcept(false)
+    : pValue(0)
 {
     Data_type = data.Data_type;
     Number_of_elements = data.Number_of_elements;
@@ -52,6 +54,7 @@ DATA::DATA(DATA &&data) noexcept(false)
 }
 
 DATA::DATA(S_TOKEN_TYPE _element_type)
+    : pValue(0), object_id(0)
 {
     Data_type = _element_type;
     Number_of_elements = 0;
@@ -69,6 +72,7 @@ DATA::DATA(S_TOKEN_TYPE _element_type)
 }
 
 DATA::DATA(uint32_t _num_of_elements, S_TOKEN_TYPE _element_type)
+    : pValue(0), object_id(0)
 {
     nGlobalVarTableIndex = 0xffffffff;
     Number_of_elements = _num_of_elements;

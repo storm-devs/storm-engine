@@ -52,6 +52,7 @@ class BLADE : public Entity
         char *locatorName;
 
         TIEITEM_INFO()
+            : eid(0)
         {
             nItemIndex = -1;
             locatorName = nullptr;

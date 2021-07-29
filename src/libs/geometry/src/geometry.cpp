@@ -229,7 +229,7 @@ void *GEOM_SERVICE_R::malloc(long bytes)
 
 void GEOM_SERVICE_R::free(void *ptr)
 {
-    delete ptr;
+    delete[] static_cast<char*>(ptr);
 }
 
 GEOS::ID GEOM_SERVICE_R::CreateTexture(const char *fname)
@@ -440,7 +440,7 @@ void GEOM_SERVICE_R::ReleaseVertexBuffer(GEOS::ID vb)
     if (RenderService)
         if (vb >= SHIFT_VALUE)
         {
-            delete avb[vb - SHIFT_VALUE].buff;
+            delete static_cast<char*>(avb[vb - SHIFT_VALUE].buff);
             avb[vb - SHIFT_VALUE].nvertices = 0;
         }
         else

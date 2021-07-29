@@ -42,7 +42,7 @@ long WorldMap::month[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 // Construction, destruction
 // ============================================================================================
 
-WorldMap::WorldMap()
+WorldMap::WorldMap() : rs{}, aDate{}
 {
     Assert(!wdmObjects);
     new WdmObjects();

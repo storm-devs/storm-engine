@@ -82,7 +82,10 @@ inline int wildcmp(const char *wild, const char *string)
         else
         {
             wild = mp;
-            string = cp++;
+            if (cp != nullptr)
+            {
+                string = cp++;
+            }
         }
     }
 
@@ -126,7 +129,10 @@ inline int wildicmp(const char *wild, const char *string)
         else
         {
             wild = mp;
-            string = cp++;
+            if (cp != nullptr)
+            {
+                string = cp++;
+            }
         }
     }
 
