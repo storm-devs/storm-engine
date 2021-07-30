@@ -223,8 +223,6 @@ bool CORE::Initialize()
 {
     ResetCore();
 
-    InitializeCriticalSection(&lock);
-
     Initialized = true;
 
     return true;
@@ -910,16 +908,6 @@ storm::ENGINE_VERSION CORE::GetTargetEngineVersion() const noexcept
 {
     return targetVersion_;
 }
-
-void CORE::Start_CriticalSection()
-{
-    EnterCriticalSection(&lock);
-};
-
-void CORE::Leave_CriticalSection()
-{
-    LeaveCriticalSection(&lock);
-};
 
 ScreenSize CORE::GetScreenSize() const noexcept
 {

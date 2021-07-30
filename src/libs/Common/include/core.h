@@ -75,10 +75,6 @@ class CORE
 
     char *State_file_name;
 
-    CRITICAL_SECTION lock;
-    void Start_CriticalSection();
-    void Leave_CriticalSection();
-
     TIMER Timer;
 
     COMPILER *Compiler;
