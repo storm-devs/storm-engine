@@ -128,7 +128,7 @@ void TSeagulls::Execute(uint32_t _dTime)
         else
         {
             seagulls[i].screamTime = (rand() % (screamTime >> 1)) + (screamTime >> 1);
-            CVECTOR pos(static_cast<float>(seagulls[i].center.x + sin(seagulls[i].a) * seagulls[i].radius),
+            Vector pos(static_cast<float>(seagulls[i].center.x + sin(seagulls[i].a) * seagulls[i].radius),
                         static_cast<float>(seagulls[i].center.z + cos(seagulls[i].a) * seagulls[i].radius),
                         static_cast<float>(seagulls[i].height));
 
@@ -209,7 +209,7 @@ void TSeagulls::Realize(uint32_t _dTime)
 
     for (auto i = 0; i < count; i++)
     {
-        CVECTOR ang, pos;
+        Vector ang, pos;
         ang.x = 0.0f;
         ang.z = 0.0f;
         auto angle = seagulls[i].a;
@@ -220,7 +220,7 @@ void TSeagulls::Realize(uint32_t _dTime)
         pos.x = seagulls[i].center.x + sinf(seagulls[i].a) * seagulls[i].radius;
         pos.z = seagulls[i].center.z + cosf(seagulls[i].a) * seagulls[i].radius;
         pos.y = seagulls[i].height;
-        seagull->mtx = CMatrix(ang, pos);
+        seagull->mtx = Matrix(ang, pos);
         seagull->ProcessStage(Entity::Stage::realize, _dTime);
     }
 }
@@ -249,7 +249,7 @@ void TSeagulls::Add(float _x, float _y, float _z)
 
     for (int i = count; i < (count + countAdd); i++)
     {
-        seagulls[i].center = CVECTOR(randCentered(maxDistance) + _x, rand(maxHeight) + SEAGULL_MIN_HEIGHT,
+        seagulls[i].center = Vector(randCentered(maxDistance) + _x, rand(maxHeight) + SEAGULL_MIN_HEIGHT,
                                      randCentered(maxDistance) + _z);
         seagulls[i].radius = randUpper(maxRadius);
         op = randUpper(maxAngleSpeed);

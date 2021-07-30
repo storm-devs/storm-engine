@@ -4,8 +4,6 @@
 #include "dx9render.h"
 #include "model.h"
 #include "sea_base.h"
-#include "vmodule_api.h"
-//#include "..\geom_lib\geos.h"
 #include "IVBufferManager.h"
 
 namespace waterrings
@@ -23,7 +21,7 @@ constexpr int RING_FVF = (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEX
 
 struct RING_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
     float tu, tv;
 };

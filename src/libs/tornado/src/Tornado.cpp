@@ -89,7 +89,7 @@ bool Tornado::Init()
     soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
     if (soundService)
     {
-        const auto pos = CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
+        const auto pos = Vector(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
         sID = soundService->SoundPlay("tornado", PCM_3D, VOLUME_FX, false, true, false, 0, &pos);
     }
     return true;
@@ -121,7 +121,7 @@ void Tornado::Execute(uint32_t delta_time)
         liveTime -= dltTime;
     if (soundService && sID != SOUND_INVALID_ID)
     {
-        const auto pos = CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
+        const auto pos = Vector(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
         soundService->SoundSet3DParam(sID, SM_POSITION, &pos);
     }
 }
@@ -132,7 +132,7 @@ void Tornado::Realize(uint32_t delta_time)
     // Wreckage
     debris.Draw(rs);
     // World identity matrix
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
     // The clouds
     noiseCloud.Draw(rs);
     // Pillar

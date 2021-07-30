@@ -11,7 +11,6 @@
 #pragma once
 
 #include "model.h"
-#include "vmodule_api.h"
 
 class Animation;
 
@@ -115,11 +114,11 @@ class ModelArray
     void UpdateShadowPath();
 
     // Check the visibility of two points
-    bool VisibleTest(const CVECTOR &p1, const CVECTOR &p2);
+    bool VisibleTest(const Vector &p1, const Vector &p2);
     // Trace the ray through the location
-    float Trace(const CVECTOR &src, const CVECTOR &dst);
+    float Trace(const Vector &src, const Vector &dst);
     bool GetCollideTriangle(TRIANGLE &trg) const;
-    void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
+    void Clip(Plane *p, long numPlanes, Vector &cnt, float rad, bool (*fnc)(const Vector *vtx, long num));
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation

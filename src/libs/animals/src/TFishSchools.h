@@ -1,13 +1,10 @@
 #pragma once
 
 #include "AnimalsDefines.h"
-#include "Matrix.h"
 #include "TDynamicObject.h"
 #include "TDynamicSystem.h"
 #include "dx9render.h"
-#include "geometry.h"
 #include "sea_base.h"
-#include "ship_base.h"
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES

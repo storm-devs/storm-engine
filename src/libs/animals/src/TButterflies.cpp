@@ -50,7 +50,7 @@ void TButterflies::Init()
         new IVBufferManager(renderService, BUTTERFLY_VERTEX_TYPE, sizeof(tButterflyVertex), 3 * 4, 6, butterfliesCount);
 
     for (auto i = 0; i < butterfliesCount; i++)
-        butterflies[i].Initialize(CVECTOR(0.0f, 0.0f, 0.0f), maxDistance, ivManager->ReserveElement(), rand() % 4,
+        butterflies[i].Initialize(Vector(0.0f, 0.0f, 0.0f), maxDistance, ivManager->ReserveElement(), rand() % 4,
                                   rand() % 4);
 
     texture = renderService->TextureCreate("butter.tga");
@@ -71,7 +71,7 @@ uint64_t TButterflies::ProcessMessage(long _code, MESSAGE &message)
         break;
 
     case MSG_ANIMALS_BUTTERFLIES_XYZ: {
-        static CVECTOR affectVector(0.f, 0.f, 0.f);
+        static Vector affectVector(0.f, 0.f, 0.f);
         affectVector.x = message.Float();
         affectVector.z = message.Float();
         for (auto i = 0; i < butterfliesCount; i++)
@@ -91,7 +91,7 @@ void TButterflies::Execute(uint32_t _dTime)
         return;
 
     // re-set center
-    CVECTOR pos, ang;
+    Vector pos, ang;
     float persp;
     renderService->GetCamera(pos, ang, persp);
     butterflies[0].SetCenter(pos);
@@ -138,7 +138,7 @@ void TButterflies::Realize(uint32_t dTime)
     if (!enabled)
         return;
 
-    const CMatrix wMatrix;
+    const Matrix wMatrix;
 
     renderService->SetTransform(D3DTS_WORLD, static_cast<D3DMATRIX *>(wMatrix));
     renderService->TextureSet(0, texture);

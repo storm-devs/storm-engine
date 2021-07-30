@@ -1,9 +1,7 @@
 #include "Utils.h"
 
 #include "core.h"
-
 #include "image/imgrender.h"
-#include "vmodule_api.h"
 
 // extern data
 entid_t BIUtils::idBattleInterface;
@@ -165,7 +163,7 @@ long BIUtils::GetFontIDFromAttr(ATTRIBUTES *pA, const char *name, VDX9RENDER *rs
     return -1;
 }
 
-bool BIUtils::ReadVectorFormAttr(ATTRIBUTES *pA, const char *name, CVECTOR &vOut, const CVECTOR &vDef)
+bool BIUtils::ReadVectorFormAttr(ATTRIBUTES *pA, const char *name, Vector &vOut, const Vector &vDef)
 {
     vOut = vDef;
     if (pA && name)

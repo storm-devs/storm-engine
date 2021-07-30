@@ -1,8 +1,8 @@
 #pragma once
 
 #include "dx9render.h"
+#include "Entity.h"
 #include "geometry.h"
-#include "vmodule_api.h"
 
 class Lights;
 

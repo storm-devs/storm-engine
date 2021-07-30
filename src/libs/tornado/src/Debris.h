@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "Matrix.h"
 #include "Pillar.h"
 #include "VSoundService.h"
 #include "model.h"
@@ -24,7 +23,7 @@ class Debris
         float alpha;
         float scale;
         float maxSpeed;
-        CVECTOR ang;
+        Vector ang;
         MODEL *mdl;
     };
 

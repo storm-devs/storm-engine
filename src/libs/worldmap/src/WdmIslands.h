@@ -35,15 +35,15 @@ class WdmIslands : public WdmRenderObject
         WdmRenderModel *area;  // Island area model
         WdmRenderModel *palms; // Model with palm trees
         WdmIslandWaves *waves; // Model with foam
-        CMatrix toLocal;       // Conversion to the local island system
+        Matrix toLocal;       // Conversion to the local island system
         std::string modelName; // Island Model Name
-        CVECTOR worldPosition; // The position of the island in the world
+        Vector worldPosition; // The position of the island in the world
     };
 
     struct Label
     {
         std::string text;        // Label text
-        CVECTOR pos;             // Label position
+        Vector pos;             // Label position
         float l, t, r, b;        // Rectangle describing the label in screen coordinates
         float dl, dt, dr, db;    // Offsets to get a rectangle at a known point on the screen
         float textX, textY;      // Relative text position
@@ -80,7 +80,7 @@ class WdmIslands : public WdmRenderObject
 
     struct Quest
     {
-        CVECTOR pos;
+        Vector pos;
         std::string name;
     };
 
@@ -94,7 +94,7 @@ class WdmIslands : public WdmRenderObject
     ~WdmIslands() override;
 
     // Check for possible collision
-    bool CollisionTest(CMatrix &objMtx, float length, float width, bool heighTest = true);
+    bool CollisionTest(Matrix &objMtx, float length, float width, bool heighTest = true);
     // Check for the presence of triangles in this place
     bool ObstacleTest(float x, float z, float radius);
 
@@ -102,13 +102,13 @@ class WdmIslands : public WdmRenderObject
     void SetIslandsData(ATTRIBUTES *apnt, bool isChange);
 
     // Find the direction to arrive at a given destination from the current
-    void FindDirection(const CVECTOR &position, const CVECTOR &destination, CVECTOR &direction) const;
+    void FindDirection(const Vector &position, const Vector &destination, Vector &direction) const;
     // Find the repulsive force
-    void FindReaction(const CVECTOR &position, CVECTOR &reaction) const;
+    void FindReaction(const Vector &position, Vector &reaction) const;
     // Find a random point for a merchant
-    bool GetRandomMerchantPoint(CVECTOR &p);
+    bool GetRandomMerchantPoint(Vector &p);
     // Get the coordinates of the quest locator
-    bool GetQuestLocator(const char *locName, CVECTOR &p);
+    bool GetQuestLocator(const char *locName, Vector &p);
 
     // Check if the boat is in the island zone
     bool CheckIslandArea(const char *islandName, float x, float z);
@@ -122,15 +122,15 @@ class WdmIslands : public WdmRenderObject
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    bool IsShipInArea(long islIndex, const CVECTOR &pos);
+    bool IsShipInArea(long islIndex, const Vector &pos);
     static bool AddEdges(const GEOS::VERTEX *vrt, long numVrt);
     static bool FindNearPoint(const GEOS::VERTEX *vrt, long numVrt);
     void LabelsReadIconParams(ATTRIBUTES *apnt);
     long LabelsFind(const char *id, uint32_t hash);
-    bool LabelsFindLocator(const char *name, CVECTOR &pos) const;
+    bool LabelsFindLocator(const char *name, Vector &pos) const;
     long LabelsAddFont(const char *name);
     void LabelsRelease();
-    static CVECTOR Norm2D(const CVECTOR &ret);
+    static Vector Norm2D(const Vector &ret);
 
   private:
     // Model containing all locators
@@ -148,23 +148,23 @@ class WdmIslands : public WdmRenderObject
     // Labels registered for rendering
     std::vector<long> labelSort;
     // Merchant destinations
-    std::vector<CVECTOR> merchants;
+    std::vector<Vector> merchants;
     // Destination Points of Quest Encounters
     std::vector<Quest> quests;
 
     // Input table for finding labels
     long labelsEntry[1024];
 
-    static CMatrix curMatrix, locMatrix;
+    static Matrix curMatrix, locMatrix;
     static long numEdges;
-    static CVECTOR curPos;
+    static Vector curPos;
     static bool checkMode;
 
   public:
-    static CVECTOR centPos;
+    static Vector centPos;
 };
 
-inline CVECTOR WdmIslands::Norm2D(const CVECTOR &v)
+inline Vector WdmIslands::Norm2D(const Vector &v)
 {
     auto ret = v;
     ret.y = 0.0f;

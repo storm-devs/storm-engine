@@ -11,7 +11,7 @@
 #pragma once
 
 #include "dx9render.h"
-#include "vmodule_api.h"
+#include "Entity.h"
 
 class Fader : public Entity
 {

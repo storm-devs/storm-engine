@@ -39,7 +39,7 @@ class ItemEntity : public Entity
     void SetBeginData();
     void Release();
 
-    void SetModelToPosition(const CMatrix &mtx) const;
+    void SetModelToPosition(const Matrix &mtx) const;
     void SetTechnique(const char *pcTechnique) const;
     bool TieToLocator(entid_t mdlEID, const char *pcLocName);
     void UnTieFromLocator();
@@ -55,7 +55,7 @@ class ItemEntity : public Entity
     bool m_bVisible;
     entid_t m_eidModel;
     MODEL *m_pModel;
-    CMatrix m_mtxpos;
+    Matrix m_mtxpos;
 
     bool m_bTieToLocator;
     entid_t m_eidTieModel;

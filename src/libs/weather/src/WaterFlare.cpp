@@ -91,7 +91,7 @@ void WATERFLARE::GenerateFlares()
     for (long i = 0; i < iFlaresNum; i++)
     {
         pfAlpha[i] = FRAND(-40.0f);
-        pRSRect[i].vPos = CVECTOR(FRAND(1000.0f), 0.0f, FRAND(1000.0f));
+        pRSRect[i].vPos = Vector(FRAND(1000.0f), 0.0f, FRAND(1000.0f));
         pRSRect[i].fAngle = 0.0f;
         pRSRect[i].dwSubTexture = 0;
         pRSRect[i].fSize = 0.5f;
@@ -109,7 +109,7 @@ void WATERFLARE::Realize(uint32_t Delta_Time) const
         if (pfAlpha[i] > 2.0f)
         {
             pfAlpha[i] = 0.0f;
-            pRSRect[i].vPos = CVECTOR(FRAND(200.0f), 0.0f, FRAND(200.0f));
+            pRSRect[i].vPos = Vector(FRAND(200.0f), 0.0f, FRAND(200.0f));
         }
         const auto dwAlpha = static_cast<uint32_t>(255.0f * ((pfAlpha[i] > 1.0f) ? 2.0f - pfAlpha[i] : pfAlpha[i]));
         pRSRect[i].dwColor = makeRGB(dwAlpha, dwAlpha, dwAlpha);

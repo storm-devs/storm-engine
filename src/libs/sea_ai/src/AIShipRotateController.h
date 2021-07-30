@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Sd2_h/VAI_ObjBase.h"
-#include "vmodule_api.h"
-
 // ============================================================================
 // master class AIShipRotateController
 // Contain base virtual functions

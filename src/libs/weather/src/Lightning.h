@@ -22,7 +22,7 @@ class LIGHTNING : public Entity
         uint32_t dwFlickerTime;
         float fTime;
         float fSize, fScaleX, fScaleY;
-        CVECTOR vPos;
+        Vector vPos;
 
         // inner parameters
         float fAlpha;

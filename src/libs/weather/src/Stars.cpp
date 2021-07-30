@@ -155,11 +155,11 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
 
         pRS->CreateVertexDeclaration(VertexElem, &pDecl);
 
-        iVertexBuffer = pRS->CreateVertexBuffer(0, dwSize * sizeof(CVECTOR), D3DUSAGE_WRITEONLY);
+        iVertexBuffer = pRS->CreateVertexBuffer(0, dwSize * sizeof(Vector), D3DUSAGE_WRITEONLY);
         iVertexBufferColors =
             pRS->CreateVertexBuffer(0, dwSize * sizeof(uint32_t), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC);
 
-        auto *const pVPos = static_cast<CVECTOR *>(pRS->LockVertexBuffer(iVertexBuffer));
+        auto *const pVPos = static_cast<Vector *>(pRS->LockVertexBuffer(iVertexBuffer));
         auto *pVColors = static_cast<uint32_t *>(pRS->LockVertexBuffer(iVertexBufferColors));
 
         auto bRecalculateData = true;
@@ -167,14 +167,14 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
         if (outfileS.is_open())
         {
             uint32_t dwFileLen = fio->_GetFileSize("resource\\star.dat");
-            if (dwFileLen == dwSize * (sizeof(Star) + sizeof(CVECTOR) + sizeof(uint32_t)))
+            if (dwFileLen == dwSize * (sizeof(Star) + sizeof(Vector) + sizeof(uint32_t)))
             {
                 // aStars.AddElements(dwSize);
                 aStars.resize(aStars.size() + dwSize);
                 fio->_SetFilePointer(outfileS, 0, std::ios::beg);
                 fio->_ReadFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
                 fio->_ReadFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
-                fio->_ReadFile(outfileS, pVPos, sizeof(CVECTOR) * dwSize);
+                fio->_ReadFile(outfileS, pVPos, sizeof(Vector) * dwSize);
                 fio->_ReadFile(outfileS, pVColors, sizeof(uint32_t) * dwSize);
                 bRecalculateData = false;
             }
@@ -201,7 +201,7 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
                 if (s.fMag > fMinMag)
                     fMinMag = s.fMag;
 
-                s.vPos = CVECTOR(cosf(s.fDec) * cosf(s.fRA), cosf(s.fDec) * sinf(s.fRA), sinf(s.fDec));
+                s.vPos = Vector(cosf(s.fDec) * cosf(s.fRA), cosf(s.fDec) * sinf(s.fRA), sinf(s.fDec));
                 const auto vPos = fRadius * s.vPos;
                 s.fAlpha = (vPos.y < fHeightFade) ? Clamp(vPos.y / fHeightFade) : 1.0f;
 
@@ -215,7 +215,7 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
             if (!outfileS.is_open())
             {
                 fio->_WriteFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
-                fio->_WriteFile(outfileS, pVPos, sizeof(CVECTOR) * dwSize);
+                fio->_WriteFile(outfileS, pVPos, sizeof(Vector) * dwSize);
                 fio->_WriteFile(outfileS, pVColors, sizeof(uint32_t) * dwSize);
                 fio->_CloseFile(outfileS);
             }
@@ -266,9 +266,9 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
     if (iVertexBufferColors == -1)
         return;
 
-    CVECTOR vCamPos, vCamAng;
+    Vector vCamPos, vCamAng;
     float fFov;
-    CMatrix mView, IMatrix;
+    Matrix mView, IMatrix;
     // RS_RECT rr[1000];
 
     pRS->GetCamera(vCamPos, vCamAng, fFov);
@@ -314,12 +314,12 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
     pRS->SetRenderState(D3DRS_POINTSCALE_B, F2DW(0.0f));
     pRS->SetRenderState(D3DRS_POINTSCALE_C, F2DW(1.0f));
 
-    CMatrix mWorld;
+    Matrix mWorld;
     mWorld.BuildPosition(vCamPos.x, vCamPos.y, vCamPos.z);
     pRS->SetTransform(D3DTS_WORLD, mWorld);
     pRS->TextureSet(0, iTexture);
     pRS->SetVertexDeclaration(pDecl);
-    pRS->SetStreamSource(0, pRS->GetVertexBuffer(iVertexBuffer), sizeof(CVECTOR));
+    pRS->SetStreamSource(0, pRS->GetVertexBuffer(iVertexBuffer), sizeof(Vector));
     pRS->SetStreamSource(1, pRS->GetVertexBuffer(iVertexBufferColors), sizeof(uint32_t));
 
     if (pRS->TechniqueExecuteStart("stars"))
@@ -370,7 +370,7 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
       float fCosRA = fCosTable[iRA & (COS_TABLE_SIZE - 1)];
       float fSinRA = fCosTable[(iRA + COS_TABLE_SIZE / 4) & (COS_TABLE_SIZE - 1)];
 
-      CVECTOR vPos = vCamPos + fRadius * CVECTOR(s.fCosDec * fCosRA, s.fCosDec * fSinRA, s.fSinDec);
+      Vector vPos = vCamPos + fRadius * Vector(s.fCosDec * fCosRA, s.fCosDec * fSinRA, s.fSinDec);
       if (vPos.y < 0.0f) continue;
 
       float fHA = (vPos.y < fHeightFade) ? vPos.y / fHeightFade : 1.0f;
@@ -379,25 +379,25 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
       if (fAlpha <= (0.010001f * 255.0f)) continue;
 
       // fill vertex buffer
-      CVECTOR vPos1 = mView * vPos;
+      Vector vPos1 = mView * vPos;
       //if (vPos.z < 0.0f) continue;
       uint32_t dwAlpha; FTOL(dwAlpha, fAlpha);
       uint32_t dwStarsColor = (dwAlpha << 24L) | dwColor;
       float fStarsSize = fSize * fFV;
 
-      pV[0].vPos = vPos1 + CVECTOR(-fStarsSize, -fStarsSize * fScaleY, 0.0f);
+      pV[0].vPos = vPos1 + Vector(-fStarsSize, -fStarsSize * fScaleY, 0.0f);
       pV[0].dwColor = dwStarsColor;
       pV[0].tu = s.fTexX; pV[0].tv = s.fTexY;
 
-      pV[1].vPos = vPos1 + CVECTOR(-fStarsSize, fStarsSize * fScaleY, 0.0f);
+      pV[1].vPos = vPos1 + Vector(-fStarsSize, fStarsSize * fScaleY, 0.0f);
       pV[1].dwColor = dwStarsColor;
       pV[1].tu = s.fTexX; pV[1].tv = s.fTexY + fTexDY;
 
-      pV[2].vPos = vPos1 + CVECTOR(fStarsSize, -fStarsSize * fScaleY, 0.0f);
+      pV[2].vPos = vPos1 + Vector(fStarsSize, -fStarsSize * fScaleY, 0.0f);
       pV[2].dwColor = dwStarsColor;
       pV[2].tu = s.fTexX + fTexDX; pV[2].tv = s.fTexY;
 
-      pV[3].vPos = vPos1 + CVECTOR(fStarsSize, fStarsSize * fScaleY, 0.0f);
+      pV[3].vPos = vPos1 + Vector(fStarsSize, fStarsSize * fScaleY, 0.0f);
       pV[3].dwColor = dwStarsColor;
       pV[3].tu = s.fTexX + fTexDX; pV[3].tv = s.fTexY + fTexDY;
 
@@ -459,7 +459,7 @@ void Astronomy::STARS::TimeUpdate(ATTRIBUTES *pAP)
         return;
     }
 
-    auto *pVPos = static_cast<CVECTOR *>(pRS->LockVertexBuffer(iVertexBuffer));
+    auto *pVPos = static_cast<Vector *>(pRS->LockVertexBuffer(iVertexBuffer));
     if (!pVPos)
     {
         bEnable = false;

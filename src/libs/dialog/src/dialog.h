@@ -1,10 +1,9 @@
 #pragma once
 
 #include "dx9render.h"
-#include "matrix.h"
-#include "vmodule_api.h"
-
 #include "defines.h"
+#include "Entity.h"
+
 #include <string>
 #include <vector>
 
@@ -19,7 +18,7 @@ class INIFILE;
 
 struct XI_TEX_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     float rhw;
     uint32_t color;
     float u, v;

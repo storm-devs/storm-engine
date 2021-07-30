@@ -1,10 +1,8 @@
 #pragma once
 
-#include "CVECTOR.h"
 #include "SinkSplashDefines.h"
 #include "TSink.h"
 #include "dx9render.h"
-#include "geometry.h"
 #include "sea_base.h"
 
 ///////////////////////////////////////////////////////////////////
@@ -41,7 +39,7 @@ class SINKEFFECT : public Entity
 
   private:
     void InitializeSinks();
-    TSink *TryToAddSink(const CVECTOR &_pos, float _r);
+    TSink *TryToAddSink(const Vector &_pos, float _r);
 
     TSink sinks[sink_effect::MAX_SINKS];
     VDX9RENDER *renderer;

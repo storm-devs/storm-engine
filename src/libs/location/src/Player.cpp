@@ -364,17 +364,17 @@ void Player::Rotate(float dltTime)
             if (dx * dx + dz * dz > 0.1f)
             {
                 // Rotate the vector relative to the camera
-                CMatrix mtx;
+                Matrix mtx;
                 auto *const location = GetLocation();
                 location->GetRS()->GetTransform(D3DTS_VIEW, mtx);
                 mtx.Transposition3X3();
-                mtx.Vy() = CVECTOR(0.0f, 1.0f, 0.0f);
-                mtx.Vx().y = 0.0f;
-                mtx.Vz().y = 0.0f;
-                mtx.Vx() = !CVECTOR(mtx.Vx());
-                mtx.Vz() = !CVECTOR(mtx.Vz());
-                mtx.Pos() = 0.0f;
-                const auto res = mtx * CVECTOR(dx, 0.0f, dz);
+                mtx.vy = Vector(0.0f, 1.0f, 0.0f);
+                mtx.vx.y = 0.0f;
+                mtx.vz.y = 0.0f;
+                mtx.vx = !Vector(mtx.vx);
+                mtx.vz = !Vector(mtx.vz);
+                mtx.pos = 0.0f;
+                const auto res = mtx * Vector(dx, 0.0f, dz);
                 Turn(res.x, res.z);
             }
         }
@@ -730,13 +730,13 @@ void Player::FireFromShootgun()
     // Get the position from where to shoot
     auto dx = sinf(ay);
     auto dz = cosf(ay);
-    CMatrix mtx;
+    Matrix mtx;
     auto *const location = GetLocation();
     location->GetRS()->GetTransform(D3DTS_VIEW, mtx);
     mtx.Transposition();
-    const auto src = mtx.Pos() + mtx.Vz() * 0.7f;
-    core.Send_Message(effects, "sffffff", "SGFireParticles", src.x, src.y - 0.35f, src.z, mtx.Vz().x, mtx.Vz().y,
-                      mtx.Vz().z);
+    const auto src = mtx.pos + mtx.vz * 0.7f;
+    core.Send_Message(effects, "sffffff", "SGFireParticles", src.x, src.y - 0.35f, src.z, mtx.vz.x, mtx.vz.y,
+                      mtx.vz.z);
 
     auto *collide = static_cast<COLLIDE *>(core.CreateService("COLL"));
     if (!collide)
@@ -757,7 +757,7 @@ void Player::FireFromShootgun()
         // Get the position where the buckshot will fall
         const auto r = rand() * 3.0f / RAND_MAX;
         const auto a = rand() * 6.283185307f / (RAND_MAX + 1);
-        auto dst = mtx * CVECTOR(r * sinf(a), r * cosf(a), 25.0f);
+        auto dst = mtx * Vector(r * sinf(a), r * cosf(a), 25.0f);
         if (collide)
         {
             auto id = GetId();

@@ -8,17 +8,17 @@
 class LCOLL : public LOCAL_COLLIDE
 {
     EntityManager::layer_index_t layerIndex_;
-    PLANE plane[6];
-    CVECTOR boxCenter;
+    Plane plane[6];
+    Vector boxCenter;
     float boxRadius;
     COLLIDE *col;
 
   public:
     LCOLL(EntityManager::layer_index_t idx);
     ~LCOLL() override;
-    long SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOnly = false) override;
-    const CVECTOR *GetFace(long &numVertices) override;
-    float Trace(const CVECTOR &src, const CVECTOR &dst) override;
+    long SetBox(const Vector &boxSize, const Matrix &transform, bool testOnly = false) override;
+    const Vector *GetFace(long &numVertices) override;
+    float Trace(const Vector &src, const Vector &dst) override;
 };
 
 class COLL : public COLLIDE
@@ -27,10 +27,10 @@ class COLL : public COLLIDE
     COLL() = default;
     ~COLL() override = default;
     LOCAL_COLLIDE *CreateLocalCollide(EntityManager::layer_index_t idx) override;
-    float Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst) override;
-    float Trace(EntityManager::LayerIterators its, const CVECTOR &src, const CVECTOR &dst, const entid_t *exclude_list,
+    float Trace(entid_t entity, const Vector &src, const Vector &dst) override;
+    float Trace(EntityManager::LayerIterators its, const Vector &src, const Vector &dst, const entid_t *exclude_list,
                 long entities) override;
-    bool Clip(EntityManager::LayerIterators its, const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
+    bool Clip(EntityManager::LayerIterators its, const Plane *planes, long nplanes, const Vector &center, float radius,
               ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, long entities) override;
     entid_t GetObjectID() override;
 };

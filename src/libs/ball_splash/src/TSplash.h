@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Cvector.h"
 #include "defines.h"
 #include "dx9render.h"
 #include "sea_base.h"
@@ -13,14 +12,14 @@ class INIFILE;
 ///////////////////////////////////////////////////////////////////
 struct GRID_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
     float tu, tv;
 };
 
 struct GRID_VERTEX2
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
     float tu, tv;
     float tu2, tv2;
@@ -34,7 +33,7 @@ class TSplash
 
     void Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *sea, VDX9RENDER *_renderer);
     void Release();
-    void Start(const CVECTOR &_pos, const CVECTOR &_dir);
+    void Start(const Vector &_pos, const Vector &_dir);
     bool Process(uint32_t dTime);
     bool Process2(uint32_t dTime);
     void PostProcess();
@@ -62,7 +61,7 @@ class TSplash
 
     float width2;
     float distortDivider;
-    CVECTOR center, dir;
+    Vector center, dir;
     float growK;
     float height, midY;
 };

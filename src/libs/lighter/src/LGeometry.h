@@ -51,7 +51,7 @@ class LGeometry
     // Update colors in buffers
     void UpdateColors(VDX9RENDER *rs);
     // Trace the ray through all models
-    float Trace(const CVECTOR &src, const CVECTOR &dst);
+    float Trace(const Vector &src, const Vector &dst);
     // Save lighting
     bool Save();
 
@@ -73,12 +73,12 @@ class LGeometry
 
     lighter::Shadow *shadows;
 
-    CVECTOR min, max;
+    Vector min, max;
     float radius;
 
     bool useColor;
 
-    CVECTOR *drawbuf;
+    Vector *drawbuf;
 
     char modelsPath[512];
     char lightPath[512];

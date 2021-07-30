@@ -57,7 +57,8 @@ class Plane
     Plane(const Vector &normal, const Vector &point);
     // Copy constructor
     Plane(const Plane &plane);
-
+    // Move assignment
+    Plane &operator=(const Plane &plane);
     // -----------------------------------------------------------
     // Transformation
     // -----------------------------------------------------------
@@ -117,6 +118,13 @@ inline Plane::Plane(const Plane &plane)
 {
     N = plane.N;
     D = plane.D;
+}
+
+inline Plane &Plane::operator=(const Plane &plane)
+{
+    N = plane.N;
+    D = plane.D;
+    return *this;
 }
 
 // ===========================================================

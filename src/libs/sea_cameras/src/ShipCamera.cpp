@@ -65,9 +65,9 @@ void SHIP_CAMERA::Execute(uint32_t dwDeltaTime)
     auto *pModel = GetModelPointer();
     Assert(pModel);
     auto *const mtx = &pModel->mtx;
-    vCenter = mtx->Pos();
+    vCenter = mtx->pos;
 
-    fModelAy = static_cast<float>(atan2(mtx->Vz().x, mtx->Vz().z));
+    fModelAy = static_cast<float>(atan2(mtx->vz.x, mtx->vz.z));
 
     Move(fDeltaTime);
 }
@@ -140,7 +140,7 @@ void SHIP_CAMERA::Move(float fDeltaTime)
 
     // Current distance
     auto boxSize =
-        GetAIObj()->GetBoxsize() * CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
+        GetAIObj()->GetBoxsize() * Vector(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
     boxSize.x += boxSize.y;
     boxSize.z += boxSize.y;
     const auto maxRad = boxSize.z * 2.0f;
@@ -150,7 +150,7 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     const auto c = boxSize.z * 1.2f + fDistance * (maxRad - boxSize.z * 1.2f); // z
     // Find the position of the camera on the ellipsoid
     vCenter.y += 0.5f * boxSize.y;
-    CVECTOR vPos;
+    Vector vPos;
     if (vAng.x <= 0.0f)
     {
         // Above 0 driving on an ellipsoid
@@ -165,7 +165,7 @@ void SHIP_CAMERA::Move(float fDeltaTime)
         vPos.y = 0.0f; // b*sinf(-vAng.x);
         vPos.z = c * cosf(vAng.y);
     }
-    vPos = CMatrix(CVECTOR(0.0f, fModelAy, 0.0f), vCenter) * vPos;
+    vPos = Matrix(Vector(0.0f, fModelAy, 0.0f), vCenter) * vPos;
     if (vAng.x > 0.0f)
         vCenter.y += boxSize.z * vAng.x * 6.0f;
     // Limit the height from the bottom
@@ -185,7 +185,7 @@ void SHIP_CAMERA::Move(float fDeltaTime)
         vCenter.y += vPos.y - oldPosY;
     // Set new camera
     vCenter.y += fDistance * 2.0f * boxSize.y;
-    pRS->SetCamera(vPos, vCenter, CVECTOR(0.0f, 1.0f, 0.0f));
+    pRS->SetCamera(vPos, vCenter, Vector(0.0f, 1.0f, 0.0f));
     pRS->SetPerspective(GetPerspective());
 }
 
@@ -232,9 +232,9 @@ uint32_t SHIP_CAMERA::AttributeChanged(ATTRIBUTES *pAttr)
     return 0;
 }
 
-void SHIP_CAMERA::ShipsCollision(CVECTOR &pos)
+void SHIP_CAMERA::ShipsCollision(Vector &pos)
 {
-    CVECTOR p;
+    Vector p;
     const auto &entities = EntityManager::GetEntityIdVector("ship");
     for (auto ent : entities)
     {
@@ -246,9 +246,9 @@ void SHIP_CAMERA::ShipsCollision(CVECTOR &pos)
             continue;
         // Camera position in the ship system
         Assert(ship->GetMatrix());
-        ship->GetMatrix()->MulToInv(pos, p);
+        p = ship->GetMatrix()->MulVertexByInverse(pos);
         // Check if hitting the box
-        auto s = ship->GetBoxsize() * CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
+        auto s = ship->GetBoxsize() * Vector(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
         if (s.x <= 0.0f || s.y <= 0.0f || s.z <= 0.0f)
             continue;
         // Building an ellipsoid
@@ -275,7 +275,7 @@ void SHIP_CAMERA::ShipsCollision(CVECTOR &pos)
     }
 }
 
-bool SHIP_CAMERA::IslandCollision(CVECTOR &pos)
+bool SHIP_CAMERA::IslandCollision(Vector &pos)
 {
     const auto camRadius = 0.4f;
     // Island
@@ -308,7 +308,7 @@ bool SHIP_CAMERA::IslandCollision(CVECTOR &pos)
     float k[5];
     k[0] = mdl->Trace(vCenter, vCenter + dr);
     // Basis
-    auto left = dir ^ CVECTOR(0.0f, 1.0f, 0.0f);
+    auto left = dir ^ Vector(0.0f, 1.0f, 0.0f);
     const auto l = ~left;
     if (l <= 0.0f)
     {
@@ -319,7 +319,7 @@ bool SHIP_CAMERA::IslandCollision(CVECTOR &pos)
     left *= 1.0f / sqrtf(l);
     const auto up = dir ^ left;
     // Find nearest distanse
-    CVECTOR src;
+    Vector src;
     src = vCenter + left * camRadius;
     k[1] = mdl->Trace(src, src + dr);
     src = vCenter - left * camRadius;

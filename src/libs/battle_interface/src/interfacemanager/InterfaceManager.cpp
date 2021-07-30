@@ -2,12 +2,9 @@
 #include "../image/imgrender.h"
 #include "MousePointer.h"
 #include "interfacenode/AllNodes.h"
-
 #include "interfacegroup/SeaGroup.h"
-
 #include "core.h"
 #include "shared/bimanager/messages.h"
-#include "vmodule_api.h"
 
 BI_InterfaceManager::BI_InterfaceManager()
 {

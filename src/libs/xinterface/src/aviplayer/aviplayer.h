@@ -1,5 +1,6 @@
 #pragma once
 
+#include "message.h"
 #include "../base_video.h"
 #include <amstream.h>
 #include <ddraw.h>
@@ -8,7 +9,7 @@
 
 struct XI_AVIVIDEO_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     float w;
     float tu, tv;
 };

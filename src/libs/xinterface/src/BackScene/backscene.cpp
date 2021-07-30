@@ -75,7 +75,7 @@ InterfaceBackScene::MenuDescr::~MenuDescr()
     pPassive = nullptr;
 }
 
-void InterfaceBackScene::MenuDescr::Set(CMatrix *pMtx, const char *pcActiveName, const char *pcPassiveName,
+void InterfaceBackScene::MenuDescr::Set(Matrix *pMtx, const char *pcActiveName, const char *pcPassiveName,
                                         const char *pcEvent, const char *pcPathName, const char *pcTechniqueName)
 {
     if (!pcTechniqueName)
@@ -217,10 +217,10 @@ void InterfaceBackScene::Execute(uint32_t Delta_Time)
 
     if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
     {
-        CMatrix mtx;
-        mtx.BuildMatrix(m_vCamAng);
-        const auto vz = mtx * CVECTOR(0.f, 0.f, 1.f);
-        const auto vx = mtx * CVECTOR(1.f, 0.f, 0.f);
+        Matrix mtx;
+        mtx.Build(m_vCamAng);
+        const auto vz = mtx * Vector(0.f, 0.f, 1.f);
+        const auto vx = mtx * Vector(1.f, 0.f, 0.f);
 
         auto fForwardSpeed = 0.01f * Delta_Time;
         if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
@@ -431,7 +431,7 @@ void InterfaceBackScene::SetCameraPosition(const char *pcLocatorName)
 {
     // FindLocator( pcLocatorName, 0, &m_vCamPos, &m_vCamAng.y );
     Matrix mtx;
-    FindLocator(pcLocatorName, (CMatrix *)&mtx, &m_vCamPos, nullptr);
+    FindLocator(pcLocatorName, (Matrix *)&mtx, &m_vCamPos, nullptr);
     Vector vAddZ;
     mtx.GetAngles(m_vCamAng.x, m_vCamAng.y, m_vCamAng.z);
     vAddZ = mtx.MulNormal(Vector(0.f, 0.f, 1.f));
@@ -457,7 +457,7 @@ void InterfaceBackScene::SetShipPosition(const char *pcLocName, ATTRIBUTES *pACh
         pAAng = pAChar->CreateSubAClass(pAChar, "Ship.Ang");
     Assert(pAAng);
 
-    CVECTOR pos;
+    Vector pos;
     float fYAng;
     if (FindLocator(pcLocName, nullptr, &pos, &fYAng))
     {
@@ -468,7 +468,7 @@ void InterfaceBackScene::SetShipPosition(const char *pcLocName, ATTRIBUTES *pACh
     }
 }
 
-bool InterfaceBackScene::FindLocator(const char *pcLocName, CMatrix *pMtx, CVECTOR *pPos, float *pYAng) const
+bool InterfaceBackScene::FindLocator(const char *pcLocName, Matrix *pMtx, Vector *pPos, float *pYAng) const
 {
     if (!pcLocName || !m_pLocators)
         return false;
@@ -506,7 +506,7 @@ bool InterfaceBackScene::FindLocator(const char *pcLocName, CMatrix *pMtx, CVECT
     return false;
 }
 
-void InterfaceBackScene::SetLocatorPosition(MODEL *pModel, const char *pcLocName, CVECTOR &pos, NODE *&pNodPtr)
+void InterfaceBackScene::SetLocatorPosition(MODEL *pModel, const char *pcLocName, Vector &pos, NODE *&pNodPtr)
 {
     pos = 0.f;
     if (pModel && pcLocName)
@@ -550,7 +550,7 @@ void InterfaceBackScene::CreateMenuList(long nStartIndex, ATTRIBUTES *pAMenu)
         return;
 
     ATTRIBUTES *pA;
-    CMatrix mtx;
+    Matrix mtx;
     const long q = pAMenu->GetAttributesNum();
     for (long n = 0; n < q; n++)
     {
@@ -626,20 +626,19 @@ long InterfaceBackScene::CheckMousePos(float fX, float fY)
     float fRelX = 2.f * fX / fW - 1.f;
     float fRelY = 2.f * fY / fH - 1.f;
 
-    CMatrix mtxProj;
+    Matrix mtxProj;
     m_pRS->GetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&mtxProj);
-    CVECTOR v;
+    Vector v;
     v.x = fRelX / mtxProj.m[0][0];
     v.y = -fRelY / mtxProj.m[1][1];
     v.z = 1.0f;
 
-    CMatrix mtxView;
+    Matrix mtxView;
     m_pRS->GetTransform(D3DTS_VIEW, (D3DXMATRIX *)&mtxView);
-    CVECTOR vDir;
-    mtxView.MulToInvNorm(v, vDir);
+    Vector vDir = mtxView.MulNormalByInverse(v);
     mtxView.Transposition();
-    CVECTOR vStart = mtxView.Pos();
-    CVECTOR vEnd = vStart + vDir * 300.f;
+    Vector vStart = mtxView.pos;
+    Vector vEnd = vStart + vDir * 300.f;
 
     for (long n = 0; n < m_aMenuDescr.size(); n++)
         if (m_aMenuDescr[n]->bSelectable && m_aMenuDescr[n]->pActive &&
@@ -691,9 +690,9 @@ void InterfaceBackScene::InitLight(ATTRIBUTES *pAParam)
     pLight->bUse = pAParam->GetAttributeAsDword("turnon", 0) != 0;
 
     // find transform from locator
-    CMatrix locMtx;
+    Matrix locMtx;
     FindLocator(pAParam->GetAttribute("locator"), &locMtx, nullptr, nullptr);
-    pLight->vLightPos = locMtx.Pos();
+    pLight->vLightPos = locMtx.pos;
 
     // load model
     char *pcFonarModel = pAParam->GetAttribute("model");
@@ -718,7 +717,7 @@ void InterfaceBackScene::InitLight(ATTRIBUTES *pAParam)
                                pLight->pLightSrcNode);
             if (m_aLights.size() > 0 && m_aLights[0]->bUse)
             {
-                CVECTOR vFlarePos = pLight->vLightPos;
+                Vector vFlarePos = pLight->vLightPos;
                 SetLocatorPosition(pLight->pModel, pAParam->GetAttribute("flarelocator"), vFlarePos,
                                    pLight->pLightSrcNode);
                 m_vFlarePos = pLight->pLightSrcNode->glob_mtx * vFlarePos;
@@ -790,9 +789,9 @@ void InterfaceBackScene::RestoreLight()
 
 void InterfaceBackScene::FlareShow(long idx)
 {
-    CVECTOR pos, ang;
+    Vector pos, ang;
     m_pRS->GetCamera(pos, ang, ang.x);
-    CMatrix camMtx;
+    Matrix camMtx;
     m_pRS->GetTransform(D3DTS_VIEW, camMtx);
 
     float dx = m_vFlarePos.x - pos.x;
@@ -826,8 +825,8 @@ void InterfaceBackScene::FlareShow(long idx)
     uint32_t c = uint32_t(alpha); c |= (c << 24) | (c << 16) | (c << 8);*/
     // Angle of rotation
     float cs, sn;
-    float _cs = (dx * camMtx.Vx().z + dz * camMtx.Vz().z);
-    float _sn = (dx * camMtx.Vz().z - dz * camMtx.Vx().z);
+    float _cs = (dx * camMtx.vx.z + dz * camMtx.vz.z);
+    float _sn = (dx * camMtx.vz.z - dz * camMtx.vx.z);
     float kn = _cs * _cs + _sn * _sn;
     if (kn > 0.0f)
     {
@@ -848,15 +847,15 @@ void InterfaceBackScene::FlareShow(long idx)
 
     uint32_t c = m_aLights[idx]->dwFlareColor;
 
-    buffer[0].pos = pos + CVECTOR(m_fFlareSize * (-cs + sn), m_fFlareSize * (sn + cs), 0.0f);
+    buffer[0].pos = pos + Vector(m_fFlareSize * (-cs + sn), m_fFlareSize * (sn + cs), 0.0f);
     buffer[0].color = c;
     buffer[0].u = 0.0f;
     buffer[0].v = 0.0f;
-    buffer[1].pos = pos + CVECTOR(m_fFlareSize * (-cs - sn), m_fFlareSize * (sn - cs), 0.0f);
+    buffer[1].pos = pos + Vector(m_fFlareSize * (-cs - sn), m_fFlareSize * (sn - cs), 0.0f);
     buffer[1].color = c;
     buffer[1].u = 0.0f;
     buffer[1].v = 1.0f;
-    buffer[2].pos = pos + CVECTOR(m_fFlareSize * (cs + sn), m_fFlareSize * (-sn + cs), 0.0f);
+    buffer[2].pos = pos + Vector(m_fFlareSize * (cs + sn), m_fFlareSize * (-sn + cs), 0.0f);
     buffer[2].color = c;
     buffer[2].u = 1.0f;
     buffer[2].v = 0.0f;
@@ -868,12 +867,12 @@ void InterfaceBackScene::FlareShow(long idx)
     buffer[4].color = c;
     buffer[4].u = 0.0f;
     buffer[4].v = 1.0f;
-    buffer[5].pos = pos + CVECTOR(m_fFlareSize * (cs - sn), m_fFlareSize * (-sn - cs), 0.0f);
+    buffer[5].pos = pos + Vector(m_fFlareSize * (cs - sn), m_fFlareSize * (-sn - cs), 0.0f);
     buffer[5].color = c;
     buffer[5].u = 1.0f;
     buffer[5].v = 1.0f;
     m_pRS->TextureSet(0, m_nFlareTexture);
-    CMatrix mtx;
+    Matrix mtx;
     mtx.SetIdentity();
     m_pRS->SetWorld(mtx);
     m_pRS->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, buffer, sizeof(Vertex),
@@ -894,7 +893,7 @@ void InterfaceBackScene::InitAniModel(ATTRIBUTES *pAParam)
         return;
     }
 
-    CMatrix mtx;
+    Matrix mtx;
     if (!FindLocator(pAParam->GetAttribute("locator"), &mtx, nullptr, nullptr))
         mtx.SetIdentity();
 
@@ -945,7 +944,7 @@ void InterfaceBackScene::InitStaticModel(ATTRIBUTES *pAParam)
         return;
     }
 
-    CMatrix mtx;
+    Matrix mtx;
     if (!FindLocator(pAParam->GetAttribute("locator"), &mtx, nullptr, nullptr))
         mtx.SetIdentity();
 
@@ -987,7 +986,7 @@ void InterfaceBackScene::InitStaticModel(ATTRIBUTES *pAParam)
 // ---------------------------------------------------
 // Flies at the lamps
 // ---------------------------------------------------
-void InterfaceBackScene::AddLampFlys(CVECTOR &pos)
+void InterfaceBackScene::AddLampFlys(Vector &pos)
 {
     // resize the array
     if (numFlys >= maxFlys)
@@ -1029,10 +1028,10 @@ void InterfaceBackScene::AddLampFlys(CVECTOR &pos)
 
 void InterfaceBackScene::ProcessedFlys(float dltTime)
 {
-    CMatrix view;
+    Matrix view;
     m_pRS->GetTransform(D3DTS_VIEW, view);
     view.Transposition();
-    const CVECTOR cam = view.Pos();
+    const Vector cam = view.pos;
     const float dax = dltTime * 1.3f;
     const float day = dltTime * 1.4f;
     const float da = dltTime * 5.6f;
@@ -1040,7 +1039,7 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
     for (long i = 0; i < numFlys; i++)
     {
         // Coefficient of visibility
-        CVECTOR dir = cam - flys[i].pos;
+        Vector dir = cam - flys[i].pos;
         float k = ~dir;
         if (k > 400.0f)
             continue;
@@ -1070,7 +1069,7 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
             // Transparency
             f.alpha = k * 255.0f;
             // Colour
-            CVECTOR tmp = f.pos - flys[i].pos;
+            Vector tmp = f.pos - flys[i].pos;
             float dst = sqrtf(~tmp);
             if (dst > 0.0f)
                 tmp *= 1.0f / dst;
@@ -1103,17 +1102,17 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
 void InterfaceBackScene::DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx,
                                        long numU)
 {
-    CMatrix camMtx;
+    Matrix camMtx;
     m_pRS->GetTransform(D3DTS_VIEW, camMtx);
-    m_pRS->SetTransform(D3DTS_VIEW, CMatrix());
-    m_pRS->SetTransform(D3DTS_WORLD, CMatrix());
+    m_pRS->SetTransform(D3DTS_VIEW, Matrix());
+    m_pRS->SetTransform(D3DTS_WORLD, Matrix());
     m_pRS->TextureSet(0, texture);
     long n = 0;
     for (long i = 0; i < num; i++)
     {
         auto *parts = static_cast<Particle *>(prts);
         prts = static_cast<char *>(prts) + size;
-        CVECTOR pos = camMtx * parts->pos;
+        Vector pos = camMtx * parts->pos;
         const float size = parts->size * 0.5f;
         const float sn = sinf(parts->angle);
         const float cs = cosf(parts->angle);
@@ -1130,15 +1129,15 @@ void InterfaceBackScene::DrawParticles(void *prts, long num, long size, long tex
             u1 = static_cast<long>(static_cast<ParticleEx *>(parts)->frame) * u2;
             u2 += u1;
         }
-        buffer[n * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), size * (sn + cs), 0.0f);
+        buffer[n * 6 + 0].pos = pos + Vector(size * (-cs + sn), size * (sn + cs), 0.0f);
         buffer[n * 6 + 0].color = color;
         buffer[n * 6 + 0].u = u1;
         buffer[n * 6 + 0].v = 0.0f;
-        buffer[n * 6 + 1].pos = pos + CVECTOR(size * (-cs - sn), size * (sn - cs), 0.0f);
+        buffer[n * 6 + 1].pos = pos + Vector(size * (-cs - sn), size * (sn - cs), 0.0f);
         buffer[n * 6 + 1].color = color;
         buffer[n * 6 + 1].u = u1;
         buffer[n * 6 + 1].v = 1.0f;
-        buffer[n * 6 + 2].pos = pos + CVECTOR(size * (cs + sn), size * (-sn + cs), 0.0f);
+        buffer[n * 6 + 2].pos = pos + Vector(size * (cs + sn), size * (-sn + cs), 0.0f);
         buffer[n * 6 + 2].color = color;
         buffer[n * 6 + 2].u = u2;
         buffer[n * 6 + 2].v = 0.0f;
@@ -1150,7 +1149,7 @@ void InterfaceBackScene::DrawParticles(void *prts, long num, long size, long tex
         buffer[n * 6 + 4].color = color;
         buffer[n * 6 + 4].u = u1;
         buffer[n * 6 + 4].v = 1.0f;
-        buffer[n * 6 + 5].pos = pos + CVECTOR(size * (cs - sn), size * (-sn - cs), 0.0f);
+        buffer[n * 6 + 5].pos = pos + Vector(size * (cs - sn), size * (-sn - cs), 0.0f);
         buffer[n * 6 + 5].color = color;
         buffer[n * 6 + 5].u = u2;
         buffer[n * 6 + 5].v = 1.0f;

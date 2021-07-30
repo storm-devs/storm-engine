@@ -6,7 +6,6 @@
 #include "Common_Camera.h"
 #include "dx9render.h"
 #include "model.h"
-#include "vmodule_api.h"
 
 #define D3DFVF_VERTEX (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 #define AIM_SIZE 0.05f
@@ -37,11 +36,11 @@ class DECK_CAMERA : public COMMON_CAMERA
     float DEFAULT_HEIGHT;
     //--------------------------------------
 
-    CVECTOR g_gv0, g_gv1, g_gv2;
+    Vector g_gv0, g_gv1, g_gv2;
 
     MODEL *pModel;
     VDX9RENDER *RenderService;
-    CVECTOR camera_pos, camera_ang;
+    Vector camera_pos, camera_ang;
     float h_eye;
     RECT Screen_Rect;
     long lock_x;
@@ -50,10 +49,10 @@ class DECK_CAMERA : public COMMON_CAMERA
     bool bLoad;
     NODE *pathNode;
     void SetStartPos();
-    bool GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p2, CVECTOR &res);
+    bool GetCrossXZ(Vector &spos, Vector &dv, Vector &p1, Vector &p2, Vector &res);
     bool FindPath();
-    void SetViewPoint(CVECTOR &cViewPoint);
-    float MultiTrace(const CVECTOR &cvBase, const CVECTOR &cvDown, float fHBase);
+    void SetViewPoint(Vector &cViewPoint);
+    float MultiTrace(const Vector &cvBase, const Vector &cvDown, float fHBase);
 
   public:
     DECK_CAMERA();

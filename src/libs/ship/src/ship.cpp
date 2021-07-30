@@ -146,9 +146,9 @@ void SHIP::LoadServices()
     FirePlace::eidSound = EntityManager::GetEntityId("sound");
 }
 
-CVECTOR SHIP::ShipRocking(float fDeltaTime)
+Vector SHIP::ShipRocking(float fDeltaTime)
 {
-    CMatrix mat;
+    Matrix mat;
     mat = *GetMatrix();
 
     fDeltaTime = Min(fDeltaTime, 0.1f);
@@ -160,7 +160,7 @@ CVECTOR SHIP::ShipRocking(float fDeltaTime)
 
     auto vAng2 = State.vAng;
 
-    CVECTOR point, fang;
+    Vector point, fang;
     fang.x = 0.0f;
     fang.y = 0.0f;
     fang.z = 0.0f;
@@ -236,10 +236,10 @@ CVECTOR SHIP::ShipRocking(float fDeltaTime)
     return vAng + Min(fRockingAZ * fDelta, 1.0f) * (vAng2 - vAng);
 }
 
-BOOL SHIP::CalculateNewSpeedVector(CVECTOR *Speed, CVECTOR *Rotate)
+BOOL SHIP::CalculateNewSpeedVector(Vector *Speed, Vector *Rotate)
 {
     long i;
-    CVECTOR result(0.0f, 0.0f, 0.0f);
+    Vector result(0.0f, 0.0f, 0.0f);
     for (i = 0; i < RESERVED_STRENGTH; i++)
     {
         *Speed += Strength[i].vSpeed;
@@ -280,7 +280,7 @@ BOOL SHIP::ApplyStrength(float dtime, BOOL bCollision)
     if (State.vRotate.y<-0.1f) State.vRotate.y = -0.1f; */
 
     // calculate new speed,rotate vector
-    auto new_speed = CVECTOR(0.0f, 0.0f, 0.0f), new_rotate = CVECTOR(0.0f, 0.0f, 0.0f);
+    auto new_speed = Vector(0.0f, 0.0f, 0.0f), new_rotate = Vector(0.0f, 0.0f, 0.0f);
 
     CalculateNewSpeedVector(&new_speed, &new_rotate);
     if (bPerkTurnActive)
@@ -541,8 +541,8 @@ void SHIP::Execute(uint32_t DeltaTime)
     // check for end of fast turn perk
     if (bPerkTurnActive)
     {
-        auto vCurDir = CVECTOR(sinf(State.vAng.y), 0.0f, cosf(State.vAng.y));
-        auto vResDir = CVECTOR(sinf(fResultPerkAngle), 0.0f, cosf(fResultPerkAngle));
+        auto vCurDir = Vector(sinf(State.vAng.y), 0.0f, cosf(State.vAng.y));
+        auto vResDir = Vector(sinf(fResultPerkAngle), 0.0f, cosf(fResultPerkAngle));
         if ((vResDir | vCurDir) >= 0.9f)
         {
             bPerkTurnActive = false;
@@ -574,7 +574,7 @@ void SHIP::Execute(uint32_t DeltaTime)
     auto *pAImpulse = GetACharacter()->FindAClass(GetACharacter(), "Ship.Impulse");
     if (pAImpulse && !isDead())
     {
-        CVECTOR vRotate = 0.0f, vXSpeed = 0.0f;
+        Vector vRotate = 0.0f, vXSpeed = 0.0f;
         auto *pARotate = pAImpulse->FindAClass(pAImpulse, "Rotate");
         auto *pASpeed = pAImpulse->FindAClass(pAImpulse, "Speed");
         if (pARotate)
@@ -634,7 +634,7 @@ void SHIP::Execute(uint32_t DeltaTime)
 
     /*if (isDead())
     {
-      CVECTOR vAng2 = ShipRocking(fDeltaTime);
+      Vector vAng2 = ShipRocking(fDeltaTime);
 
       float fScale = Bring2Range(8.0f, 22.0f, -5.0f, 0.0f, vPos.y);
       fMinusVolume += fScale * fDeltaTime * 0.5f;
@@ -747,7 +747,7 @@ void SHIP::Execute(uint32_t DeltaTime)
         CheckShip2Strand(fDeltaTime);
 
     RecalculateWorldOffset();
-    mRoot = CMatrix(vAng.x + vCurDeadDir.x, vAng.y, vAng.z + vCurDeadDir.z, vPos.x + fXOffset,
+    mRoot = Matrix(vAng.x + vCurDeadDir.x, vAng.y, vAng.z + vCurDeadDir.z, vPos.x + fXOffset,
                     vPos.y - State.fShipImmersion - SP.fWaterLine, vPos.z + fZOffset);
     SetMatrix(mRoot);
 
@@ -759,7 +759,7 @@ void SHIP::Execute(uint32_t DeltaTime)
         for (long i = 0; i < iNumMasts; i++)
             if (!pMasts[i].bBroken)
             {
-                CVECTOR v1, v2;
+                Vector v1, v2;
                 VDATA *pV;
                 auto fShipRes = 2.0f, fIslRes = 2.0f;
 
@@ -840,7 +840,7 @@ void SHIP::Execute(uint32_t DeltaTime)
         auto *pATurnID = pASounds->GetAttributeClass("TurnID");
         auto *pASailsID = pASounds->GetAttributeClass("SailsID");
 
-        CMatrix mRotate;
+        Matrix mRotate;
         mRoot.Get3X3(mRotate);
         auto vBoxSize = State.vBoxSize / 2.0f;
 
@@ -851,7 +851,7 @@ void SHIP::Execute(uint32_t DeltaTime)
             auto x = pAWaterID->GetAttributeAsFloat("x", 0.0f);
             auto y = pAWaterID->GetAttributeAsFloat("y", 0.0f);
             auto z = pAWaterID->GetAttributeAsFloat("z", 0.0f);
-            auto vPos = State.vPos + (mRotate * CVECTOR(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
+            auto vPos = State.vPos + (mRotate * Vector(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
             auto fWaterSoundVolume = Min(KNOTS2METERS(fabsf(State.vSpeed.z)), fWaterSpeed) / fWaterSpeed;
             core.Send_Message(FirePlace::eidSound, "llf", MSG_SOUND_SET_VOLUME, iWaterSound, fWaterSoundVolume);
             core.Send_Message(FirePlace::eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iWaterSound, SOUND_PARAM_POSITION,
@@ -865,7 +865,7 @@ void SHIP::Execute(uint32_t DeltaTime)
             auto x = pATurnID->GetAttributeAsFloat("x", 0.0f);
             auto y = pATurnID->GetAttributeAsFloat("y", 0.0f);
             auto z = pATurnID->GetAttributeAsFloat("z", 0.0f);
-            auto vPos = State.vPos + (mRotate * CVECTOR(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
+            auto vPos = State.vPos + (mRotate * Vector(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
             auto fTurnSoundVolume = Min(fabsf(State.vRotate.y), fTurnSpeed) / fTurnSpeed;
             core.Send_Message(FirePlace::eidSound, "llf", MSG_SOUND_SET_VOLUME, iTurnSound, fTurnSoundVolume);
             core.Send_Message(FirePlace::eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iTurnSound, SOUND_PARAM_POSITION,
@@ -878,7 +878,7 @@ void SHIP::Execute(uint32_t DeltaTime)
             auto x = pASailsID->GetAttributeAsFloat("x", 0.0f);
             auto y = pASailsID->GetAttributeAsFloat("y", 0.0f);
             auto z = pASailsID->GetAttributeAsFloat("z", 0.0f);
-            auto vPos = State.vPos + (mRotate * CVECTOR(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
+            auto vPos = State.vPos + (mRotate * Vector(vBoxSize.x * x, vBoxSize.y * y, vBoxSize.z * z));
             core.Send_Message(FirePlace::eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iSailSound, SOUND_PARAM_POSITION,
                               vPos.x + fXOffset, vPos.y, vPos.z + fZOffset);
         }
@@ -987,7 +987,7 @@ void SHIP::MastFall(mast_t *pM)
     }
 }
 
-CMatrix SHIP::UpdateModelMatrix()
+Matrix SHIP::UpdateModelMatrix()
 {
     auto *pModel = GetModel();
     Assert(pModel);
@@ -1026,7 +1026,7 @@ void SHIP::SetLightAndFog(bool bSetLight)
         // ambient
         const auto fScale = Bring2Range(0.0f, 1.0f, -35.0f, 0.0f, State.vPos.y);
         pRS->GetRenderState(D3DRS_AMBIENT, &dwSaveAmbient);
-        const CVECTOR vAmbient = fScale * COLOR2VECTOR(dwSaveAmbient);
+        const Vector vAmbient = fScale * COLOR2VECTOR(dwSaveAmbient);
         pRS->SetRenderState(D3DRS_AMBIENT, ARGB((dwSaveAmbient >> 24L), vAmbient.x, vAmbient.y, vAmbient.z));
 
         // light
@@ -1050,7 +1050,7 @@ void SHIP::SetLightAndFog(bool bSetLight)
         // fog
         const auto fFogScale = Bring2Range(0.0f, 1.0f, -30.0f, 0.0f, State.vPos.y);
         pRS->GetRenderState(D3DRS_FOGCOLOR, &dwSaveFogColor);
-        const CVECTOR vFogColor = fFogScale * COLOR2VECTOR(dwSaveFogColor);
+        const Vector vFogColor = fFogScale * COLOR2VECTOR(dwSaveFogColor);
         pRS->SetRenderState(D3DRS_FOGCOLOR, ARGB((dwSaveFogColor >> 24L), vFogColor.x, vFogColor.y, vFogColor.z));
     }
 }
@@ -1092,8 +1092,8 @@ void SHIP::Realize(uint32_t dtime)
     // draw model
     if (bModelUpperShip && pModelUpperShip)
     {
-        CMatrix m1;
-        m1.BuildMatrix(0.0f, fUpperShipAY, 0.0f, State.vPos.x + fXOffset, State.vPos.y + fUpperShipY,
+        Matrix m1;
+        m1.Build(0.0f, fUpperShipAY, 0.0f, State.vPos.x + fXOffset, State.vPos.y + fUpperShipY,
                        State.vPos.z + fZOffset);
         pModelUpperShip->mtx = m1;
         pModelUpperShip->ProcessStage(Stage::realize, dtime);
@@ -1122,7 +1122,7 @@ void SHIP::UnSetLights()
     }
 }
 
-void SHIP::Fire(const CVECTOR &vPos)
+void SHIP::Fire(const Vector &vPos)
 {
     if (pShipsLights)
     {
@@ -1172,7 +1172,7 @@ long SHIP::AddStrength(STRENGTH *strength)
 uint64_t SHIP::ProcessMessage(MESSAGE &message)
 {
     entid_t entity;
-    CVECTOR cpos, cang;
+    Vector cpos, cang;
     float fov;
     const auto code = message.Long();
 
@@ -1242,7 +1242,7 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
 
         st.bInertia = message.Long() != 0;
 
-        CVECTOR vSpeed;
+        Vector vSpeed;
 
         vSpeed.x = message.Float();
         vSpeed.y = message.Float();
@@ -1326,19 +1326,19 @@ void SHIP::FakeFire(const char *sBort, float fRandTime)
             pNode->geo->GetLabel(i, label);
             if (strcmp(sBort, label.group_name) == 0)
             {
-                CVECTOR vPos, vCurPos, vDir;
-                CMatrix m;
-                CMatrix mNode = pNode->glob_mtx;
-                CMatrix mRot;
+                Vector vPos, vCurPos, vDir;
+                Matrix m;
+                Matrix mNode = pNode->glob_mtx;
+                Matrix mRot;
                 memcpy(m, label.m, sizeof(m));
 
-                vPos = m.Pos();
+                vPos = m.pos;
                 vCurPos = mNode * vPos;
 
                 GetMatrix()->Get3X3(mRot);
-                vDir = CVECTOR(m.Vz().x, 0.0f, m.Vz().z);
+                vDir = Vector(m.vz.x, 0.0f, m.vz.z);
 
-                CVECTOR vDirTemp = mRot * vDir;
+                Vector vDirTemp = mRot * vDir;
                 float fDir = NormalizeAngle(atan2f(vDirTemp.x, vDirTemp.z));
 
                 core.Event("Ship_FakeFire", "ffff", vCurPos.x, vCurPos.y, vCurPos.z, fDir);
@@ -1453,7 +1453,7 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     const entid_t temp_id = GetId();
     core.Send_Message(touch_id, "li", MSG_SHIP_CREATE, temp_id);
     core.Send_Message(sea_id, "lic", MSG_SHIP_CREATE, temp_id,
-                      CVECTOR(State.vPos.x + fXOffset, State.vPos.y, State.vPos.z + fZOffset));
+                      Vector(State.vPos.x + fXOffset, State.vPos.y, State.vPos.z + fZOffset));
 
     GEOS::INFO ginfo;
     MODEL *pModel = GetModel();
@@ -1610,9 +1610,9 @@ void SHIP::CalcRealBoxsize()
         if (!pN)
             break;
         pN->geo->GetInfo(ginfo);
-        CVECTOR vGlobPos = pN->glob_mtx.Pos();
-        const CVECTOR vBC = vGlobPos + CVECTOR(ginfo.boxcenter.x, ginfo.boxcenter.y, ginfo.boxcenter.z);
-        const CVECTOR vBS = CVECTOR(ginfo.boxsize.x, ginfo.boxsize.y, ginfo.boxsize.z) / 2.0f;
+        Vector vGlobPos = pN->glob_mtx.pos;
+        const Vector vBC = vGlobPos + Vector(ginfo.boxcenter.x, ginfo.boxcenter.y, ginfo.boxcenter.z);
+        const Vector vBS = Vector(ginfo.boxsize.x, ginfo.boxsize.y, ginfo.boxsize.z) / 2.0f;
         if (vBC.x - vBS.x < x1)
             x1 = vBC.x - vBS.x;
         if (vBC.x + vBS.x > x2)
@@ -1627,7 +1627,7 @@ void SHIP::CalcRealBoxsize()
             z2 = vBC.z + vBS.z;
     }
 
-    State.vRealBoxSize = CVECTOR(x2 - x1, y2 - y1, z2 - z1);
+    State.vRealBoxSize = Vector(x2 - x1, y2 - y1, z2 - z1);
 }
 
 void SHIP::ScanShipForFirePlaces()
@@ -1695,14 +1695,14 @@ BOOL SHIP::LoadShipParameters()
     return true;
 }
 
-float SHIP::Trace(const CVECTOR &src, const CVECTOR &dst)
+float SHIP::Trace(const Vector &src, const Vector &dst)
 {
     MODEL *pModel = GetModel();
     Assert(pModel);
     return pModel->Trace(src, dst);
 };
 
-float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
+float SHIP::Cannon_Trace(long iBallOwner, const Vector &vSrc, const Vector &vDst)
 {
     MODEL *pModel = GetModel();
     Assert(pModel);
@@ -1719,7 +1719,7 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
 
             if (fRes <= 1.0f)
             {
-                const CVECTOR v1 = vSrc + fRes * (vDst - vSrc);
+                const Vector v1 = vSrc + fRes * (vDst - vSrc);
                 VDATA *pV = core.Event(SHIP_MAST_DAMAGE, "llffffal", SHIP_MAST_TOUCH_BALL, pM->iMastNum, v1.x, v1.y,
                                        v1.z, pM->fDamage, GetACharacter(), iBallOwner);
                 pM->fDamage = Clamp(pV->GetFloat());
@@ -1735,7 +1735,7 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
 
             if (fRes <= 1.0f)
             {
-                const CVECTOR v1 = vSrc + fRes * (vDst - vSrc);
+                const Vector v1 = vSrc + fRes * (vDst - vSrc);
                 VDATA *pV = core.Event(SHIP_HULL_DAMAGE, "llffffaas", SHIP_HULL_TOUCH_BALL, pM->iHullNum, v1.x, v1.y,
                                        v1.z, pM->fDamage, GetACharacter(), iBallOwner, pM->pNode->GetName());
                 pM->fDamage = Clamp(pV->GetFloat());
@@ -1746,8 +1746,8 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
     float fRes = pModel->Trace(vSrc, vDst);
     if (fRes <= 1.0f)
     {
-        CVECTOR vDir = !(vDst - vSrc);
-        CVECTOR vTemp = vSrc + fRes * (vDst - vSrc);
+        Vector vDir = !(vDst - vSrc);
+        Vector vTemp = vSrc + fRes * (vDst - vSrc);
         // search nearest fire place
         float fMinDistance = 1e8f;
         long iBestIndex = -1;
@@ -1773,7 +1773,7 @@ uint32_t SHIP::AttributeChanged(ATTRIBUTES *pAttribute)
     return 0;
 }
 
-CVECTOR SHIP::GetBoxsize() const
+Vector SHIP::GetBoxsize() const
 {
     return State.vBoxSize;
 };
@@ -1788,27 +1788,27 @@ MODEL *SHIP::GetModel() const
     return static_cast<MODEL *>(EntityManager::GetEntityPointer(GetModelEID()));
 }
 
-CMatrix *SHIP::GetMatrix()
+Matrix *SHIP::GetMatrix()
 {
     return &GetModel()->mtx;
 }
 
-void SHIP::SetMatrix(CMatrix &mtx)
+void SHIP::SetMatrix(Matrix &mtx)
 {
     GetModel()->mtx = mtx;
 }
 
-CVECTOR SHIP::GetAng() const
+Vector SHIP::GetAng() const
 {
     return State.vAng;
 }
 
-CVECTOR SHIP::GetPos() const
+Vector SHIP::GetPos() const
 {
-    return CVECTOR(State.vPos.x + fXOffset, State.vPos.y, State.vPos.z + fZOffset);
+    return Vector(State.vPos.x + fXOffset, State.vPos.y, State.vPos.z + fZOffset);
 }
 
-void SHIP::SetPos(const CVECTOR &vNewPos)
+void SHIP::SetPos(const Vector &vNewPos)
 {
     State.vPos = vNewPos;
     if (pSea)
@@ -1881,7 +1881,7 @@ void SHIP::Save(CSaveLoad *pSL)
     pSL->SaveBuffer((const char *)&ShipPoints[0][0], sizeof(ShipPoints));
     pSL->SaveVector(vSpeedAccel);
     pSL->SaveBuffer((const char *)&SP, sizeof(SP));
-    pSL->SaveVector(CVECTOR(vPos.x + fXOffset, vPos.y, vPos.z + fZOffset));
+    pSL->SaveVector(Vector(vPos.x + fXOffset, vPos.y, vPos.z + fZOffset));
     pSL->SaveVector(vAng);
     pSL->SaveFloat(fWaterLine);
     pSL->SaveDword(bDead);

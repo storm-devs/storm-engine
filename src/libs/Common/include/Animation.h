@@ -12,8 +12,8 @@
 
 //============================================================================================
 
-#include "Matrix.h"
 #include "service.h"
+#include "math3d/Matrix.h"
 
 //============================================================================================
 
@@ -185,7 +185,7 @@ class Animation
     // Get the number of bones in a skeleton
     virtual long GetNumBones() const = 0;
     // Get animation matrix for bone
-    virtual CMatrix &GetAnimationMatrix(long iBone) const = 0;
+    virtual Matrix &GetAnimationMatrix(long iBone) const = 0;
     // miscellanea
     // Get custom data for animation
     virtual const char *GetData(const char *dataName) const = 0;

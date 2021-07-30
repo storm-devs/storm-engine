@@ -1,5 +1,6 @@
 #include "xi_video.h"
-#include <stdio.h>
+
+#include "VideoTexture.h"
 
 CXI_VIDEO::CXI_VIDEO()
 {

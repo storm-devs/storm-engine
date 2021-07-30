@@ -1,18 +1,16 @@
 #pragma once
 
 #include "Animation.h"
-#include "Matrix.h"
 #include "geos.h"
 #include "object.h"
-#include "vmodule_api.h"
 
 class NODER;
 
 class NODE
 {
   public:
-    CMatrix loc_mtx;
-    CMatrix glob_mtx;
+    Matrix loc_mtx;
+    Matrix glob_mtx;
 
     enum FLAGS
     {
@@ -49,10 +47,10 @@ class NODE
 
     virtual void SetTechnique(const char *name) = 0;
     virtual const char *GetTechnique() = 0;
-    virtual bool Init(const char *lightPath, const char *pname, const char *oname, const CMatrix &m,
-                      const CMatrix &globm, NODER *par, const char *lmPath) = 0;
+    virtual bool Init(const char *lightPath, const char *pname, const char *oname, const Matrix &m,
+                      const Matrix &globm, NODER *par, const char *lmPath) = 0;
 
-    virtual float Trace(const CVECTOR &src, const CVECTOR &dst) = 0;
+    virtual float Trace(const Vector &src, const Vector &dst) = 0;
 };
 
 class VDX9RENDER;
@@ -104,8 +102,8 @@ class MODEL : public COLLISION_OBJECT
     virtual void Update() = 0;
     virtual Animation *GetAnimation() = 0;
 
-    float Trace(const CVECTOR &src, const CVECTOR &dst) override = 0;
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
+    float Trace(const Vector &src, const Vector &dst) override = 0;
+    bool Clip(const Plane *planes, long nplanes, const Vector &center, float radius,
               ADD_POLYGON_FUNC addpoly) override = 0;
 
     const char *GetCollideMaterialName() override = 0;

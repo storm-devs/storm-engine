@@ -259,7 +259,7 @@ long WdmCloud::FillRain(RS_RECT *rainRect, long rcnt)
 void WdmCloud::Render(VDX9RENDER *rs)
 {
     // Inverse camera matrix
-    CMatrix view;
+    Matrix view;
     rs->GetTransform(D3DTS_VIEW, view);
     view.Transposition();
     // Draw lightning if needed
@@ -276,12 +276,12 @@ void WdmCloud::Render(VDX9RENDER *rs)
                 const auto kFrames = 1.0f / 4.0f;
                 const auto width = 10.0f;
                 const auto u = ((r.dwColor >> 8) & 3) * kFrames;
-                auto &vx = view.Vx();
-                lght[0].pos = r.vPos - vx * width - CVECTOR(0.0f, 3.0f, 0.0f);
+                auto &vx = view.vx;
+                lght[0].pos = r.vPos - vx * width - Vector(0.0f, 3.0f, 0.0f);
                 lght[0].c = lightningColor;
                 lght[0].u = u;
                 lght[0].v = 0.01f;
-                lght[1].pos = r.vPos + vx * width - CVECTOR(0.0f, 3.0f, 0.0f);
+                lght[1].pos = r.vPos + vx * width - Vector(0.0f, 3.0f, 0.0f);
                 lght[1].c = lightningColor;
                 lght[1].u = u + kFrames;
                 lght[1].v = 0.01f;
@@ -309,7 +309,7 @@ void WdmCloud::Render(VDX9RENDER *rs)
     rs->TextureSet(0, texture);
     rs->TextureSet(1, light);
     // Constants
-    CMatrix prj;
+    Matrix prj;
     rs->GetTransform(D3DTS_PROJECTION, prj);
     rs->SetVertexShaderConstantF(0, prj, 4);
     prj.matrix[0] = view.matrix[1];
@@ -358,7 +358,7 @@ void WdmCloud::BuildCloud(long n)
     dir = 0.0f;
 }
 
-void WdmCloud::FindPartPos(CVECTOR &v)
+void WdmCloud::FindPartPos(Vector &v)
 {
     v.x = 20.0f * Rnd();
     v.y = 5.0f * Rnd();

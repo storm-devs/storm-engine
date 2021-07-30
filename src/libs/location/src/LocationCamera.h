@@ -10,10 +10,8 @@
 
 #pragma once
 
-#include "Matrix.h"
 #include "PathTracks.h"
 #include "dx9render.h"
-#include "vmodule_api.h"
 #include <string>
 #include <vector>
 
@@ -93,12 +91,12 @@ class LocationCamera : public Entity
     void ExecuteFree(float dltTime);
 
     // Moving a camera from a given position to a new one
-    bool MoveFollow(CVECTOR &pos, const CVECTOR &cpos, const CVECTOR &to);
+    bool MoveFollow(Vector &pos, const Vector &cpos, const Vector &to);
 
     // Trace the ray through the location
-    float Trace(const CVECTOR &src, const CVECTOR &dst) const;
+    float Trace(const Vector &src, const Vector &dst) const;
     bool GetCollideTriangle(TRIANGLE &trg) const;
-    void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num)) const;
+    void Clip(Plane *p, long numPlanes, Vector &cnt, float rad, bool (*fnc)(const Vector *vtx, long num)) const;
 
   private:
     VDX9RENDER *rs;
@@ -129,8 +127,8 @@ class LocationCamera : public Entity
 
     float dAx, dAy;
 
-    CVECTOR camPos, lookTo;    // Current camera parameters
-    CVECTOR oldPos, oldLookTo; // Last camera position in the previous mode
+    Vector camPos, lookTo;    // Current camera parameters
+    Vector oldPos, oldLookTo; // Last camera position in the previous mode
     float kMorph;              // Current morph ratio
 
     // Models
@@ -140,7 +138,7 @@ class LocationCamera : public Entity
     CameraFollow cf; // Camera following the character
 
     float obstructTime; // Character obstruction time
-    CVECTOR obstruct;   // After
+    Vector obstruct;   // After
 
     float freeAx, freeAy; // Free camera angles
 
@@ -148,11 +146,11 @@ class LocationCamera : public Entity
     bool isTeleport;
 
     // Camera observing the character from a point
-    CVECTOR fromLook;
+    Vector fromLook;
 
     // Temporary values at the time of execution
     Character *character; // Character pointer
-    CVECTOR pos;          // Character position
+    Vector pos;          // Character position
     float chay;           // Character direction
     float lheight;        // Height where to look
     float height;         // Character height
@@ -178,7 +176,7 @@ class LocationCamera : public Entity
 
     void TurnOnDynamicFov(float fSpeed, float fTime, float fRelationMin, float fRelationMax, float fAngSpeed,
                           float fAngMax);
-    void ProcessDynamicFov(float fDeltaTime, const CVECTOR &vFrom, const CVECTOR &vTo, CVECTOR &vUp);
+    void ProcessDynamicFov(float fDeltaTime, const Vector &vFrom, const Vector &vTo, Vector &vUp);
     void StoreRestoreDynamicFov(bool bStore);
 
     // track mode section

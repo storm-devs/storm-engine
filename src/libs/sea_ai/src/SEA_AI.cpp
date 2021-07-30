@@ -138,7 +138,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         y = message.Float();
         z = message.Float();
         ay = message.Float();
-        AIGroup::SetXYZ_AY(cGroupName.c_str(), CVECTOR(x, y, z), ay);
+        AIGroup::SetXYZ_AY(cGroupName.c_str(), Vector(x, y, z), ay);
     }
     break;
     case AI_MESSAGE_SHIP_SET_SAIL_STATE: {
@@ -177,7 +177,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
             }
             else
             {
-                CVECTOR vPos = 0.0f;
+                Vector vPos = 0.0f;
                 vPos.x = message.Float();
                 vPos.z = message.Float();
                 AIShip::ShipSetMove(dwTaskPriority, pCharacter1, vPos);
@@ -206,7 +206,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
     }
     break;
     case AI_MESSAGE_GROUP_SET_TASK: {
-        CVECTOR vPnt;
+        Vector vPnt;
         char cGroupAttackingName[256];
         uint32_t dwCommand = message.Long();
         switch (dwCommand)
@@ -273,7 +273,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         z = message.Float();
         ay = message.Float();
 
-        AIGroup::SailMainGroup(CVECTOR(x, y, z), ay, nullptr);
+        AIGroup::SailMainGroup(Vector(x, y, z), ay, nullptr);
     }
     break;
     case AI_MESSAGE_SAIL_2_CHARACTER: {
@@ -282,7 +282,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         auto fAngle = message.Float();
         auto *pAIShip = AIShip::FindShip(pACharacter);
         Assert(pAIShip);
-        auto vPos = pAIShip->GetPos() + (fDistance * CVECTOR(sinf(fAngle), 0.0f, cosf(fAngle)));
+        auto vPos = pAIShip->GetPos() + (fDistance * Vector(sinf(fAngle), 0.0f, cosf(fAngle)));
 
         AIGroup::SailMainGroup(vPos, -10000.0f, pACharacter);
     }
@@ -324,7 +324,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
 
         auto *pAIShip = AIShip::FindShip(pACharacter);
         Assert(pAIShip);
-        pAIShip->GetCannonController()->CheckCannonsBoom(fTmpCannonDamage, CVECTOR(x, y, z));
+        pAIShip->GetCannonController()->CheckCannonsBoom(fTmpCannonDamage, Vector(x, y, z));
     }
     break;
         // boal 08.08.06 method of recounting guns on the ship -->

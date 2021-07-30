@@ -10,5 +10,5 @@
 #define SEA_COS_TABLE_SIZE 2048
 #define SEA_EXP_TABLE_SIZE 256
 
-extern void GetLineABC(CVECTOR &v1, CVECTOR &v2, float &A, float &B, float &C);
+extern void GetLineABC(Vector &v1, Vector &v2, float &A, float &B, float &C);
 extern void RotateAroundY(float &x, float &y, float cos, float sin);

@@ -263,10 +263,10 @@ void ParticleManager::Execute(float DeltaTime)
         const float x2 = ((220.0f / static_cast<float>(ViewPort.Width)) * 2) - 1.0f;
         const float y1 = 1.0f - ((16.0f / static_cast<float>(ViewPort.Height)) * 2.0f);
         const float y2 = 1.0f - ((150.0f / static_cast<float>(ViewPort.Height)) * 2.0f);
-        spr[0].vPos = CVECTOR(x1, y1, 0.2f);
-        spr[1].vPos = CVECTOR(x2, y1, 0.2f);
-        spr[2].vPos = CVECTOR(x2, y2, 0.2f);
-        spr[3].vPos = CVECTOR(x1, y2, 0.2f);
+        spr[0].vPos = Vector(x1, y1, 0.2f);
+        spr[1].vPos = Vector(x2, y1, 0.2f);
+        spr[2].vPos = Vector(x2, y2, 0.2f);
+        spr[3].vPos = Vector(x1, y2, 0.2f);
         pRS->DrawSprites(spr, 1, "dbgInfoSprite");
 
         /*

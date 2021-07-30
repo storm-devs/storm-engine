@@ -1,7 +1,6 @@
 #include "DataBool.h"
 
 #include "storm_assert.h"
-#include "vmodule_api.h"
 
 #pragma warning(disable : 4800)
 

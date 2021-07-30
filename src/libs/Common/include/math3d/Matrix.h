@@ -226,7 +226,7 @@ class Matrix
     // Project Vertex (for projection matrix)
     Vector4 Projection(Vector vertex, float vphWidth05 = 1.0f, float vphHeight05 = 1.0f) const;
     // Project vertex array (for projection matrix)
-    void Projection(Vector4 *dstArray, Vector *srcArray, long num, float vphWidth05 = 1.0f, float vphHeight05 = 1.0f,
+    void Projection(Vector4 *dstArray, const Vector *srcArray, long num, float vphWidth05 = 1.0f, float vphHeight05 = 1.0f,
                     long srcSize = sizeof(Vector), long dstSize = sizeof(Vector4)) const;
 
     // Get angles from unscaled rotation matrix
@@ -248,6 +248,27 @@ class Matrix
     Vector4 GetVectorZ() const;
     // Get a vector for calculating the W component
     Vector4 GetVectorW() const;
+
+
+	// LEGACY COMPAT
+
+	// Set position without modifying anything else
+    Matrix &SetPosition(float x, float y, float z);
+	Matrix &SetPosition(const Vector& pos);
+
+    // Move(-(pos * this))
+    void MoveInversePosition(float x, float y, float z);
+
+    // Move(-(pos * this))
+    void SetInversePosition(float x, float y, float z);
+
+    // Get 3x3 matrix
+    void Get3X3(Matrix &mtx);
+
+	operator const float *() const
+	{
+		return static_cast<const float *>(matrix);
+	}
 };
 
 // ===========================================================
@@ -1419,7 +1440,7 @@ inline Vector4 Matrix::Projection(Vector vertex, float vphWidth05, float vphHeig
 }
 
 // Project vertex array (for projection matrix)
-inline void Matrix::Projection(Vector4 *dstArray, Vector *srcArray, long num, float vphWidth05, float vphHeight05,
+inline void Matrix::Projection(Vector4 *dstArray, const Vector *srcArray, long num, float vphWidth05, float vphHeight05,
                                long srcSize, long dstSize) const
 {
     for (; num > 0; num--)
@@ -1437,7 +1458,7 @@ inline void Matrix::Projection(Vector4 *dstArray, Vector *srcArray, long num, fl
         dstArray->z *= w;
         dstArray->w = w;
         // Pointers to the next vertices
-        srcArray = (Vector *)((char *)srcArray + srcSize);
+        srcArray = (const Vector *)((char *)srcArray + srcSize);
         dstArray = (Vector4 *)((char *)dstArray + dstSize);
     }
 }
@@ -1506,6 +1527,49 @@ inline Vector4 Matrix::GetVectorZ() const
 inline Vector4 Matrix::GetVectorW() const
 {
     return Vector4(m[0][3], m[1][3], m[2][3], m[3][3]);
+}
+
+inline Matrix &Matrix::SetPosition(float x, float y, float z)
+{
+    m[3][0] = x;
+    m[3][1] = y;
+    m[3][2] = z;
+    return *this;
+}
+
+inline Matrix &Matrix::SetPosition(const Vector &pos)
+{
+    m[3][0] = pos.x;
+    m[3][1] = pos.y;
+    m[3][2] = pos.z;
+    return *this;
+}
+
+inline void Matrix::MoveInversePosition(float x, float y, float z)
+{
+    m[3][0] -= m[0][0] * x + m[1][0] * y + m[2][0] * z;
+    m[3][1] -= m[0][1] * x + m[1][1] * y + m[2][1] * z;
+    m[3][2] -= m[0][2] * x + m[1][2] * y + m[2][2] * z;
+}
+
+inline void Matrix::SetInversePosition(float x, float y, float z)
+{
+    m[3][0] = -(m[0][0] * x + m[1][0] * y + m[2][0] * z);
+    m[3][1] = -(m[0][1] * x + m[1][1] * y + m[2][1] * z);
+    m[3][2] = -(m[0][2] * x + m[1][2] * y + m[2][2] * z);
+}
+
+inline void Matrix::Get3X3(Matrix &mtx)
+{
+    mtx.matrix[0] = matrix[0];
+    mtx.matrix[1] = matrix[1];
+    mtx.matrix[2] = matrix[2];
+    mtx.matrix[4] = matrix[4];
+    mtx.matrix[5] = matrix[5];
+    mtx.matrix[6] = matrix[6];
+    mtx.matrix[8] = matrix[8];
+    mtx.matrix[9] = matrix[9];
+    mtx.matrix[10] = matrix[10];
 }
 
 #pragma pack(pop)

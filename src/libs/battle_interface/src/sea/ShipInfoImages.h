@@ -4,7 +4,7 @@
 
 struct SII_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     float tu, tv;
 };
 
@@ -34,8 +34,8 @@ class ShipInfoImages
     float GetProgressSail(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
     float GetProgressCrew(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
 
-    void CalculateDirectingVectors(const CVECTOR &pos);
-    void WriteSquareVertex(SII_VERTEX *pV, const CVECTOR &center, const CVECTOR &offset, const FPOINT &size,
+    void CalculateDirectingVectors(const Vector &pos);
+    void WriteSquareVertex(SII_VERTEX *pV, const Vector &center, const Vector &offset, const FPOINT &size,
                            const FRECT &uv, float fProgress) const;
 
   protected:
@@ -55,26 +55,26 @@ class ShipInfoImages
     long m_nShipQ;
     long m_nCurMaxQuantity;
 
-    CVECTOR m_vRelationOffset;
+    Vector m_vRelationOffset;
     FPOINT m_fpRelationSize;
     FRECT m_uvRelation[3];
 
-    CVECTOR m_vProgressBackOffset;
+    Vector m_vProgressBackOffset;
     FPOINT m_fpProgressBackSize;
     FRECT m_uvProgressBack;
 
-    CVECTOR m_vHullOffset;
+    Vector m_vHullOffset;
     FRECT m_uvHull;
-    CVECTOR m_vSailOffset;
+    Vector m_vSailOffset;
     FRECT m_uvSail;
-    CVECTOR m_vCrewOffset;
+    Vector m_vCrewOffset;
     FRECT m_uvCrew;
     FPOINT m_fpProgressSize;
 
     SII_VERTEX *m_pVBuffProgress;
     SII_VERTEX *m_pVBuffBackProgress;
     SII_VERTEX *m_pVBuffRelation;
-    CVECTOR m_vUpDir;
-    CVECTOR m_vRightDir;
+    Vector m_vUpDir;
+    Vector m_vRightDir;
     float m_fImgScale;
 };

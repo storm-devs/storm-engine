@@ -22,16 +22,16 @@ LighterLights::LighterLights()
     for (long i = 0; i < maxLights; i++)
         SetDefLightParam(i);
     light[0].type = Light::t_amb;
-    light[0].color = CVECTOR(0.2f, 0.2f, 0.2f);
+    light[0].color = Vector(0.2f, 0.2f, 0.2f);
     light[0].group = nullptr;
     light[0].isOn = false;
     light[1].type = Light::t_sun;
-    light[1].color = CVECTOR(0.9f, 0.9f, 0.6f);
-    light[1].p = !CVECTOR(1.0f, 1.0f, 1.0f);
+    light[1].color = Vector(0.9f, 0.9f, 0.6f);
+    light[1].p = !Vector(1.0f, 1.0f, 1.0f);
     light[1].group = nullptr;
     light[1].isOn = false;
     light[2].type = Light::t_sky;
-    light[2].color = CVECTOR(0.3f, 0.5f, 1.0f);
+    light[2].color = Vector(0.3f, 0.5f, 1.0f);
     light[2].group = nullptr;
     light[2].isOn = false;
 }
@@ -42,13 +42,13 @@ LighterLights::~LighterLights()
         delete light[i].group;
 }
 
-void LighterLights::AddAmbient(const CVECTOR &color)
+void LighterLights::AddAmbient(const Vector &color)
 {
     light[0].color = color;
     light[0].isOn = true;
 }
 
-void LighterLights::AddWeaterLights(const CVECTOR &color, const CVECTOR &dir)
+void LighterLights::AddWeaterLights(const Vector &color, const Vector &dir)
 {
     light[1].color = color;
     if (~dir > 0.0f)
@@ -57,7 +57,7 @@ void LighterLights::AddWeaterLights(const CVECTOR &color, const CVECTOR &dir)
     light[2].isOn = true;
 }
 
-void LighterLights::AddPointLight(const CVECTOR &color, const CVECTOR &pos, float att0, float att1, float att2,
+void LighterLights::AddPointLight(const Vector &color, const Vector &pos, float att0, float att1, float att2,
                                   float range, const char *group)
 {
     if (numLights > maxLights)

@@ -175,12 +175,11 @@ void AIHelper::Print(float x, float y, float fScale, const char *pFormat, ...)
                   static_cast<long>(y), cBuffer);
 }
 
-void AIHelper::Print3D(CVECTOR vPos, float dy, float fScale, const char *pFormat, ...)
+void AIHelper::Print3D(Vector vPos, float dy, float fScale, const char *pFormat, ...)
 {
-    CMatrix mtx, view, prj;
+    Matrix mtx, view, prj;
     char Buff_4k[2048];
     D3DVIEWPORT9 vp;
-    MTX_PRJ_VECTOR vrt;
 
     pRS->GetTransform(D3DTS_VIEW, view);
     pRS->GetTransform(D3DTS_PROJECTION, prj);
@@ -191,8 +190,9 @@ void AIHelper::Print3D(CVECTOR vPos, float dy, float fScale, const char *pFormat
     auto fWidth = vp.Width * 0.5f;
     auto fHeight = vp.Height * 0.5f;
 
-    mtx.Projection(&vPos, &vrt, 1, fWidth, fHeight, sizeof(CVECTOR), sizeof(MTX_PRJ_VECTOR));
-    vPos = CVECTOR(vrt.x, vrt.y, vrt.z);
+    Vector4 vrt;
+    mtx.Projection(&vrt, & vPos, 1, fWidth, fHeight);
+    vPos = Vector(vrt.x, vrt.y, vrt.z);
 
     va_list args;
     va_start(args, pFormat);

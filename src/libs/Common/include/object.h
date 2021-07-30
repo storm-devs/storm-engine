@@ -1,10 +1,15 @@
 #pragma once
 
-#include "Matrix.h"
+#include "math3d/Plane.h"
 #include "dx9render.h"
-#include "triangle.h"
+#include "Entity.h"
 
-using ADD_POLYGON_FUNC = bool (*)(const CVECTOR *v, long nv);
+struct TRIANGLE
+{
+    Vector vrt[3];
+};
+
+using ADD_POLYGON_FUNC = bool (*)(const Vector *v, long nv);
 
 class COLLISION_OBJECT : public Entity
 {
@@ -15,10 +20,10 @@ class COLLISION_OBJECT : public Entity
     }
 
     ~COLLISION_OBJECT() override{};
-    CMatrix mtx;
+    Matrix mtx;
 
-    virtual float Trace(const CVECTOR &src, const CVECTOR &dst) = 0;
-    virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
+    virtual float Trace(const Vector &src, const Vector &dst) = 0;
+    virtual bool Clip(const Plane *planes, long nplanes, const Vector &center, float radius,
                       ADD_POLYGON_FUNC addpoly) = 0;
 
     virtual const char *GetCollideMaterialName() = 0;

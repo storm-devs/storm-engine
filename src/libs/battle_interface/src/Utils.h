@@ -96,7 +96,7 @@ class BIUtils
     static bool ReadPosFromAttr(ATTRIBUTES *pA, const char *name, long &nX, long &nY, long nXDef, long nYDef);
     static long GetAlignmentFromAttr(ATTRIBUTES *pA, const char *name, long nDefAlign);
     static long GetFontIDFromAttr(ATTRIBUTES *pA, const char *name, VDX9RENDER *rs, const char *pcDefFontName);
-    static bool ReadVectorFormAttr(ATTRIBUTES *pA, const char *name, CVECTOR &vOut, const CVECTOR &vDef);
+    static bool ReadVectorFormAttr(ATTRIBUTES *pA, const char *name, Vector &vOut, const Vector &vDef);
 
     static bool ComparePoint(POINT &p1, POINT &p2);
 

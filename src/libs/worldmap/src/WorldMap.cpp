@@ -26,6 +26,7 @@
 #include "WdmWindUI.h"
 #include "defines.h"
 #include "entity.h"
+#include "WdmObjects.h"
 
 CREATE_CLASS(WorldMap)
 
@@ -395,7 +396,7 @@ void WorldMap::Realize(uint32_t delta_time)
 {
     if (AttributesPointer && wdmObjects->playerShip)
     {
-        CVECTOR wind(0.0f);
+        Vector wind(0.0f);
         float x, z, ay;
         wdmObjects->playerShip->GetPosition(x, z, ay);
         const auto force = wdmObjects->GetWind(x, z, wind);
@@ -950,7 +951,7 @@ bool WorldMap::CreateMerchantShip(const char *modelName, const char *locNameStar
     {
         core.Trace("World map: Islands not found");
     }
-    CVECTOR gpos;
+    Vector gpos;
     if (!locNameEnd || !locNameEnd[0])
     {
         if (wdmObjects->islands)

@@ -3,14 +3,14 @@
 // ************************************************************************
 #pragma once
 
-#include "Sea_Base.h"
-#include "cvector4.h"
-#include "dx9render.h"
-
-#include "defines.h"
-
-#include "Intel.h"
 #include <vector>
+
+#include "Sea_Base.h"
+#include "dx9render.h"
+#include "defines.h"
+#include "Intel.h"
+#include "vmodule_api.h"
+
 
 class SEA : public SEA_BASE
 {
@@ -24,8 +24,8 @@ class SEA : public SEA_BASE
 
     struct SeaVertex
     {
-        CVECTOR vPos;
-        CVECTOR vNormal;
+        Vector vPos;
+        Vector vNormal;
         float tu, tv;
     };
 
@@ -55,8 +55,8 @@ class SEA : public SEA_BASE
 
     struct SeaTrash
     {
-        CVECTOR vPos;
-        CVECTOR vSpeed;
+        Vector vPos;
+        Vector vSpeed;
         uint32_t dwSubTexture;
         float fTime;
         float fSize;
@@ -64,8 +64,8 @@ class SEA : public SEA_BASE
 
     struct SeaLight
     {
-        CVECTOR vPos;
-        CVECTOR vSpeed;
+        Vector vPos;
+        Vector vSpeed;
         uint32_t dwSubTexture;
         float fTime;
     };
@@ -78,9 +78,9 @@ class SEA : public SEA_BASE
     float fGridStep;
     float fLodScale;
     float fBumpScale, fBumpSpeed;
-    CVECTOR vMoveSpeed1, vMoveSpeed2;
+    Vector vMoveSpeed1, vMoveSpeed2;
 
-    CVECTOR vCamPos, vSeaCenterPos, vWorldOffset;
+    Vector vCamPos, vSeaCenterPos, vWorldOffset;
 
     static bool bIntel, bSSE, bSeaDebug;
 
@@ -105,7 +105,7 @@ class SEA : public SEA_BASE
     uint32_t *pIndices;
     long iVStart, iTStart, iIStart;
 
-    PLANE *pFrustumPlanes;
+    Plane *pFrustumPlanes;
     uint32_t dwNumFrustumPlanes;
 
     long iSeaTrashTexture;
@@ -122,14 +122,14 @@ class SEA : public SEA_BASE
     std::vector<uint8_t *> aBumps;
     std::vector<SeaBlock> aBlocks;
 
-    CVECTOR4 v4SeaColor, v4SkyColor, v4SeaParameters;
+    Vector4 v4SeaColor, v4SkyColor, v4SeaParameters;
 
     std::vector<IDirect3DTexture9 *> aBumpMaps;
     IDirect3DTexture9 *pRenderTargetBumpMap;
 
     float *pSeaFrame1, *pSeaFrame2, *pSeaNormalsFrame1, *pSeaNormalsFrame2;
 
-    CVECTOR vMove1, vMove2;
+    Vector vMove1, vMove2;
     float fFrame1, fFrame2;
     float fScale1, fScale2;
     float fAmp1, fAmp2;
@@ -143,7 +143,7 @@ class SEA : public SEA_BASE
     long iB1, iB2;
 
     float fFogSeaDensity, fFogStartDistance;
-    CVECTOR vFogColor;
+    Vector vFogColor;
     bool bFogEnable;
 
     bool bTempFullMode;
@@ -153,24 +153,24 @@ class SEA : public SEA_BASE
     float fFoamV, fFoamK, fFoamUV, fFoamTextureDisturb;
     long iFoamTexture;
 
-    CMatrix mTexProjection;
+    Matrix mTexProjection;
 
     void SSE_WaveXZ(SeaVertex **pArray);
-    float WaveXZ(float x, float z, CVECTOR *pNormal = nullptr) override;
+    float WaveXZ(float x, float z, Vector *pNormal = nullptr) override;
 
     void AddBlock(long iTX, long iTY, long iSize, long iLOD);
     void BuildTree(long iTX, long iTY, long iLev);
     void SetBlock(uint32_t dwBlockIndex);
 
-    bool isVisibleBBox(const CVECTOR &vCenter, const CVECTOR &v1, const CVECTOR &v2);
-    void CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, long &iMaxLOD, long &iMinLOD);
+    bool isVisibleBBox(const Vector &vCenter, const Vector &v1, const Vector &v2);
+    void CalculateLOD(const Vector &v1, const Vector &v2, long &iMaxLOD, long &iMinLOD);
     inline float CalcLod(const float &x, const float &y, const float &z);
     void WaveXZBlock(SeaBlock *pB);
     void SSE_WaveXZBlock(SeaBlock *pB);
     SeaBlock *GetUndoneBlock();
     void PrepareIndicesForBlock(uint32_t dwBlockIndex);
 
-    long VisCode(const CVECTOR &vP);
+    long VisCode(const Vector &vP);
 
     void CalculateHeightMap(float fFrame, float fAmplitude, float *pfOut, std::vector<uint8_t *> &aFrames);
     void CalculateNormalMap(float fFrame, float fAmplitude, float *pfOut, std::vector<uint32_t *> &aFrames);
@@ -179,7 +179,7 @@ class SEA : public SEA_BASE
     bool EnvMap_Render2();
     bool SunRoad_Render();
     bool EnvMap_Render();
-    void EnvMap_GetSideMatrix(D3DCUBEMAP_FACES Face, CMatrix &mView);
+    void EnvMap_GetSideMatrix(D3DCUBEMAP_FACES Face, Matrix &mView);
 
     // HyperThreading
     Intel intel;
@@ -203,10 +203,10 @@ class SEA : public SEA_BASE
     void BuildVolumeTexture();
     void Realize(uint32_t dwDeltaTime);
 
-    float Trace(const CVECTOR &vSrc, const CVECTOR &vDst) override;
-    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
+    float Trace(const Vector &vSrc, const Vector &vDst) override;
+    float Cannon_Trace(long iBallOwner, const Vector &src, const Vector &dst) override;
 
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
+    bool Clip(const Plane *planes, long nplanes, const Vector &center, float radius, ADD_POLYGON_FUNC addpoly) override
     {
         return false;
     }

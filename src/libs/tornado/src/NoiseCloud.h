@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "Matrix.h"
 #include "Pillar.h"
 #include "dx9render.h"
 
@@ -29,7 +28,7 @@ class NoiseCloud
 
     struct Vertex
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t color;
         float u, v;
     };

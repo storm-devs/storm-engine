@@ -12,7 +12,6 @@
 
 #include "Animation.h"
 #include "Entity.h"
-#include "vmodule_api.h"
 
 class VDX9RENDER;
 

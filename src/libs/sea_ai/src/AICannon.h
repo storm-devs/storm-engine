@@ -12,12 +12,12 @@ class AICannon
   private:
     AIAttributesHolder *pAHolder;
     entid_t eidParent;       // parent for cannon (ship, or fort entity)
-    CVECTOR vPos, vDir;      // Cannon position and direction(relative to parent)
+    Vector vPos, vDir;      // Cannon position and direction(relative to parent)
     float fTime2Action;      // timeout before action(calculated in script)
     float fTotalTime2Action; // total timeout before action(calculated in script)(unchangeable)
 
     float fSpeedV0; // saved current ball speed
-    CVECTOR vEnemyPos;
+    Vector vEnemyPos;
 
     bool bEmpty;      // is empty cannon(no balls available)
     float fDamaged;   // is cannon damaged(if fDamaged >= 100.0f)
@@ -59,8 +59,8 @@ class AICannon
     };
     VAI_OBJBASE *GetAIObjPointer() const;
 
-    float CalcHeightFireAngle(float _fSpeedV0, const CVECTOR &vOur, const CVECTOR &vEnemy) const;
-    bool Fire(float fSpeedV0, const CVECTOR &vFirePos);
+    float CalcHeightFireAngle(float _fSpeedV0, const Vector &vOur, const Vector &vEnemy) const;
+    bool Fire(float fSpeedV0, const Vector &vFirePos);
     void Load();
     void Unload();
     void Recharge();
@@ -82,11 +82,11 @@ class AICannon
     {
         return fDamaged;
     };
-    CVECTOR GetPos() const;
-    CVECTOR GetDir() const;
+    Vector GetPos() const;
+    Vector GetDir() const;
     float GetDirY() const;
 
-    float GetDistance(CVECTOR &vPos) const
+    float GetDistance(Vector &vPos) const
     {
         return sqrtf(~(vPos - GetPos()));
     };

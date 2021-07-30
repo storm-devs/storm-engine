@@ -184,14 +184,14 @@ GEOS *WdmObjects::CreateGeometry(const char *path)
 
 WdmObjects::Vertex WdmObjects::vertex[1024];
 
-void WdmObjects::DrawCircle(const CVECTOR &pos, float radius, uint32_t color) const
+void WdmObjects::DrawCircle(const Vector &pos, float radius, uint32_t color) const
 {
-    static CMatrix mtx;
+    static Matrix mtx;
     mtx.SetPosition(pos.x, pos.y, pos.z);
     DrawCircle(mtx, radius, color);
 }
 
-void WdmObjects::DrawCircle(CMatrix &mtx, float radius, uint32_t color) const
+void WdmObjects::DrawCircle(Matrix &mtx, float radius, uint32_t color) const
 {
     for (long i = 0; i < 64; i++)
     {
@@ -206,7 +206,7 @@ void WdmObjects::DrawCircle(CMatrix &mtx, float radius, uint32_t color) const
     rs->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, D3DFVF_XYZ | D3DFVF_DIFFUSE, 62, vertex, sizeof(vertex[0]), "WdmDebugDraw");
 }
 
-void WdmObjects::DrawVector(const CVECTOR &start, const CVECTOR &end, uint32_t color) const
+void WdmObjects::DrawVector(const Vector &start, const Vector &end, uint32_t color) const
 {
     auto dir = end - start;
     auto len = ~dir;
@@ -291,52 +291,52 @@ void WdmObjects::DrawVector(const CVECTOR &start, const CVECTOR &end, uint32_t c
     Assert(t * 3 * 6 < sizeof(vertex) / sizeof(Vertex));
     rs->TextureSet(0, -1);
     rs->TextureSet(1, -1);
-    auto yBs = dir ^ CVECTOR(0.0f, 1.0f, 0.0f);
+    auto yBs = dir ^ Vector(0.0f, 1.0f, 0.0f);
     if (~yBs == 0.0f)
     {
-        yBs = dir ^ CVECTOR(1.0f, 0.0f, 0.0f);
+        yBs = dir ^ Vector(1.0f, 0.0f, 0.0f);
         if (~yBs == 0.0f)
-            yBs = dir ^ CVECTOR(0.0f, 0.0f, 1.0f);
+            yBs = dir ^ Vector(0.0f, 0.0f, 1.0f);
         if (~yBs == 0.0f)
             return;
     }
-    CMatrix mtx;
-    mtx.Vx() = yBs ^ dir;
-    mtx.Vy() = yBs;
-    mtx.Vz() = dir;
+    Matrix mtx;
+    mtx.vx = yBs ^ dir;
+    mtx.vy = yBs;
+    mtx.vz = dir;
     mtx.SetPosition(start.x, start.y, start.z);
     rs->SetTransform(D3DTS_WORLD, mtx);
     rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, t, vertex, sizeof(vertex[0]), "WdmDebugDraw");
 }
 
-void WdmObjects::DrawLine(const CVECTOR &start, const CVECTOR &end, uint32_t color) const
+void WdmObjects::DrawLine(const Vector &start, const Vector &end, uint32_t color) const
 {
     vertex[0].v = start;
     vertex[0].c = color;
     vertex[1].v = end;
     vertex[1].c = color;
-    const CMatrix mtx;
+    const Matrix mtx;
     rs->SetTransform(D3DTS_WORLD, mtx);
     rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, 1, vertex, sizeof(vertex[0]), "WdmDebugDraw");
 }
 
-void WdmObjects::DrawBox2D(CMatrix &mtx, float l, float w, uint32_t color) const
+void WdmObjects::DrawBox2D(Matrix &mtx, float l, float w, uint32_t color) const
 {
-    vertex[0].v = CVECTOR(-w, 0.2f, l);
+    vertex[0].v = Vector(-w, 0.2f, l);
     vertex[0].c = color;
-    vertex[1].v = CVECTOR(w, 0.2f, l);
+    vertex[1].v = Vector(w, 0.2f, l);
     vertex[1].c = color;
-    vertex[2].v = CVECTOR(w, 0.2f, l);
+    vertex[2].v = Vector(w, 0.2f, l);
     vertex[2].c = color;
-    vertex[3].v = CVECTOR(w, 0.2f, -l);
+    vertex[3].v = Vector(w, 0.2f, -l);
     vertex[3].c = color;
-    vertex[4].v = CVECTOR(w, 0.2f, -l);
+    vertex[4].v = Vector(w, 0.2f, -l);
     vertex[4].c = color;
-    vertex[5].v = CVECTOR(-w, 0.2f, -l);
+    vertex[5].v = Vector(-w, 0.2f, -l);
     vertex[5].c = color;
-    vertex[6].v = CVECTOR(-w, 0.2f, -l);
+    vertex[6].v = Vector(-w, 0.2f, -l);
     vertex[6].c = color;
-    vertex[7].v = CVECTOR(-w, 0.2f, l);
+    vertex[7].v = Vector(-w, 0.2f, l);
     vertex[7].c = color;
     rs->SetTransform(D3DTS_WORLD, mtx);
     rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, 4, vertex, sizeof(vertex[0]), "WdmDebugDraw");
@@ -353,7 +353,7 @@ void WdmObjects::GetVPSize(float &w, float &h) const
 }
 
 // Get wind direction and strength
-float WdmObjects::GetWind(float x, float z, CVECTOR &dir)
+float WdmObjects::GetWind(float x, float z, Vector &dir)
 {
     windField.GetWind(x, z, dir.x, dir.z);
     dir.y = 0.0f;
@@ -391,7 +391,7 @@ void WdmObjects::UpdateWind(float dltTime)
         float pz = worldSizeZ*(z/(float)size - 0.5f);
         float wx, wz;
         windField.GetWind(px, pz, wx, wz);
-        DrawLine(CVECTOR(px, 1.0f, pz), CVECTOR(px, 1.0f, pz) + CVECTOR(wx, 0.0f, wz)*30.0f, 0xff00ff00);
+        DrawLine(Vector(px, 1.0f, pz), Vector(px, 1.0f, pz) + Vector(wx, 0.0f, wz)*30.0f, 0xff00ff00);
       }
     }
     */

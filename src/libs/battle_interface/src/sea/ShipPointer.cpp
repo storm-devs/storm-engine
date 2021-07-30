@@ -11,7 +11,7 @@
 
 struct SPV_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     float tu, tv;
 };
 
@@ -89,7 +89,7 @@ void SHIPPOINTER::Realize(uint32_t delta_time) const
     if (!m_bVisible)
         return;
 
-    CMatrix matw;
+    Matrix matw;
     rs->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)&matw);
 
     if (m_bFriend)
@@ -139,17 +139,17 @@ void SHIPPOINTER::UpdateShipPointer() const
     auto *pv = static_cast<SPV_VERTEX *>(rs->LockVertexBuffer(m_idVBuf));
     if (pv != nullptr)
     {
-        CVECTOR campos, camang;
+        Vector campos, camang;
         float camper;
         rs->GetCamera(campos, camang, camper);
 
-        auto ourPos = m_pShip->GetPos() + CVECTOR(0.f, m_fShiftTop + m_fShiftAmp * sinf(m_fShiftVal), 0.f);
+        auto ourPos = m_pShip->GetPos() + Vector(0.f, m_fShiftTop + m_fShiftAmp * sinf(m_fShiftVal), 0.f);
         auto k = camper * .05f * sqrtf(~(campos - ourPos));
         if (k < 1.f)
             k = 1.f;
 
-        const auto cvhorz = k * .5f * !((campos - ourPos) ^ CVECTOR(0.f, 1.f, 0.f));
-        const CVECTOR cvvert = k * CVECTOR(0.f, 1.f, 0.f);
+        const auto cvhorz = k * .5f * !((campos - ourPos) ^ Vector(0.f, 1.f, 0.f));
+        const Vector cvvert = k * Vector(0.f, 1.f, 0.f);
 
         ourPos.y += k * 1.0f;
 

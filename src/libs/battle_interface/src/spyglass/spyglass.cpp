@@ -156,7 +156,7 @@ bool ISPYGLASS::Init()
     FillUVArrayFromAttributes(m_aChargeUV, GetAttr("chargeuvarray"));
     FillUVArrayFromAttributes(m_aSailUV, GetAttr("sailuvarray"));
 
-    CVECTOR pos, ang;
+    Vector pos, ang;
     rs->GetCamera(pos, ang, m_Camera.fOldPerspective);
 
     return true;
@@ -432,11 +432,10 @@ void ISPYGLASS::SetShipInfo(long nCharIndex)
 void ISPYGLASS::FindNewTargetShip()
 {
     // get trace ray
-    CMatrix mtxv;
+    Matrix mtxv;
     rs->GetTransform(D3DTS_VIEW, (D3DMATRIX *)&mtxv);
-    CVECTOR src, dst;
-    mtxv.MulToInv(CVECTOR(0.0f, 0.0f, 0.0f), src);
-    mtxv.MulToInv(CVECTOR(0.0f, 0.0f, 10000.f), dst);
+    Vector src = mtxv.MulVertexByInverse(Vector(0.0f, 0.0f, 0.0f));
+    Vector dst = mtxv.MulVertexByInverse(Vector(0.0f, 0.0f, 10000.f));
 
     // find ships
     long nFindedCharIndex = -1;

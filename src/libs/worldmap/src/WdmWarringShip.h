@@ -16,7 +16,7 @@ class WdmWarringShip : public WdmEnemyShip
 {
     struct MoveInfo
     {
-        CVECTOR v;
+        Vector v;
         float dAng;
         float time;
         float kTime;

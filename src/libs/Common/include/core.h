@@ -1,4 +1,5 @@
 #pragma once
+
 #include <windows.h>
 
 // common includes
@@ -10,6 +11,7 @@
 #include "timer.h"
 #include "vdata.h"
 #include "vfile_service.h"
+#include "vmodule_api.h"
 
 #define ENGINE_SCRIPT_VERSION 54128
 

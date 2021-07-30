@@ -1,10 +1,9 @@
 #include "SailorsWayPoints.h"
+
 #include <d3dx9math.h>
 
 #include "core.h"
-
 #include "vfile_service.h"
-#include "vmodule_api.h"
 
 //--------------------------------------------------------------------------------------------------------------
 
@@ -88,7 +87,7 @@ void SailorsPoints::Draw(VDX9RENDER *rs, bool pointmode)
 
     for (auto i = 0; i < points.count; i++)
     {
-        pRSR.vPos = CVECTOR(points.point[i].x, points.point[i].y, points.point[i].z);
+        pRSR.vPos = Vector(points.point[i].x, points.point[i].y, points.point[i].z);
 
         pRSR.fSize = 0.15f;
         if (pointmode)
@@ -110,7 +109,7 @@ void SailorsPoints::Draw(VDX9RENDER *rs, bool pointmode)
     if (points.selected >= 0 && pointmode)
     {
         pRSR.vPos =
-            CVECTOR(points.point[points.selected].x, points.point[points.selected].y, points.point[points.selected].z);
+            Vector(points.point[points.selected].x, points.point[points.selected].y, points.point[points.selected].z);
 
         pRSR.fSize = 0.25f;
         pRSR.dwColor = COLOR_SHADOW;
@@ -125,22 +124,22 @@ void SailorsPoints::Draw(VDX9RENDER *rs, bool pointmode)
 
         rs->DrawRects(&pRSR, 1, "EditorFront");
 
-        //        rs->DrawSphere(CVECTOR(points.point[points.selected].x,points.point[points.selected].y,points.point[points.selected].z),0.5f,0xFFFFFFFF);
+        //        rs->DrawSphere(Vector(points.point[points.selected].x,points.point[points.selected].y,points.point[points.selected].z),0.5f,0xFFFFFFFF);
     }
 
     if (!pointmode)
         return;
 
-    CVECTOR _v2, _v1;
+    Vector _v2, _v1;
     RS_LINE pRSL[2];
 
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
 
     for (auto m = 0; m < links.count; m++)
     {
-        _v1 = CVECTOR(points.point[links.link[m].first].x, points.point[links.link[m].first].y,
+        _v1 = Vector(points.point[links.link[m].first].x, points.point[links.link[m].first].y,
                       points.point[links.link[m].first].z);
-        _v2 = CVECTOR(points.point[links.link[m].next].x, points.point[links.link[m].next].y,
+        _v2 = Vector(points.point[links.link[m].next].x, points.point[links.link[m].next].y,
                       points.point[links.link[m].next].z);
 
         pRSL[0].vPos = _v1;
@@ -170,7 +169,7 @@ void SailorsPoints::Draw_(VDX9RENDER *rs, bool pointmode)
 
     for (auto i = 0; i < points.count; i++)
     {
-        pRSR.vPos = CVECTOR(points.point[i].x, points.point[i].y, points.point[i].z);
+        pRSR.vPos = Vector(points.point[i].x, points.point[i].y, points.point[i].z);
 
         pRSR.fSize = 0.15f;
         pRSR.dwColor = COLOR_SHADOW;
@@ -183,16 +182,16 @@ void SailorsPoints::Draw_(VDX9RENDER *rs, bool pointmode)
         rs->DrawRects(&pRSR, 1, "EditorFront");
     }
 
-    CVECTOR _v2, _v1;
+    Vector _v2, _v1;
     RS_LINE pRSL[2];
 
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
 
     for (auto m = 0; m < links.count; m++)
     {
-        _v1 = CVECTOR(points.point[links.link[m].first].x, points.point[links.link[m].first].y,
+        _v1 = Vector(points.point[links.link[m].first].x, points.point[links.link[m].first].y,
                       points.point[links.link[m].first].z);
-        _v2 = CVECTOR(points.point[links.link[m].next].x, points.point[links.link[m].next].y,
+        _v2 = Vector(points.point[links.link[m].next].x, points.point[links.link[m].next].y,
                       points.point[links.link[m].next].z);
 
         pRSL[0].vPos = _v1;
@@ -213,16 +212,16 @@ void SailorsPoints::Draw_(VDX9RENDER *rs, bool pointmode)
 //--------------------------------------------------------------------------------------------------------------
 void SailorsPoints::DrawLinks(VDX9RENDER *rs)
 {
-    CVECTOR _v2, _v1;
+    Vector _v2, _v1;
     RS_LINE pRSL[2];
 
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
 
     for (auto m = 0; m < links.count; m++)
     {
-        _v1 = CVECTOR(points.point[links.link[m].first].x, points.point[links.link[m].first].y,
+        _v1 = Vector(points.point[links.link[m].first].x, points.point[links.link[m].first].y,
                       points.point[links.link[m].first].z);
-        _v2 = CVECTOR(points.point[links.link[m].next].x, points.point[links.link[m].next].y,
+        _v2 = Vector(points.point[links.link[m].next].x, points.point[links.link[m].next].y,
                       points.point[links.link[m].next].z);
 
         pRSL[0].vPos = _v1;
@@ -338,8 +337,8 @@ void SailorsPoints::UpdateLinks()
                     ((links.link[_l].first == m && links.link[_l].next == i) ||
                      (links.link[_l].first == i && links.link[_l].next == m)))
                 {
-                    matrix[i][m] = Dest(CVECTOR(points.point[i].x, points.point[i].y, points.point[i].z),
-                                        CVECTOR(points.point[m].x, points.point[m].y, points.point[m].z));
+                    matrix[i][m] = Dest(Vector(points.point[i].x, points.point[i].y, points.point[i].z),
+                                        Vector(points.point[m].x, points.point[m].y, points.point[m].z));
                     break;
                 }
 };

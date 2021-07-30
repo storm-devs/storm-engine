@@ -40,7 +40,7 @@ uint64_t EnemyStatShower::ProcessMessage(MESSAGE &message)
 
 bool EnemyStatShower::ReadAndCreate()
 {
-    // BIUtils::ReadVectorFormAttr(AttributesPointer,"pos",m_mtxpos.Pos(),CVECTOR(0.f));
+    // BIUtils::ReadVectorFormAttr(AttributesPointer,"pos",m_mtxpos.pos,Vector(0.f));
     return true;
 }
 

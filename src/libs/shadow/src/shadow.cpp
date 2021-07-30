@@ -76,14 +76,14 @@ bool Shadow::Init()
     return true;
 }
 
-CMatrix trans;
+Matrix trans;
 float perspective, atten_start, atten_end;
 Shadow::SHADOW_VERTEX *shadvert;
 long tot_verts;
-CVECTOR lightPos, ObjPos, objPos;
-CVECTOR camPos;
+Vector lightPos, ObjPos, objPos;
+Vector camPos;
 
-bool AddPoly(const CVECTOR *vr, long nverts)
+bool AddPoly(const Vector *vr, long nverts)
 {
     const auto norm = !((vr[1] - vr[0]) ^ (vr[2] - vr[0]));
 
@@ -152,7 +152,7 @@ void Shadow::Realize(uint32_t Delta_Time)
     auto *node = obj->GetNode(0);
     GEOS::INFO gi;
     node->geo->GetInfo(gi);
-    objPos = obj->mtx.Pos();
+    objPos = obj->mtx.pos;
     ObjPos = objPos;
     objPos.y += gi.radius;
     auto headPos = objPos;
@@ -168,18 +168,18 @@ void Shadow::Realize(uint32_t Delta_Time)
 
     dLight.Position.y = lightPos.y;
 
-    auto light_pos = !CVECTOR(dLight.Direction.x, dLight.Direction.y, dLight.Direction.z);
+    auto light_pos = !Vector(dLight.Direction.x, dLight.Direction.y, dLight.Direction.z);
     if (light_pos.y > -0.6f)
         light_pos.y = -0.6f;
     light_pos = -1000.0f * (!light_pos);
 
     light_pos = objPos - !(objPos - light_pos) * 100.0f;
 
-    CVECTOR dir = !(objPos - light_pos);
+    Vector dir = !(objPos - light_pos);
     lightPos = light_pos;
 
     // check visibility of shadow
-    CMatrix visView, visPoj;
+    Matrix visView, visPoj;
     rs->GetTransform(D3DTS_VIEW, visView);
     camPos.x =
         -visView.m[3][0] * visView.m[0][0] - visView.m[3][1] * visView.m[0][1] - visView.m[3][2] * visView.m[0][2];
@@ -193,9 +193,9 @@ void Shadow::Realize(uint32_t Delta_Time)
 
     const auto its = EntityManager::GetEntityIdIterators(SHADOW);
 
-    CVECTOR hdest = headPos + !(headPos - light_pos) * 100.0f;
+    Vector hdest = headPos + !(headPos - light_pos) * 100.0f;
     float ray = col->Trace(its, headPos, hdest, nullptr, 0);
-    CVECTOR cen;
+    Vector cen;
     float radius;
     if (ray <= 1.0f)
     {
@@ -215,7 +215,7 @@ void Shadow::Realize(uint32_t Delta_Time)
     long p;
     for (p = 0; p < 4; p++)
     {
-        float dist = cen.x * planes[p].Nx + cen.y * planes[p].Ny + cen.z * planes[p].Nz - planes[p].D;
+        float dist = cen.x * planes[p].n.x + cen.y * planes[p].n.y + cen.z * planes[p].n.z - planes[p].D;
         if (dist > radius)
             break;
     }
@@ -227,7 +227,7 @@ void Shadow::Realize(uint32_t Delta_Time)
     float minVal = 0.0f;
     for (long it = 0; it < 10; it++)
     {
-        CVECTOR ps = ObjPos;
+        Vector ps = ObjPos;
         ps.y += gi.radius * 0.111f * static_cast<float>(it);
         if (col->Trace(its, ps, lightPos, nullptr, 0) > 1.0f)
             minVal += 0.1f;
@@ -254,15 +254,15 @@ void Shadow::Realize(uint32_t Delta_Time)
     }
 
     // view matrix-------------------------------------
-    CMatrix lightmtx;
-    lightmtx.BuildViewMatrix(CVECTOR(0.0f, 0.0f, 0.0f), dir, CVECTOR(0.0f, 1.0f, 0.0f));
+    Matrix lightmtx;
+    lightmtx.BuildView(Vector(0.0f, 0.0f, 0.0f), dir, Vector(0.0f, 1.0f, 0.0f));
     lightmtx.SetInversePosition(light_pos.x, light_pos.y, light_pos.z);
     // projection matrix-------------------------------------
-    CMatrix proj;
+    Matrix proj;
     float tanfov = sqrtf(~(objPos - light_pos)) / (1.2f * gi.radius);
     float fov = 2.0f * atanf(1.0f / tanfov);
 
-    proj.BuildProjectionMatrix(fov, TEXTURE_SIZE, TEXTURE_SIZE, 0.1f, 1000.0f);
+    proj.BuildProjection(fov, TEXTURE_SIZE, TEXTURE_SIZE, 0.1f, 1000.0f);
 
     // general params-------------------------------------
     trans = lightmtx;
@@ -276,7 +276,7 @@ void Shadow::Realize(uint32_t Delta_Time)
     //---------------------------------------------------------------
     //---------------------------------------------------------------
     // draw object into shadow texture
-    CMatrix prev_view, prev_proj;
+    Matrix prev_view, prev_proj;
     rs->GetTransform(D3DTS_VIEW, prev_view);
     rs->GetTransform(D3DTS_PROJECTION, prev_proj);
 
@@ -325,18 +325,18 @@ void Shadow::Realize(uint32_t Delta_Time)
 
     // create last plane
     lightmtx.Transposition3X3();
-    CVECTOR pdir = -!CVECTOR(dir.x, 0.0f, dir.z);
-    planes[4].Nx = pdir.x;
-    planes[4].Ny = pdir.y;
-    planes[4].Nz = pdir.z;
+    Vector pdir = -!Vector(dir.x, 0.0f, dir.z);
+    planes[4].n.x = pdir.x;
+    planes[4].n.y = pdir.y;
+    planes[4].n.z = pdir.z;
     planes[4].D = pdir | (objPos + 0.5f * pdir);
-    planes[5].Nx = -pdir.x;
-    planes[5].Ny = -pdir.y;
-    planes[5].Nz = -pdir.z;
+    planes[5].n.x = -pdir.x;
+    planes[5].n.y = -pdir.y;
+    planes[5].n.z = -pdir.z;
     planes[5].D = -pdir | (objPos - 3.5f * pdir);
 
     rs->SetTexture(0, blurTex);
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
 
     float dist = 3.0f * sqrtf(~(cen - camPos));
     shading *= powf(2.71f, -fogDensity * dist);
@@ -362,9 +362,9 @@ void Shadow::Realize(uint32_t Delta_Time)
     rs->SetViewport(&vp);
 }
 
-void Shadow::FindPlanes(const CMatrix &view, const CMatrix &proj)
+void Shadow::FindPlanes(const Matrix &view, const Matrix &proj)
 {
-    CVECTOR v[4];
+    Vector v[4];
     // left
     v[0].x = proj.m[0][0];
     v[0].y = 0.0f;
@@ -386,45 +386,45 @@ void Shadow::FindPlanes(const CMatrix &view, const CMatrix &proj)
     v[2] = !v[2];
     v[3] = !v[3];
 
-    CVECTOR pos;
+    Vector pos;
 
     pos.x = -view.m[3][0] * view.m[0][0] - view.m[3][1] * view.m[0][1] - view.m[3][2] * view.m[0][2];
     pos.y = -view.m[3][0] * view.m[1][0] - view.m[3][1] * view.m[1][1] - view.m[3][2] * view.m[1][2];
     pos.z = -view.m[3][0] * view.m[2][0] - view.m[3][1] * view.m[2][1] - view.m[3][2] * view.m[2][2];
 
-    planes[0].Nx = v[0].x * view.m[0][0] + v[0].y * view.m[0][1] + v[0].z * view.m[0][2];
-    planes[0].Ny = v[0].x * view.m[1][0] + v[0].y * view.m[1][1] + v[0].z * view.m[1][2];
-    planes[0].Nz = v[0].x * view.m[2][0] + v[0].y * view.m[2][1] + v[0].z * view.m[2][2];
+    planes[0].n.x = v[0].x * view.m[0][0] + v[0].y * view.m[0][1] + v[0].z * view.m[0][2];
+    planes[0].n.y = v[0].x * view.m[1][0] + v[0].y * view.m[1][1] + v[0].z * view.m[1][2];
+    planes[0].n.z = v[0].x * view.m[2][0] + v[0].y * view.m[2][1] + v[0].z * view.m[2][2];
 
-    planes[1].Nx = v[1].x * view.m[0][0] + v[1].y * view.m[0][1] + v[1].z * view.m[0][2];
-    planes[1].Ny = v[1].x * view.m[1][0] + v[1].y * view.m[1][1] + v[1].z * view.m[1][2];
-    planes[1].Nz = v[1].x * view.m[2][0] + v[1].y * view.m[2][1] + v[1].z * view.m[2][2];
+    planes[1].n.x = v[1].x * view.m[0][0] + v[1].y * view.m[0][1] + v[1].z * view.m[0][2];
+    planes[1].n.y = v[1].x * view.m[1][0] + v[1].y * view.m[1][1] + v[1].z * view.m[1][2];
+    planes[1].n.z = v[1].x * view.m[2][0] + v[1].y * view.m[2][1] + v[1].z * view.m[2][2];
 
-    planes[2].Nx = v[2].x * view.m[0][0] + v[2].y * view.m[0][1] + v[2].z * view.m[0][2];
-    planes[2].Ny = v[2].x * view.m[1][0] + v[2].y * view.m[1][1] + v[2].z * view.m[1][2];
-    planes[2].Nz = v[2].x * view.m[2][0] + v[2].y * view.m[2][1] + v[2].z * view.m[2][2];
+    planes[2].n.x = v[2].x * view.m[0][0] + v[2].y * view.m[0][1] + v[2].z * view.m[0][2];
+    planes[2].n.y = v[2].x * view.m[1][0] + v[2].y * view.m[1][1] + v[2].z * view.m[1][2];
+    planes[2].n.z = v[2].x * view.m[2][0] + v[2].y * view.m[2][1] + v[2].z * view.m[2][2];
 
-    planes[3].Nx = v[3].x * view.m[0][0] + v[3].y * view.m[0][1] + v[3].z * view.m[0][2];
-    planes[3].Ny = v[3].x * view.m[1][0] + v[3].y * view.m[1][1] + v[3].z * view.m[1][2];
-    planes[3].Nz = v[3].x * view.m[2][0] + v[3].y * view.m[2][1] + v[3].z * view.m[2][2];
+    planes[3].n.x = v[3].x * view.m[0][0] + v[3].y * view.m[0][1] + v[3].z * view.m[0][2];
+    planes[3].n.y = v[3].x * view.m[1][0] + v[3].y * view.m[1][1] + v[3].z * view.m[1][2];
+    planes[3].n.z = v[3].x * view.m[2][0] + v[3].y * view.m[2][1] + v[3].z * view.m[2][2];
 
-    planes[0].Nx = -planes[0].Nx;
-    planes[0].Ny = -planes[0].Ny;
-    planes[0].Nz = -planes[0].Nz;
-    planes[1].Nx = -planes[1].Nx;
-    planes[1].Ny = -planes[1].Ny;
-    planes[1].Nz = -planes[1].Nz;
-    planes[2].Nx = -planes[2].Nx;
-    planes[2].Ny = -planes[2].Ny;
-    planes[2].Nz = -planes[2].Nz;
-    planes[3].Nx = -planes[3].Nx;
-    planes[3].Ny = -planes[3].Ny;
-    planes[3].Nz = -planes[3].Nz;
+    planes[0].n.x = -planes[0].n.x;
+    planes[0].n.y = -planes[0].n.y;
+    planes[0].n.z = -planes[0].n.z;
+    planes[1].n.x = -planes[1].n.x;
+    planes[1].n.y = -planes[1].n.y;
+    planes[1].n.z = -planes[1].n.z;
+    planes[2].n.x = -planes[2].n.x;
+    planes[2].n.y = -planes[2].n.y;
+    planes[2].n.z = -planes[2].n.z;
+    planes[3].n.x = -planes[3].n.x;
+    planes[3].n.y = -planes[3].n.y;
+    planes[3].n.z = -planes[3].n.z;
 
-    planes[0].D = (pos.x * planes[0].Nx + pos.y * planes[0].Ny + pos.z * planes[0].Nz);
-    planes[1].D = (pos.x * planes[1].Nx + pos.y * planes[1].Ny + pos.z * planes[1].Nz);
-    planes[2].D = (pos.x * planes[2].Nx + pos.y * planes[2].Ny + pos.z * planes[2].Nz);
-    planes[3].D = (pos.x * planes[3].Nx + pos.y * planes[3].Ny + pos.z * planes[3].Nz);
+    planes[0].D = (pos.x * planes[0].n.x + pos.y * planes[0].n.y + pos.z * planes[0].n.z);
+    planes[1].D = (pos.x * planes[1].n.x + pos.y * planes[1].n.y + pos.z * planes[1].n.z);
+    planes[2].D = (pos.x * planes[2].n.x + pos.y * planes[2].n.y + pos.z * planes[2].n.z);
+    planes[3].D = (pos.x * planes[3].n.x + pos.y * planes[3].n.y + pos.z * planes[3].n.z);
 }
 
 void Shadow::Smooth()

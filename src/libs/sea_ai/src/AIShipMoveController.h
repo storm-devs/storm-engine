@@ -1,8 +1,6 @@
 #pragma once
 
 #include "AIFlowGraph.h"
-#include "Sd2_h/VAI_ObjBase.h"
-#include "vmodule_api.h"
 
 // ============================================================================
 // master class AIShipMoveController
@@ -18,8 +16,8 @@ class AIShipMoveController
     AIShip *pOurAIShip; // our AI ship pointer
 
     bool bStopped;      // if ship stopped
-    CVECTOR vDestPoint; // destination point
-    CVECTOR vRetardForce, vDeflectForce;
+    Vector vDestPoint; // destination point
+    Vector vRetardForce, vDeflectForce;
 
     float fMoveTime;
 
@@ -34,15 +32,15 @@ class AIShipMoveController
     virtual void Realize(float);
 
     // move to point (major function!!!)
-    virtual void Move(CVECTOR);
+    virtual void Move(Vector);
     // stop moving/rotating
     virtual void Stop(bool _bStopped = true)
     {
         bStopped = _bStopped;
     };
 
-    virtual void AddDeflectForce(CVECTOR _vDeflectForce);
-    virtual void AddRetardForce(CVECTOR _vRetardForce);
+    virtual void AddDeflectForce(Vector _vDeflectForce);
+    virtual void AddRetardForce(Vector _vRetardForce);
 
     virtual bool isStopped()
     {

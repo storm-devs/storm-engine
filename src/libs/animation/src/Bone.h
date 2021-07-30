@@ -12,7 +12,7 @@
 
 //============================================================================================
 
-#include "Matrix.h"
+#include "math3d.h"
 #include "defines.h"
 
 #include <d3dx9.h>
@@ -43,9 +43,9 @@ class Bone
     // Set parent
     void SetParent(Bone *parentBone);
     // how many frames of animation there will be
-    void SetNumFrames(long num, CVECTOR &sPos, bool isRoot = false);
+    void SetNumFrames(long num, Vector &sPos, bool isRoot = false);
     // Set animation positions
-    void SetPositions(const CVECTOR *pArray, long numPos);
+    void SetPositions(const Vector *pArray, long numPos);
     // Set animation angles
     void SetAngles(const D3DXQUATERNION *aArray, long numAng);
     // Initialize start matrix
@@ -63,9 +63,9 @@ class Bone
     // Create matrix for frame 0
     // void BuildMatrixZero();
     // Get position matrix
-    CMatrix &Matrix();
+    Matrix &GetPosMatrix();
     // Get the starting position matrix
-    CMatrix &StartMatrix();
+    Matrix &GetStartMatrix();
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
@@ -87,14 +87,14 @@ class Bone
     D3DXQUATERNION *ang; // Animation frame angles
 #endif
 
-    CVECTOR *pos;   // Animation frame positions
+    Vector *pos;   // Animation frame positions
     long numFrames; // Number of animation frames
-    CVECTOR pos0;   // Bone position if there are no animation frame positions
+    Vector pos0;   // Bone position if there are no animation frame positions
 
-    CVECTOR p;        // Bone position in local coordinates
+    Vector p;        // Bone position in local coordinates
     D3DXQUATERNION a; // Bone rotation angles in local coordinates
-    CMatrix matrix;   // Bone position matrix
-    CMatrix start;    // Frame 0 matrix
+    Matrix matrix;   // Bone position matrix
+    Matrix start;    // Frame 0 matrix
 };
 
 //============================================================================================
@@ -108,13 +108,13 @@ inline void Bone::SetParent(Bone *parentBone)
 }
 
 // Get position matrix
-inline CMatrix &Bone::Matrix()
+inline Matrix &Bone::GetPosMatrix()
 {
     return matrix;
 }
 
 // Get the starting position matrix
-inline CMatrix &Bone::StartMatrix()
+inline Matrix &Bone::GetStartMatrix()
 {
     return start;
 }

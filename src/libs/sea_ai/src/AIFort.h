@@ -26,10 +26,10 @@ class AIFort : public VAI_OBJBASE
                 mTmp.SetIdentity();
             }
 
-            CMatrix mTmp;
+            Matrix mTmp;
             AI_FORT *pFort;
 
-            CMatrix *GetMatrix() override
+            Matrix *GetMatrix() override
             {
                 return &GetModel()->mtx;
             };
@@ -48,19 +48,19 @@ class AIFort : public VAI_OBJBASE
 
             void Load(CSaveLoad *pSL) override{};
 
-            void Fire(const CVECTOR &vPos) override{};
+            void Fire(const Vector &vPos) override{};
 
-            float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override
+            float Cannon_Trace(long iBallOwner, const Vector &src, const Vector &dst) override
             {
                 return 2.0f;
             };
 
-            float Trace(const CVECTOR &vSrc, const CVECTOR &vDst) override
+            float Trace(const Vector &vSrc, const Vector &vDst) override
             {
                 return 2.0f;
             };
 
-            bool Clip(const PLANE *planes, long nplanes, const CVECTOR &vCenter, float radius,
+            bool Clip(const Plane *planes, long nplanes, const Vector &vCenter, float radius,
                       ADD_POLYGON_FUNC addpoly) override
             {
                 return false;
@@ -85,21 +85,21 @@ class AIFort : public VAI_OBJBASE
                 return false;
             }
 
-            void SetPos(const CVECTOR &vNewPos) override
+            void SetPos(const Vector &vNewPos) override
             {
             }
 
-            CVECTOR GetPos() const override
-            {
-                return {};
-            }
-
-            CVECTOR GetAng() const override
+            Vector GetPos() const override
             {
                 return {};
             }
 
-            CVECTOR GetBoxsize() const override
+            Vector GetAng() const override
+            {
+                return {};
+            }
+
+            Vector GetBoxsize() const override
             {
                 return {};
             }
@@ -109,8 +109,8 @@ class AIFort : public VAI_OBJBASE
         entid_t eidBlot;
 
       public:
-        CMatrix mOldMatrix;
-        CVECTOR vPos;
+        Matrix mOldMatrix;
+        Vector vPos;
         ATTRIBUTES *pFortLabelAP;
         TmpVAI_OBJBASE tmpObject;
 
@@ -206,18 +206,18 @@ class AIFort : public VAI_OBJBASE
             vPos.z = pFortLabelAP->GetAttributeAsFloat("z");
         }
 
-        CVECTOR GetPos() const override
+        Vector GetPos() const override
         {
             return vPos;
         };
-        CVECTOR GetAttackPoint(VAI_INNEROBJ *) override;
+        Vector GetAttackPoint(VAI_INNEROBJ *) override;
 
-        CVECTOR GetFollowPoint(VAI_INNEROBJ *) override
+        Vector GetFollowPoint(VAI_INNEROBJ *) override
         {
             return 0.0f;
         };
 
-        CVECTOR GetAbordagePoint(VAI_INNEROBJ *) override
+        Vector GetAbordagePoint(VAI_INNEROBJ *) override
         {
             return 0.0f;
         };
@@ -235,17 +235,17 @@ class AIFort : public VAI_OBJBASE
         void Save(CSaveLoad *pSL);
         void Load(CSaveLoad *pSL, entid_t eid);
 
-        CVECTOR GetAng() const override
+        Vector GetAng() const override
         {
             return {};
         }
 
-        CVECTOR GetBoxsize() const override
+        Vector GetBoxsize() const override
         {
             return {};
         }
 
-        void SetPos(const CVECTOR &vNewPos) override{};
+        void SetPos(const Vector &vNewPos) override{};
 
         void SetAngleY(float fAngleY) override{};
     };
@@ -264,7 +264,7 @@ class AIFort : public VAI_OBJBASE
     }
 
   private:
-    CMatrix mtxFort;
+    Matrix mtxFort;
 
     DTimer dtFiredTimer;
     AI_FORT *pLastTraceFort;
@@ -275,7 +275,7 @@ class AIFort : public VAI_OBJBASE
     // Ships lights
     IShipLights *pShipsLights;
 
-    void AddFortHit(long iCharacterIndex, CVECTOR &vHitPos);
+    void AddFortHit(long iCharacterIndex, Vector &vHitPos);
     float GetSpeedV0(uint32_t dwFortIndex);
     bool ScanFortForCannons(AI_FORT *pFort, char *pModelsDir, char *pLocatorsName) const;
     bool AddFort(ATTRIBUTES *pIslandAP, ATTRIBUTES *pFortAP, ATTRIBUTES *pFortCharacter, entid_t eidModel,
@@ -325,9 +325,9 @@ class AIFort : public VAI_OBJBASE
     uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
 
     // inherit functions COLLISION_OBJECT
-    float Trace(const CVECTOR &vSrc, const CVECTOR &vDst) override;
+    float Trace(const Vector &vSrc, const Vector &vDst) override;
 
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &vCenter, float radius,
+    bool Clip(const Plane *planes, long nplanes, const Vector &vCenter, float radius,
               ADD_POLYGON_FUNC addpoly) override
     {
         return false;
@@ -344,12 +344,12 @@ class AIFort : public VAI_OBJBASE
     };
 
     // inherit functions CANNON_TRACE_BASE
-    float Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst) override;
+    float Cannon_Trace(long iBallOwner, const Vector &vSrc, const Vector &vDst) override;
 
     // inherit functions VAI_OBJBASE
     ATTRIBUTES *GetACharacter() override;
 
-    CMatrix *GetMatrix() override
+    Matrix *GetMatrix() override
     {
         return &mtxFort;
     };
@@ -364,14 +364,14 @@ class AIFort : public VAI_OBJBASE
         return {};
     };
 
-    CVECTOR GetPos() const override
+    Vector GetPos() const override
     {
-        return CVECTOR(0.0f, 0.0f, 0.0f);
+        return Vector(0.0f, 0.0f, 0.0f);
     };
 
-    CVECTOR GetAng() const override
+    Vector GetAng() const override
     {
-        return CVECTOR(0.0f, 0.0f, 0.0f);
+        return Vector(0.0f, 0.0f, 0.0f);
     };
 
     bool Mount(ATTRIBUTES *pAttribute) override;
@@ -379,11 +379,11 @@ class AIFort : public VAI_OBJBASE
     void Save(CSaveLoad *pSL) override;
     void Load(CSaveLoad *pSL) override;
 
-    void Fire(const CVECTOR &vPos) override;
+    void Fire(const Vector &vPos) override;
 
-    void SetPos(const CVECTOR &vNewPos) override{};
+    void SetPos(const Vector &vNewPos) override{};
 
-    CVECTOR GetBoxsize() const override
+    Vector GetBoxsize() const override
     {
         return {};
     }

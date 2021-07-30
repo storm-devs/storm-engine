@@ -10,6 +10,7 @@
 
 #include "WdmShip.h"
 #include "WdmIslands.h"
+#include "WdmObjects.h"
 
 //============================================================================================
 
@@ -76,7 +77,7 @@ bool WdmShip::Load(const char *modelName)
 
 void WdmShip::Teleport(float x, float z, float ay)
 {
-    mtx.BuildMatrix(0.0f, ay, 0.0f, x, 0.0f, z);
+    mtx.Build(0.0f, ay, 0.0f, x, 0.0f, z);
     this->ay = ay;
     for (long i = 0; i < WDM_SHIP_WMSZ; i++)
     {
@@ -89,8 +90,8 @@ void WdmShip::Teleport(float x, float z, float ay)
 
 void WdmShip::GetPosition(float &x, float &z, float &ay) const
 {
-    x = mtx.Pos().x;
-    z = mtx.Pos().z;
+    x = mtx.pos.x;
+    z = mtx.pos.z;
     ay = this->ay;
 }
 
@@ -121,7 +122,7 @@ void WdmShip::ShipUpdate(float dltTime)
     isWMRender = false;
     // Keep the previous position
     const auto oay = ay;
-    auto opos = mtx.Pos();
+    auto opos = mtx.pos;
     // Limiting the speed
     if (speed > WDM_SHIP_MAX_SPEED * kMaxSpeed)
         speed = WDM_SHIP_MAX_SPEED * kMaxSpeed;
@@ -150,15 +151,15 @@ void WdmShip::ShipUpdate(float dltTime)
     if (az < -pi2)
         az += pi2;
     // Coefficient of dependence of speed on wind
-    CVECTOR windDir = 0.0f;
-    auto kWind = wdmObjects->GetWind(mtx.Pos().x, mtx.Pos().z, windDir);
+    Vector windDir = 0.0f;
+    auto kWind = wdmObjects->GetWind(mtx.pos.x, mtx.pos.z, windDir);
     kWind *= (sinf(ay) * windDir.x + cosf(ay) * windDir.z) * 0.5f + 0.5f;
     kWind =
         wdmObjects->shipSpeedOppositeWind + (wdmObjects->shipSpeedOverWind - wdmObjects->shipSpeedOppositeWind) * kWind;
     // Find a new position
-    CVECTOR pos = mtx.Pos();
+    Vector pos = mtx.pos;
     const float dltMove = speed * kWind * dltTime;
-    pos += mtx.Vz() * dltMove + rspeed * dltTime;
+    pos += mtx.vz * dltMove + rspeed * dltTime;
     baseV -= dltMove * 0.04f;
     if (baseV < -1.0f)
         baseV += 1.0f;
@@ -171,14 +172,14 @@ void WdmShip::ShipUpdate(float dltTime)
     rspeed -= k * rspeed;
     slope += (turnspd * speed * (0.5f / WDM_SHIP_MAX_SPEED) - slope) * k;
     // recalculate the matrix
-    mtx.BuildMatrix(0.1f * sinf(ax), ay, 0.1f * sinf(az) + slope, pos.x, 0.0f, pos.z);
+    mtx.Build(0.1f * sinf(ax), ay, 0.1f * sinf(az) + slope, pos.x, 0.0f, pos.z);
     // Collision with the ground
     if (wdmObjects->islands)
     {
         if (wdmObjects->islands->CollisionTest(mtx, modelL05, modelW05))
         {
             collisionCounter++;
-            static CVECTOR moveDir = pos - wdmObjects->islands->centPos;
+            static Vector moveDir = pos - wdmObjects->islands->centPos;
             if (collisionCounter > 10)
             {
                 if (collisionCounter == 11)
@@ -215,7 +216,7 @@ void WdmShip::ShipUpdate(float dltTime)
                 rspeed += pos * (-0.8f) * (k);
                 k = ~rspeed;
 
-                mtx.MulToInvNorm(CVECTOR(pos), pos);
+                pos = mtx.MulNormalByInverse(Vector(pos));
                 turnspd = -1.5f * 2.0f * pos.x * pos.z * (pos.z > 0.0f ? 2.0f : 1.0f);
 
                 // Limiting the kick-back speed
@@ -223,7 +224,7 @@ void WdmShip::ShipUpdate(float dltTime)
                     rspeed *= 5.0f / k;
             }
             // return the ship to the previous position
-            mtx.BuildMatrix(0.1f * sinf(ax), oay, 0.1f * sinf(az) + slope, opos.x, 0.0f, opos.z);
+            mtx.Build(0.1f * sinf(ax), oay, 0.1f * sinf(az) + slope, opos.x, 0.0f, opos.z);
             speed = 0.0f;
             Collide();
         }
@@ -233,14 +234,14 @@ void WdmShip::ShipUpdate(float dltTime)
         }
     }
     // Limiting coordinates
-    if (mtx.Pos().x < -0.5f * wdmObjects->worldSizeX)
-        mtx.Pos().x = -0.5f * wdmObjects->worldSizeX;
-    if (mtx.Pos().x > 0.5f * wdmObjects->worldSizeX)
-        mtx.Pos().x = 0.5f * wdmObjects->worldSizeX;
-    if (mtx.Pos().z < -0.5f * wdmObjects->worldSizeZ)
-        mtx.Pos().z = -0.5f * wdmObjects->worldSizeZ;
-    if (mtx.Pos().z > 0.5f * wdmObjects->worldSizeZ)
-        mtx.Pos().z = 0.5f * wdmObjects->worldSizeZ;
+    if (mtx.pos.x < -0.5f * wdmObjects->worldSizeX)
+        mtx.pos.x = -0.5f * wdmObjects->worldSizeX;
+    if (mtx.pos.x > 0.5f * wdmObjects->worldSizeX)
+        mtx.pos.x = 0.5f * wdmObjects->worldSizeX;
+    if (mtx.pos.z < -0.5f * wdmObjects->worldSizeZ)
+        mtx.pos.z = -0.5f * wdmObjects->worldSizeZ;
+    if (mtx.pos.z > 0.5f * wdmObjects->worldSizeZ)
+        mtx.pos.z = 0.5f * wdmObjects->worldSizeZ;
     // Update trail
     UpdateWaterMark(dltTime);
 }
@@ -261,9 +262,9 @@ void WdmShip::LRender(VDX9RENDER *rs)
         const float y = 0.01f;
         uint32_t color = (static_cast<uint32_t>(al) << 16) | (static_cast<uint32_t>(al) << 8) |
                          (static_cast<uint32_t>(al) << 0) | 0xff000000;
-        vrt[0].x = mtx.Pos().x + (lines[0].x - mtx.Pos().x) * 1.2f;
+        vrt[0].x = mtx.pos.x + (lines[0].x - mtx.pos.x) * 1.2f;
         vrt[0].y = y;
-        vrt[0].z = mtx.Pos().z + (lines[0].z - mtx.Pos().z) * 1.2f;
+        vrt[0].z = mtx.pos.z + (lines[0].z - mtx.pos.z) * 1.2f;
         vrt[0].color = color;
         vrt[0].tu = 0.5f;
         vrt[0].tv = 0.0f;
@@ -297,7 +298,7 @@ void WdmShip::LRender(VDX9RENDER *rs)
         // Textures
         rs->TextureSet(0, wmtexture);
         // Transform
-        static CMatrix identity;
+        static Matrix identity;
         rs->SetTransform(D3DTS_WORLD, identity);
         // Render
         rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, WDM_SHIP_WMSZ * 2 - 1, vrt,
@@ -309,7 +310,7 @@ void WdmShip::LRender(VDX9RENDER *rs)
         // Draw a model
         WdmRenderModel::LRender(rs);
     }
-    // wdmObjects->DrawVector(rs, mtx.Pos(), mtx.Pos() + rspeed, 0xff00ff00);
+    // wdmObjects->DrawVector(rs, mtx.pos, mtx.pos + rspeed, 0xff00ff00);
 }
 
 void WdmShip::UpdateWaterMark(float dltTime)
@@ -323,8 +324,8 @@ void WdmShip::UpdateWaterMark(float dltTime)
         kSpeed = 0.0f;
     if (kSpeed > 0.8f)
         kSpeed = 0.8f;
-    lines[0].x = mtx.Pos().x + sinf(ay) * modelL05 * 0.4f * kSpeed;
-    lines[0].z = mtx.Pos().z + cosf(ay) * modelL05 * 0.4f * kSpeed;
+    lines[0].x = mtx.pos.x + sinf(ay) * modelL05 * 0.4f * kSpeed;
+    lines[0].z = mtx.pos.z + cosf(ay) * modelL05 * 0.4f * kSpeed;
     lines[0].ay = ay;
     lines[0].size = kSpeed * modelW05 * 0.36f;
     float kp = inrtPos * dltTime;
@@ -372,8 +373,8 @@ bool WdmShip::CheckPosition(float x, float z, float objRadius)
             continue;
         if (wdmObjects->ships[i]->killMe)
             continue;
-        const float dx = wdmObjects->ships[i]->mtx.Pos().x - x;
-        const float dz = wdmObjects->ships[i]->mtx.Pos().z - z;
+        const float dx = wdmObjects->ships[i]->mtx.pos.x - x;
+        const float dz = wdmObjects->ships[i]->mtx.pos.z - z;
         if (dx * dx + dz * dz < wdmObjects->ships[i]->modelRadius2)
             return false;
     }

@@ -27,7 +27,7 @@ class SHIP_CAMERA : public COMMON_CAMERA
     float fSensivityDistance, fSensivityAzimuthAngle, fSensivityHeightAngle;
     float fSensivityHeightAngleOnShip;
     float fInvertMouseX, fInvertMouseY;
-    CVECTOR vCenter, vAng;
+    Vector vCenter, vAng;
     float fModelAy;
 
     // long minHeightOnSea,maxHeightOnSea;
@@ -65,8 +65,8 @@ class SHIP_CAMERA : public COMMON_CAMERA
     void SetCharacter(ATTRIBUTES *_pACharacter) override;
 
     uint32_t AttributeChanged(ATTRIBUTES *) override;
-    void ShipsCollision(CVECTOR &pos);
-    bool IslandCollision(CVECTOR &pos);
+    void ShipsCollision(Vector &pos);
+    bool IslandCollision(Vector &pos);
 
   public:
     SHIP_CAMERA();

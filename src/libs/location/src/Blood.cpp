@@ -9,7 +9,7 @@
 
 Blood::ClipTriangle Blood::clipT[MAX_CLIPPING_TRIANGLES];
 long Blood::nClipTQ;
-CVECTOR Blood::normal;
+Vector Blood::normal;
 
 Blood::Blood()
 {
@@ -95,7 +95,7 @@ void Blood::Realize(uint32_t delta_time)
         pRS->SetRenderState(D3DRS_TEXTUREFACTOR, dwAmbient);
 
         pRS->TextureSet(0, texID);
-        CMatrix mtx;
+        Matrix mtx;
         mtx.SetIdentity();
         pRS->SetWorld(mtx);
 
@@ -121,7 +121,7 @@ void Blood::Realize(uint32_t delta_time)
 uint64_t Blood::ProcessMessage(MESSAGE &message)
 {
     entid_t eid;
-    CVECTOR cv;
+    Vector cv;
 
     switch (message.Long())
     {
@@ -140,7 +140,7 @@ uint64_t Blood::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-bool Blood::AddClipPoligon(const CVECTOR *v, long nv)
+bool Blood::AddClipPoligon(const Vector *v, long nv)
 {
     if (nClipTQ >= MAX_CLIPPING_TRIANGLES)
         return false;
@@ -158,10 +158,10 @@ bool Blood::AddClipPoligon(const CVECTOR *v, long nv)
     return true;
 }
 
-void Blood::AddBlood(const CVECTOR &pos)
+void Blood::AddBlood(const Vector &pos)
 {
     nClipTQ = 0;
-    normal = CVECTOR(0.f, 1.f, 0.f);
+    normal = Vector(0.f, 1.f, 0.f);
 
     auto cpos = pos;
 
@@ -197,30 +197,30 @@ void Blood::AddBlood(const CVECTOR &pos)
     }
 
     // Bounding box
-    static PLANE p[6];
-    p[0].Nx = 0.0f;
-    p[0].Ny = 1.0f;
-    p[0].Nz = 0.0f;
+    static Plane p[6];
+    p[0].n.x = 0.0f;
+    p[0].n.y = 1.0f;
+    p[0].n.z = 0.0f;
     p[0].D = (cpos.y + BLOOD_RADIUS);
-    p[1].Nx = 0.0f;
-    p[1].Ny = -1.0f;
-    p[1].Nz = 0.0f;
+    p[1].n.x = 0.0f;
+    p[1].n.y = -1.0f;
+    p[1].n.z = 0.0f;
     p[1].D = -(cpos.y - BLOOD_RADIUS);
-    p[2].Nx = 0.0f;
-    p[2].Ny = 0.0f;
-    p[2].Nz = 1.0f;
+    p[2].n.x = 0.0f;
+    p[2].n.y = 0.0f;
+    p[2].n.z = 1.0f;
     p[2].D = (cpos.z + BLOOD_RADIUS);
-    p[3].Nx = 0.0f;
-    p[3].Ny = 0.0f;
-    p[3].Nz = -1.0f;
+    p[3].n.x = 0.0f;
+    p[3].n.y = 0.0f;
+    p[3].n.z = -1.0f;
     p[3].D = -(cpos.z - BLOOD_RADIUS);
-    p[4].Nx = 1.0f;
-    p[4].Ny = 0.0f;
-    p[4].Nz = 0.0f;
+    p[4].n.x = 1.0f;
+    p[4].n.y = 0.0f;
+    p[4].n.z = 0.0f;
     p[4].D = (cpos.x + BLOOD_RADIUS);
-    p[5].Nx = -1.0f;
-    p[5].Ny = 0.0f;
-    p[5].Nz = 0.0f;
+    p[5].n.x = -1.0f;
+    p[5].n.y = 0.0f;
+    p[5].n.z = 0.0f;
     p[5].D = -(cpos.x - BLOOD_RADIUS);
 
     // loop through the layer
@@ -249,7 +249,7 @@ void Blood::AddBlood(const CVECTOR &pos)
     BuildBloodDataByCollision(cpos);
 }
 
-void Blood::BuildBloodDataByCollision(const CVECTOR &cpos)
+void Blood::BuildBloodDataByCollision(const Vector &cpos)
 {
     if (nClipTQ <= 0)
         return;
@@ -321,7 +321,7 @@ void Blood::BuildBloodDataByCollision(const CVECTOR &cpos)
     }
 }
 
-void Blood::SetVertexByPos(BloodVertex &v, const CVECTOR &pos, const CVECTOR &vc, float fU0, float fV0)
+void Blood::SetVertexByPos(BloodVertex &v, const Vector &pos, const Vector &vc, float fU0, float fV0)
 {
     v.pos = pos;
     v.pos.y += 0.01f;
@@ -342,7 +342,7 @@ void Blood::SetVertexByPos(BloodVertex &v, const CVECTOR &pos, const CVECTOR &vc
     v.v += fV0;
 }
 
-long Blood::CheckBloodQuantityInRadius(const CVECTOR &cpos, float fDist, long nLimitQ)
+long Blood::CheckBloodQuantityInRadius(const Vector &cpos, float fDist, long nLimitQ)
 {
     const auto fDistPow2 = fDist * fDist;
     long nCurQ = 0;

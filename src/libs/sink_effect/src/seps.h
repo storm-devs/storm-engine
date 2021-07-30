@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Matrix.h"
 #include "dx9render.h"
+#include "Entity.h"
 #include "geometry.h"
 #include "vfile_service.h"
-#include "vmodule_api.h"
 
 #define MAX_PS_TEXTURES 8
 #define VERTEXS_ON_PARTICLE 6
@@ -48,7 +47,7 @@ namespace sink_effect
 {
 struct PARTICLE_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
     float tu, tv;
 };
@@ -57,11 +56,11 @@ struct PARTICLE_VERTEX
 
 struct PARTICLE
 {
-    CVECTOR pos;
-    CVECTOR ang;
-    CVECTOR v;
-    CVECTOR chaos;
-    CVECTOR track_dest;
+    Vector pos;
+    Vector ang;
+    Vector v;
+    Vector chaos;
+    Vector track_dest;
 
     float size;
     float weight;
@@ -119,14 +118,14 @@ class SEPS_PS
 
     IDirect3DVertexBuffer9 *VBuffer;
 
-    CVECTOR Camera_EmitterPos;
-    CVECTOR Camera_EmitterPosA;
-    CVECTOR Emitter;
-    CVECTOR EmitterDirection;
+    Vector Camera_EmitterPos;
+    Vector Camera_EmitterPosA;
+    Vector Emitter;
+    Vector EmitterDirection;
     float DirectionDeviation;
     long EmitterIniTime;
 
-    CVECTOR vWindDirection;
+    Vector vWindDirection;
     float fWindPower;
     float fWindEffect;
     float Gravity;
@@ -148,8 +147,8 @@ class SEPS_PS
     long DeltaTimeSLE;  // SinceLastEmission
     bool EmitParticle();
     long nSystemLifeTime;
-    // void  AddTrackPoint(CVECTOR pos);
-    CVECTOR *pFlowTrack;
+    // void  AddTrackPoint(Vector pos);
+    Vector *pFlowTrack;
     uint32_t nFlowTrackSize;
     bool bUseFlowTrack;
     void SetFlowTrack(uint32_t index);
@@ -166,11 +165,11 @@ class SEPS_PS
 
     //---------------------------------
 
-    CVECTOR CameraPos;
-    CVECTOR CameraAng;
+    Vector CameraPos;
+    Vector CameraAng;
     float Perspective;
 
-    CMatrix Matrix;
+    Matrix mtx;
 
     bool bComplete;
 
@@ -184,9 +183,9 @@ class SEPS_PS
     SEPS_PS *r_PTR;
 
     entid_t LinkObject;
-    CVECTOR LinkPos;
-    CVECTOR LinkDir;
-    CVECTOR LinkDirPos;
+    Vector LinkPos;
+    Vector LinkDir;
+    Vector LinkDirPos;
 
     long EmitIndex;
     long EmitTimeDelta;
@@ -206,8 +205,8 @@ class SEPS_PS
 
     float GetTrackValue(sink_effect::TRACK_EVENT *Track, long Time);
     bool BuildTrack(INIFILE *ini, sink_effect::TRACK_EVENT *Track, const char *psname, const char *key_name);
-    void SetEmitter(CVECTOR p, CVECTOR a);
-    void LinkToObject(entid_t id, CVECTOR _LinkPos);
+    void SetEmitter(Vector p, Vector a);
+    void LinkToObject(entid_t id, Vector _LinkPos);
     void SetDelay(long _delay);
     void TryEmitParticle();
 

@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include "vmodule_api.h"
+#include <cstdint>
+
+#include "math3d/Vector.h"
 
 #define TRND_PI 3.141592654f
-
-struct CVECTOR;
 
 class Pillar
 {
@@ -62,7 +62,7 @@ class Pillar
     float X();
     float Z();
 
-    float RandomPos(CVECTOR &pos);
+    float RandomPos(Vector &pos);
 
     void SetGlobalAlpha(float a);
 

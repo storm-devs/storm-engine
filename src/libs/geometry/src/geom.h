@@ -11,6 +11,7 @@ Import library class
 
 #include "Rdf.h"
 #include "geos.h"
+#include "math3d/Vectord.h"
 
 #define EPSILON 4e-7
 
@@ -23,11 +24,11 @@ struct SAVAGE
 class GEOM : public GEOS
 {
     static SAVAGE _stack[256];
-    CVECTOR *vrt;
+    Vector *vrt;
     RDF_BSPTRIANGLE *btrg;
     BSP_NODE *sroot;
 
-    CVECTOR res_norm;
+    Vector res_norm;
     float res_pldist;
     float res_dist;
 
@@ -56,7 +57,7 @@ class GEOM : public GEOS
 
     long *atriangles;
     long traceid;
-    DVECTOR src, dst;
+    Vectord src, dst;
 
   public:
     GEOM(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags);

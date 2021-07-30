@@ -1,16 +1,14 @@
 #pragma once
 
-#include "cvector.h"
 #include "sd2_h/VAI_ObjBase.h"
-#include "vmodule_api.h"
 
 struct SHIP_STATE
 {
-    CVECTOR vPos, vAng;
-    CVECTOR vSpeed, vInert;
-    CVECTOR vRotate, vAngInert;
-    CVECTOR vBoxSize, vRealBoxSize;
-    CVECTOR vInertiaAccel, vInertiaBrake;
+    Vector vPos, vAng;
+    Vector vSpeed, vInert;
+    Vector vRotate, vAngInert;
+    Vector vBoxSize, vRealBoxSize;
+    Vector vInertiaAccel, vInertiaBrake;
 
     float fInertiaFactor, fMassInertia, fWaterResis;
     float fWeight; // current weight of ship in cwt
@@ -25,15 +23,15 @@ struct STRENGTH
 {
     BOOL bUse;       // true if use
     BOOL bInertia;   // inertia(true) or impulse(false)
-    CVECTOR vSpeed;  // speed power
-    CVECTOR vRotate; // rotate power
+    Vector vSpeed;  // speed power
+    Vector vRotate; // rotate power
 };
 
 struct TOUCH_PARAMS
 {
-    CVECTOR vSpeed;  // speed vector
-    CVECTOR vRotate; // rotate speed vector
-    CVECTOR vPos, vAng;
+    Vector vSpeed;  // speed vector
+    Vector vRotate; // rotate speed vector
+    Vector vPos, vAng;
 };
 
 class SHIP_BASE : public VAI_OBJBASE
@@ -51,7 +49,7 @@ class SHIP_BASE : public VAI_OBJBASE
         return pAShip;
     }
 
-    virtual BOOL BuildContour(CVECTOR *vContour, long &iNumVContour) = 0;
+    virtual BOOL BuildContour(Vector *vContour, long &iNumVContour) = 0;
 
     virtual BOOL TouchMove(uint32_t DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew) = 0;
     virtual long AddStrength(STRENGTH *strength) = 0;
@@ -81,7 +79,7 @@ class SHIP_BASE : public VAI_OBJBASE
     // set ship lights
     virtual void SetLights() = 0;
     virtual void UnSetLights() = 0;
-    void Fire(const CVECTOR &vPos) override = 0;
+    void Fire(const Vector &vPos) override = 0;
 
     virtual void SetFixedSpeed(bool bSetFixed, float fFixedSpeed) = 0;
 };

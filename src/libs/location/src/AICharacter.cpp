@@ -69,7 +69,7 @@ void AICharacter::Calculate(float dltTime)
 {
     auto *const location = GetLocation();
     CalcRepulsionForces();
-    CVECTOR slideForce;
+    Vector slideForce;
     location->GetPtcData().FindForce(currentNode, slideForce);
     // restrict the vector
     auto l = ~separation;
@@ -99,17 +99,17 @@ void AICharacter::Calculate(float dltTime)
 
     if (location->IsDebugView())
     {
-        location->DrawLine(curPos + CVECTOR(0, 0.01f, 0), 0xff0000ff, curPos + goForce + CVECTOR(0, 0.01f, 0),
+        location->DrawLine(curPos + Vector(0, 0.01f, 0), 0xff0000ff, curPos + goForce + Vector(0, 0.01f, 0),
                            0xff0000ff, false);
-        location->DrawLine(curPos + CVECTOR(0, 0.02f, 0), 0xffff0000, curPos + separation + CVECTOR(0, 0.02f, 0),
+        location->DrawLine(curPos + Vector(0, 0.02f, 0), 0xffff0000, curPos + separation + Vector(0, 0.02f, 0),
                            0xffff0000, false);
-        location->DrawLine(curPos + CVECTOR(0, 0.03f, 0), 0xff00ff00, curPos + alignment + CVECTOR(0, 0.03f, 0),
+        location->DrawLine(curPos + Vector(0, 0.03f, 0), 0xff00ff00, curPos + alignment + Vector(0, 0.03f, 0),
                            0xff00ff00, false);
-        location->DrawLine(curPos + CVECTOR(0, 0.04f, 0), 0xffffff00, curPos + around + CVECTOR(0, 0.04f, 0),
+        location->DrawLine(curPos + Vector(0, 0.04f, 0), 0xffffff00, curPos + around + Vector(0, 0.04f, 0),
                            0xffffff00, false);
-        location->DrawLine(curPos + CVECTOR(0, 0.1f, 0), 0xffffffff, curPos + force + CVECTOR(0, 0.1f, 0), 0xffffffff,
+        location->DrawLine(curPos + Vector(0, 0.1f, 0), 0xffffffff, curPos + force + Vector(0, 0.1f, 0), 0xffffffff,
                            false);
-        location->DrawLine(curPos + CVECTOR(0, 0.1f, 0), 0xff00ffff, curPos + slideForce + CVECTOR(0, 0.1f, 0),
+        location->DrawLine(curPos + Vector(0, 0.1f, 0), 0xff00ffff, curPos + slideForce + Vector(0, 0.1f, 0),
                            0xffffffff, false);
     }
 
@@ -188,11 +188,11 @@ bool AICharacter::CmdGotoPoint(float x, float y, float z, float rad, long node, 
     if (currentNode < 0)
         return false;
     if (node < 0)
-        node = FindNodeIndex(CVECTOR(x, y, z), &y);
+        node = FindNodeIndex(Vector(x, y, z), &y);
     if (node < 0)
         return false;
     command.cmd = aicmd_gotopoint;
-    command.pnt = CVECTOR(x, y, z);
+    command.pnt = Vector(x, y, z);
     command.node = node;
     command.tpnt = curPos;
     command.tnode = currentNode;
@@ -212,7 +212,7 @@ bool AICharacter::CmdEscape(float x, float y, float z, float rad)
     if (bMusketer && bMusketerNoMove)
         return true;
     command.cmd = aicmd_escape;
-    command.pnt = CVECTOR(x, y, z);
+    command.pnt = Vector(x, y, z);
     command.node = -1;
     command.radius = rad;
     command.waitTime = 0.0f;
@@ -302,7 +302,7 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
         uint32_t color = static_cast<long>(dist);
         color |= (255 - color) << 16;
         color |= 0xff00ff00;
-        location->DrawLine(command.pnt + CVECTOR(0, 0.01f, 0), color, command.pnt + CVECTOR(0, 3.01f, 0), color, false);
+        location->DrawLine(command.pnt + Vector(0, 0.01f, 0), color, command.pnt + Vector(0, 3.01f, 0), color, false);
     }
     // Slow down in front of the locator
     if (d < 1.5f * 1.5f)
@@ -345,7 +345,7 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
         }
     }
     if (location->IsDebugView())
-        location->DrawLine(command.tpnt, 0xffff0000, command.tpnt + CVECTOR(0.0f, 3.0f, 0.0f), 0xff00ff00, false);
+        location->DrawLine(command.tpnt, 0xffff0000, command.tpnt + Vector(0.0f, 3.0f, 0.0f), 0xff00ff00, false);
 }
 
 void AICharacter::CmdUpdateGotoPoint(float dltTime)
@@ -459,7 +459,7 @@ void AICharacter::CmdUpdateEscape(float dltTime)
 //--------------------------------------------------------------------------------------------
 
 // Find the node index for a given coordinate
-long AICharacter::FindNodeIndex(const CVECTOR &pos, float *hy)
+long AICharacter::FindNodeIndex(const Vector &pos, float *hy)
 {
     auto *const location = GetLocation();
     float yy;
@@ -475,15 +475,15 @@ bool AICharacter::FindDirectional()
     if (command.tnode < 0 || command.node < 0)
         return false;
     auto *const location = GetLocation();
-    if (!location->GetPtcData().FindPathDir(command.tnode, CVECTOR(command.tpnt), command.node, command.pnt,
+    if (!location->GetPtcData().FindPathDir(command.tnode, Vector(command.tpnt), command.node, command.pnt,
                                             command.tnode, command.tpnt))
         return false;
     if (location->IsDebugView())
     {
         for (long i = 0; i < location->GetPtcData().numSteps; i++)
         {
-            location->DrawLine(location->GetPtcData().stepPos[i] + CVECTOR(0, 0.01f, 0), 0xffff00ff,
-                               location->GetPtcData().stepPos[i] + CVECTOR(0, 2.01f, 0), 0xff2f80ff, false);
+            location->DrawLine(location->GetPtcData().stepPos[i] + Vector(0, 0.01f, 0), 0xffff00ff,
+                               location->GetPtcData().stepPos[i] + Vector(0, 2.01f, 0), 0xff2f80ff, false);
         }
     }
     return true;
@@ -545,8 +545,8 @@ void AICharacter::CalcRepulsionForces()
 }
 
 // Calculate the point formed by the intersection and lying on the edge
-bool AICharacter::FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVECTOR &cur, const CVECTOR &to,
-                                   CVECTOR &res)
+bool AICharacter::FindIntersection(const Vector &s, const Vector &e, const Vector &cur, const Vector &to,
+                                   Vector &res)
 {
     const auto deX = e.x - s.x;
     const auto deZ = e.z - s.z;

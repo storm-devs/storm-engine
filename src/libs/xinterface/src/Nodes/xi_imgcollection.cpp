@@ -220,25 +220,25 @@ void CXI_IMGCOLLECTION::SetBuffers(XI_ONETEX_VERTEX *pVBuf, uint16_t *pIBuf, int
     pIBuf += rectNum * 6;
 
     // left top point
-    pVBuf->pos = CVECTOR(static_cast<float>(scrRect.left), static_cast<float>(scrRect.top), 1.f);
+    pVBuf->pos = Vector(static_cast<float>(scrRect.left), static_cast<float>(scrRect.top), 1.f);
     pVBuf->tu = texRect.left;
     pVBuf->tv = texRect.top;
     pVBuf->color = dwColor;
     pVBuf++;
     // right top point
-    pVBuf->pos = CVECTOR(static_cast<float>(scrRect.right), static_cast<float>(scrRect.top), 1.f);
+    pVBuf->pos = Vector(static_cast<float>(scrRect.right), static_cast<float>(scrRect.top), 1.f);
     pVBuf->tu = texRect.right;
     pVBuf->tv = texRect.top;
     pVBuf->color = dwColor;
     pVBuf++;
     // left bottom point
-    pVBuf->pos = CVECTOR(static_cast<float>(scrRect.left), static_cast<float>(scrRect.bottom), 1.f);
+    pVBuf->pos = Vector(static_cast<float>(scrRect.left), static_cast<float>(scrRect.bottom), 1.f);
     pVBuf->tu = texRect.left;
     pVBuf->tv = texRect.bottom;
     pVBuf->color = dwColor;
     pVBuf++;
     // right bottom point
-    pVBuf->pos = CVECTOR(static_cast<float>(scrRect.right), static_cast<float>(scrRect.bottom), 1.f);
+    pVBuf->pos = Vector(static_cast<float>(scrRect.right), static_cast<float>(scrRect.bottom), 1.f);
     pVBuf->tu = texRect.right;
     pVBuf->tv = texRect.bottom;
     pVBuf->color = dwColor;

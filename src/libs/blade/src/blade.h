@@ -12,6 +12,7 @@ model binded to an animated locator
 #include "collide.h"
 #include "dx9render.h"
 #include "model.h"
+#include "math3d.h"
 
 #define BLADE_INFO_QUANTITY 2
 #define ITEMS_INFO_QUANTITY 10
@@ -22,7 +23,7 @@ class BLADE : public Entity
 
     struct VERTEX
     {
-        CVECTOR pos;
+        Vector4 pos;
         unsigned long diffuse;
     };
 

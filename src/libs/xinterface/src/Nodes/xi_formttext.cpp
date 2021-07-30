@@ -3,7 +3,7 @@
 #include "Entity.h"
 #include "utf8.h"
 #include "xi_scroller.h"
-#include <stdio.h>
+#include "VideoTexture.h"
 
 static void SubRightWord(char *buf, int fontNum, int width, VDX9RENDER *rs)
 {

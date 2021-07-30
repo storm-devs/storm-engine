@@ -1,7 +1,6 @@
 #pragma once
 
 #include "dtimer.h"
-#include "vmodule_api.h"
 
 class AIShip;
 
@@ -20,7 +19,7 @@ class AIShipTouchController
     float fLeftRaysFree, fRightRaysFree; //
     float fRaySize;                      // ray size
     float fSpeedFactor, fRotateFactor;
-    CVECTOR vBox[5];
+    Vector vBox[5];
 
   public:
     virtual void TestCollision(AIShip *pOtherShip);
@@ -32,8 +31,8 @@ class AIShipTouchController
 
     //
     float GetBestRotateDirection();
-    CVECTOR *GetPentagonBox();
-    bool isCollision2D(const CVECTOR &vSrc, const CVECTOR &vDst);
+    Vector *GetPentagonBox();
+    bool isCollision2D(const Vector &vSrc, const Vector &vDst);
 
     // get/set our ship pointer
     void SetAIShip(AIShip *pShip)

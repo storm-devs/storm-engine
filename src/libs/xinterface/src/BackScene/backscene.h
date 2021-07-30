@@ -2,12 +2,11 @@
 
 #include "../xdefines.h"
 #include "Entity.h"
-#include "Matrix.h"
 #include "dx9render.h"
 
 class MODEL;
 class NODE;
-class CMatrix;
+class Matrix;
 
 class InterfaceBackScene : public Entity
 {
@@ -36,7 +35,7 @@ class InterfaceBackScene : public Entity
         MODEL *pModel;
         entid_t eiModel;
 
-        CVECTOR vLightPos;
+        Vector vLightPos;
         NODE *pLightSrcNode;
 
         LightParam()
@@ -86,8 +85,8 @@ class InterfaceBackScene : public Entity
     MODEL *m_pLocators;
 
     FXYPOINT m_pntOldMouse;
-    CVECTOR m_vCamPos;
-    CVECTOR m_vCamAng;
+    Vector m_vCamPos;
+    Vector m_vCamAng;
     float m_fCamPerspective;
 
     std::vector<LightParam *> m_aLights;
@@ -109,7 +108,7 @@ class InterfaceBackScene : public Entity
         }
 
         ~MenuDescr();
-        void Set(CMatrix *pMtx, const char *pcActiveName, const char *pcPassiveName, const char *pcEvent,
+        void Set(Matrix *pMtx, const char *pcActiveName, const char *pcPassiveName, const char *pcEvent,
                  const char *pcPathName, const char *pcTechniqueName);
     };
 
@@ -120,8 +119,8 @@ class InterfaceBackScene : public Entity
     void SetCameraPosition(const char *pcLocatorName);
     void SetShipPosition(const char *pcLocName, ATTRIBUTES *pAChar) const;
 
-    bool FindLocator(const char *pcLocName, CMatrix *pMtx, CVECTOR *pPos, float *pYAng) const;
-    void SetLocatorPosition(MODEL *pModel, const char *pcLocName, CVECTOR &pos, NODE *&pNodPtr);
+    bool FindLocator(const char *pcLocName, Matrix *pMtx, Vector *pPos, float *pYAng) const;
+    void SetLocatorPosition(MODEL *pModel, const char *pcLocName, Vector &pos, NODE *&pNodPtr);
 
     void ReleaseMenuList();
     void CreateMenuList(long nStartIndex, ATTRIBUTES *pAMenu);
@@ -167,7 +166,7 @@ class InterfaceBackScene : public Entity
     // a fly is a migratory bird!
     struct Particle
     {
-        CVECTOR pos;
+        Vector pos;
         float angle;
         float size;
         float alpha;
@@ -188,7 +187,7 @@ class InterfaceBackScene : public Entity
 
     struct LampFlys
     {
-        CVECTOR pos;
+        Vector pos;
         float radius;
         long start;
         long num;
@@ -196,7 +195,7 @@ class InterfaceBackScene : public Entity
 
     struct Vertex
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t color;
         float u, v;
     };
@@ -209,11 +208,11 @@ class InterfaceBackScene : public Entity
     long flyTex;
     Vertex buffer[256 * 6];
 
-    CVECTOR m_vFlarePos;
+    Vector m_vFlarePos;
     float m_fFlareSize;
     long m_nFlareTexture;
 
-    void AddLampFlys(CVECTOR &pos);
+    void AddLampFlys(Vector &pos);
     void ProcessedFlys(float dltTime);
     void DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx = false,
                        long numU = 0);

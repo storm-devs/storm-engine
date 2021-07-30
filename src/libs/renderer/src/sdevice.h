@@ -2,13 +2,13 @@
 
 #include "Effects.h"
 #include "Font.h"
-#include "VideoTexture.h"
 #include "defines.h"
 #include "dx9render.h"
-#include "vmodule_api.h"
-
 #include "d3d9types.h"
+#include "Entity.h"
 #include "script_libriary.h"
+
+#include "math3d/Plane.h"
 
 #include <stack>
 #include <vector>
@@ -96,7 +96,7 @@ class DX9RENDER : public VDX9RENDER
 
     struct RECT_VERTEX
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t color;
         float u, v;
     };
@@ -112,7 +112,7 @@ class DX9RENDER : public VDX9RENDER
     IDirect3D9 *d3d;
     HWND hwnd;
 
-    CVECTOR Pos, Ang;
+    Vector Pos, Ang;
     float Fov;
 
     Effects effects_;
@@ -132,7 +132,7 @@ class DX9RENDER : public VDX9RENDER
     bool bShowFps, bShowExInfo;
     bool bInsideScene;
 
-    PLANE viewplane[4];
+    Plane viewplane[4];
 
     STEXTURE Textures[MAX_STEXTURES];
     INDEX_BUFFER IndexBuffers[MAX_BUFFERS];
@@ -298,17 +298,17 @@ class DX9RENDER : public VDX9RENDER
 
     // DX9Render: Clip Planes Section
     HRESULT SetClipPlane(uint32_t Index, CONST float *pPlane) override;
-    PLANE *GetPlanes() override;
+    Plane *GetPlanes() override;
 
     // DX9Render: Camera Section
     void SetTransform(long type, D3DMATRIX *mtx) override;
     void GetTransform(long type, D3DMATRIX *mtx) override;
 
-    bool SetCamera(const CVECTOR &pos, const CVECTOR &ang, float perspective) override;
-    bool SetCamera(const CVECTOR &pos, const CVECTOR &ang) override;
-    bool SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up) override;
+    bool SetCamera(const Vector &pos, const Vector &ang, float perspective) override;
+    bool SetCamera(const Vector &pos, const Vector &ang) override;
+    bool SetCamera(Vector lookFrom, Vector lookTo, Vector up) override;
     bool SetPerspective(float perspective, float fAspectRatio = -1.0f) override;
-    void GetCamera(CVECTOR &pos, CVECTOR &ang, float &perspective) override;
+    void GetCamera(Vector &pos, Vector &ang, float &perspective) override;
 
     bool SetCurrentMatrix(D3DMATRIX *mtx) override;
 
@@ -495,7 +495,7 @@ class DX9RENDER : public VDX9RENDER
     bool LoadState(ENTITY_STATE *state) override;
     bool CreateState(ENTITY_STATE_GEN *state_gen) override;
 
-    void ProcessScriptPosAng(const CVECTOR &vPos, const CVECTOR &vAng);
+    void ProcessScriptPosAng(const Vector &vPos, const Vector &vAng);
     void FindPlanes(IDirect3DDevice9 *d3dDevice);
 
     void SetCommonStates();
@@ -511,12 +511,12 @@ class DX9RENDER : public VDX9RENDER
     bool TextureSet(long stage, long texid);
     bool TextureRelease(long texid);
     //-----------------------------
-    bool SetCamera(CVECTOR *pos, CVECTOR *ang, float perspective);
-    bool SetCamera(CVECTOR *pos, CVECTOR *ang);
-    bool SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up);
+    bool SetCamera(Vector *pos, Vector *ang, float perspective);
+    bool SetCamera(Vector *pos, Vector *ang);
+    bool SetCamera(Vector lookFrom, Vector lookTo, Vector up);
     bool SetPerspective(float perspective, float fAspectRatio = -1.0f);
 
-    void ProcessScriptPosAng(CVECTOR & vPos, CVECTOR & vAng);
+    void ProcessScriptPosAng(Vector & vPos, Vector & vAng);
 
     bool SetCurrentMatrix(D3DMATRIX *mtx);
     //-----------------------------
@@ -583,7 +583,7 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     uint32_t SetTextureStageState(uint32_t Stage,uint32_t Type,uint32_t Value);
     uint32_t GetTextureStageState(uint32_t Stage,uint32_t Type,uint32_t* pValue);
 
-    void GetCamera(CVECTOR& pos, CVECTOR& ang, float& perspective);
+    void GetCamera(Vector& pos, Vector& ang, float& perspective);
     void SaveShoot();
 
 
@@ -601,7 +601,7 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     void MakeScreenShot();
 
     void FindPlanes(IDirect3DDevice9 * d3dDevice);
-    PLANE * GetPlanes();
+    Plane * GetPlanes();
 
     void DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, char *cBlockName = 0, uint32_t dwSubTexturesX = 1, uint32_t
     dwSubTexturesY = 1); void DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, char *cBlockName, uint32_t
@@ -692,10 +692,10 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     D3DPRESENT_PARAMETERS d3dpp;
     bool bDeviceLost;
 
-    CMatrix mView, mWorld, mProjection;
+    Matrix mView, mWorld, mProjection;
 
-    CVECTOR vWordRelationPos;
-    CVECTOR vViewRelationPos;
+    Vector vWordRelationPos;
+    Vector vViewRelationPos;
 
     bool bUseLargeBackBuffer;
 
@@ -707,7 +707,7 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     char *GetTipsImage() override;
 
     void SetColorParameters(float fGamma, float fBrightness, float fContrast) override;
-    void DrawSphere(const CVECTOR &vPos, float fRadius, uint32_t dwColor) override;
+    void DrawSphere(const Vector &vPos, float fRadius, uint32_t dwColor) override;
 
     void GetNearFarPlane(float &fNear, float &fFar) override;
     void SetNearFarPlane(float fNear, float fFar) override;
@@ -715,9 +715,9 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     void SetLoadTextureEnable(bool bEnable = true) override;
     bool ResetDevice();
 
-    void MakeDrawVector(RS_LINE *pLines, uint32_t dwNumSubLines, const CMatrix &mMatrix, CVECTOR vUp, CVECTOR v1,
-                        CVECTOR v2, float fScale, uint32_t dwColor);
-    void DrawVector(const CVECTOR &v1, const CVECTOR &v2, uint32_t dwColor,
+    void MakeDrawVector(RS_LINE *pLines, uint32_t dwNumSubLines, const Matrix &mMatrix, Vector vUp, Vector v1,
+                        Vector v2, float fScale, uint32_t dwColor);
+    void DrawVector(const Vector &v1, const Vector &v2, uint32_t dwColor,
                     const char *pTechniqueName = "DXVector") override;
     IDirect3DBaseTexture9 *GetBaseTexture(long iTexture) override;
 
@@ -727,12 +727,12 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     bool PopRenderTarget() override;
     bool SetRenderTarget(IDirect3DCubeTexture9 *pCubeTex, uint32_t dwFaceType, uint32_t dwLevel,
                          IDirect3DSurface9 *pNewZStencil) override;
-    void SetView(const CMatrix &mView) override;
-    void SetWorld(const CMatrix &mView) override;
-    void SetProjection(const CMatrix &mView) override;
-    const CMatrix &GetView() override;
-    const CMatrix &GetWorld() override;
-    const CMatrix &GetProjection() override;
+    void SetView(const Matrix &mView) override;
+    void SetWorld(const Matrix &mView) override;
+    void SetProjection(const Matrix &mView) override;
+    const Matrix &GetView() override;
+    const Matrix &GetWorld() override;
+    const Matrix &GetProjection() override;
 
     IDirect3DVolumeTexture9 *CreateVolumeTexture(uint32_t Width, uint32_t Height, uint32_t Depth, uint32_t Levels,
                                                  uint32_t Usage, D3DFORMAT Format, D3DPOOL Pool) override;

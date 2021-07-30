@@ -40,7 +40,7 @@ void ShipInfoImages::Draw()
     if (m_nShipQ <= 0)
         return;
 
-    CMatrix matw;
+    Matrix matw;
     pRS->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)&matw);
 
     if (m_idRelationTexture != -1)
@@ -85,7 +85,7 @@ void ShipInfoImages::Init(ATTRIBUTES *pAttr)
 
     // params for relation image
     m_idRelationTexture = BIUtils::GetTextureFromAttr(pRS, pAttr, "RelationTexture");
-    m_vRelationOffset = CVECTOR(0.f, 10.f, 0.f);
+    m_vRelationOffset = Vector(0.f, 10.f, 0.f);
     BIUtils::ReadVectorFormAttr(pAttr, "RelationOffset", m_vRelationOffset, m_vRelationOffset);
     BIUtils::ReadPosFromAttr(pAttr, "RelationSize", m_fpRelationSize.x, m_fpRelationSize.y, 1.f, 1.f);
     FULLRECT(m_uvRelation[0]);
@@ -97,26 +97,26 @@ void ShipInfoImages::Init(ATTRIBUTES *pAttr)
 
     // params for progress background image
     m_idProgressTexture = BIUtils::GetTextureFromAttr(pRS, pAttr, "ProgressTexture");
-    m_vProgressBackOffset = CVECTOR(0.f, 11.25f, 0.f);
+    m_vProgressBackOffset = Vector(0.f, 11.25f, 0.f);
     BIUtils::ReadVectorFormAttr(pAttr, "ProgressBackOffset", m_vProgressBackOffset, m_vProgressBackOffset);
     BIUtils::ReadPosFromAttr(pAttr, "ProgressBackSize", m_fpProgressBackSize.x, m_fpProgressBackSize.y, 2.f, 0.3f);
     FULLRECT(m_uvProgressBack);
     BIUtils::ReadRectFromAttr(pAttr, "ProgressBackUV", m_uvProgressBack, m_uvProgressBack);
 
     // params for hull progress image
-    m_vHullOffset = CVECTOR(0.f, 10.75f, 0.f);
+    m_vHullOffset = Vector(0.f, 10.75f, 0.f);
     BIUtils::ReadVectorFormAttr(pAttr, "HullOffset", m_vHullOffset, m_vHullOffset);
     FULLRECT(m_uvHull);
     BIUtils::ReadRectFromAttr(pAttr, "HullUV", m_uvHull, m_uvHull);
 
     // params for sail progress image
-    m_vSailOffset = CVECTOR(0.f, 11.25f, 0.f);
+    m_vSailOffset = Vector(0.f, 11.25f, 0.f);
     BIUtils::ReadVectorFormAttr(pAttr, "SailOffset", m_vSailOffset, m_vSailOffset);
     FULLRECT(m_uvSail);
     BIUtils::ReadRectFromAttr(pAttr, "SailUV", m_uvSail, m_uvSail);
 
     // params for crew progress image
-    m_vCrewOffset = CVECTOR(0.f, 11.75f, 0.f);
+    m_vCrewOffset = Vector(0.f, 11.75f, 0.f);
     BIUtils::ReadVectorFormAttr(pAttr, "CrewOffset", m_vCrewOffset, m_vCrewOffset);
     FULLRECT(m_uvCrew);
     BIUtils::ReadRectFromAttr(pAttr, "CrewUV", m_uvCrew, m_uvCrew);
@@ -287,7 +287,7 @@ bool ShipInfoImages::IsEnableShowShipInfo(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD) c
     if (pSD->isDead)
         return false;
 
-    CVECTOR vpos, vang;
+    Vector vpos, vang;
     float fpersp;
     pRS->GetCamera(vpos, vang, fpersp);
     if (~(pSD->pShip->GetPos() - vpos) > MAX_SHIPINFO_DIST_IN_POW2)
@@ -355,9 +355,9 @@ float ShipInfoImages::GetProgressCrew(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD)
     return f;
 }
 
-void ShipInfoImages::CalculateDirectingVectors(const CVECTOR &pos)
+void ShipInfoImages::CalculateDirectingVectors(const Vector &pos)
 {
-    CVECTOR campos, camang;
+    Vector campos, camang;
     float camper;
     pRS->GetCamera(campos, camang, camper);
 
@@ -365,18 +365,18 @@ void ShipInfoImages::CalculateDirectingVectors(const CVECTOR &pos)
     if (m_fImgScale < 1.f)
         m_fImgScale = 1.f;
 
-    m_vRightDir = m_fImgScale * .5f * !((campos - pos) ^ CVECTOR(0.f, 1.f, 0.f));
-    m_vUpDir = m_fImgScale * CVECTOR(0.f, 1.f, 0.f);
+    m_vRightDir = m_fImgScale * .5f * !((campos - pos) ^ Vector(0.f, 1.f, 0.f));
+    m_vUpDir = m_fImgScale * Vector(0.f, 1.f, 0.f);
 }
 
-void ShipInfoImages::WriteSquareVertex(SII_VERTEX *pV, const CVECTOR &center, const CVECTOR &offset, const FPOINT &size,
+void ShipInfoImages::WriteSquareVertex(SII_VERTEX *pV, const Vector &center, const Vector &offset, const FPOINT &size,
                                        const FRECT &uv, float fProgress) const
 {
-    const CVECTOR vVert = size.y * m_vUpDir;
+    const Vector vVert = size.y * m_vUpDir;
 
     // left side
     //--------------
-    CVECTOR vc = center + m_fImgScale * offset - 0.5f * size.x * m_vRightDir + 0.5f * vVert;
+    Vector vc = center + m_fImgScale * offset - 0.5f * size.x * m_vRightDir + 0.5f * vVert;
     // top
     pV[0].pos = vc;
     pV[0].tu = uv.left;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AnimalsDefines.h"
-#include "Matrix.h"
+#include "math3d.h"
 #include "VSoundService.h"
 #include "dx9render.h"
 #include "message.h"
@@ -11,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////
 struct tSeagull
 {
-    CVECTOR center;
+    Vector center;
     float radius;
     float va;
     float height;
@@ -66,6 +66,6 @@ class TSeagulls
     long screamTime;
     char screamFilename[256];
 
-    CVECTOR cameraPos, cameraAng;
+    Vector cameraPos, cameraAng;
     float startY;
 };

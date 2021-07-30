@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Sd2_h/CannonTrace.h"
 
 class NODE;
@@ -26,7 +27,7 @@ class ROPE_BASE : public Entity
 {
   public:
     // service function
-    virtual void GetEndPoint(CVECTOR *cv, int ropenum, entid_t mdl_id) = 0;
+    virtual void GetEndPoint(Vector *cv, int ropenum, entid_t mdl_id) = 0;
     virtual bool IsAbsentRope(entid_t mdl_id, int ropenum) = 0;
     virtual void DoDeleteUntie(entid_t mdl_id, NODE *rnod, int gNum) = 0;
 };

@@ -5,7 +5,7 @@
 // returns random float
 inline float rand(float r)
 {
-    std::random_device rd;
+    static std::random_device rd;
     return r * ((float)rd() / (float)UINT_MAX);
 }
 

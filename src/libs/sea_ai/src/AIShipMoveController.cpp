@@ -48,7 +48,7 @@ void AIShipMoveController::Execute(float fDeltaTime)
     vDeflectForce.z = 1.0f; // FRAND(2.0f) - 1.0f;
     // vDeflectForce.z = FRAND(2.0f) - 1.0f;
 
-    const auto vCurDir = CVECTOR(sinf(vCurAng.y), 0.0f, cosf(vCurAng.y));
+    const auto vCurDir = Vector(sinf(vCurAng.y), 0.0f, cosf(vCurAng.y));
     const auto vDestDir = !(vMovePoint - vCurPos);
 
     auto fTime = 0.0f;
@@ -118,14 +118,14 @@ void AIShipMoveController::Realize(float fDeltaTime)
         pRL->dwColor = 0xFFFFFF;
         pRL->vPos = vDestPoint;
       }
-      CMatrix m;
+      Matrix m;
       AIHelper::pRS->SetTransform(D3DTS_WORLD, m);
       if (aLines.size() >= 2) AIHelper::pRS->DrawLines(&aLines[0], aLines.size()/2, "Line");
     }
     */
 }
 
-void AIShipMoveController::Move(CVECTOR vMovePoint)
+void AIShipMoveController::Move(Vector vMovePoint)
 {
     auto fDist = sqrtf(~(vMovePoint - vDestPoint));
     if (fMoveTime > 0.0f)
@@ -135,7 +135,7 @@ void AIShipMoveController::Move(CVECTOR vMovePoint)
 
     if (AIHelper::pIsland)
     {
-        CVECTOR vRealMovePoint;
+        Vector vRealMovePoint;
         auto vOurPos = GetAIShip()->GetPos();
         vOurPos.y = vMovePoint.y = 0.0f;
         const auto b = AIHelper::pIsland->GetMovePoint(vOurPos, vMovePoint, vRealMovePoint);
@@ -148,12 +148,12 @@ void AIShipMoveController::Move(CVECTOR vMovePoint)
     vDestPoint = vMovePoint;
 }
 
-void AIShipMoveController::AddRetardForce(CVECTOR _vRetardForce)
+void AIShipMoveController::AddRetardForce(Vector _vRetardForce)
 {
     vRetardForce += _vRetardForce;
 }
 
-void AIShipMoveController::AddDeflectForce(CVECTOR _vDeflectForce)
+void AIShipMoveController::AddDeflectForce(Vector _vDeflectForce)
 {
     vDeflectForce += _vDeflectForce;
 }

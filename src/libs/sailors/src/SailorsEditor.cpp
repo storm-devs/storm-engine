@@ -12,8 +12,8 @@ SailorsEditor::SailorsEditor() : rs(nullptr), model(nullptr)
     cameraAng.x = PI / 4;
     cameraAng.y = -PI / 3 + PI;
 
-    cameraTo = CVECTOR(0.0f, 5, 0.0f);
-    cameraPos = CVECTOR(0.0f, 30.0f, 0.0f);
+    cameraTo = Vector(0.0f, 5, 0.0f);
+    cameraPos = Vector(0.0f, 30.0f, 0.0f);
 };
 
 SailorsEditor::~SailorsEditor()
@@ -42,7 +42,7 @@ bool SailorsEditor::Init()
     EntityManager::AddToLayer(EDITOR_REALIZE, shipID, 100000);
     model = static_cast<MODEL *>(EntityManager::GetEntityPointer(shipID));
 
-    model->mtx.BuildMatrix(CVECTOR(0.0f), CVECTOR(0.0f, 0.0f, 0.0f));
+    model->mtx.Build(Vector(0.0f), Vector(0.0f, 0.0f, 0.0f));
 
     auto ctrl = core.Controls->CreateControl("DeltaMouseH");
     core.Controls->MapControl(ctrl, 256);
@@ -96,9 +96,9 @@ void SailorsEditor::SetCamera(uint32_t &dltTime)
     core.Controls->GetControlState("DeltaMouseH", cs);
     cameraAng.y += cs.fValue * 0.001f;
 
-    CVECTOR pos;
+    Vector pos;
 
-    CMatrix mtx(cameraAng);
+    Matrix mtx(cameraAng);
     pos = mtx * cameraPos;
 
     float speed = 0;
@@ -108,7 +108,7 @@ void SailorsEditor::SetCamera(uint32_t &dltTime)
         speed = 0.1f;
 
     cameraPos.y += speed * (dltTime / 10.0f);
-    rs->SetCamera(cameraTo + pos, cameraTo, CVECTOR(0.0f, 1.0f, 0.0f));
+    rs->SetCamera(cameraTo + pos, cameraTo, Vector(0.0f, 1.0f, 0.0f));
 
     if (GetAsyncKeyState(0x57) < 0)
     {

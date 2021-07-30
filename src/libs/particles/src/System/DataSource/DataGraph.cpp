@@ -1,7 +1,6 @@
 #include "DataGraph.h"
 #include "../../ICommon/GraphTime.h"
 #include "../../ICommon/Types.h"
-#include "vmodule_api.h"
 
 #pragma warning(disable : 4800)
 

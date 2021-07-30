@@ -326,7 +326,7 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
     auto rpos = spos;
     if (sb)
     {
-        CVECTOR n;
+        Vector n;
         const auto seaY = sb->WaveXZ(spos.x, spos.z, &n);
         if (rpos.y > seaY)
             rpos.y = seaY;
@@ -350,14 +350,14 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
     if (vBase > 1.0f)
         vBase -= 1.0f;
     // Matrix update
-    mdl->mtx.BuildMatrix(angs, rpos);
+    mdl->mtx.Build(angs, rpos);
     /*
     if(GetAsyncKeyState('Z') >= 0)
     {
       if(GetAsyncKeyState('X') < 0) rpos.y += 30.0f;
-      mdl->mtx.BuildMatrix(angs, rpos);
+      mdl->mtx.Build(angs, rpos);
     }else{
-      mdl->mtx.BuildMatrix(angs, pos + CVECTOR(0.0f, 30.0f, 0.0f));
+      mdl->mtx.Build(angs, pos + Vector(0.0f, 30.0f, 0.0f));
     }
     //*/
 }
@@ -376,7 +376,7 @@ inline void Sharks::Shark::IslandCollision(ISLAND_BASE *ib, long numPnt, float r
         const auto z = cosf(i * step);
         const auto xp = spos.x + rad * x;
         const auto zp = spos.z + rad * z;
-        auto h = mdl->Trace(CVECTOR(xp, 100.0f, zp), CVECTOR(xp, -50.0f, zp));
+        auto h = mdl->Trace(Vector(xp, 100.0f, zp), Vector(xp, -50.0f, zp));
         if (h < 1.0f)
         {
             h -= 100.0f / 150.0f;
@@ -446,7 +446,7 @@ long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SE
     auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!mdl)
         return 0;
-    auto k = mdl->mtx.Pos().y;
+    auto k = mdl->mtx.pos.y;
     if (k <= -1.2f)
         return 0;
     if (k > 0.0f)
@@ -460,10 +460,10 @@ long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SE
     for (long i = 0; i < 30; i++)
         inds[i] = indeces[i] + base;
     // Vertices
-    const CVECTOR s(0.0f, 0.0f, 0.75f);
+    const Vector s(0.0f, 0.0f, 0.75f);
     vrt[0].pos = s;
-    vrt[7].pos = s + CVECTOR(-width, 0.0f, -length);
-    vrt[9].pos = s + CVECTOR(width, 0.0f, -length);
+    vrt[7].pos = s + Vector(-width, 0.0f, -length);
+    vrt[9].pos = s + Vector(width, 0.0f, -length);
     vrt[8].pos = (vrt[7].pos + vrt[9].pos) * 0.5f;
     vrt[1].pos = s + (vrt[7].pos - s) * 0.333f;
     vrt[2].pos = s + (vrt[8].pos - s) * 0.333f;
@@ -493,7 +493,7 @@ long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SE
     vrt[9].v = 1.0f;
     for (long i = 0; i < 10; i++)
     {
-        vrt[i].pos = mdl->mtx * CVECTOR(vrt[i].pos);
+        vrt[i].pos = mdl->mtx * Vector(vrt[i].pos);
         vrt[i].pos.y = sb->WaveXZ(vrt[i].pos.x, vrt[i].pos.z) + 0.001f;
         vrt[i].color = 0x4fffffff;
         vrt[i].v -= vBase;
@@ -601,7 +601,7 @@ bool Sharks::Init()
 // Execution
 void Sharks::Execute(uint32_t delta_time)
 {
-    CVECTOR a;
+    Vector a;
     if (delta_time & 1)
         rand();
     rs->GetCamera(camPos, a, a.x);
@@ -624,7 +624,7 @@ void Sharks::Execute(uint32_t delta_time)
         if (!ship)
             break;
         // Ship position
-        const auto shipPos = ship->GetMatrix()->Pos();
+        const auto shipPos = ship->GetMatrix()->pos;
         // Ship size
         const auto s = ship->GetBoxsize();
         const auto rd2 = (s.x * s.x + s.z * s.z) * 3.0f;
@@ -671,9 +671,9 @@ void Sharks::Execute(uint32_t delta_time)
             auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(periscope.model));
             if (mdl)
             {
-                mdl->mtx.BuildMatrix(CVECTOR(0.0f, periscope.ay, 0.0f), periscope.pos + CVECTOR(0.0f, 1.0f, 0.0f));
-                periscope.pos.x += mdl->mtx.Vz().x * dltTime * 5.0f;
-                periscope.pos.z += mdl->mtx.Vz().z * dltTime * 5.0f;
+                mdl->mtx.Build(Vector(0.0f, periscope.ay, 0.0f), periscope.pos + Vector(0.0f, 1.0f, 0.0f));
+                periscope.pos.x += mdl->mtx.vz.x * dltTime * 5.0f;
+                periscope.pos.z += mdl->mtx.vz.z * dltTime * 5.0f;
             }
             if (periscope.time < 0.0f)
             {
@@ -693,7 +693,7 @@ void Sharks::Execute(uint32_t delta_time)
                     if (LoadPeriscopeModel())
                     {
                         periscope.time = 30.0f + rand() * (20.0f / RAND_MAX);
-                        CVECTOR dummy;
+                        Vector dummy;
                         rs->GetCamera(periscope.pos, dummy, periscope.pos.y);
                     }
                     periscope.pos.y = -10.0f;
@@ -742,7 +742,7 @@ void Sharks::Realize(uint32_t delta_time)
     if (num)
     {
         rs->TextureSet(0, trackTx);
-        rs->SetTransform(D3DTS_WORLD, CMatrix());
+        rs->SetTransform(D3DTS_WORLD, Matrix());
         rs->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
         rs->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, num, num, indeces, D3DFMT_INDEX16, vrt, sizeof(Vertex),
                                    "SharkTrack");

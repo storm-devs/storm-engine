@@ -96,8 +96,8 @@ void LocLife::Update(float dltTime)
         return;
     if (location->IsExDebugView())
     {
-        location->DrawLine(pos, 0xff00ffff, pos + CVECTOR(0.0f, 1.0f, 0.0f), 0xff00ffff);
-        location->DrawLine(pos, 0xff00ff00, pos + CVECTOR(sinf(ay), 0.0f, cosf(ay)) * 0.5f, 0xff00ff00);
+        location->DrawLine(pos, 0xff00ffff, pos + Vector(0.0f, 1.0f, 0.0f), 0xff00ffff);
+        location->DrawLine(pos, 0xff00ff00, pos + Vector(sinf(ay), 0.0f, cosf(ay)) * 0.5f, 0xff00ff00);
     }
     // Model and location information
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
@@ -134,7 +134,7 @@ void LocLife::Update(float dltTime)
             return;
         }
         if (location->IsExDebugView())
-            location->DrawLine(dir, 0xff00ff00, dir + CVECTOR(0.0f, 1.0f, 0.0f), 0xffff0000);
+            location->DrawLine(dir, 0xff00ff00, dir + Vector(0.0f, 1.0f, 0.0f), 0xffff0000);
         dir -= pos;
         double dirl = ~dir;
         const double vx = dir.x;
@@ -164,7 +164,7 @@ long LocLife::FindPos()
         return -1;
     auto &ptc = location->GetPtcData();
     // Direction
-    const CVECTOR dir(sinf(ay), 0.0f, cosf(ay));
+    const Vector dir(sinf(ay), 0.0f, cosf(ay));
     // Heights
     float yf, yc, yb;
     const auto curnode = ptc.FindNode(pos, yc);
@@ -182,14 +182,14 @@ long LocLife::FindPos()
     if (ptc.FindNode(p2, yb) < 0)
         yb = yc;
     pos.y = std::max(yf, std::max(yc, yb));
-    yc = location->Trace(pos + CVECTOR(0.0f, 0.2f, 0.0f), pos - CVECTOR(0.0f, 0.2f, 0.0f));
+    yc = location->Trace(pos + Vector(0.0f, 0.2f, 0.0f), pos - Vector(0.0f, 0.2f, 0.0f));
     if (yc <= 1.0f)
         pos.y += 0.2f - 0.4f * yc;
     pos.y += 0.05f;
     p1.y = yf;
     p2.y = yb;
-    CMatrix mtx;
-    mtx.BuildViewMatrix(pos + (p2 - p1), pos, CVECTOR(0.0f, 1.0f, 0.0f));
+    Matrix mtx;
+    mtx.BuildView(pos + (p2 - p1), pos, Vector(0.0f, 1.0f, 0.0f));
     mtx.Transposition();
     m->mtx = mtx;
     return curnode;
@@ -226,7 +226,7 @@ bool LocLife::IsNearPlayer(float radius) const
 {
     if (location->supervisor.player)
     {
-        CVECTOR playerPos;
+        Vector playerPos;
         location->supervisor.player->GetPosition(playerPos);
         playerPos -= pos;
         playerPos.y = 0.0f;
@@ -236,7 +236,7 @@ bool LocLife::IsNearPlayer(float radius) const
     return false;
 }
 
-long LocLife::FindRandomPos(CVECTOR &pos) const
+long LocLife::FindRandomPos(Vector &pos) const
 {
     auto &ptc = location->GetPtcData();
     if (!ptc.numTriangles)

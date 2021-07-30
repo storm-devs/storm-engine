@@ -352,7 +352,7 @@ void FLAG::DoMove(FLAGDATA *pr, float delta_time) const
 {
     if (pr == nullptr)
         return;
-    CVECTOR cPos;
+    Vector cPos;
     cPos = *pr->pMatWorld * pr->spos;
 
     auto xMul = globalWind.ang.x;
@@ -371,12 +371,12 @@ void FLAG::DoMove(FLAGDATA *pr, float delta_time) const
     auto sBeta = sinf(Beta);
     auto cBeta = cosf(Beta);
 
-    CVECTOR dhVect;
-    dhVect = *pr->pMatWorld * pr->dhv - pr->pMatWorld->Pos();
+    Vector dhVect;
+    dhVect = *pr->pMatWorld * pr->dhv - pr->pMatWorld->pos;
 
     long sIdx = pr->sv;
-    CVECTOR dopVect;
-    CVECTOR incrVect;
+    Vector dopVect;
+    Vector incrVect;
     incrVect.x = FLAGVECTORLEN * xMul;
     incrVect.z = FLAGVECTORLEN * zMul;
     incrVect.y = -DOWNVAL;
@@ -433,7 +433,7 @@ void FLAG::DoMove(FLAGDATA *pr, float delta_time) const
             dhVect.x = tmp * zMul;
             dhVect.z = tmp * xMul;
         }
-        dhVect = *pr->pMatWorld * dhVect - pr->pMatWorld->Pos();
+        dhVect = *pr->pMatWorld * dhVect - pr->pMatWorld->pos;
 
         cPos += incrVect;
     }
@@ -508,7 +508,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
         flist[flagQuantity - 1] = fd;
     }
 
-    CVECTOR cv;
+    Vector cv;
     cv.x = gl.m[3][0] + nod->loc_mtx.matrix[3];
     cv.y = gl.m[3][1] + nod->loc_mtx.matrix[7];
     cv.z = gl.m[3][2] + nod->loc_mtx.matrix[11];
@@ -798,7 +798,7 @@ void FLAG::SetAdd(int flagNum)
     {
         if (flist[fn] == nullptr)
             continue;
-        CVECTOR bmpos, empos;
+        Vector bmpos, empos;
         float len;
 
         auto p0 = flist[fn]->spos;

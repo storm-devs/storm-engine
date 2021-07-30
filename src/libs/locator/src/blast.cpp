@@ -76,17 +76,17 @@ void BLAST::AddGeometry(char *name, long num)
     ItemsNum += num;
 }
 
-void BLAST::SetBlastCenter(CVECTOR pos, CVECTOR ang)
+void BLAST::SetBlastCenter(Vector pos, Vector ang)
 {
     uint32_t n;
-    CMatrix m;
+    Matrix m;
     for (n = 0; n < ItemsNum; n++)
     {
         Item[n].bEffect = false;
         Item[n].pos = pos;
         Item[n].ang = ang;
-        m.BuildMatrix(ang);
-        Item[n].dir = m.Vz();
+        m.Build(ang);
+        Item[n].dir = m.vz;
 
         Item[n].ang.x += AngleDeviation * rand() / RAND_MAX - AngleDeviation / 2.0f;
         Item[n].ang.y += AngleDeviation * rand() / RAND_MAX - AngleDeviation / 2.0f;
@@ -122,7 +122,7 @@ void BLAST::ProcessTime(uint32_t DT)
         // if(Item[n].speed > 0) Item[n].speed -= 0.001f*Delta_Time;
         // else Item[n].speed = 0.0;
         // Item[n].pos += Item[n].speed*Item[n].dir*Delta_Time;
-        CVECTOR a;
+        Vector a;
         a = Item[n].pos;
         Item[n].pos.x += (Item[n].dir.x * Item[n].speed * Delta_Time);
         Item[n].pos.y += (Item[n].dir.y * Item[n].speed * Delta_Time);
@@ -173,8 +173,8 @@ void BLAST::ProcessTime(uint32_t DT)
 uint64_t BLAST::ProcessMessage(MESSAGE &message)
 {
     long code;
-    CVECTOR ang;
-    CVECTOR pos;
+    Vector ang;
+    Vector pos;
     code = message.Long();
     switch (code)
     {
@@ -218,7 +218,7 @@ void BLAST::Realize(uint32_t Delta_Time)
     {
         if (Item[n].geo)
         {
-            Center.BuildMatrix(Item[n].ang, Item[n].pos);
+            Center.Build(Item[n].ang, Item[n].pos);
             rs->SetTransform(D3DTS_WORLD, Center);
             Item[n].geo->Draw((GEOS::PLANE *)rs->GetPlanes(), 0, nullptr);
         }

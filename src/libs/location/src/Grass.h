@@ -12,8 +12,8 @@
 
 #include "Supervisor.h"
 #include "dx9render.h"
+#include "Entity.h"
 #include "grs.h"
-#include "vmodule_api.h"
 
 #define MSG_GRASS_LOAD_DATA 40666
 #define MSG_GRASS_SET_TEXTURE 41666
@@ -101,8 +101,8 @@ class Grass : public Entity
   public:
     struct CharacterPos
     {
-        CVECTOR pos;     // Current position
-        CVECTOR lastPos; // Inertial position
+        Vector pos;     // Current position
+        Vector lastPos; // Inertial position
         Character *chr;  // Character pointer
         long useCounter; // Grass Influence Counter
     };
@@ -152,15 +152,15 @@ class Grass : public Entity
     // --------------------------------------------------------------------------------------------
   private:
     // Render block
-    void RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlanes, long mx, long mz);
+    void RenderBlock(const Vector &camPos, const Plane *plane, long numPlanes, long mx, long mz);
     // Box visibility check
-    bool VisibleTest(const PLANE *plane, long numPlanes, const CVECTOR &min, const CVECTOR &max);
+    bool VisibleTest(const Plane *plane, long numPlanes, const Vector &min, const Vector &max);
     // Render block
     void RenderBlock(GRSMiniMapElement &mme, float kLod);
     // Draw the contents of the buffer
     void DrawBuffer();
     // Get the color
-    static long GetColor(CVECTOR color);
+    static long GetColor(Vector color);
     // Vertex declaration
     void CreateVertexDeclaration() const;
 
@@ -187,16 +187,16 @@ class Grass : public Entity
     // Current swing phases
     float phase[7];
     // Current light source options
-    CVECTOR lDir;   // Direction of the source
-    CVECTOR lColor; // Source color
-    CVECTOR aColor; // Ambient light color
+    Vector lDir;   // Direction of the source
+    Vector lColor; // Source color
+    Vector aColor; // Ambient light color
 
     long blockChrs[32]; // Indexes of characters processed by the block
     long numBlockChr;   // Number of characters processed by the block
 
     float lodSelect; // Lod selection range factor (kLod = kLod^lodSelect)
     float winForce;  // Wind speed coefficient 0..1
-    CVECTOR winDir;  // Normalized wind direction
+    Vector winDir;  // Normalized wind direction
 
     Vertex *vbuffer; // Locked buffer
 

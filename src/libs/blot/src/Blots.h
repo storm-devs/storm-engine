@@ -11,8 +11,8 @@
 #pragma once
 
 #include "dx9render.h"
+#include "Entity.h"
 #include "model.h"
-#include "vmodule_api.h"
 
 #define BLOTS_NTRGS 32    // Triangles in 1 blot
 #define BLOTS_MAX 256     // Total blots
@@ -31,12 +31,12 @@ class Blots : public Entity
         float liveTime;    // Lifetime
         long startIndex;   // Starting index in the array
         long rnd;
-        CVECTOR pos, dir;
+        Vector pos, dir;
     };
 
     struct Vertex
     {
-        CVECTOR pos;
+        Vector pos;
         long c;
         float u, v;
     };
@@ -81,7 +81,7 @@ class Blots : public Entity
     // Register a hit
     void Hit(MESSAGE &message);
     // Add a blot
-    void AddBlot(long i, long rnd, const CVECTOR &pos, const CVECTOR &dir, float time);
+    void AddBlot(long i, long rnd, const Vector &pos, const Vector &dir, float time);
     //
     void SetNodesCollision(NODE *n, bool isSet);
     // Save blot parameters
@@ -102,8 +102,8 @@ class Blots : public Entity
 
     long updateBlot;
 
-    static bool AddPolygon(const CVECTOR *v, long nv);
-    static CVECTOR clipTriangles[3 * BLOTS_NTRGS];
+    static bool AddPolygon(const Vector *v, long nv);
+    static Vector clipTriangles[3 * BLOTS_NTRGS];
     static long numClipTriangles;
-    static CVECTOR dir, normal;
+    static Vector dir, normal;
 };

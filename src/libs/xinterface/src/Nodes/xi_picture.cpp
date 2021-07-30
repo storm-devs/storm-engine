@@ -2,6 +2,7 @@
 
 #include "storm_assert.h"
 #include "vfile_service.h"
+#include "VideoTexture.h"
 
 CXI_PICTURE::CXI_PICTURE()
 {

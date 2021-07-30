@@ -76,7 +76,7 @@ void BIImage::SetPosition(long nLeft, long nTop, long nRight, long nBottom)
     m_pMaterial->UpdateFlagOn();
 }
 
-void BIImage::Set3DPosition(const CVECTOR &vPos, float fWidth, float fHeight)
+void BIImage::Set3DPosition(const Vector &vPos, float fWidth, float fHeight)
 {
 }
 

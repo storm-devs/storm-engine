@@ -22,9 +22,9 @@ class LighterLights
     LighterLights();
     virtual ~LighterLights();
 
-    void AddAmbient(const CVECTOR &color);
-    void AddWeaterLights(const CVECTOR &color, const CVECTOR &dir);
-    void AddPointLight(const CVECTOR &color, const CVECTOR &pos, float att0, float att1, float att2, float range,
+    void AddAmbient(const Vector &color);
+    void AddWeaterLights(const Vector &color, const Vector &dir);
+    void AddPointLight(const Vector &color, const Vector &pos, float att0, float att1, float att2, float range,
                        const char *group);
     void PostInit();
     void UpdateLights(long lit);

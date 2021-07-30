@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "core.h"
 #include "defines.h"
+#include "model.h"
 #include "rands.h"
 #include "shared/messages.h"
 #include "vfile_service.h"
@@ -54,7 +55,7 @@ void TFishSchools::Init()
     for (auto i = 0; i < fishSchoolsCount; i++)
     {
         fishSchools[i] = new TFishSchool();
-        fishSchools[i]->Initialize(CVECTOR(0.0f, 0.0f, 0.0f), maxDistance);
+        fishSchools[i]->Initialize(Vector(0.0f, 0.0f, 0.0f), maxDistance);
         fishSchools[i]->depth = 0.05f;
         fishSchools[i]->time = 0;
         fishSchools[i]->timeDivider = randUpper(100.0f);
@@ -93,7 +94,7 @@ void TFishSchools::Execute(uint32_t _dTime)
     if (!enabled)
         return;
 
-    CVECTOR pos, ang, fishPos;
+    Vector pos, ang, fishPos;
     float persp;
     renderService->GetCamera(pos, ang, persp);
 
@@ -118,7 +119,7 @@ void TFishSchools::Realize(uint32_t _dTime)
     if (!enabled)
         return;
     /*
-      CVECTOR cameraPos, cameraAng;
+      Vector cameraPos, cameraAng;
       float   cameraPersp;
       renderService->GetCamera(cameraPos, cameraAng, cameraPersp);
     */
@@ -139,14 +140,14 @@ void TFishSchools::Realize(uint32_t _dTime)
         const auto fishSchoolAngle = fishSchools[i]->GetAngle();
         const auto fishSchoolPos = fishSchools[i]->GetXYZ();
         const auto fishSchoolTime = fishSchools[i]->time / fishSchools[i]->timeDivider;
-        CVECTOR ang(0.0f,
+        Vector ang(0.0f,
                     PId2 - fishSchoolAngle - (fishSchools[i]->amplitude * (PId2 / 10.0f) / 0.1f) * cosf(fishSchoolTime),
                     0.0f);
-        CVECTOR pos;
+        Vector pos;
         pos.x = fishSchoolPos.x + fishSchools[i]->amplitude * cosf(fishSchoolAngle + PId2) * sinf(fishSchoolTime);
         pos.z = fishSchoolPos.z + fishSchools[i]->amplitude * sinf(fishSchoolAngle + PId2) * sinf(fishSchoolTime);
         pos.y = sea->WaveXZ(pos.x, pos.z) - fishSchools[i]->depth;
-        fishSchool->mtx.BuildMatrix(ang, pos);
+        fishSchool->mtx.Build(ang, pos);
         fishSchool->ProcessStage(Entity::Stage::realize, _dTime);
     }
 }

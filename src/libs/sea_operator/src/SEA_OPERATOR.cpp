@@ -11,7 +11,7 @@ CREATE_CLASS(SEA_OPERATOR)
 
 char dbgs[1024];
 static const float MIN_TIME_DELTA = 0.05f;
-CVECTOR lastCP;
+Vector lastCP;
 
 SEA_OPERATOR::SEA_OPERATOR()
     : enabled(false), active(false), sea(nullptr), renderer(nullptr), myShip(nullptr), enemyShip(nullptr), idleTime(0),
@@ -60,7 +60,7 @@ uint64_t SEA_OPERATOR::ProcessMessage(MESSAGE &message)
             break;
 
         const std::string &bortName = message.String();
-        CVECTOR direction, destination;
+        Vector direction, destination;
         direction.x = message.Float();
         direction.y = message.Float();
         direction.z = message.Float();
@@ -123,7 +123,7 @@ void SEA_OPERATOR::Realize(uint32_t dTime)
     if (!enabled)
         return;
 
-    static CVECTOR upVector(0.0f, 1.0f, 0.0f);
+    static Vector upVector(0.0f, 1.0f, 0.0f);
     if (active)
     {
         renderer->SetCamera(cameraPos, cameraTargetPos, upVector);
@@ -253,8 +253,8 @@ void SEA_OPERATOR::HandleShipIdle()
     actionBuffer.push(action);
 }
 
-void SEA_OPERATOR::HandleShipFire(entid_t _shipID, const char *_bortName, const CVECTOR &_destination,
-                                  const CVECTOR &_direction)
+void SEA_OPERATOR::HandleShipFire(entid_t _shipID, const char *_bortName, const Vector &_destination,
+                                  const Vector &_direction)
 {
     auto bort = BORT_FRONT;
     auto *ship = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(_shipID));
@@ -271,8 +271,8 @@ void SEA_OPERATOR::HandleShipFire(entid_t _shipID, const char *_bortName, const 
     tAction action;
 
     auto shipPosition = ship->GetPos();
-    const auto shipDirection = CVECTOR(sinf(ship->GetAng().y), 0.0f, cosf(ship->GetAng().y));
-    auto shipDirectionPerp = CVECTOR(shipDirection.z, 0.0f, -1.0f * shipDirection.x);
+    const auto shipDirection = Vector(sinf(ship->GetAng().y), 0.0f, cosf(ship->GetAng().y));
+    auto shipDirectionPerp = Vector(shipDirection.z, 0.0f, -1.0f * shipDirection.x);
     float chosenK;
 
     srand(GetTickCount());
@@ -311,9 +311,9 @@ void SEA_OPERATOR::ShowAttackerBort(tAction *_action)
     const auto addY = 0.5f * _action->attackerShip->GetBoxsize().y;
     const auto timeDistance = static_cast<float>(_action->timePassed) / 7e2f;
     const auto shipDirection =
-        CVECTOR(sinf(_action->attackerShip->GetAng().y), 0.0f, cosf(_action->attackerShip->GetAng().y));
-    auto shipDirectionPerp = CVECTOR(shipDirection.z, 0.0f, -1.0f * shipDirection.x);
-    const auto directionPerp = CVECTOR(_action->direction.z, 0.0f, -1.0f * _action->direction.x);
+        Vector(sinf(_action->attackerShip->GetAng().y), 0.0f, cosf(_action->attackerShip->GetAng().y));
+    auto shipDirectionPerp = Vector(shipDirection.z, 0.0f, -1.0f * shipDirection.x);
+    const auto directionPerp = Vector(_action->direction.z, 0.0f, -1.0f * _action->direction.x);
 
     cameraTargetPos = shipPosition;
     cameraTargetPos.y += addY;

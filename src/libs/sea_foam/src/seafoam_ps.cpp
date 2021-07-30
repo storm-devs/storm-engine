@@ -327,15 +327,15 @@ bool SEAFOAM_PS::Init(INIFILE *ini, const char *psname)
 
 void SEAFOAM_PS::UpdateVertexBuffer()
 {
-    CVECTOR ipos[4];
-    CVECTOR rpos[4];
-    CVECTOR pos;
-    CVECTOR local_pos;
+    Vector ipos[4];
+    Vector rpos[4];
+    Vector pos;
+    Vector local_pos;
     PARTICLE_VERTEX *pVertex;
     long n, i;
     long index;
     float halfsize;
-    CMatrix RMatrix;
+    Matrix RMatrix;
 
     Camera_EmitterPosA.x = Camera_EmitterPosA.y = Camera_EmitterPosA.z = 0;
 
@@ -346,7 +346,7 @@ void SEAFOAM_PS::UpdateVertexBuffer()
         index = n * VERTEXS_ON_PARTICLE;
 
         // RenderService->GetTransform(D3DTS_VIEW,Matrix); set for lock particles in screen zero axis
-        local_pos = Matrix * Particle[n].pos;
+        local_pos = mtx * Particle[n].pos;
 
         Camera_EmitterPosA += local_pos;
 
@@ -460,7 +460,7 @@ void SEAFOAM_PS::Execute(uint32_t DeltaTime)
 void SEAFOAM_PS::LayOnSurface(uint32_t index)
 {
     COLLISION_OBJECT *pLink;
-    CVECTOR from, to;
+    Vector from, to;
     float dist;
     pLink = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(SurfaceID));
     if (pLink == nullptr)
@@ -494,13 +494,13 @@ void SEAFOAM_PS::Realize(uint32_t DeltaTime)
         }
     }
 
-    RenderService->GetTransform(D3DTS_VIEW, Matrix);
+    RenderService->GetTransform(D3DTS_VIEW, mtx);
 
     // Camera_EmitterPos = Matrix * Emitter;
 
     RenderService->GetCamera(CameraPos, CameraAng, Perspective);
 
-    const CMatrix IMatrix;
+    const Matrix IMatrix;
     RenderService->SetTransform(D3DTS_VIEW, IMatrix);
     RenderService->SetTransform(D3DTS_WORLD, IMatrix);
     ProcessParticles(DeltaTime);
@@ -526,7 +526,7 @@ void SEAFOAM_PS::Realize(uint32_t DeltaTime)
         }
     }
 
-    RenderService->SetTransform(D3DTS_VIEW, Matrix);
+    RenderService->SetTransform(D3DTS_VIEW, mtx);
 }
 
 bool SEAFOAM_PS::EmitParticle()
@@ -829,7 +829,7 @@ bool SEAFOAM_PS::BuildTrack(INIFILE *ini, TRACK_EVENT *Track, const char *psname
     return bFound;
 }
 
-void SEAFOAM_PS::SetEmitter(CVECTOR p, CVECTOR a)
+void SEAFOAM_PS::SetEmitter(Vector p, Vector a)
 {
     Emitter = p;
     EmitterDirection = !a;
@@ -843,7 +843,7 @@ void SEAFOAM_PS::SetEmitter(CVECTOR p, CVECTOR a)
     */
 }
 
-void SEAFOAM_PS::LinkToObject(entid_t id, CVECTOR _LinkPos)
+void SEAFOAM_PS::LinkToObject(entid_t id, Vector _LinkPos)
 {
     long n;
     bLinkEmitter = true;
@@ -872,17 +872,17 @@ bool SEAFOAM_PS::Complete()
 }
 
 /*
-void SEAFOAM_PS::AddTrackPoint(CVECTOR pos)
+void SEAFOAM_PS::AddTrackPoint(Vector pos)
 {
     bUseFlowTrack = true;
     nFlowTrackSize++;
-    pFlowTrack = (CVECTOR *)RESIZE(pFlowTrack,nFlowTrackSize*sizeof(CVECTOR));
+    pFlowTrack = (Vector *)RESIZE(pFlowTrack,nFlowTrackSize*sizeof(Vector));
     pFlowTrack[nFlowTrackSize - 1] = pos;
 }*/
 
 void SEAFOAM_PS::SetFlowTrack(uint32_t index)
 {
-    CVECTOR dest;
+    Vector dest;
     if (Particle[index].flow_track_index >= nFlowTrackSize)
         return;
     dest = pFlowTrack[Particle[index].flow_track_index];

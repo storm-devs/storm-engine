@@ -1,4 +1,5 @@
 #include "xi_glowCursor.h"
+#include "VideoTexture.h"
 
 CXI_GLOWCURSOR::CXI_GLOWCURSOR()
 {

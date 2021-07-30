@@ -5,7 +5,6 @@
 #include "geos.h"
 #include "model.h"
 #include "sail_base.h"
-#include "vmodule_api.h"
 
 #include <filesystem>
 
@@ -96,12 +95,12 @@ class SAIL : public SAIL_BASE
     void SetDevice();
     // Collision func
     int LastTraceGroup;
-    float Trace(const CVECTOR &src, const CVECTOR &dst) override;
+    float Trace(const Vector &src, const Vector &dst) override;
     const char *GetCollideMaterialName() override;
     bool GetCollideTriangle(TRIANGLE &triangle) override;
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
+    bool Clip(const Plane *planes, long nplanes, const Vector &center, float radius,
               ADD_POLYGON_FUNC addpoly) override;
-    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
+    float Cannon_Trace(long iBallOwner, const Vector &src, const Vector &dst) override;
 
     entid_t GetShipID() override
     {
@@ -154,7 +153,7 @@ class SAIL : public SAIL_BASE
         int sailQuantity;
         int *sailIdx;
         // restrictive box
-        CVECTOR boxCenter, boxSize;
+        Vector boxCenter, boxSize;
         float boxRadius;
         // Effect on ship speed
         float shipSpeed;

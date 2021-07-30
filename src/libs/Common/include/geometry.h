@@ -2,7 +2,6 @@
 
 #include "geos.h"
 #include "service.h"
-#include "vmodule_api.h"
 
 class ANIMATION
 {

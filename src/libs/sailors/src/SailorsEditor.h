@@ -40,9 +40,9 @@ class SailorsEditor : public Entity
 
     MODEL *model;
 
-    CVECTOR cameraPos;
-    CVECTOR cameraTo;
-    CVECTOR cameraAng;
+    Vector cameraPos;
+    Vector cameraTo;
+    Vector cameraAng;
 
     Menu menu;
     // SailorsPoints sailorsPoints;

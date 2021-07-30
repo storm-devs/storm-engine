@@ -4,11 +4,10 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#include "Entity.h"
-#include "Matrix.h"
 #include "service.h"
 #include "storm_assert.h"
-#include "types3d.h"
+#include "math3d.h"
+#include "math3d/Plane.h"
 #include "utf8.h"
 
 #define FONT_DEFAULT 0
@@ -36,7 +35,7 @@ struct FVF_VERTEX
 
 struct RS_RECT
 {
-    CVECTOR vPos;
+    Vector vPos;
     float fSize;
     float fAngle;
     uint32_t dwColor;
@@ -45,13 +44,13 @@ struct RS_RECT
 
 struct RS_LINE
 {
-    CVECTOR vPos;
+    Vector vPos;
     uint32_t dwColor;
 };
 
 struct RS_SPRITE
 {
-    CVECTOR vPos;
+    Vector vPos;
     float rhw;
     uint32_t dwColor;
     float tu, tv;
@@ -59,7 +58,7 @@ struct RS_SPRITE
 
 struct RS_LINE2D
 {
-    CVECTOR vPos;
+    Vector vPos;
     float rhw;
     uint32_t dwColor;
 };
@@ -101,17 +100,17 @@ class VDX9RENDER : public SERVICE
 
     // DX9Render: Clip Planes Section
     virtual HRESULT SetClipPlane(uint32_t Index, CONST float *pPlane) = 0;
-    virtual PLANE *GetPlanes() = 0;
+    virtual Plane *GetPlanes() = 0;
 
     // DX9Render: Camera Section
     virtual void SetTransform(long type, D3DMATRIX *mtx) = 0;
     virtual void GetTransform(long type, D3DMATRIX *mtx) = 0;
 
-    virtual bool SetCamera(const CVECTOR &pos, const CVECTOR &ang, float perspective) = 0;
-    virtual bool SetCamera(const CVECTOR &pos, const CVECTOR &ang) = 0;
-    virtual bool SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up) = 0;
+    virtual bool SetCamera(const Vector &pos, const Vector &ang, float perspective) = 0;
+    virtual bool SetCamera(const Vector &pos, const Vector &ang) = 0;
+    virtual bool SetCamera(Vector lookFrom, Vector lookTo, Vector up) = 0;
     virtual bool SetPerspective(float perspective, float fAspectRatio = -1.0f) = 0;
-    virtual void GetCamera(CVECTOR &pos, CVECTOR &ang, float &perspective) = 0;
+    virtual void GetCamera(Vector &pos, Vector &ang, float &perspective) = 0;
 
     virtual bool SetCurrentMatrix(D3DMATRIX *mtx) = 0;
 
@@ -148,7 +147,7 @@ class VDX9RENDER : public SERVICE
                            float fScaleY = 1.0f) = 0;
     virtual void DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, const char *cBlockName = nullptr) = 0;
     virtual void DrawLines(RS_LINE *pRSL, uint32_t dwLinesNum, const char *cBlockName = nullptr) = 0;
-    virtual void DrawVector(const CVECTOR &v1, const CVECTOR &v2, uint32_t dwColor,
+    virtual void DrawVector(const Vector &v1, const Vector &v2, uint32_t dwColor,
                             const char *pTechniqueName = "DXVector") = 0;
     virtual void DrawLines2D(RS_LINE2D *pRSL2D, size_t dwLinesNum, const char *cBlockName = nullptr) = 0;
 
@@ -289,7 +288,7 @@ class VDX9RENDER : public SERVICE
     virtual char *GetTipsImage() = 0;
     virtual void SetColorParameters(float fGamma, float fBrightness, float fContrast) = 0;
 
-    virtual void DrawSphere(const CVECTOR &vPos, float fRadius, uint32_t dwColor) = 0;
+    virtual void DrawSphere(const Vector &vPos, float fRadius, uint32_t dwColor) = 0;
 
     virtual void GetNearFarPlane(float &fNear, float &fFar) = 0;
     virtual void SetNearFarPlane(float fNear, float fFar) = 0;
@@ -303,12 +302,12 @@ class VDX9RENDER : public SERVICE
     virtual bool PopRenderTarget() = 0;
     virtual bool SetRenderTarget(IDirect3DCubeTexture9 *pCubeTex, uint32_t dwFaceType, uint32_t dwLevel,
                                  IDirect3DSurface9 *pNewZStencil) = 0;
-    virtual void SetView(const CMatrix &mView) = 0;
-    virtual void SetWorld(const CMatrix &mView) = 0;
-    virtual void SetProjection(const CMatrix &mView) = 0;
-    virtual const CMatrix &GetView() = 0;
-    virtual const CMatrix &GetWorld() = 0;
-    virtual const CMatrix &GetProjection() = 0;
+    virtual void SetView(const Matrix &mView) = 0;
+    virtual void SetWorld(const Matrix &mView) = 0;
+    virtual void SetProjection(const Matrix &mView) = 0;
+    virtual const Matrix &GetView() = 0;
+    virtual const Matrix &GetWorld() = 0;
+    virtual const Matrix &GetProjection() = 0;
 
     virtual IDirect3DVolumeTexture9 *CreateVolumeTexture(uint32_t Width, uint32_t Height, uint32_t Depth,
                                                          uint32_t Levels, uint32_t Usage, D3DFORMAT Format,

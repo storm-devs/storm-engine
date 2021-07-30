@@ -10,10 +10,7 @@
 
 #pragma once
 
-#include "WdmObjects.h"
 #include "WdmRenderObject.h"
-
-#include "Matrix.h"
 
 class GEOS;
 class VGEOMETRY;
@@ -37,7 +34,7 @@ class WdmRenderModel : public WdmRenderObject
     long GetTexture(long stage) const;
     void SetTexture(long stage, long id) const;
 
-    CMatrix mtx;
+    Matrix mtx;
     float alpha;
 
   public:
@@ -48,7 +45,7 @@ class WdmRenderModel : public WdmRenderObject
     const char *techa;
 
     // Positioned circle
-    CVECTOR center;
+    Vector center;
     float radius;
 
     bool drawCircle;

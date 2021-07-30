@@ -50,7 +50,7 @@ class AnimationImp final : public Animation
     // Get the number of bones in a skeleton
     long GetNumBones() const override;
     // Get animation matrix for bone
-    CMatrix &GetAnimationMatrix(long iBone) const override;
+    Matrix &GetAnimationMatrix(long iBone) const override;
     // misc
     // Get custom data for animation
     const char *GetData(const char *dataName) const override;
@@ -128,7 +128,7 @@ class AnimationImp final : public Animation
     // Custom blending
     bool isUserBlend;
     // Skeleton matrices
-    CMatrix *matrix;
+    Matrix *matrix;
     // Internal event subscribers
     AnimationEventListener *ae_listeners[ae_numevents][ANIIMP_MAXLISTENERS];
     // Subscribers to external events

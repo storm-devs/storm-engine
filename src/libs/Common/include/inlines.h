@@ -42,14 +42,14 @@ inline float NormalizeAngle(float fAngle)
     return fAngle;
 }
 
-inline void GetLineABC(const CVECTOR &v1, const CVECTOR &v2, float &A, float &B, float &C)
+inline void GetLineABC(const Vector &v1, const Vector &v2, float &A, float &B, float &C)
 {
     A = (v2.z - v1.z);
     B = (v1.x - v2.x);
     C = -v1.x * v2.z + v1.z * v2.x;
 }
 
-inline bool IntersectLines2D(const CVECTOR &v1, const CVECTOR &v2, const CVECTOR &v3, const CVECTOR &v4, CVECTOR &vRes)
+inline bool IntersectLines2D(const Vector &v1, const Vector &v2, const Vector &v3, const Vector &v4, Vector &vRes)
 {
     float a1, b1, c1, a2, b2, c2;
     GetLineABC(v1, v2, a1, b1, c1);

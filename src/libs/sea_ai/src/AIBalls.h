@@ -3,12 +3,11 @@
 #include "AIHelper.h"
 #include "Character.h"
 #include "Sd2_h/CannonTrace.h"
-#include "vmodule_api.h"
 #include "vparticle_system.h"
 
 struct BALL_PARAMS
 {
-    CVECTOR vFirstPos, vPos; // first and current ball position
+    Vector vFirstPos, vPos; // first and current ball position
     VPARTICLE_SYSTEM *pParticle;
     char sBallEvent[TSE_MAX_EVENT_LENGTH + 1];
     long iBallOwner;    // ball owner(character index)

@@ -1,5 +1,4 @@
 #include "DataPosition.h"
-#include "vmodule_api.h"
 
 // constructor / destructor
 DataPosition::DataPosition()

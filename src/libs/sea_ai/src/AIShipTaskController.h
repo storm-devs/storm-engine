@@ -1,4 +1,5 @@
 #pragma once
+
 #include "shared/sea_ai/Script_defines.h"
 
 // ============================================================================
@@ -24,7 +25,7 @@ class AITask
     uint32_t dwTaskType;
 
     ATTRIBUTES *pATaskCharacter;
-    CVECTOR vTaskPnt;
+    Vector vTaskPnt;
 
     void SetActive(bool _bActive)
     {
@@ -85,7 +86,7 @@ class AIShipTaskController
     void DoAttackRotate();
     void DoTask(float fDeltaTime);
     bool CheckCurrentTaskComplete();
-    void SetDestinationPoint(CVECTOR vDestPnt);
+    void SetDestinationPoint(Vector vDestPnt);
     void FindRunAwayPoint();
 
   public:
@@ -101,7 +102,7 @@ class AIShipTaskController
         return (Secondary.isActive()) ? &Secondary : &Primary;
     };
 
-    void SetNewTask(uint32_t dwPriority, uint32_t dwNewTaskType, CVECTOR &vPnt);
+    void SetNewTask(uint32_t dwPriority, uint32_t dwNewTaskType, Vector &vPnt);
     void SetNewTask(uint32_t dwPriority, uint32_t dwNewTaskType, ATTRIBUTES *_pATaskCharacter);
 
     // controller execute

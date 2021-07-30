@@ -138,8 +138,8 @@ void TornadoParticles::Update(float dltTime)
 void TornadoParticles::Draw(VDX9RENDER *rs)
 {
     rs->GetTransform(D3DTS_VIEW, camMtx);
-    rs->SetTransform(D3DTS_VIEW, CMatrix());
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_VIEW, Matrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
     rs->TextureSet(0, txtPillarPrts);
     DrawParticles(rs, pillarPrt, sizeof(pillarPrt) / sizeof(PillarParticle), sizeof(PillarParticle), -1,
                   "TornadoPillarParticles");
@@ -162,15 +162,15 @@ inline void TornadoParticles::DrawParticles(VDX9RENDER *rs, void *prts, long num
         const auto sn = sinf(parts->angle);
         const auto cs = cosf(parts->angle);
         const auto color = (static_cast<long>(parts->alpha * galpha) << 24) | 0x00ffffff;
-        buffer[n * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), size * (sn + cs), 0.0f);
+        buffer[n * 6 + 0].pos = pos + Vector(size * (-cs + sn), size * (sn + cs), 0.0f);
         buffer[n * 6 + 0].color = color;
         buffer[n * 6 + 0].u = 0.0f;
         buffer[n * 6 + 0].v = 0.0f;
-        buffer[n * 6 + 1].pos = pos + CVECTOR(size * (-cs - sn), size * (sn - cs), 0.0f);
+        buffer[n * 6 + 1].pos = pos + Vector(size * (-cs - sn), size * (sn - cs), 0.0f);
         buffer[n * 6 + 1].color = color;
         buffer[n * 6 + 1].u = 0.0f;
         buffer[n * 6 + 1].v = 1.0f;
-        buffer[n * 6 + 2].pos = pos + CVECTOR(size * (cs + sn), size * (-sn + cs), 0.0f);
+        buffer[n * 6 + 2].pos = pos + Vector(size * (cs + sn), size * (-sn + cs), 0.0f);
         buffer[n * 6 + 2].color = color;
         buffer[n * 6 + 2].u = 1.0f;
         buffer[n * 6 + 2].v = 0.0f;
@@ -182,7 +182,7 @@ inline void TornadoParticles::DrawParticles(VDX9RENDER *rs, void *prts, long num
         buffer[n * 6 + 4].color = color;
         buffer[n * 6 + 4].u = 0.0f;
         buffer[n * 6 + 4].v = 1.0f;
-        buffer[n * 6 + 5].pos = pos + CVECTOR(size * (cs - sn), size * (-sn - cs), 0.0f);
+        buffer[n * 6 + 5].pos = pos + Vector(size * (cs - sn), size * (-sn - cs), 0.0f);
         buffer[n * 6 + 5].color = color;
         buffer[n * 6 + 5].u = 1.0f;
         buffer[n * 6 + 5].v = 1.0f;

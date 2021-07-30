@@ -1,7 +1,6 @@
 #pragma once
 
 #include "dx9render.h"
-#include "vmodule_api.h"
 
 class xiBaseVideo : public Entity
 {

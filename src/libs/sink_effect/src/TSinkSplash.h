@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Cvector.h"
-#include "VSoundService.h"
 #include "dx9render.h"
 #include "sea_base.h"
 #include "seps.h"
@@ -11,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////
 struct SINK_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
     float tu, tv;
 };
@@ -24,7 +22,7 @@ class TSinkSplash
 
     void Initialize(INIFILE *_ini, SEA_BASE *sea);
     void Release();
-    void Start(const CVECTOR &_pos, uint16_t *_indexes, SINK_VERTEX *_vertexes, long vOffset);
+    void Start(const Vector &_pos, uint16_t *_indexes, SINK_VERTEX *_vertexes, long vOffset);
     void Process(uint32_t dTime, uint16_t *_indexes, SINK_VERTEX *_vertexes);
     bool Enabled();
     void Reset(uint16_t *_indexes, SINK_VERTEX *_vertexes);
@@ -39,6 +37,6 @@ class TSinkSplash
     uint32_t time;
 
     float distortDivider;
-    CVECTOR center, dir;
+    Vector center, dir;
     float growK;
 };

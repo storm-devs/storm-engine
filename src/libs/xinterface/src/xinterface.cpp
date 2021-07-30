@@ -328,7 +328,7 @@ void XINTERFACE::Realize(uint32_t Delta_Time)
 
     Delta_Time = core.GetRDeltaTime();
 
-    CMatrix moldv, moldp, moldw;
+    Matrix moldv, moldp, moldw;
 
     uint32_t dwFogFlag;
     pRenderService->GetRenderState(D3DRS_FOGENABLE, &dwFogFlag);
@@ -1111,7 +1111,7 @@ void XINTERFACE::LoadIni()
     m_fpMouseOutZoneOffset.y = ini->GetFloat(section, "mouseOutZoneHeight", 0.f);
     m_nMouseLastClickTimeMax = ini->GetLong(section, "mouseDblClickInterval", 300);
 
-    CMatrix oldmatp;
+    Matrix oldmatp;
     pRenderService->GetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&oldmatp);
     GlobalRect.left = GlobalScreenRect.left;
     GlobalRect.top = GlobalScreenRect.top;

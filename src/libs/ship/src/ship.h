@@ -38,7 +38,7 @@ class SHIP : public SHIP_BASE
     struct mast_t
     {
         NODE *pNode;        // node pointer in model
-        CVECTOR vSrc, vDst; // src and dest vectors
+        Vector vSrc, vDst; // src and dest vectors
         long iMastNum;      // mast number
         bool bBroken;       // if mast is broken then pNode = 0
         float fDamage;
@@ -47,7 +47,7 @@ class SHIP : public SHIP_BASE
     struct hull_t
     {
         NODE *pNode;        // node pointer in model
-        CVECTOR vSrc, vDst; // src and dest vectors
+        Vector vSrc, vDst; // src and dest vectors
         long iHullNum;      // hull detail number
         bool bBroken;       // if hull detail is broken then pNode = 0
         float fDamage;
@@ -83,8 +83,8 @@ class SHIP : public SHIP_BASE
     static COLLIDE *pCollide;
     static VGEOMETRY *pGS;
 
-    CMatrix mRoot;
-    CVECTOR vSpeed, vSpeedsA;
+    Matrix mRoot;
+    Vector vSpeed, vSpeedsA;
     float fMinusVolume;
     float fXOffset, fZOffset;
 
@@ -107,14 +107,14 @@ class SHIP : public SHIP_BASE
     ship_point_t ShipPoints[16][16];
 
     // executed parameters
-    CVECTOR vSpeedAccel;
+    Vector vSpeedAccel;
     ship_t SP;
-    CVECTOR vPos, vAng;
+    Vector vPos, vAng;
     float fSailState;
     float fWaterLine;
     bool bDead, bVisible;
-    CVECTOR vDeadDir, vCurDeadDir;
-    CVECTOR vKeelContour[MAX_KEEL_POINTS];
+    Vector vDeadDir, vCurDeadDir;
+    Vector vKeelContour[MAX_KEEL_POINTS];
     long iNumMasts;
     long iNumHulls;
     std::vector<mast_t> pMasts;
@@ -122,7 +122,7 @@ class SHIP : public SHIP_BASE
     bool bShip2Strand;
     bool bMounted;
     bool bKeelContour;
-    CVECTOR vOldAng, vOldPos;
+    Vector vOldAng, vOldPos;
     bool bSetFixed;
     float fFixedSpeed;
 
@@ -135,16 +135,16 @@ class SHIP : public SHIP_BASE
     DTimer dtMastTrace, dtUpdateParameters;
 
     // executed functions
-    CVECTOR ShipRocking(float fDeltaTime);
+    Vector ShipRocking(float fDeltaTime);
     BOOL ApplyStrength(float dtime, BOOL bCollision);
-    BOOL CalculateNewSpeedVector(CVECTOR *Speed, CVECTOR *Rotate);
+    BOOL CalculateNewSpeedVector(Vector *Speed, Vector *Rotate);
     void CalculateImmersion(); //
     void CheckShip2Strand(float fDeltaTime);
     void MastFall(mast_t *pM);
     void HullFall(hull_t *pM);
     void FakeFire(const char *sBort, float fRandTime);
 
-    CMatrix UpdateModelMatrix();
+    Matrix UpdateModelMatrix();
     void RecalculateWorldOffset();
 
     // init section
@@ -175,7 +175,7 @@ class SHIP : public SHIP_BASE
     long AddStrength(STRENGTH *strength) override;
     bool DelStrength(long iIdx) override;
 
-    BOOL BuildContour(CVECTOR *vContour, long &iNumVContour) override;
+    BOOL BuildContour(Vector *vContour, long &iNumVContour) override;
     bool BuildMasts();
     bool BuildHulls();
     BOOL Move(uint32_t DeltaTime, BOOL bCollision);
@@ -204,14 +204,14 @@ class SHIP : public SHIP_BASE
 
     void SetLights() override;
     void UnSetLights() override;
-    void Fire(const CVECTOR &vPos) override;
+    void Fire(const Vector &vPos) override;
 
     void SetFixedSpeed(bool bSetFixed, float fFixedSpeed) override;
 
     // inherit functions COLLISION_OBJECT
-    float Trace(const CVECTOR &src, const CVECTOR &dst) override;
+    float Trace(const Vector &src, const Vector &dst) override;
 
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
+    bool Clip(const Plane *planes, long nplanes, const Vector &center, float radius, ADD_POLYGON_FUNC addpoly) override
     {
         return false;
     };
@@ -227,20 +227,20 @@ class SHIP : public SHIP_BASE
     };
 
     // inherit functions CANNON_TRACE_BASE
-    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
+    float Cannon_Trace(long iBallOwner, const Vector &src, const Vector &dst) override;
 
     // inherit functions VAI_OBJBASE
     void SetACharacter(ATTRIBUTES *pAP) override;
 
-    CMatrix *GetMatrix() override;
-    void SetMatrix(CMatrix &mtx);
+    Matrix *GetMatrix() override;
+    void SetMatrix(Matrix &mtx);
     MODEL *GetModel() const override;
     entid_t GetModelEID() const override;
-    CVECTOR GetPos() const override;
-    CVECTOR GetAng() const override;
-    CVECTOR GetBoxsize() const override;
+    Vector GetPos() const override;
+    Vector GetAng() const override;
+    Vector GetBoxsize() const override;
 
-    void SetPos(const CVECTOR &vNewPos) override;
+    void SetPos(const Vector &vNewPos) override;
 
     bool Mount(ATTRIBUTES *) override;
 

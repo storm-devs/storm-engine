@@ -4,7 +4,7 @@
 #include "../../ICommon/Types.h"
 #include "../DataSource/DataSource.h"
 #include "../ParticleSystem/particlesystem.h"
-#include "math3D.h"
+#include "math3d.h"
 
 class DataGraph;
 

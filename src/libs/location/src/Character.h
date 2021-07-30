@@ -10,9 +10,7 @@
 
 #pragma once
 
-#include "Matrix.h"
 #include "model.h"
-#include "vmodule_api.h"
 #include <string>
 
 class Location;
@@ -287,9 +285,9 @@ class Character : public Entity
     // Get character height
     float GetHeight() const;
     // Get character position
-    void GetPosition(CVECTOR &pos) const;
+    void GetPosition(Vector &pos) const;
     // Get character position
-    void GetGrassPosition(CVECTOR &pos, CVECTOR &gpos) const;
+    void GetGrassPosition(Vector &pos, Vector &gpos) const;
     // Set the flag of walking on the grass
     void SetGrassSound();
     // Get maximum character radius
@@ -380,7 +378,7 @@ class Character : public Entity
     long startColCharacter;
     long numColCharacter;
     bool isSlide;
-    CVECTOR slideDir;
+    Vector slideDir;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
@@ -401,9 +399,9 @@ class Character : public Entity
     bool zDistByCharacter(MESSAGE &message, bool is2D);
     uint32_t zExMessage(MESSAGE &message);
     bool zPlaySound(MESSAGE &message);
-    bool TestJump(CVECTOR pos);
-    bool BuildJump(CVECTOR pos, float fAng);
-    bool TraceWithObstacle(const CVECTOR &src, const CVECTOR &dst);
+    bool TestJump(Vector pos);
+    bool BuildJump(Vector pos, float fAng);
+    bool TraceWithObstacle(const Vector &src, const Vector &dst);
     void UpdateActionsData();
     void UpdateActionMoveData(ActionMove &am, Animation *a);
     void UpdateActionCharacterData(ActionCharacter &ac, Animation *a);
@@ -422,7 +420,7 @@ class Character : public Entity
     // Refresh weapon state
     void UpdateWeapons();
     // Get direction towards the enemy to bounce on hit
-    CVECTOR GetEnemyDirForImpulse();
+    Vector GetEnemyDirForImpulse();
 
     bool PriorityActionIsJump() const;
 
@@ -446,7 +444,7 @@ class Character : public Entity
     // Character sizes
     float radius, radiusNrm, radiusFgt;
     // Current and previous positions
-    CVECTOR curPos, oldPos, colMove, grsPos, impulse;
+    Vector curPos, oldPos, colMove, grsPos, impulse;
     float strafeMove;
     float seaY;
 
@@ -652,8 +650,8 @@ class Character : public Entity
     float ayStack[16];
     long ayStackPointer;
 
-    CVECTOR jumpTrack[50];
-    CVECTOR osculationPoint;
+    Vector jumpTrack[50];
+    Vector osculationPoint;
     float jumpFallTime;
     float curJumpFallTime;
     long jumpPoints;
@@ -663,7 +661,7 @@ class Character : public Entity
     //
     long m_nHandLightID;
     const char *m_pcHandLightLocator;
-    CVECTOR GetHandLightPos();
+    Vector GetHandLightPos();
 
     bool CheckObstacle(float fx, float fz, float fzlen);
     long GetRandomIndexByObstacle(ObstacleZone *pZone, long num);
@@ -736,7 +734,7 @@ inline float Character::GetHeight() const
 }
 
 // Get character position
-inline void Character::GetPosition(CVECTOR &pos) const
+inline void Character::GetPosition(Vector &pos) const
 {
     pos = curPos;
     if (isSwim)
@@ -744,7 +742,7 @@ inline void Character::GetPosition(CVECTOR &pos) const
 }
 
 // Get character position
-inline void Character::GetGrassPosition(CVECTOR &pos, CVECTOR &gpos) const
+inline void Character::GetGrassPosition(Vector &pos, Vector &gpos) const
 {
     pos = curPos;
     gpos = grsPos;

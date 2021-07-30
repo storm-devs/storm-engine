@@ -2,11 +2,11 @@
 
 // ANIMATION_HEADER
 // long parentIndex[nJoints]
-// CVECTOR jointPos[nJoints]
+// Vector jointPos[nJoints]
 
 // Frames:
-// CVECTOR rootPos[nFrames]
-// CVECTOR jointAngle[nJoints][nFrames]
+// Vector rootPos[nFrames]
+// Vector jointAngle[nJoints][nFrames]
 
 #pragma pack(push, 1)
 

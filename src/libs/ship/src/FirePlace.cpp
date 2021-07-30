@@ -114,9 +114,9 @@ void FirePlace::Execute(float fDeltaTime)
         return;
     }
     if (pParticleSmoke)
-        pParticleSmoke->SetEmitter(vCurPos, CVECTOR(0.0f, 1.0f, 0.0f));
+        pParticleSmoke->SetEmitter(vCurPos, Vector(0.0f, 1.0f, 0.0f));
     if (pParticleFire)
-        pParticleFire->SetEmitter(vCurPos, CVECTOR(0.0f, 1.0f, 0.0f));
+        pParticleFire->SetEmitter(vCurPos, Vector(0.0f, 1.0f, 0.0f));
     core.Send_Message(eidSound, "lllfff", MSG_SOUND_SET_3D_PARAM, iSoundID, SOUND_PARAM_POSITION, vCurPos.x, vCurPos.y,
                       vCurPos.z);
 }
@@ -126,10 +126,10 @@ void FirePlace::Init(SEA_BASE *_pSea, SHIP_BASE *_pShip, GEOS::LABEL &label)
     SetShip(_pShip);
     pSea = _pSea;
 
-    CMatrix m;
+    Matrix m;
     memcpy(&m.m[0][0], &label.m[0][0], sizeof(m));
 
-    SetPos(m.Pos());
+    SetPos(m.pos);
 }
 
 void FirePlace::Save(CSaveLoad *pSL)

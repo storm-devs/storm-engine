@@ -3,7 +3,6 @@
 #include "core.h"
 
 #include "vfile_service.h"
-#include "vmodule_api.h"
 
 bool ReadingAlreadyComplete;
 

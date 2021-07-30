@@ -15,16 +15,16 @@
 ///////////////////////////////////////////////////////////////////
 struct tFoamEmitter
 {
-    CVECTOR center[TRACE_STEPS_Y];
-    CVECTOR meanPoint;
+    Vector center[TRACE_STEPS_Y];
+    Vector meanPoint;
     float k;
-    CVECTOR finalPos;
+    Vector finalPos;
 };
 
 struct tShipFoamInfo
 {
     tFoamEmitter hull[2][TRACE_STEPS_Z];
-    CVECTOR levelStarts[2][TRACE_STEPS_Z];
+    Vector levelStarts[2][TRACE_STEPS_Z];
     GEOS::INFO hullInfo;
     SHIP_BASE *ship;
     TCarcass *carcass[2];

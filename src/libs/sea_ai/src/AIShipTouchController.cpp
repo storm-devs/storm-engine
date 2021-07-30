@@ -21,9 +21,9 @@ bool AIShipTouchController::Init()
     return true;
 }
 
-bool AIShipTouchController::isCollision2D(const CVECTOR &vSrc, const CVECTOR &vDst)
+bool AIShipTouchController::isCollision2D(const Vector &vSrc, const Vector &vDst)
 {
-    CVECTOR vRes;
+    Vector vRes;
 
     auto *const vPentaBox = GetPentagonBox();
 
@@ -34,18 +34,18 @@ bool AIShipTouchController::isCollision2D(const CVECTOR &vSrc, const CVECTOR &vD
     return false;
 }
 
-CVECTOR *AIShipTouchController::GetPentagonBox()
+Vector *AIShipTouchController::GetPentagonBox()
 {
-    CMatrix m;
+    Matrix m;
     const auto vOurPos = GetAIShip()->GetPos();
 
     const auto vBoxSize = GetAIShip()->GetBoxsize() / 2.0f;
     m.BuildRotateY(GetAIShip()->GetAng().y);
-    vBox[0] = CVECTOR(-vBoxSize.x, 0.0f, -vBoxSize.z);
-    vBox[1] = CVECTOR(vBoxSize.x, 0.0f, -vBoxSize.z);
-    vBox[2] = CVECTOR(vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
-    vBox[3] = CVECTOR(0.0f, 0.0f, vBoxSize.z);
-    vBox[4] = CVECTOR(-vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
+    vBox[0] = Vector(-vBoxSize.x, 0.0f, -vBoxSize.z);
+    vBox[1] = Vector(vBoxSize.x, 0.0f, -vBoxSize.z);
+    vBox[2] = Vector(vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
+    vBox[3] = Vector(0.0f, 0.0f, vBoxSize.z);
+    vBox[4] = Vector(-vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
     for (uint32_t i = 0; i < 5; i++)
         vBox[i] = vOurPos + m * vBox[i];
     return &vBox[0];
@@ -58,9 +58,9 @@ void AIShipTouchController::TestCollision(AIShip *pOtherShip)
         return;
 
     uint32_t i;
-    CMatrix m;
-    CVECTOR vBox[5], vBoxSize;
-    CVECTOR vOurPos, vEnemyPos, vEnemyPredictionPos;
+    Matrix m;
+    Vector vBox[5], vBoxSize;
+    Vector vOurPos, vEnemyPos, vEnemyPredictionPos;
 
     const auto fSpeed = GetAIShip()->GetShipBasePointer()->State.vSpeed.z;
     if (fSpeed < 0.1f)
@@ -73,11 +73,11 @@ void AIShipTouchController::TestCollision(AIShip *pOtherShip)
 
     vBoxSize = pOtherShip->GetBoxsize() / 2.0f;
     m.BuildRotateY(pOtherShip->GetAng().y);
-    vBox[0] = CVECTOR(-vBoxSize.x, 0.0f, -vBoxSize.z);
-    vBox[1] = CVECTOR(vBoxSize.x, 0.0f, -vBoxSize.z);
-    vBox[2] = CVECTOR(vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
-    vBox[3] = CVECTOR(0.0f, 0.0f, vBoxSize.z);
-    vBox[4] = CVECTOR(-vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
+    vBox[0] = Vector(-vBoxSize.x, 0.0f, -vBoxSize.z);
+    vBox[1] = Vector(vBoxSize.x, 0.0f, -vBoxSize.z);
+    vBox[2] = Vector(vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
+    vBox[3] = Vector(0.0f, 0.0f, vBoxSize.z);
+    vBox[4] = Vector(-vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
     for (i = 0; i < 5; i++)
         vBox[i] = vEnemyPos + m * vBox[i];
 
@@ -85,10 +85,10 @@ void AIShipTouchController::TestCollision(AIShip *pOtherShip)
     {
         const auto fAng =
             GetAIShip()->GetAng().y + static_cast<float>(i) / static_cast<float>(aTouchRays.size()) * PIm2;
-        auto vPos = vOurPos + fRaySize * CVECTOR(sinf(fAng), 0.0f, cosf(fAng));
+        auto vPos = vOurPos + fRaySize * Vector(sinf(fAng), 0.0f, cosf(fAng));
         for (uint32_t j = 0; j < 5; j++)
         {
-            CVECTOR vRes;
+            Vector vRes;
 
             if (IntersectLines2D(vOurPos, vPos, vBox[j], vBox[(j == 4) ? 0 : j + 1], vRes))
             {
@@ -107,8 +107,8 @@ void AIShipTouchController::TestCollision(AIShip *pOtherShip)
 void AIShipTouchController::Execute(float fDeltaTime)
 {
     uint32_t i, j;
-    CMatrix m;
-    CVECTOR vBoxSize; // , v[4];
+    Matrix m;
+    Vector vBoxSize; // , v[4];
 
     if (GetAIShip()->isMainCharacter())
         return;
@@ -122,10 +122,10 @@ void AIShipTouchController::Execute(float fDeltaTime)
 
     /*vBoxSize = GetAIShip()->GetBoxsize() / 2.0f;
     m.BuildRotateY(GetAIShip()->GetAng().y);
-    v[0] = m * CVECTOR(-vBoxSize.x, 0.0f, -vBoxSize.z);
-    v[1] = m * CVECTOR(vBoxSize.x, 0.0f, -vBoxSize.z);
-    v[2] = m * CVECTOR(vBoxSize.x, 0.0f, vBoxSize.z);
-    v[3] = m * CVECTOR(-vBoxSize.x, 0.0f, vBoxSize.z);*/
+    v[0] = m * Vector(-vBoxSize.x, 0.0f, -vBoxSize.z);
+    v[1] = m * Vector(vBoxSize.x, 0.0f, -vBoxSize.z);
+    v[2] = m * Vector(vBoxSize.x, 0.0f, vBoxSize.z);
+    v[3] = m * Vector(-vBoxSize.x, 0.0f, vBoxSize.z);*/
 
     // reset
     if (dtTouchTime.Update(fDeltaTime))
@@ -149,7 +149,7 @@ void AIShipTouchController::Execute(float fDeltaTime)
             {
                 const auto fAng =
                     GetAIShip()->GetAng().y + static_cast<float>(i) / static_cast<float>(aTouchRays.size()) * PIm2;
-                auto vPos = vOurPos + fRaySize * CVECTOR(sinf(fAng), 0.0f, cosf(fAng));
+                auto vPos = vOurPos + fRaySize * Vector(sinf(fAng), 0.0f, cosf(fAng));
                 const auto fRes = static_cast<COLLISION_OBJECT *>(AIHelper::pIsland)->Trace(vOurPos, vPos);
                 if (fRes < 1.0f)
                 {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dx9render.h"
+#include "Entity.h"
 
 class InfoHandler : public Entity
 {

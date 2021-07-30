@@ -121,7 +121,7 @@ ShipLights::LightType *ShipLights::FindLightType(std::string sLightType)
     return nullptr;
 }
 
-void ShipLights::AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos)
+void ShipLights::AddDynamicLights(VAI_OBJBASE *pObject, const Vector &vPos)
 {
     if (!bLoadLights && !LoadLights())
         return;
@@ -178,7 +178,7 @@ bool ShipLights::SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr)
     if (!pL->pNode)
         return false;
 
-    CMatrix mNode = pL->pNode->glob_mtx;
+    Matrix mNode = pL->pNode->glob_mtx;
     mNode.Transposition();
     pL->vPos = mNode * pL->vPos;
     return true;
@@ -186,7 +186,7 @@ bool ShipLights::SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr)
 
 void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, const GEOS::LABEL &label)
 {
-    CMatrix m;
+    Matrix m;
     char str[256], str2[256];
     ZERO(str);
     if (!label.name)
@@ -200,7 +200,7 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
     memcpy(m, label.m, sizeof(m));
 
     pL->pNode = nullptr;
-    pL->vPos = m.Pos();
+    pL->vPos = m.pos;
 
     if (str[0] != 'f' && !bLight)
         return;
@@ -414,7 +414,7 @@ void ShipLights::SetLights(VAI_OBJBASE *pObject)
         {
             if (aLights[i].pNode)
             {
-                CVECTOR vPos = aLights[i].vPos;
+                Vector vPos = aLights[i].vPos;
                 aLights[i].vCurPos = aLights[i].pNode->glob_mtx * vPos;
             }
             else
@@ -462,7 +462,7 @@ void ShipLights::Execute(uint32_t dwDeltaTime)
     const float fDeltaTime = static_cast<float>(dwDeltaTime) * 0.001f;
 
     float fFov;
-    CVECTOR vCamPos, vCamAng;
+    Vector vCamPos, vCamAng;
     pRS->GetCamera(vCamPos, vCamAng, fFov);
 
     for (uint32_t i = 0; i < aLights.size(); i++)
@@ -595,7 +595,7 @@ void ShipLights::Realize(uint32_t dwDeltaTime)
     float fDeltaTime = static_cast<float>(dwDeltaTime) * 0.001f;
 
     float fFov;
-    CVECTOR vCamPos, vCamAng;
+    Vector vCamPos, vCamAng;
     pRS->GetCamera(vCamPos, vCamAng, fFov);
 
     static std::vector<RS_RECT> aRects;

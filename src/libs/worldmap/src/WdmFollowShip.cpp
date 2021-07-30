@@ -19,8 +19,8 @@ WdmFollowShip::WdmFollowShip()
 {
     isEnemy = true;
     shipType = wdmest_follow;
-    mtx.Pos().x = wdmObjects->worldSizeX;
-    mtx.Pos().z = wdmObjects->worldSizeZ;
+    mtx.pos.x = wdmObjects->worldSizeX;
+    mtx.pos.z = wdmObjects->worldSizeZ;
 }
 
 WdmFollowShip::~WdmFollowShip()
@@ -38,8 +38,8 @@ bool WdmFollowShip::Load(const char *modelName)
     if (wdmObjects->playerShip)
     {
         // Determine the angle
-        const double sn = wdmObjects->playerShip->mtx.Pos().x - mtx.Pos().x;
-        double cs = wdmObjects->playerShip->mtx.Pos().z - mtx.Pos().z;
+        const double sn = wdmObjects->playerShip->mtx.pos.x - mtx.pos.x;
+        double cs = wdmObjects->playerShip->mtx.pos.z - mtx.pos.z;
         const auto l = sn * sn + cs * cs;
         if (l > 0.0)
             cs /= sqrt(l);
@@ -60,19 +60,19 @@ bool WdmFollowShip::Load(const char *modelName)
 // Find the pulling force in the desired direction
 void WdmFollowShip::FindMoveForce()
 {
-    CVECTOR dir;
+    Vector dir;
     if (wdmObjects->islands)
     {
-        wdmObjects->islands->FindDirection(mtx.Pos(), static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.Pos(), dir);
+        wdmObjects->islands->FindDirection(mtx.pos, static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.pos, dir);
     }
     else
     {
         // Player position
-        dir.x = static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.Pos().x;
-        dir.z = static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.Pos().z;
+        dir.x = static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.pos.x;
+        dir.z = static_cast<WdmShip *>(wdmObjects->playerShip)->mtx.pos.z;
         // Direction to player
-        dir.x -= mtx.Pos().x;
-        dir.z -= mtx.Pos().z;
+        dir.x -= mtx.pos.x;
+        dir.z -= mtx.pos.z;
         auto dl = dir.x * dir.x + dir.z * dir.z;
         if (dl > 1.0f)
         {

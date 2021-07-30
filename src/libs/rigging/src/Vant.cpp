@@ -119,12 +119,12 @@ void VANT_BASE::Realize(uint32_t Delta_Time)
             return;
 
         // draw nature vants
-        CVECTOR cp, ca;
+        Vector cp, ca;
         float pr;
         RenderService->GetCamera(cp, ca, pr);
         pr = tanf(pr * .5f);
         for (auto gn = 0; gn < groupQuantity; gn++)
-            if (gdata[gn].nIndx && nVert && (~(gdata[gn].pMatWorld->Pos() - cp)) * pr < fVantMaxDist)
+            if (gdata[gn].nIndx && nVert && (~(gdata[gn].pMatWorld->pos - cp)) * pr < fVantMaxDist)
             {
                 static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->SetLightAndFog(true);
                 static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->SetLights();
@@ -384,7 +384,7 @@ void VANT_BASE::SetVertexes() const
 {
     int j, i;
     uint32_t iv;
-    CVECTOR uPos, lPos, rPos;
+    Vector uPos, lPos, rPos;
 
     auto *pv = static_cast<VANTVERTEX *>(RenderService->LockVertexBuffer(vBuf));
     if (pv)
@@ -395,16 +395,18 @@ void VANT_BASE::SetVertexes() const
                 continue;
             iv = vlist[vn]->sv;
 
-            gdata[vlist[vn]->HostGroup].pMatWorld->MulToInv((*vlist[vn]->pUpMatWorld) * vlist[vn]->pUp, uPos);
-            gdata[vlist[vn]->HostGroup].pMatWorld->MulToInv((*vlist[vn]->pDownMatWorld) * vlist[vn]->pLeft, lPos);
-            gdata[vlist[vn]->HostGroup].pMatWorld->MulToInv((*vlist[vn]->pDownMatWorld) * vlist[vn]->pRight, rPos);
+            uPos = gdata[vlist[vn]->HostGroup].pMatWorld->MulVertexByInverse((*vlist[vn]->pUpMatWorld) * vlist[vn]->pUp);
+            lPos = gdata[vlist[vn]->HostGroup].pMatWorld->MulVertexByInverse((*vlist[vn]->pDownMatWorld) *
+                                                                          vlist[vn]->pLeft);
+            rPos = gdata[vlist[vn]->HostGroup].pMatWorld->MulVertexByInverse((*vlist[vn]->pDownMatWorld) *
+                                                                          vlist[vn]->pRight);
 
             // Set last parameters
             vlist[vn]->pLeftStart = vlist[vn]->pLeftOld = lPos;
             vlist[vn]->pUpStart = vlist[vn]->pUpOld = uPos;
 
-            CVECTOR horzDirect = !(rPos - lPos);
-            CVECTOR vertDirect = !((rPos + lPos) * .5f - uPos);
+            Vector horzDirect = !(rPos - lPos);
+            Vector vertDirect = !((rPos + lPos) * .5f - uPos);
             // Set angles point
             pv[iv].pos = uPos;
             pv[iv + 3].pos = pv[iv + 1].pos =
@@ -434,7 +436,7 @@ void VANT_BASE::SetVertexes() const
             iv += 7;
 
             // set beam points
-            CVECTOR tvec = uPos - horzDirect * (upWidth * .5f) + vertDirect * upHeight;
+            Vector tvec = uPos - horzDirect * (upWidth * .5f) + vertDirect * upHeight;
             pv[iv].pos = tvec - vertDirect * upHeight * fBalkHeight;
             pv[iv + 1].pos = tvec + vlist[vn]->pos[0] * fBalkWidth;
             pv[iv + 2].pos = tvec + vlist[vn]->pos[VANT_EDGE / 2] * fBalkWidth;
@@ -450,8 +452,8 @@ void VANT_BASE::SetVertexes() const
             iv += 6;
 
             // Set up ropes points
-            CVECTOR sp = uPos - horzDirect * (.5f * upWidth) + vertDirect * upHeight;
-            CVECTOR dp = horzDirect * (upWidth / static_cast<float>(ROPE_QUANT - 1));
+            Vector sp = uPos - horzDirect * (.5f * upWidth) + vertDirect * upHeight;
+            Vector dp = horzDirect * (upWidth / static_cast<float>(ROPE_QUANT - 1));
             const float dtmp = (vRopeXr - vRopeXl) / static_cast<float>(VANT_EDGE);
             for (i = 0; i < ROPE_QUANT; i++)
             {
@@ -543,25 +545,25 @@ void VANT_BASE::AddLabel(GEOS::LABEL &lbl, NODE *nod)
     switch (lbl.name[5])
     {
     case 'u': // up edge of vant
-        vd->pUp = CVECTOR(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) - gdata[groupQuantity - 1].pMatWorld->Pos();
-        // + nod->glob_mtx.Pos();
+        vd->pUp = Vector(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) - gdata[groupQuantity - 1].pMatWorld->pos;
+        // + nod->glob_mtx.pos;
         vd->pUpMatWorld = &nod->glob_mtx; // get host matrix
         break;
     case 'l': // left edge of vant
-        vd->pLeft = CVECTOR(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) - gdata[groupQuantity - 1].pMatWorld->Pos();
-        // + nod->glob_mtx.Pos();
+        vd->pLeft = Vector(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) - gdata[groupQuantity - 1].pMatWorld->pos;
+        // + nod->glob_mtx.pos;
         if (vd->pDownMatWorld == nullptr)
             vd->pDownMatWorld = &nod->glob_mtx; // get host matrix
         else if (vd->pDownMatWorld != &nod->glob_mtx)
-            vd->pDownMatWorld->MulToInv(nod->glob_mtx * vd->pLeft, vd->pLeft);
+            vd->pLeft = vd->pDownMatWorld->MulVertexByInverse(nod->glob_mtx * vd->pLeft);
         break;
     case 'r': // right edge of vant
-        vd->pRight = CVECTOR(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) - gdata[groupQuantity - 1].pMatWorld->Pos();
-        // + nod->glob_mtx.Pos();
+        vd->pRight = Vector(lbl.m[3][0], lbl.m[3][1], lbl.m[3][2]) - gdata[groupQuantity - 1].pMatWorld->pos;
+        // + nod->glob_mtx.pos;
         if (vd->pDownMatWorld == nullptr)
             vd->pDownMatWorld = &nod->glob_mtx; // get host matrix
         else if (vd->pDownMatWorld != &nod->glob_mtx)
-            vd->pDownMatWorld->MulToInv(nod->glob_mtx * vd->pLeft, vd->pLeft);
+            vd->pLeft = vd->pDownMatWorld->MulVertexByInverse(nod->glob_mtx * vd->pLeft);
         break;
     }
 }
@@ -606,15 +608,15 @@ void VANT_BASE::SetAll()
             break;
 
         // Set normals with length equal the rope width
-        CMatrix tmat;
-        tmat.BuildViewMatrix(.5f * (vlist[vn]->pLeft + vlist[vn]->pRight), vlist[vn]->pUp, CVECTOR(0.f, 0.f, 1.f));
+        Matrix tmat;
+        tmat.BuildView(.5f * (vlist[vn]->pLeft + vlist[vn]->pRight), vlist[vn]->pUp, Vector(0.f, 0.f, 1.f));
         float ca, sa;
         for (int i = 0; i < VANT_EDGE; i++)
         {
             ca = cosf(static_cast<float>(i) / static_cast<float>(VANT_EDGE) * 2.f * PI);
             sa = sinf(static_cast<float>(i) / static_cast<float>(VANT_EDGE) * 2.f * PI);
-            // tmat.MulToInvNorm(CVECTOR(ROPE_WIDTH/2.f*ca,ROPE_WIDTH/2.f*sa,0.f),vlist[vn]->pos[i]);
-            vlist[vn]->pos[i] = CVECTOR(ROPE_WIDTH / 2.f * ca, 0.f, ROPE_WIDTH / 2.f * sa);
+            // tmat.MulNormalByInverse(Vector(ROPE_WIDTH/2.f*ca,ROPE_WIDTH/2.f*sa,0.f),vlist[vn]->pos[i]);
+            vlist[vn]->pos[i] = Vector(ROPE_WIDTH / 2.f * ca, 0.f, ROPE_WIDTH / 2.f * sa);
         }
 
         vlist[vn]->nv = (VANT_EDGE + 1) * ROPE_QUANT * 2 + 7 + 6;
@@ -869,7 +871,7 @@ void VANT_BASE::doMove()
 {
     int j, i;
     uint32_t iv;
-    CVECTOR uPos, lPos, rPos;
+    Vector uPos, lPos, rPos;
 
     auto *pv = static_cast<VANTVERTEX *>(RenderService->LockVertexBuffer(vBuf));
     if (pv)
@@ -881,10 +883,11 @@ void VANT_BASE::doMove()
                 bYesDeleted = true;
                 continue;
             }
-            CVECTOR vtmp, htmp;
-            gdata[vlist[vn]->HostGroup].pMatWorld->MulToInv(*vlist[vn]->pUpMatWorld * vlist[vn]->pUp, uPos);
-            gdata[vlist[vn]->HostGroup].pMatWorld->MulToInv(*vlist[vn]->pDownMatWorld * vlist[vn]->pLeft, lPos);
-            gdata[vlist[vn]->HostGroup].pMatWorld->MulToInv(*vlist[vn]->pDownMatWorld * vlist[vn]->pRight, rPos);
+            Vector vtmp, htmp;
+            uPos = gdata[vlist[vn]->HostGroup].pMatWorld->MulVertexByInverse(*vlist[vn]->pUpMatWorld * vlist[vn]->pUp);
+            lPos = gdata[vlist[vn]->HostGroup].pMatWorld->MulVertexByInverse(*vlist[vn]->pDownMatWorld * vlist[vn]->pLeft);
+            rPos = gdata[vlist[vn]->HostGroup].pMatWorld->MulVertexByInverse(*vlist[vn]->pDownMatWorld *
+                                                                          vlist[vn]->pRight);
 
             if (!VectCmp(lPos, vlist[vn]->pLeftStart, MAXFALL_CMP_VAL) ||
                 !VectCmp(uPos, vlist[vn]->pUpStart, MAXFALL_CMP_VAL))
@@ -899,8 +902,8 @@ void VANT_BASE::doMove()
                 vlist[vn]->pLeftOld = lPos;
                 vlist[vn]->pUpOld = uPos;
 
-                CVECTOR horzDirect = !(rPos - lPos);
-                CVECTOR vertDirect = !((rPos + lPos) * .5f - uPos);
+                Vector horzDirect = !(rPos - lPos);
+                Vector vertDirect = !((rPos + lPos) * .5f - uPos);
 
                 iv = vlist[vn]->sv;
 
@@ -915,7 +918,7 @@ void VANT_BASE::doMove()
                 iv += 7;
 
                 // set beam points
-                CVECTOR tvec = uPos - htmp + vertDirect * upHeight;
+                Vector tvec = uPos - htmp + vertDirect * upHeight;
                 pv[iv].pos = uPos - htmp + vtmp;
                 pv[iv + 1].pos = tvec + vlist[vn]->pos[0] * fBalkWidth;
                 pv[iv + 2].pos = tvec + vlist[vn]->pos[VANT_EDGE / 2] * fBalkWidth;
@@ -926,8 +929,8 @@ void VANT_BASE::doMove()
                 iv += 6;
 
                 // Set up ropes points
-                CVECTOR sp = uPos - horzDirect * (.5f * upWidth) + vertDirect * upHeight;
-                CVECTOR dp = horzDirect * (upWidth / static_cast<float>(ROPE_QUANT - 1));
+                Vector sp = uPos - horzDirect * (.5f * upWidth) + vertDirect * upHeight;
+                Vector dp = horzDirect * (upWidth / static_cast<float>(ROPE_QUANT - 1));
                 for (i = 0; i < ROPE_QUANT; i++)
                 {
                     for (j = 0; j <= VANT_EDGE; j++)
@@ -963,9 +966,9 @@ void VANT_BASE::doMove()
     }
 }
 
-bool VANT_BASE::VectCmp(CVECTOR v1, CVECTOR v2, float minCmpVal) // return true if equal
+bool VANT_BASE::VectCmp(Vector v1, Vector v2, float minCmpVal) // return true if equal
 {
-    const CVECTOR dv = v1 - v2;
+    const Vector dv = v1 - v2;
 
     if (dv.x > minCmpVal || dv.x < -minCmpVal || dv.y > minCmpVal || dv.y < -minCmpVal || dv.z > minCmpVal ||
         dv.z < -minCmpVal)
@@ -1025,14 +1028,14 @@ void VANT_BASE::SetAdd(int firstNum)
             break;
 
         // Set normals with length equal the rope width
-        CMatrix tmat;
-        tmat.BuildViewMatrix(.5f * (vlist[vn]->pLeft + vlist[vn]->pRight), vlist[vn]->pUp, CVECTOR(0.f, 0.f, 1.f));
+        Matrix tmat;
+        tmat.BuildView(.5f * (vlist[vn]->pLeft + vlist[vn]->pRight), vlist[vn]->pUp, Vector(0.f, 0.f, 1.f));
         float ca, sa;
         for (int i = 0; i < VANT_EDGE; i++)
         {
             ca = cosf(static_cast<float>(i) / static_cast<float>(VANT_EDGE) * 2.f * PI);
             sa = sinf(static_cast<float>(i) / static_cast<float>(VANT_EDGE) * 2.f * PI);
-            tmat.MulToInvNorm(CVECTOR(ROPE_WIDTH / 2.f * ca, ROPE_WIDTH / 2.f * sa, 0.f), vlist[vn]->pos[i]);
+            vlist[vn]->pos[i] = tmat.MulNormalByInverse(Vector(ROPE_WIDTH / 2.f * ca, ROPE_WIDTH / 2.f * sa, 0.f));
         }
 
         vlist[vn]->nv = (VANT_EDGE + 1) * ROPE_QUANT * 2 + 7 + 6;

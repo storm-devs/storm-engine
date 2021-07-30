@@ -1,5 +1,4 @@
 #include "DataUV.h"
-#include "vmodule_api.h"
 
 // constructor / destructor
 DataUV::DataUV()

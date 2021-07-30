@@ -116,11 +116,11 @@ void TCarcass::RebuildLevels(tCarcassVertex *_vBuffer, bool _firstDraw, uint32_t
                 heightK = 1.f + 1.35f * static_cast<float>(level) / FRONT_FADE_LEVEL;
             else
                 heightK = 1.f + (1.f - levelK);
-            // tempVertex->pos = sceneMatrix * (levelStarts[level] + CVECTOR((1.f +
+            // tempVertex->pos = sceneMatrix * (levelStarts[level] + Vector((1.f +
             // WIDEN_K*levelK)*measure.deltaPointX[measurePoint],
             // heightK*measure.deltaPointY[measurePoint], 0.f));
             tempVertex->pos =
-                (levelStarts[level] + CVECTOR((1.f + WIDEN_K * levelK) * measure.deltaPointX[measurePoint],
+                (levelStarts[level] + Vector((1.f + WIDEN_K * levelK) * measure.deltaPointX[measurePoint],
                                               heightK * measure.deltaPointY[measurePoint], 0.f));
             tempVertex->pos.y += .01f;
 
@@ -172,7 +172,7 @@ void TCarcass::Uninitialize()
 }
 
 //--------------------------------------------------------------------
-void TCarcass::Execute(uint32_t _dTime, CMatrix &_mtx, const CVECTOR *_starts)
+void TCarcass::Execute(uint32_t _dTime, Matrix &_mtx, const Vector *_starts)
 {
     sceneMatrix = _mtx;
     for (auto level = 0; level < levelsCount; level++)

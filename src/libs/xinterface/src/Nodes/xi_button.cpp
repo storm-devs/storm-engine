@@ -1,4 +1,5 @@
 #include "xi_button.h"
+#include "VideoTexture.h"
 
 CXI_BUTTON::CXI_BUTTON()
 {

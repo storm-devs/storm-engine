@@ -34,7 +34,7 @@ class SKY : public Entity
         }
     }
 
-    float CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize);
+    float CalculateAlphaForSun(const Vector &vSunPos, float fSunSize);
 
   private:
     enum
@@ -49,7 +49,7 @@ class SKY : public Entity
 
     struct SKYVERTEX
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t diffuse;
         float tu, tv;
         float tu2, tv2;
@@ -57,7 +57,7 @@ class SKY : public Entity
 
     struct FOGVERTEX
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t diffuse;
     };
 
@@ -89,7 +89,7 @@ class SKY : public Entity
     // fog section
     void CreateFogSphere();
     void UpdateFogSphere();
-    uint32_t CalcFogDiffuse(CVECTOR &vPos);
+    uint32_t CalcFogDiffuse(Vector &vPos);
 
     void FillSkyDirArray(ATTRIBUTES *pAttribute);
     void GetSkyDirStrings(std::string &sSkyDir, std::string &sSkyDirNext);

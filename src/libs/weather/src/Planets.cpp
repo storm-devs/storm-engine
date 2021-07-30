@@ -112,7 +112,7 @@ void Astronomy::PLANETS::Realize(double dDeltaTime, double dHour)
     if (fPlanetFade <= 0.f)
         return;
 
-    CVECTOR vCamPos, vCamAng;
+    Vector vCamPos, vCamAng;
     float fFov;
     pRS->GetCamera(vCamPos, vCamAng, fFov);
     uint32_t bLighting, dwAmbient;
@@ -125,17 +125,17 @@ void Astronomy::PLANETS::Realize(double dDeltaTime, double dHour)
 
     for (uint32_t i = 0; i < aPlanets.size(); i++)
     {
-        CMatrix mP, m2;
+        Matrix mP, m2;
         auto fDistance = aPlanets[i].fRealDistance;
-        mP.BuildMatrix(0.0f, aPlanets[i].fAngle, 0.0f);
-        m2.BuildMatrix(PI / 8.0f, 0.0f, 0.0f);
-        auto vPos = mP * CVECTOR(0.0f, 0.0f, fDistance);
+        mP.Build(0.0f, aPlanets[i].fAngle, 0.0f);
+        m2.Build(PI / 8.0f, 0.0f, 0.0f);
+        auto vPos = mP * Vector(0.0f, 0.0f, fDistance);
         vPos = m2 * vPos;
         mP.m[0][0] = aPlanets[i].fScale * fPlanetScale;
         mP.m[1][1] = aPlanets[i].fScale * fPlanetScale;
         mP.m[2][2] = aPlanets[i].fScale * fPlanetScale;
 
-        // Astronomy::pRS->SetTransform(D3DTS_WORLD, CMatrix());
+        // Astronomy::pRS->SetTransform(D3DTS_WORLD, Matrix());
         // Astronomy::pRS->DrawSphere(vCamPos + vPos, 200.0f * aPlanets[i].fScale, 0xFFFFFFFF);
 
         RS_RECT p;

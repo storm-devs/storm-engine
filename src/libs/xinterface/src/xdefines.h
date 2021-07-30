@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Cvector.h"
+#include "math3d.h"
 #include "QuestFileReader//QuestFileReader.h"
 #include "dx9render.h"
 #include "shared/interface/messages.h"
-#include "stringService.h"
 #include "vxservice.h"
+#include "stringService.h"
 #include <EntityManager.h>
 
 #define ALPHA(x) ((x) >> 24)
@@ -210,7 +210,7 @@ struct FXYRECT
 
 struct XI_NOTEX_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
 };
 
@@ -218,7 +218,7 @@ struct XI_NOTEX_VERTEX
 
 struct XI_ONLYONETEX_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     float tu, tv;
 };
 
@@ -226,7 +226,7 @@ struct XI_ONLYONETEX_VERTEX
 
 struct XI_ONETEX_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
     float tu, tv;
 };
@@ -235,7 +235,7 @@ struct XI_ONETEX_VERTEX
 
 struct XI_TWOTEX_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
     float tu1, tv1;
     float tu2, tv2;
@@ -245,7 +245,7 @@ struct XI_TWOTEX_VERTEX
 
 struct XI_THREETEX_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
     float tu1, tv1;
     float tu2, tv2;

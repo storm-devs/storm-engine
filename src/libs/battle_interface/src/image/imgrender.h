@@ -1,6 +1,7 @@
 #pragma once
 
 #include "material.h"
+#include "message.h"
 
 class BIImageRender
 {

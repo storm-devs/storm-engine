@@ -61,8 +61,8 @@ void AIShip::SetSeaAIAttributes(ATTRIBUTES *pAAttr, VAI_INNEROBJ *pObj) const
     pAAttr->SetAttributeUseFloat("distance", GetDistance(*pObj));
 
     // calc angle between our ship and other object
-    const auto v1 = CVECTOR(sinf(GetAng().y), 0.0f, cosf(GetAng().y));
-    const auto v2 = CVECTOR(sinf(pObj->GetAng().y), 0.0f, cosf(pObj->GetAng().y));
+    const auto v1 = Vector(sinf(GetAng().y), 0.0f, cosf(GetAng().y));
+    const auto v2 = Vector(sinf(pObj->GetAng().y), 0.0f, cosf(pObj->GetAng().y));
     const auto fDot = v1 | v2;
     pAAttr->SetAttributeUseFloat("d_ay", fDot);
 
@@ -231,7 +231,7 @@ void AIShip::SetACharacter(ATTRIBUTES *pAP)
     GetAIObjShipPointer()->SetACharacter(GetACharacter());
 }
 
-void AIShip::CreateShip(entid_t _eidShip, ATTRIBUTES *_pACharacter, ATTRIBUTES *_pAShipBase, CVECTOR *vInitPos)
+void AIShip::CreateShip(entid_t _eidShip, ATTRIBUTES *_pACharacter, ATTRIBUTES *_pAShipBase, Vector *vInitPos)
 {
     Assert(_pACharacter && _pAShipBase);
     pAShipBase = _pAShipBase;
@@ -246,8 +246,8 @@ void AIShip::CreateShip(entid_t _eidShip, ATTRIBUTES *_pACharacter, ATTRIBUTES *
     auto *pShip = static_cast<SHIP_BASE *>(pObj);
     if (vInitPos)
     {
-        pObj->SetPos(CVECTOR(vInitPos->x, 0.0f, vInitPos->z));
-        // if (!isMainCharacter()) pObj->SetPos(pObj->GetPos() + CVECTOR(FRAND(100.0f), 0.0f, 40.0f + FRAND(100.0f)));
+        pObj->SetPos(Vector(vInitPos->x, 0.0f, vInitPos->z));
+        // if (!isMainCharacter()) pObj->SetPos(pObj->GetPos() + Vector(FRAND(100.0f), 0.0f, 40.0f + FRAND(100.0f)));
         pShip->State.vAng.y = vInitPos->y;
     }
 
@@ -265,7 +265,7 @@ void AIShip::CreateShip(entid_t _eidShip, ATTRIBUTES *_pACharacter, ATTRIBUTES *
     GetSpeedController()->Init();
 }
 
-bool AIShip::isCanPlace(CVECTOR vNewPos) const
+bool AIShip::isCanPlace(Vector vNewPos) const
 {
     auto vBoxSize = GetBoxsize();
     vBoxSize.x += 30.0f;
@@ -291,7 +291,7 @@ void AIShip::CheckStartPosition() const
     auto fAng = 0.0f;
     while (!isCanPlace(vNewPos))
     {
-        vNewPos = vOurPos + fRadius * CVECTOR(sinf(fAng), 0.0f, cosf(fAng));
+        vNewPos = vOurPos + fRadius * Vector(sinf(fAng), 0.0f, cosf(fAng));
         fAng += PI / 8.0f;
         if (fAng >= PIm2)
         {
@@ -302,9 +302,9 @@ void AIShip::CheckStartPosition() const
     GetShipBasePointer()->State.vPos = vNewPos;
 }
 
-bool AIShip::isCanFire(const CVECTOR &vFirePos) const
+bool AIShip::isCanFire(const Vector &vFirePos) const
 {
-    CVECTOR v1, v2, vOurPos;
+    Vector v1, v2, vOurPos;
     float fAng, fCos, fSin, fDist;
 
     vOurPos = GetPos();
@@ -426,7 +426,7 @@ void AIShip::ReleasePoint(VAI_INNEROBJ *pOtherObj)
     // aAttackPoints.Del(AI_POINT(pOtherObj));
 }
 
-CVECTOR AIShip::GetAbordagePoint(VAI_INNEROBJ *pOtherObj)
+Vector AIShip::GetAbordagePoint(VAI_INNEROBJ *pOtherObj)
 {
     const auto vDir = !(pOtherObj->GetPos() - GetPos());
     const auto vAdd = fAbordageDistance * vDir;
@@ -434,11 +434,11 @@ CVECTOR AIShip::GetAbordagePoint(VAI_INNEROBJ *pOtherObj)
     return vAdd;
 }
 
-CVECTOR AIShip::GetFollowPoint(VAI_INNEROBJ *pOtherObj)
+Vector AIShip::GetFollowPoint(VAI_INNEROBJ *pOtherObj)
 {
     const auto vDir = !(pOtherObj->GetPos() - GetPos());
     // float fAng = GetAng().y;
-    const auto vAdd = fFollowDistance * vDir; // CVECTOR(0.0f, 0.0f, 200.0f);
+    const auto vAdd = fFollowDistance * vDir; // Vector(0.0f, 0.0f, 200.0f);
     // RotateAroundY(vAdd.x,vAdd.z,cosf(fAng),sinf(fAng));
 
     return vAdd;
@@ -449,7 +449,7 @@ CVECTOR AIShip::GetFollowPoint(VAI_INNEROBJ *pOtherObj)
       aFollowPoints[dwIdx].pObj = pOtherObj;
     }
     float fAng = GetAng().y;
-    CVECTOR vAdd = CVECTOR(0.0f, 0.0f, 100.0f);
+    Vector vAdd = Vector(0.0f, 0.0f, 100.0f);
     RotateAroundY(vAdd.x,vAdd.z,cosf(fAng),sinf(fAng));
 
     aFollowPoints[dwIdx].fAngle = 0.0f;
@@ -457,7 +457,7 @@ CVECTOR AIShip::GetFollowPoint(VAI_INNEROBJ *pOtherObj)
     return vAdd;*/
 }
 
-CVECTOR AIShip::GetAttackPoint(VAI_INNEROBJ *pOtherObj)
+Vector AIShip::GetAttackPoint(VAI_INNEROBJ *pOtherObj)
 {
     auto vSrc = pOtherObj->GetPos();
     vSrc.y = 0.0f;
@@ -467,7 +467,7 @@ CVECTOR AIShip::GetAttackPoint(VAI_INNEROBJ *pOtherObj)
     for (uint32_t i = 0; i < 16; i++)
     {
         const auto fAngle = FRAND(0.1f) + PIm2 * static_cast<float>(i) / 15.0f;
-        auto vRay = CVECTOR(0.0f, 0.0f, fAttackDistance);
+        auto vRay = Vector(0.0f, 0.0f, fAttackDistance);
         RotateAroundY(vRay.x, vRay.z, cosf(fAngle), sinf(fAngle));
 
         // float fAng = GetAng().y;
@@ -499,7 +499,7 @@ CVECTOR AIShip::GetAttackPoint(VAI_INNEROBJ *pOtherObj)
       aAttackPoints[dwIdx].fAngle = fTempAng;
     }
 
-    CVECTOR vAdd = CVECTOR(0.0f , 0.0f, 150.0f);
+    Vector vAdd = Vector(0.0f , 0.0f, 150.0f);
     RotateAroundY(vAdd.x,vAdd.z,cosf(aAttackPoints[dwIdx].fAngle),sinf(aAttackPoints[dwIdx].fAngle));
 
     float fAng = GetAng().y;
@@ -509,12 +509,12 @@ CVECTOR AIShip::GetAttackPoint(VAI_INNEROBJ *pOtherObj)
     return vBestPos;
 }
 
-void AIShip::GetPrediction(float fTime, CVECTOR *vPos, CVECTOR *vAng)
+void AIShip::GetPrediction(float fTime, Vector *vPos, Vector *vAng)
 {
     if (vPos)
     {
         const auto fSpeed = GetShipBasePointer()->GetCurrentSpeed();
-        const auto vDir = CVECTOR(sinf(GetAng().y), 0.0f, cosf(GetAng().y));
+        const auto vDir = Vector(sinf(GetAng().y), 0.0f, cosf(GetAng().y));
 
         *vPos = GetPos() + fTime * fSpeed * vDir;
     }
@@ -647,7 +647,7 @@ void AIShip::ShipSetMove(uint32_t dwPriority, ATTRIBUTES *pACharacter1, ATTRIBUT
         pShip->GetTaskController()->SetNewTask(dwPriority, AITASK_MOVE, pACharacter2);
 }
 
-void AIShip::ShipSetMove(uint32_t dwPriority, ATTRIBUTES *pACharacter1, CVECTOR &vPnt)
+void AIShip::ShipSetMove(uint32_t dwPriority, ATTRIBUTES *pACharacter1, Vector &vPnt)
 {
     auto *const pShip = FindShip(pACharacter1);
     if (pShip)

@@ -45,7 +45,7 @@
 #define CHARACTER_HIDE_DIST 0.5f // Distance to the camera at which to hide the character
 
 #define CHARACTER_JUMPMAXTIME 5.0f // Maximum allowed fall time when jumping
-#define CHARACTER_MAXJUMPPOINTS (sizeof(jumpTrack) / sizeof(CVECTOR))
+#define CHARACTER_MAXJUMPPOINTS (sizeof(jumpTrack) / sizeof(Vector))
 #define CHARACTER_JUMP_TIMESTEP (CHARACTER_JUMPMAXTIME / CHARACTER_MAXJUMPPOINTS)
 
 // Types of attacks
@@ -798,7 +798,7 @@ uint64_t Character::ProcessMessage(MESSAGE &message)
             chp = 0.0f;
         if (mhp < 0.0f)
             mhp = 0.0f;
-        location->AddDamageMessage(curPos + CVECTOR(0.0f, height, 0.0f), hit, chp, mhp);
+        location->AddDamageMessage(curPos + Vector(0.0f, height, 0.0f), hit, chp, mhp);
     }
         return 1;
     default:
@@ -1095,7 +1095,7 @@ bool Character::Teleport(float x, float y, float z)
         return false;
     // New coordinates
     man->mtx.SetPosition(x, y, z);
-    curPos = oldPos = grsPos = CVECTOR(x, y, z);
+    curPos = oldPos = grsPos = Vector(x, y, z);
     vy = 0.0f;
     float bearingY;
     currentNode = location->GetPtcData().FindNode(curPos, bearingY);
@@ -1115,8 +1115,8 @@ bool Character::Teleport(float x, float y, float z, float ay)
     if (!man)
         return false;
     // New coordinates
-    man->mtx.BuildMatrix(0.0f, ay, 0.0f, x, y, z);
-    curPos = oldPos = grsPos = CVECTOR(x, y, z);
+    man->mtx.Build(0.0f, ay, 0.0f, x, y, z);
+    curPos = oldPos = grsPos = Vector(x, y, z);
     vy = 0.0f;
     Turn(ay);
     this->ay = nay;
@@ -1140,12 +1140,12 @@ bool Character::Teleport(const char *group, const char *locator)
     const long li = la->FindByName(locator);
     if (li < 0)
         return false;
-    CMatrix mtx;
+    Matrix mtx;
     if (!la->GetLocatorPos(li, mtx))
         return false;
     // looking for the angle of rotation along Y
-    double vz = mtx.Vz().z;
-    const double vx = mtx.Vz().x;
+    double vz = mtx.vz.z;
+    const double vx = mtx.vz.x;
     const double l = vx * vx + vz * vz;
     if (l > 0.0000001)
     {
@@ -1158,7 +1158,7 @@ bool Character::Teleport(const char *group, const char *locator)
         vz = -vz;
 
     // see if we can put the character in this locator
-    const CVECTOR pos = mtx.Pos();
+    const Vector pos = mtx.pos;
     if (location->supervisor.CheckPosition(pos.x, pos.y, pos.z, this))
         return Teleport(pos.x, pos.y, pos.z, static_cast<float>(vz));
 
@@ -1171,14 +1171,14 @@ bool Character::Teleport(const char *group, const char *locator)
         const float z = radius * cosf(ang);
 
         // check if there is a patch here
-        CVECTOR src = CVECTOR(pos.x + x, pos.y + 2.0f, pos.z + z);
-        CVECTOR dst = CVECTOR(pos.x + x, pos.y - 2.0f, pos.z + z);
+        Vector src = Vector(pos.x + x, pos.y + 2.0f, pos.z + z);
+        Vector dst = Vector(pos.x + x, pos.y - 2.0f, pos.z + z);
         const float k = location->GetPtcData().Trace(src, dst);
         // if there is no patch, then the next iteration
         if (k > 1.0f)
             continue;
         // if the point is free - teleport there
-        const CVECTOR pnt = src + (dst - src) * k + CVECTOR(0.0f, 0.01f, 0.0f);
+        const Vector pnt = src + (dst - src) * k + Vector(0.0f, 0.01f, 0.0f);
         if (location->supervisor.CheckPosition(pnt.x, pnt.y, pnt.z, this))
             return Teleport(pnt.x, pnt.y, pnt.z, static_cast<float>(vz));
     }
@@ -1619,7 +1619,7 @@ void Character::StrafeLeft()
     fgtSetType = fgt_strafe_l;
     fgtSetIndex = 0;
     isTurnLock = false;
-    // impulse += 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay))
+    // impulse += 15.0f*Vector(-cosf(ay), 0.0f, sinf(ay))
 }
 
 // Jump right
@@ -1637,7 +1637,7 @@ void Character::StrafeRight()
     fgtSetType = fgt_strafe_r;
     fgtSetIndex = 0;
     isTurnLock = false;
-    // impulse -= 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay));
+    // impulse -= 15.0f*Vector(-cosf(ay), 0.0f, sinf(ay));
 }
 
 // Feint
@@ -1818,32 +1818,32 @@ void Character::Dead()
             dead[i].p *= 0.1f;
         const float cs = cosf(dead[i].ang);
         const float sn = sinf(dead[i].ang);
-        CVECTOR p = curPos + CVECTOR(0.0f, 0.5f, 0.0f);
-        if (!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn)))
+        Vector p = curPos + Vector(0.0f, 0.5f, 0.0f);
+        if (!location->VisibleTest(p, p + Vector(cs, 0.0f, sn)))
             dead[i].p *= 0.5f;
-        p += CVECTOR(sn * 0.5f, 0.0f, -cs * 0.5f);
-        if (!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn)))
+        p += Vector(sn * 0.5f, 0.0f, -cs * 0.5f);
+        if (!location->VisibleTest(p, p + Vector(cs, 0.0f, sn)))
             dead[i].p *= 0.5f;
-        p -= CVECTOR(sn * 1.0f, 0.0f, -cs * 1.0f);
-        if (!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn)))
+        p -= Vector(sn * 1.0f, 0.0f, -cs * 1.0f);
+        if (!location->VisibleTest(p, p + Vector(cs, 0.0f, sn)))
             dead[i].p *= 0.5f;
-        p = curPos + CVECTOR(0.0f, 1.0f, 0.0f);
-        if (!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn)))
+        p = curPos + Vector(0.0f, 1.0f, 0.0f);
+        if (!location->VisibleTest(p, p + Vector(cs, 0.0f, sn)))
             dead[i].p *= 0.5f;
-        p += CVECTOR(sn * 0.5f, 0.0f, -cs * 0.5f);
-        if (!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn)))
+        p += Vector(sn * 0.5f, 0.0f, -cs * 0.5f);
+        if (!location->VisibleTest(p, p + Vector(cs, 0.0f, sn)))
             dead[i].p *= 0.5f;
-        p -= CVECTOR(sn * 1.0f, 0.0f, -cs * 1.0f);
-        if (!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn)))
+        p -= Vector(sn * 1.0f, 0.0f, -cs * 1.0f);
+        if (!location->VisibleTest(p, p + Vector(cs, 0.0f, sn)))
             dead[i].p *= 0.5f;
-        p = curPos + CVECTOR(0.0f, 1.5f, 0.0f);
-        if (!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn)))
+        p = curPos + Vector(0.0f, 1.5f, 0.0f);
+        if (!location->VisibleTest(p, p + Vector(cs, 0.0f, sn)))
             dead[i].p *= 0.9f;
-        p += CVECTOR(sn * 0.5f, 0.0f, -cs * 0.5f);
-        if (!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn)))
+        p += Vector(sn * 0.5f, 0.0f, -cs * 0.5f);
+        if (!location->VisibleTest(p, p + Vector(cs, 0.0f, sn)))
             dead[i].p *= 0.9f;
-        p -= CVECTOR(sn * 1.0f, 0.0f, -cs * 1.0f);
-        if (!location->VisibleTest(p, p + CVECTOR(cs, 0.0f, sn)))
+        p -= Vector(sn * 1.0f, 0.0f, -cs * 1.0f);
+        if (!location->VisibleTest(p, p + Vector(cs, 0.0f, sn)))
             dead[i].p *= 0.9f;
     }
     ay = _ay;
@@ -1971,11 +1971,11 @@ void Character::Move(float dltTime)
             turnspd = bturn.Get();
         // Moving
         const float spd = dltTime * speed * k;
-        CVECTOR moveVec(sinf(ay) * spd, 0.0f, cosf(ay) * spd);
+        Vector moveVec(sinf(ay) * spd, 0.0f, cosf(ay) * spd);
         curPos += moveVec;
         if (spd < 0.0f)
             moveVec = -moveVec;
-        curPos += CVECTOR(moveVec.z, 0.0f, -moveVec.x) * (strafeMove * 0.8f);
+        curPos += Vector(moveVec.z, 0.0f, -moveVec.x) * (strafeMove * 0.8f);
         curPos += impulse * dltTime;
         const float kStrafe = dltTime * 8.0f;
         bool noStrafe = true;
@@ -2052,7 +2052,7 @@ void Character::Move(float dltTime)
                     strafeVel = 0.0f;
             }
         }
-        curPos += CVECTOR(cosf(ay), 0.0f, -sinf(ay)) * (strafeVel * dltTime * 0.9f);
+        curPos += Vector(cosf(ay), 0.0f, -sinf(ay)) * (strafeVel * dltTime * 0.9f);
         // Rotation
         if (turnDir > 0.0f)
         {
@@ -2191,7 +2191,7 @@ void Character::Move(float dltTime)
         isRunDisable = false;
         if (sb)
         {
-            CVECTOR n;
+            Vector n;
             seaY = sb->WaveXZ(curPos.x, curPos.z, &n);
             isRunDisable = seaY - curPos.y > CHARACTER_SEA_NOTRUN;
             if (seaY > curPos.y)
@@ -2267,7 +2267,7 @@ void Character::Update(float dltTime)
             }
         }
         // add to the list of drawables
-        const CVECTOR pos = curPos + CVECTOR(0.0f, 2.0f, 0.0f);
+        const Vector pos = curPos + Vector(0.0f, 2.0f, 0.0f);
         location->DrawEnemyBars(pos, hp, energy, tuner.GetAlpha() * enemyBarsAlpha);
     }
     //
@@ -2319,7 +2319,7 @@ void Character::Update(float dltTime)
         {
             if (fall.name && !isFight && !priorityAction.name)
             {
-                if (TestJump(curPos + CVECTOR(0.001f * sinf(ay), -0.001f, 0.001f * cosf(ay))))
+                if (TestJump(curPos + Vector(0.001f * sinf(ay), -0.001f, 0.001f * cosf(ay))))
                 {
                     PlaySound("recoil");
                     isJump = true;
@@ -2339,24 +2339,24 @@ void Character::Update(float dltTime)
     }
     // SetSoundPosition(recoilSound);
     // Wave height at a given point
-    CVECTOR chrPos = curPos;
+    Vector chrPos = curPos;
     if (isSwim && location->IsSwimming())
     {
         vy = 0.0f;
         chrPos.y = seaY;
     }
     // put the matrix for the model
-    m->mtx.BuildMatrix(CVECTOR(0.0f, ay + strafeAngle * 3.1415f * 0.25f * 0.8f, 0.0f), chrPos);
-    // - CVECTOR(0.0f, 0.14f, 0.0f));
+    m->mtx.Build(Vector(0.0f, ay + strafeAngle * 3.1415f * 0.25f * 0.8f, 0.0f), chrPos);
+    // - Vector(0.0f, 0.14f, 0.0f));
     // Walking up the stairs
     float sn = 0.0f;
-    CVECTOR nodeNorm;
+    Vector nodeNorm;
     ptc.GetNodeNormal(currentNode, nodeNorm);
     float k = 10.0f * dltTime;
     if (k > 1.0f)
         k = 1.0f;
     movecs += (nodeNorm.y - movecs) * k;
-    isUp = nodeNorm.x * m->mtx.Vz().x + nodeNorm.z * m->mtx.Vz().z <= 0;
+    isUp = nodeNorm.x * m->mtx.vz.x + nodeNorm.z * m->mtx.vz.z <= 0;
     // Animation
     /*
     if(_stricmp(characterID, "Blaze") == 0)
@@ -2407,7 +2407,7 @@ void Character::Update(float dltTime)
             }
         }
     }
-    CVECTOR camPos, camAng;
+    Vector camPos, camAng;
     float perspective;
     location->GetRS()->GetCamera(camPos, camAng, perspective);
     const float dxz = (curPos.x - camPos.x) * (curPos.x - camPos.x) + (curPos.z - camPos.z) * (curPos.z - camPos.z);
@@ -2439,16 +2439,16 @@ void Character::Update(float dltTime)
     MODEL *signMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(sign));
     if (signMdl)
     {
-        CVECTOR dir = camPos - curPos;
+        Vector dir = camPos - curPos;
         dir.y = 0.0f;
         const float len = sqrtf(~dir);
         if (len > 1e-10f)
         {
-            signMdl->mtx.Vz() = dir / len;
-            signMdl->mtx.Vy() = CVECTOR(0.0f, 1.0f, 0.0f);
-            signMdl->mtx.Vx() = signMdl->mtx.Vz() ^ signMdl->mtx.Vy();
+            signMdl->mtx.vz = dir / len;
+            signMdl->mtx.vy = Vector(0.0f, 1.0f, 0.0f);
+            signMdl->mtx.vx = signMdl->mtx.vz ^ signMdl->mtx.vy;
         }
-        signMdl->mtx.Pos() = curPos;
+        signMdl->mtx.pos = curPos;
     }
 
     // character light source
@@ -2762,7 +2762,7 @@ long Character::PlaySound(const char *soundName, bool isLoop, bool isCached)
 {
     if (!soundService)
         return SOUND_INVALID_ID;
-    CVECTOR pos = curPos + CVECTOR(0.0f, 1.0f, 0.0f);
+    Vector pos = curPos + Vector(0.0f, 1.0f, 0.0f);
     const long sID = soundService->SoundPlay(soundName, PCM_3D, VOLUME_FX, false, false, isCached, 0, &pos);
     return sID;
 }
@@ -2906,18 +2906,18 @@ void Character::SetSoundPosition(long id)
 {
     if (!soundService || id == SOUND_INVALID_ID)
         return;
-    CVECTOR pos = curPos + CVECTOR(0.0f, 1.0f, 0.0f);
+    Vector pos = curPos + Vector(0.0f, 1.0f, 0.0f);
     auto *const location = GetLocation();
     if (location->supervisor.player)
     {
         VDX9RENDER *rs = location->GetRS();
         if (rs)
         {
-            static CMatrix view, cur;
+            static Matrix view, cur;
             rs->GetTransform(D3DTS_VIEW, view);
-            cur.BuildMatrix(CVECTOR(0.0f, ay, 0.0f), location->supervisor.player->curPos);
-            cur.MulToInv(CVECTOR(pos), pos);
-            view.MulToInv(CVECTOR(pos), pos);
+            cur.Build(Vector(0.0f, ay, 0.0f), location->supervisor.player->curPos);
+            pos = cur.MulVertexByInverse(Vector(pos));
+            pos = view.MulVertexByInverse(Vector(pos));
         }
     }
     soundService->SoundSet3DParam(id, SM_POSITION, &pos);
@@ -3143,17 +3143,17 @@ bool Character::zTurnByLoc(MESSAGE &message)
     const long li = la->FindByName(name.c_str());
     if (li < 0)
         return false;
-    CMatrix mtx;
+    Matrix mtx;
     if (!la->GetLocatorPos(li, mtx))
         return false;
     const bool isTo = message.Long() != 0;
     if (isTo)
     {
-        Turn(mtx.Pos().x - curPos.x, mtx.Pos().z - curPos.z);
+        Turn(mtx.pos.x - curPos.x, mtx.pos.z - curPos.z);
     }
     else
     {
-        Turn(mtx.Vz().x, mtx.Vz().z);
+        Turn(mtx.vz.x, mtx.vz.z);
     }
     return true;
 }
@@ -3203,7 +3203,7 @@ uint32_t Character::zExMessage(MESSAGE &message)
     LocatorArray *la;
     long i;
     VDATA *v;
-    CVECTOR pos;
+    Vector pos;
     if (_stricmp(msg.c_str(), "TieItem") == 0)
     {
         i = message.Long();
@@ -3286,7 +3286,7 @@ uint32_t Character::zExMessage(MESSAGE &message)
             v = message.ScriptVariablePointer();
             // Looking for a locator
             la = location->FindLocatorsGroup(grp.c_str());
-            i = location->supervisor.FindForvardLocator(la, curPos, CVECTOR(sinf(ay), 0.0f, cosf(ay)));
+            i = location->supervisor.FindForvardLocator(la, curPos, Vector(sinf(ay), 0.0f, cosf(ay)));
             if (i < 0)
             {
                 v->Set("");
@@ -3382,34 +3382,34 @@ bool Character::zPlaySound(MESSAGE &message)
 }
 
 // Check the ability to fly
-bool Character::TestJump(CVECTOR pos)
+bool Character::TestJump(Vector pos)
 {
     auto *const location = GetLocation();
     MODEL *jpm = location->JmpPatch();
     if (!jpm)
         return false;
-    const CVECTOR src(pos.x, pos.y + 1.0f, pos.z);
-    const CVECTOR dst(pos.x, pos.y - 1.0f, pos.z);
+    const Vector src(pos.x, pos.y + 1.0f, pos.z);
+    const Vector dst(pos.x, pos.y - 1.0f, pos.z);
     if (jpm->Trace(src, dst) >= 1.0f)
         return false;
     // Checking the trajectory of the fall
     const float speed = 3.3f;
-    CVECTOR v(speed * sinf(ay), vy, speed * cosf(ay));
+    Vector v(speed * sinf(ay), vy, speed * cosf(ay));
     for (long i = 0; i < CHARACTER_MAXJUMPPOINTS; i++)
     {
         // Save position in the track
         jumpTrack[i] = pos;
         // Checking the next segment
-        CVECTOR dlt = v * CHARACTER_JUMP_TIMESTEP;
+        Vector dlt = v * CHARACTER_JUMP_TIMESTEP;
         v.y -= 9.8f * CHARACTER_JUMP_TIMESTEP;
-        CVECTOR src = pos - dlt * 0.001f;
-        CVECTOR dst = pos + dlt * 1.001f;
+        Vector src = pos - dlt * 0.001f;
+        Vector dst = pos + dlt * 1.001f;
         // location->DrawLine(src, 0xff00ff00, dst, 0xff00ff00, false);
         const float k = location->GetPtcData().Trace(src, dst);
         if (k < 1.0f)
         {
             // Found a landing point
-            osculationPoint = src + (dst - src) * k + CVECTOR(0.0f, 0.01f, 0.0f);
+            osculationPoint = src + (dst - src) * k + Vector(0.0f, 0.01f, 0.0f);
             jumpFallTime = (i + k) * CHARACTER_JUMP_TIMESTEP;
             curJumpFallTime = 0.0f;
             jumpPoints = i + 1;
@@ -3421,7 +3421,7 @@ bool Character::TestJump(CVECTOR pos)
     return false;
 }
 
-bool Character::BuildJump(CVECTOR pos, float fAng)
+bool Character::BuildJump(Vector pos, float fAng)
 {
     auto *const location = GetLocation();
     // no jumping patch - no jumping
@@ -3429,8 +3429,8 @@ bool Character::BuildJump(CVECTOR pos, float fAng)
     if (!jpm)
         return false;
 
-    const CVECTOR src(pos.x, pos.y + 1.0f, pos.z);
-    const CVECTOR dst(pos.x, pos.y - 1.0f, pos.z);
+    const Vector src(pos.x, pos.y + 1.0f, pos.z);
+    const Vector dst(pos.x, pos.y - 1.0f, pos.z);
     const float fTrace = location->GetPtcData().Trace(src, dst);
     if (fTrace > 1.0f)
         return false;
@@ -3438,24 +3438,24 @@ bool Character::BuildJump(CVECTOR pos, float fAng)
 
     // Checking the trajectory of the jump
     const float speed = 3.3f;
-    CVECTOR v(speed * sinf(fAng), speed, speed * cosf(fAng)); // jump speed
+    Vector v(speed * sinf(fAng), speed, speed * cosf(fAng)); // jump speed
     // Building a jump track
     for (long i = 0; i < CHARACTER_MAXJUMPPOINTS; i++)
     {
         // Save position in the track
         jumpTrack[i] = pos;
         // Checking the next segment
-        CVECTOR dlt = v * CHARACTER_JUMP_TIMESTEP;
+        Vector dlt = v * CHARACTER_JUMP_TIMESTEP;
         v.y -= 9.8f * CHARACTER_JUMP_TIMESTEP;
-        CVECTOR src = pos - dlt * 0.001f;
-        CVECTOR dst = pos + dlt * 1.001f;
+        Vector src = pos - dlt * 0.001f;
+        Vector dst = pos + dlt * 1.001f;
         // location->DrawLine(src, 0xff00ff00, dst, 0xff00ff00, false);
         // if we bump into any thread, we can't jump
         const float k = location->GetPtcData().Trace(src, dst);
         if (k < 1.0f)
         {
             // Found a landing point
-            osculationPoint = src + (dst - src) * k + CVECTOR(0.0f, 0.01f, 0.0f);
+            osculationPoint = src + (dst - src) * k + Vector(0.0f, 0.01f, 0.0f);
             jumpFallTime = (i + k) * CHARACTER_JUMP_TIMESTEP;
             curJumpFallTime = 0.0f;
             jumpPoints = i + 1;
@@ -3471,7 +3471,7 @@ bool Character::BuildJump(CVECTOR pos, float fAng)
                 // yes we land on the jump patch
                 if (fT < 1.f)
                 {
-                    CVECTOR vdlt = src + (dst - src) * fT - osculationPoint;
+                    Vector vdlt = src + (dst - src) * fT - osculationPoint;
                     // take into account the correction if it is large enough
                     if (vdlt.GetLength() > 0.1f)
                     {
@@ -3494,7 +3494,7 @@ bool Character::BuildJump(CVECTOR pos, float fAng)
     return false;
 }
 
-bool Character::TraceWithObstacle(const CVECTOR &src, const CVECTOR &dst)
+bool Character::TraceWithObstacle(const Vector &src, const Vector &dst)
 {
     auto *const location = GetLocation();
     if (location->Trace(src, dst) > 1.f)
@@ -4342,7 +4342,7 @@ void Character::UpdateAnimation()
                 case fgt_strafe_l: // Bounce to the left
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     recoilSound = SOUND_INVALID_ID; // PlaySound("recoil", true);
-                    impulse += 15.0f * CVECTOR(-cosf(ay), 0.0f, sinf(ay));
+                    impulse += 15.0f * Vector(-cosf(ay), 0.0f, sinf(ay));
                     if (!(isSet = SetAction(strafe_l.name, strafe_l.tblend, 0.0f, 0.0f)))
                     {
                         core.Trace("Character animation: not set recoil action: \"%s\"", strafe_l.name);
@@ -4351,7 +4351,7 @@ void Character::UpdateAnimation()
                 case fgt_strafe_r: // Bounce to the left
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     recoilSound = SOUND_INVALID_ID; // PlaySound("recoil", true);
-                    impulse -= 15.0f * CVECTOR(-cosf(ay), 0.0f, sinf(ay));
+                    impulse -= 15.0f * Vector(-cosf(ay), 0.0f, sinf(ay));
                     if (!(isSet = SetAction(strafe_r.name, strafe_r.tblend, 0.0f, 0.0f)))
                     {
                         core.Trace("Character animation: not set recoil action: \"%s\"", strafe_l.name);
@@ -4994,21 +4994,21 @@ bool Character::VisibleTest(Character *chr)
         return false;
     auto *const location = GetLocation();
     // Character axis test
-    if (location->VisibleTest(curPos + CVECTOR(0.0f, height * 0.9f, 0.0f),
-                              chr->curPos + CVECTOR(0.0f, chr->height * 0.97f, 0.0f)))
+    if (location->VisibleTest(curPos + Vector(0.0f, height * 0.9f, 0.0f),
+                              chr->curPos + Vector(0.0f, chr->height * 0.97f, 0.0f)))
         return true;
-    if (location->VisibleTest(curPos + CVECTOR(0.0f, height * 0.9f, 0.0f),
-                              chr->curPos + CVECTOR(0.0f, chr->height * 0.67f, 0.0f)))
+    if (location->VisibleTest(curPos + Vector(0.0f, height * 0.9f, 0.0f),
+                              chr->curPos + Vector(0.0f, chr->height * 0.67f, 0.0f)))
         return true;
-    if (location->VisibleTest(curPos + CVECTOR(0.0f, height * 0.9f, 0.0f),
-                              chr->curPos + CVECTOR(0.0f, chr->height * 0.37f, 0.0f)))
+    if (location->VisibleTest(curPos + Vector(0.0f, height * 0.9f, 0.0f),
+                              chr->curPos + Vector(0.0f, chr->height * 0.37f, 0.0f)))
         return true;
     // Trace rays off-center
-    if (location->VisibleTest(curPos + CVECTOR(0.0f, height * 0.9f, 0.0f),
-                              chr->curPos + CVECTOR(0.3f * cosf(chr->ay), chr->height * 0.8f, -0.3f * sinf(chr->ay))))
+    if (location->VisibleTest(curPos + Vector(0.0f, height * 0.9f, 0.0f),
+                              chr->curPos + Vector(0.3f * cosf(chr->ay), chr->height * 0.8f, -0.3f * sinf(chr->ay))))
         return true;
-    if (location->VisibleTest(curPos + CVECTOR(0.0f, height * 0.9f, 0.0f),
-                              chr->curPos + CVECTOR(-0.3f * cosf(chr->ay), chr->height * 0.8f, 0.3f * sinf(chr->ay))))
+    if (location->VisibleTest(curPos + Vector(0.0f, height * 0.9f, 0.0f),
+                              chr->curPos + Vector(-0.3f * cosf(chr->ay), chr->height * 0.8f, 0.3f * sinf(chr->ay))))
         return true;
     // Hid ...
     return false;
@@ -5028,12 +5028,12 @@ void Character::UpdateWeapons()
 }
 
 // Get direction towards the enemy to bounce on hit
-CVECTOR Character::GetEnemyDirForImpulse()
+Vector Character::GetEnemyDirForImpulse()
 {
     auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(enemyAttack));
     if (!chr)
-        return CVECTOR(0.0f);
-    CVECTOR dir = chr->curPos - curPos;
+        return Vector(0.0f);
+    Vector dir = chr->curPos - curPos;
     dir.y = 0.0f;
     const float l = ~dir;
     if (l > 0.0f)
@@ -5045,7 +5045,7 @@ CVECTOR Character::GetEnemyDirForImpulse()
             return dir;
         }
     }
-    return CVECTOR(0.0f);
+    return Vector(0.0f);
 }
 
 // Get postfix
@@ -5065,7 +5065,7 @@ const char *Character::GetValueByPrefix(const char *str, const char *pref)
     return nullptr;
 }
 
-CVECTOR Character::GetHandLightPos()
+Vector Character::GetHandLightPos()
 {
     MODEL *mdlChr = Model();
     NODE *mdlNode = mdlChr ? mdlChr->GetNode(0) : nullptr;
@@ -5077,33 +5077,33 @@ CVECTOR Character::GetHandLightPos()
         if ((sti = mdlNode->geo->FindLabelN(sti + 1, idLocator)) > -1)
         {
             Animation *ani = mdlChr->GetAnimation();
-            CMatrix *bones = &ani->GetAnimationMatrix(0);
+            Matrix *bones = &ani->GetAnimationMatrix(0);
 
             GEOS::LABEL lb;
             mdlNode->geo->GetLabel(sti, lb);
-            CMatrix mt;
-            mt.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
-            mt.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
-            mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
-            mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            Matrix mt;
+            mt.vx = Vector(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
+            mt.vy = Vector(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
+            mt.vz = Vector(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
+            mt.pos = Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
-            CMatrix mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
+            Matrix mbn = mt * bones[lb.bones[0]];
+            mbn.pos.x *= -1.0f;
+            mbn.vx.x *= -1.0f;
+            mbn.vy.x *= -1.0f;
+            mbn.vz.x *= -1.0f;
 
-            CMatrix scl;
-            scl.Vx().x = -1.0f;
-            scl.Vy().y = 1.0f;
-            scl.Vz().z = 1.0f;
-            mbn.EqMultiply(scl, CMatrix(mbn));
+            Matrix scl;
+            scl.vx.x = -1.0f;
+            scl.vy.y = 1.0f;
+            scl.vz.z = 1.0f;
+            mbn.EqMultiply(scl, Matrix(mbn));
 
-            return (mbn * mdlChr->mtx).Pos();
+            return (mbn * mdlChr->mtx).pos;
         }
     }
 
-    return CVECTOR(0.f, 0.f, 0.f);
+    return Vector(0.f, 0.f, 0.f);
 }
 
 // boal -->
@@ -5144,13 +5144,13 @@ bool Character::CheckObstacle(float fx, float fz, float fzlen)
 
     float fTrace;
     float fHDist;
-    CVECTOR vsrc, vdst;
+    Vector vsrc, vdst;
 
     auto *const location = GetLocation();
 
     // check the midpoint
-    vsrc = CVECTOR(xmed, 50.f, zmed);
-    vdst = CVECTOR(xmed, -50.f, zmed);
+    vsrc = Vector(xmed, 50.f, zmed);
+    vdst = Vector(xmed, -50.f, zmed);
     fTrace = location->GetPtcData().Trace(vsrc, vdst);
     if (fTrace < 0.f || fTrace > 1.f)
         return true;
@@ -5159,8 +5159,8 @@ bool Character::CheckObstacle(float fx, float fz, float fzlen)
         return true;
 
     // check the starting point
-    vsrc = CVECTOR(xbeg, 50.f, zbeg);
-    vdst = CVECTOR(xbeg, -50.f, zbeg);
+    vsrc = Vector(xbeg, 50.f, zbeg);
+    vdst = Vector(xbeg, -50.f, zbeg);
     fTrace = location->GetPtcData().Trace(vsrc, vdst);
     if (fTrace < 0.f || fTrace > 1.f)
         return true;
@@ -5169,8 +5169,8 @@ bool Character::CheckObstacle(float fx, float fz, float fzlen)
         return true;
 
     // check the end point
-    vsrc = CVECTOR(xend, 50.f, zend);
-    vdst = CVECTOR(xend, -50.f, zend);
+    vsrc = Vector(xend, 50.f, zend);
+    vdst = Vector(xend, -50.f, zend);
     fTrace = location->GetPtcData().Trace(vsrc, vdst);
     if (fTrace < 0.f || fTrace > 1.f)
         return true;

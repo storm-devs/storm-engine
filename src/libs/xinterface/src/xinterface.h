@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Matrix.h"
 #include "Nodes/xi_util.h"
 #include "QuestFileReader//QuestFileReader.h"
 #include "dx9render.h"
 #include "editor/editor.h"
 #include "inode.h"
-#include "vmodule_api.h"
 
 #include <filesystem>
 
@@ -214,7 +212,7 @@ class XINTERFACE : public XINTERFACE_BASE
 
   protected:
     // WORLD,VIEW and PROJECTION matrixes
-    CMatrix matw, matv, matp;
+    Matrix matw, matv, matp;
 
     CINODE *m_pCurNode;
     CINODE *m_pNodes;

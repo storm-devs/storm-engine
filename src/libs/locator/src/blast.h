@@ -1,18 +1,16 @@
 #pragma once
 
-#include "Matrix.h"
 #include "Sd2_h/CannonTrace.h"
 #include "blast.h"
 #include "dx9render.h"
 #include "geometry.h"
-#include "vmodule_api.h"
 
 using GEOPARTICLE = struct
 {
-    CVECTOR pos;
-    CVECTOR ang;
-    CVECTOR ang_speed;
-    CVECTOR dir;
+    Vector pos;
+    Vector ang;
+    Vector ang_speed;
+    Vector dir;
     GEOS *geo;
     float speed;
     bool bDouble;
@@ -28,7 +26,7 @@ class BLAST : public Entity
     entid_t sea_eid;
     float AngleDeviation;
     uint32_t ItemsNum;
-    CMatrix Center;
+    Matrix Center;
     entid_t Splash;
 
   public:
@@ -39,7 +37,7 @@ class BLAST : public Entity
     uint32_t AttributeChanged(ATTRIBUTES *) override;
     void Realize(uint32_t Delta_Time);
     void ProcessTime(uint32_t Delta_Time);
-    void SetBlastCenter(CVECTOR pos, CVECTOR ang);
+    void SetBlastCenter(Vector pos, Vector ang);
     void AddGeometry(char *name, long num);
 
     void ProcessStage(Stage stage, uint32_t delta) override

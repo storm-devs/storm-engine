@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Cvector.h"
+#include <vector>
+
+#include "math3d.h"
 #include "SoundDefines.h"
 #include "VSoundService.h"
 #include "service.h"
-#include <vector>
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES
@@ -48,7 +49,7 @@ class VSoundService : public SERVICE
                              bool _looped = false,      // looped?
                              bool _cached = false,      // unload after stoppping?
                              long _time = 0,            // fade in, if _time > 0
-                             const CVECTOR *_startPosition = nullptr, float _minDistance = -1.0f,
+                             const Vector *_startPosition = nullptr, float _minDistance = -1.0f,
                              float _maxDistance = -1.0f, long _loopPauseTime = 0, float _volume = 1.0f,
                              long _prior = 128) = 0;
 
@@ -65,8 +66,8 @@ class VSoundService : public SERVICE
     // Service functions
     virtual void SetMasterVolume(float _fxVolume, float _musicVolume, float _speechVolume) = 0;
     virtual void GetMasterVolume(float *_fxVolume, float *_musicVolume, float *_speechVolume) = 0;
-    virtual void SetCameraPosition(const CVECTOR &_cameraPosition) = 0;
-    virtual void SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_head) = 0;
+    virtual void SetCameraPosition(const Vector &_cameraPosition) = 0;
+    virtual void SetCameraOrientation(const Vector &_nose, const Vector &_head) = 0;
 
     virtual void ResetScheme() = 0;
     virtual bool SetScheme(const char *_schemeName) = 0;

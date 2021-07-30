@@ -143,7 +143,7 @@ void TSplash::Release()
 }
 
 //--------------------------------------------------------------------
-void TSplash::Start(const CVECTOR &_pos, const CVECTOR &_dir)
+void TSplash::Start(const Vector &_pos, const Vector &_dir)
 {
     time = 0;
     center = _pos;
@@ -215,7 +215,7 @@ bool TSplash::Process(uint32_t _dTime)
     auto *vertices = startVertices + topIndex * GRID_STEPS * GRID_STEPS;
     const auto stepSize = static_cast<float>(GRID_LENGTH) / static_cast<float>(GRID_STEPS);
     const auto halfSize = GRID_LENGTH / 2.0f;
-    CVECTOR curPos;
+    Vector curPos;
     float localHeight;
 
     // calculate alpha
@@ -379,7 +379,7 @@ void TSplash::Realize(uint32_t _dTime)
     RDTSC_B(ticksRealize);
 
     static uint32_t ambient, tfactor, oldAmbient, alpha;
-    const CMatrix m;
+    const Matrix m;
     renderer->SetTransform(D3DTS_WORLD, static_cast<D3DMATRIX *>(m));
     renderer->TextureSet(0, texture);
 
@@ -400,7 +400,7 @@ void TSplash::Realize2(uint32_t _dTime)
     RDTSC_B(ticksRealize);
 
     static uint32_t ambient, fogColor, oldAmbient;
-    const CMatrix m;
+    const Matrix m;
     renderer->SetTransform(D3DTS_WORLD, static_cast<D3DMATRIX *>(m));
     renderer->TextureSet(0, texture2);
     renderer->TextureSet(1, texture2);

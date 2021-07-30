@@ -59,8 +59,8 @@ void WdmMerchantShip::Goto(float x, float z, float rad)
     // Determine the direction
     if (isEnableSetDir)
     {
-        const double sn = x - mtx.Pos().x;
-        double cs = z - mtx.Pos().z;
+        const double sn = x - mtx.pos.x;
+        double cs = z - mtx.pos.z;
         const auto l = sn * sn + cs * cs;
         if (l > 0.0)
             cs /= sqrt(l);
@@ -79,17 +79,17 @@ void WdmMerchantShip::Goto(float x, float z, float rad)
 void WdmMerchantShip::FindMoveForce()
 {
     isEnableSetDir = false;
-    CVECTOR dir;
+    Vector dir;
     if (wdmObjects->islands)
     {
-        wdmObjects->islands->FindDirection(mtx.Pos(), gotoPos, dir);
-        // wdmObjects->rs->DrawVector(mtx.Pos(), gotoPos, 0xFFFFFFFF);
-        // wdmObjects->rs->DrawVector(mtx.Pos(), mtx.Pos()+dir*100.f, 0xFFFF0000);
+        wdmObjects->islands->FindDirection(mtx.pos, gotoPos, dir);
+        // wdmObjects->rs->DrawVector(mtx.pos, gotoPos, 0xFFFFFFFF);
+        // wdmObjects->rs->DrawVector(mtx.pos, mtx.pos+dir*100.f, 0xFFFF0000);
     }
     else
     {
-        dir.x = gotoPos.x - mtx.Pos().x;
-        dir.z = gotoPos.z - mtx.Pos().z;
+        dir.x = gotoPos.x - mtx.pos.x;
+        dir.z = gotoPos.z - mtx.pos.z;
         auto dl = dir.x * dir.x + dz * dz;
         if (dl > 1.0f)
         {
@@ -105,8 +105,8 @@ void WdmMerchantShip::FindMoveForce()
 // Completion check
 bool WdmMerchantShip::KillTest()
 {
-    const auto dx = gotoPos.x - mtx.Pos().x;
-    const auto dz = gotoPos.z - mtx.Pos().z;
+    const auto dx = gotoPos.x - mtx.pos.x;
+    const auto dz = gotoPos.z - mtx.pos.z;
     const auto dl = dx * dx + dz * dz;
     return dl <= gotoRad * gotoRad;
 }

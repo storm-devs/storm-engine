@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "Matrix.h"
-#include "vmodule_api.h"
 #include <cstdint>
 
 #include "LocatorArray.h"
@@ -26,13 +24,13 @@ class Location : public Entity
 {
     struct SphVertex
     {
-        CVECTOR v;
+        Vector v;
         uint32_t c;
     };
 
     struct BarVertex
     {
-        CVECTOR p;
+        Vector p;
         float rhw;
         uint32_t c;
         float u, v;
@@ -40,7 +38,7 @@ class Location : public Entity
 
     struct DmgMessage
     {
-        CVECTOR p;
+        Vector p;
         float alpha;
         float hit, hp;
         uint32_t c;
@@ -48,7 +46,7 @@ class Location : public Entity
 
     struct EnemyBar
     {
-        CVECTOR p;
+        Vector p;
         float hp;
         float energy;
         float alpha;
@@ -99,19 +97,19 @@ class Location : public Entity
     MODEL *JmpPatch();
 
     // Check the visibility of 2 points
-    bool VisibleTest(const CVECTOR &p1, const CVECTOR &p2);
+    bool VisibleTest(const Vector &p1, const Vector &p2);
 
     // Trace the ray through the location
-    float Trace(const CVECTOR &src, const CVECTOR &dst);
+    float Trace(const Vector &src, const Vector &dst);
     bool GetCollideTriangle(TRIANGLE &trg) const;
-    void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
+    void Clip(Plane *p, long numPlanes, Vector &cnt, float rad, bool (*fnc)(const Vector *vtx, long num));
 
     Lights *GetLights() const;
 
     VDX9RENDER *GetRS() const;
-    void DrawLine(const CVECTOR &s, uint32_t cs, const CVECTOR &d, uint32_t cd, bool useZ = true) const;
+    void DrawLine(const Vector &s, uint32_t cs, const Vector &d, uint32_t cd, bool useZ = true) const;
     // Write text
-    void Print(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale, const char *format,
+    void Print(const Vector &pos3D, float rad, long line, float alpha, uint32_t color, float scale, const char *format,
                ...) const;
 
     bool IsDebugView();
@@ -122,9 +120,9 @@ class Location : public Entity
     bool IsSwimming() const;
 
     // Add a damage message
-    void AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, float maxhp);
+    void AddDamageMessage(const Vector &pos3D, float hit, float curhp, float maxhp);
     // Draw bars above the enemy in this frame
-    void DrawEnemyBars(const CVECTOR &pos, float hp, float energy, float alpha);
+    void DrawEnemyBars(const Vector &pos, float hp, float energy, float alpha);
 
   public:
     // The object that controls the repulsion of characters
@@ -147,7 +145,7 @@ class Location : public Entity
     void TestLocatorsInPatch(MESSAGE &message);
     // Drawing bars over characters
     void DrawEnemyBars();
-    void DrawBar(const MTX_PRJ_VECTOR &vrt, uint32_t color, float hp, float energy);
+    void DrawBar(const Vector4 &vrt, uint32_t color, float hp, float energy);
     void CorrectBar(float v, float start, float end, BarVertex *vrt);
 
   private:
@@ -226,7 +224,7 @@ inline VDX9RENDER *Location::GetRS() const
 }
 
 // Check the visibility of 2 points
-inline bool Location::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
+inline bool Location::VisibleTest(const Vector &p1, const Vector &p2)
 {
     return model.VisibleTest(p1, p2);
 }
@@ -237,7 +235,7 @@ inline Lights *Location::GetLights() const
 }
 
 // Trace the ray through the location
-inline float Location::Trace(const CVECTOR &src, const CVECTOR &dst)
+inline float Location::Trace(const Vector &src, const Vector &dst)
 {
     return model.Trace(src, dst);
 }
@@ -247,7 +245,7 @@ inline bool Location::GetCollideTriangle(TRIANGLE &trg) const
     return model.GetCollideTriangle(trg);
 }
 
-inline void Location::Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num))
+inline void Location::Clip(Plane *p, long numPlanes, Vector &cnt, float rad, bool (*fnc)(const Vector *vtx, long num))
 {
     model.Clip(p, numPlanes, cnt, rad, fnc);
 }

@@ -22,7 +22,7 @@ void PARTICLE_SYSTEM::Stop()
 {
 }
 
-void PARTICLE_SYSTEM::SetEmitter(CVECTOR p, CVECTOR a)
+void PARTICLE_SYSTEM::SetEmitter(Vector p, Vector a)
 {
     // core.Trace("K2 Particles Wrapper: SetEmitter (%3.2f, %3.2f, %3.2f, %3.2f, %3.2f, %3.2f)", p.x, p.y, p.z, a.x,
     // a.y, a.z);
@@ -37,7 +37,7 @@ void PARTICLE_SYSTEM::SetEmitter(CVECTOR p, CVECTOR a)
     pSystem->SetTransform(mTransform);
 }
 
-void PARTICLE_SYSTEM::LinkToObject(entid_t id, CVECTOR _LinkPos)
+void PARTICLE_SYSTEM::LinkToObject(entid_t id, Vector _LinkPos)
 {
 }
 

@@ -12,7 +12,6 @@
 
 #include "Animation.h"
 #include "Island_Base.h"
-#include "Matrix.h"
 #include "dx9render.h"
 #include "sea_base.h"
 #include "ship_base.h"
@@ -21,7 +20,7 @@ class Sharks : public Entity
 {
     struct Vertex
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t color;
         float u, v;
     };
@@ -45,18 +44,18 @@ class Sharks : public Entity
         long GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SEA_BASE *sb);
 
         // Waypoint
-        CVECTOR pos;    // Waypoint position
-        CVECTOR vel;    // Move direction
-        CVECTOR force;  // Directional force
+        Vector pos;    // Waypoint position
+        Vector vel;    // Move direction
+        Vector force;  // Directional force
         float yDir;     // The tendency to ascend or sink
         float dirTime;  // Time until next change
         float accs;     // Shark acceleration
-        CVECTOR rForce; // Accidental external force
+        Vector rForce; // Accidental external force
         float rTime;
         // Shark
-        CVECTOR fforce; // Directional force
-        CVECTOR spos;   // Model position
-        CVECTOR angs;   // Model angles
+        Vector fforce; // Directional force
+        Vector spos;   // Model position
+        Vector angs;   // Model angles
         float turn;     // Angle change rate
         float imspd;    // Dive speed
         float speed;    // Move speed
@@ -73,7 +72,7 @@ class Sharks : public Entity
 
     struct Periscope
     {
-        CVECTOR pos;
+        Vector pos;
         float ay;
         float time;
         entid_t model;
@@ -121,7 +120,7 @@ class Sharks : public Entity
     long numShakes;
     Periscope periscope;
     float waitPTime;
-    CVECTOR camPos;
+    Vector camPos;
     entid_t sea;
     entid_t island;
     long trackTx;

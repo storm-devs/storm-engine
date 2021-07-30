@@ -9,8 +9,12 @@
 #include <xmmintrin.h> // espkk # remove inline asm # 30/Dec/2017
 
 //#define inline __forceinline
+#define ARRSIZE(ar) (sizeof(ar) / sizeof(ar[0]))
+
 
 #include "Math3D/Vector.h"
+#include "Math3D/Vector4.h"
+#include "Math3D/Matrix.h"
 
 // Fast conversion of a floating point number to an integer with discarding of the fractional part
 inline long fftol(float f)
@@ -162,7 +166,3 @@ inline float safeASin(float ang)
     d = acos(d);
     return static_cast<float>(d);
 }
-
-#define ARRSIZE(ar) (sizeof(ar) / sizeof(ar[0]))
-
-#include "Math3D/Vector4.h"

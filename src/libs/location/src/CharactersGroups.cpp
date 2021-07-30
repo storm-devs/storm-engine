@@ -544,7 +544,7 @@ bool CharactersGroups::MsgIsValidateTarget(MESSAGE &message)
     auto *en = static_cast<Character *>(EntityManager::GetEntityPointer(trg));
     if (!en)
         return false;
-    CVECTOR vP1, vP2;
+    Vector vP1, vP2;
     c->GetPosition(vP1);
     en->GetPosition(vP2);
     const auto fDistance = sqrtf(~(vP1 - vP2));
@@ -567,7 +567,7 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
     long s = 0;
     if (c->numTargets > 1)
     {
-        CVECTOR pos, p;
+        Vector pos, p;
         c->GetPosition(pos);
         const auto numChr = location->supervisor.numCharacters;
         auto *const cEx = location->supervisor.character;

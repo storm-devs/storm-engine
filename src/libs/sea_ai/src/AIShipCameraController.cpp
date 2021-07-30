@@ -52,11 +52,11 @@ void AIShipCameraController::Execute(float fDeltaTime)
     else
     {
         uint32_t i, j, iMax;
-        CMatrix m;
+        Matrix m;
 
         AIHelper::pRS->GetTransform(D3DTS_VIEW, m);
         m.Transposition();
-        const auto vZ = m.Vz();
+        const auto vZ = m.vz;
 
         auto bEnemy = false;
         if (GetAIShip()->GetCannonController()->isCanFire(vZ))
@@ -134,13 +134,13 @@ void AIShipCameraController::Execute(float fDeltaTime)
 
 bool AIShipCameraController::Fire()
 {
-    CMatrix m;
+    Matrix m;
 
     AIHelper::pRS->GetTransform(D3DTS_VIEW, m);
     m.Transposition();
-    const auto vZ = m.Vz();
-    // CVECTOR vZ = m * CVECTOR(0.0f, 0.0f, 1.0f);
-    // vZ = !CVECTOR(vZ.x, 0.0f, vZ.z);
+    const auto vZ = m.vz;
+    // Vector vZ = m * Vector(0.0f, 0.0f, 1.0f);
+    // vZ = !Vector(vZ.x, 0.0f, vZ.z);
     if (!GetAIShip()->GetCannonController()->isCanFire(vZ))
         return false;
 
@@ -151,7 +151,7 @@ bool AIShipCameraController::Fire()
     }
 
     // if (pTargetAPointer) AIGroup::GroupSetAttack(GetAIShip()->GetACharacter(), pTargetAPointer);
-    return GetAIShip()->GetCannonController()->Fire(m.Pos(), vZ);
+    return GetAIShip()->GetCannonController()->Fire(m.pos, vZ);
 }
 
 void AIShipCameraController::Realize(float fDeltaTime)
@@ -159,20 +159,20 @@ void AIShipCameraController::Realize(float fDeltaTime)
     if (isCameraOutside())
         return;
 
-    CMatrix m;
+    Matrix m;
     RS_RECT rCam;
 
-    // AIHelper::pRS->GetTransform(D3DTS_VIEW, m); m.Transposition();    CVECTOR vZ = m.Vz();
+    // AIHelper::pRS->GetTransform(D3DTS_VIEW, m); m.Transposition();    Vector vZ = m.vz;
     const auto mOldView = m;
     AIHelper::pRS->GetTransform(D3DTS_VIEW, mOldView);
     m = mOldView;
     m.Transposition();
-    const auto vZ = m.Vz();
-    /*CVECTOR campos,camang;
+    const auto vZ = m.vz;
+    /*Vector campos,camang;
     float campersp;
     AIHelper::pRS->GetCamera(campos,camang,campersp);
-    m.BuildMatrix(camang);
-    CVECTOR vZ = m.Vz();*/
+    m.Build(camang);
+    Vector vZ = m.vz;*/
     if (!GetAIShip()->GetCannonController()->isCanFire(vZ))
         return;
 
@@ -186,8 +186,8 @@ void AIShipCameraController::Realize(float fDeltaTime)
     rCam.fAngle = 0.0f;
     const auto fSizeMultiply = 0.9f + (0.2f * ((fDelta > 1.0f) ? fDelta : (2.0f - fDelta)));
     rCam.fSize = fSizeMultiply * pACrosshair->GetAttributeAsFloat("Size");
-    // rCam.vPos = campos + m * CVECTOR(0.0f,0.0f,1.0f);
-    rCam.vPos = m * CVECTOR(0.0f, 0.0f, 1.0f);
+    // rCam.vPos = campos + m * Vector(0.0f,0.0f,1.0f);
+    rCam.vPos = m * Vector(0.0f, 0.0f, 1.0f);
     rCam.dwSubTexture = 0;
 
     AIHelper::pRS->TextureSet(0, iCrosshairTex);

@@ -119,7 +119,7 @@ void AISeaGoods::Realize(uint32_t dwDeltaTime)
                 auto *const pI = &aGoods[i]->aItems[j];
 
                 // set world matrix for item
-                CMatrix m;
+                Matrix m;
                 m.BuildPosition(pI->vPos.x, pI->vPos.y, pI->vPos.z);
 
                 AIHelper::pRS->SetTransform(D3DTS_WORLD, m);

@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "Matrix.h"
 #include "Pillar.h"
 #include "sea_base.h"
 
@@ -18,7 +17,7 @@ class TornadoParticles
 {
     struct Particle
     {
-        CVECTOR pos;
+        Vector pos;
         float angle;
         float size;
         float alpha;
@@ -42,7 +41,7 @@ class TornadoParticles
 
     struct Vertex
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t color;
         float u, v;
     };
@@ -75,7 +74,7 @@ class TornadoParticles
     Pillar &pillar;
     entid_t seaID;
     float galpha;
-    CMatrix camMtx;
+    Matrix camMtx;
     GroundParticle groundPrt[128];
     PillarParticle pillarPrt[1024];
     Vertex buffer[256 * 6];

@@ -1,6 +1,5 @@
 #include "SoundService.h"
 #include "Entity.h"
-#include "Matrix.h"
 #include "defines.h"
 #include "rands.h"
 #include "vfile_service.h"
@@ -153,14 +152,14 @@ void SoundService::RunStart()
 
     if (rs)
     {
-        static CVECTOR pos, ang, nose, head;
-        static CMatrix view;
+        static Vector pos, ang, nose, head;
+        static Matrix view;
 
         rs->GetTransform(D3DTS_VIEW, view);
         view.Transposition();
-        nose = view.Vz();
-        head = view.Vy();
-        pos = view.Pos();
+        nose = view.vz;
+        head = view.vy;
+        pos = view.pos;
 
         SetCameraPosition(pos);
         SetCameraOrientation(nose, head);
@@ -268,7 +267,7 @@ int SoundService::GetAliasIndexByName(const char *szAliasName)
 
 TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType _volumeType,
                                bool _simpleCache /* = false*/, bool _looped /* = false*/, bool _cached /* = false*/,
-                               long _time /* = 0*/, const CVECTOR *_startPosition /* = 0*/,
+                               long _time /* = 0*/, const Vector *_startPosition /* = 0*/,
                                float _minDistance /* = -1.0f*/, float _maxDistance /* = -1.0f*/,
                                long _loopPauseTime /* = 0*/, float _volume, /* = 1.0f*/
                                long _prior)
@@ -489,7 +488,7 @@ void SoundService::SoundSet3DParam(TSD_ID _id, eSoundMessage _message, const voi
     if (PlayingSounds[_id].bFree)
         return;
 
-    auto vVelocity = CVECTOR(0.0f, 0.0f, 0.0f);
+    auto vVelocity = Vector(0.0f, 0.0f, 0.0f);
 
     switch (_message)
     {
@@ -653,7 +652,7 @@ float SoundService::SoundGetPosition(TSD_ID _id)
     return 0;
 }
 
-void SoundService::SetCameraPosition(const CVECTOR &_cameraPosition)
+void SoundService::SetCameraPosition(const Vector &_cameraPosition)
 {
     vListenerPos.x = _cameraPosition.x;
     vListenerPos.y = _cameraPosition.y;
@@ -662,7 +661,7 @@ void SoundService::SetCameraPosition(const CVECTOR &_cameraPosition)
     CHECKFMODERR(system->set3DListenerAttributes(0, &vListenerPos, nullptr, nullptr, nullptr));
 }
 
-void SoundService::SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_head)
+void SoundService::SetCameraOrientation(const Vector &_nose, const Vector &_head)
 {
     const auto nose = !_nose;
     const auto head = !_head;
@@ -1025,14 +1024,14 @@ void SoundService::DebugDraw()
     FMOD_VECTOR lpos, lvel, lforward, lup;
     system->get3DListenerAttributes(0, &lpos, &lvel, &lforward, &lup);
 
-    auto vListener = CVECTOR(lpos.x, lpos.y, lpos.z);
+    auto vListener = Vector(lpos.x, lpos.y, lpos.z);
 
     float fTotal;
     system->getCPUUsage(nullptr, nullptr, nullptr, nullptr, &fTotal);
     int CurrentAlloc, PeakAlloc;
     FMOD::Memory_GetStats(&CurrentAlloc, &PeakAlloc);
 
-    CVECTOR list_pos;
+    Vector list_pos;
     list_pos.x = lpos.x;
     list_pos.y = lpos.y;
     list_pos.z = lpos.z;
@@ -1043,7 +1042,7 @@ void SoundService::DebugDraw()
     rs->Print(0, 16, "position  %3.2f, %3.2f, %3.2f, forward %3.2f, %3.2f, %3.2f, up %3.2f, %3.2f, %3.2f", lpos.x,
               lpos.y, lpos.z, lforward.x, lforward.y, lforward.z, lup.x, lup.y, lup.z);
 
-    CMatrix ind;
+    Matrix ind;
     ind.SetIdentity();
     rs->SetWorld(ind);
 
@@ -1105,7 +1104,7 @@ void SoundService::DebugDraw()
                 drawColor.Lerp(Zero, Full, audib);
             }
 
-            CVECTOR vec_pos;
+            Vector vec_pos;
             vec_pos.x = pos.x;
             vec_pos.y = pos.y;
             vec_pos.z = pos.z;
@@ -1117,7 +1116,7 @@ void SoundService::DebugDraw()
                 Draw2DCircle(vec_pos, drawColor.GetDword(), fMin, drawColor.GetDword(), fMax);
             }
 
-            float fDistance = CVECTOR(vListener - vec_pos).GetLength();
+            float fDistance = Vector(vListener - vec_pos).GetLength();
 
             DebugPrint3D(vec_pos, 30.0f, 2, 1.0f, drawColor.GetDword(), 1.0f, "%s", PlayingSounds[i].Name.c_str());
             DebugPrint3D(vec_pos, 30.0f, 0, 1.0f, drawColor.GetDword(), 1.0f, "%3.2f m", fDistance);
@@ -1198,7 +1197,7 @@ int SoundService::GetFromCache(const char *szName, eSoundType _type)
 }
 
 // Write text
-void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
+void SoundService::DebugPrint3D(const Vector &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
                                 const char *format, ...) const
 {
     static char buf[256];
@@ -1206,22 +1205,21 @@ void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, floa
     long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
     // Looking for a point position on the screen
-    static CMatrix mtx, view, prj;
+    static Matrix mtx, view, prj;
     static D3DVIEWPORT9 vp;
-    MTX_PRJ_VECTOR vrt;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, prj);
     mtx.EqMultiply(view, prj);
     view.Transposition();
-    float dist = ~(pos3D - view.Pos());
+    float dist = ~(pos3D - view.pos);
     if (dist >= rad * rad)
         return;
-    const float d = view.Vz() | view.Pos();
-    if ((pos3D | view.Vz()) < d)
+    const float d = view.vz | view.pos;
+    if ((pos3D | view.vz) < d)
         return;
     rs->GetViewport(&vp);
-    mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
-                   sizeof(MTX_PRJ_VECTOR));
+    Vector4 vrt;
+    mtx.Projection(&vrt, &pos3D, 1, vp.Width * 0.5f, vp.Height * 0.5f);
     // Looking for a position
     const long fh = rs->CharHeight(FONT_DEFAULT) / 2;
     vrt.y -= (line + 0.5f) * fh;
@@ -1244,20 +1242,20 @@ void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, floa
                  static_cast<long>(vrt.y), buf);
 }
 
-void SoundService::Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float fRadius, uint32_t dwColor2,
+void SoundService::Draw2DCircle(const Vector &center, uint32_t dwColor, float fRadius, uint32_t dwColor2,
                                 float fRadius2) const
 {
     float fDelta = 0.2f;
     RS_LINE line[2];
-    CVECTOR vStart;
-    CVECTOR vEnd;
-    CVECTOR vStartPoint;
+    Vector vStart;
+    Vector vEnd;
+    Vector vStartPoint;
 
-    vStartPoint = CVECTOR(cosf(0) * fRadius, 0.0f, sinf(0) * fRadius);
+    vStartPoint = Vector(cosf(0) * fRadius, 0.0f, sinf(0) * fRadius);
     vStartPoint += center;
     for (float Angle = fDelta; Angle <= (PI * 2); Angle += fDelta)
     {
-        auto vPoint = CVECTOR(cosf(Angle) * fRadius, 0.0f, sinf(Angle) * fRadius);
+        auto vPoint = Vector(cosf(Angle) * fRadius, 0.0f, sinf(Angle) * fRadius);
         vPoint += center;
 
         vStart = vStartPoint;
@@ -1273,7 +1271,7 @@ void SoundService::Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float f
     }
 
     vStart = vStartPoint;
-    vEnd = CVECTOR(cosf(0) * fRadius, 0.0f, sinf(0) * fRadius);
+    vEnd = Vector(cosf(0) * fRadius, 0.0f, sinf(0) * fRadius);
     vEnd += center;
 
     line[0].vPos = vStart;
@@ -1282,11 +1280,11 @@ void SoundService::Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float f
     line[1].dwColor = dwColor;
     rs->DrawLines(line, 1, "Line");
 
-    vStartPoint = CVECTOR(cosf(0) * fRadius2, 0.0f, sinf(0) * fRadius2);
+    vStartPoint = Vector(cosf(0) * fRadius2, 0.0f, sinf(0) * fRadius2);
     vStartPoint += center;
     for (float Angle = fDelta; Angle <= (PI * 2); Angle += fDelta)
     {
-        auto vPoint = CVECTOR(cosf(Angle) * fRadius2, 0.0f, sinf(Angle) * fRadius2);
+        auto vPoint = Vector(cosf(Angle) * fRadius2, 0.0f, sinf(Angle) * fRadius2);
         vPoint += center;
 
         vStart = vStartPoint;
@@ -1302,7 +1300,7 @@ void SoundService::Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float f
     }
 
     vStart = vStartPoint;
-    vEnd = CVECTOR(cosf(0) * fRadius2, 0.0f, sinf(0) * fRadius2);
+    vEnd = Vector(cosf(0) * fRadius2, 0.0f, sinf(0) * fRadius2);
     vEnd += center;
 
     line[0].vPos = vStart;
@@ -1311,27 +1309,27 @@ void SoundService::Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float f
     line[1].dwColor = dwColor2;
     rs->DrawLines(line, 1, "Line");
 
-    line[0].vPos = CVECTOR(fRadius, 0.0f, 0.0f) + center;
+    line[0].vPos = Vector(fRadius, 0.0f, 0.0f) + center;
     line[0].dwColor = dwColor;
-    line[1].vPos = CVECTOR(fRadius2, 0.0f, 0.0f) + center;
+    line[1].vPos = Vector(fRadius2, 0.0f, 0.0f) + center;
     line[1].dwColor = dwColor;
     rs->DrawLines(line, 1, "Line");
 
-    line[0].vPos = CVECTOR(-fRadius, 0.0f, 0.0f) + center;
+    line[0].vPos = Vector(-fRadius, 0.0f, 0.0f) + center;
     line[0].dwColor = dwColor;
-    line[1].vPos = CVECTOR(-fRadius2, 0.0f, 0.0f) + center;
+    line[1].vPos = Vector(-fRadius2, 0.0f, 0.0f) + center;
     line[1].dwColor = dwColor;
     rs->DrawLines(line, 1, "Line");
 
-    line[0].vPos = CVECTOR(0.0f, 0.0f, fRadius) + center;
+    line[0].vPos = Vector(0.0f, 0.0f, fRadius) + center;
     line[0].dwColor = dwColor;
-    line[1].vPos = CVECTOR(0.0f, 0.0f, fRadius2) + center;
+    line[1].vPos = Vector(0.0f, 0.0f, fRadius2) + center;
     line[1].dwColor = dwColor;
     rs->DrawLines(line, 1, "Line");
 
-    line[0].vPos = CVECTOR(0.0f, 0.0f, -fRadius) + center;
+    line[0].vPos = Vector(0.0f, 0.0f, -fRadius) + center;
     line[0].dwColor = dwColor;
-    line[1].vPos = CVECTOR(0.0f, 0.0f, -fRadius2) + center;
+    line[1].vPos = Vector(0.0f, 0.0f, -fRadius2) + center;
     line[1].dwColor = dwColor;
     rs->DrawLines(line, 1, "Line");
 

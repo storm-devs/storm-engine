@@ -65,15 +65,15 @@ class MAST : public Entity
     void Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer);
     void LoadIni();
     void doMove(uint32_t DeltaTime);
-    int GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECTOR &lrey, CVECTOR &rrey, float &angl);
+    int GetSlide(entid_t mod, Vector &pbeg, Vector &pend, Vector &dp, Vector &lrey, Vector &rrey, float &angl);
 
     struct MASTMOVE
     {
-        CVECTOR bp, ep;     // mast coordinates
-        CVECTOR brey, erey; // rhea coordinates
+        Vector bp, ep;     // mast coordinates
+        Vector brey, erey; // rhea coordinates
 
-        CVECTOR ang, dang, sdang;
-        CVECTOR mov, dmov, sdmov;
+        Vector ang, dang, sdang;
+        Vector mov, dmov, sdmov;
     };
 
     MASTMOVE mm;

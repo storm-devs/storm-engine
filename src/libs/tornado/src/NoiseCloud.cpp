@@ -106,15 +106,15 @@ void NoiseCloud::Draw(VDX9RENDER *rs)
         // Position
         const auto sn = sinf(rect[i].angle);
         const auto cs = cosf(rect[i].angle);
-        CVECTOR pos(pillar.X() + rect[i].r * sinf(rect[i].a), pillar.GetHeight(),
+        Vector pos(pillar.X() + rect[i].r * sinf(rect[i].a), pillar.GetHeight(),
                     pillar.Z() + rect[i].r * cosf(rect[i].a));
-        buf[i * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), 0.0f, size * (sn + cs));
+        buf[i * 6 + 0].pos = pos + Vector(size * (-cs + sn), 0.0f, size * (sn + cs));
         buf[i * 6 + 0].u = 0.0f;
         buf[i * 6 + 0].v = 0.0f;
-        buf[i * 6 + 1].pos = pos + CVECTOR(size * (-cs - sn), 0.0f, size * (sn - cs));
+        buf[i * 6 + 1].pos = pos + Vector(size * (-cs - sn), 0.0f, size * (sn - cs));
         buf[i * 6 + 1].u = 0.0f;
         buf[i * 6 + 1].v = 1.0f;
-        buf[i * 6 + 2].pos = pos + CVECTOR(size * (cs + sn), 0.0f, size * (-sn + cs));
+        buf[i * 6 + 2].pos = pos + Vector(size * (cs + sn), 0.0f, size * (-sn + cs));
         buf[i * 6 + 2].u = 1.0f;
         buf[i * 6 + 2].v = 0.0f;
         buf[i * 6 + 3].pos = buf[i * 6 + 2].pos;
@@ -123,7 +123,7 @@ void NoiseCloud::Draw(VDX9RENDER *rs)
         buf[i * 6 + 4].pos = buf[i * 6 + 1].pos;
         buf[i * 6 + 4].u = 0.0f;
         buf[i * 6 + 4].v = 1.0f;
-        buf[i * 6 + 5].pos = pos + CVECTOR(size * (cs - sn), 0.0f, size * (-sn - cs));
+        buf[i * 6 + 5].pos = pos + Vector(size * (cs - sn), 0.0f, size * (-sn - cs));
         buf[i * 6 + 5].u = 1.0f;
         buf[i * 6 + 5].v = 1.0f;
         // Colour

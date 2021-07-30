@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "Matrix.h"
 #include "dx9render.h"
 
 #include "WdmObjectsWind.h"
@@ -99,11 +98,11 @@ class WdmObjects
     bool isPause;
     bool isDebug;
 
-    void DrawCircle(const CVECTOR &pos, float radius, uint32_t color) const;
-    void DrawCircle(CMatrix &mtx, float radius, uint32_t color) const;
-    void DrawVector(const CVECTOR &start, const CVECTOR &end, uint32_t color) const;
-    void DrawLine(const CVECTOR &start, const CVECTOR &end, uint32_t color) const;
-    void DrawBox2D(CMatrix &mtx, float l, float w, uint32_t color) const;
+    void DrawCircle(const Vector &pos, float radius, uint32_t color) const;
+    void DrawCircle(Matrix &mtx, float radius, uint32_t color) const;
+    void DrawVector(const Vector &start, const Vector &end, uint32_t color) const;
+    void DrawLine(const Vector &start, const Vector &end, uint32_t color) const;
+    void DrawBox2D(Matrix &mtx, float l, float w, uint32_t color) const;
     void GetVPSize(float &w, float &h) const;
 
     float shipSpeedOppositeWind; // Relative speed of the ship against the wind
@@ -144,7 +143,7 @@ class WdmObjects
     std::string modelPath;
 
     // Get wind direction and strength
-    float GetWind(float x, float z, CVECTOR &dir);
+    float GetWind(float x, float z, Vector &dir);
     // Update wind state
     void UpdateWind(float dltTime);
     // Get save string
@@ -161,7 +160,7 @@ class WdmObjects
   private:
     struct Vertex
     {
-        CVECTOR v;
+        Vector v;
         uint32_t c;
     };
 

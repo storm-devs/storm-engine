@@ -52,7 +52,7 @@ class WdmStorm : public WdmRenderObject
     void UpdateSaveData();
 
   private:
-    CVECTOR pos, dir;
+    Vector pos, dir;
 
     float isActiveTime;
     float liveTime;
@@ -62,7 +62,7 @@ class WdmStorm : public WdmRenderObject
 
     long num;
     WdmCloud *cloud[8];  // Pointers to the clouds
-    CVECTOR cloudPos[8]; // Positions
+    Vector cloudPos[8]; // Positions
     float rotSpd[8];     // Rotational speeds around the center
 
     ATTRIBUTES *saveAttribute;

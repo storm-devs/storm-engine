@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "Matrix.h"
 #include "WdmRenderObject.h"
 
 class WdmCloud : public WdmRenderObject
@@ -20,9 +19,9 @@ class WdmCloud : public WdmRenderObject
 
     struct MoveInfo
     {
-        CVECTOR pos;
-        CVECTOR v;
-        CVECTOR cent;
+        Vector pos;
+        Vector v;
+        Vector cent;
         float rotSpd;
         float kSpd;
         float dx, dz;
@@ -32,7 +31,7 @@ class WdmCloud : public WdmRenderObject
     struct Rain
     {
         uint32_t isLive;
-        CVECTOR pos;
+        Vector pos;
         float alpha;
         float vy;
         float size;
@@ -41,7 +40,7 @@ class WdmCloud : public WdmRenderObject
 
     struct Vertex
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t c;
         float u, v;
     };
@@ -63,8 +62,8 @@ class WdmCloud : public WdmRenderObject
 
     long FillRain(RS_RECT *rainRect, long rcnt);
 
-    CVECTOR pos;       // Cloud position
-    CVECTOR dir;       // Direction of cloud movement
+    Vector pos;       // Cloud position
+    Vector dir;       // Direction of cloud movement
     float globalAlpha; // Current transparency
     float constAlpha;  // Current transparency
 
@@ -95,6 +94,6 @@ class WdmCloud : public WdmRenderObject
 
   private:
     void Render(VDX9RENDER *rs);
-    void FindPartPos(CVECTOR &v);
+    void FindPartPos(Vector &v);
     float Rnd();
 };

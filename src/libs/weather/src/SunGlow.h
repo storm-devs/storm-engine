@@ -48,7 +48,7 @@ class SUNGLOW : public Entity
 
     struct SUNGLOWVERTEX
     {
-        CVECTOR vPos;
+        Vector vPos;
         uint32_t dwColor;
         float tu, tv;
     };
@@ -124,13 +124,13 @@ class SUNGLOW : public Entity
 
     float fBottomClip;
 
-    float LayerTrace(CVECTOR &vSrc, EntityManager::LayerIterators its) const;
+    float LayerTrace(Vector &vSrc, EntityManager::LayerIterators its) const;
     void GenerateSunGlow();
     void DrawReflection() const;
     void Release();
 
-    void DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float fAngle, const char *pcTechnique,
+    void DrawRect(uint32_t dwColor, const Vector &pos, float fSize, float fAngle, const char *pcTechnique,
                   float fBottomClip) const;
 
-    float GetSunFadeoutFactor(const CVECTOR &vSunPos, float fSunSize);
+    float GetSunFadeoutFactor(const Vector &vSunPos, float fSunSize);
 };

@@ -112,7 +112,7 @@ void Lighter::PreparingData()
     // Scattered
     auto amb = 0xff404040;
     rs->GetRenderState(D3DRS_AMBIENT, &amb);
-    CVECTOR clr;
+    Vector clr;
     clr.x = ((amb >> 16) & 0xff) / 255.0f;
     clr.y = ((amb >> 8) & 0xff) / 255.0f;
     clr.z = ((amb >> 0) & 0xff) / 255.0f;
@@ -131,7 +131,7 @@ void Lighter::PreparingData()
         D3DLIGHT9 lit;
         if (isLight && rs->GetLight(0, &lit))
         {
-            CVECTOR clr, dir = !CVECTOR(1.0f, 1.0f, 1.0f);
+            Vector clr, dir = !Vector(1.0f, 1.0f, 1.0f);
             clr.x = lit.Diffuse.r;
             clr.y = lit.Diffuse.g;
             clr.z = lit.Diffuse.b;
@@ -235,7 +235,7 @@ void Lighter::MsgLightPath(MESSAGE &message)
 
 void Lighter::MsgAddLight(MESSAGE &message)
 {
-    CVECTOR pos, clr;
+    Vector pos, clr;
     // Position
     pos.x = message.Float();
     pos.y = message.Float();

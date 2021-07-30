@@ -24,7 +24,7 @@ inline bool FloatCompare(float a, float b)
 
 bool g_bExternMapCenter = false;
 bool g_bMapScaling = false;
-CVECTOR g_externPos;
+Vector g_externPos;
 
 void BATTLE_NAVIGATOR::CalculateTextureRect(FRECT &texRect, long num, long hq, long vq)
 {
@@ -93,7 +93,7 @@ void BATTLE_NAVIGATOR::Draw() const
     int n;
 
     // set world matrix
-    const CMatrix matw;
+    const Matrix matw;
     rs->SetTransform(D3DTS_WORLD, matw);
 
     // gradient background
@@ -747,7 +747,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     auto *pv = static_cast<BI_NOTEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idFireZoneVBuf));
     if (pv != nullptr)
     {
-        const auto vCenter = CVECTOR(static_cast<float>(m_XNavigator), static_cast<float>(m_YNavigator), 1.f);
+        const auto vCenter = Vector(static_cast<float>(m_XNavigator), static_cast<float>(m_YNavigator), 1.f);
         for (i = 0; i < FIRERANGE_QUANTITY; i++)
         {
             pv[i].w = .5f;
@@ -1305,7 +1305,7 @@ long BATTLE_NAVIGATOR::SetRectangleSegVertexTex(BI_ONETEXTURE_VERTEX *v, float x
 
 void BATTLE_NAVIGATOR::SetIsland()
 {
-    CVECTOR posCenter;
+    Vector posCenter;
     float islSize = 0;
 
     MODEL *pM = nullptr;
@@ -1319,7 +1319,7 @@ void BATTLE_NAVIGATOR::SetIsland()
         pM->Update();
         // Get island size
         auto xMin = 0.f, yMin = 0.f, zMin = 0.f, xMax = 0.f, yMax = 0.f, zMax = 0.f;
-        posCenter = pM->mtx.Pos();
+        posCenter = pM->mtx.pos;
         xMin = xMax = posCenter.x;
         zMin = zMax = posCenter.z;
         yMin = yMax = posCenter.y;
@@ -1328,7 +1328,7 @@ void BATTLE_NAVIGATOR::SetIsland()
         {
             GEOS::INFO gi;
             pN->geo->GetInfo(gi);
-            posCenter = pN->glob_mtx * *(CVECTOR *)&gi.boxcenter;
+            posCenter = pN->glob_mtx * *(Vector *)&gi.boxcenter;
             auto xmin = posCenter.x - gi.boxsize.x / 2;
             auto xmax = posCenter.x + gi.boxsize.x / 2;
             auto zmin = posCenter.z - gi.boxsize.z / 2;
@@ -1361,10 +1361,10 @@ void BATTLE_NAVIGATOR::SetIsland()
                     rs->GetDepthStencilSurface(&pStencil);
                     if (rs->SetRenderTarget(pRenderTarg, nullptr) == D3D_OK)
                     {
-                        CMatrix matw, matv, oldmatv;
+                        Matrix matw, matv, oldmatv;
                         D3DMATRIX matp, oldmatp;
-                        matv.BuildViewMatrix(posCenter + CVECTOR(0.f, islSize / 2.f, 0.f), posCenter,
-                                             CVECTOR(0.f, 0.f, 1.f));
+                        matv.BuildView(posCenter + Vector(0.f, islSize / 2.f, 0.f), posCenter,
+                                             Vector(0.f, 0.f, 1.f));
                         rs->GetTransform(D3DTS_VIEW, oldmatv);
                         rs->SetTransform(D3DTS_VIEW, matv);
                         rs->GetTransform(D3DTS_PROJECTION, &oldmatp);

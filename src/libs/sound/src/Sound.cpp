@@ -44,7 +44,7 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
         return 0;
 
     auto code = message.Long();
-    CVECTOR vector, vector2;
+    Vector vector, vector2;
     long temp, temp2, temp3, temp4, vt;
     long id, tempLong;
     float minD, maxD;

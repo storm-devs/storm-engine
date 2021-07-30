@@ -67,9 +67,9 @@ void CXI_LINECOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2
             // m_aLines[n].vPos.x = (float)scrRect.left; m_aLines[n+1].vPos.x = (float)scrRect.right;
             // m_aLines[n].vPos.y = (float)scrRect.top;  m_aLines[n+1].vPos.y = (float)scrRect.bottom;
             m_aLines.push_back(
-                RS_LINE{CVECTOR{static_cast<float>(scrRect.left), static_cast<float>(scrRect.top), 1.f}, dwCol});
+                RS_LINE{Vector{static_cast<float>(scrRect.left), static_cast<float>(scrRect.top), 1.f}, dwCol});
             m_aLines.push_back(
-                RS_LINE{CVECTOR{static_cast<float>(scrRect.right), static_cast<float>(scrRect.bottom), 1.f}, dwCol});
+                RS_LINE{Vector{static_cast<float>(scrRect.right), static_cast<float>(scrRect.bottom), 1.f}, dwCol});
 
             nCurLine++;
         } while (ini1->ReadStringNext(name1, "line", param, sizeof(param) - 1));

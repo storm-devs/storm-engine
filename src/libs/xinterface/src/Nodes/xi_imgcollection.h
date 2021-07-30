@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../inode.h"
-#include "vmodule_api.h"
 
 // static inactive images into one object
 class CXI_IMGCOLLECTION : public CINODE

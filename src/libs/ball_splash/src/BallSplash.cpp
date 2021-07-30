@@ -1,6 +1,5 @@
 #include "BallSplash.H"
 #include "shared/messages.h"
-#include <stdio.h>
 
 #include "core.h"
 
@@ -49,7 +48,7 @@ uint64_t BALLSPLASH::ProcessMessage(MESSAGE &message)
     switch (code)
     {
     case MSG_BALLSPLASH_ADD: {
-        CVECTOR pos, dir;
+        Vector pos, dir;
         pos.x = message.Float();
         pos.y = message.Float();
         pos.z = message.Float();
@@ -152,7 +151,7 @@ void BALLSPLASH::InitializeSplashes()
 }
 
 //--------------------------------------------------------------------
-TSplash *BALLSPLASH::TryToAddSplash(const CVECTOR &_pos, const CVECTOR &_dir)
+TSplash *BALLSPLASH::TryToAddSplash(const Vector &_pos, const Vector &_dir)
 {
     auto backDir = !_dir;
     backDir.y = -backDir.y;

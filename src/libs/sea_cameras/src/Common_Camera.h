@@ -3,7 +3,6 @@
 #include "Entity.h"
 #include "Sd2_h/VAI_ObjBase.h"
 #include "core.h"
-#include "vmodule_api.h"
 
 class COMMON_CAMERA : public Entity
 {

@@ -167,7 +167,7 @@ void PtcData::SFLB_PotectionLoad()
 }
 
 // Determine the current position
-long PtcData::FindNode(const CVECTOR &pos, float &y)
+long PtcData::FindNode(const Vector &pos, float &y)
 {
     // Position on the map
     const auto mapX = static_cast<long>((pos.x - min.x) / ws);
@@ -189,8 +189,8 @@ long PtcData::FindNode(const CVECTOR &pos, float &y)
         for (j = 0; j < 3; j++)
         {
             // Edge vertices
-            CVECTOR &vs = *(CVECTOR *)&vertex[trg.i[j]];
-            CVECTOR &ve = *(CVECTOR *)&vertex[trg.i[j == 2 ? 0 : j + 1]];
+            Vector &vs = *(Vector *)&vertex[trg.i[j]];
+            Vector &ve = *(Vector *)&vertex[trg.i[j == 2 ? 0 : j + 1]];
             // Edge normal
             const float nx = -(ve.z - vs.z);
             const float nz = (ve.x - vs.x);
@@ -224,7 +224,7 @@ long PtcData::FindNode(const CVECTOR &pos, float &y)
 }
 
 // Move pos to to, returns a new node
-long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
+long PtcData::Move(long curNode, const Vector &to, Vector &pos, long depth)
 {
     isSlide = false;
     isBearing = false;
@@ -232,8 +232,8 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
         return -1;
     Assert(curNode < numTriangles);
     // Direction of movement in 2D
-    CVECTOR dir(to.x - pos.x, 0.0f, to.z - pos.z);
-    CVECTOR ps = pos;
+    Vector dir(to.x - pos.x, 0.0f, to.z - pos.z);
+    Vector ps = pos;
     long firstNode = curNode;
     // path length in 2D
     float dst = ~dir;
@@ -251,7 +251,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
     dst = sqrtf(dst);
     dir *= 1.0f / dst;
     // Vertical plane passing through the displacement segment
-    CVECTOR nd(dir.z, 0.0f, -dir.x);
+    Vector nd(dir.z, 0.0f, -dir.x);
     float d = (nd | pos);
     // Trace the way
     long fromNode = -2; // Where we came from
@@ -264,8 +264,8 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
         for (j = 0; j < 3; j++)
         {
             // Edge vertices
-            CVECTOR &vs = *(CVECTOR *)&vertex[trg[j]];
-            CVECTOR &ve = *(CVECTOR *)&vertex[trg[j == 2 ? 0 : j + 1]];
+            Vector &vs = *(Vector *)&vertex[trg[j]];
+            Vector &ve = *(Vector *)&vertex[trg[j == 2 ? 0 : j + 1]];
             // Edge normal
             float nx = -(ve.z - vs.z);
             float nz = (ve.x - vs.x);
@@ -296,15 +296,15 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
         // Find the edge through which to go further
         short *nb = triangle[curNode].nb;
         long curEdge = -1;
-        CVECTOR pnt;
+        Vector pnt;
         for (j = 0; j < 3; j++)
         {
             // skip the direction we came from
             if (nb[j] == fromNode)
                 continue;
             // Edge vertices
-            CVECTOR &vs = *(CVECTOR *)&vertex[trg[j]];
-            CVECTOR &ve = *(CVECTOR *)&vertex[trg[j == 2 ? 0 : j + 1]];
+            Vector &vs = *(Vector *)&vertex[trg[j]];
+            Vector &ve = *(Vector *)&vertex[trg[j == 2 ? 0 : j + 1]];
             // Distances to the movement line
             float d1 = (nd | vs) - d;
             float d2 = (nd | ve) - d;
@@ -319,7 +319,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
             if (k > 1.0f)
                 k = 1.0f;
             // Intersection point
-            CVECTOR p;
+            Vector p;
             // k += 0.000000001;
             p.x = static_cast<float>(vs.x + (ve.x - vs.x) * k);
             p.y = static_cast<float>(vs.y + (ve.y - vs.y) * k);
@@ -353,8 +353,8 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
                 if (nb[j] == fromNode)
                     continue;
                 // Edge vertices
-                CVECTOR &vs = *(CVECTOR *)&vertex[trg[j]];
-                CVECTOR &ve = *(CVECTOR *)&vertex[trg[j == 2 ? 0 : j + 1]];
+                Vector &vs = *(Vector *)&vertex[trg[j]];
+                Vector &ve = *(Vector *)&vertex[trg[j == 2 ? 0 : j + 1]];
                 // Distances to the movement line
                 float d1 = (nd | vs) - d;
                 float d2 = (nd | ve) - d;
@@ -369,7 +369,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
                 if (k > 1.0f)
                     k = 1.0f;
                 // Intersection point
-                CVECTOR p;
+                Vector p;
                 // k += 0.000000001;
                 p.x = static_cast<float>(vs.x + (ve.x - vs.x) * k);
                 p.y = static_cast<float>(vs.y + (ve.y - vs.y) * k);
@@ -410,8 +410,8 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
         else
         {
             // The edge along which need to slide
-            CVECTOR &vs = *(CVECTOR *)&vertex[trg[curEdge]];
-            CVECTOR &ve = *(CVECTOR *)&vertex[trg[curEdge == 2 ? 0 : curEdge + 1]];
+            Vector &vs = *(Vector *)&vertex[trg[curEdge]];
+            Vector &ve = *(Vector *)&vertex[trg[curEdge == 2 ? 0 : curEdge + 1]];
             // Edge normal
             float nx = -(ve.z - vs.z);
             float nz = (ve.x - vs.x);
@@ -429,7 +429,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
             nx *= d;
             nz *= d;
             // Out-of-triangle vector
-            CVECTOR sld = to - pnt;
+            Vector sld = to - pnt;
             sld.y = 0.0f;
             // Sliding distance
             d = nx * sld.x + nz * sld.z;
@@ -438,7 +438,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
             if (d < 0.0f)
                 d -= 0.001f;
             // Slide
-            CVECTOR newPos(to.x - nx * d, to.y, to.z - nz * d);
+            Vector newPos(to.x - nx * d, to.y, to.z - nz * d);
             if (newPos.x == to.x && newPos.z == to.z)
             {
                 isSlide = true;
@@ -478,7 +478,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
 }
 
 // Get normal to a node
-void PtcData::GetNodeNormal(long curNode, CVECTOR &n) const
+void PtcData::GetNodeNormal(long curNode, Vector &n) const
 {
     if (curNode >= 0)
     {
@@ -495,7 +495,7 @@ void PtcData::GetNodeNormal(long curNode, CVECTOR &n) const
 }
 
 // Find the direction of the path
-bool PtcData::FindPathDir(long curNode, const CVECTOR &cur, long toNode, const CVECTOR &to, long &node, CVECTOR &toPos)
+bool PtcData::FindPathDir(long curNode, const Vector &cur, long toNode, const Vector &to, long &node, Vector &toPos)
 {
     numSteps = 0;
     if (curNode < 0 || toNode < 0)
@@ -507,8 +507,8 @@ bool PtcData::FindPathDir(long curNode, const CVECTOR &cur, long toNode, const C
 }
 
 // Find the direction of the path
-bool PtcData::FindPathDir(long step, long curNode, const CVECTOR &cur, long toNode, const CVECTOR &to, long &node,
-                          CVECTOR &pos)
+bool PtcData::FindPathDir(long step, long curNode, const Vector &cur, long toNode, const Vector &to, long &node,
+                          Vector &pos)
 {
     if (step > numSteps)
         numSteps = step;
@@ -529,10 +529,10 @@ bool PtcData::FindPathDir(long step, long curNode, const CVECTOR &cur, long toNo
     if (v == 3)
         return false;
     // Edge
-    CVECTOR &vs = *(CVECTOR *)&vertex[triangle[curNode].i[v]];
-    CVECTOR &ve = *(CVECTOR *)&vertex[triangle[curNode].i[v + 1 < 3 ? v + 1 : 0]];
+    Vector &vs = *(Vector *)&vertex[triangle[curNode].i[v]];
+    Vector &ve = *(Vector *)&vertex[triangle[curNode].i[v + 1 < 3 ? v + 1 : 0]];
     // Point on the edge
-    const CVECTOR p = FindEdgePoint(vs, ve, cur, to);
+    const Vector p = FindEdgePoint(vs, ve, cur, to);
     // analyze the further path
     const long nb = triangle[curNode].nb[v];
     if (nb < 0)
@@ -547,13 +547,13 @@ bool PtcData::FindPathDir(long step, long curNode, const CVECTOR &cur, long toNo
 }
 
 // Find a point on an edge
-CVECTOR PtcData::FindEdgePoint(const CVECTOR &vs, const CVECTOR &ve, const CVECTOR &cur, const CVECTOR &to)
+Vector PtcData::FindEdgePoint(const Vector &vs, const Vector &ve, const Vector &cur, const Vector &to)
 {
-    CVECTOR pos;
+    Vector pos;
     // Normal to the edge
-    CVECTOR edge = ve - vs;
+    Vector edge = ve - vs;
     edge.y = 0.0f;
-    CVECTOR nrm(edge.z, 0.0f, -edge.x);
+    Vector nrm(edge.z, 0.0f, -edge.x);
     const float nl = ~nrm;
     if (nl > 0.0f)
     {
@@ -571,7 +571,7 @@ CVECTOR PtcData::FindEdgePoint(const CVECTOR &vs, const CVECTOR &ve, const CVECT
             float k = dCur / (dCur - dTo);
             pos = cur + (to - cur) * k;
             // Limiting the move point
-            CVECTOR p = vs + (ve - vs) * 0.001f;
+            Vector p = vs + (ve - vs) * 0.001f;
             k = (ve - p) | (pos - p);
             if (k <= 0.0f)
                 pos = p;
@@ -603,18 +603,18 @@ CVECTOR PtcData::FindEdgePoint(const CVECTOR &vs, const CVECTOR &ve, const CVECT
 }
 
 // Find patch intersection
-float PtcData::Trace(const CVECTOR &s, const CVECTOR &d) const
+float PtcData::Trace(const Vector &s, const Vector &d) const
 {
     // The area describing the segment
     float k = 2.0f;
-    CVECTOR pmin = s;
+    Vector pmin = s;
     if (pmin.x > d.x)
         pmin.x = d.x;
     if (pmin.y > d.y)
         pmin.y = d.y;
     if (pmin.z > d.z)
         pmin.z = d.z;
-    CVECTOR pmax = s;
+    Vector pmax = s;
     if (pmax.x < d.x)
         pmax.x = d.x;
     if (pmax.y < d.y)
@@ -649,12 +649,12 @@ float PtcData::Trace(const CVECTOR &s, const CVECTOR &d) const
 }
 
 // Check the intersection of a triangle with a line segment
-float PtcData::Trace(PtcTriangle &trg, const CVECTOR &s, const CVECTOR &d) const
+float PtcData::Trace(PtcTriangle &trg, const Vector &s, const Vector &d) const
 {
     // Normal to triangle
-    CVECTOR &n = *(CVECTOR *)&normal[trg.n];
+    Vector &n = *(Vector *)&normal[trg.n];
     // Distance to triangle
-    const float dst = n | *(CVECTOR *)&vertex[trg.i[0]];
+    const float dst = n | *(Vector *)&vertex[trg.i[0]];
     // Distance of the segment to the plane
     const float d1 = (n | s) - dst;
     const float d2 = (n | d) - dst;
@@ -671,13 +671,13 @@ float PtcData::Trace(PtcTriangle &trg, const CVECTOR &s, const CVECTOR &d) const
         k = 0.0f;
     if (k > 1.0f)
         k = 1.0f;
-    const CVECTOR pnt = s + (d - s) * k;
+    const Vector pnt = s + (d - s) * k;
     // Vertices
-    CVECTOR &v0 = *(CVECTOR *)&vertex[trg.i[0]];
-    CVECTOR &v1 = *(CVECTOR *)&vertex[trg.i[1]];
-    CVECTOR &v2 = *(CVECTOR *)&vertex[trg.i[2]];
+    Vector &v0 = *(Vector *)&vertex[trg.i[0]];
+    Vector &v1 = *(Vector *)&vertex[trg.i[1]];
+    Vector &v2 = *(Vector *)&vertex[trg.i[2]];
     // check the location of the point in the triangle
-    CVECTOR en;
+    Vector en;
     en = (v1 - v0) ^ n;
     if ((en | pnt) - (en | v0) > 0.0f)
         return 2.0f;
@@ -692,7 +692,7 @@ float PtcData::Trace(PtcTriangle &trg, const CVECTOR &s, const CVECTOR &d) const
 }
 
 // Find the force pushing away from the edges
-void PtcData::FindForce(long curNode, CVECTOR &force) const
+void PtcData::FindForce(long curNode, Vector &force) const
 {
     force = 0.0f;
     if (curNode < 0 || curNode >= numTriangles)
@@ -706,8 +706,8 @@ void PtcData::FindForce(long curNode, CVECTOR &force) const
         const long s = triangle[curNode].i[i];
         const long e = triangle[curNode].i[i < 2 ? i + 1 : 0];
         // Edge vertices
-        CVECTOR &vs = *(CVECTOR *)&vertex[s];
-        CVECTOR &ve = *(CVECTOR *)&vertex[e];
+        Vector &vs = *(Vector *)&vertex[s];
+        Vector &ve = *(Vector *)&vertex[e];
         // Edge normal
         float nx = (ve.z - vs.z);
         float nz = -(ve.x - vs.x);
@@ -723,7 +723,7 @@ void PtcData::FindForce(long curNode, CVECTOR &force) const
 }
 
 // Find the force pushing away from the edges
-void PtcData::FindForce(long curNode, const CVECTOR &pos, float dist, CVECTOR &force) const
+void PtcData::FindForce(long curNode, const Vector &pos, float dist, Vector &force) const
 {
     force = 0.0f;
     if (curNode < 0 || curNode >= numTriangles)
@@ -737,8 +737,8 @@ void PtcData::FindForce(long curNode, const CVECTOR &pos, float dist, CVECTOR &f
         const long s = triangle[curNode].i[i];
         const long e = triangle[curNode].i[i < 2 ? i + 1 : 0];
         // Edge vertices
-        CVECTOR &vs = *(CVECTOR *)&vertex[s];
-        CVECTOR &ve = *(CVECTOR *)&vertex[e];
+        Vector &vs = *(Vector *)&vertex[s];
+        Vector &ve = *(Vector *)&vertex[e];
         // Edge normal
         float nx = (ve.z - vs.z);
         float nz = -(ve.x - vs.x);
@@ -833,8 +833,8 @@ inline void PtcData::AddClTriangle(long i)
 inline float PtcData::FindHeight(long trgID, float x, float z)
 {
     Assert(trgID >= 0 && trgID < numTriangles);
-    CVECTOR &n = *(CVECTOR *)&normal[triangle[trgID].n];
-    float d = n | *(CVECTOR *)&vertex[triangle[trgID].i[0]];
+    Vector &n = *(Vector *)&normal[triangle[trgID].n];
+    float d = n | *(Vector *)&vertex[triangle[trgID].i[0]];
     d = static_cast<float>((d - n.x * x - n.z * z) / static_cast<double>(n.y) + 0.0001);
     return d;
 }
@@ -885,7 +885,7 @@ void PtcData::DebugDraw(VDX9RENDER *rs, float dltTime)
         }
     }
     auto tech = "DbgPatchViewZ";
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
     rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, numTriangles, dbgTriangles, sizeof(DbgVertex),
                         tech);
     rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, numTriangles * 3, dbgEdges, sizeof(DbgVertex),

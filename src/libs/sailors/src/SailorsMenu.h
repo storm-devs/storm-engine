@@ -10,8 +10,8 @@ class Menu
     int selected;
     int blocked;
     int count;
-    CVECTOR cameraAng;
-    CVECTOR cameraPos;
+    Vector cameraAng;
+    Vector cameraPos;
     uint32_t dltTime;
 
     bool keyPressed;

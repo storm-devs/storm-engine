@@ -50,7 +50,7 @@ void AICannon::Execute(float fDeltaTime)
     }
 }
 
-float AICannon::CalcHeightFireAngle(float _fSpeedV0, const CVECTOR &vOur, const CVECTOR &vEnemy) const
+float AICannon::CalcHeightFireAngle(float _fSpeedV0, const Vector &vOur, const Vector &vEnemy) const
 {
     auto vTemp = vOur - vEnemy;
     vTemp.y = 0.0f;
@@ -90,31 +90,31 @@ VAI_OBJBASE *AICannon::GetAIObjPointer() const
 
 float AICannon::GetDirY() const
 {
-    CMatrix mRot;
+    Matrix mRot;
     auto *pAIObj = GetAIObjPointer();
 
-    (*pAIObj->GetMatrix()).Get3X3(mRot);
+    pAIObj->GetMatrix()->Get3X3(mRot);
 
     const auto vDirTemp = mRot * vDir;
     return NormalizeAngle(atan2f(vDirTemp.x, vDirTemp.z));
 }
 
-CVECTOR AICannon::GetDir() const
+Vector AICannon::GetDir() const
 {
-    CMatrix mRot;
+    Matrix mRot;
     auto *pAIObj = GetAIObjPointer();
-    (*pAIObj->GetMatrix()).Get3X3(mRot);
+    pAIObj->GetMatrix()->Get3X3(mRot);
     return mRot * vDir;
 }
 
-CVECTOR AICannon::GetPos() const
+Vector AICannon::GetPos() const
 {
     return *GetAIObjPointer()->GetMatrix() * vPos;
 }
 
 void AICannon::RealFire()
 {
-    CMatrix mRot;
+    Matrix mRot;
     // calculate real world cannon position and direction,
     // calculate fire height and azimuth angle, and call script
     auto *pAIObj = GetAIObjPointer();
@@ -137,14 +137,14 @@ void AICannon::RealFire()
     Recharge();
 }
 
-bool AICannon::Fire(float _fSpeedV0, const CVECTOR &_vFirePos)
+bool AICannon::Fire(float _fSpeedV0, const Vector &_vFirePos)
 {
     if (isFired() || isRecharged() || isDamaged() || isEmpty())
         return false;
 
     auto *pAIObj = GetAIObjPointer();
     const auto vPosTemp = *pAIObj->GetMatrix() * vPos;
-    CMatrix mRot;
+    Matrix mRot;
     (*pAIObj->GetMatrix()).Get3X3(mRot);
 
     const auto vFireDir = !(_vFirePos - vPosTemp);
@@ -234,12 +234,12 @@ void AICannon::Init(AIAttributesHolder *_pAHolder, const entid_t eid, GEOS::LABE
     pAHolder = _pAHolder;
     eidParent = eid;
 
-    CMatrix m;
+    Matrix m;
     memcpy(&m.m[0][0], &lbl.m[0][0], sizeof(m));
 
-    vPos = m.Pos();
-    vDir = CVECTOR(m.Vz().x, 0.0f, m.Vz().z);
-    // vDir = atan2f(m.Vz().x,m.Vz().z);
+    vPos = m.pos;
+    vDir = Vector(m.vz.x, 0.0f, m.vz.z);
+    // vDir = atan2f(m.vz.x,m.vz.z);
 }
 
 void AICannon::Save(CSaveLoad *pSL) const

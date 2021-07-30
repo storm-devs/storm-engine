@@ -13,13 +13,13 @@
 
 using RAINVERTEX = struct
 {
-    CVECTOR vPos;
+    Vector vPos;
     uint32_t dwColor;
 };
 
 struct SEADROPVERTEX
 {
-    CVECTOR vPos;
+    Vector vPos;
     uint32_t dwColor;
     float tu, tv;
 };
@@ -28,8 +28,8 @@ using rainblock_t = struct
 {
     float fWindFlaw, fWindSpeedJitter;
     uint32_t dwTime;
-    CVECTOR vPos;
-    CVECTOR vAng;
+    Vector vPos;
+    Vector vAng;
 };
 
 class RAIN : public Entity
@@ -42,14 +42,14 @@ class RAIN : public Entity
 
     struct seadrop_t
     {
-        CVECTOR vPos;
+        Vector vPos;
         float fTime;
         float fLifeTime;
     };
 
     struct drop_t
     {
-        CVECTOR vPos;
+        Vector vPos;
         float fLifeTime;
         long iShip;
         // SHIP_BASE * pShip;
@@ -78,7 +78,7 @@ class RAIN : public Entity
     uint32_t dwNumRainBlocks;
     rainblock_t *pRainBlocks;
 
-    CVECTOR vCamPos, vCamAng;
+    Vector vCamPos, vCamAng;
 
     float fRainHeight, fRainRadius;
     uint32_t dwNumDrops;
@@ -99,7 +99,7 @@ class RAIN : public Entity
     VDX9RENDER *rs;
     COLLIDE *cs;
 
-    void GenerateRandomDrop(CVECTOR *vPos) const;
+    void GenerateRandomDrop(Vector *vPos) const;
     void GenerateRain();
     void InitialSomeBlockParameters(long iIdx) const;
     void Release();

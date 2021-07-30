@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Matrix.h"
 #include "dx9render.h"
 #include "geometry.h"
 #include "vfile_service.h"
-#include "vmodule_api.h"
 #include "vparticle_system.h"
 
 #define MAX_PS_TEXTURES 8
@@ -47,7 +45,7 @@
 
 struct PARTICLE_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     uint32_t color;
     float tu, tv;
 };
@@ -56,11 +54,11 @@ struct PARTICLE_VERTEX
 
 struct PARTICLE
 {
-    CVECTOR pos;
-    CVECTOR ang;
-    CVECTOR v;
-    CVECTOR chaos;
-    CVECTOR track_dest;
+    Vector pos;
+    Vector ang;
+    Vector v;
+    Vector chaos;
+    Vector track_dest;
 
     float size;
     float weight;
@@ -117,14 +115,14 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
 
     IDirect3DVertexBuffer9 *VBuffer;
 
-    CVECTOR Camera_EmitterPos;
-    CVECTOR Camera_EmitterPosA;
-    CVECTOR Emitter;
-    CVECTOR EmitterDirection;
+    Vector Camera_EmitterPos;
+    Vector Camera_EmitterPosA;
+    Vector Emitter;
+    Vector EmitterDirection;
     float DirectionDeviation;
     long EmitterIniTime;
 
-    CVECTOR vWindDirection;
+    Vector vWindDirection;
     float fWindPower;
     float fWindEffect;
     float Gravity;
@@ -147,8 +145,8 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
     long DeltaTimeSLE;  // SinceLastEmission
     bool EmitParticle();
     long nSystemLifeTime;
-    // void  AddTrackPoint(CVECTOR pos);
-    CVECTOR *pFlowTrack;
+    // void  AddTrackPoint(Vector pos);
+    Vector *pFlowTrack;
     uint32_t nFlowTrackSize;
     bool bUseFlowTrack;
     void SetFlowTrack(uint32_t index);
@@ -165,11 +163,11 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
 
     //---------------------------------
 
-    CVECTOR CameraPos;
-    CVECTOR CameraAng;
+    Vector CameraPos;
+    Vector CameraAng;
     float Perspective;
 
-    CMatrix Matrix;
+    Matrix mtx;
 
     bool bComplete;
 
@@ -183,9 +181,9 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
     SEAFOAM_PS *r_PTR;
 
     entid_t LinkObject;
-    CVECTOR LinkPos;
-    CVECTOR LinkDir;
-    CVECTOR LinkDirPos;
+    Vector LinkPos;
+    Vector LinkDir;
+    Vector LinkDirPos;
 
     long EmitIndex;
     long EmitTimeDelta;
@@ -209,8 +207,8 @@ class SEAFOAM_PS : VPARTICLE_SYSTEM
 
     float GetTrackValue(TRACK_EVENT *Track, long Time);
     bool BuildTrack(INIFILE *ini, TRACK_EVENT *Track, const char *psname, const char *key_name);
-    void SetEmitter(CVECTOR p, CVECTOR a) override;
-    void LinkToObject(entid_t id, CVECTOR _LinkPos) override;
+    void SetEmitter(Vector p, Vector a) override;
+    void LinkToObject(entid_t id, Vector _LinkPos) override;
     void SetDelay(long _delay) override;
 
     void EnableEmit(bool _enableEmit)

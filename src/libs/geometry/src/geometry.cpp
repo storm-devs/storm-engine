@@ -503,14 +503,14 @@ void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, lo
 
     if (bCaustic)
     {
-        CMatrix mWorld, mView, mProjection;
+        Matrix mWorld, mView, mProjection;
         RenderService->GetTransform(D3DTS_WORLD, mWorld);
         RenderService->GetTransform(D3DTS_PROJECTION, mProjection);
         RenderService->GetTransform(D3DTS_VIEW, mView);
 
         auto mWVP = (mWorld * mView) * mProjection;
 
-        mWVP.Transposition4x4();
+        mWVP.Transposition();
 
         // constants
         // 0 - World * View * Projection

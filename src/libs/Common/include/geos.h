@@ -10,8 +10,9 @@ Import library main header
 
 #pragma once
 
-#include <cstdint>
 #include <fstream>
+
+#include "math3d/Plane.h"
 
 class GEOS
 {

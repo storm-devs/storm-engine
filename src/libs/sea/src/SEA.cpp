@@ -352,7 +352,7 @@ bool SEA::Init()
 
 void SEA::BuildVolumeTexture()
 {
-    std::vector<CVECTOR *> aVectors;
+    std::vector<Vector *> aVectors;
     uint32_t i, j;
 
     for (const auto &normal : aNormals)
@@ -380,7 +380,7 @@ void SEA::BuildVolumeTexture()
         auto pBuffer = new uint32_t[XWIDTH * YWIDTH];
         aNormals.push_back(pBuffer);
 
-        auto *pVectors = new CVECTOR[XWIDTH * YWIDTH];
+        auto *pVectors = new Vector[XWIDTH * YWIDTH];
         aVectors.push_back(pVectors);
 
         for (uint32_t y = 0; y < YWIDTH; y++)
@@ -397,7 +397,7 @@ void SEA::BuildVolumeTexture()
                 float fTop = GET_MASSIVE(0, -1) - fCenter;
                 float fBottom = GET_MASSIVE(0, 1) - fCenter;
 
-                CVECTOR vRes, vRes1, d0, d1, d2, d3;
+                Vector vRes, vRes1, d0, d1, d2, d3;
 
                 uint32_t dwNums = 0;
                 if (fLeft < 0.0f)
@@ -410,24 +410,24 @@ void SEA::BuildVolumeTexture()
                     dwNums++;
 
                 float d = 1.0f;
-                d0 = CVECTOR(-1.f, d * fLeft, 0.f);
-                d1 = CVECTOR(0.f, d * fTop, -1.f);
-                d2 = CVECTOR(1.f, d * fRight, 0.f);
-                d3 = CVECTOR(0.f, d * fBottom, 1.f);
+                d0 = Vector(-1.f, d * fLeft, 0.f);
+                d1 = Vector(0.f, d * fTop, -1.f);
+                d2 = Vector(1.f, d * fRight, 0.f);
+                d3 = Vector(0.f, d * fBottom, 1.f);
 
                 // res = !((d0^d1) + (d2^d3));
 
-                CVECTOR v1 = (d1 ^ d0);
-                CVECTOR v2 = (d3 ^ d2);
-                CVECTOR v3 = (d0 ^ d3);
-                CVECTOR v4 = (d2 ^ d1);
+                Vector v1 = (d1 ^ d0);
+                Vector v2 = (d3 ^ d2);
+                Vector v3 = (d0 ^ d3);
+                Vector v4 = (d2 ^ d1);
 
                 vRes = vRes1 = !((d1 ^ d0) + (d3 ^ d2) + (d0 ^ d3) + (d2 ^ d1));
                 if (bSimpleSea)
                 {
-                    vRes1 = !(vRes * CVECTOR(100.0f, 1.0f, 100.0f));
+                    vRes1 = !(vRes * Vector(100.0f, 1.0f, 100.0f));
                 }
-                // CVECTOR vRes1 = !(vRes * CVECTOR(100.0f, 1.0f, 100.0f));
+                // Vector vRes1 = !(vRes * Vector(100.0f, 1.0f, 100.0f));
                 uint32_t dwRes = MAKELONG(static_cast<short>(vRes.x * 32767.5f), static_cast<short>(vRes.z * 32767.5f));
 
                 aNormals[i][x + y * XWIDTH] = dwRes;
@@ -472,7 +472,7 @@ void SEA::BuildVolumeTexture()
                 {
                     for (uint32_t x = 0; x < d3dsd.Width; x++)
                     {
-                        CVECTOR vTmp = 0.0f;
+                        Vector vTmp = 0.0f;
                         long dwMult = 1 << (lev);
                         for (uint32_t y1 = y * dwMult; y1 < (y + 1) * dwMult; y1++)
                             for (uint32_t x1 = x * dwMult; x1 < (x + 1) * dwMult; x1++)
@@ -502,7 +502,7 @@ void SEA::BuildVolumeTexture()
 
     for (j = 1; j < 4; j++)
     {
-        auto *pVectors = new CVECTOR[(XWIDTH >> j) * (YWIDTH >> j)];
+        auto *pVectors = new Vector[(XWIDTH >> j) * (YWIDTH >> j)];
 
         for (i = 0; i < (FRAMES >> j); i++)
         {
@@ -511,7 +511,7 @@ void SEA::BuildVolumeTexture()
                 for (uint32_t x = 0; x < (XWIDTH >> j); x++)
                 {
                     long iNumVectors = 0;
-                    CVECTOR vVec = 0.0f;
+                    Vector vVec = 0.0f;
                     uint32_t dwW = 1 << j;
                     for (uint32_t k = i * dwW; k < (i + 1) * dwW; k++)
                     {
@@ -562,24 +562,24 @@ void SEA::BuildVolumeTexture()
 bool SEA::EditMode_Update()
 {
     // return true;
-    v4SeaColor = CVECTOR4(10.0f / 255.0f, 55.0f / 255.0f, 100.0f / 255.0f, 1.0f);
-    v4SkyColor = CVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
+    v4SeaColor = Vector4(10.0f / 255.0f, 55.0f / 255.0f, 100.0f / 255.0f, 1.0f);
+    v4SkyColor = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
     const float fReflection = 0.8f;
     const float fTransparency = 0.7f;
     float fFrenel = 0.75f;
     const float fAttenuation = 0.9f;
-    v4SeaParameters = CVECTOR4(fAttenuation, fReflection, fTransparency, 0.0f);
+    v4SeaParameters = Vector4(fAttenuation, fReflection, fTransparency, 0.0f);
 
     fAmp1 = _fAmp1 = 8.0f;
     fAnimSpeed1 = 6.0f;
     fScale1 = 0.5f;
-    vMoveSpeed1 = CVECTOR(5.0f, 0.0f, 0.0f);
+    vMoveSpeed1 = Vector(5.0f, 0.0f, 0.0f);
 
     fAmp2 = _fAmp2 = 1.0f;
     fAnimSpeed2 = 3.0f;
     fScale2 = 2.0f;
-    vMoveSpeed2 = CVECTOR(0.0f, 0.0f, 2.0f);
+    vMoveSpeed2 = Vector(0.0f, 0.0f, 2.0f);
 
     fBumpScale = 0.1f;
     fBumpSpeed = 1.0f;
@@ -593,17 +593,17 @@ bool SEA::EditMode_Update()
     return true;
 }
 
-long SEA::VisCode(const CVECTOR &vP)
+long SEA::VisCode(const Vector &vP)
 {
     long vc = 0;
 
     /*
-    CVECTOR v = vP - vCamPos;
+    Vector v = vP - vCamPos;
 
-    CVECTOR vp1 = CVECTOR(pFrustumPlanes[0].Nx, pFrustumPlanes[0].Ny, pFrustumPlanes[0].Nz);
-    CVECTOR vp2 = CVECTOR(pFrustumPlanes[1].Nx, pFrustumPlanes[1].Ny, pFrustumPlanes[1].Nz);
-    CVECTOR vp3 = CVECTOR(pFrustumPlanes[2].Nx, pFrustumPlanes[2].Ny, pFrustumPlanes[2].Nz);
-    CVECTOR vp4 = CVECTOR(pFrustumPlanes[3].Nx, pFrustumPlanes[3].Ny, pFrustumPlanes[3].Nz);
+    Vector vp1 = Vector(pFrustumPlanes[0].n.x, pFrustumPlanes[0].n.y, pFrustumPlanes[0].n.z);
+    Vector vp2 = Vector(pFrustumPlanes[1].n.x, pFrustumPlanes[1].n.y, pFrustumPlanes[1].n.z);
+    Vector vp3 = Vector(pFrustumPlanes[2].n.x, pFrustumPlanes[2].n.y, pFrustumPlanes[2].n.z);
+    Vector vp4 = Vector(pFrustumPlanes[3].n.x, pFrustumPlanes[3].n.y, pFrustumPlanes[3].n.z);
 
     //if((v | pFrustumPlanes[0].n) < 0 ) vc |= 0x10;
     if ((v | vp1) < 0 ) vc |= 0x01;
@@ -614,27 +614,27 @@ long SEA::VisCode(const CVECTOR &vP)
     */
 
     // Max - so the accuracy is much higher, blocks should not disappear sometimes in the distance
-    PLANE *p = &pFrustumPlanes[0];
-    if (p->Nx * vP.x + p->Ny * vP.y + p->Nz * vP.z < p->D)
+    Plane *p = &pFrustumPlanes[0];
+    if (p->n.x * vP.x + p->n.y * vP.y + p->n.z * vP.z < p->D)
         vc |= 0x01;
     p = &pFrustumPlanes[1];
-    if (p->Nx * vP.x + p->Ny * vP.y + p->Nz * vP.z < p->D)
+    if (p->n.x * vP.x + p->n.y * vP.y + p->n.z * vP.z < p->D)
         vc |= 0x02;
     p = &pFrustumPlanes[2];
-    if (p->Nx * vP.x + p->Ny * vP.y + p->Nz * vP.z < p->D)
+    if (p->n.x * vP.x + p->n.y * vP.y + p->n.z * vP.z < p->D)
         vc |= 0x04;
     p = &pFrustumPlanes[3];
-    if (p->Nx * vP.x + p->Ny * vP.y + p->Nz * vP.z < p->D)
+    if (p->n.x * vP.x + p->n.y * vP.y + p->n.z * vP.z < p->D)
         vc |= 0x08;
 
     return vc;
 }
 
-bool SEA::isVisibleBBox(const CVECTOR &vCenter, const CVECTOR &v1, const CVECTOR &v2)
+bool SEA::isVisibleBBox(const Vector &vCenter, const Vector &v1, const Vector &v2)
 {
-    /*CVECTOR vc = vCenter - vCamPos;
-    CVECTOR vp1 = v1 - vCamPos;
-    CVECTOR vp2 = v2 - vCamPos;
+    /*Vector vc = vCenter - vCamPos;
+    Vector vp1 = v1 - vCamPos;
+    Vector vp2 = v2 - vCamPos;
     float fR2 = sqrtf(Sqr((vp1.x - vp2.x) * 0.5f) + Sqr((vp1.z - vp2.z)) * 0.5f);*/
 
     // if sphere not visible - return
@@ -643,18 +643,18 @@ bool SEA::isVisibleBBox(const CVECTOR &vCenter, const CVECTOR &v1, const CVECTOR
 
     // check box visible
     long vc = 0xFF;
-    vc &= VisCode(CVECTOR(v1.x, v1.y, v1.z));
+    vc &= VisCode(Vector(v1.x, v1.y, v1.z));
     if (vc == 0)
         return true;
-    vc &= VisCode(CVECTOR(v1.x, v2.y, v1.z));
-    vc &= VisCode(CVECTOR(v2.x, v1.y, v1.z));
-    vc &= VisCode(CVECTOR(v2.x, v2.y, v1.z));
+    vc &= VisCode(Vector(v1.x, v2.y, v1.z));
+    vc &= VisCode(Vector(v2.x, v1.y, v1.z));
+    vc &= VisCode(Vector(v2.x, v2.y, v1.z));
     if (vc == 0)
         return true;
-    vc &= VisCode(CVECTOR(v1.x, v1.y, v2.z));
-    vc &= VisCode(CVECTOR(v1.x, v2.y, v2.z));
-    vc &= VisCode(CVECTOR(v2.x, v1.y, v2.z));
-    vc &= VisCode(CVECTOR(v2.x, v2.y, v2.z));
+    vc &= VisCode(Vector(v1.x, v1.y, v2.z));
+    vc &= VisCode(Vector(v1.x, v2.y, v2.z));
+    vc &= VisCode(Vector(v2.x, v1.y, v2.z));
+    vc &= VisCode(Vector(v2.x, v2.y, v2.z));
 
     return vc == 0;
 }
@@ -664,7 +664,7 @@ inline float SEA::CalcLod(const float &x, const float &y, const float &z)
     return Sqr(x - vCamPos.x) + /*Sqr((y - vCamPos.y)) + */ Sqr(z - vCamPos.z);
 }
 
-void SEA::CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, long &iMaxLOD, long &iMinLOD)
+void SEA::CalculateLOD(const Vector &v1, const Vector &v2, long &iMaxLOD, long &iMinLOD)
 {
     float fCur, fMax, fMin;
 
@@ -739,8 +739,8 @@ void SEA::BuildTree(long iTX, long iTY, long iLev)
     const long iSize = static_cast<long>(dwMaxDim >> iLev);
     const float fGSize = fGridStep * iSize;
 
-    const CVECTOR v1 = vSeaCenterPos + CVECTOR(iTX * fGSize, -fMaxSeaHeight / 2.0f, iTY * fGSize);
-    const CVECTOR v2 = v1 + CVECTOR(fGSize, fMaxSeaHeight, fGSize);
+    const Vector v1 = vSeaCenterPos + Vector(iTX * fGSize, -fMaxSeaHeight / 2.0f, iTY * fGSize);
+    const Vector v2 = v1 + Vector(fGSize, fMaxSeaHeight, fGSize);
 
     if (!isVisibleBBox(vSeaCenterPos, v1, v2))
         return;
@@ -779,7 +779,7 @@ inline void PrefetchNTA(uint32_t dwAddress)
 // In particular I have converted the normalise and square roots over to SSE.
 void SEA::SSE_WaveXZ(SeaVertex **pArray)
 {
-    CVECTOR vNormal[4];
+    Vector vNormal[4];
     float nY1[4];
     float nY2[4];
     bool bDistancePass = false;
@@ -915,7 +915,7 @@ void SEA::SSE_WaveXZ(SeaVertex **pArray)
     }
 }
 
-float SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
+float SEA::WaveXZ(float x, float z, Vector *pNormal)
 {
     long iX11, iX12, iX21, iX22, iY11, iY12, iY21, iY22;
 
@@ -923,7 +923,7 @@ float SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
     if (fDistance > 1600.0f * 1600.0f)
     {
         if (pNormal)
-            *pNormal = CVECTOR(0.0f, 1.0f, 0.0f);
+            *pNormal = Vector(0.0f, 1.0f, 0.0f);
         return 0.0f;
     }
 
@@ -1013,7 +1013,7 @@ float SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
         const float nY1 = sqrtf(1.0f - (Sqr(nX1) + Sqr(nZ1)));
         const float nY2 = sqrtf(1.0f - (Sqr(nX2) + Sqr(nZ2)));
 
-        CVECTOR vNormal;
+        Vector vNormal;
 
         vNormal.x = fScale1 * fAmp1 * nX1 + fScale2 * fAmp2 * nX2;
         vNormal.z = fScale1 * fAmp1 * nZ1 + fScale2 * fAmp2 * nZ2;
@@ -1191,7 +1191,7 @@ void SEA::SSE_WaveXZBlock(SeaBlock *pB)
     y1 += vSeaCenterPos.z;
     y2 += vSeaCenterPos.z;
 
-    // CVECTOR vNormal, vTmp;
+    // Vector vNormal, vTmp;
     long iCurrentV = 0;
 
     long iIStart1 = pB->iIStart;
@@ -1293,7 +1293,7 @@ void SEA::WaveXZBlock(SeaBlock *pB)
     y1 += vSeaCenterPos.z;
     y2 += vSeaCenterPos.z;
 
-    CVECTOR vNormal, vTmp;
+    Vector vNormal, vTmp;
 
     long iIStart1 = pB->iIStart;
     const long iIFirst = pB->iIFirst;
@@ -1477,12 +1477,12 @@ void SEA::Realize(uint32_t dwDeltaTime)
     uint64_t dwTotalRDTSC;
     RDTSC_B(dwTotalRDTSC);
 
-    CMatrix mView, mIView;
+    Matrix mView, mIView;
     rs->GetTransform(D3DTS_VIEW, mView);
     mIView = mView;
     mIView.Transposition();
 
-    vCamPos = mIView.Pos();
+    vCamPos = mIView.pos;
 #ifdef OLD_WORLD_POS
     vWorldOffset = 0.0f;
 #else
@@ -1516,7 +1516,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
 
     float fBlockSize = 256.0f * fGridStep;
     long iNumBlocks = static_cast<long>(dwMaxDim) / (256 * 2);
-    vSeaCenterPos = CVECTOR(fBlockSize * (static_cast<long>(vCamPos.x / fBlockSize) - iNumBlocks), fMaxSeaHeight * 0.5f,
+    vSeaCenterPos = Vector(fBlockSize * (static_cast<long>(vCamPos.x / fBlockSize) - iNumBlocks), fMaxSeaHeight * 0.5f,
                             fBlockSize * (static_cast<long>(vCamPos.z / fBlockSize) - iNumBlocks));
 
     iB1 = 0;
@@ -1665,12 +1665,12 @@ void SEA::Realize(uint32_t dwDeltaTime)
 
     if (iVStart && iTStart)
     {
-        CMatrix mWorldView, mWorldViewProj;
+        Matrix mWorldView, mWorldViewProj;
 
-        CMatrix mView = rs->GetView();
-        CMatrix mWorld;
+        Matrix mView = rs->GetView();
+        Matrix mWorld;
         mWorld.SetIdentity(); // = rs->GetWorld();
-        CMatrix mProjection = rs->GetProjection();
+        Matrix mProjection = rs->GetProjection();
 
 #ifndef OLD_WORLD_POS
         mView.MoveInversePosition(-vWorldOffset.x, 0.f, -vWorldOffset.z);
@@ -1679,7 +1679,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
         mWorldView.EqMultiply(mWorld, mView);
         mWorldViewProj.EqMultiply(mWorldView, mProjection);
 
-        mWorldViewProj.Transposition4x4();
+        mWorldViewProj.Transposition();
 
         fTmp += fDeltaTime * fBumpSpeed;
         while (fTmp >= 1.0f)
@@ -1687,16 +1687,16 @@ void SEA::Realize(uint32_t dwDeltaTime)
 
         rs->SetVertexDeclaration(vertexDecl_);
 
-        const auto vec1 = CVECTOR4(0.0f, 1.0f, 0.5f, -0.04f);
-        const auto vec2 = CVECTOR4(2.0f, -1.0f, 0.00036621652552071f, (bFogEnable) ? fFogSeaDensity : 0.0f);
-        const auto vec3 = CVECTOR4(fFoamV, fFoamK, fFoamUV, 6.0f);
-        const auto vec4 = CVECTOR4(fTmp, fTmp, fTmp, fTmp);
-        const auto vec5 = CVECTOR4(vCamPos.x - vWorldOffset.x, vCamPos.y, vCamPos.z - vWorldOffset.z, 1.0f);
-        const auto vec6 = CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
-        const auto vec7 = CVECTOR4(fFrenel, 1.0f, 0.5f, 1.0f);
-        const auto vec8 = CVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
-        CVECTOR vTmp = !CVECTOR(0.0f, 1.0f, 0.0f);
-        const auto vec9 = CVECTOR4(vTmp.x, vTmp.y, vTmp.z, 1.0f);
+        const auto vec1 = Vector4(0.0f, 1.0f, 0.5f, -0.04f);
+        const auto vec2 = Vector4(2.0f, -1.0f, 0.00036621652552071f, (bFogEnable) ? fFogSeaDensity : 0.0f);
+        const auto vec3 = Vector4(fFoamV, fFoamK, fFoamUV, 6.0f);
+        const auto vec4 = Vector4(fTmp, fTmp, fTmp, fTmp);
+        const auto vec5 = Vector4(vCamPos.x - vWorldOffset.x, vCamPos.y, vCamPos.z - vWorldOffset.z, 1.0f);
+        const auto vec6 = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+        const auto vec7 = Vector4(fFrenel, 1.0f, 0.5f, 1.0f);
+        const auto vec8 = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+        Vector vTmp = !Vector(0.0f, 1.0f, 0.0f);
+        const auto vec9 = Vector4(vTmp.x, vTmp.y, vTmp.z, 1.0f);
         rs->SetVertexShaderConstantF(GC_CONSTANT, (const float *)&vec1, 1);
         rs->SetVertexShaderConstantF(GC_CONSTANT2, (const float *)&vec2, 1);
         rs->SetVertexShaderConstantF(GC_SHADOW_CONST1, (const float *)&vec3, 1);
@@ -1742,7 +1742,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
         }
         else
         {
-            const auto vec1 = CMatrix(0.0f, 0.0f, PId2);
+            const auto vec1 = Matrix(0.0f, 0.0f, PId2);
             rs->SetVertexShaderConstantF(GC_FREE + 8, (const float *)&vec1, 4); // Matrix!!
 
             rs->SetTexture(0, (pVolumeTexture) ? static_cast<IDirect3DBaseTexture9 *>(pVolumeTexture)
@@ -1754,7 +1754,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
             if (fFoamK > 0.0f && bFoamEnable && bIniFoamEnable)
             {
                 // Render sea foam
-                const auto vec2 = CVECTOR4(fFoamTextureDisturb, 0.0f, 0.0f, 0.0f);
+                const auto vec2 = Vector4(fFoamTextureDisturb, 0.0f, 0.0f, 0.0f);
                 rs->SetPixelShaderConstantF(0, (const float *)&vec2, 1);
 
                 rs->TextureSet(0, iFoamTexture);
@@ -1797,8 +1797,8 @@ void SEA::Realize(uint32_t dwDeltaTime)
 
     if (bUnderSea && bUnderSeaEnable)
     {
-        CVECTOR d(20.0f, 5.0f, 20.0f);
-        CVECTOR d2(54.0f, 10.0f, 54.0f);
+        Vector d(20.0f, 5.0f, 20.0f);
+        Vector d2(54.0f, 10.0f, 54.0f);
         if (!bUnderSeaStarted)
         {
             // doing a bunch of sea trash for the first time
@@ -1808,8 +1808,8 @@ void SEA::Realize(uint32_t dwDeltaTime)
                 aSeaTrash.push_back(SeaTrash{});
                 // SeaTrash & st = aSeaTrash[aSeaTrash.Add()];
                 SeaTrash &st = aSeaTrash.back();
-                st.vPos = vCamPos + CVECTOR(RRnd(-d.x, d.x), RRnd(-d.y, d.y), RRnd(-d.z, d.z));
-                st.vSpeed = CVECTOR(0.1f, 0.0f, 0.0f);
+                st.vPos = vCamPos + Vector(RRnd(-d.x, d.x), RRnd(-d.y, d.y), RRnd(-d.z, d.z));
+                st.vSpeed = Vector(0.1f, 0.0f, 0.0f);
                 st.dwSubTexture = rand() % 4;
                 st.fSize = RRnd(0.01f, 0.05f);
                 st.fTime = static_cast<float>(i) * 0.02f;
@@ -1822,8 +1822,8 @@ void SEA::Realize(uint32_t dwDeltaTime)
                 aSeaLights.push_back(SeaLight{});
                 // SeaLight & sl = aSeaLights[aSeaLights.Add()];
                 SeaLight &sl = aSeaLights.back();
-                sl.vPos = vCamPos + CVECTOR(RRnd(-d2.x, d2.x), RRnd(-d2.y, d2.y), RRnd(-d2.z, d2.z));
-                sl.vSpeed = CVECTOR(0.1f, 0.0f, 0.0f);
+                sl.vPos = vCamPos + Vector(RRnd(-d2.x, d2.x), RRnd(-d2.y, d2.y), RRnd(-d2.z, d2.z));
+                sl.vSpeed = Vector(0.1f, 0.0f, 0.0f);
                 sl.dwSubTexture = rand() % 4;
                 sl.fTime = static_cast<float>(i);
             }
@@ -1838,8 +1838,8 @@ void SEA::Realize(uint32_t dwDeltaTime)
             aSeaTrash.push_back(SeaTrash{});
             // SeaTrash & st = aSeaTrash[aSeaTrash.Add()];
             SeaTrash &st = aSeaTrash.back();
-            st.vPos = vCamPos + CVECTOR(RRnd(-d.x, d.x), RRnd(-d.y, d.y), RRnd(-d.z, d.z));
-            st.vSpeed = CVECTOR(0.1f, 0.0f, 0.0f);
+            st.vPos = vCamPos + Vector(RRnd(-d.x, d.x), RRnd(-d.y, d.y), RRnd(-d.z, d.z));
+            st.vSpeed = Vector(0.1f, 0.0f, 0.0f);
             st.dwSubTexture = rand() % 4;
             st.fTime = 20.0f;
             st.fSize = RRnd(0.01f, 0.05f);
@@ -1898,8 +1898,8 @@ void SEA::Realize(uint32_t dwDeltaTime)
             aSeaLights.push_back(SeaLight{});
             // SeaLight & sl = aSeaLights[aSeaLights.Add()];
             SeaLight &sl = aSeaLights.back();
-            sl.vPos = vCamPos + CVECTOR(RRnd(-d2.x, d2.x), RRnd(-d2.y, d2.y), RRnd(-d2.z, d2.z));
-            sl.vSpeed = CVECTOR(0.1f, 0.0f, 0.0f);
+            sl.vPos = vCamPos + Vector(RRnd(-d2.x, d2.x), RRnd(-d2.y, d2.y), RRnd(-d2.z, d2.z));
+            sl.vSpeed = Vector(0.1f, 0.0f, 0.0f);
             sl.dwSubTexture = rand() % 4;
             sl.fTime = 50.0f;
         }
@@ -1933,8 +1933,8 @@ void SEA::Realize(uint32_t dwDeltaTime)
             if (aSeaLights[i].fTime <= 5.0f)
                 fAlpha = 1.0f - (5.0f - aSeaLights[i].fTime) / 5.0f;
 
-            CVECTOR v = aSeaLights[i].vPos;
-            r.vPos = CVECTOR(v.x, WaveXZ(v.x, v.z) - 5.0f, v.z);
+            Vector v = aSeaLights[i].vPos;
+            r.vPos = Vector(v.x, WaveXZ(v.x, v.z) - 5.0f, v.z);
             r.fSize = 20.0f;
             r.fAngle = 0.0f;
             r.dwColor = ARGB(0.07f * fAlphaK * fAlpha * 255.0f, 227, 245, 153);
@@ -1953,7 +1953,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
     bStarted = true;
 }
 
-float SEA::Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
+float SEA::Trace(const Vector &vSrc, const Vector &vDst)
 {
     const long iNumTests = 5;
     float fRes = 2.0f;
@@ -1964,7 +1964,7 @@ float SEA::Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
 
     for (long i = 0; i < iNumTests; i++)
     {
-        const CVECTOR vTemp = vSrc + static_cast<float>(i) * fDV * (vDst - vSrc);
+        const Vector vTemp = vSrc + static_cast<float>(i) * fDV * (vDst - vSrc);
         const float fWaveY = WaveXZ(vTemp.x, vTemp.z, nullptr);
 
         if (fWaveY > vTemp.y)
@@ -1974,13 +1974,13 @@ float SEA::Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
     return 2.0f;
 }
 
-float SEA::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
+float SEA::Cannon_Trace(long iBallOwner, const Vector &vSrc, const Vector &vDst)
 {
     const float fRes = Trace(vSrc, vDst);
 
     if (fRes <= 1.0f)
     {
-        const CVECTOR vTemp = vSrc + fRes * (vDst - vSrc);
+        const Vector vTemp = vSrc + fRes * (vDst - vSrc);
         const float fTmpY = WaveXZ(vTemp.x, vTemp.z, nullptr);
         core.Event(BALL_WATER_HIT, "lfff", iBallOwner, vTemp.x, fTmpY, vTemp.z);
     }

@@ -32,7 +32,7 @@ AnimationImp::AnimationImp(long id, AnimationInfo *animationInfo)
         action[i].SetAnimation(this, i);
         timer[i].SetAnimation(this);
     }
-    matrix = new CMatrix[aniInfo->NumBones()];
+    matrix = new Matrix[aniInfo->NumBones()];
     memset(ae_listeners, 0, sizeof(ae_listeners));
     ae_listenersExt = nullptr;
     // Auto normalization
@@ -108,7 +108,7 @@ long AnimationImp::GetNumBones() const
 }
 
 // Get animation matrix for bone
-CMatrix &AnimationImp::GetAnimationMatrix(long iBone) const
+Matrix &AnimationImp::GetAnimationMatrix(long iBone) const
 {
     Assert(iBone >= 0 && iBone < aniInfo->NumBones());
     return matrix[iBone];
@@ -239,22 +239,22 @@ void AnimationImp::BuildAnimationMatrices()
             for (long j = 0; j < nbones; j++)
             {
                 auto &bn = aniInfo->GetBone(j);
-                CMatrix inmtx;
+                Matrix inmtx;
                 D3DXQUATERNION qt0, qt1, qt;
                 bn.BlendFrame(f0, ki0, qt0);
                 bn.BlendFrame(f1, ki1, qt1);
                 D3DXQuaternionSlerp(&qt, &qt0, &qt1, kBlend);
                 D3DXMatrixRotationQuaternion(inmtx, &qt);
-                inmtx.Pos() = bn.pos0;
+                inmtx.pos = bn.pos0;
                 if (j == 0)
                 {
                     auto p0 = bn.pos[f0] + ki0 * (bn.pos[f0 + 1] - bn.pos[f0]);
                     auto p1 = bn.pos[f1] + ki1 * (bn.pos[f1 + 1] - bn.pos[f1]);
-                    inmtx.Pos() = p0 + kBlend * (p1 - p0);
+                    inmtx.pos = p0 + kBlend * (p1 - p0);
                 }
 
                 if (bn.parent)
-                    bn.matrix.EqMultiply(inmtx, CMatrix(bn.parent->matrix));
+                    bn.matrix.EqMultiply(inmtx, Matrix(bn.parent->matrix));
                 else
                     bn.matrix = inmtx;
             }
@@ -274,16 +274,16 @@ void AnimationImp::BuildAnimationMatrices()
             for (long j = 0; j < nbones; j++)
             {
                 auto &bn = aniInfo->GetBone(j);
-                CMatrix inmtx;
+                Matrix inmtx;
                 D3DXQUATERNION qt;
                 bn.BlendFrame(f, ki, qt);
                 D3DXMatrixRotationQuaternion(inmtx, &qt);
-                inmtx.Pos() = bn.pos0;
+                inmtx.pos = bn.pos0;
                 if (j == 0)
-                    inmtx.Pos() = bn.pos[f] + ki * (bn.pos[f + 1] - bn.pos[f]);
+                    inmtx.pos = bn.pos[f] + ki * (bn.pos[f + 1] - bn.pos[f]);
 
                 if (bn.parent)
-                    bn.matrix.EqMultiply(inmtx, CMatrix(bn.parent->matrix));
+                    bn.matrix.EqMultiply(inmtx, Matrix(bn.parent->matrix));
                 else
                     bn.matrix = inmtx;
             }
@@ -303,16 +303,16 @@ void AnimationImp::BuildAnimationMatrices()
             for (long j = 0; j < nbones; j++)
             {
                 auto &bn = aniInfo->GetBone(j);
-                CMatrix inmtx;
+                Matrix inmtx;
                 D3DXQUATERNION qt;
                 bn.BlendFrame(f, ki, qt);
                 D3DXMatrixRotationQuaternion(inmtx, &qt);
-                inmtx.Pos() = bn.pos0;
+                inmtx.pos = bn.pos0;
                 if (j == 0)
-                    inmtx.Pos() = bn.pos[f] + ki * (bn.pos[f + 1] - bn.pos[f]);
+                    inmtx.pos = bn.pos[f] + ki * (bn.pos[f + 1] - bn.pos[f]);
 
                 if (bn.parent)
-                    bn.matrix.EqMultiply(inmtx, CMatrix(bn.parent->matrix));
+                    bn.matrix.EqMultiply(inmtx, Matrix(bn.parent->matrix));
                 else
                     bn.matrix = inmtx;
             }
@@ -329,7 +329,7 @@ void AnimationImp::BuildAnimationMatrices()
     for (long j = 0; j < nbones; j++)
     {
         auto &bn = aniInfo->GetBone(j);
-        matrix[j] = CMatrix(bn.start) * CMatrix(bn.matrix);
+        matrix[j] = Matrix(bn.start) * Matrix(bn.matrix);
     }
 }
 

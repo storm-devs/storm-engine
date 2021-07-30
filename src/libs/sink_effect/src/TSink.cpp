@@ -52,7 +52,7 @@ void TSink::Release()
 }
 
 //--------------------------------------------------------------------
-void TSink::Start(const CVECTOR &_pos, float _radius)
+void TSink::Start(const Vector &_pos, float _radius)
 {
     if (enabled)
         return;
@@ -160,7 +160,7 @@ void TSink::Realize(uint32_t _dTime)
     if (!enabled)
         return;
 
-    const CMatrix m;
+    const Matrix m;
     uint32_t ambient;
 
     renderer->SetTransform(D3DTS_WORLD, static_cast<D3DMATRIX *>(m));

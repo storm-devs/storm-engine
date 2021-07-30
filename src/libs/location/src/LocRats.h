@@ -11,8 +11,6 @@
 #pragma once
 
 #include "dx9render.h"
-#include "vmodule_api.h"
-
 #include "LocRat.h"
 
 class LocRats : public Entity

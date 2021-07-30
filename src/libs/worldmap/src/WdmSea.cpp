@@ -9,10 +9,10 @@
 //============================================================================================
 
 #include "WdmSea.h"
-#include "Matrix.h"
 #include "WdmShip.h"
 #include "defines.h"
 #include "storm_assert.h"
+#include "WdmObjects.h"
 
 //============================================================================================
 
@@ -315,11 +315,11 @@ void WdmSea::LRender(VDX9RENDER *rs)
     rs->TextureSet(0, aniTextures[curFrame]);
     rs->TextureSet(1, aniTextures[nextFrame]);
     // Matrix for textures
-    CMatrix mtx;
+    Matrix mtx;
     mtx.m[0][0] = aniTiling;
     mtx.m[1][1] = aniTiling;
     mtx.m[2][2] = aniTiling;
-    mtx.Pos() = 0.0f;
+    mtx.pos = 0.0f;
     rs->SetTransform(D3DTS_TEXTURE0, mtx);
     rs->SetTransform(D3DTS_TEXTURE1, mtx);
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, WDM_SEA_CLR(WDM_SEA_ANIALPHA, k));
@@ -327,10 +327,10 @@ void WdmSea::LRender(VDX9RENDER *rs)
     // draw flares
     if (flareCount > 0)
     {
-        CMatrix view;
+        Matrix view;
         rs->GetTransform(D3DTS_VIEW, view);
         view.Transposition();
-        auto y = view.Pos().y;
+        auto y = view.pos.y;
         const auto maxy = 130.0f;
         const auto miny = 80.0f;
         if (y < maxy)
@@ -349,7 +349,7 @@ void WdmSea::LRender(VDX9RENDER *rs)
 
 void WdmSea::Render(VDX9RENDER *rs, const char *tech) const
 {
-    static CMatrix identity;
+    static Matrix identity;
     if (vb < 0 || ib < 0)
         return;
     rs->SetTransform(D3DTS_WORLD, identity);
@@ -360,7 +360,7 @@ void WdmSea::Render(VDX9RENDER *rs, const char *tech) const
 void WdmSea::PresetMain(VDX9RENDER *rs) const
 {
     // Matrix for textures
-    CMatrix mtx;
+    Matrix mtx;
     mtx.m[0][0] = seaSizeX / wdmObjects->worldSizeX;
     mtx.m[1][1] = mtx.m[0][0];
     mtx.m[2][0] = (1.0f - mtx.m[0][0]) * 0.5f;

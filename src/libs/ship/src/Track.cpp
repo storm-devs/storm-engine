@@ -273,7 +273,7 @@ void ShipTracks::ShipTrack::Execute(float fDeltaTime)
     }
 
     float fFov;
-    CVECTOR vCamPos, vCamAng;
+    Vector vCamPos, vCamAng;
     pRS->GetCamera(vCamPos, vCamAng, fFov);
     const auto fCamDist = Clamp(sqrtf(~vCamPos) / 10000.0f);
     const auto fWaveUP = fUP1 + fCamDist * (fUP2 - fUP1);
@@ -362,7 +362,7 @@ void ShipTracks::ShipTrack::Execute(float fDeltaTime)
                     RotateAroundY(x, z, T.fCos, T.fSin);
                     x += T.vPos.x;
                     z += T.vPos.z;
-                    auto vPos = CVECTOR(x, fWaveUP * (1.4f - fabsf((k * 2.0f) - 1.0f)) + pSea->WaveXZ(x, z), z);
+                    auto vPos = Vector(x, fWaveUP * (1.4f - fabsf((k * 2.0f) - 1.0f)) + pSea->WaveXZ(x, z), z);
                     pV[i * dwTrackStep1 + xxx].vPos = vPos - vCurPos;
                     pV[i * dwTrackStep1 + xxx].tu = xx / (fTrackStep1 - 1.0f);
                     pV[i * dwTrackStep1 + xxx].tv = T.fTV;
@@ -404,7 +404,7 @@ void ShipTracks::ShipTrack::Execute(float fDeltaTime)
                     RotateAroundY(x, z, T.fCos, T.fSin);
                     x += T.vPos.x;
                     z += T.vPos.z;
-                    auto vPos = CVECTOR(x, fWaveUP + pSea->WaveXZ(x, z), z);
+                    auto vPos = Vector(x, fWaveUP + pSea->WaveXZ(x, z), z);
                     pV[i * dwTrackStep2 + xxx].vPos = vPos - vCurPos;
                     pV[i * dwTrackStep2 + xxx].tu = static_cast<float>(xx) / (fTrackStep2 - 1.0f);
                     pV[i * dwTrackStep2 + xxx].tv = T.fTV * 6.0f;
@@ -441,9 +441,9 @@ void ShipTracks::ShipTrack::Realize(float fDeltaTime)
     if (!pShip || !pSea)
         return;
 
-    // pRS->SetTransform(D3DTS_WORLD, CMatrix());
-    const CMatrix m;
-    m.Pos() = pShip->GetPos();
+    // pRS->SetTransform(D3DTS_WORLD, Matrix());
+    Matrix m;
+    m.pos = pShip->GetPos();
     pRS->SetTransform(D3DTS_WORLD, m);
 
     if (aTrack1.size() > 1)

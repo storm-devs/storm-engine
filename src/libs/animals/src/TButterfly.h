@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Cvector.h"
 #include "EntityManager.h"
 #include "IVBufferManager.h"
 #include "collide.h"
@@ -31,7 +30,7 @@
 #pragma pack(push, 1)
 struct tButterflyVertex
 {
-    CVECTOR pos;
+    Vector pos;
     float tu, tv;
 };
 #pragma pack(pop)
@@ -42,21 +41,21 @@ class TButterfly
     TButterfly();
     virtual ~TButterfly();
 
-    void Initialize(const CVECTOR &_center, float _radius, long _bufferIndex, int _tI, int _tJ);
+    void Initialize(const Vector &_center, float _radius, long _bufferIndex, int _tI, int _tJ);
     void Calculate(long _dTime, COLLIDE *_collide, EntityManager::LayerIterators its);
-    void Effect(const CVECTOR &_position);
+    void Effect(const Vector &_position);
 
-    static void SetCenter(const CVECTOR &_center)
+    static void SetCenter(const Vector &_center)
     {
         center = _center;
     };
 
-    const CVECTOR GetDirection()
+    const Vector GetDirection()
     {
         return centerVelocity;
     }
 
-    const CVECTOR GetPosition()
+    const Vector GetPosition()
     {
         return centerPosition;
     }
@@ -72,14 +71,14 @@ class TButterfly
     void Draw(VDX9RENDER *_renderer, MODEL *_model);
 
   private:
-    CVECTOR centerPosition, centerVelocity, oldPos;
-    CVECTOR displaceVector;
+    Vector centerPosition, centerVelocity, oldPos;
+    Vector displaceVector;
     long timeToNextDisplace;
     long fullActiveTime, activeTime, waitTime;
     long bufferIndex;
     bool active;
 
-    static CVECTOR center;
+    static Vector center;
     float minY, maxY;
     bool firstDraw;
     float time;

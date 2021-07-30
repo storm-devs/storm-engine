@@ -1,4 +1,5 @@
 #pragma once
+
 #include "script_libriary.h"
 
 class SCRIPT_LIBRIARY_TEST : public SCRIPT_LIBRIARY

@@ -8,11 +8,10 @@
 //
 //============================================================================================
 
-#include "WdmEnemyShip.h"
-
 #include "core.h"
-
+#include "WdmEnemyShip.h"
 #include "WdmIslands.h"
+#include "WdmObjects.h"
 
 //============================================================================================
 
@@ -67,8 +66,8 @@ void WdmEnemyShip::Update(float dltTime)
     // Moving
     Move(dltTime);
     // Distance from us to the player
-    const auto dx = wdmObjects->playerShip->mtx.Pos().x - mtx.Pos().x;
-    const auto dz = wdmObjects->playerShip->mtx.Pos().z - mtx.Pos().z;
+    const auto dx = wdmObjects->playerShip->mtx.pos.x - mtx.pos.x;
+    const auto dz = wdmObjects->playerShip->mtx.pos.z - mtx.pos.z;
     const auto d = sqrtf(dx * dx + dz * dz);
     // Visibility
     // depending on the distance from player
@@ -146,10 +145,10 @@ void WdmEnemyShip::LRender(VDX9RENDER *rs)
         if (a > 255)
             a = 255;
         a <<= 24;
-        wdmObjects->DrawVector(mtx.Pos(), mtx.Pos() + CVECTOR(mx, 0.0f, mz) * 10.0f, 0x00ff00 | a);
-        wdmObjects->DrawVector(mtx.Pos(), mtx.Pos() + CVECTOR(ix, 0.0f, iz) * 10.0f, 0xff0000 | a);
-        wdmObjects->DrawVector(mtx.Pos(), mtx.Pos() + CVECTOR(sx, 0.0f, sz) * 10.0f, 0x0000ff | a);
-        wdmObjects->DrawVector(mtx.Pos(), mtx.Pos() + CVECTOR(dx, 0.0f, dz) * 10.0f, 0xffffff | a);
+        wdmObjects->DrawVector(mtx.pos, mtx.pos + Vector(mx, 0.0f, mz) * 10.0f, 0x00ff00 | a);
+        wdmObjects->DrawVector(mtx.pos, mtx.pos + Vector(ix, 0.0f, iz) * 10.0f, 0xff0000 | a);
+        wdmObjects->DrawVector(mtx.pos, mtx.pos + Vector(sx, 0.0f, sz) * 10.0f, 0x0000ff | a);
+        wdmObjects->DrawVector(mtx.pos, mtx.pos + Vector(dx, 0.0f, dz) * 10.0f, 0xffffff | a);
     }
     WdmShip::LRender(rs);
 }
@@ -164,10 +163,10 @@ void WdmEnemyShip::FindMoveForce()
 // Find the force that repels from the islands
 void WdmEnemyShip::FindIslandForce()
 {
-    CVECTOR reaction;
+    Vector reaction;
     if (wdmObjects->islands)
     {
-        wdmObjects->islands->FindReaction(mtx.Pos(), reaction);
+        wdmObjects->islands->FindReaction(mtx.pos, reaction);
         ix = reaction.x * 1.5f;
         iz = reaction.z * 1.5f;
     }
@@ -192,8 +191,8 @@ void WdmEnemyShip::FindShipsForce()
         if (ship == wdmObjects->playerShip && !isLookOnPlayer)
             continue;
         // Vertor from the ship to us
-        auto fx = mtx.Pos().x - ship->mtx.Pos().x;
-        auto fz = mtx.Pos().z - ship->mtx.Pos().z;
+        auto fx = mtx.pos.x - ship->mtx.pos.x;
+        auto fz = mtx.pos.z - ship->mtx.pos.z;
         // Distance
         auto fl = fx * fx + fz * fz - 25.0f * 25.0f;
         if (fl > 25.0f * 25.0f)
@@ -207,8 +206,8 @@ void WdmEnemyShip::FindShipsForce()
         sz += fz;
         // Deviation
         fl = fx * fx + fz * fz;
-        fx *= ship->mtx.Vz().x;
-        fz *= ship->mtx.Vz().z;
+        fx *= ship->mtx.vz.x;
+        fz *= ship->mtx.vz.z;
         sx += -fz * 0.01f;
         sz += fx * 0.01f;
     }
@@ -236,8 +235,8 @@ void WdmEnemyShip::Move(float dltTime)
     dz = 1.0f * mz + 1.5f * iz + 1.1f * sz;
     const auto dl = dx * dx + dz * dz;
     // Our direction
-    const auto vx = mtx.Vz().x;
-    const auto vz = mtx.Vz().z;
+    const auto vx = mtx.vz.x;
+    const auto vz = mtx.vz.z;
     const auto vl = vx * vx + vz * vz;
     // The sine of the angle between this pair of vectors
     auto sn = vz * dx - vx * dz;
@@ -286,9 +285,9 @@ void WdmEnemyShip::UpdateSaveData()
     saveAttribute->SetAttributeUseFloat("brnAlpha", brnAlpha);
     saveAttribute->SetAttributeUseFloat("deleteAlpha", deleteAlpha);
     saveAttribute->SetAttributeUseFloat("liveTime", liveTime);
-    saveAttribute->SetAttributeUseFloat("x", mtx.Pos().x);
-    saveAttribute->SetAttributeUseFloat("y", mtx.Pos().y);
-    saveAttribute->SetAttributeUseFloat("z", mtx.Pos().z);
+    saveAttribute->SetAttributeUseFloat("x", mtx.pos.x);
+    saveAttribute->SetAttributeUseFloat("y", mtx.pos.y);
+    saveAttribute->SetAttributeUseFloat("z", mtx.pos.z);
     saveAttribute->SetAttributeUseFloat("ax", ax);
     saveAttribute->SetAttributeUseFloat("ay", ay);
     saveAttribute->SetAttributeUseFloat("az", az);
@@ -322,9 +321,9 @@ void WdmEnemyShip::SetSaveAttribute(ATTRIBUTES *save)
     brnAlpha = saveAttribute->GetAttributeAsFloat("brnAlpha", brnAlpha);
     deleteAlpha = saveAttribute->GetAttributeAsFloat("deleteAlpha", deleteAlpha);
     liveTime = saveAttribute->GetAttributeAsFloat("liveTime", liveTime);
-    mtx.Pos().x = saveAttribute->GetAttributeAsFloat("x", mtx.Pos().x);
-    mtx.Pos().y = saveAttribute->GetAttributeAsFloat("y", mtx.Pos().y);
-    mtx.Pos().z = saveAttribute->GetAttributeAsFloat("z", mtx.Pos().z);
+    mtx.pos.x = saveAttribute->GetAttributeAsFloat("x", mtx.pos.x);
+    mtx.pos.y = saveAttribute->GetAttributeAsFloat("y", mtx.pos.y);
+    mtx.pos.z = saveAttribute->GetAttributeAsFloat("z", mtx.pos.z);
     ax = saveAttribute->GetAttributeAsFloat("ax", ax);
     ay = saveAttribute->GetAttributeAsFloat("ay", ay);
     az = saveAttribute->GetAttributeAsFloat("az", az);
@@ -368,8 +367,8 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float &x, 
     // Player position
     if (!wdmObjects->playerShip)
         return false;
-    const auto psx = wdmObjects->playerShip->mtx.Pos().x;
-    const auto psz = wdmObjects->playerShip->mtx.Pos().z;
+    const auto psx = wdmObjects->playerShip->mtx.pos.x;
+    const auto psz = wdmObjects->playerShip->mtx.pos.z;
     const auto psay = static_cast<WdmEnemyShip *>(wdmObjects->playerShip)->ay;
     // Choice fields
     uint8_t field[32];

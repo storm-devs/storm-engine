@@ -1,10 +1,8 @@
 #pragma once
 
 #include "BallSplashDefines.h"
-#include "CVECTOR.h"
 #include "TSplash.h"
 #include "dx9render.h"
-#include "geometry.h"
 #include "sea_base.h"
 
 ///////////////////////////////////////////////////////////////////
@@ -32,16 +30,12 @@ class BALLSPLASH : public Entity
         case Stage::realize:
             Realize(delta);
             break;
-            /*case Stage::lost_render:
-                LostRender(delta); break;
-            case Stage::restore_render:
-                RestoreRender(delta); break;*/
         }
     }
 
   private:
     void InitializeSplashes();
-    TSplash *TryToAddSplash(const CVECTOR &_pos, const CVECTOR &_dir);
+    TSplash *TryToAddSplash(const Vector &_pos, const Vector &_dir);
 
     TSplash splashes[MAX_SPLASHES];
     VDX9RENDER *renderer;

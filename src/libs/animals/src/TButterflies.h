@@ -1,13 +1,10 @@
 #pragma once
 
 #include "AnimalsDefines.h"
-#include "Animation.h"
 #include "IVBufferManager.h"
-#include "Matrix.h"
 #include "TButterfly.h"
 #include "collide.h"
 #include "dx9render.h"
-#include "geometry.h"
 
 #define Y_REDEFINE_TIME 250
 

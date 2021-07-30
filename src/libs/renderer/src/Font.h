@@ -1,9 +1,7 @@
 #pragma once
 
 #include "dx9render.h"
-#include "matrix.h"
-#include "vmodule_api.h"
-//#include "iimage.h"
+#include "math3d.h"
 
 #define USED_CODES 0x2070 // end of https://unicode-table.com/en/blocks/general-punctuation/
 #define MAX_SYMBOLS 512
@@ -14,7 +12,7 @@
 
 struct IMAGE_VERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     float rhw;
     uint32_t color;
     float tu, tv;

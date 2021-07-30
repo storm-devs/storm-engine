@@ -53,7 +53,7 @@ Grass::Grass()
 
     lodSelect = GRASS_BLK_LOD;
     winForce = 0.3f;
-    winDir = !CVECTOR(0.0f, 0.0f, 1.0f);
+    winDir = !Vector(0.0f, 0.0f, 1.0f);
     numCharacters = 0;
 
     strcpy_s(textureName, GRASS_DEFTEXTURE);
@@ -367,7 +367,7 @@ void Grass::Realize(uint32_t delta_time)
 {
     if (quality == rq_off || fx_ == nullptr)
         return;
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
     // Remove textures
     rs->TextureSet(0, -1);
     rs->TextureSet(1, -1);
@@ -406,7 +406,7 @@ void Grass::Realize(uint32_t delta_time)
 
     struct SphVertex
     {
-        CVECTOR v;
+        Vector v;
         uint32_t c;
     };
 
@@ -445,7 +445,7 @@ void Grass::Realize(uint32_t delta_time)
         if (len > 0.0f)
             lDir *= 1.0f / sqrtf(len);
         else
-            lDir = !CVECTOR(0.9f, 0.0f, 0.5f);
+            lDir = !Vector(0.9f, 0.0f, 0.5f);
         // Direction color
         lColor.z = light.Diffuse.r;
         lColor.y = light.Diffuse.g;
@@ -499,7 +499,7 @@ void Grass::Realize(uint32_t delta_time)
         if (aColor.z > 1.0f)
             aColor.z = 1.0f;
         // Direction
-        lDir = !CVECTOR(0.9f, 0.0f, 0.5f);
+        lDir = !Vector(0.9f, 0.0f, 0.5f);
         // Direction color
         lColor = 0.3f;
     }
@@ -515,31 +515,31 @@ void Grass::Realize(uint32_t delta_time)
     }
 
     // matrix
-    CMatrix view, prj;
+    Matrix view, prj;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, prj);
-    CMatrix cmtx;
+    Matrix cmtx;
     cmtx.EqMultiply(view, prj);
 
     // Camera position
-    CVECTOR pos, ang;
+    Vector pos, ang;
     float prs;
     rs->GetCamera(pos, ang, prs);
     // Clipping planes
-    PLANE *pln = rs->GetPlanes();
-    PLANE plane[5];
-    plane[0].Nx = plane[0].Ny = plane[0].Nz = 0.0f;
+    Plane *pln = rs->GetPlanes();
+    Plane plane[5];
+    plane[0].n.x = plane[0].n.y = plane[0].n.z = 0.0f;
     for (long i = 0; i < 4; i++)
     {
         plane[i + 1] = pln[i];
-        plane[0].Nx += pln[i].Nx;
-        plane[0].Ny += pln[i].Ny;
-        plane[0].Nz += pln[i].Nz;
+        plane[0].n.x += pln[i].n.x;
+        plane[0].n.y += pln[i].n.y;
+        plane[0].n.z += pln[i].n.z;
     }
-    plane[0].Nx *= 0.25f;
-    plane[0].Ny *= 0.25f;
-    plane[0].Nz *= 0.25f;
-    plane[0].D = pos.x * plane[0].Nx + pos.y * plane[0].Ny + pos.z * plane[0].Nz;
+    plane[0].n.x *= 0.25f;
+    plane[0].n.y *= 0.25f;
+    plane[0].n.z *= 0.25f;
+    plane[0].D = pos.x * plane[0].n.x + pos.y * plane[0].n.y + pos.z * plane[0].n.z;
     long numPlanes = 5;
     // set texture
     rs->TextureSet(0, texture);
@@ -585,7 +585,7 @@ void Grass::Realize(uint32_t delta_time)
         camz = miniZ - 1;
     // Preparing blocks for rendering
     numPoints = 0;
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
 
     // core.Trace("%d %d %d %d %d %d", left, top, bottom, right, camx, camz);
     /*for (long mx = left, mz; mx <= camx; mx++)
@@ -657,14 +657,14 @@ uint64_t Grass::ProcessMessage(MESSAGE &message)
 }
 
 // Draw a block with coordinates on the minimap
-void Grass::RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlanes, long mx, long mz)
+void Grass::RenderBlock(const Vector &camPos, const Plane *plane, long numPlanes, long mx, long mz)
 {
     // Draw a buffer if overflowed
     if (numPoints >= GRASS_MAX_POINTS - (GRASS_CNT_MIN + GRASS_CNT_DLT) * 3)
     {
         DrawBuffer();
     }
-    CVECTOR min, max;
+    Vector min, max;
     // The block we draw
     GRSMiniMapElement &mm = miniMap[mz * miniX + mx];
     // Distance from the center of the cluster (box) to the camera in 2D
@@ -713,17 +713,17 @@ void Grass::RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlane
 }
 
 // Box visibility check
-inline bool Grass::VisibleTest(const PLANE *plane, long numPlanes, const CVECTOR &min, const CVECTOR &max)
+inline bool Grass::VisibleTest(const Plane *plane, long numPlanes, const Vector &min, const Vector &max)
 {
     for (long i = 0; i < numPlanes; i++)
     {
         const float d = plane[i].D;
-        const float minX = min.x * plane[i].Nx;
-        const float minY = min.y * plane[i].Ny;
-        const float minZ = min.z * plane[i].Nz;
-        const float maxX = max.x * plane[i].Nx;
-        const float maxY = max.y * plane[i].Ny;
-        const float maxZ = max.z * plane[i].Nz;
+        const float minX = min.x * plane[i].n.x;
+        const float minY = min.y * plane[i].n.y;
+        const float minZ = min.z * plane[i].n.z;
+        const float maxX = max.x * plane[i].n.x;
+        const float maxY = max.y * plane[i].n.y;
+        const float maxZ = max.z * plane[i].n.z;
         if (minX + minY + minZ >= d)
             continue;
         if (minX + maxY + minZ >= d)
@@ -937,7 +937,7 @@ void Grass::DrawBuffer()
     }
 }
 
-long Grass::GetColor(CVECTOR color)
+long Grass::GetColor(Vector color)
 {
     if (color.x > 1.0f)
         color.x = 1.0f;

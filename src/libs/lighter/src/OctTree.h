@@ -16,11 +16,11 @@ class OctTree
 {
     struct OTNode
     {
-        OTNode(const CVECTOR &_min, const CVECTOR &_max);
+        OTNode(const Vector &_min, const Vector &_max);
         ~OTNode();
         OTNode *node[8]; // Children
-        CVECTOR min;     // Minimum value
-        CVECTOR max;     // Maximum value
+        Vector min;     // Minimum value
+        Vector max;     // Maximum value
         Vertex **vrt;    // Vertex indices
         long num;        // Number of vertices
     };
@@ -35,7 +35,7 @@ class OctTree
     // Initialize tree
     void Init(LGeometry *g);
     // Find vertices in a given radius
-    void FindVerts(const CVECTOR &pos, float r);
+    void FindVerts(const Vector &pos, float r);
 
     std::vector<OctFndVerts> verts;
     long numVerts;
@@ -58,6 +58,6 @@ class OctTree
     Vertex *vrt;
     long numVrt;
     OTNode *root;
-    CVECTOR vertsPos, vertsPosMin, vertsPosMax;
+    Vector vertsPos, vertsPosMin, vertsPosMax;
     float vertsR;
 };

@@ -1,5 +1,4 @@
 #include "ModelRealizer.h"
-#include "CVector4.h"
 #include "Lights.h"
 
 // ============================================================================================
@@ -7,7 +6,7 @@
 // ============================================================================================
 
 extern float fCausticScale, fCausticDelta, fFogDensity, fCausticDistance;
-extern CVECTOR4 v4CausticColor;
+extern Vector4 v4CausticColor;
 extern bool bCausticEnable;
 extern float fCausticFrame;
 extern long iCausticTex[32];
@@ -70,11 +69,11 @@ void LocModelRealizer::Realize(uint32_t delta_time) const
             // 13 - (0, 0, 0, 0)
 
             fCausticDelta = fCausticFrame - static_cast<long>(fCausticFrame);
-            const auto vec1 = CVECTOR4(fCausticScale, fCausticDelta, 0.0f, 0.0f);
-            const auto vec2 = CVECTOR4(fFogDensity, 0.0f, 0.0f, 0.0f);
-            const auto vec3 = CVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
-            const auto vec4 = CVECTOR4(0.0f, 1.0f, 0.0f, 0.0f);
-            const auto vec5 = CVECTOR4(1.0f / fCausticDistance, 1.0f, 0.0f, 0.0f);
+            const auto vec1 = Vector4(fCausticScale, fCausticDelta, 0.0f, 0.0f);
+            const auto vec2 = Vector4(fFogDensity, 0.0f, 0.0f, 0.0f);
+            const auto vec3 = Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+            const auto vec4 = Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+            const auto vec5 = Vector4(1.0f / fCausticDistance, 1.0f, 0.0f, 0.0f);
             rs->SetVertexShaderConstantF(10, reinterpret_cast<const float *>(&vec1), 1);
             rs->SetVertexShaderConstantF(11, reinterpret_cast<const float *>(&v4CausticColor), 1);
             rs->SetVertexShaderConstantF(12, reinterpret_cast<const float *>(&vec2), 1);

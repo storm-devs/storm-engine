@@ -12,7 +12,6 @@
 
 #include <ctime>
 
-#include "Cvector.h"
 #include "storm_assert.h"
 
 //============================================================================================
@@ -195,7 +194,7 @@ float Pillar::GetZ(float y)
            1.2f * sinf(20.0f * kH - phaseZ2);
 }
 
-float Pillar::RandomPos(CVECTOR &pos)
+float Pillar::RandomPos(Vector &pos)
 {
     pos.y = rand() * TRND_HEIGHT / RAND_MAX;
     const auto ang = rand() * 2.0f * TRND_PI / (RAND_MAX + 1);

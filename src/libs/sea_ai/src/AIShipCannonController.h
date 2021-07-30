@@ -38,8 +38,8 @@ class AIShipCannonController
         // each frame parameters
         float fSpeedV0;         // current fire speed
         float fMaxFireDistance; // maximum fire distance
-        // CVECTOR                vAngleVectors[2];        // fire cone (2d(x,z))
-        CVECTOR vDirection;
+        // Vector                vAngleVectors[2];        // fire cone (2d(x,z))
+        Vector vDirection;
 
         std::vector<AICannon> aCannons; // cannons container for this bort
 
@@ -79,7 +79,7 @@ class AIShipCannonController
 
     bool ScanShipForCannons();
 
-    bool Fire2Position(uint32_t dwBort, const CVECTOR &vFirePos, float fFireHeight);
+    bool Fire2Position(uint32_t dwBort, const Vector &vFirePos, float fFireHeight);
 
     float GetSpeedV0();
 
@@ -90,37 +90,37 @@ class AIShipCannonController
 
     // bort section
     float GetBortHeightAngle(long iBortIndex);
-    bool isCanFireBort(uint32_t dwBort, const CVECTOR &vFirePos, float *pfZapasDistance = nullptr);
-    uint32_t GetFirstFireBort(const CVECTOR &vFirePos, float *pfZapasDistance = nullptr);
+    bool isCanFireBort(uint32_t dwBort, const Vector &vFirePos, float *pfZapasDistance = nullptr);
+    uint32_t GetFirstFireBort(const Vector &vFirePos, float *pfZapasDistance = nullptr);
     bool isHaveEnoughtBallsForBort(uint32_t dwBortIdx);
-    uint32_t GetNextFireBort(uint32_t dwPrevBort, const CVECTOR &vFirePos, float *pfZapasDistance = nullptr);
-    CVECTOR GetBortDirection(uint32_t dwBort);
-    uint32_t GetBestFireBortOnlyDistance(CVECTOR vFirePos, float fZapasDistance);
-    CVECTOR GetFirePos(const CVECTOR &vFireDir);
-    CVECTOR GetFirePos(const CVECTOR &vFireDir, float fDistance);
+    uint32_t GetNextFireBort(uint32_t dwPrevBort, const Vector &vFirePos, float *pfZapasDistance = nullptr);
+    Vector GetBortDirection(uint32_t dwBort);
+    uint32_t GetBestFireBortOnlyDistance(Vector vFirePos, float fZapasDistance);
+    Vector GetFirePos(const Vector &vFireDir);
+    Vector GetFirePos(const Vector &vFireDir, float fDistance);
     uint32_t GetBortIntactCannonsNum(uint32_t dwBortIdx);
     uint32_t GetBortDisabledCannonsNum(uint32_t dwBortIdx);
 
     // fire test
-    bool isCanFirePos(const CVECTOR &vFirePos); // is we can fire to position
+    bool isCanFirePos(const Vector &vFirePos); // is we can fire to position
     bool isCanFire(AIShip *pEnemy);             // is we can fire to enemy ship
-    bool isCanFire(const CVECTOR &vCamDir);     // is we can fire to camera direction
+    bool isCanFire(const Vector &vCamDir);     // is we can fire to camera direction
 
     // fire section
-    bool Fire(const CVECTOR &vFirePos);                             // fire to position
+    bool Fire(const Vector &vFirePos);                             // fire to position
     bool Fire(AIShip *pEnemy);                                      // fire to ship
-    bool Fire(const CVECTOR &vFireCamPos, const CVECTOR &vFireDir); // manual fire
+    bool Fire(const Vector &vFireCamPos, const Vector &vFireDir); // manual fire
 
     // reload section
     void Unload(); // unload cannons
     void Reload(); // set flag to reload
 
     // temp
-    void AddTrg(CVECTOR *pVerts, uint32_t dwColor);
+    void AddTrg(Vector *pVerts, uint32_t dwColor);
     // temp
 
     // Cannon boom check
-    void CheckCannonsBoom(float fTmpCannonDamage, const CVECTOR &vPnt);
+    void CheckCannonsBoom(float fTmpCannonDamage, const Vector &vPnt);
     void ResearchCannons(); // boal 08.08.06 method of recalculating guns on a ship
 
     // execute/realize section

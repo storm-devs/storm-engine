@@ -80,7 +80,7 @@ void Debris::Update(float dltTime)
                 {
                     if (lastPlayTime <= 0.0f)
                     {
-                        const auto pos = CVECTOR(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
+                        const auto pos = Vector(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
                         soundService->SoundPlay("TornadoCrackSound", PCM_3D, VOLUME_FX, false, false, true, 0, &pos);
                         lastPlayTime = 0.2f + rand() * (0.2f / RAND_MAX);
                     }
@@ -139,11 +139,11 @@ void Debris::Draw(VDX9RENDER *rs)
     for (long i = 0; i < flyCounter; i++)
     {
         // Model position
-        CVECTOR pos;
+        Vector pos;
         pos.x = pillar.GetX(fly[i].y) + fly[i].r * sinf(fly[i].a);
         pos.y = fly[i].y;
         pos.z = pillar.GetZ(fly[i].y) + fly[i].r * cosf(fly[i].a);
-        fly[i].mdl->mtx.BuildMatrix(fly[i].ang, pos);
+        fly[i].mdl->mtx.Build(fly[i].ang, pos);
         for (long a = 0; a < 3; a++)
             for (long b = 0; b < 3; b++)
                 fly[i].mdl->mtx.m[a][b] *= fly[i].scale;
@@ -219,8 +219,8 @@ MODEL *Debris::SelectModel(float &maxSpd)
 
 bool Debris::IsShip()
 {
-    const CVECTOR p(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
-    CVECTOR pos;
+    const Vector p(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
+    Vector pos;
     const auto &entities = EntityManager::GetEntityIdVector("ship");
     for (auto id : entities)
     {
@@ -230,7 +230,7 @@ bool Debris::IsShip()
             break;
         // Tornado position in the ship system
         Assert(ship->GetMatrix());
-        ship->GetMatrix()->MulToInv(p, pos);
+        pos = ship->GetMatrix()->MulVertexByInverse(p);
         // Check the box
         const auto s = ship->GetBoxsize();
         if (pos.x < -s.x - 6.0f || pos.x > s.x + 6.0f)

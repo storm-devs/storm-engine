@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Entity.h"
-#include "shared/layers.h"
+#include "entity.h"
 #include "vmodule_api.h"
+#include "shared/layers.h"
 
 #include <algorithm>
 #include <array>

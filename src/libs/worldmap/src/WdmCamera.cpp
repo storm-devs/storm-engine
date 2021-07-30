@@ -9,6 +9,8 @@
 //============================================================================================
 
 #include "WdmCamera.h"
+
+#include "WdmObjects.h"
 #include "WdmPlayerShip.h"
 
 //============================================================================================
@@ -23,8 +25,8 @@
 
 WdmCamera::WdmCamera()
 {
-    pos = CVECTOR(0.0f, 120.0f, 0.0f);
-    ang = CVECTOR(1.0f, 0.0f, 0.0f);
+    pos = Vector(0.0f, 120.0f, 0.0f);
+    ang = Vector(1.0f, 0.0f, 0.0f);
     wdmObjects->camera = this;
     isInit = false;
     realHeight = 0.0f;
@@ -126,8 +128,8 @@ void WdmCamera::Move(float dltTime, VDX9RENDER *rs)
     }
     else
     {
-        pos.x = wdmObjects->playerShip->mtx.Pos().x - cx;
-        pos.z = wdmObjects->playerShip->mtx.Pos().z - cz;
+        pos.x = wdmObjects->playerShip->mtx.pos.x - cx;
+        pos.z = wdmObjects->playerShip->mtx.pos.z - cz;
         isInit = true;
     }
     // Camera rotation
@@ -183,7 +185,7 @@ void WdmCamera::Move(float dltTime, VDX9RENDER *rs)
     }
     else
         kBlendPos = 1.0f;
-    rs->SetCamera(CVECTOR(ps.x + r * sn, realHeight, ps.z + r * cs), ang);
+    rs->SetCamera(Vector(ps.x + r * sn, realHeight, ps.z + r * cs), ang);
 }
 
 void WdmCamera::CheckRange()

@@ -1,7 +1,6 @@
 #pragma once
 
-//#include <windows.h>
-#include "Cvector.h"
+#include "math3d.h"
 
 #define ATTRACT_FACTOR 0.9f // 0.01f
 #define DEFLECT_FACTOR 10.5f
@@ -13,28 +12,28 @@ class TDynamicObject
   public:
     TDynamicObject();
     virtual ~TDynamicObject();
-    void Initialize(const CVECTOR &_center, float _radius);
+    void Initialize(const Vector &_center, float _radius);
     void Calculate(TDynamicObject **a, int aCount, TDynamicObject **d, int dCount, float _k = 1.0f);
-    void SetXYZ(const CVECTOR &_pos);
+    void SetXYZ(const Vector &_pos);
 
     float GetAngle()
     {
         return (float)atan2(velocity.z, velocity.x);
     }
 
-    CVECTOR GetDirection()
+    Vector GetDirection()
     {
         return velocity;
     }
 
-    CVECTOR GetXYZ()
+    Vector GetXYZ()
     {
         return pos;
     }
 
     // void Draw(HDC _dc, DWORD _color);
   private:
-    CVECTOR pos, velocity;
+    Vector pos, velocity;
     // float ang;
 };
 

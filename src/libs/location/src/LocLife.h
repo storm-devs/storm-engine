@@ -46,7 +46,7 @@ class LocLife : public AnimationEventListener
 
   private:
     long FindPos();
-    long FindRandomPos(CVECTOR &pos) const;
+    long FindRandomPos(Vector &pos) const;
 
     //--------------------------------------------------------------------------------------------
   protected:
@@ -58,6 +58,6 @@ class LocLife : public AnimationEventListener
     entid_t model;
     long node;
     float ay;
-    CVECTOR pos;
-    CVECTOR npos;
+    Vector pos;
+    Vector npos;
 };

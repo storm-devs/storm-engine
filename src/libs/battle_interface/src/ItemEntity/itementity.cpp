@@ -66,18 +66,18 @@ uint64_t ItemEntity::ProcessMessage(MESSAGE &message)
         break;
 
     case 4: // replace item to other position
-        m_mtxpos.Pos().x = message.Float();
-        m_mtxpos.Pos().y = message.Float();
-        m_mtxpos.Pos().z = message.Float();
-        m_mtxpos.Vx().x = message.Float();
-        m_mtxpos.Vx().y = message.Float();
-        m_mtxpos.Vx().z = message.Float();
-        m_mtxpos.Vy().x = message.Float();
-        m_mtxpos.Vy().y = message.Float();
-        m_mtxpos.Vy().z = message.Float();
-        m_mtxpos.Vz().x = message.Float();
-        m_mtxpos.Vz().y = message.Float();
-        m_mtxpos.Vz().z = message.Float();
+        m_mtxpos.pos.x = message.Float();
+        m_mtxpos.pos.y = message.Float();
+        m_mtxpos.pos.z = message.Float();
+        m_mtxpos.vx.x = message.Float();
+        m_mtxpos.vx.y = message.Float();
+        m_mtxpos.vx.z = message.Float();
+        m_mtxpos.vy.x = message.Float();
+        m_mtxpos.vy.y = message.Float();
+        m_mtxpos.vy.z = message.Float();
+        m_mtxpos.vz.x = message.Float();
+        m_mtxpos.vz.y = message.Float();
+        m_mtxpos.vz.z = message.Float();
         SetModelToPosition(m_mtxpos);
         DeleteParticle();
         CreateParticle();
@@ -99,10 +99,10 @@ uint64_t ItemEntity::ProcessMessage(MESSAGE &message)
 
 bool ItemEntity::ReadAndCreate()
 {
-    BIUtils::ReadVectorFormAttr(AttributesPointer, "pos", m_mtxpos.Pos(), CVECTOR(0.f));
-    BIUtils::ReadVectorFormAttr(AttributesPointer, "pos.vx", m_mtxpos.Vx(), CVECTOR(0.f));
-    BIUtils::ReadVectorFormAttr(AttributesPointer, "pos.vy", m_mtxpos.Vy(), CVECTOR(0.f));
-    BIUtils::ReadVectorFormAttr(AttributesPointer, "pos.vz", m_mtxpos.Vz(), CVECTOR(0.f));
+    BIUtils::ReadVectorFormAttr(AttributesPointer, "pos", m_mtxpos.pos, Vector(0.f));
+    BIUtils::ReadVectorFormAttr(AttributesPointer, "pos.vx", m_mtxpos.vx, Vector(0.f));
+    BIUtils::ReadVectorFormAttr(AttributesPointer, "pos.vy", m_mtxpos.vy, Vector(0.f));
+    BIUtils::ReadVectorFormAttr(AttributesPointer, "pos.vz", m_mtxpos.vz, Vector(0.f));
     auto *const pcModelName = BIUtils::GetStringFromAttr(AttributesPointer, "model", "");
     auto *const pcTechnique = BIUtils::GetStringFromAttr(AttributesPointer, "technique", "");
     if (pcModelName)
@@ -139,13 +139,13 @@ void ItemEntity::Release()
     DeleteParticle();
 }
 
-void ItemEntity::SetModelToPosition(const CMatrix &mtx) const
+void ItemEntity::SetModelToPosition(const Matrix &mtx) const
 {
     if (m_pModel)
     {
-        core.Send_Message(m_eidModel, "lffffffffffff", MSG_MODEL_SET_POSITION, m_mtxpos.Pos().x, m_mtxpos.Pos().y,
-                          m_mtxpos.Pos().z, m_mtxpos.Vx().x, m_mtxpos.Vx().y, m_mtxpos.Vx().z, m_mtxpos.Vy().x,
-                          m_mtxpos.Vy().y, m_mtxpos.Vy().z, m_mtxpos.Vz().x, m_mtxpos.Vz().y, m_mtxpos.Vz().z);
+        core.Send_Message(m_eidModel, "lffffffffffff", MSG_MODEL_SET_POSITION, m_mtxpos.pos.x, m_mtxpos.pos.y,
+                          m_mtxpos.pos.z, m_mtxpos.vx.x, m_mtxpos.vx.y, m_mtxpos.vx.z, m_mtxpos.vy.x,
+                          m_mtxpos.vy.y, m_mtxpos.vy.z, m_mtxpos.vz.x, m_mtxpos.vz.y, m_mtxpos.vz.z);
     }
 }
 
@@ -205,7 +205,7 @@ void ItemEntity::DrawIntoLocator()
         return;
     }
 
-    CMatrix perMtx;
+    Matrix perMtx;
     long sti;
     if (m_pModel)
     {
@@ -219,23 +219,23 @@ void ItemEntity::DrawIntoLocator()
 
             GEOS::LABEL lb;
             m_pMdlNode->geo->GetLabel(sti, lb);
-            CMatrix mt;
-            mt.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
-            mt.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
-            mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
-            mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            Matrix mt;
+            mt.vx = Vector(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
+            mt.vy = Vector(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
+            mt.vz = Vector(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
+            mt.pos = Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
             auto mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
+            mbn.pos.x *= -1.0f;
+            mbn.vx.x *= -1.0f;
+            mbn.vy.x *= -1.0f;
+            mbn.vz.x *= -1.0f;
 
-            CMatrix scl;
-            scl.Vx().x = -1.0f;
-            scl.Vy().y = 1.0f;
-            scl.Vz().z = 1.0f;
-            mbn.EqMultiply(scl, CMatrix(mbn));
+            Matrix scl;
+            scl.vx.x = -1.0f;
+            scl.vy.y = 1.0f;
+            scl.vz.z = 1.0f;
+            mbn.EqMultiply(scl, Matrix(mbn));
 
             perMtx = mbn * pMdl->mtx;
         }
@@ -310,7 +310,7 @@ bool ItemEntity::CreateParticle()
             const auto eidParticle = EntityManager::GetEntityId("particles");
             if (eidParticle)
             {
-                const auto vPos = m_mtxpos.Pos();
+                const auto vPos = m_mtxpos.pos;
                 m_pParticle =
                     (VPARTICLE_SYSTEM *)core.Send_Message(eidParticle, "lsffffffl", PS_CREATE_RIC, pcParticleName,
                                                           vPos.x, vPos.y, vPos.z, 0.0f, 1.0f, 0.0f, 0);

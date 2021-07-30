@@ -25,7 +25,7 @@ class BIImage : public IBIImage
 
     void SetColor(uint32_t color) override;
     void SetPosition(long nLeft, long nTop, long nRight, long nBottom) override;
-    void Set3DPosition(const CVECTOR &vPos, float fWidth, float fHeight) override;
+    void Set3DPosition(const Vector &vPos, float fWidth, float fHeight) override;
     void SetUV(const FRECT &uv) override;
     void SetType(BIImageType type);
 

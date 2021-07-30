@@ -21,9 +21,9 @@ CREATE_CLASS(Blots)
 
 //============================================================================================
 
-CVECTOR Blots::clipTriangles[3 * 32];
+Vector Blots::clipTriangles[3 * 32];
 long Blots::numClipTriangles;
-CVECTOR Blots::dir, Blots::normal;
+Vector Blots::dir, Blots::normal;
 
 // ============================================================================================
 // Construction, destruction
@@ -96,13 +96,12 @@ void Blots::Hit(MESSAGE &message)
     if (!m)
         return;
     // Position
-    CVECTOR pos;
+    Vector pos;
     pos.x = message.Float();
     pos.y = message.Float();
     pos.z = message.Float();
     // Looking for a free blot and proximity to others
-    CVECTOR lpos;
-    m->mtx.MulToInv(pos, lpos);
+    Vector lpos = m->mtx.MulVertexByInverse(pos);
     long i, j = -1;
     for (i = 0; i < BLOTS_MAX; i++)
     {
@@ -124,46 +123,45 @@ void Blots::Hit(MESSAGE &message)
     dir.x = message.Float();
     dir.y = message.Float();
     dir.z = message.Float();
-    CVECTOR ldir;
-    m->mtx.MulToInvNorm(dir, ldir);
+    Vector ldir = m->mtx.MulNormalByInverse(dir);
     AddBlot(i, rand(), lpos, ldir, 0.0f);
 }
 
 // Add blot
-void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, float time)
+void Blots::AddBlot(long i, long rnd, const Vector &lpos, const Vector &dir, float time)
 {
     // Model of a ship
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
         return;
     blot[i].isUsed = false;
-    auto pos = m->mtx * CVECTOR(lpos);
-    this->dir = m->mtx * CVECTOR(dir) - m->mtx.Pos();
+    auto pos = m->mtx * Vector(lpos);
+    this->dir = m->mtx * Vector(dir) - m->mtx.pos;
     // bounding box
-    static PLANE p[6];
-    p[0].Nx = 0.0f;
-    p[0].Ny = 1.0f;
-    p[0].Nz = 0.0f;
+    static Plane p[6];
+    p[0].n.x = 0.0f;
+    p[0].n.y = 1.0f;
+    p[0].n.z = 0.0f;
     p[0].D = (pos.y + BLOTS_RADIUS);
-    p[1].Nx = 0.0f;
-    p[1].Ny = -1.0f;
-    p[1].Nz = 0.0f;
+    p[1].n.x = 0.0f;
+    p[1].n.y = -1.0f;
+    p[1].n.z = 0.0f;
     p[1].D = -(pos.y - BLOTS_RADIUS);
-    p[2].Nx = 0.0f;
-    p[2].Ny = 0.0f;
-    p[2].Nz = 1.0f;
+    p[2].n.x = 0.0f;
+    p[2].n.y = 0.0f;
+    p[2].n.z = 1.0f;
     p[2].D = (pos.z + BLOTS_RADIUS);
-    p[3].Nx = 0.0f;
-    p[3].Ny = 0.0f;
-    p[3].Nz = -1.0f;
+    p[3].n.x = 0.0f;
+    p[3].n.y = 0.0f;
+    p[3].n.z = -1.0f;
     p[3].D = -(pos.z - BLOTS_RADIUS);
-    p[4].Nx = 1.0f;
-    p[4].Ny = 0.0f;
-    p[4].Nz = 0.0f;
+    p[4].n.x = 1.0f;
+    p[4].n.y = 0.0f;
+    p[4].n.z = 0.0f;
     p[4].D = (pos.x + BLOTS_RADIUS);
-    p[5].Nx = -1.0f;
-    p[5].Ny = 0.0f;
-    p[5].Nz = 0.0f;
+    p[5].n.x = -1.0f;
+    p[5].n.y = 0.0f;
+    p[5].n.z = 0.0f;
     p[5].D = -(pos.x - BLOTS_RADIUS);
     // Cut out the triangles in the box
     numClipTriangles = 0;
@@ -176,12 +174,12 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
     if (numClipTriangles <= 0)
         return;
     // transformation matrix to the local coordinate system of the hole
-    CMatrix uvmtx;
-    if (!uvmtx.BuildViewMatrix(pos, pos + normal * 1.0f, CVECTOR(0.0f, 1.0f, 0.0f)))
+    Matrix uvmtx;
+    if (!uvmtx.BuildView(pos, pos + normal * 1.0f, Vector(0.0f, 1.0f, 0.0f)))
     {
-        if (!uvmtx.BuildViewMatrix(pos, pos + normal * 1.0f, CVECTOR(0.0f, 0.0f, 1.0f)))
+        if (!uvmtx.BuildView(pos, pos + normal * 1.0f, Vector(0.0f, 0.0f, 1.0f)))
         {
-            if (!uvmtx.BuildViewMatrix(pos, pos + normal * 1.0f, CVECTOR(1.0f, 0.0f, 0.0f)))
+            if (!uvmtx.BuildView(pos, pos + normal * 1.0f, Vector(1.0f, 0.0f, 0.0f)))
                 return;
         }
     }
@@ -347,7 +345,7 @@ void Blots::LoadBlot(long i)
         const auto vy = blt->GetAttributeAsFloat("vy");
         const auto vz = blt->GetAttributeAsFloat("vz");
         const auto time = blt->GetAttributeAsFloat("time");
-        AddBlot(i, rnd, CVECTOR(x, y, z), CVECTOR(vx, vy, vz), time);
+        AddBlot(i, rnd, Vector(x, y, z), Vector(vx, vy, vz), time);
     }
 }
 
@@ -365,9 +363,9 @@ void Blots::Realize(uint32_t delta_time)
     if (!m)
         return;
     // Distance from camera
-    CVECTOR pos, ang;
+    Vector pos, ang;
     rs->GetCamera(pos, ang, ang.x);
-    auto dist = ~(pos - m->mtx.Pos());
+    auto dist = ~(pos - m->mtx.pos);
     if (dist >= BLOTS_DIST * BLOTS_DIST)
         return;
     // Transparency according to the distance to the ship
@@ -489,7 +487,7 @@ void Blots::Realize(uint32_t delta_time)
                             sizeof(Vertex), "Blot");
 }
 
-bool Blots::AddPolygon(const CVECTOR *v, long nv)
+bool Blots::AddPolygon(const Vector *v, long nv)
 {
     if (numClipTriangles >= BLOTS_NTRGS)
         return false;

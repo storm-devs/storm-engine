@@ -390,15 +390,15 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
 
 void SEPS_PS::UpdateVertexBuffer()
 {
-    CVECTOR ipos[4];
-    CVECTOR rpos[4];
-    CVECTOR pos;
-    CVECTOR local_pos;
+    Vector ipos[4];
+    Vector rpos[4];
+    Vector pos;
+    Vector local_pos;
     sink_effect::PARTICLE_VERTEX *pVertex;
     long n, i;
     long index;
     float halfsize;
-    CMatrix RMatrix;
+    Matrix RMatrix;
 
     Camera_EmitterPosA.x = Camera_EmitterPosA.y = Camera_EmitterPosA.z = 0;
 
@@ -409,7 +409,7 @@ void SEPS_PS::UpdateVertexBuffer()
         index = n * VERTEXS_ON_PARTICLE;
 
         // RenderService->GetTransform(D3DTS_VIEW,Matrix); set for lock particles in screen zero axis
-        local_pos = Matrix * Particle[n].pos;
+        local_pos = mtx * Particle[n].pos;
 
         Camera_EmitterPosA += local_pos;
 
@@ -523,7 +523,7 @@ void SEPS_PS::Execute(uint32_t DeltaTime)
 void SEPS_PS::LayOnSurface(uint32_t index)
 {
     COLLISION_OBJECT *pLink;
-    CVECTOR from, to;
+    Vector from, to;
     float dist;
     pLink = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(SurfaceID));
     if (pLink == nullptr)
@@ -557,18 +557,18 @@ void SEPS_PS::Realize(uint32_t DeltaTime)
         }
     }
 
-    CVECTOR p, a;
+    Vector p, a;
 
     p.x = p.y = p.z = 0;
     a.x = a.y = a.z = 0;
 
-    RenderService->GetTransform(D3DTS_VIEW, Matrix);
+    RenderService->GetTransform(D3DTS_VIEW, mtx);
 
     // Camera_EmitterPos = Matrix * Emitter;
 
     RenderService->GetCamera(CameraPos, CameraAng, Perspective);
 
-    const CMatrix IMatrix;
+    const Matrix IMatrix;
     RenderService->SetTransform(D3DTS_VIEW, IMatrix);
     RenderService->SetTransform(D3DTS_WORLD, IMatrix);
     ProcessParticles(DeltaTime);
@@ -594,7 +594,7 @@ void SEPS_PS::Realize(uint32_t DeltaTime)
         }
     }
 
-    RenderService->SetTransform(D3DTS_VIEW, Matrix);
+    RenderService->SetTransform(D3DTS_VIEW, mtx);
 }
 
 bool SEPS_PS::EmitParticle()
@@ -894,7 +894,7 @@ bool SEPS_PS::BuildTrack(INIFILE *ini, sink_effect::TRACK_EVENT *Track, const ch
     return bFound;
 }
 
-void SEPS_PS::SetEmitter(CVECTOR p, CVECTOR a)
+void SEPS_PS::SetEmitter(Vector p, Vector a)
 {
     Emitter = p;
     EmitterDirection = !a;
@@ -908,7 +908,7 @@ void SEPS_PS::SetEmitter(CVECTOR p, CVECTOR a)
     */
 }
 
-void SEPS_PS::LinkToObject(entid_t id, CVECTOR _LinkPos)
+void SEPS_PS::LinkToObject(entid_t id, Vector _LinkPos)
 {
     long n;
     bLinkEmitter = true;
@@ -937,18 +937,18 @@ bool SEPS_PS::Complete()
 }
 
 /*
-void SEPS_PS::AddTrackPoint(CVECTOR pos)
+void SEPS_PS::AddTrackPoint(Vector pos)
 {
     bUseFlowTrack = true;
     nFlowTrackSize++;
-    pFlowTrack = (CVECTOR *)RESIZE(pFlowTrack,nFlowTrackSize*sizeof(CVECTOR));
+    pFlowTrack = (Vector *)RESIZE(pFlowTrack,nFlowTrackSize*sizeof(Vector));
     pFlowTrack[nFlowTrackSize - 1] = pos;
 
 }*/
 
 void SEPS_PS::SetFlowTrack(uint32_t index)
 {
-    CVECTOR dest;
+    Vector dest;
     if (Particle[index].flow_track_index >= nFlowTrackSize)
         return;
     dest = pFlowTrack[Particle[index].flow_track_index];

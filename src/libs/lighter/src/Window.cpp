@@ -838,7 +838,7 @@ bool Window::Slider(long id, float y, const char *text, float &value, float min,
     return isUpdate;
 }
 
-bool Window::ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res)
+bool Window::ColorPicker(long id, float y, Vector &ref, float st, Vector &res)
 {
     bool isChange = false;
     // calculate the color

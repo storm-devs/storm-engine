@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include "Matrix.h"
-#include "vmodule_api.h"
-
 #include "Character.h"
 #include "Location.h"
 

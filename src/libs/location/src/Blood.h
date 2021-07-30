@@ -2,7 +2,7 @@
 
 #include "collide.h"
 #include "dx9render.h"
-#include "vmodule_api.h"
+
 #include <vector>
 
 #define MAX_BLOOD_TRIANGLES 10000
@@ -13,7 +13,7 @@ class Blood : public Entity
 {
     struct BloodVertex
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t dwCol;
         float u, v;
     };
@@ -28,12 +28,12 @@ class Blood : public Entity
         long nStartIdx;
         long nIdxQ;
         float fLiveTime;
-        CVECTOR cpos;
+        Vector cpos;
     };
 
     struct ClipTriangle
     {
-        CVECTOR v[3];
+        Vector v[3];
     };
 
     // --------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ class Blood : public Entity
         }
     }
 
-    static bool AddClipPoligon(const CVECTOR *v, long nv);
+    static bool AddClipPoligon(const Vector *v, long nv);
 
   protected:
     VDX9RENDER *pRS;
@@ -85,10 +85,10 @@ class Blood : public Entity
 
     static ClipTriangle clipT[MAX_CLIPPING_TRIANGLES];
     static long nClipTQ;
-    static CVECTOR normal;
+    static Vector normal;
 
-    void AddBlood(const CVECTOR &pos);
-    void BuildBloodDataByCollision(const CVECTOR &cpos);
-    void SetVertexByPos(BloodVertex &v, const CVECTOR &pos, const CVECTOR &vc, float fU0, float fV0);
-    long CheckBloodQuantityInRadius(const CVECTOR &cpos, float fDist, long nLimitQ);
+    void AddBlood(const Vector &pos);
+    void BuildBloodDataByCollision(const Vector &cpos);
+    void SetVertexByPos(BloodVertex &v, const Vector &pos, const Vector &vc, float fU0, float fV0);
+    long CheckBloodQuantityInRadius(const Vector &cpos, float fDist, long nLimitQ);
 };

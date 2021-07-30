@@ -205,13 +205,13 @@ void Lights::Execute(uint32_t delta_time)
 void Lights::Realize(uint32_t delta_time)
 {
     // Camera position
-    CVECTOR pos, ang;
+    Vector pos, ang;
     rs->GetCamera(pos, ang, ang.x);
-    CMatrix camMtx;
+    Matrix camMtx;
     rs->GetTransform(D3DTS_VIEW, camMtx);
-    rs->SetTransform(D3DTS_VIEW, CMatrix());
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
-    const auto camPDist = -(pos.x * camMtx.Vx().z + pos.y * camMtx.Vy().z + pos.z * camMtx.Vz().z);
+    rs->SetTransform(D3DTS_VIEW, Matrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
+    const auto camPDist = -(pos.x * camMtx.vx.z + pos.y * camMtx.vy.z + pos.z * camMtx.vz.z);
     for (long i = 0, n = 0; i < numLights; i++)
     {
         // Source
@@ -220,7 +220,7 @@ void Lights::Realize(uint32_t delta_time)
         if (l.corona < 0)
             continue;
         // in the foreground
-        auto dist = ls.pos.x * camMtx.Vx().z + ls.pos.y * camMtx.Vy().z + ls.pos.z * camMtx.Vz().z + camPDist;
+        auto dist = ls.pos.x * camMtx.vx.z + ls.pos.y * camMtx.vy.z + ls.pos.z * camMtx.vz.z + camPDist;
         if (dist < -2.0f * l.coronaSize)
             continue;
         // Distance
@@ -235,7 +235,7 @@ void Lights::Realize(uint32_t delta_time)
         if (collide)
         {
             const auto dist = collide->Trace(EntityManager::GetEntityIdIterators(SUN_TRACE), pos,
-                                             CVECTOR(ls.pos.x, ls.pos.y, ls.pos.z), lampModels, numLampModels);
+                                             Vector(ls.pos.x, ls.pos.y, ls.pos.z), lampModels, numLampModels);
             isVisible = dist > 1.0f;
         }
         ls.corona += isVisible ? 0.008f * delta_time : -0.008f * delta_time;
@@ -276,7 +276,7 @@ void Lights::Realize(uint32_t delta_time)
         if (alpha > 255.0f)
             alpha = 255.0f;
         // Position
-        auto pos = camMtx * CVECTOR(ls.pos.x, ls.pos.y, ls.pos.z);
+        auto pos = camMtx * Vector(ls.pos.x, ls.pos.y, ls.pos.z);
         // Colour
         auto c = static_cast<uint32_t>(alpha);
         c |= (c << 24) | (c << 16) | (c << 8);
@@ -284,8 +284,8 @@ void Lights::Realize(uint32_t delta_time)
         float cs, sn;
         if (dist > 0.0f)
         {
-            auto _cs = (dx * camMtx.Vx().z + dz * camMtx.Vz().z);
-            auto _sn = (dx * camMtx.Vz().z - dz * camMtx.Vx().z);
+            auto _cs = (dx * camMtx.vx.z + dz * camMtx.vz.z);
+            auto _sn = (dx * camMtx.vz.z - dz * camMtx.vx.z);
             auto kn = _cs * _cs + _sn * _sn;
             if (kn > 0.0f)
             {
@@ -307,15 +307,15 @@ void Lights::Realize(uint32_t delta_time)
             sn = 0.0f;
         }
         // fill in
-        buf[n * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), size * (sn + cs), 0.0f);
+        buf[n * 6 + 0].pos = pos + Vector(size * (-cs + sn), size * (sn + cs), 0.0f);
         buf[n * 6 + 0].color = c;
         buf[n * 6 + 0].u = 0.0f;
         buf[n * 6 + 0].v = 0.0f;
-        buf[n * 6 + 1].pos = pos + CVECTOR(size * (-cs - sn), size * (sn - cs), 0.0f);
+        buf[n * 6 + 1].pos = pos + Vector(size * (-cs - sn), size * (sn - cs), 0.0f);
         buf[n * 6 + 1].color = c;
         buf[n * 6 + 1].u = 0.0f;
         buf[n * 6 + 1].v = 1.0f;
-        buf[n * 6 + 2].pos = pos + CVECTOR(size * (cs + sn), size * (-sn + cs), 0.0f);
+        buf[n * 6 + 2].pos = pos + Vector(size * (cs + sn), size * (-sn + cs), 0.0f);
         buf[n * 6 + 2].color = c;
         buf[n * 6 + 2].u = 1.0f;
         buf[n * 6 + 2].v = 0.0f;
@@ -327,7 +327,7 @@ void Lights::Realize(uint32_t delta_time)
         buf[n * 6 + 4].color = c;
         buf[n * 6 + 4].u = 0.0f;
         buf[n * 6 + 4].v = 1.0f;
-        buf[n * 6 + 5].pos = pos + CVECTOR(size * (cs - sn), size * (-sn - cs), 0.0f);
+        buf[n * 6 + 5].pos = pos + Vector(size * (cs - sn), size * (-sn - cs), 0.0f);
         buf[n * 6 + 5].color = c;
         buf[n * 6 + 5].u = 1.0f;
         buf[n * 6 + 5].v = 1.0f;
@@ -352,7 +352,7 @@ long Lights::FindLight(const char *name)
 }
 
 // Add source to location
-void Lights::AddLight(long index, const CVECTOR &pos)
+void Lights::AddLight(long index, const Vector &pos)
 {
     if (index == -1)
         return;
@@ -401,7 +401,7 @@ void Lights::DelAllLights()
 }
 
 // Add portable source
-long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
+long Lights::AddMovingLight(const char *type, const Vector &pos)
 {
     long idx;
     for (idx = 0; idx < 1000; idx++)
@@ -432,7 +432,7 @@ long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
 }
 
 // Put portable source in new position
-void Lights::UpdateMovingLight(long id, const CVECTOR &pos)
+void Lights::UpdateMovingLight(long id, const Vector &pos)
 {
     for (long n = 0; n < aMovingLight.size(); n++)
         if (aMovingLight[n].id == id)
@@ -459,7 +459,7 @@ void Lights::DelMovingLight(long id)
 }
 
 // Set light sources for the character
-void Lights::SetCharacterLights(const CVECTOR *const pos)
+void Lights::SetCharacterLights(const Vector *const pos)
 {
     // Filling the source array
     long i;

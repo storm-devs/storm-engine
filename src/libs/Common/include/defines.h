@@ -23,7 +23,7 @@ inline unsigned long HashNoCase(const char *str)
 } // namespace TOREMOVE
 
 // includes
-#include "math3D.h"
+#include "math3d.h"
 #include <cstdint>
 #include <cstring>
 
@@ -170,9 +170,9 @@ constexpr auto makeRGB(uint32_t r, uint32_t g, uint32_t b)
         if (a)                                                                                                         \
             strcpy_s(a, b);                                                                                            \
     }
-#define COLOR2VECTOR(a) CVECTOR(float((a & 0xFF0000) >> 0x10), float((a & 0xFF00) >> 0x8), float(a & 0xFF));
+#define COLOR2VECTOR(a) Vector(float((a & 0xFF0000) >> 0x10), float((a & 0xFF00) >> 0x8), float(a & 0xFF));
 #define COLOR2VECTOR4(a)                                                                                               \
-    CVECTOR4(float((a & 0xFF0000) >> 0x10) / 255.0f, float((a & 0xFF00) >> 0x8) / 255.0f, float(a & 0xFF) / 255.0f,    \
+    Vector4(float((a & 0xFF0000) >> 0x10) / 255.0f, float((a & 0xFF00) >> 0x8) / 255.0f, float(a & 0xFF) / 255.0f,    \
              float((a & 0xFF000000) >> 0x18) / 255.0f);
 
 // game defines

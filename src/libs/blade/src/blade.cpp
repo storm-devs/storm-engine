@@ -49,7 +49,7 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
     auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(eid));
     if (obj != nullptr)
     {
-        CMatrix perMtx;
+        Matrix perMtx;
 
         auto *bladeNode = obj->GetNode(0);
         if ((blendValue & 0xff000000) == 0xff000000)
@@ -70,23 +70,23 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
 
             GEOS::LABEL lb;
             manNode->geo->GetLabel(sti, lb);
-            CMatrix mt;
-            mt.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
-            mt.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
-            mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
-            mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            Matrix mt;
+            mt.vx = Vector(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
+            mt.vy = Vector(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
+            mt.vz = Vector(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
+            mt.pos = Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
-            auto mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
+            Matrix mbn = mt * bones[lb.bones[0]];
+            mbn.pos.x *= -1.0f;
+            mbn.vx.x *= -1.0f;
+            mbn.vy.x *= -1.0f;
+            mbn.vz.x *= -1.0f;
 
-            CMatrix scl;
-            scl.Vx().x = -1.0f;
-            scl.Vy().y = 1.0f;
-            scl.Vz().z = 1.0f;
-            mbn.EqMultiply(scl, CMatrix(mbn));
+            Matrix scl;
+            scl.vx.x = -1.0f;
+            scl.vy.y = 1.0f;
+            scl.vz.z = 1.0f;
+            mbn.EqMultiply(scl, Matrix(mbn));
 
             perMtx = mbn * mdl->mtx;
         }
@@ -95,7 +95,7 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
 
         //--------------------------------------------------------------------------
         rs->SetTexture(0, nullptr);
-        rs->SetTransform(D3DTS_WORLD, CMatrix());
+        rs->SetTransform(D3DTS_WORLD, Matrix());
 
         // move to the beginning
         long first = 0; // end vertex 2 draw
@@ -137,13 +137,13 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
         if (sti >= 0)
         {
             bladeNode->geo->GetLabel(sti, lb);
-            vrt[0].pos = perMtx * CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            vrt[0].pos = perMtx * Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
             vrt[0].diffuse = color[0];
             sti = bladeNode->geo->FindLabelN(0, bladeNode->geo->FindName(bladeEnd));
             if (sti >= 0)
             {
                 bladeNode->geo->GetLabel(sti, lb);
-                vrt[1].pos = perMtx * CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+                vrt[1].pos = perMtx * Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
                 vrt[1].diffuse = color[0];
                 vrtTime[0] = time;
 
@@ -255,16 +255,16 @@ void BLADE::Realize(uint32_t Delta_Time)
     rs->TextureSet(2, -1);
     rs->TextureSet(3, -1);
 
-    CMatrix mtx;
+    Matrix mtx;
     rs->GetTransform(D3DTS_VIEW, mtx);
     mtx.Transposition();
-    mtx.Pos() = 0.0f;
+    mtx.pos = 0.0f;
     rs->SetTransform(D3DTS_TEXTURE1, mtx);
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, blendValue);
 
     //------------------------------------------------------
     // draw gun
-    CMatrix perMtx;
+    Matrix perMtx;
     long sti;
     auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(gun));
     if (obj != nullptr)
@@ -288,23 +288,23 @@ void BLADE::Realize(uint32_t Delta_Time)
 
             GEOS::LABEL lb;
             manNode->geo->GetLabel(sti, lb);
-            CMatrix mt;
-            mt.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
-            mt.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
-            mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
-            mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            Matrix mt;
+            mt.vx = Vector(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
+            mt.vy = Vector(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
+            mt.vz = Vector(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
+            mt.pos = Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
             auto mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
+            mbn.pos.x *= -1.0f;
+            mbn.vx.x *= -1.0f;
+            mbn.vy.x *= -1.0f;
+            mbn.vz.x *= -1.0f;
 
-            CMatrix scl;
-            scl.Vx().x = -1.0f;
-            scl.Vy().y = 1.0f;
-            scl.Vz().z = 1.0f;
-            mbn.EqMultiply(scl, CMatrix(mbn));
+            Matrix scl;
+            scl.vx.x = -1.0f;
+            scl.vy.y = 1.0f;
+            scl.vz.z = 1.0f;
+            mbn.EqMultiply(scl, Matrix(mbn));
 
             perMtx = mbn * mdl->mtx;
         }
@@ -384,7 +384,7 @@ void BLADE::GunFire()
 
     //------------------------------------------------------
     // search gunfire
-    CMatrix perMtx;
+    Matrix perMtx;
     long sti;
 
     auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(gun));
@@ -404,17 +404,17 @@ void BLADE::GunFire()
 
             GEOS::LABEL lb;
             manNode->geo->GetLabel(sti, lb);
-            CMatrix mt;
-            mt.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
-            mt.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
-            mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
-            mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            Matrix mt;
+            mt.vx = Vector(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
+            mt.vy = Vector(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
+            mt.vz = Vector(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
+            mt.pos = Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
             auto mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
+            mbn.pos.x *= -1.0f;
+            mbn.vx.x *= -1.0f;
+            mbn.vy.x *= -1.0f;
+            mbn.vz.x *= -1.0f;
             perMtx = mbn * mdl->mtx;
         }
 
@@ -424,12 +424,12 @@ void BLADE::GunFire()
         {
             GEOS::LABEL lb;
             gunNode->geo->GetLabel(sti, lb);
-            CMatrix resm;
-            resm.EqMultiply(perMtx, *(CMatrix *)&lb.m);
-            auto rp = perMtx * CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            Matrix resm;
+            resm.EqMultiply(perMtx, *(Matrix *)&lb.m);
+            auto rp = perMtx * Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
             core.Send_Message(EntityManager::GetEntityId("particles"), "lsffffffl", PS_CREATEX, "gunfire", rp.x, rp.y,
-                              rp.z, resm.Vz().x, resm.Vz().y, resm.Vz().z, 0);
+                              rp.z, resm.vz.x, resm.vz.y, resm.vz.z, 0);
         }
         else
             core.Trace("MSG_BLADE_GUNFIRE Can't find gun_fire locator");
@@ -605,7 +605,7 @@ void BLADE::TIEITEM_INFO::DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODE
     auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(eid));
     if (obj != nullptr)
     {
-        CMatrix perMtx;
+        Matrix perMtx;
 
         NODE *mdlNode = obj->GetNode(0);
         if ((blendValue & 0xff000000) == 0xff000000)
@@ -622,27 +622,27 @@ void BLADE::TIEITEM_INFO::DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODE
         if ((sti = manNode->geo->FindLabelN(sti + 1, idLoc)) > -1)
         {
             Animation *ani = mdl->GetAnimation();
-            CMatrix *bones = &ani->GetAnimationMatrix(0);
+            Matrix *bones = &ani->GetAnimationMatrix(0);
 
             GEOS::LABEL lb;
             manNode->geo->GetLabel(sti, lb);
-            CMatrix mt;
-            mt.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
-            mt.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
-            mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
-            mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            Matrix mt;
+            mt.vx = Vector(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
+            mt.vy = Vector(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
+            mt.vz = Vector(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
+            mt.pos = Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
-            CMatrix mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
+            Matrix mbn = mt * bones[lb.bones[0]];
+            mbn.pos.x *= -1.0f;
+            mbn.vx.x *= -1.0f;
+            mbn.vy.x *= -1.0f;
+            mbn.vz.x *= -1.0f;
 
-            CMatrix scl;
-            scl.Vx().x = -1.0f;
-            scl.Vy().y = 1.0f;
-            scl.Vz().z = 1.0f;
-            mbn.EqMultiply(scl, CMatrix(mbn));
+            Matrix scl;
+            scl.vx.x = -1.0f;
+            scl.vy.y = 1.0f;
+            scl.vz.z = 1.0f;
+            mbn.EqMultiply(scl, Matrix(mbn));
 
             perMtx = mbn * mdl->mtx;
         }

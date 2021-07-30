@@ -105,7 +105,7 @@ void ISLAND::Realize(uint32_t Delta_Time)
     pRS->SetRenderState(D3DRS_LIGHTING, false);
     dwAmbient = dwAmbientOld & 0xFF;
 
-    CVECTOR vCamPos, vCamAng;
+    Vector vCamPos, vCamAng;
     float fOldNear, fOldFar, fPerspective;
     pRS->GetCamera(vCamPos, vCamAng, fPerspective);
     pRS->GetNearFarPlane(fOldNear, fOldFar);
@@ -118,7 +118,7 @@ void ISLAND::Realize(uint32_t Delta_Time)
     if (fCamDistance > fImmersionDistance)
         fCurrentImmersion = (fCamDistance / fImmersionDistance - 1.0f) * fImmersionDepth;
 
-    CMatrix mTemp;
+    Matrix mTemp;
     mTemp.BuildPosition(0.0f, -fCurrentImmersion, 0.0f);
     pModel->mtx = mIslandOld * mTemp;
 
@@ -219,7 +219,7 @@ void ISLAND::Realize(uint32_t Delta_Time)
             aLines.push_back(RS_LINE{AIPath.GetPointPos(pE->dw1), 0xFFFFFF});
             aLines.push_back(RS_LINE{AIPath.GetPointPos(pE->dw2), 0xFFFFFF});
         }
-        CMatrix m;
+        Matrix m;
         pRS->SetTransform(D3DTS_WORLD, m);
         pRS->DrawLines(&aLines[0], aLines.size() / 2, "Line");
     }
@@ -316,7 +316,7 @@ inline float ISLAND::GetDepthCheck(uint32_t iX, uint32_t iZ)
     return GetDepthNoCheck(iX, iZ);
 }
 
-bool ISLAND::Check2DBoxDepth(CVECTOR vPos, CVECTOR vSize, float fAngY, float fMinDepth)
+bool ISLAND::Check2DBoxDepth(Vector vPos, Vector vSize, float fAngY, float fMinDepth)
 {
     // if (!mzDepth.isLoaded()) return false;
 
@@ -372,7 +372,7 @@ bool ISLAND::GetDepth(float x, float z, float *fRes)
     return true;
 }
 
-bool ISLAND::ActivateCamomileTrace(CVECTOR &vSrc)
+bool ISLAND::ActivateCamomileTrace(Vector &vSrc)
 {
     const float fRadius = 100.0f;
     const long iNumPetal = 8;
@@ -381,14 +381,14 @@ bool ISLAND::ActivateCamomileTrace(CVECTOR &vSrc)
     for (long i = 0; i < iNumPetal; i++)
     {
         TRIANGLE trg;
-        CVECTOR vDst, vCross;
+        Vector vDst, vCross;
         float fAng, fCos, fSin, fRes;
 
         fAng = static_cast<float>(i) / static_cast<float>(iNumPetal) * PIm2;
         fCos = cosf(fAng);
         fSin = sinf(fAng);
 
-        vDst = vSrc + CVECTOR(fCos * fRadius, 0.0f, fSin * fRadius);
+        vDst = vSrc + Vector(fCos * fRadius, 0.0f, fSin * fRadius);
         fRes = Trace(vSrc, vDst);
         if (fRes > 1.0f)
             continue;
@@ -406,7 +406,7 @@ bool ISLAND::ActivateCamomileTrace(CVECTOR &vSrc)
     return false;
 }
 
-void ISLAND::CalcBoxParameters(CVECTOR &_vBoxCenter, CVECTOR &_vBoxSize)
+void ISLAND::CalcBoxParameters(Vector &_vBoxCenter, Vector &_vBoxSize)
 {
     GEOS::INFO ginfo;
     float x1 = 1e+8f, x2 = -1e+8f, z1 = 1e+8f, z2 = -1e+8f;
@@ -426,9 +426,9 @@ void ISLAND::CalcBoxParameters(CVECTOR &_vBoxCenter, CVECTOR &_vBoxSize)
             if (!pN)
                 break;
             pN->geo->GetInfo(ginfo);
-            CVECTOR vGlobPos = pN->glob_mtx.Pos();
-            const CVECTOR vBC = vGlobPos + CVECTOR(ginfo.boxcenter.x, 0.0f, ginfo.boxcenter.z);
-            const CVECTOR vBS = CVECTOR(ginfo.boxsize.x, 0.0f, ginfo.boxsize.z) / 2.0f;
+            Vector vGlobPos = pN->glob_mtx.pos;
+            const Vector vBC = vGlobPos + Vector(ginfo.boxcenter.x, 0.0f, ginfo.boxcenter.z);
+            const Vector vBS = Vector(ginfo.boxsize.x, 0.0f, ginfo.boxsize.z) / 2.0f;
             if (vBC.x - vBS.x < x1)
                 x1 = vBC.x - vBS.x;
             if (vBC.x + vBS.x > x2)
@@ -439,8 +439,8 @@ void ISLAND::CalcBoxParameters(CVECTOR &_vBoxCenter, CVECTOR &_vBoxSize)
                 z2 = vBC.z + vBS.z;
         }
     }
-    _vBoxCenter = CVECTOR((x1 + x2) / 2.0f, 0.0f, (z1 + z2) / 2.0f);
-    _vBoxSize = CVECTOR(x2 - x1, 0.0f, z2 - z1);
+    _vBoxCenter = Vector((x1 + x2) / 2.0f, 0.0f, (z1 + z2) / 2.0f);
+    _vBoxSize = Vector(x2 - x1, 0.0f, z2 - z1);
 }
 
 bool ISLAND::CreateShadowMap(char *pDir, char *pName)
@@ -486,8 +486,8 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
 
     float fX, fZ;
     uint32_t x, z;
-    CVECTOR vSun;
-    pWeather->GetVector(whv_sun_pos, &vSun); // CVECTOR(15000.0f, 2000.0f, 15000.0f);
+    Vector vSun;
+    pWeather->GetVector(whv_sun_pos, &vSun); // Vector(15000.0f, 2000.0f, 15000.0f);
     vSun = 100000.0f * !vSun;
 
     for (fZ = -fShadowMapSize / 2.0f, z = 0; fZ < fShadowMapSize / 2.0f; fZ += fShadowMapStep, z++)
@@ -496,8 +496,8 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
             // uint32_t x = uint32_t((fX + fShadowMapSize / 2.0f) / fShadowMapStep);
             // uint32_t z = uint32_t((fZ + fShadowMapSize / 2.0f) / fShadowMapStep);
             // if (x == 774) _asm int 3
-            CVECTOR vSrc = CVECTOR(fX, 2.0f, fZ) + vBoxCenter;
-            CVECTOR vDst = vSrc + vSun;
+            Vector vSrc = Vector(fX, 2.0f, fZ) + vBoxCenter;
+            Vector vDst = vSrc + vSun;
             float fRes = Trace(vSrc, vDst);
             pShadowMap[x + z * DMAP_SIZE] = 255;
             if (fRes <= 1.0f)
@@ -568,7 +568,7 @@ bool ISLAND::CreateHeightMap(const std::string_view &pDir, const std::string_vie
 
     // calc center and size
     CalcBoxParameters(vBoxCenter, vRealBoxSize);
-    vBoxSize = vRealBoxSize + CVECTOR(50.0f, 0.0f, 50.0f);
+    vBoxSize = vRealBoxSize + Vector(50.0f, 0.0f, 50.0f);
 
     rIsland.x1 = vBoxCenter.x - vBoxSize.x / 2.0f;
     rIsland.y1 = vBoxCenter.z - vBoxSize.z / 2.0f;
@@ -613,7 +613,7 @@ bool ISLAND::CreateHeightMap(const std::string_view &pDir, const std::string_vie
         auto pI = fio->OpenIniFile(iniName.c_str());
         Assert(pI.get());
 
-        CVECTOR vTmpBoxCenter, vTmpBoxSize;
+        Vector vTmpBoxCenter, vTmpBoxSize;
         pI->ReadString("Main", "vBoxCenter", str_tmp, sizeof(str_tmp) - 1, "1.0,1.0,1.0");
         sscanf(str_tmp, "%f,%f,%f", &vTmpBoxCenter.x, &vTmpBoxCenter.y, &vTmpBoxCenter.z);
         pI->ReadString("Main", "vBoxSize", str_tmp, sizeof(str_tmp) - 1, "1.0,1.0,1.0");
@@ -665,7 +665,7 @@ bool ISLAND::CreateHeightMap(const std::string_view &pDir, const std::string_vie
             pDepthMap[iIdx] = 255;
             float fXX = (fX - static_cast<float>(iDMapSize) / 2.0f) * fStepDX;
             float fZZ = (fZ - static_cast<float>(iDMapSize) / 2.0f) * fStepDZ;
-            CVECTOR vSrc(fXX, 0.0f, fZZ), vDst(fXX, -500.0f, fZZ + 0.001f);
+            Vector vSrc(fXX, 0.0f, fZZ), vDst(fXX, -500.0f, fZZ + 0.001f);
             vSrc += vBoxCenter;
             vDst += vBoxCenter;
             float fRes = Trace(vSrc, vDst);
@@ -686,8 +686,8 @@ bool ISLAND::CreateHeightMap(const std::string_view &pDir, const std::string_vie
             }
             else // check for up direction
             {
-                vSrc = CVECTOR(fXX, 0.0f, fZZ);
-                vDst = CVECTOR(fXX, 1500.0f, fZZ + 0.001f);
+                vSrc = Vector(fXX, 0.0f, fZZ);
+                vDst = Vector(fXX, 1500.0f, fZZ + 0.001f);
                 vSrc += vBoxCenter;
                 vDst += vBoxCenter;
                 float fRes = Trace(vSrc, vDst);
@@ -813,30 +813,30 @@ bool ISLAND::Mount(const std::string_view &fname, const std::string_view &fdir, 
       aSpheres.Add(eid);
     }*/
 
-    // AIFlowGraph::Path * pPath = FindPath(CVECTOR(-10000.0f,0.0f,-10000.0f),CVECTOR(10000.0f,0.0f,10000.0f));
+    // AIFlowGraph::Path * pPath = FindPath(Vector(-10000.0f,0.0f,-10000.0f),Vector(10000.0f,0.0f,10000.0f));
     // STORM_DELETE(pPath);
 
     return true;
 }
 
-float ISLAND::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
+float ISLAND::Cannon_Trace(long iBallOwner, const Vector &vSrc, const Vector &vDst)
 {
     const float fRes = Trace(vSrc, vDst);
     if (fRes <= 1.0f)
     {
-        const CVECTOR vTemp = vSrc + fRes * (vDst - vSrc);
+        const Vector vTemp = vSrc + fRes * (vDst - vSrc);
         core.Event(BALL_ISLAND_HIT, "lfff", iBallOwner, vTemp.x, vTemp.y, vTemp.z);
     }
     return fRes;
 }
 
-float ISLAND::Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
+float ISLAND::Trace(const Vector &vSrc, const Vector &vDst)
 {
     return pCollide->Trace(EntityManager::GetEntityIdIterators(ISLAND_TRACE), vSrc, vDst, nullptr, 0);
 }
 
 // Path section
-bool ISLAND::GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes)
+bool ISLAND::GetMovePoint(Vector &vSrc, Vector &vDst, Vector &vRes)
 {
     // check for one side
     uint32_t i, j;
@@ -851,7 +851,7 @@ bool ISLAND::GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes)
     if (Trace(vSrc, vDst) >= 1.0f)
         return false;
 
-    CVECTOR vDir = !(vDst - vSrc);
+    Vector vDir = !(vDst - vSrc);
 
     std::vector<AIFlowGraph::npoint_t> *PointsSrc, *PointsDst;
 
@@ -898,7 +898,7 @@ bool ISLAND::GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes)
     return true;
 }
 
-/*AIFlowGraph::VectorPath    * ISLAND::FindPath(CVECTOR & vSrc, CVECTOR & vDst)
+/*AIFlowGraph::VectorPath    * ISLAND::FindPath(Vector & vSrc, Vector & vDst)
 {
     AIFlowGraph::VectorPath        * pVPath;
 

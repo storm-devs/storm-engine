@@ -44,8 +44,8 @@ class WdmCamera
     //
     //--------------------------------------------------------------------------------------------
   public:
-    CVECTOR pos;
-    CVECTOR ang;
+    Vector pos;
+    Vector ang;
     float realHeight;
     float hgh;
 
@@ -64,7 +64,7 @@ class WdmCamera
 
     bool isFreeMode;
     float lastAng;
-    CVECTOR bndPos;
+    Vector bndPos;
     float kBlendPos;
 
     bool isInit;

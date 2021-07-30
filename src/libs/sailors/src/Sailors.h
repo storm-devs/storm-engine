@@ -4,8 +4,6 @@
 #include "dx9render.h"
 #include "model.h"
 #include "ship_base.h"
-#include "vmodule_api.h"
-
 #include "sea_base.h"
 
 const float RUN_SPEED = 0.30f;
@@ -62,10 +60,10 @@ class ShipMan
     entid_t modelID;
     MODEL *model;
 
-    CVECTOR pos, ang; // current position
-    CVECTOR ptTo, angTo, dir;
+    Vector pos, ang; // current position
+    Vector ptTo, angTo, dir;
 
-    CVECTOR spos; // Bypassing each other
+    Vector spos; // Bypassing each other
     // float sang; // Bypass each other
 
     float dieTime;
@@ -88,7 +86,7 @@ class ShipMan
     void FindNextPoint(SailorsPoints &sailorsPoints, ShipState &shipState);
     int FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState);
     int FindRandomPointWithoutType(SailorsPoints &sailorsPoints) const;
-    void ApplyTargetPoint(CVECTOR pt, bool randomWalk);
+    void ApplyTargetPoint(Vector pt, bool randomWalk);
 
     void UpdatePos(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &shipState);
 
@@ -131,7 +129,7 @@ class ShipWalk
     void Init(entid_t _shipID, int editorMode, const char *shipType);
     void CheckPosition(uint32_t &dltTime);
     void SetMastBroken(int iMastIndex);
-    void OnHullHit(const CVECTOR &v);
+    void OnHullHit(const Vector &v);
     void Reset();
 
     void Free();

@@ -16,16 +16,17 @@
 #include "WdmShip.h"
 #include "WorldMap.h"
 #include "defines.h"
+#include "WdmObjects.h"
 
 // ============================================================================================
 // Collision data
 // ============================================================================================
 
-CVECTOR WdmIslands::centPos;
+Vector WdmIslands::centPos;
 long WdmIslands::numEdges;
-CVECTOR WdmIslands::curPos;
+Vector WdmIslands::curPos;
 bool WdmIslands::checkMode;
-CMatrix WdmIslands::curMatrix;
+Matrix WdmIslands::curMatrix;
 
 // ============================================================================================
 // Construction, destruction
@@ -47,7 +48,7 @@ WdmIslands::WdmIslands()
     GEOS::LABEL label;
     baseModel->geo->GetInfo(ginfo);
     // Finding the size of the world and iterating over the locators
-    CVECTOR vmin, vmax, center = 0.0f, vmn, vmx;
+    Vector vmin, vmax, center = 0.0f, vmn, vmx;
     auto isMin = false, isMax = false;
     for (long i = 0; i < ginfo.nlabels; i++)
     {
@@ -58,24 +59,24 @@ WdmIslands::WdmIslands()
         {
             if (_stricmp(label.name, "min") == 0)
             {
-                vmn = ((CMatrix *)label.m)->Pos();
+                vmn = ((Matrix *)label.m)->pos;
                 isMin = true;
             }
             if (_stricmp(label.name, "max") == 0)
             {
-                vmx = ((CMatrix *)label.m)->Pos();
+                vmx = ((Matrix *)label.m)->pos;
                 isMax = true;
             }
         }
         else if (_stricmp(label.group_name, "merchant") == 0)
         {
-            merchants.push_back(((CMatrix *)label.m)->Pos());
+            merchants.push_back(((Matrix *)label.m)->pos);
         }
         else if (label.name && label.name[0] && _stricmp(label.group_name, "quests") == 0)
         {
-            quests.push_back(Quest{((CMatrix *)label.m)->Pos(), label.name});
+            quests.push_back(Quest{((Matrix *)label.m)->pos, label.name});
             // Quest & q = quests[quests.Add()];
-            // q.pos = ((CMatrix *)label.m)->Pos();
+            // q.pos = ((Matrix *)label.m)->pos;
             // q.name = label.name;
         }
     }
@@ -125,12 +126,12 @@ WdmIslands::WdmIslands()
             // Islands & isl = islands[islands.Add()];
             auto &isl = islands.back();
             isl.model = model;
-            model->mtx = *((CMatrix *)label.m);
-            model->mtx.Pos() += center;
+            model->mtx = *((Matrix *)label.m);
+            model->mtx.pos += center;
             isl.toLocal = model->mtx;
             isl.toLocal.Transposition();
             isl.modelName = label.name;
-            isl.worldPosition = model->mtx.Pos();
+            isl.worldPosition = model->mtx.pos;
             // Model describing the area of the island
             name += "_area";
             isl.area = static_cast<WdmRenderModel *>(
@@ -191,7 +192,7 @@ WdmIslands::~WdmIslands()
 }
 
 // Check for possible collision
-bool WdmIslands::CollisionTest(CMatrix &objMtx, float length, float width, bool heighTest)
+bool WdmIslands::CollisionTest(Matrix &objMtx, float length, float width, bool heighTest)
 {
     const auto maxHeightInTest = 0.5f;
     // Radius of a rectangle on a plane
@@ -212,19 +213,19 @@ bool WdmIslands::CollisionTest(CMatrix &objMtx, float length, float width, bool 
         // The island we work with
         Islands &island = islands[i];
         // Transform to the local coordinates system
-        CMatrix locMtx(objMtx, island.toLocal);
+        Matrix locMtx(objMtx, island.toLocal);
 
         // Check hitting the island sphere
-        const float dist2 = ~(locMtx.Pos() - island.model->center);
+        const float dist2 = ~(locMtx.pos - island.model->center);
         const float maxDist = boxRadius + island.model->radius;
         if (dist2 >= maxDist * maxDist)
             continue;
         // test triangles
         GEOS::PLANE p[5];
         // Direction vector
-        p[0].nrm.x = locMtx.Vz().x;
+        p[0].nrm.x = locMtx.vz.x;
         p[0].nrm.y = 0.0f;
-        p[0].nrm.z = locMtx.Vz().z;
+        p[0].nrm.z = locMtx.vz.z;
         float radius = p[0].nrm.x * p[0].nrm.x + p[0].nrm.z * p[0].nrm.z;
         // Skip broken model
         if (radius < 0.000001f)
@@ -248,20 +249,20 @@ bool WdmIslands::CollisionTest(CMatrix &objMtx, float length, float width, bool 
         p[4].nrm.z = 0.0f;
         // Distances to planes
         p[0].d =
-            (p[0].nrm.x * length + locMtx.Pos().x) * p[0].nrm.x + (p[0].nrm.z * length + locMtx.Pos().z) * p[0].nrm.z;
+            (p[0].nrm.x * length + locMtx.pos.x) * p[0].nrm.x + (p[0].nrm.z * length + locMtx.pos.z) * p[0].nrm.z;
         p[1].d =
-            (p[1].nrm.x * length + locMtx.Pos().x) * p[1].nrm.x + (p[1].nrm.z * length + locMtx.Pos().z) * p[1].nrm.z;
+            (p[1].nrm.x * length + locMtx.pos.x) * p[1].nrm.x + (p[1].nrm.z * length + locMtx.pos.z) * p[1].nrm.z;
         p[2].d =
-            (p[2].nrm.x * width + locMtx.Pos().x) * p[2].nrm.x + (p[2].nrm.z * width + locMtx.Pos().z) * p[2].nrm.z;
+            (p[2].nrm.x * width + locMtx.pos.x) * p[2].nrm.x + (p[2].nrm.z * width + locMtx.pos.z) * p[2].nrm.z;
         p[3].d =
-            (p[3].nrm.x * width + locMtx.Pos().x) * p[3].nrm.x + (p[3].nrm.z * width + locMtx.Pos().z) * p[3].nrm.z;
+            (p[3].nrm.x * width + locMtx.pos.x) * p[3].nrm.x + (p[3].nrm.z * width + locMtx.pos.z) * p[3].nrm.z;
         p[4].d = maxHeightInTest;
         // Sphere position
         GEOS::VERTEX v;
-        v.x = locMtx.Pos().x;
-        v.y = locMtx.Pos().y;
-        v.z = locMtx.Pos().z;
-        curPos = locMtx.Pos();
+        v.x = locMtx.pos.x;
+        v.y = locMtx.pos.y;
+        v.z = locMtx.pos.z;
+        curPos = locMtx.pos;
         // Conversion matrix to world coordinates
         curMatrix = island.model->mtx;
         // looking for hitting polygons
@@ -282,22 +283,22 @@ bool WdmIslands::AddEdges(const GEOS::VERTEX *vrt, long numVrt)
         return true;
     if (checkMode)
     {
-        centPos = curMatrix * CVECTOR(vrt[0].x, 0.0f, vrt[0].z);
+        centPos = curMatrix * Vector(vrt[0].x, 0.0f, vrt[0].z);
         numEdges = 1;
         return false;
     }
     // try to determine the location of the point relative to the plane
-    const CVECTOR v1(vrt[1].x - vrt[0].x, vrt[1].y - vrt[0].y, vrt[1].z - vrt[0].z);
-    const CVECTOR v2(vrt[2].x - vrt[1].x, vrt[2].y - vrt[1].y, vrt[2].z - vrt[1].z);
-    const CVECTOR v = v1 ^ v2;
-    const float d = (v | curPos) - (v | CVECTOR(vrt[0].x, vrt[0].y, vrt[0].z));
+    const Vector v1(vrt[1].x - vrt[0].x, vrt[1].y - vrt[0].y, vrt[1].z - vrt[0].z);
+    const Vector v2(vrt[2].x - vrt[1].x, vrt[2].y - vrt[1].y, vrt[2].z - vrt[1].z);
+    const Vector v = v1 ^ v2;
+    const float d = (v | curPos) - (v | Vector(vrt[0].x, vrt[0].y, vrt[0].z));
     if (d < 0)
         return true;
     // Adding edges
     numEdges += numVrt;
     for (long i = 0; i < numVrt; i++)
     {
-        centPos += curMatrix * CVECTOR(vrt[i].x, 0.0f, vrt[i].z);
+        centPos += curMatrix * Vector(vrt[i].x, 0.0f, vrt[i].z);
     }
     // continue
     return true;
@@ -308,14 +309,14 @@ bool WdmIslands::ObstacleTest(float x, float z, float radius)
 {
     if (radius <= 0.0f)
         return false;
-    const CVECTOR wPos(x, 0.0f, z);
+    const Vector wPos(x, 0.0f, z);
     // walk through all the islands
     for (long i = 0; i < islands.size(); i++)
     {
         // The island we work with
         Islands &island = islands[i];
         // Converting to the local island system
-        const CVECTOR pos = island.toLocal * wPos;
+        const Vector pos = island.toLocal * wPos;
         GEOS::PLANE p[4];
         p[0].nrm.x = 0.0f;
         p[0].nrm.y = 0.0f;
@@ -346,7 +347,7 @@ bool WdmIslands::ObstacleTest(float x, float z, float radius)
 // Read Island Data
 void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
 {
-    CVECTOR pos;
+    Vector pos;
     if (!isChange)
     {
         LabelsRelease();
@@ -523,7 +524,7 @@ long WdmIslands::LabelsFind(const char *id, uint32_t hash)
     return -1;
 }
 
-bool WdmIslands::LabelsFindLocator(const char *name, CVECTOR &pos) const
+bool WdmIslands::LabelsFindLocator(const char *name, Vector &pos) const
 {
     if (!baseModel || !name || !name[0])
         return false;
@@ -541,7 +542,7 @@ bool WdmIslands::LabelsFindLocator(const char *name, CVECTOR &pos) const
         // if(_stricmp(label.group_name, "geometry") != 0) continue;
         if (_stricmp(label.name, name) == 0)
         {
-            pos = ((CMatrix *)label.m)->Pos();
+            pos = ((Matrix *)label.m)->pos;
             return true;
         }
     }
@@ -598,7 +599,7 @@ void WdmIslands::Update(float dltTime)
 {
     if (wdmObjects->playerShip)
     {
-        CVECTOR pos;
+        Vector pos;
         wdmObjects->playerShip->GetPosition(pos.x, pos.z, pos.y);
         pos.y = 0.0f;
         for (long i = 0; i < islands.size(); i++)
@@ -667,7 +668,7 @@ void WdmIslands::LRender(VDX9RENDER *rs)
     icons.f[0] *= icons.u;
     icons.f[1] *= icons.u;
     // get the current transformation matrix
-    static CMatrix mtx, view, prj;
+    static Matrix mtx, view, prj;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, prj);
     mtx.EqMultiply(view, prj);
@@ -681,7 +682,6 @@ void WdmIslands::LRender(VDX9RENDER *rs)
     const float dAlpha = core.GetDeltaTime() * (0.001f * 1.5f * 255.0f);
     // Projecting to the screen
     labelSort.clear();
-    MTX_PRJ_VECTOR prjVertex;
     for (long i = 0; i < labels.size(); i++)
     {
         // Label
@@ -704,7 +704,8 @@ void WdmIslands::LRender(VDX9RENDER *rs)
             continue;
         // calculate the projection point
         // rs->DrawSphere(label.pos, 1.0f, 0xff00ff00);
-        mtx.Projection(&label.pos, &prjVertex, 1, w * 0.5f, h * 0.5f, 0, 0);
+        Vector4 prjVertex;
+        mtx.Projection(&prjVertex, & label.pos, 1, w * 0.5f, h * 0.5f);
         // Rectangle on screen
         label.l = prjVertex.x + label.dl; // label.dl;
         label.t = prjVertex.y + 0;        // label.dt;
@@ -789,7 +790,7 @@ void WdmIslands::LRender(VDX9RENDER *rs)
 }
 
 // Find the direction to arrive at a given destination from the current
-void WdmIslands::FindDirection(const CVECTOR &position, const CVECTOR &destination, CVECTOR &direction) const
+void WdmIslands::FindDirection(const Vector &position, const Vector &destination, Vector &direction) const
 {
     // If there is no patch, then go in a straight line
     if (!patch)
@@ -817,7 +818,7 @@ void WdmIslands::FindDirection(const CVECTOR &position, const CVECTOR &destinati
 }
 
 // Find the repulsive force
-void WdmIslands::FindReaction(const CVECTOR &position, CVECTOR &reaction) const
+void WdmIslands::FindReaction(const Vector &position, Vector &reaction) const
 {
     if (patch)
     {
@@ -839,7 +840,7 @@ void WdmIslands::FindReaction(const CVECTOR &position, CVECTOR &reaction) const
 }
 
 // Find a random point for a merchant
-bool WdmIslands::GetRandomMerchantPoint(CVECTOR &p)
+bool WdmIslands::GetRandomMerchantPoint(Vector &p)
 {
     if (merchants.size() <= 0)
     {
@@ -851,7 +852,7 @@ bool WdmIslands::GetRandomMerchantPoint(CVECTOR &p)
 }
 
 // Get the coordinates of the quest locator
-bool WdmIslands::GetQuestLocator(const char *locName, CVECTOR &p)
+bool WdmIslands::GetQuestLocator(const char *locName, Vector &p)
 {
     if (!locName || !locName[0])
     {
@@ -879,7 +880,7 @@ bool WdmIslands::CheckIslandArea(const char *islandName, float x, float z)
             continue;
         if (islands[i].modelName == islandName)
         {
-            return IsShipInArea(i, CVECTOR(x, 0.0f, z));
+            return IsShipInArea(i, Vector(x, 0.0f, z));
         }
     }
     return false;
@@ -942,7 +943,7 @@ bool WdmIslands::FindNearPoint(const GEOS::VERTEX *vrt, long numVrt)
     return true;
 }
 
-bool WdmIslands::IsShipInArea(long islIndex, const CVECTOR &pos)
+bool WdmIslands::IsShipInArea(long islIndex, const Vector &pos)
 {
     static const float testRadius = 0.01f;
     // No area, no intersection
@@ -1017,7 +1018,7 @@ void WdmIslandWaves::Render(VDX9RENDER *rs, float k)
 {
     // Setting the matrix for the texture
     // k = 0.5f + 0.5f * sinf (k * 2.0f * PI);
-    CMatrix mtx;
+    Matrix mtx;
     mtx.m[1][1] = 0.3f + 1.0f * sinf(k * PI);
     mtx.m[2][1] = 0.0f; // 0.2f*sinf((k - 0.25f)*2.0f*PI) - 0.5f;
     rs->SetTransform(D3DTS_TEXTURE0, mtx);

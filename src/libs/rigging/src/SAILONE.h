@@ -4,11 +4,6 @@
 
 #pragma once
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#include "Matrix.h"
 #include "dx9render.h"
 #include "sail_base.h"
 
@@ -24,7 +19,7 @@ class NODE;
 
 struct SAILVERTEX
 {
-    CVECTOR pos, norm;
+    Vector pos, norm;
     float tu1, tv1;
     float tu2, tv2;
     float tu3, tv3;
@@ -56,8 +51,8 @@ struct WIND
 
 struct SPHERE
 {
-    CVECTOR c;
-    CVECTOR rc; // center in world coordinates
+    Vector c;
+    Vector rc; // center in world coordinates
     float r;
 };
 
@@ -76,6 +71,10 @@ struct TEXTURESLIST
 
 struct SAILGEOMETRY
 {
+    // shall be explicit due to union
+    SAILGEOMETRY() : v{}
+    {
+    }
     union {
         struct
         {
@@ -84,11 +83,11 @@ struct SAILGEOMETRY
 
         struct
         {
-            CVECTOR dVv, ddVv, dddVv; // Vectors for vertical flex of sail
-            CVECTOR dVh, ddVh;        // Vectors for horizontal flaex of sail
-            CVECTOR normL, dnormL;    // Vectors for leftside sail normals
-            CVECTOR normR, dnormR;    // Vectors for rightside sail normals
-            CVECTOR dopV;             // Vector for rope tie;
+            Vector dVv, ddVv, dddVv; // Vectors for vertical flex of sail
+            Vector dVh, ddVh;        // Vectors for horizontal flaex of sail
+            Vector normL, dnormL;    // Vectors for leftside sail normals
+            Vector normR, dnormR;    // Vectors for rightside sail normals
+            Vector dopV;             // Vector for rope tie;
         };
     };
 };
@@ -106,14 +105,14 @@ struct ROTATEROPEDSAIL
 {
     int ropenum;
     float r1, r2; // radius to the end of the rope and the beginning of another point
-    CVECTOR b;    // x, y, z coordinate for calculating rope tension in Z
+    Vector b;    // x, y, z coordinate for calculating rope tension in Z
     int tiePoint;
 };
 
 struct SAILTIEROPE
 {
     bool pnttie[4];
-    CVECTOR *pPos[4];
+    Vector *pPos[4];
     ROTATEROPEDSAIL *rrs[2];
 };
 
@@ -136,10 +135,10 @@ struct SAILSTATE
     SAIL_TYPE eSailType;
 
     // sail anchor points
-    CVECTOR hardPoints[4];
+    Vector hardPoints[4];
 
     bool bYesLimitPoint;
-    CVECTOR LimitPoint;
+    Vector LimitPoint;
 
     // texture number
     uint16_t texNum;
@@ -156,8 +155,8 @@ struct SAILSTATE
 
     // sail bounding sphere
     SPHERE boundSphere;
-    CVECTOR boxCenter;
-    CVECTOR boxSize;
+    Vector boxCenter;
+    Vector boxSize;
 
     bool rollingSail, turningSail;
 
@@ -195,11 +194,11 @@ class SAILONE : public SAILONE_BASE
     void DoRollingStep(uint32_t Delta_Time); // perform the step of folding-unfolding the sail
     void TurnSail(float fTurnStep);          // turn the sail around the OY axis
     void CalculateMirrorSailIndex() override;
-    bool GetGrid(CVECTOR &pos, float perspect);
-    float Trace(const CVECTOR &src, const CVECTOR &dst, bool bCannonTrace);
-    float SSailTrace(CVECTOR &src, CVECTOR &dst, bool bCannonTrace);
-    float TSailTrace(CVECTOR &src, CVECTOR &dst, bool bCannonTrace);
-    float CheckSailSquar(int i, CVECTOR &va, CVECTOR &vb, CVECTOR &vc, CVECTOR &vsrc, CVECTOR &vdst, bool bCannonTrace);
+    bool GetGrid(Vector &pos, float perspect);
+    float Trace(const Vector &src, const Vector &dst, bool bCannonTrace);
+    float SSailTrace(Vector &src, Vector &dst, bool bCannonTrace);
+    float TSailTrace(Vector &src, Vector &dst, bool bCannonTrace);
+    float CheckSailSquar(int i, Vector &va, Vector &vb, Vector &vc, Vector &vsrc, Vector &vdst, bool bCannonTrace);
     void SetAllHole(uint32_t holeData) override;
     // number of vertices vertically and horizontally
     uint32_t m_dwRow, m_dwCol;
@@ -230,7 +229,7 @@ class SAILONE : public SAILONE_BASE
         return ss.eSailType == SAIL_TREANGLE ? 10 : 12;
     }
 
-    float GetDistanceFromPointTo3Point(const CVECTOR &v, const CVECTOR &vB1, const CVECTOR &vB2, const CVECTOR &vB3);
+    float GetDistanceFromPointTo3Point(const Vector &v, const Vector &vB1, const Vector &vB2, const Vector &vB3);
 
     // Wind exposure parameters
     // ------------------------------
@@ -240,7 +239,7 @@ class SAILONE : public SAILONE_BASE
     float SumWind, MaxSumWind;
     bool bFreeSail; // free sails - when falling or flying
 
-    CVECTOR SailPnt[20];
+    Vector SailPnt[20];
 
     // ------------------------------------
     // Unfolding the sail
@@ -254,7 +253,7 @@ class SAILONE : public SAILONE_BASE
     int groupNum;       // sail group number in the node
     int mastNum;        // mast number
     NODE *hostNode;     // host
-    CMatrix *pMatWorld; // the matrix of this node
+    Matrix *pMatWorld; // the matrix of this node
 
     SAILTIEROPE sailtrope;
     float oldWindAngl;
@@ -264,7 +263,7 @@ class SAILONE : public SAILONE_BASE
     float curSpeed; // Current speed
 
     // wind
-    CVECTOR sailWind;
+    Vector sailWind;
     void CalculateSailWind();
 
     int wind_incr, wind_add;
@@ -273,7 +272,7 @@ class SAILONE : public SAILONE_BASE
     bool bDeleted;
 
     // Parameters limiting sail turn
-    CVECTOR m_vMastTrace[2];
+    Vector m_vMastTrace[2];
     float m_fMaxAngle;
     float m_fMinAngle;
 

@@ -12,7 +12,6 @@
 
 #include "core.h"
 #include "storm_assert.h"
-#include "vmodule_api.h"
 
 // ============================================================================================
 // Construction, destruction
@@ -33,7 +32,7 @@ Bone::~Bone()
 }
 
 // how many frames of animation there will be
-void Bone::SetNumFrames(long num, CVECTOR &sPos, bool isRoot)
+void Bone::SetNumFrames(long num, Vector &sPos, bool isRoot)
 {
     delete ang;
     delete pos;
@@ -55,19 +54,19 @@ void Bone::SetNumFrames(long num, CVECTOR &sPos, bool isRoot)
 
     if (isRoot)
     {
-        pos = new CVECTOR[num];
-        memset(pos, 0, numFrames * sizeof(CVECTOR));
+        pos = new Vector[num];
+        memset(pos, 0, numFrames * sizeof(Vector));
     }
     pos0 = sPos;
 }
 
 // Set animation positions
-void Bone::SetPositions(const CVECTOR *pArray, long numPos)
+void Bone::SetPositions(const Vector *pArray, long numPos)
 {
     Assert(numPos == numFrames);
     Assert(pArray);
     Assert(pos);
-    memcpy(pos, pArray, numFrames * sizeof(CVECTOR));
+    memcpy(pos, pArray, numFrames * sizeof(Vector));
 }
 
 //=====================================================================================
@@ -156,11 +155,11 @@ void Bone::BuildStartMatrix()
 {
     if (numFrames == 0 || !ang)
         return;
-    const CMatrix inmtx;
+    Matrix inmtx;
     D3DXQUATERNION a;
     GetFrame(0, a);
     D3DXMatrixRotationQuaternion(inmtx, &a);
-    inmtx.Pos() = pos0;
+    inmtx.pos = pos0;
     if (parent)
         start.EqMultiply(inmtx, parent->start);
     else
@@ -197,10 +196,10 @@ void Bone::BlendFrame(long frame, float kBlend, D3DXQUATERNION &res)
 void Bone::BuildMatrix()
 {
     // Turns
-    // matrix = a.BuildMatrix();
+    // matrix = a.Build();
     D3DXMatrixRotationQuaternion(matrix, &a);
-    matrix.Pos() = p;
+    matrix.pos = p;
     // Multiply by the parent matrix
     if (parent)
-        matrix.EqMultiply(CMatrix(matrix), parent->matrix);
+        matrix.EqMultiply(Matrix(matrix), parent->matrix);
 }

@@ -12,7 +12,7 @@ geometry file format
 
 #pragma pack(push, 1)
 
-#include "cvector.h"
+#include "Math3D/Vector.h"
 
 /*
 
@@ -61,7 +61,7 @@ struct RDF_HEAD
     long ntriangles;
     long nvrtbuffs;
 
-    CVECTOR bbox_size, bbox_center;
+    Vector bbox_size, bbox_center;
     float radius;
 };
 
@@ -125,10 +125,10 @@ struct RDF_LIGHT
     long name;
     float r, g, b;
     float range;
-    CVECTOR pos;
+    Vector pos;
     float atten[3];
     float inner, outer, falloff;
-    CVECTOR dir;
+    Vector dir;
 };
 
 //------------------------------------------------------------
@@ -177,7 +177,7 @@ struct RDF_OBJECT
     long group_name;
     long name;
     long flags;
-    CVECTOR center;
+    Vector center;
     float radius;
     long vertex_buff;
     long ntriangles, striangle, nvertices, svertex;
@@ -209,16 +209,16 @@ struct RDF_VERTEXBUFF
 //------------------------------------------------------------
 struct RDF_VERTEX0
 {
-    CVECTOR pos;
-    CVECTOR norm;
+    Vector pos;
+    Vector norm;
     long color;
     float tu0, tv0;
 };
 
 struct RDF_VERTEX1
 {
-    CVECTOR pos;
-    CVECTOR norm;
+    Vector pos;
+    Vector norm;
     long color;
     float tu0, tv0;
     float tu1, tv1;
@@ -226,8 +226,8 @@ struct RDF_VERTEX1
 
 struct RDF_VERTEX2
 {
-    CVECTOR pos;
-    CVECTOR norm;
+    Vector pos;
+    Vector norm;
     long color;
     float tu0, tv0;
     float tu1, tv1;
@@ -236,8 +236,8 @@ struct RDF_VERTEX2
 
 struct RDF_VERTEX3
 {
-    CVECTOR pos;
-    CVECTOR norm;
+    Vector pos;
+    Vector norm;
     long color;
     float tu0, tv0;
     float tu1, tv1;
@@ -248,10 +248,10 @@ struct RDF_VERTEX3
 //-------------------animated vertex---------------
 struct RDF_AVERTEX0
 {
-    CVECTOR pos;
+    Vector pos;
     float weight;
     unsigned long boneid;
-    CVECTOR norm;
+    Vector norm;
     long color;
     float tu0, tv0;
 };
@@ -271,11 +271,11 @@ struct RDF_BSPTRIANGLE
     unsigned char vindex[3][3];
 };
 
-#define RDF_BSPVERTEX CVECTOR
+#define RDF_BSPVERTEX Vector
 
 struct BSP_NODE
 {
-    CVECTOR norm;
+    Vector norm;
     float pd;
     unsigned long node : 22, sign : 1, left : 1, nfaces : 4, right : 2, type : 2;
 

@@ -8,7 +8,11 @@ Comments:
 trace and clip functions
 ******************************************************************************/
 #include "geom.h"
+
 #include <cstring>
+
+#include "math3d/Vectord.h"
+
 
 //---------------------------------------------------------------------------
 // Trace main procedure
@@ -19,11 +23,11 @@ float GEOM::Trace(VERTEX &start, VERTEX &finish)
 {
     if (!(rhead.flags & FLAGS_BSP_PRESENT))
         return 2.0f;
-    src = DVECTOR(start.x, start.y, start.z);
-    dst = DVECTOR(finish.x, finish.y, finish.z);
+    src = Vectord(start.x, start.y, start.z);
+    dst = Vectord(finish.x, finish.y, finish.z);
 
     double diss, dise, ssrc, sdst, dist;
-    DVECTOR dirvec, tp, V, AV;
+    Vectord dirvec, tp, V, AV;
     BSP_NODE *second;
     BSP_NODE *node;
     SAVAGE *stack;
@@ -135,8 +139,8 @@ rec_return:;
 
         // Tomas Moller and Ben Trumbore algorithm
 
-        DVECTOR a = vrt[vindex[1]] - vrt[vindex[0]];
-        DVECTOR b = vrt[vindex[2]] - vrt[vindex[0]];
+        Vectord a = vrt[vindex[1]] - vrt[vindex[0]];
+        Vectord b = vrt[vindex[2]] - vrt[vindex[0]];
         auto pvec = dirvec ^ b;
         const auto det = a | pvec;
 
@@ -193,12 +197,12 @@ rec_return:;
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-static CVECTOR poly[256];
+static Vector poly[256];
 
 long ClipByPlane(const GEOS::PLANE &plane, long n)
 {
     long inside = 0;
-    CVECTOR cr0, cr1;
+    Vector cr0, cr1;
     long i;
     for (i = 0; i < n; i++)
         if (plane.nrm.x * poly[i].x + plane.nrm.y * poly[i].y + plane.nrm.z * poly[i].z - plane.d < 0.0)
@@ -287,7 +291,7 @@ bool GEOM::Clip(const PLANE *planes, long nplanes, const VERTEX &center, float r
 {
     if (!(rhead.flags & FLAGS_BSP_PRESENT))
         return false;
-    const DVECTOR src(center.x, center.y, center.z);
+    const Vectord src(center.x, center.y, center.z);
 
     attempt++;
     if (attempt == 0)
@@ -323,7 +327,7 @@ rec_loop:;
                 {
                     const long vindex = (btrg[face].vindex[v][0] << 0) | (btrg[face].vindex[v][1] << 8) |
                                         (btrg[face].vindex[v][2] << 16);
-                    memcpy(&poly[v], &vrt[vindex], sizeof(CVECTOR));
+                    memcpy(&poly[v], &vrt[vindex], sizeof(Vector));
                 }
 
                 // clip polygon by planes

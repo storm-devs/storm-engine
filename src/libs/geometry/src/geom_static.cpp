@@ -13,6 +13,8 @@ Import library main file
 #include <cstring>
 #include <vector>
 
+#include "math3d/Vectord.h"
+
 namespace
 {
 std::vector<uint32_t> getColData(GEOM_SERVICE &srv, const std::string_view &file_name)
@@ -193,7 +195,7 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, long fl
         sroot = static_cast<BSP_NODE *>(srv.malloc(bhead.nnodes * sizeof(BSP_NODE)));
         srv.ReadFile(file, sroot, bhead.nnodes * sizeof(BSP_NODE));
 
-        vrt = static_cast<CVECTOR *>(srv.malloc(bhead.nvertices * sizeof(RDF_BSPVERTEX)));
+        vrt = static_cast<Vector *>(srv.malloc(bhead.nvertices * sizeof(RDF_BSPVERTEX)));
         srv.ReadFile(file, vrt, bhead.nvertices * sizeof(RDF_BSPVERTEX));
 
         btrg = static_cast<RDF_BSPTRIANGLE *>(srv.malloc(bhead.ntriangles * sizeof(RDF_BSPTRIANGLE)));
@@ -310,18 +312,18 @@ bool GEOM::GetCollisionDetails(TRACE_INFO &ti) const
         (btrg[traceid].vindex[2][0] << 0) | (btrg[traceid].vindex[2][1] << 8) | (btrg[traceid].vindex[2][2] << 16);
 
     const auto ve = dst - src;
-    const DVECTOR a = vrt[vindex[1]] - vrt[vindex[0]];
-    const DVECTOR b = vrt[vindex[2]] - vrt[vindex[0]];
+    const Vectord a = vrt[vindex[1]] - vrt[vindex[0]];
+    const Vectord b = vrt[vindex[2]] - vrt[vindex[0]];
     const auto pvec = ve ^ b;
     const double det = a | pvec;
     const double invdet = 1.0 / det;
-    const DVECTOR c = src - vrt[vindex[0]];
+    const Vectord c = src - vrt[vindex[0]];
 
     ti.a = static_cast<float>((c | pvec) * invdet);
     ti.b = static_cast<float>((ve | (c ^ a)) * invdet);
 
     // plane info
-    const DVECTOR nrm = !(a ^ b);
+    const Vectord nrm = !(a ^ b);
     const double pldist = nrm | vrt[vindex[0]];
     ti.plane.nrm.x = static_cast<float>(nrm.x);
     ti.plane.nrm.y = static_cast<float>(nrm.y);

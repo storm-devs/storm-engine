@@ -24,7 +24,7 @@ MODELR::MODELR()
     nAniVerts = 0;
 }
 
-CMatrix *bones;
+Matrix *bones;
 
 MODELR::~MODELR()
 {
@@ -69,7 +69,7 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
     GEOS::VERTEX0 *dst;
     dest_vb->Lock(0, 0, (VOID **)&dst, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
 
-    CMatrix mtx;
+    Matrix mtx;
     for (long v = 0; v < totVerts; v++)
     {
         // Vertex
@@ -93,9 +93,9 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
         mtx.matrix[13] = m1.matrix[13] * vrt.weight + m2.matrix[13] * wNeg;
         mtx.matrix[14] = m1.matrix[14] * vrt.weight + m2.matrix[14] * wNeg;
         // Position
-        ((CVECTOR &)dstVrt.pos) = mtx * (CVECTOR &)vrt.pos;
+        ((Vector &)dstVrt.pos) = mtx * (Vector &)vrt.pos;
         // Normal
-        ((CVECTOR &)dstVrt.nrm) = mtx * (CVECTOR &)vrt.nrm;
+        ((Vector &)dstVrt.nrm) = mtx * (Vector &)vrt.nrm;
         // Rest
         dstVrt.color = vrt.color;
         dstVrt.tu = vrt.tu0;
@@ -165,12 +165,12 @@ void MODELR::Realize(uint32_t Delta_Time)
         }
     }
 
-    CMatrix view, proj;
+    Matrix view, proj;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, proj);
     FindPlanes(view, proj);
 
-    CVECTOR tmp;
+    Vector tmp;
     root->Update(mtx, tmp);
 
     // if have animation - special render
@@ -253,7 +253,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
 {
     std::string str;
     const long code = message.Long();
-    CVECTOR tmp;
+    Vector tmp;
     switch (code)
     {
     case MSG_SEA_REFLECTION_DRAW:
@@ -269,10 +269,10 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
     break;
     case MSG_MODEL_SET_POSITION: {
         // Pos,vx,vy,vz
-        CVECTOR &vx = mtx.Vx();
-        CVECTOR &vy = mtx.Vy();
-        CVECTOR &vz = mtx.Vz();
-        CVECTOR &vpos = mtx.Pos();
+        Vector &vx = mtx.vx;
+        Vector &vy = mtx.vy;
+        Vector &vz = mtx.vz;
+        Vector &vpos = mtx.pos;
 
         vpos.x = message.Float();
         vpos.y = message.Float();
@@ -306,7 +306,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         NODER::gs = GeometyService;
         NODER::rs = rs;
         root = new NODER();
-        if (!root->Init(LightPath.c_str(), str.c_str(), "", CMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, nullptr,
+        if (!root->Init(LightPath.c_str(), str.c_str(), "", Matrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), mtx, nullptr,
                         lmPath.c_str()))
         {
             delete root;
@@ -314,7 +314,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
             EntityManager::EraseEntity(GetId());
             return 0;
         }
-        // CVECTOR tmp;
+        // Vector tmp;
         root->Update(mtx, tmp);
         return 1;
         // UNGUARD
@@ -387,15 +387,15 @@ NODE *MODELR::FindNode(const char *cNodeName)
 
 void MODELR::Update()
 {
-    CVECTOR tmp;
+    Vector tmp;
     static_cast<NODER *>(root)->Update(mtx, tmp);
 }
 
 //-------------------------------------------------------------------
 // clip functions
 //-------------------------------------------------------------------
-const PLANE *clip_p;
-const CVECTOR *clip_c;
+const Plane *clip_p;
+const Vector *clip_c;
 float clip_r;
 ADD_POLYGON_FUNC clip_ap;
 GEOS::ADD_POLYGON_FUNC clip_geosap;
@@ -403,7 +403,7 @@ long clip_nps;
 
 bool AddPolygon(const GEOS::VERTEX *vr, long nv);
 //-------------------------------------------------------------------
-bool MODELR::Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+bool MODELR::Clip(const Plane *planes, long nplanes, const Vector &center, float radius, ADD_POLYGON_FUNC addpoly)
 {
     clip_p = planes;
     clip_nps = nplanes;
@@ -437,22 +437,22 @@ bool MODELR::GetCollideTriangle(TRIANGLE &triangle)
     GEOS::TRACE_INFO ti;
     if (colideNode->geo->GetCollisionDetails(ti) == false)
         return false;
-    triangle.vrt[0] = colideNode->glob_mtx * CVECTOR(ti.vrt[0].x, ti.vrt[0].y, ti.vrt[0].z);
-    triangle.vrt[1] = colideNode->glob_mtx * CVECTOR(ti.vrt[1].x, ti.vrt[1].y, ti.vrt[1].z);
-    triangle.vrt[2] = colideNode->glob_mtx * CVECTOR(ti.vrt[2].x, ti.vrt[2].y, ti.vrt[2].z);
+    triangle.vrt[0] = colideNode->glob_mtx * Vector(ti.vrt[0].x, ti.vrt[0].y, ti.vrt[0].z);
+    triangle.vrt[1] = colideNode->glob_mtx * Vector(ti.vrt[1].x, ti.vrt[1].y, ti.vrt[1].z);
+    triangle.vrt[2] = colideNode->glob_mtx * Vector(ti.vrt[2].x, ti.vrt[2].y, ti.vrt[2].z);
     return true;
 }
 
 //-------------------------------------------------------------------
-CVECTOR cold[1024 * 1024];
+Vector cold[1024 * 1024];
 
-float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
+float MODELR::Trace(const Vector &src, const Vector &dst)
 {
     // collision with skinned geometry
     if (ani)
     {
         // check for bounding spheres intersection
-        CVECTOR lmn = dst - src;
+        Vector lmn = dst - src;
         float dist2ray2 = ~((root->glob_mtx * root->center - src) ^ lmn);
         float dlmn = ~(lmn);
         // hierarchy test
@@ -464,10 +464,9 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
         // get bones
         bones = &ani->GetAnimationMatrix(0);
 
-        CVECTOR _src, _dst;
-        root->glob_mtx.MulToInv(src, _src);
-        root->glob_mtx.MulToInv(dst, _dst);
-        CVECTOR dirvec = _dst - _src;
+        Vector src_ = root->glob_mtx.MulVertexByInverse(src);
+        Vector dst_ = root->glob_mtx.MulVertexByInverse(dst);
+        Vector dirvec = dst_ - src_;
 
         float bd = 2.0f;
         GEOS::INFO gi;
@@ -538,13 +537,13 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
             // transform vertices and trace
             for (long v = 0; v < gavb.nvertices; v++)
             {
-                cold[v] = *(CVECTOR *)(&gsrc->pos);
-                CMatrix &m1 = bones[gsrc->boneid & 0xff];
-                CMatrix &m2 = bones[(gsrc->boneid >> 8) & 0xff];
+                cold[v] = *(Vector *)(&gsrc->pos);
+                Matrix &m1 = bones[gsrc->boneid & 0xff];
+                Matrix &m2 = bones[(gsrc->boneid >> 8) & 0xff];
 
-                CVECTOR pos(*(CVECTOR *)(&gsrc->pos));
-                CVECTOR v1 = m1 * pos;
-                CVECTOR v2 = m2 * pos;
+                Vector pos(*(Vector *)(&gsrc->pos));
+                Vector v1 = m1 * pos;
+                Vector v2 = m2 * pos;
                 cold[v].x = -(gsrc->weight * v1.x + (1.0f - gsrc->weight) * v2.x);
                 cold[v].y = gsrc->weight * v1.y + (1.0f - gsrc->weight) * v2.y;
                 cold[v].z = gsrc->weight * v1.z + (1.0f - gsrc->weight) * v2.z;
@@ -564,18 +563,18 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
                 {
                     long t = gt * 3 + go.striangle;
                     // Tomas Moller and Ben Trumbore algorithm
-                    CVECTOR a = cold[idxBuff[t + 1] + go.start_vertex] - cold[idxBuff[t + 0] + go.start_vertex];
-                    CVECTOR b = cold[idxBuff[t + 2] + go.start_vertex] - cold[idxBuff[t + 0] + go.start_vertex];
-                    CVECTOR pvec = dirvec ^ b;
+                    Vector a = cold[idxBuff[t + 1] + go.start_vertex] - cold[idxBuff[t + 0] + go.start_vertex];
+                    Vector b = cold[idxBuff[t + 2] + go.start_vertex] - cold[idxBuff[t + 0] + go.start_vertex];
+                    Vector pvec = dirvec ^ b;
                     float det = a | pvec;
                     float invdet = 1.0f / det;
 
-                    CVECTOR c = _src - cold[idxBuff[t + 0] + go.start_vertex];
+                    Vector c = src_ - cold[idxBuff[t + 0] + go.start_vertex];
                     float U = (c | pvec) * invdet;
                     if (U < 0.0f || U > 1.0)
                         continue;
 
-                    CVECTOR qvec = c ^ a;
+                    Vector qvec = c ^ a;
                     float V = (dirvec | qvec) * invdet;
                     if (V < 0.0f || U + V > 1.0)
                         continue;
@@ -602,9 +601,9 @@ NODE *MODELR::GetCollideNode()
     return colideNode;
 }
 
-void MODELR::FindPlanes(const CMatrix &view, const CMatrix &proj)
+void MODELR::FindPlanes(const Matrix &view, const Matrix &proj)
 {
-    CVECTOR v[4];
+    Vector v[4];
     // left
     v[0].x = proj.m[0][0];
     v[0].y = 0.0f;
@@ -626,7 +625,7 @@ void MODELR::FindPlanes(const CMatrix &view, const CMatrix &proj)
     v[2] = !v[2];
     v[3] = !v[3];
 
-    CVECTOR pos;
+    Vector pos;
 
     pos.x = -view.m[3][0] * view.m[0][0] - view.m[3][1] * view.m[0][1] - view.m[3][2] * view.m[0][2];
     pos.y = -view.m[3][0] * view.m[1][0] - view.m[3][1] * view.m[1][1] - view.m[3][2] * view.m[1][2];

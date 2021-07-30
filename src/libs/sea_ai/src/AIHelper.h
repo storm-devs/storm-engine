@@ -57,7 +57,7 @@ class AIHelper
     uint32_t GetRelationSafe(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const;
 
     static void Print(float x, float y, float fScale, const char *pFormat, ...);
-    static void Print3D(CVECTOR vPos, float dy, float fScale, const char *pFormat, ...);
+    static void Print3D(Vector vPos, float dy, float fScale, const char *pFormat, ...);
 
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);

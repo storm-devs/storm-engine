@@ -303,10 +303,10 @@ void ModelArray::Update(float dltTime)
         }
         if (model[i].rotator)
         {
-            CMatrix mtr(model[i].rotator->rx * dltTime, model[i].rotator->ry * dltTime, model[i].rotator->rz * dltTime);
+            Matrix mtr(model[i].rotator->rx * dltTime, model[i].rotator->ry * dltTime, model[i].rotator->rz * dltTime);
             auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[i].id));
             if (mdl)
-                mdl->mtx = CMatrix(mtr, mdl->mtx);
+                mdl->mtx = Matrix(mtr, mdl->mtx);
         }
     }
 }
@@ -354,7 +354,7 @@ uint32_t ModelArray::CalcHashString(const char *str)
 
 void ModelArray::UVSlider::Set(MODEL *model, VDX9RENDER *rs)
 {
-    static CMatrix mtx;
+    static Matrix mtx;
     mtx.m[2][0] = u0;
     mtx.m[2][1] = v0;
     rs->SetTransform(D3DTS_TEXTURE0, mtx);
@@ -367,7 +367,7 @@ void ModelArray::UVSlider::Set(MODEL *model, VDX9RENDER *rs)
 
 void ModelArray::UVSlider::Restore(MODEL *model, VDX9RENDER *rs)
 {
-    static CMatrix mtx;
+    static Matrix mtx;
     rs->SetTransform(D3DTS_TEXTURE0, mtx);
     rs->SetTransform(D3DTS_TEXTURE1, mtx);
     rs->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
@@ -376,17 +376,17 @@ void ModelArray::UVSlider::Restore(MODEL *model, VDX9RENDER *rs)
 
 void ModelArray::Relection::Set(MODEL *model, VDX9RENDER *rs)
 {
-    CMatrix mtx;
+    Matrix mtx;
     rs->GetTransform(D3DTS_VIEW, mtx);
     mtx.Transposition();
-    mtx.Pos() = 0.0f;
+    mtx.pos = 0.0f;
     rs->SetTransform(D3DTS_TEXTURE1, mtx);
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, tfactor);
 }
 
 void ModelArray::Relection::Restore(MODEL *model, VDX9RENDER *rs)
 {
-    const CMatrix mtx;
+    const Matrix mtx;
     rs->SetTransform(D3DTS_TEXTURE1, mtx);
 }
 
@@ -411,7 +411,7 @@ void ModelArray::UpdatePath(std::string &path)
 }
 
 // Check the visibility of two points
-bool ModelArray::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
+bool ModelArray::VisibleTest(const Vector &p1, const Vector &p2)
 {
     for (long i = 0; i < numModels; i++)
     {
@@ -426,7 +426,7 @@ bool ModelArray::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
 }
 
 // Trace the ray through the location
-float ModelArray::Trace(const CVECTOR &src, const CVECTOR &dst)
+float ModelArray::Trace(const Vector &src, const Vector &dst)
 {
     isHavecTrg = false;
     auto k = 2.0f;
@@ -452,7 +452,7 @@ bool ModelArray::GetCollideTriangle(TRIANGLE &trg) const
     return isHavecTrg;
 }
 
-void ModelArray::Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num))
+void ModelArray::Clip(Plane *p, long numPlanes, Vector &cnt, float rad, bool (*fnc)(const Vector *vtx, long num))
 {
     for (long i = 0; i < numModels; i++)
     {

@@ -12,6 +12,8 @@
 
 #include "WdmRenderModel.h"
 
+#include "WdmObjects.h"
+
 #define WDM_MODEL_TECH "WdmModelDrawStd"
 #define WDM_MODEL_TECHA "WdmModelDrawStdA"
 
@@ -42,7 +44,7 @@ bool WdmRenderModel::Load(const char *modelName)
     {
         GEOS::INFO ginfo;
         geo->GetInfo(ginfo);
-        center = CVECTOR(ginfo.boxcenter.x, ginfo.boxcenter.y, ginfo.boxcenter.z);
+        center = Vector(ginfo.boxcenter.x, ginfo.boxcenter.y, ginfo.boxcenter.z);
         radius = sqrtf(ginfo.boxsize.x * ginfo.boxsize.x + ginfo.boxsize.z * ginfo.boxsize.z) * 0.51f;
         return true;
     }
@@ -73,8 +75,8 @@ void WdmRenderModel::LRender(VDX9RENDER *rs)
     /*
     if(drawCircle)
     {
-      CMatrix m(mtx);
-      m.Pos() = m*center;
+      Matrix m(mtx);
+      m.pos = m*center;
       wdmObjects->DrawCircle(m, radius, 0x2f0fffff);
       //wdmObjects->DrawCircle(mtx, modelRadius, 0x2fffff0f);
     }*/
@@ -133,13 +135,13 @@ void WdmRenderModel::Render(VDX9RENDER *rs) const
     }
     // Check for visibility
     auto *const plane = rs->GetPlanes();
-    static CMatrix mtx;
+    static Matrix mtx;
     rs->GetTransform(D3DTS_WORLD, mtx);
     const auto v = mtx * center;
     for (long i = 0; i < 4; i++)
     {
         auto &p = plane[i];
-        const auto dist = v.x * p.Nx + v.y * p.Ny + v.z * p.Nz - p.D;
+        const auto dist = v.x * p.n.x + v.y * p.n.y + v.z * p.n.z - p.D;
         if (dist < -radius)
             return;
     }

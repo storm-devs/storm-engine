@@ -16,7 +16,7 @@
 
 static const char *RIGGING_INI_FILE = "resource\\ini\\rigging.ini";
 
-void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);
+void sailPrint(VDX9RENDER *rs, const Vector &pos3D, float rad, long line, const char *format, ...);
 int traceSail = -1;
 long g_iBallOwnerIdx = -1;
 
@@ -375,7 +375,7 @@ void SAIL::Execute(uint32_t Delta_Time)
             if (cmod == nullptr)
                 continue;
             gdata[i].boxCenter = gdata[i].boxSize = slist[gdata[i].sailIdx[0]]->ss.boundSphere.rc;
-            // CVECTOR(0.f,0.f,0.f);
+            // Vector(0.f,0.f,0.f);
             gdata[i].speed_c = 0.f;
             gdata[i].maxSpeed = 0.f;
             gdata[i].curHole = 0;
@@ -388,13 +388,13 @@ void SAIL::Execute(uint32_t Delta_Time)
                 gdata[i].fRollingSpeed = pvdat->GetFloat() * ROLLINGSPEED;
         }
 
-        CVECTOR pos, ang;
+        Vector pos, ang;
         float perspect;
         RDTSC_B(rtime);
         RenderService->GetCamera(pos, ang, perspect);
-        CMatrix tmpMtx;
-        tmpMtx.BuildMatrix(ang);
-        CVECTOR vCamDirect = tmpMtx * CVECTOR(0, 0, 1.f);
+        Matrix tmpMtx;
+        tmpMtx.Build(ang);
+        Vector vCamDirect = tmpMtx * Vector(0, 0, 1.f);
         float minCos = cosf(atanf(perspect));
 
         for (i = 0; i < sailQuantity; i++)
@@ -432,7 +432,7 @@ void SAIL::Execute(uint32_t Delta_Time)
                 //                    if(!slist[i]->ss.rollingSail)
                 //                        slist[i]->SetRolling(gdata[slist[i]->HostNum].bFinalSailUp);
                 // sail bounding box calculation
-                CVECTOR vtmp = slist[i]->ss.boundSphere.rc - slist[i]->ss.boundSphere.r;
+                Vector vtmp = slist[i]->ss.boundSphere.rc - slist[i]->ss.boundSphere.r;
                 int itmp = slist[i]->HostNum;
                 if (gdata[itmp].boxCenter.x > vtmp.x)
                     gdata[itmp].boxCenter.x = vtmp.x;
@@ -536,7 +536,7 @@ void SAIL::Realize(uint32_t Delta_Time)
             return;
         RenderService->SetMaterial(mat);
         RenderService->TextureSet(2, texl);
-        CMatrix matv, matp, matc;
+        Matrix matv, matp, matc;
         RenderService->GetTransform(D3DTS_VIEW, (D3DXMATRIX *)&matv);
         RenderService->GetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&matp);
         matc = matv * matp;
@@ -741,8 +741,8 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
         nod = (NODE *)message.Pointer();
         int gNum;
         gNum = message.Long();
-        CVECTOR *pos;
-        pos = (CVECTOR *)message.Pointer();
+        Vector *pos;
+        pos = (Vector *)message.Pointer();
         if (pos == nullptr)
             break;
         int ropenum;
@@ -770,7 +770,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
                 so->sailtrope.pnttie[posNum] = true;
                 so->sailtrope.pPos[posNum] = pos;
 
-                CVECTOR epos;
+                Vector epos;
                 if (so->ss.turningSail && posNum != 0) // setting for turning sails only
                     if (tmpEI = EntityManager::GetEntityId("rope"))
                         if (so->sailtrope.rrs[0] == nullptr)
@@ -778,7 +778,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
                             so->sailtrope.rrs[0] = new ROTATEROPEDSAIL;
                             so->sailtrope.rrs[0]->ropenum = ropenum;
                             so->sailtrope.rrs[0]->tiePoint = posNum;
-                            CVECTOR bpos;
+                            Vector bpos;
                             switch (posNum)
                             {
                             case 1:
@@ -797,7 +797,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
                             so->sailtrope.rrs[0]->r2 = sqrtf(~(*pos - epos));
                             if (so->ss.eSailType != SAIL_TREANGLE)
                             {
-                                CVECTOR tmpv;
+                                Vector tmpv;
                                 tmpv = so->sgeo.dVv + so->sgeo.ddVv * static_cast<float>(SAIL_ROW_MAX);
                                 tmpv = so->sgeo.dVv + so->sgeo.ddVv * static_cast<float>(SAIL_ROW_MAX);
                                 tmpv = (so->sailtrope.rrs[0]->r1) * (!tmpv);
@@ -811,7 +811,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
                             so->sailtrope.rrs[1] = new ROTATEROPEDSAIL;
                             so->sailtrope.rrs[1]->ropenum = ropenum;
                             so->sailtrope.rrs[1]->tiePoint = posNum;
-                            CVECTOR bpos;
+                            Vector bpos;
                             switch (posNum)
                             {
                             case 1:
@@ -830,7 +830,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
                             so->sailtrope.rrs[1]->r2 = sqrtf(~(*pos - epos));
                             if (so->ss.eSailType != SAIL_TREANGLE)
                             {
-                                CVECTOR tmpv;
+                                Vector tmpv;
                                 tmpv = so->sgeo.dVv + so->sgeo.ddVv * static_cast<float>(SAIL_ROW_MAX);
                                 tmpv = (so->sailtrope.rrs[1]->r1) * (!tmpv);
                                 tmpv = *pos - tmpv;
@@ -1049,7 +1049,7 @@ void SAIL::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
         cs->groupNum = grNum; // write identify info
         cs->pMatWorld = &nod->glob_mtx;
         cs->curSpeed = 0;
-        cs->sailWind = CVECTOR(0.f, 0.f, 0.f);
+        cs->sailWind = Vector(0.f, 0.f, 0.f);
         cs->bRolling = !bSailUp;
 
         cs->mastNum = 0;
@@ -1114,7 +1114,7 @@ void SAIL::AddSailLabel(GEOS::LABEL &lbl, NODE *nod, bool bSailUp)
         cs->ss.turningSail = !strncmp(nod->GetName(), "rey_", 4);
     }
 
-    CVECTOR vtmp;
+    Vector vtmp;
     vtmp.x = lbl.m[3][0]; //+nod->glob_mtx.matrix[3];
     vtmp.y = lbl.m[3][1]; //+nod->glob_mtx.matrix[7];
     vtmp.z = lbl.m[3][2]; //+nod->glob_mtx.matrix[11];
@@ -1439,7 +1439,7 @@ void SAIL::LoadSailIni()
     // UNGUARD
 }
 
-float SAIL::Trace(const CVECTOR &src, const CVECTOR &dst)
+float SAIL::Trace(const Vector &src, const Vector &dst)
 {
     float retVal = 2.f;
     if (!bUse)
@@ -1449,8 +1449,8 @@ float SAIL::Trace(const CVECTOR &src, const CVECTOR &dst)
     {
         if (gdata[i].bDeleted)
             continue;
-        const CVECTOR minp = gdata[i].boxCenter - gdata[i].boxSize;
-        const CVECTOR maxp = gdata[i].boxCenter + gdata[i].boxSize;
+        const Vector minp = gdata[i].boxCenter - gdata[i].boxSize;
+        const Vector maxp = gdata[i].boxCenter + gdata[i].boxSize;
 
         if (!(src.x <= maxp.x && src.x >= minp.x && src.y <= maxp.y && src.y >= minp.y && src.z <= maxp.z &&
               src.z >= minp.z) &&
@@ -1458,7 +1458,7 @@ float SAIL::Trace(const CVECTOR &src, const CVECTOR &dst)
               dst.z >= minp.z))
         {
             bool bYesTrace = false;
-            CVECTOR vmed;
+            Vector vmed;
             // section by X:
             if (src.x < minp.x)
             {
@@ -1551,7 +1551,7 @@ bool SAIL::GetCollideTriangle(struct TRIANGLE &trg)
     return false;
 }
 
-bool SAIL::Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+bool SAIL::Clip(const Plane *planes, long nplanes, const Vector &center, float radius, ADD_POLYGON_FUNC addpoly)
 {
     return false;
 }
@@ -1577,13 +1577,13 @@ void SAIL::FirstRun()
                     if (slist[sn]->sailtrope.rrs[i])
                     {
                         const int tieNum = slist[sn]->sailtrope.rrs[i]->tiePoint;
-                        CVECTOR endVect;
+                        Vector endVect;
                         static_cast<ROPE_BASE *>(EntityManager::GetEntityPointer(ropeEI))
                             ->GetEndPoint(&endVect, slist[sn]->sailtrope.rrs[i]->ropenum,
                                           gdata[slist[sn]->HostNum].modelEI);
-                        CVECTOR medVect;
+                        Vector medVect;
                         medVect = slist[sn]->ss.hardPoints[tieNum];
-                        CVECTOR begVect;
+                        Vector begVect;
                         switch (tieNum)
                         {
                         case 1:
@@ -1630,7 +1630,7 @@ void SAIL::FirstRun()
     bUse = sailQuantity > 0;
 }
 
-float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst)
+float SAIL::Cannon_Trace(long iBallOwner, const Vector &src, const Vector &dst)
 {
     bCannonTrace = true;
     g_iBallOwnerIdx = iBallOwner;
@@ -1644,7 +1644,7 @@ float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst
     {
         if (!slist[traceSail]->bFreeSail && !gdata[slist[traceSail]->HostNum].bDeleted)
         {
-            const CVECTOR damagePoint = src + (dst - src) * retVal;
+            const Vector damagePoint = src + (dst - src) * retVal;
             auto *pvai =
                 static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[slist[traceSail]->HostNum].shipEI));
             ATTRIBUTES *pA = nullptr;
@@ -1704,7 +1704,7 @@ void SAIL::DoSailToNewHost(entid_t newModelEI, entid_t newHostEI, int grNum, NOD
         gdata[gn].bYesShip = false;
         gdata[gn].bDeleted = false;
         gdata[gn].sailQuantity = 0;
-        gdata[gn].boxCenter = gdata[gn].boxSize = CVECTOR(0.f, 0.f, 0.f);
+        gdata[gn].boxCenter = gdata[gn].boxSize = Vector(0.f, 0.f, 0.f);
         gdata[gn].boxRadius = 0.f;
         gdata[gn].shipEI = newHostEI;
         gdata[gn].speed_m = 0.f;
@@ -2030,8 +2030,8 @@ void SAIL::DoNoRopeSailToNewHost(entid_t newModel, entid_t newHost, entid_t oldH
                             if (slist[sn]->ss.eSailType == SAIL_TREANGLE)
                                 iMax = 3;
                             for (int j = 0; j < iMax; j++)
-                                nroot->glob_mtx.MulToInv(slist[sn]->hostNode->glob_mtx * slist[sn]->ss.hardPoints[j],
-                                                         slist[sn]->ss.hardPoints[j]);
+                                slist[sn]->ss.hardPoints[j] = nroot->glob_mtx.MulVertexByInverse(
+                                    slist[sn]->hostNode->glob_mtx * slist[sn]->ss.hardPoints[j]);
                             slist[sn]->hostNode = nroot;
                             slist[sn]->pMatWorld = &nroot->glob_mtx;
                         }
@@ -2040,29 +2040,29 @@ void SAIL::DoNoRopeSailToNewHost(entid_t newModel, entid_t newHost, entid_t oldH
     }
 }
 
-void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...)
+void sailPrint(VDX9RENDER *rs, const Vector &pos3D, float rad, long line, const char *format, ...)
 {
     static char buf[256];
     // print to the buffer
     long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
     // Looking for a point position on the screen
-    static CMatrix mtx, view, prj;
+    static Matrix mtx, view, prj;
     static D3DVIEWPORT9 vp;
-    MTX_PRJ_VECTOR vrt;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, prj);
     mtx.EqMultiply(view, prj);
     view.Transposition();
-    float dist = ~(pos3D - view.Pos());
+    float dist = ~(pos3D - view.pos);
     if (dist >= rad * rad)
         return;
-    const float d = view.Vz() | view.Pos();
-    if ((pos3D | view.Vz()) < d)
+    const float d = view.vz | view.pos;
+    if ((pos3D | view.vz) < d)
         return;
     rs->GetViewport(&vp);
-    mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
-                   sizeof(MTX_PRJ_VECTOR));
+
+    Vector4 vrt;
+    mtx.Projection(&vrt, &pos3D, 1, vp.Width * 0.5f, vp.Height * 0.5f);
     // Looking for a position
     const long fh = rs->CharHeight(FONT_DEFAULT) / 2;
     vrt.y -= (line + 0.5f) * fh;

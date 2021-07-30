@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Matrix.h"
 #include "defines.h"
 #include "dx9render.h"
 #include <string>
@@ -148,18 +147,18 @@ class SailorsPoints
 
 //-------------------------------------------------------------------------------------
 
-inline float Dest(const CVECTOR &_v1, const CVECTOR &_v2)
+inline float Dest(const Vector &_v1, const Vector &_v2)
 {
     return static_cast<float>(sqrt((_v2.x - _v1.x) * (_v2.x - _v1.x) + (_v2.y - _v1.y) * (_v2.y - _v1.y) +
                                    (_v2.z - _v1.z) * (_v2.z - _v1.z)));
 };
 
-inline bool Dest(const CVECTOR &_v1, const CVECTOR &_v2, float d)
+inline bool Dest(const Vector &_v1, const Vector &_v2, float d)
 {
     return (fabs(_v2.x - _v1.x) < d && fabs(_v2.y - _v1.y) < d && fabs(_v2.z - _v1.z) < d);
 };
 
-inline float Vector2Angle(const CVECTOR &_v)
+inline float Vector2Angle(const Vector &_v)
 {
     auto result = static_cast<float>(atan2(_v.x, _v.z));
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Cvector.h"
 #include "entity.h"
 
 #define MAX_FLOAT_PARAMS 128
@@ -81,6 +80,7 @@
 #define whs_sunglow_texture 0
 #define whs_rainbow_texture 1
 
+class Vector;
 class WEATHER_BASE : public Entity
 {
   public:
@@ -89,8 +89,8 @@ class WEATHER_BASE : public Entity
     ~WEATHER_BASE() override{};
 
     virtual long GetLong(uint32_t dwCode) = 0;
-    virtual uint32_t GetColor(uint32_t, CVECTOR *) = 0;
+    virtual uint32_t GetColor(uint32_t, Vector *) = 0;
     virtual uint32_t GetColor(uint32_t) = 0;
     virtual float GetFloat(uint32_t) = 0;
-    virtual void GetVector(uint32_t, CVECTOR *) = 0;
+    virtual void GetVector(uint32_t, Vector *) = 0;
 };

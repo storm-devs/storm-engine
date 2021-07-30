@@ -3,14 +3,13 @@
 #include "collide.h"
 #include "dx9render.h"
 #include "model.h"
-#include "vmodule_api.h"
 
 class Shadow : public Entity
 {
     VDX9RENDER *rs;
     COLLIDE *col;
-    void FindPlanes(const CMatrix &view, const CMatrix &proj);
-    PLANE planes[6];
+    void FindPlanes(const Matrix &view, const Matrix &proj);
+    Plane planes[6];
     entid_t entity;
     void Smooth();
     float shading;
@@ -21,7 +20,7 @@ class Shadow : public Entity
 
     struct SHADOW_VERTEX
     {
-        CVECTOR pos;
+        Vector pos;
         float tu, tv;
     };
 

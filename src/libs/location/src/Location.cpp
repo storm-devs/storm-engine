@@ -11,17 +11,14 @@
 #include "Location.h"
 
 #include "core.h"
-
 #include "Character.h"
 #include "Grass.h"
 #include "Lights.h"
-
-#include "CVector4.h"
 #include "defines.h"
 #include "shared/messages.h"
 
 float fCausticScale, fCausticDelta, fFogDensity, fCausticDistance;
-CVECTOR4 v4CausticColor;
+Vector4 v4CausticColor;
 bool bCausticEnable = false;
 float fCausticFrame = 0.0f;
 long iCausticTex[32];
@@ -414,7 +411,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         u0 = message.Float();
         v0 = message.Float();
         u1 = message.Float();
-        lights->AddLight(i, CVECTOR(u0, v0, u1));
+        lights->AddLight(i, Vector(u0, v0, u1));
         return true;
     }
     case MSG_LOCATION_EX_MSG: {
@@ -501,7 +498,7 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
         const auto locIndex = locators[j]->FindByName(label.name);
         if (locIndex < 0)
         {
-            auto &mtxx = *((CMatrix *)label.m);
+            auto &mtxx = *((Matrix *)label.m);
             for (long me = 0; me < 16; me++)
                 if (_isnan(mtxx.matrix[me]))
                 {
@@ -514,7 +511,7 @@ long Location::LoadStaticModel(const char *modelName, const char *tech, long lev
         }
         else
         {
-            locators[j]->SetNewMatrix(locIndex, *((CMatrix *)label.m));
+            locators[j]->SetNewMatrix(locIndex, *((Matrix *)label.m));
         }
     }
 
@@ -649,7 +646,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
             EntityManager::AddToLayer(EXECUTE, blood, 65540);
             EntityManager::AddToLayer(REALIZE, blood, 65540);
         }
-        CVECTOR vPos;
+        Vector vPos;
         vPos.x = message.Float();
         vPos.y = message.Float();
         vPos.z = message.Float();
@@ -710,7 +707,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
 
 void Location::UpdateLocators()
 {
-    CMatrix mtx;
+    Matrix mtx;
     if (!AttributesPointer)
         return;
     ATTRIBUTES *atr = AttributesPointer->FindAClass(AttributesPointer, "locators");
@@ -740,17 +737,17 @@ void Location::UpdateLocators()
                         // Matrix
                         locators[i]->GetLocatorPos(j, mtx);
                         // Pos
-                        a->SetAttributeUseFloat("x", mtx.Pos().x);
-                        a->SetAttributeUseFloat("y", mtx.Pos().y);
-                        a->SetAttributeUseFloat("z", mtx.Pos().z);
+                        a->SetAttributeUseFloat("x", mtx.pos.x);
+                        a->SetAttributeUseFloat("y", mtx.pos.y);
+                        a->SetAttributeUseFloat("z", mtx.pos.z);
                         // vz
                         a->CreateSubAClass(a, "vz");
                         ATTRIBUTES *v = a->FindAClass(a, "vz");
                         if (v)
                         {
-                            v->SetAttributeUseFloat("x", mtx.Vz().x);
-                            v->SetAttributeUseFloat("y", mtx.Vz().y);
-                            v->SetAttributeUseFloat("z", mtx.Vz().z);
+                            v->SetAttributeUseFloat("x", mtx.vz.x);
+                            v->SetAttributeUseFloat("y", mtx.vz.y);
+                            v->SetAttributeUseFloat("z", mtx.vz.z);
                         }
                         else
                         {
@@ -762,9 +759,9 @@ void Location::UpdateLocators()
                         v = a->FindAClass(a, "vy");
                         if (v)
                         {
-                            v->SetAttributeUseFloat("x", mtx.Vy().x);
-                            v->SetAttributeUseFloat("y", mtx.Vy().y);
-                            v->SetAttributeUseFloat("z", mtx.Vy().z);
+                            v->SetAttributeUseFloat("x", mtx.vy.x);
+                            v->SetAttributeUseFloat("y", mtx.vy.y);
+                            v->SetAttributeUseFloat("z", mtx.vy.z);
                         }
                         else
                         {
@@ -776,9 +773,9 @@ void Location::UpdateLocators()
                         v = a->FindAClass(a, "vx");
                         if (v)
                         {
-                            v->SetAttributeUseFloat("x", mtx.Vx().x);
-                            v->SetAttributeUseFloat("y", mtx.Vx().y);
-                            v->SetAttributeUseFloat("z", mtx.Vx().z);
+                            v->SetAttributeUseFloat("x", mtx.vx.x);
+                            v->SetAttributeUseFloat("y", mtx.vx.y);
+                            v->SetAttributeUseFloat("z", mtx.vx.z);
                         }
                         else
                         {
@@ -812,7 +809,7 @@ void Location::DrawLocators(LocatorArray *la)
         // States
         if (!sphereNumTrgs)
             CreateSphere();
-        CMatrix mPos;
+        Matrix mPos;
         // Remove textures
         rs->TextureSet(0, -1);
         rs->TextureSet(1, -1);
@@ -846,7 +843,7 @@ void Location::DrawLocators(LocatorArray *la)
             }
     }
     // sign
-    static CMatrix mtx, view, prj;
+    static Matrix mtx, view, prj;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, prj);
     mtx.EqMultiply(view, prj);
@@ -855,12 +852,11 @@ void Location::DrawLocators(LocatorArray *la)
     rs->GetViewport(&vp);
     const float w = vp.Width * 0.5f;
     const float h = vp.Height * 0.5f;
-    CVECTOR lvrt;
-    MTX_PRJ_VECTOR vrt;
+    Vector lvrt;
     const long fh = rs->CharHeight(FONT_DEFAULT);
     const long gw = rs->StringWidth(la->GetGroupName()) / 2;
     view.Transposition();
-    const float d = view.Vz() | view.Pos();
+    const float d = view.vz | view.pos;
     const float viewDst = la->viewDist * la->viewDist;
     // Draw
     for (long i = 0; i < la->Num(); i++)
@@ -872,27 +868,28 @@ void Location::DrawLocators(LocatorArray *la)
             lbh = 1.5f;
         // writing a text
         la->GetLocatorPos(i, lvrt.x, lvrt.y, lvrt.z);
-        if ((lvrt | view.Vz()) < d)
+        if ((lvrt | view.vz) < d)
             continue;
-        if (~(lvrt - view.Pos()) > viewDst)
+        if (~(lvrt - view.pos) > viewDst)
             continue;
         lvrt.y += lbh;
-        mtx.Projection(&lvrt, &vrt, 1, w, h, sizeof(CVECTOR), sizeof(MTX_PRJ_VECTOR));
+        Vector4 vrt;
+        mtx.Projection(&vrt, & lvrt, 1, w, h);
         rs->Print(static_cast<long>(vrt.x - gw), static_cast<long>(vrt.y - fh), la->GetGroupName());
         const long lw = rs->StringWidth((char *)la->LocatorName(i)) / 2;
         rs->Print(static_cast<long>(vrt.x - lw), static_cast<long>(vrt.y), (char *)la->LocatorName(i));
     }
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
 }
 
-void Location::DrawLine(const CVECTOR &s, uint32_t cs, const CVECTOR &d, uint32_t cd, bool useZ) const
+void Location::DrawLine(const Vector &s, uint32_t cs, const Vector &d, uint32_t cd, bool useZ) const
 {
     SphVertex lineVertex[2];
     lineVertex[0].v = s;
     lineVertex[0].c = cs;
     lineVertex[1].v = d;
     lineVertex[1].c = cd;
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
     // Remove textures
     rs->TextureSet(0, -1);
     rs->TextureSet(1, -1);
@@ -911,7 +908,7 @@ void Location::CreateSphere()
 {
 #define CalcKColor(ind)                                                                                                \
     {                                                                                                                  \
-        kColor = light | !CVECTOR(sphereVertex[t * 3 + ind].v.x, sphereVertex[t * 3 + ind].v.y,                        \
+        kColor = light | !Vector(sphereVertex[t * 3 + ind].v.x, sphereVertex[t * 3 + ind].v.y,                        \
                                   sphereVertex[t * 3 + ind].v.z);                                                      \
         if (kColor < 0.0f)                                                                                             \
             kColor = 0.0f;                                                                                             \
@@ -931,7 +928,7 @@ void Location::CreateSphere()
     sphereNumTrgs = a1 * a2 * 2;
     sphereVertex = new SphVertex[sphereNumTrgs * 6];
 
-    const CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
+    const Vector light = !Vector(0.0f, 0.0f, 1.0f);
     float kColor;
     // Filling the vertices
     long t = 0;
@@ -993,7 +990,7 @@ bool Location::IsDebugView()
 }
 
 // Write text
-void Location::Print(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
+void Location::Print(const Vector &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
                      const char *format, ...) const
 {
     static char buf[256];
@@ -1002,22 +999,21 @@ void Location::Print(const CVECTOR &pos3D, float rad, long line, float alpha, ui
     long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
     // Find a position of a point on the screen
-    static CMatrix mtx, view, prj;
+    static Matrix mtx, view, prj;
     static D3DVIEWPORT9 vp;
-    MTX_PRJ_VECTOR vrt;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, prj);
     mtx.EqMultiply(view, prj);
     view.Transposition();
-    float dist = ~(pos3D - view.Pos());
+    float dist = ~(pos3D - view.pos);
     if (dist >= rad * rad)
         return;
-    const float d = view.Vz() | view.Pos();
-    if ((pos3D | view.Vz()) < d)
+    const float d = view.vz | view.pos;
+    if ((pos3D | view.vz) < d)
         return;
     rs->GetViewport(&vp);
-    mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
-                   sizeof(MTX_PRJ_VECTOR));
+    Vector4 vrt;
+    mtx.Projection(&vrt, & pos3D, 1, vp.Width * 0.5f, vp.Height * 0.5f);
     // Find a position
     const float fh = rs->CharHeight(FONT_DEFAULT) * 0.8f;
     vrt.y -= (line + 0.5f) * fh * scale;
@@ -1041,7 +1037,7 @@ void Location::Print(const CVECTOR &pos3D, float rad, long line, float alpha, ui
 }
 
 // Add a damage message
-void Location::AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, float maxhp)
+void Location::AddDamageMessage(const Vector &pos3D, float hit, float curhp, float maxhp)
 {
     curMessage++;
     if (curMessage >= sizeof(message) / sizeof(DmgMessage))
@@ -1067,7 +1063,7 @@ void Location::AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, fl
 }
 
 // Draw bars above the enemy in this frame
-void Location::DrawEnemyBars(const CVECTOR &pos, float hp, float energy, float alpha)
+void Location::DrawEnemyBars(const Vector &pos, float hp, float energy, float alpha)
 {
     if (enemyBarsCount >= sizeof(enemyBar) / sizeof(enemyBar[0]))
     {
@@ -1107,7 +1103,7 @@ void Location::TestLocatorsInPatch(MESSAGE &message)
         core.Event("LocatorsEventTrace", "lsss", 0, buf, la->GetGroupName(), "");
         return;
     }
-    CVECTOR pos;
+    Vector pos;
     for (long i = 0; i < num; i++)
     {
         la->GetLocatorPos(i, pos.x, pos.y, pos.z);
@@ -1139,11 +1135,11 @@ void Location::DrawEnemyBars()
     const float maxViewDist = 12.0f;
     const float alphaThresholdRelativeDist = 0.8f;
     // Current scene parameters
-    static CMatrix mtx, view, prj;
+    static Matrix mtx, view, prj;
     static D3DVIEWPORT9 vp;
     struct SortElement
     {
-        MTX_PRJ_VECTOR vrt;
+        Vector4 vrt;
         uint32_t color;
         float hp;
         float energy;
@@ -1159,16 +1155,15 @@ void Location::DrawEnemyBars()
     for (long i = 0; i < enemyBarsCount; i++)
     {
         // Find a position of a point on the screen
-        CVECTOR &pos3D = enemyBar[i].p;
-        const float dist = ~(pos3D - view.Pos());
+        Vector &pos3D = enemyBar[i].p;
+        const float dist = ~(pos3D - view.pos);
         if (dist >= maxViewDist * maxViewDist)
             continue;
-        const float d = view.Vz() | view.Pos();
-        if ((pos3D | view.Vz()) < d)
+        const float d = view.vz | view.pos;
+        if ((pos3D | view.vz) < d)
             continue;
-        MTX_PRJ_VECTOR vrt;
-        mtx.Projection(static_cast<CVECTOR *>(&pos3D), &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
-                       sizeof(MTX_PRJ_VECTOR));
+        Vector4 vrt;
+        mtx.Projection(&vrt, &pos3D, 1, vp.Width * 0.5f, vp.Height * 0.5f);
         // Calculating transparency
         float k = sqrtf(dist) / maxViewDist;
         if (k > alphaThresholdRelativeDist)
@@ -1207,11 +1202,11 @@ void Location::DrawEnemyBars()
     // Rendering
     for (long i = 0; i < sortCount; i++)
     {
-        MTX_PRJ_VECTOR &vrt = selements[i]->vrt;
+        Vector4 &vrt = selements[i]->vrt;
         uint32_t &color = selements[i]->color;
         static BarVertex bar[18];
-        float width = (256.0f * vrt.rhw) * 0.5f;
-        float height = (64.0f * vrt.rhw) * 0.5f;
+        float width = (256.0f * vrt.w) * 0.5f;
+        float height = (64.0f * vrt.w) * 0.5f;
         if (width > vp.Width * 0.1f)
         {
             const float k = vp.Width * 0.1f / width;
@@ -1279,7 +1274,7 @@ void Location::DrawEnemyBars()
         for (long n = 0; n < sizeof(bar) / sizeof(bar[0]); n++)
         {
             bar[n].p.z = vrt.z;
-            bar[n].rhw = vrt.rhw;
+            bar[n].rhw = vrt.w;
             bar[n].c = color;
         }
         // Adjusting the bars

@@ -238,7 +238,7 @@ long WdmClouds::Cloud::FillRects(RS_RECT *rects, long cnt, float galpha)
 }
 
 // Get sphere center and radius
-float WdmClouds::Cloud::GetBound(CVECTOR &_center) const
+float WdmClouds::Cloud::GetBound(Vector &_center) const
 {
     if (!count)
     {
@@ -319,10 +319,9 @@ void WdmClouds::LRender(VDX9RENDER *rs)
     // Getting camera frustum
     auto *plane = rs->GetPlanes();
     // Determine the global alpha depending on the distance to the camera
-    CMatrix view;
+    Matrix view;
     rs->GetTransform(D3DTS_VIEW, view);
-    CVECTOR camPos;
-    view.MulToInv(CVECTOR(0.0f), camPos);
+    Vector camPos = view.MulVertexByInverse(Vector(0.0f));
     auto alpha = (camPos.y - WdmCloudsCloudHeight - 10.0f) * 1.0f / 80.0f;
     if (alpha <= 0.0f)
         return;
@@ -334,14 +333,14 @@ void WdmClouds::LRender(VDX9RENDER *rs)
     for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
         // get the sphere
-        CVECTOR c;
+        Vector c;
         auto r = clouds[i].GetBound(c);
         // test for visibility
         long j;
         for (j = 0; j < 4; j++)
         {
             auto &p = plane[j];
-            auto dist = c.x * p.Nx + c.y * p.Ny + c.z * p.Nz - p.D;
+            auto dist = c.x * p.n.x + c.y * p.n.y + c.z * p.n.z - p.D;
             if (dist < -r)
                 break;
         }
@@ -360,7 +359,7 @@ void WdmClouds::LRender(VDX9RENDER *rs)
         rs->TextureSet(0, texture);
         rs->TextureSet(1, light);
 
-        CMatrix prj;
+        Matrix prj;
         rs->GetTransform(D3DTS_PROJECTION, prj);
         view.Transposition();
         rs->SetVertexShaderConstantF(0, prj, 4);

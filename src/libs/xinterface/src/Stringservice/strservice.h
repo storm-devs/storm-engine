@@ -1,7 +1,5 @@
 #pragma once
 
-#include "vmodule_api.h"
-
 #include "script_libriary.h"
 #include "stringService.h"
 

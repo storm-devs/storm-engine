@@ -9,10 +9,10 @@
 // ============================================================================================
 
 #pragma once
+#include "math3D/Vector.h"
 
 class Character;
 class LocatorArray;
-struct CVECTOR;
 
 #define MAX_CHARACTERS 64
 
@@ -67,7 +67,7 @@ class Supervisor
     void DelSavePositions(bool isTeleport) const;
 
     // Find the best locator to continue walking the character
-    long FindForvardLocator(LocatorArray *la, const CVECTOR &pos, const CVECTOR &norm, bool lookChr = false) const;
+    long FindForvardLocator(LocatorArray *la, const Vector &pos, const Vector &norm, bool lookChr = false) const;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation

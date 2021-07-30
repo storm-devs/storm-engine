@@ -274,7 +274,7 @@ void LocationCamera::Realize(uint32_t delta_time)
                 float h = r * sinf(ang * PI / 180.0f);
                 r = r * cosf(ang * PI / 180.0f);
                 character->GetPosition(lookTo);
-                CVECTOR v = CVECTOR(-r * sinf(character->GetAY()), h, -r * cosf(character->GetAY()));
+                Vector v = Vector(-r * sinf(character->GetAY()), h, -r * cosf(character->GetAY()));
                 camPos = lookTo + v;
             }
 #endif
@@ -323,7 +323,7 @@ void LocationCamera::Realize(uint32_t delta_time)
             realPos.y = seaY;
     }
 
-    auto vUp = CVECTOR(0.0f, 1.0f, 0.0f);
+    auto vUp = Vector(0.0f, 1.0f, 0.0f);
     if (dynamic_fog.isOn)
         ProcessDynamicFov(core.GetDeltaTime() * .001f, realPos, lookTo, vUp);
 
@@ -343,10 +343,10 @@ void LocationCamera::Execute(uint32_t delta_time)
 {
     // rs->Print(10, 10, "%f", cf.fndRadius);
     /*
-    CMatrix mtx;
+    Matrix mtx;
     rs->GetTransform(D3DTS_VIEW, mtx);
     mtx.Transposition();
-    float dst = location->Trace(CVECTOR(mtx.Pos()), CVECTOR(mtx.Pos() + (mtx.Vz()*100.0f)));
+    float dst = location->Trace(Vector(mtx.pos), Vector(mtx.pos + (mtx.vz*100.0f)));
     rs->Print(10, 10, "%f", dst);
     */
 }
@@ -490,23 +490,23 @@ void LocationCamera::ExecuteLook(float dltTime)
         GEOS::LABEL lb;
         // Locator matrix
         node->geo->GetLabel(strIndex, lb);
-        CMatrix mtl;
-        mtl.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
-        mtl.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
-        mtl.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
-        mtl.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+        Matrix mtl;
+        mtl.vx = Vector(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
+        mtl.vy = Vector(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
+        mtl.vz = Vector(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
+        mtl.pos = Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
         // Bone matrix
         auto ml = mtl * ani->GetAnimationMatrix(lb.bones[0]);
-        ml.Pos().x *= -1.0f;
-        ml.Vx().x *= -1.0f;
-        ml.Vy().x *= -1.0f;
-        ml.Vz().x *= -1.0f;
-        CMatrix m(ml, mdl->mtx);
-        camPos = m.Pos() - m.Vz() * 0.3f;
+        ml.pos.x *= -1.0f;
+        ml.vx.x *= -1.0f;
+        ml.vy.x *= -1.0f;
+        ml.vz.x *= -1.0f;
+        Matrix m(ml, mdl->mtx);
+        camPos = m.pos - m.vz * 0.3f;
     }
     else
     {
-        camPos = pos + CVECTOR(0.0f, height, 0.0f);
+        camPos = pos + Vector(0.0f, height, 0.0f);
     }
     // Determine where we are looking at
     lookTo.x = camPos.x + cosf(ax) * sinf(chay);
@@ -518,7 +518,7 @@ void LocationCamera::ExecuteLook(float dltTime)
 void LocationCamera::ExecuteTopos(float dltTime)
 {
     // Where are we looking at
-    lookTo = pos + CVECTOR(0.0f, lheight, 0.0f);
+    lookTo = pos + Vector(0.0f, lheight, 0.0f);
     // Where are we looking from
     camPos = fromLook;
 }
@@ -555,7 +555,7 @@ void LocationCamera::ExecuteFree(float dltTime)
 }
 
 // Trace the ray through the location
-float LocationCamera::Trace(const CVECTOR &src, const CVECTOR &dst) const
+float LocationCamera::Trace(const Vector &src, const Vector &dst) const
 {
     if (!location)
         return 2.0f;
@@ -569,8 +569,8 @@ bool LocationCamera::GetCollideTriangle(TRIANGLE &trg) const
     return location->GetCollideTriangle(trg);
 }
 
-void LocationCamera::Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad,
-                          bool (*fnc)(const CVECTOR *vtx, long num)) const
+void LocationCamera::Clip(Plane *p, long numPlanes, Vector &cnt, float rad,
+                          bool (*fnc)(const Vector *vtx, long num)) const
 {
     if (location)
         location->Clip(p, numPlanes, cnt, rad, fnc);
@@ -597,7 +597,7 @@ void LocationCamera::TurnOnDynamicFov(float fSpeed, float fTime, float fRelation
     dynamic_fog.fMaxAngle = fAngMax;
 }
 
-void LocationCamera::ProcessDynamicFov(float fDeltaTime, const CVECTOR &vFrom, const CVECTOR &vTo, CVECTOR &vUp)
+void LocationCamera::ProcessDynamicFov(float fDeltaTime, const Vector &vFrom, const Vector &vTo, Vector &vUp)
 {
     if (dynamic_fog.fFogTimeMax > 0.f)
         dynamic_fog.fFogTimeCur += fDeltaTime;
@@ -649,7 +649,7 @@ void LocationCamera::ProcessDynamicFov(float fDeltaTime, const CVECTOR &vFrom, c
 
         const auto v = vTo - vFrom;
         const auto fAng = atan2f(v.x, v.z);
-        CMatrix mrot(0.f, 0.f, dynamic_fog.fCurAngle);
+        Matrix mrot(0.f, 0.f, dynamic_fog.fCurAngle);
         mrot.RotateY(fAng);
         vUp = mrot * vUp;
     }
@@ -731,7 +731,7 @@ bool LocationCamera::LoadCameraTrack(const char *pcTrackFile, float fTrackTime)
     view.vz = -view.vz;
     view.Inverse();
     view.pos = view * -pos;
-    rs->SetView(*(CMatrix *)&view);
+    rs->SetView(*(Matrix *)&view);
     rs->SetPerspective(LOCATIONCAMERA_PERSPECTIVE);
 
     return true;
@@ -753,8 +753,8 @@ void LocationCamera::TurnOffTrackCamera()
         view.vz = -view.vz;
         view.Inverse();
 
-        oldPos = *(CVECTOR *)&pos;
-        (*(CMatrix *)&view).MulToInvNorm(CVECTOR(0.f, 0.f, 1.f), oldLookTo);
+        oldPos = *(Vector *)&pos;
+        oldLookTo = (*(Matrix *)&view).MulNormalByInverse(Vector(0.f, 0.f, 1.f));
     }
     core.Event("TrackCameraOff", "s", m_sCurTrackName.c_str());
 }
@@ -778,7 +778,7 @@ void LocationCamera::ProcessTrackCamera()
     view.vz = -view.vz;
     view.Inverse();
     view.pos = view * -pos;
-    rs->SetView(*(CMatrix *)&view);
+    rs->SetView(*(Matrix *)&view);
     rs->SetPerspective(LOCATIONCAMERA_PERSPECTIVE);
 }
 

@@ -105,25 +105,25 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
         camera_ang.y -= PIm2;
 
     // determine the real angle of rotation of the camera
-    CMatrix glbRotMtx;
-    glbRotMtx.BuildMatrix(camera_ang);
-    CMatrix rotMtx;
-    pathNode->glob_mtx.Get3X3(&rotMtx);
+    Matrix glbRotMtx;
+    glbRotMtx.Build(camera_ang);
+    Matrix rotMtx;
+    pathNode->glob_mtx.Get3X3(rotMtx);
     glbRotMtx *= rotMtx;
     auto cx = cosf(camera_ang.x);
     auto sx = sinf(camera_ang.x);
     auto cy = cosf(camera_ang.y);
     auto sy = sinf(camera_ang.y);
     float xAng, yAng, zAng;
-    auto v = glbRotMtx * CVECTOR(0, 0, 1.f);
+    auto v = glbRotMtx * Vector(0, 0, 1.f);
     yAng = atan2f(v.x, v.z);
     glbRotMtx.RotateY(-yAng);
-    v = glbRotMtx * CVECTOR(0, 0, 1.f);
+    v = glbRotMtx * Vector(0, 0, 1.f);
     xAng = atan2f(-v.y, v.z);
     glbRotMtx.RotateX(-xAng);
-    v = glbRotMtx * CVECTOR(0, 1.f, 0);
+    v = glbRotMtx * Vector(0, 1.f, 0);
     zAng = atan2f(-v.x, v.y);
-    CVECTOR s_ang;
+    Vector s_ang;
     s_ang.x = xAng + (camera_ang.x - xAng) * (1.0f - fRockingX);
     s_ang.y = yAng;
     s_ang.z = zAng * fRockingZ;
@@ -132,23 +132,23 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
     auto prev_pos = camera_pos;
     auto speed0 = DeltaTime * fSensivityDistance;
     auto speed = 0.f;
-    CVECTOR vShift;
+    Vector vShift;
     vShift.x = cx * sy;
     vShift.y = 0.f;
     vShift.z = cx * cy;
 
-    /*CVECTOR strafeV = CVECTOR(0.f,0.f,0.f);
+    /*Vector strafeV = Vector(0.f,0.f,0.f);
     core.Controls->GetControlState("DeckCamera_Left",cs);
     if(cs.state == CST_ACTIVE)
     {
-      strafeV = !(CVECTOR(0.f, -1.f, 0.f)^vShift);
+      strafeV = !(Vector(0.f, -1.f, 0.f)^vShift);
       speed=speed0;
     }
 
     core.Controls->GetControlState("DeckCamera_Right",cs);
     if(cs.state == CST_ACTIVE)
     {
-      strafeV = !(CVECTOR(0.f, 1.f, 0.f)^vShift);
+      strafeV = !(Vector(0.f, 1.f, 0.f)^vShift);
       speed=speed0;
     }*/
 
@@ -168,7 +168,7 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
 
     if (speed != 0.f)
     {
-        CVECTOR src, dst;
+        Vector src, dst;
         src.y = 500.f;
         dst.y = -500.f;
         auto bNoFinded = true;
@@ -176,7 +176,7 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
         auto step = MEN_STEP_MIN;
         float len;
         auto prev_res = vRes;
-        CVECTOR p1, p2;
+        Vector p1, p2;
         long trgNum = -1;
         while (true)
         {
@@ -231,8 +231,8 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
                 if (bNoFinded)
                     break; // standing where there is no floor
 
-                CVECTOR ep;
-                CVECTOR dp;
+                Vector ep;
+                Vector dp;
                 if (((p2 - p1) | vShift) < 0.f)
                 {
                     ep = p1;
@@ -296,8 +296,8 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
     }
 
     // calculate camera position
-    CVECTOR s_pos;
-    s_pos = pathNode->glob_mtx * (camera_pos + CVECTOR(0.f, h_eye, 0.f));
+    Vector s_pos;
+    s_pos = pathNode->glob_mtx * (camera_pos + Vector(0.f, h_eye, 0.f));
 
     // set camera
     RenderService->SetCamera(s_pos, s_ang, GetPerspective());
@@ -331,7 +331,7 @@ uint64_t DECK_CAMERA::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_DECK_CAMERA_SET_VIEWPOINT: {
-        CVECTOR cv;
+        Vector cv;
         cv.x = message.Float();
         cv.y = message.Float();
         cv.z = message.Float();
@@ -382,7 +382,7 @@ void DECK_CAMERA::SetStartPos()
             }
             if (j < gi.nlabels)
             {
-                pathNode->glob_mtx.MulToInv(root->glob_mtx * camera_pos, camera_pos);
+                camera_pos = pathNode->glob_mtx.MulVertexByInverse(root->glob_mtx * camera_pos);
                 break;
             }
         }
@@ -412,7 +412,7 @@ void DECK_CAMERA::SetStartPos()
     }
 }
 
-bool DECK_CAMERA::GetCrossXZ(CVECTOR &spos, CVECTOR &dv, CVECTOR &p1, CVECTOR &p2, CVECTOR &res)
+bool DECK_CAMERA::GetCrossXZ(Vector &spos, Vector &dv, Vector &p1, Vector &p2, Vector &res)
 {
     auto bNoCross = false;
 
@@ -594,35 +594,34 @@ uint32_t DECK_CAMERA::AttributeChanged(ATTRIBUTES *pAttr)
     return 0;
 }
 
-void DECK_CAMERA::SetViewPoint(CVECTOR &cViewPoint)
+void DECK_CAMERA::SetViewPoint(Vector &cViewPoint)
 {
     if (pathNode == nullptr)
         return;
 
     /*calculate camera position
-    CVECTOR s_pos;
-    s_pos = pathNode->glob_mtx*(camera_pos+CVECTOR(0.f,h_eye,0.f));
+    Vector s_pos;
+    s_pos = pathNode->glob_mtx*(camera_pos+Vector(0.f,h_eye,0.f));
 
-    CMatrix glbRotMtx;
-    glbRotMtx.BuildViewMatrix(s_pos,cViewPoint,CVECTOR(0.f,1.f,0.f));
+    Matrix glbRotMtx;
+    glbRotMtx.BuildView(s_pos,cViewPoint,Vector(0.f,1.f,0.f));
     glbRotMtx.SetPosition(0.f,0.f,0.f);
 
-    CMatrix invRotMtx;
+    Matrix invRotMtx;
     pathNode->glob_mtx.Get3X3(invRotMtx);
     invRotMtx.Transposition3X3();
 
     glbRotMtx *= invRotMtx;
 
-    CVECTOR v = glbRotMtx*CVECTOR(0,0,1.f);
+    Vector v = glbRotMtx*Vector(0,0,1.f);
     float yAng = atan2f(v.x,v.z);
     glbRotMtx.RotateY(-yAng);
 
-    v = glbRotMtx*CVECTOR(0,0,1.f);
+    v = glbRotMtx*Vector(0,0,1.f);
     float xAng = atan2f(-v.y,v.z);*/
 
     // Viewpoint in local coordinates
-    CVECTOR e_pos;
-    pathNode->glob_mtx.MulToInv(cViewPoint, e_pos);
+    Vector e_pos = pathNode->glob_mtx.MulVertexByInverse(cViewPoint);
 
     e_pos -= camera_pos;
 
@@ -630,7 +629,7 @@ void DECK_CAMERA::SetViewPoint(CVECTOR &cViewPoint)
     camera_ang.y = atan2f(e_pos.x, e_pos.z);
 }
 
-float DECK_CAMERA::MultiTrace(const CVECTOR &cvUp, const CVECTOR &cvDown, float fHBase)
+float DECK_CAMERA::MultiTrace(const Vector &cvUp, const Vector &cvDown, float fHBase)
 {
     if (pathNode == nullptr)
         return 2.f;

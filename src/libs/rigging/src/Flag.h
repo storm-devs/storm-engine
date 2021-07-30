@@ -2,7 +2,6 @@
 
 #include "dx9render.h"
 #include "geos.h"
-#include "matrix.h"
 #include "model.h"
 
 #include <filesystem>
@@ -11,7 +10,7 @@
 
 struct FLAGLXVERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     float tu, tv;
 };
 
@@ -98,11 +97,11 @@ class FLAG : public Entity
         bool isSpecialFlag;
         bool isShip;
 
-        CVECTOR spos;      // start flags position
-        CVECTOR dv;        // delta flags start position to along
-        CVECTOR dhv, ddhv; // delta from position to flag top&bottom and delta for this value
+        Vector spos;      // start flags position
+        Vector dv;        // delta flags start position to along
+        Vector dhv, ddhv; // delta from position to flag top&bottom and delta for this value
 
-        CVECTOR curpos, dHV;
+        Vector curpos, dHV;
         int lineNum;
         int windIdx, curIdx;
         bool bDecreaze;
@@ -113,7 +112,7 @@ class FLAG : public Entity
         int flagNum; // number of flag
         int grNum;   // number of flag group
         NODE *nod;
-        CMatrix *pMatWorld;
+        Matrix *pMatWorld;
 
         int texNumC;
         int texNumR;

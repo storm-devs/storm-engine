@@ -1,5 +1,7 @@
 #include "xi_textbutton.h"
 
+#include "VideoTexture.h"
+
 CXI_TEXTBUTTON::CXI_TEXTBUTTON()
 {
     m_rs = nullptr;

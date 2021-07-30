@@ -1,5 +1,5 @@
 #pragma once
-
+#if 0
 #include "../common_h/cvector.h"
 #include "../common_h/templates/array.h"
 #include "../common_h/templates/string.h"
@@ -18,7 +18,7 @@ using seaspecific_t = struct
     string sBumpDir;
     float fBumpTile;
     float fBumpAnimSpeed;
-    CVECTOR vSkyColor, vWaterColor;
+    Vector vSkyColor, vWaterColor;
 };
 
 struct sea_dat
@@ -32,7 +32,7 @@ struct sea_dat
     float fSunAzimuthAngle, fSunHeightAngle, fSunMult, fBumpTile, fBumpScale, fSunShadowScale, fFogStartDistance,
         fFogDensity, fBumpAng, fBumpSpeed, fBumpAnimSpeed, fPenaDepthSmall, fPenaDepthBig, fFogSeaDensity, fRoadStart,
         fRoadPower, fPenaSmallIslandMultiply, fPenaBigIslandMultiply;
-    CVECTOR vSkyColor, vWaterColor, vFogColor, vSunColor, vPenaColor, vRoadColor1, vRoadColor2;
+    Vector vSkyColor, vWaterColor, vFogColor, vSunColor, vPenaColor, vRoadColor1, vRoadColor2;
     array<harmonic_t> aHarmonics;
     string sBumpDir;
     dword dwBumpMipLevels, dwBumpSize;
@@ -43,3 +43,4 @@ struct sea_dat
 
     seaspecific_t GF2MX, GF3;
 };
+#endif

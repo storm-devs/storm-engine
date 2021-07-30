@@ -65,7 +65,7 @@ void SKY::SetDevice()
     Assert(pRS);
 }
 
-uint32_t SKY::CalcFogDiffuse(CVECTOR &vPos)
+uint32_t SKY::CalcFogDiffuse(Vector &vPos)
 {
     auto fAlpha = vPos.y / 500.0f;
     fAlpha = CLAMP(fAlpha);
@@ -97,7 +97,7 @@ void SKY::CreateFogSphere()
         {
             const auto fCos = cosf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
             const auto fSin = sinf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
-            const auto vPos = CVECTOR(R1 * fCos, h, R1 * fSin);
+            const auto vPos = Vector(R1 * fCos, h, R1 * fSin);
             pVerts[idx].pos = vPos;
             auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
             Assert(pvData);
@@ -123,7 +123,7 @@ void SKY::CreateFogSphere()
             idx++;
         }
     }
-    const auto vPos = CVECTOR(0.0f, R, 0.0f);
+    const auto vPos = Vector(0.0f, R, 0.0f);
     pVerts[idx].pos = vPos;
     auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
     Assert(pvData);
@@ -143,7 +143,7 @@ void SKY::UpdateFogSphere()
 
     long x, y, iNumLevels, iNumAngles, idx = 0;
 
-    CVECTOR vPos;
+    Vector vPos;
     const auto R = 2000.0f;
     iNumLevels = 64;
     iNumAngles = 8;
@@ -158,7 +158,7 @@ void SKY::UpdateFogSphere()
         {
             const auto fCos = cosf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
             const auto fSin = sinf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
-            vPos = CVECTOR(R1 * fCos, h, R1 * fSin);
+            vPos = Vector(R1 * fCos, h, R1 * fSin);
             pVertBuf[idx].pos = vPos;
             auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
             Assert(pvData);
@@ -167,7 +167,7 @@ void SKY::UpdateFogSphere()
             idx++;
         }
     }
-    vPos = CVECTOR(0.0f, R, 0.0f);
+    vPos = Vector(0.0f, R, 0.0f);
     pVertBuf[idx].pos = vPos;
     auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
     Assert(pvData);
@@ -183,14 +183,14 @@ void SKY::GenerateSky()
 
     Release();
 
-    v[0].pos = CVECTOR(-1.0f, 0.0f, -1.0f);
-    v[1].pos = CVECTOR(1.0f, 0.0f, -1.0f);
-    v[2].pos = CVECTOR(1.0f, 0.0f, 1.0f);
-    v[3].pos = CVECTOR(-1.0f, 0.0f, 1.0f);
-    v[4].pos = CVECTOR(-1.0f, 1.0f, -1.0f);
-    v[5].pos = CVECTOR(1.0f, 1.0f, -1.0f);
-    v[6].pos = CVECTOR(1.0f, 1.0f, 1.0f);
-    v[7].pos = CVECTOR(-1.0f, 1.0f, 1.0f);
+    v[0].pos = Vector(-1.0f, 0.0f, -1.0f);
+    v[1].pos = Vector(1.0f, 0.0f, -1.0f);
+    v[2].pos = Vector(1.0f, 0.0f, 1.0f);
+    v[3].pos = Vector(-1.0f, 0.0f, 1.0f);
+    v[4].pos = Vector(-1.0f, 1.0f, -1.0f);
+    v[5].pos = Vector(1.0f, 1.0f, -1.0f);
+    v[6].pos = Vector(1.0f, 1.0f, 1.0f);
+    v[7].pos = Vector(-1.0f, 1.0f, 1.0f);
 
     const auto fpdelta = 1.0f / 1024.0f;
     const auto fpdx = 1.0f - fpdelta; //.25f - fpdelta;
@@ -336,7 +336,7 @@ void SKY::Realize(uint32_t Delta_Time)
     fAngleY += static_cast<float>(Delta_Time) * 0.001f * fSkySpeedRotate;
 
     float fFov;
-    CVECTOR vPos, vAng;
+    Vector vPos, vAng;
     D3DXMATRIX pMatWorld, pMatTranslate, pMatRotate;
 
     pRS->GetCamera(vPos, vAng, fFov);
@@ -599,19 +599,18 @@ void SKY::UpdateTimeFactor()
     }
 }
 
-float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
+float SKY::CalculateAlphaForSun(const Vector &vSunPos, float fSunSize)
 {
     // get Sky
     float fFov;
-    CVECTOR vPos, vAng;
+    Vector vPos, vAng;
     pRS->GetCamera(vPos, vAng, fFov);
 
-    CMatrix mtxWorld;
+    Matrix mtxWorld;
     mtxWorld.BuildRotateY(fAngleY + fSkyAngle);
     mtxWorld.Move(vPos.x, vPos.y / 6.0f, vPos.z);
 
-    CVECTOR vLocalSunPos;
-    mtxWorld.MulToInv(vSunPos, vLocalSunPos);
+    Vector vLocalSunPos = mtxWorld.MulVertexByInverse(vSunPos);
 
     if (vLocalSunPos.y < 0.f)
         vLocalSunPos.y = 0.f;

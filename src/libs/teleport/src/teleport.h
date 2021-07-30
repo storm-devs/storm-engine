@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dx9render.h"
-#include "vmodule_api.h"
+#include "Entity.h"
 
 class TMPTELEPORT : public Entity
 {

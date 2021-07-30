@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <math.h>
-#include <stdlib.h>
+#include "rands.h"
 
 #pragma pack(push, 1)
 

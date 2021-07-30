@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Matrix.h"
-#include "vmodule_api.h"
+#include <cstdint>
+
+#include "math3d/Vector.h"
 
 struct Light
 {
@@ -15,8 +16,8 @@ struct Light
         t_group,
     };
 
-    CVECTOR color; // Source color
-    CVECTOR p;     // Point source position or direction of directional source
+    Vector color; // Source color
+    Vector p;     // Point source position or direction of directional source
     float att0;    // Attenuation D^0
     float att1;    // Attenuation D^1
     float att2;    // Attenuation D^2
@@ -48,7 +49,7 @@ struct Shadow
     float dst;   // Distance to source
     float csatt; // Attenuation coefficient
     float shw;   // Shadow attenuation coefficient
-    CVECTOR c;   // Current source color
+    Vector c;   // Current source color
 };
 } // namespace lighter
 
@@ -66,11 +67,11 @@ struct Vertex
         // There was a mistake
     };
 
-    CVECTOR p;               // Position
-    CVECTOR n;               // Normal
-    CVECTOR c;               // Colour
-    CVECTOR bc;              // Anti-aliasing color
-    CVECTOR mc;              // Color mask
+    Vector p;               // Position
+    Vector n;               // Normal
+    Vector c;               // Colour
+    Vector bc;              // Anti-aliasing color
+    Vector mc;              // Color mask
     uint32_t alpha;          // vertex Alpha
     lighter::Shadow *shadow; // Shading values from each source
     long flags;              // Flags
@@ -82,7 +83,7 @@ struct Vertex
 
 struct Triangle
 {
-    CVECTOR n; // Normal
+    Vector n; // Normal
     float sq;  // Area
     long i[3]; // Vertex indices
 };

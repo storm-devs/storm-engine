@@ -143,18 +143,18 @@ void MAST::Realize(uint32_t Delta_Time)
         mdl->ProcessStage(Stage::realize, Delta_Time);
         RenderService->SetRenderState(D3DRS_LIGHTING, false);
 
-        /*        CVECTOR bp=mdl->mtx*mm.bp;
-                CVECTOR ep=mdl->mtx*mm.ep;
-                CVECTOR brey=mdl->mtx*mm.brey;
-                CVECTOR erey=mdl->mtx*mm.erey;
+        /*        Vector bp=mdl->mtx*mm.bp;
+                Vector ep=mdl->mtx*mm.ep;
+                Vector brey=mdl->mtx*mm.brey;
+                Vector erey=mdl->mtx*mm.erey;
 
-                CMatrix mtx;
+                Matrix mtx;
                 mtx.SetIdentity();
                 RenderService->SetTransform(D3DTS_WORLD,(D3DXMATRIX*)&mtx);
 
                 struct LINEVERTEX
                 {
-                    CVECTOR pos;
+                    Vector pos;
                     float   col;
                 };
                 LINEVERTEX pVerts[4];
@@ -312,15 +312,15 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         }
         else
         {
-            mm.ang = CVECTOR(0.f, 0.f, 0.f);
-            mm.dmov = mm.sdmov = CVECTOR(0.f, 0.f, 0.f);
+            mm.ang = Vector(0.f, 0.f, 0.f);
+            mm.dmov = mm.sdmov = Vector(0.f, 0.f, 0.f);
         }
-        mm.mov = mastNodePointer->glob_mtx.Pos();
-        mm.dang = CVECTOR(MIN_X_DANG + VAR_X_DANG * static_cast<float>(rand()) / static_cast<float>(RAND_MAX), 0.f,
+        mm.mov = mastNodePointer->glob_mtx.pos;
+        mm.dang = Vector(MIN_X_DANG + VAR_X_DANG * static_cast<float>(rand()) / static_cast<float>(RAND_MAX), 0.f,
                           MIN_Z_DANG + VAR_Z_DANG * static_cast<float>(rand()) / static_cast<float>(RAND_MAX));
         // find the nearest ship
         float minDist = 10000.f;
-        SHIP_BASE *minDstShip;
+        SHIP_BASE *minDstShip = nullptr;
 
         const auto &ships = EntityManager::GetEntityIdVector("ship");
         for (auto ship : ships)
@@ -336,10 +336,10 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
                 minDstShip = sb;
             }
         }
-        if (minDist < 4000.f) // if the nearest ship is close to us, then bring down the mast in the opposite direction
+        if (minDist < 4000.f &&
+            minDstShip) // if the nearest ship is close to us, then bring down the mast in the opposite direction
         {
-            CVECTOR vect;
-            mastNodePointer->glob_mtx.MulToInvNorm(minDstShip->State.vPos - mm.mov, vect);
+            Vector vect = mastNodePointer->glob_mtx.MulNormalByInverse(minDstShip->State.vPos - mm.mov);
             if (vect.x < 0.f)
                 mm.dang.z = -mm.dang.z;
         }
@@ -364,7 +364,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         GEOS::INFO gi;
         // set the top and bottom points of the mast
         mastNodePointer->geo->GetInfo(gi);
-        mm.ep = mm.bp = *(CVECTOR *)&gi.boxcenter;
+        mm.ep = mm.bp = *(Vector *)&gi.boxcenter;
         mm.bp.y -= gi.boxsize.y * .5f;
         mm.ep.y += gi.boxsize.y * .5f;
         if (gi.boxsize.z > MINZ_COMPARE)
@@ -374,15 +374,15 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         }
         // check the starting point of the mast, and if it is planted in the ship, then
         // trim it to the point of contact with the ship
-        CVECTOR bv = mastNodePointer->glob_mtx * mm.bp;
-        const CVECTOR ev = mastNodePointer->glob_mtx * mm.ep;
+        Vector bv = mastNodePointer->glob_mtx * mm.bp;
+        const Vector ev = mastNodePointer->glob_mtx * mm.ep;
         // zero the local matrix
         mastNodePointer->loc_mtx.SetIdentity();
         const float tmpTrace = oldmdl->Trace(ev, bv);
         if (tmpTrace <= 1.f)
         {
             bv = ev + (bv - ev) * tmpTrace;
-            mastNodePointer->glob_mtx.MulToInv(bv, mm.bp);
+            mm.bp = mastNodePointer->glob_mtx.MulVertexByInverse(bv);
         }
 
         // set the left and right points of the yard
@@ -390,7 +390,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
             if (!strncmp(mastNodePointer->next[i]->GetName(), "rey", 3))
             {
                 mastNodePointer->next[i]->geo->GetInfo(gi);
-                mm.brey = mm.erey = *(CVECTOR *)&gi.boxcenter;
+                mm.brey = mm.erey = *(Vector *)&gi.boxcenter;
                 mm.brey.x -= gi.boxsize.x * .5f;
                 mm.erey.x += gi.boxsize.x * .5f;
                 if (gi.boxsize.z > MINZ_COMPARE)
@@ -401,7 +401,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
                 break;
             }
         if (i == mastNodePointer->nnext)
-            mm.brey = mm.erey = CVECTOR(0.f, 0.f, 0.f);
+            mm.brey = mm.erey = Vector(0.f, 0.f, 0.f);
         else
         {
             mm.brey = mastNodePointer->next[i]->loc_mtx * mm.brey;
@@ -493,7 +493,7 @@ void MAST::doMove(uint32_t DeltaTime)
         if (bFallUnderWater) // if the mast is already sinking
         {
             // reached the depth where we destroy the mast
-            if (mdl->mtx.Pos().y < -DESTRUCT_MAST_DEEP)
+            if (mdl->mtx.pos.y < -DESTRUCT_MAST_DEEP)
                 bUse = false;
             // move the mast lower into the depths of the sea
             else
@@ -508,15 +508,15 @@ void MAST::doMove(uint32_t DeltaTime)
                 mm.ang += mm.dang * rtime;
 
             // calculate the global matrix for the new mast position
-            CMatrix mtx;
-            mtx.BuildMatrix(mm.ang);
+            Matrix mtx;
+            mtx.Build(mm.ang);
             mtx.SetPosition(mm.mov);
             mtx = mdl->GetNode(0)->loc_mtx * mtx;
 
-            CVECTOR bp;                                          // mast top end coordinate
-            CVECTOR ep;                                          // coordinate of the lower end of the mast
-            CVECTOR lp;                                          // coordinate of the left point of the yard (total)
-            CVECTOR rp;                                          // coordinate of the right point of the yard (total)
+            Vector bp;                                          // mast top end coordinate
+            Vector ep;                                          // coordinate of the lower end of the mast
+            Vector lp;                                          // coordinate of the left point of the yard (total)
+            Vector rp;                                          // coordinate of the right point of the yard (total)
             bool bNextClass = (wMoveCounter <= MAX_MOVE_CICLES); // continue the collision a certain number of times
             bool bStopRotate = false; // by default do not stop the rotation of the mast when it falls
 
@@ -545,7 +545,7 @@ void MAST::doMove(uint32_t DeltaTime)
                 {
                     auto modEI = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(findEI))->GetModelEID();
 
-                    CVECTOR dp;
+                    Vector dp;
                     int tmp;
                     float yAng;
                     if ((tmp = GetSlide(modEI, bp, ep, dp, lp, rp, yAng)) != 0)
@@ -575,7 +575,7 @@ void MAST::doMove(uint32_t DeltaTime)
                     if (EntityManager::GetEntityPointer(ship) == nullptr)
                         continue;
                     auto modEI = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ship))->GetModelEID();
-                    CVECTOR dp;
+                    Vector dp;
                     int tmp;
                     float yAng;
                     if ((tmp = GetSlide(modEI, bp, ep, dp, lp, rp, yAng)) != 0)
@@ -603,7 +603,7 @@ void MAST::doMove(uint32_t DeltaTime)
             if (bp.y <= -MAST_WIDTH || ep.y <= -MAST_WIDTH)
             {
                 mm.dang = 0.2f * mm.sdang;
-                CVECTOR dm;
+                Vector dm;
                 if (bp.y <= 0.f)
                     dm = !(bp - ep);
                 else
@@ -614,7 +614,7 @@ void MAST::doMove(uint32_t DeltaTime)
                 mm.dang = mm.sdang;
 
             if (bStopRotate)
-                mm.dang = CVECTOR(0.f, 0.f, 0.f);
+                mm.dang = Vector(0.f, 0.f, 0.f);
 
             if (bp.y < 0.f && ep.y < 0.f)
                 bFallUnderWater = true;
@@ -624,14 +624,14 @@ void MAST::doMove(uint32_t DeltaTime)
     }
 }
 
-int MAST::GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECTOR &lrey, CVECTOR &rrey, float &angl)
+int MAST::GetSlide(entid_t mod, Vector &pbeg, Vector &pend, Vector &dp, Vector &lrey, Vector &rrey, float &angl)
 {
     int retVal = 0;
 
     // rhea collision
-    const CVECTOR vl = lrey;
-    const CVECTOR vr = rrey;
-    const CVECTOR vcentr = (vl + vr) * .5f;
+    const Vector vl = lrey;
+    const Vector vr = rrey;
+    const Vector vcentr = (vl + vr) * .5f;
     float ang = 0.f;
     const float lf = pCollide->Trace(mod, vl, vcentr);
     const float rf = pCollide->Trace(mod, vr, vcentr);
@@ -649,9 +649,9 @@ int MAST::GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECT
     float tmp;
     float hVal = 0.f;
     float sVal = 0.f;
-    CVECTOR vb = pbeg;
-    CVECTOR ve = pend;
-    dp = CVECTOR(0.f, 0.f, 0.f);
+    Vector vb = pbeg;
+    Vector ve = pend;
+    dp = Vector(0.f, 0.f, 0.f);
     if ((tmp = pCollide->Trace(mod, ve, vb)) <= 1.f)
     {
         retVal |= SR_MOVE;
@@ -673,7 +673,7 @@ int MAST::GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECT
                     NODE *pnod = pmdl->GetCollideNode();
                     if (pnod)
                     {
-                        CVECTOR cv = vb + (ve - vb) * tmp - pnod->glob_mtx.Pos();
+                        Vector cv = vb + (ve - vb) * tmp - pnod->glob_mtx.pos;
                         cv.y = 0.f;
                         if (cv.x == 0.f && cv.z == 0.f)
                             cv.y = TRACE_SLIDING;

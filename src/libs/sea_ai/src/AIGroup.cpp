@@ -59,22 +59,22 @@ void AIGroup::AddShip(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pASh
         isWarShip = true;
         iWarShipsNum++;
     }
-    CVECTOR vShipPos, vTmpPos;
+    Vector vShipPos, vTmpPos;
 
     if (isWarShip)
     {
         // war
         vTmpPos = ((iWarShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
-                  CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
-        vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos;
+                  Vector(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
+        vShipPos = Vector(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos;
     }
     else
     {
         // trade
         vTmpPos = ((iTradeShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
-                  CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
-        vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos -
-                   CVECTOR(0.0f, 0.0f, AIGroup::fDistanceBetweenGroupLines);
+                  Vector(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
+        vShipPos = Vector(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos -
+                   Vector(0.0f, 0.0f, AIGroup::fDistanceBetweenGroupLines);
     }
 
     pShip->CreateShip(eidShip, pACharacter, pAShip, &vShipPos);
@@ -120,7 +120,7 @@ void AIGroup::Execute(float fDeltaTime)
             const auto fNewAng = FRAND(PIm2);
             auto *const pG = FindGroup(sLocationNearOtherGroup.c_str());
             auto vNewGroupPos =
-                pG->vInitGroupPos + ((100.0f + FRAND(200.0f)) * CVECTOR(sinf(fNewAng), 0.0f, cosf(fNewAng)));
+                pG->vInitGroupPos + ((100.0f + FRAND(200.0f)) * Vector(sinf(fNewAng), 0.0f, cosf(fNewAng)));
             if (pG)
                 for (uint32_t i = 0; i < aGroupShips.size(); i++)
                 {
@@ -148,8 +148,8 @@ void AIGroup::Execute(float fDeltaTime)
       if (sCommand == "move")
         for (uint32_t i=0; i<aGroupShips.size(); i++) if (!aGroupShips[i]->isMainCharacter())
         {
-          CVECTOR vDir = CVECTOR(vInitGroupPos.x, 0.0f, vInitGroupPos.z) + 20000.0f *
-    CVECTOR(sinf(vInitGroupPos.y),0.0f,cosf(vInitGroupPos.y));
+          Vector vDir = Vector(vInitGroupPos.x, 0.0f, vInitGroupPos.z) + 20000.0f *
+    Vector(sinf(vInitGroupPos.y),0.0f,cosf(vInitGroupPos.y));
           aGroupShips[i]->GetTaskController()->SetNewTask(PRIMARY_TASK, AITASK_MOVE, vDir);
         }
 
@@ -243,7 +243,7 @@ AIGroup *AIGroup::FindMainGroup()
     return nullptr;
 }
 
-void AIGroup::SailMainGroup(CVECTOR vPos, float fAngle, ATTRIBUTES *pACharacter)
+void AIGroup::SailMainGroup(Vector vPos, float fAngle, ATTRIBUTES *pACharacter)
 {
     AIGroup *pMG = FindMainGroup();
     Assert(pMG);
@@ -287,7 +287,7 @@ AIGroup *AIGroup::FindOrCreateGroup(const char *pGroupName)
     return (pAIGroup) ? pAIGroup : CreateNewGroup(pGroupName);
 }
 
-void AIGroup::GroupSetMove(const char *pGroupName, CVECTOR &vMovePoint)
+void AIGroup::GroupSetMove(const char *pGroupName, Vector &vMovePoint)
 {
     AIGroup *pAIGroup = FindOrCreateGroup(pGroupName);
     pAIGroup->sCommand = "move";
@@ -324,7 +324,7 @@ void AIGroup::GroupSetAttack(const char *pGroupName, const char *pGroupAttacking
     pG->sCommandGroup = pGroupAttackingName;
 }
 
-void AIGroup::SetXYZ_AY(const char *pGroupName, CVECTOR vPos, float _fAY)
+void AIGroup::SetXYZ_AY(const char *pGroupName, Vector vPos, float _fAY)
 {
     AIGroup *pAIGroup = FindOrCreateGroup(pGroupName);
 

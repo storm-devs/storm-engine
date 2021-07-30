@@ -5,9 +5,9 @@
 #include "Entity.h"
 #include "inlines.h"
 #include "s_import_func.h"
-#include "script_libriary.h"
 #include "texture.h"
 #include "v_s_stack.h"
+#include "VideoTexture.h"
 
 #include <DxErr.h>
 #include <corecrt_io.h>
@@ -155,7 +155,7 @@ char splashbuffer[256];
 
 struct DX9SphVertex
 {
-    CVECTOR v;
+    Vector v;
     uint32_t c;
 };
 
@@ -166,7 +166,7 @@ void CreateSphere()
 {
 #define CalcKColor(ind)                                                                                                \
     {                                                                                                                  \
-        kColor = light | !CVECTOR(DX9sphereVertex[t * 3 + ind].v.x, DX9sphereVertex[t * 3 + ind].v.y,                  \
+        kColor = light | !Vector(DX9sphereVertex[t * 3 + ind].v.x, DX9sphereVertex[t * 3 + ind].v.y,                  \
                                   DX9sphereVertex[t * 3 + ind].v.z);                                                   \
         if (kColor < 0.0f)                                                                                             \
             kColor = 0.0f;                                                                                             \
@@ -186,7 +186,7 @@ void CreateSphere()
     DX9sphereNumTrgs = a1 * a2 * 2;
     DX9sphereVertex = new DX9SphVertex[DX9sphereNumTrgs * 6];
 
-    const CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
+    const Vector light = !Vector(0.0f, 0.0f, 1.0f);
     float kColor;
     // fill in the vertices
     for (long i = 0, t = 0; i < a2; i++)
@@ -369,7 +369,7 @@ DX9RENDER::DX9RENDER()
     bPreparedCapture = false;
     iCaptureFrameIndex = 0;
 
-    vViewRelationPos = CVECTOR(0.f, 0.f, 0.f);
+    vViewRelationPos = Vector(0.f, 0.f, 0.f);
     vWordRelationPos = -vViewRelationPos;
     bUseLargeBackBuffer = false;
 }
@@ -497,7 +497,7 @@ bool DX9RENDER::Init()
 
     pDropConveyorVBuffer = nullptr;
     rectsVBuffer = nullptr;
-    d3d9->CreateVertexBuffer(2 * sizeof(CVECTOR), D3DUSAGE_WRITEONLY, D3DFVF_XYZ, D3DPOOL_MANAGED,
+    d3d9->CreateVertexBuffer(2 * sizeof(Vector), D3DUSAGE_WRITEONLY, D3DFVF_XYZ, D3DPOOL_MANAGED,
                              &pDropConveyorVBuffer, nullptr);
     d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(RECT_VERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
                              RS_RECT_VERTEX_FORMAT, D3DPOOL_DEFAULT, &rectsVBuffer, nullptr); // D3DPOOL_MANAGED
@@ -761,7 +761,7 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     // texture op for lightmaps
     // SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_ADDSIGNED);
 
-    SetCamera(CVECTOR(0.0f, 0.0f, 0.0f), CVECTOR(0.0f, 0.0f, 0.0f), 1.0f);
+    SetCamera(Vector(0.0f, 0.0f, 0.0f), Vector(0.0f, 0.0f, 0.0f), 1.0f);
 
     D3DLIGHT9 l;
     ZERO(l);
@@ -1101,10 +1101,10 @@ bool DX9RENDER::DX9EndScene()
             }
         }
 
-        CMatrix mView;
+        Matrix mView;
         GetTransform(D3DTS_VIEW, mView);
         mView.Transposition();
-        Print(80, 50, "Cam: %.3f, %.3f, %.3f", mView.Pos().x, mView.Pos().y, mView.Pos().z);
+        Print(80, 50, "Cam: %.3f, %.3f, %.3f", mView.pos.x, mView.pos.y, mView.pos.z);
         Print(80, 70, "t : %d, %.3f Mb", dwTotalTexNum, float(dwTotalTexSize) / (1024.0f * 1024.0f));
         Print(80, 90, "v : %d, %.3f Mb", dwTotalVB, float(dwTotalVBSize) / (1024.0f * 1024.0f));
         Print(80, 110, "i : %d, %.3f Mb", dwTotalIB, float(dwTotalIBSize) / (1024.0f * 1024.0f));
@@ -1115,12 +1115,12 @@ bool DX9RENDER::DX9EndScene()
     // Try to drop video conveyor
     if (bDropVideoConveyor && pDropConveyorVBuffer)
     {
-        CVECTOR *pV;
+        Vector *pV;
         pDropConveyorVBuffer->Lock(0, 0, (VOID **)&pV, 0);
         for (long i = 0; i < 2; i++)
-            pV[i] = CVECTOR(1e6f, 1e6f, 1e6f);
+            pV[i] = Vector(1e6f, 1e6f, 1e6f);
         pDropConveyorVBuffer->Unlock();
-        d3d9->SetStreamSource(0, pDropConveyorVBuffer, 0, sizeof(CVECTOR));
+        d3d9->SetStreamSource(0, pDropConveyorVBuffer, 0, sizeof(Vector));
         SetFVF(D3DFVF_XYZ);
         DrawPrimitive(D3DPT_LINELIST, 0, 1);
     }
@@ -1803,7 +1803,7 @@ bool DX9RENDER::TextureRelease(long texid)
 }
 
 //################################################################################
-bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang, float fov)
+bool DX9RENDER::SetCamera(const Vector &pos, const Vector &ang, float fov)
 {
     if (!SetCamera(pos, ang))
         return false;
@@ -1814,10 +1814,10 @@ bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang, float fov)
     return true;
 }
 
-bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang)
+bool DX9RENDER::SetCamera(const Vector &pos, const Vector &ang)
 {
-    CMatrix mtx;
-    const CVECTOR vOldWordRelationPos = vWordRelationPos;
+    Matrix mtx;
+    const Vector vOldWordRelationPos = vWordRelationPos;
     /*if (!pos || !ang)
     {
       if (!pos && !ang) return true;
@@ -1831,9 +1831,9 @@ bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang)
       }
       else
       {
-        //CVECTOR p;
-        //mtx.MulToInvNorm(mtx.Pos(), p);
-        mtx.BuildMatrix(*ang);
+        //Vector p;
+        //mtx.MulNormalByInverse(mtx.pos, p);
+        mtx.Build(*ang);
         mtx.Transposition3X3();
         //mtx.SetInversePosition(p.x, p.y, p.z);
         Ang = *ang;
@@ -1841,7 +1841,7 @@ bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang)
     }
     else*/
     {
-        mtx.BuildMatrix(ang);
+        mtx.Build(ang);
         mtx.Transposition3X3();
         // mtx.SetInversePosition(pos->x, pos->y, pos->z);
         Pos = pos;
@@ -1853,7 +1853,7 @@ bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang)
     d3d9->SetTransform(D3DTS_VIEW, mtx);
     vViewRelationPos = -(mtx * vWordRelationPos);
     d3d9->GetTransform(D3DTS_WORLD, mtx);
-    mtx.Pos() += vWordRelationPos - vOldWordRelationPos;
+    mtx.pos += vWordRelationPos - vOldWordRelationPos;
     d3d9->SetTransform(D3DTS_WORLD, mtx);
 
     FindPlanes(d3d9);
@@ -1861,10 +1861,10 @@ bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang)
     return true;
 }
 
-bool DX9RENDER::SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up)
+bool DX9RENDER::SetCamera(Vector lookFrom, Vector lookTo, Vector up)
 {
-    CMatrix mtx;
-    if (!mtx.BuildViewMatrix(lookFrom, lookTo, up))
+    Matrix mtx;
+    if (!mtx.BuildView(lookFrom, lookTo, up))
         return false;
     // if(CHECKD3DERR(SetTransform(D3DTS_VIEW, mtx))==true)    return false;
     SetTransform(D3DTS_VIEW, mtx);
@@ -1872,7 +1872,7 @@ bool DX9RENDER::SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up)
 
     // calculate the angle of the camera
     // Ang = 0.0f;
-    const CVECTOR vNorm = !(lookTo - lookFrom);
+    const Vector vNorm = !(lookTo - lookFrom);
     Ang.y = atan2f(vNorm.x, vNorm.z);
     Ang.x = atan2f(-vNorm.y, sqrtf(vNorm.x * vNorm.x + vNorm.z * vNorm.z));
     Ang.z = 0.f;
@@ -1882,7 +1882,7 @@ bool DX9RENDER::SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up)
     return true;
 }
 
-void DX9RENDER::ProcessScriptPosAng(const CVECTOR &vPos, const CVECTOR &vAng)
+void DX9RENDER::ProcessScriptPosAng(const Vector &vPos, const Vector &vAng)
 {
     core.Event("CameraPosAng", "ffffff", vPos.x, vPos.y, vPos.z, vAng.x, vAng.y, vAng.z);
 }
@@ -2272,26 +2272,26 @@ void DX9RENDER::ReleaseIndexBuffer(long id)
 
 void DX9RENDER::SetTransform(long type, D3DMATRIX *mtx)
 {
-    CMatrix m = *(CMatrix *)mtx;
+    Matrix m = *(Matrix *)mtx;
     if (type == D3DTS_VIEW)
     {
         vViewRelationPos.x = -mtx->_41;
         vViewRelationPos.y = -mtx->_42;
         vViewRelationPos.z = -mtx->_43;
 
-        CVECTOR vDeltaWorld = vWordRelationPos;
-        m.MulToInvNorm(-vViewRelationPos, vWordRelationPos);
+        Vector vDeltaWorld = vWordRelationPos;
+        vWordRelationPos = m.MulNormalByInverse(-vViewRelationPos);
         vDeltaWorld -= vWordRelationPos;
-        CMatrix mw;
+        Matrix mw;
         d3d9->GetTransform(D3DTS_WORLD, (D3DMATRIX *)&mw);
-        mw.Pos() -= vDeltaWorld;
+        mw.pos -= vDeltaWorld;
         d3d9->SetTransform(D3DTS_WORLD, mw);
 
-        m.Pos() += vViewRelationPos;
+        m.pos += vViewRelationPos;
     }
     else if (type == D3DTS_WORLD)
     {
-        m.Pos() += vWordRelationPos;
+        m.pos += vWordRelationPos;
     }
 
     CHECKD3DERR(d3d9->SetTransform(static_cast<D3DTRANSFORMSTATETYPE>(type), (D3DMATRIX *)&m));
@@ -3020,7 +3020,7 @@ uint32_t DX9RENDER::GetTextureStageState(uint32_t Stage, uint32_t Type, uint32_t
     return CHECKD3DERR(d3d9->GetTextureStageState(Stage, static_cast<D3DTEXTURESTAGESTATETYPE>(Type), (DWORD *)pValue));
 }
 
-void DX9RENDER::GetCamera(CVECTOR &pos, CVECTOR &ang, float &perspective)
+void DX9RENDER::GetCamera(Vector &pos, Vector &ang, float &perspective)
 {
     pos = Pos;
     ang = Ang;
@@ -3137,7 +3137,7 @@ void DX9RENDER::MakeScreenShot()
     // UNGUARD
 }
 
-PLANE *DX9RENDER::GetPlanes()
+Plane *DX9RENDER::GetPlanes()
 {
     FindPlanes(d3d9);
     return viewplane;
@@ -3146,7 +3146,7 @@ PLANE *DX9RENDER::GetPlanes()
 void DX9RENDER::FindPlanes(IDirect3DDevice9 *d3dDevice)
 {
     D3DMATRIX m;
-    CVECTOR v[4];
+    Vector v[4];
     GetTransform(D3DTS_PROJECTION, static_cast<D3DMATRIX *>(&m));
     // left
     v[0].x = m.m[0][0];
@@ -3170,32 +3170,32 @@ void DX9RENDER::FindPlanes(IDirect3DDevice9 *d3dDevice)
     v[3] = !v[3];
 
     GetTransform(D3DTS_VIEW, static_cast<D3DMATRIX *>(&m));
-    CVECTOR pos;
+    Vector pos;
 
     pos.x = -m._41 * m._11 - m._42 * m._12 - m._43 * m._13;
     pos.y = -m._41 * m._21 - m._42 * m._22 - m._43 * m._23;
     pos.z = -m._41 * m._31 - m._42 * m._32 - m._43 * m._33;
 
-    viewplane[0].Nx = v[0].x * m._11 + v[0].y * m._12 + v[0].z * m._13;
-    viewplane[0].Ny = v[0].x * m._21 + v[0].y * m._22 + v[0].z * m._23;
-    viewplane[0].Nz = v[0].x * m._31 + v[0].y * m._32 + v[0].z * m._33;
+    viewplane[0].n.x = v[0].x * m._11 + v[0].y * m._12 + v[0].z * m._13;
+    viewplane[0].n.y = v[0].x * m._21 + v[0].y * m._22 + v[0].z * m._23;
+    viewplane[0].n.z = v[0].x * m._31 + v[0].y * m._32 + v[0].z * m._33;
 
-    viewplane[1].Nx = v[1].x * m._11 + v[1].y * m._12 + v[1].z * m._13;
-    viewplane[1].Ny = v[1].x * m._21 + v[1].y * m._22 + v[1].z * m._23;
-    viewplane[1].Nz = v[1].x * m._31 + v[1].y * m._32 + v[1].z * m._33;
+    viewplane[1].n.x = v[1].x * m._11 + v[1].y * m._12 + v[1].z * m._13;
+    viewplane[1].n.y = v[1].x * m._21 + v[1].y * m._22 + v[1].z * m._23;
+    viewplane[1].n.z = v[1].x * m._31 + v[1].y * m._32 + v[1].z * m._33;
 
-    viewplane[2].Nx = v[2].x * m._11 + v[2].y * m._12 + v[2].z * m._13;
-    viewplane[2].Ny = v[2].x * m._21 + v[2].y * m._22 + v[2].z * m._23;
-    viewplane[2].Nz = v[2].x * m._31 + v[2].y * m._32 + v[2].z * m._33;
+    viewplane[2].n.x = v[2].x * m._11 + v[2].y * m._12 + v[2].z * m._13;
+    viewplane[2].n.y = v[2].x * m._21 + v[2].y * m._22 + v[2].z * m._23;
+    viewplane[2].n.z = v[2].x * m._31 + v[2].y * m._32 + v[2].z * m._33;
 
-    viewplane[3].Nx = v[3].x * m._11 + v[3].y * m._12 + v[3].z * m._13;
-    viewplane[3].Ny = v[3].x * m._21 + v[3].y * m._22 + v[3].z * m._23;
-    viewplane[3].Nz = v[3].x * m._31 + v[3].y * m._32 + v[3].z * m._33;
+    viewplane[3].n.x = v[3].x * m._11 + v[3].y * m._12 + v[3].z * m._13;
+    viewplane[3].n.y = v[3].x * m._21 + v[3].y * m._22 + v[3].z * m._23;
+    viewplane[3].n.z = v[3].x * m._31 + v[3].y * m._32 + v[3].z * m._33;
 
-    viewplane[0].D = (pos.x * viewplane[0].Nx + pos.y * viewplane[0].Ny + pos.z * viewplane[0].Nz);
-    viewplane[1].D = (pos.x * viewplane[1].Nx + pos.y * viewplane[1].Ny + pos.z * viewplane[1].Nz);
-    viewplane[2].D = (pos.x * viewplane[2].Nx + pos.y * viewplane[2].Ny + pos.z * viewplane[2].Nz);
-    viewplane[3].D = (pos.x * viewplane[3].Nx + pos.y * viewplane[3].Ny + pos.z * viewplane[3].Nz);
+    viewplane[0].D = (pos.x * viewplane[0].n.x + pos.y * viewplane[0].n.y + pos.z * viewplane[0].n.z);
+    viewplane[1].D = (pos.x * viewplane[1].n.x + pos.y * viewplane[1].n.y + pos.z * viewplane[1].n.z);
+    viewplane[2].D = (pos.x * viewplane[2].n.x + pos.y * viewplane[2].n.y + pos.z * viewplane[2].n.z);
+    viewplane[3].D = (pos.x * viewplane[3].n.x + pos.y * viewplane[3].n.y + pos.z * viewplane[3].n.z);
 }
 
 bool DX9RENDER::TechniqueExecuteStart(const char *cBlockName)
@@ -3218,7 +3218,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
 
     bool bDraw = true;
 
-    static CMatrix camMtx, IMatrix;
+    static Matrix camMtx, IMatrix;
     d3d9->GetTransform(D3DTS_VIEW, camMtx);
 
     fScaleY *= GetHeightDeformator();
@@ -3267,7 +3267,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
             // Local array of a particle
             RECT_VERTEX *buffer = &data[i * 6];
             RS_RECT &rect = pRSR[cnt++];
-            CVECTOR pos = camMtx * (rect.vPos + vWordRelationPos);
+            Vector pos = camMtx * (rect.vPos + vWordRelationPos);
             const float sizex = rect.fSize * fScaleX;
             const float sizey = rect.fSize * fScaleY;
             const float sn = sinf(rect.fAngle);
@@ -3287,15 +3287,15 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
                 v2 = v1 + dv;
             }
             // Filling the particle buffer
-            buffer[0].pos = pos + CVECTOR(sizex * (-cs - sn), sizey * (sn - cs), 0.0f);
+            buffer[0].pos = pos + Vector(sizex * (-cs - sn), sizey * (sn - cs), 0.0f);
             buffer[0].color = color;
             buffer[0].u = u1;
             buffer[0].v = v2;
-            buffer[1].pos = pos + CVECTOR(sizex * (-cs + sn), sizey * (sn + cs), 0.0f);
+            buffer[1].pos = pos + Vector(sizex * (-cs + sn), sizey * (sn + cs), 0.0f);
             buffer[1].color = color;
             buffer[1].u = u1;
             buffer[1].v = v1;
-            buffer[2].pos = pos + CVECTOR(sizex * (cs + sn), sizey * (-sn + cs), 0.0f);
+            buffer[2].pos = pos + Vector(sizex * (cs + sn), sizey * (-sn + cs), 0.0f);
             buffer[2].color = color;
             buffer[2].u = u2;
             buffer[2].v = v1;
@@ -3307,7 +3307,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
             buffer[4].color = color;
             buffer[4].u = u2;
             buffer[4].v = v1;
-            buffer[5].pos = pos + CVECTOR(sizex * (cs - sn), sizey * (-sn - cs), 0.0f);
+            buffer[5].pos = pos + Vector(sizex * (cs - sn), sizey * (-sn - cs), 0.0f);
             buffer[5].color = color;
             buffer[5].u = u2;
             buffer[5].v = v2;
@@ -4074,9 +4074,9 @@ void DX9RENDER::ProgressView()
     // Animated object
     m_fHeightDeformator = ((float)vp.Height * 4.0f) / ((float)vp.Width * 3.0f);
     // core.Trace(" size_x %f", (vp.Width - dx * 2.0f)*progressFramesWidth);
-    CVECTOR pos((vp.Width - dx * 2.0f) * progressFramesPosX + dx, (vp.Height - dy * 2.0f) * progressFramesPosY + dy,
+    Vector pos((vp.Width - dx * 2.0f) * progressFramesPosX + dx, (vp.Height - dy * 2.0f) * progressFramesPosY + dy,
                 0.0f);
-    CVECTOR size((vp.Width - dx * 2.0f) * progressFramesWidth,
+    Vector size((vp.Width - dx * 2.0f) * progressFramesWidth,
                  (vp.Height - dy * 2.0f) * progressFramesHeight * 4.0f / 3.0f, 0.0f);
     v[0].x = pos.x;
     v[0].y = pos.y;
@@ -4157,8 +4157,8 @@ void DX9RENDER::SetColorParameters(float fGamma, float fBrightness, float fContr
     d3d9->SetGammaRamp(0, D3DSGR_NO_CALIBRATION, &ramp);
 }
 
-void DX9RENDER::MakeDrawVector(RS_LINE *pLines, uint32_t dwNumSubLines, const CMatrix &mMatrix, CVECTOR vUp, CVECTOR v1,
-                               CVECTOR v2, float fScale, uint32_t dwColor)
+void DX9RENDER::MakeDrawVector(RS_LINE *pLines, uint32_t dwNumSubLines, const Matrix &mMatrix, Vector vUp, Vector v1,
+                               Vector v2, float fScale, uint32_t dwColor)
 {
     uint32_t i;
     uint32_t k;
@@ -4182,44 +4182,44 @@ void DX9RENDER::MakeDrawVector(RS_LINE *pLines, uint32_t dwNumSubLines, const CM
         const float x = fRadius * sinf(fAng);
         const float z = fRadius * cosf(fAng);
 
-        CVECTOR vRes;
+        Vector vRes;
 
         if (fabsf(vUp.x) < 1e-5f)
-            vRes = CVECTOR(fDist, x, z);
+            vRes = Vector(fDist, x, z);
         if (fabsf(vUp.y) < 1e-5f)
-            vRes = CVECTOR(x, fDist, z);
+            vRes = Vector(x, fDist, z);
         if (fabsf(vUp.z) < 1e-5f)
-            vRes = CVECTOR(x, z, fDist);
-        vRes = (CMatrix &)mMatrix * vRes;
+            vRes = Vector(x, z, fDist);
+        vRes = (Matrix &)mMatrix * vRes;
         pLines[2 + i * 2 + 0].vPos = vRes;
         pLines[2 + i * 2 + 1].vPos = pLines[1].vPos;
     }
 }
 
-void DX9RENDER::DrawVector(const CVECTOR &v1, const CVECTOR &v2, uint32_t dwColor, const char *pTechniqueName)
+void DX9RENDER::DrawVector(const Vector &v1, const Vector &v2, uint32_t dwColor, const char *pTechniqueName)
 {
     RS_LINE lines[51 * 2];
-    CMatrix mView;
+    Matrix mView;
 
     const float fScale = sqrtf(~(v2 - v1));
-    if (!mView.BuildViewMatrix(v1, v2, CVECTOR(0.0f, 1.0f, 0.0f)))
-        if (!mView.BuildViewMatrix(v1, v2, CVECTOR(1.0f, 0.0f, 0.0f)))
+    if (!mView.BuildView(v1, v2, Vector(0.0f, 1.0f, 0.0f)))
+        if (!mView.BuildView(v1, v2, Vector(1.0f, 0.0f, 0.0f)))
             return;
 
     mView.Transposition();
 
-    MakeDrawVector(&lines[0], 50, mView, CVECTOR(1.0f, 1.0f, 0.0f), mView.Pos(), mView.Vz(), fScale, dwColor);
+    MakeDrawVector(&lines[0], 50, mView, Vector(1.0f, 1.0f, 0.0f), mView.pos, mView.vz, fScale, dwColor);
 
-    const CMatrix mWorldSave;
+    const Matrix mWorldSave;
     GetTransform(D3DTS_WORLD, mWorldSave);
-    SetTransform(D3DTS_WORLD, CMatrix());
+    SetTransform(D3DTS_WORLD, Matrix());
     DrawLines(lines, 51, pTechniqueName);
     SetTransform(D3DTS_WORLD, mWorldSave);
 }
 
-void DX9RENDER::DrawSphere(const CVECTOR &vPos, float fRadius, uint32_t dwColor)
+void DX9RENDER::DrawSphere(const Vector &vPos, float fRadius, uint32_t dwColor)
 {
-    CMatrix m;
+    Matrix m;
     m.BuildPosition(vPos.x, vPos.y, vPos.z);
     m.m[0][0] = fRadius;
     m.m[1][1] = fRadius;
@@ -4298,34 +4298,34 @@ bool DX9RENDER::SetRenderTarget(IDirect3DCubeTexture9 *pRenderTarget, uint32_t F
     return bSuccess;
 }
 
-void DX9RENDER::SetView(const CMatrix &mView)
+void DX9RENDER::SetView(const Matrix &mView)
 {
     SetTransform(D3DTS_VIEW, mView);
 }
 
-void DX9RENDER::SetWorld(const CMatrix &mWorld)
+void DX9RENDER::SetWorld(const Matrix &mWorld)
 {
     SetTransform(D3DTS_WORLD, mWorld);
 }
 
-void DX9RENDER::SetProjection(const CMatrix &mProjection)
+void DX9RENDER::SetProjection(const Matrix &mProjection)
 {
     SetTransform(D3DTS_PROJECTION, mProjection);
 }
 
-const CMatrix &DX9RENDER::GetView()
+const Matrix &DX9RENDER::GetView()
 {
     GetTransform(D3DTS_VIEW, mView);
     return mView;
 }
 
-const CMatrix &DX9RENDER::GetWorld()
+const Matrix &DX9RENDER::GetWorld()
 {
     GetTransform(D3DTS_WORLD, mWorld);
     return mWorld;
 }
 
-const CMatrix &DX9RENDER::GetProjection()
+const Matrix &DX9RENDER::GetProjection()
 {
     GetTransform(D3DTS_PROJECTION, mProjection);
     return mProjection;

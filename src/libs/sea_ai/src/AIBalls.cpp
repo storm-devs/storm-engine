@@ -81,26 +81,26 @@ void AIBalls::FireBallFromCamera()
         return;
 
     /*AIHelper::pRS->GetTransform(D3DTS_VIEW, mView);
-    CMatrix mIView = mView;
+    Matrix mIView = mView;
     mIView.Transposition3X3();
-    float fY = atan2f(mIView.Vz().x, mIView.Vz().z);
-    float fX = SIGN(mIView.Vz().y) * acosf(mIView.Vz() | CVECTOR(mIView.Vz().x, 0.0f, mIView.Vz().z));*/
+    float fY = atan2f(mIView.vz.x, mIView.vz.z);
+    float fX = SIGN(mIView.vz.y) * acosf(mIView.vz | Vector(mIView.vz.x, 0.0f, mIView.vz.z));*/
 
-    CVECTOR vCamPos, vCamAng;
+    Vector vCamPos, vCamAng;
     float fFov;
     AIHelper::pRS->GetCamera(vCamPos, vCamAng, fFov);
 
-    CMatrix mView(vCamAng, vCamPos);
+    Matrix mView(vCamAng, vCamPos);
     auto mIView = mView;
     // mIView.Transposition3X3();
-    auto fY = atan2f(mIView.Vz().x, mIView.Vz().z);
-    auto fX = SIGN(mIView.Vz().y) * acosf(mIView.Vz() | CVECTOR(mIView.Vz().x, 0.0f, mIView.Vz().z));
+    auto fY = atan2f(mIView.vz.x, mIView.vz.z);
+    auto fX = SIGN(mIView.vz.y) * acosf(mIView.vz | Vector(mIView.vz.x, 0.0f, mIView.vz.z));
 
     pABall->SetAttribute("Type", "Balls");
     pABall->SetAttributeUseDword("CharacterIndex", static_cast<uint32_t>(iMainCharIndex));
-    pABall->SetAttributeUseFloat("x", mIView.Pos().x);
-    pABall->SetAttributeUseFloat("y", mIView.Pos().y);
-    pABall->SetAttributeUseFloat("z", mIView.Pos().z);
+    pABall->SetAttributeUseFloat("x", mIView.pos.x);
+    pABall->SetAttributeUseFloat("y", mIView.pos.y);
+    pABall->SetAttributeUseFloat("z", mIView.pos.z);
     pABall->SetAttributeUseFloat("SpdV0", 100.0f);
     pABall->SetAttributeUseFloat("HeightMultiply", 1.0f);
     pABall->SetAttributeUseFloat("SizeMultiply", 1.0f);
@@ -138,7 +138,7 @@ void AIBalls::AddBall(ATTRIBUTES *pABall)
 #define GetADword(x) pABall->GetAttributeAsDword(x)
 
     pBall->fTime = 0.0f;
-    pBall->vPos = pBall->vFirstPos = CVECTOR(GetAFloat("x"), GetAFloat("y"), GetAFloat("z"));
+    pBall->vPos = pBall->vFirstPos = Vector(GetAFloat("x"), GetAFloat("y"), GetAFloat("z"));
     pBall->fSpeedV0 = GetAFloat("SpdV0");
     pBall->fHeightMultiply = GetAFloat("HeightMultiply");
     pBall->fSizeMultiply = GetAFloat("SizeMultiply");
@@ -174,7 +174,7 @@ void AIBalls::AddBall(ATTRIBUTES *pABall)
 void AIBalls::Execute(uint32_t Delta_Time)
 {
     uint32_t i, j;
-    CVECTOR vSrc, vDst;
+    Vector vSrc, vDst;
     entid_t EID;
 
     if (!pIsland && (EID = EntityManager::GetEntityId("island")))
@@ -214,7 +214,7 @@ void AIBalls::Execute(uint32_t Delta_Time)
             float fsX = pBall->fSpeedV0 * pBall->fTime * pBall->fCosAngle;
             float fsY = pBall->fHeightMultiply * (pBall->fSpeedV0 * pBall->fTime * pBall->fSinAngle -
                                                   AIHelper::fGravity * SQR(pBall->fTime) / 2.0f);
-            pBall->vPos = CVECTOR(0.0f, fsY, fsX);
+            pBall->vPos = Vector(0.0f, fsY, fsX);
             RotateAroundY(pBall->vPos.x, pBall->vPos.z, pBall->fDirX, pBall->fDirZ);
             pBall->vPos += pBall->vFirstPos;
 
@@ -227,14 +227,14 @@ void AIBalls::Execute(uint32_t Delta_Time)
 
             if (pBall->pParticle)
             {
-                CVECTOR vDir = !(vSrc - vDst);
+                Vector vDir = !(vSrc - vDst);
                 pBall->pParticle->SetEmitter(pBall->vPos, vDir);
             }
 
             float fRes = 2.0f;
 
-            CVECTOR v1 = mView * vSrc;
-            CVECTOR v2 = mView * vDst;
+            Vector v1 = mView * vSrc;
+            Vector v2 = mView * vDst;
 
             if (SIGN(v1.z) != SIGN(v2.z))
             {
@@ -244,8 +244,8 @@ void AIBalls::Execute(uint32_t Delta_Time)
 
                 if (Sqr(x) + Sqr(y) <= Sqr(fBallFlySoundDistance))
                 {
-                    CVECTOR vRes, v = fBallFlySoundStereoMultiplyer * CVECTOR(x, y, 0.0f);
-                    mView.MulToInv(v, vRes);
+                    Vector v = fBallFlySoundStereoMultiplyer * Vector(x, y, 0.0f);
+                    Vector vRes = mView.MulVertexByInverse(v);
 
                     core.Event(BALL_FLY_NEAR_CAMERA, "fff", vRes.x, vRes.y, vRes.z);
                 }

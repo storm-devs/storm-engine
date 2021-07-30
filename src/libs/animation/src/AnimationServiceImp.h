@@ -12,7 +12,6 @@
 
 #include "Animation.h"
 #include "AnimationInfo.h"
-#include "vmodule_api.h"
 
 //============================================================================================
 

@@ -10,8 +10,8 @@ static long nlab = 0;
 long NODER::depth = -1;
 long NODER::node;
 extern long clip_nps;
-extern const PLANE *clip_p;
-extern const CVECTOR *clip_c;
+extern const Plane *clip_p;
+extern const Vector *clip_c;
 extern float clip_r;
 extern GEOS::ADD_POLYGON_FUNC clip_geosap;
 extern ADD_POLYGON_FUNC clip_ap;
@@ -27,14 +27,14 @@ GEOS *sphere = 0;
 //-------------------------------------------------------------------
 //
 //-------------------------------------------------------------------
-CMatrix *backtrans;
-CVECTOR clip_v[256];
+Matrix *backtrans;
+Vector clip_v[256];
 
 bool AddPolygon(const GEOS::VERTEX *vr, long nv)
 {
     //!!! must be transformed
     for (long p = 0; p < nv; p++)
-        clip_v[p] = *backtrans * CVECTOR(vr[p].x, vr[p].y, vr[p].z);
+        clip_v[p] = *backtrans * Vector(vr[p].x, vr[p].y, vr[p].z);
     return clip_ap(clip_v, nv);
 }
 
@@ -58,15 +58,15 @@ bool NODER::Clip()
         backtrans = &glob_mtx;
         for (long p = 0; p < clip_nps; p++)
         {
-            const auto x = clip_p[p].D * clip_p[p].Nx - glob_mtx.m[3][0];
-            const auto y = clip_p[p].D * clip_p[p].Ny - glob_mtx.m[3][1];
-            const auto z = clip_p[p].D * clip_p[p].Nz - glob_mtx.m[3][2];
+            const auto x = clip_p[p].D * clip_p[p].n.x - glob_mtx.m[3][0];
+            const auto y = clip_p[p].D * clip_p[p].n.y - glob_mtx.m[3][1];
+            const auto z = clip_p[p].D * clip_p[p].n.z - glob_mtx.m[3][2];
             const auto Nx =
-                glob_mtx.m[0][0] * clip_p[p].Nx + glob_mtx.m[0][1] * clip_p[p].Ny + glob_mtx.m[0][2] * clip_p[p].Nz;
+                glob_mtx.m[0][0] * clip_p[p].n.x + glob_mtx.m[0][1] * clip_p[p].n.y + glob_mtx.m[0][2] * clip_p[p].n.z;
             const auto Ny =
-                glob_mtx.m[1][0] * clip_p[p].Nx + glob_mtx.m[1][1] * clip_p[p].Ny + glob_mtx.m[1][2] * clip_p[p].Nz;
+                glob_mtx.m[1][0] * clip_p[p].n.x + glob_mtx.m[1][1] * clip_p[p].n.y + glob_mtx.m[1][2] * clip_p[p].n.z;
             const auto Nz =
-                glob_mtx.m[2][0] * clip_p[p].Nx + glob_mtx.m[2][1] * clip_p[p].Ny + glob_mtx.m[2][2] * clip_p[p].Nz;
+                glob_mtx.m[2][0] * clip_p[p].n.x + glob_mtx.m[2][1] * clip_p[p].n.y + glob_mtx.m[2][2] * clip_p[p].n.z;
             const auto lx = glob_mtx.m[0][0] * x + glob_mtx.m[0][1] * y + glob_mtx.m[0][2] * z;
             const auto ly = glob_mtx.m[1][0] * x + glob_mtx.m[1][1] * y + glob_mtx.m[1][2] * z;
             const auto lz = glob_mtx.m[2][0] * x + glob_mtx.m[2][1] * y + glob_mtx.m[2][2] * z;
@@ -76,8 +76,7 @@ bool NODER::Clip()
             clip_gp[p].d = (Nx * lx + Ny * ly + Nz * lz) * glob_mtx.m[3][3];
         }
         GEOS::VERTEX gc;
-        CVECTOR cnt;
-        glob_mtx.MulToInv(*clip_c, cnt);
+        Vector cnt = glob_mtx.MulVertexByInverse(*clip_c);
         gc.x = cnt.x;
         gc.y = cnt.y;
         gc.z = cnt.z;
@@ -96,7 +95,7 @@ bool NODER::Clip()
 //-------------------------------------------------------------------
 //
 //-------------------------------------------------------------------
-float NODER::Update(CMatrix &mtx, CVECTOR &cnt)
+float NODER::Update(Matrix &mtx, Vector &cnt)
 {
     glob_mtx.EqMultiply(loc_mtx, mtx);
 
@@ -106,7 +105,7 @@ float NODER::Update(CMatrix &mtx, CVECTOR &cnt)
     for (long l = 0; l < nnext; l++)
         if (next[l] != nullptr)
         {
-            CVECTOR cnt; //~!~
+            Vector cnt; //~!~
             const auto r = static_cast<NODER *>(next[l])->Update(glob_mtx, cnt);
             const auto rad = sqrtf(~(cnt - center)) + r;
             if (rad > radius)
@@ -120,7 +119,7 @@ float NODER::Update(CMatrix &mtx, CVECTOR &cnt)
 //----------------------------------------------------------
 // NODE trace
 //----------------------------------------------------------
-float NODER::Trace(const CVECTOR &src, const CVECTOR &dst)
+float NODER::Trace(const Vector &src, const Vector &dst)
 {
     if (isReleaed)
         return 2.0f;
@@ -149,9 +148,8 @@ float NODER::Trace(const CVECTOR &src, const CVECTOR &dst)
 
     if (flags & TRACE_ENABLE && dist2ray2 < dlmn * geo_radius * geo_radius)
     {
-        CVECTOR _src, _dst;
-        glob_mtx.MulToInv(src, _src);
-        glob_mtx.MulToInv(dst, _dst);
+        Vector _src = glob_mtx.MulVertexByInverse(src);
+        Vector _dst = glob_mtx.MulVertexByInverse(dst);
         const auto ds = geo->Trace((GEOS::VERTEX &)_src, (GEOS::VERTEX &)_dst);
         if (ds < best_dist)
         {
@@ -182,7 +180,7 @@ NODER::NODER()
     max_view_dist = 0.f;
 }
 
-bool NODER::Init(const char *lightPath, const char *pname, const char *oname, const CMatrix &m, const CMatrix &globm,
+bool NODER::Init(const char *lightPath, const char *pname, const char *oname, const Matrix &m, const Matrix &globm,
                  NODER *par, const char *lmPath)
 {
     name[0] = 0;
@@ -238,7 +236,7 @@ bool NODER::Init(const char *lightPath, const char *pname, const char *oname, co
     GEOS::INFO gi;
     geo->GetInfo(gi);
     geo_radius = gi.radius;
-    geo_center = CVECTOR(gi.boxcenter.x, gi.boxcenter.y, gi.boxcenter.z);
+    geo_center = Vector(gi.boxcenter.x, gi.boxcenter.y, gi.boxcenter.z);
 
     parent = par;
     if (parent == nullptr)
@@ -261,12 +259,12 @@ bool NODER::Init(const char *lightPath, const char *pname, const char *oname, co
         {
             GEOS::LABEL lb;
             geo->GetLabel(sti, lb);
-            CMatrix mt;
+            Matrix mt;
             // memcpy(mt.m, lb.m, sizeof(lb.m));
-            mt.Vx() = CVECTOR(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
-            mt.Vy() = CVECTOR(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
-            mt.Vz() = CVECTOR(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
-            mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            mt.vx = Vector(lb.m[0][0], lb.m[0][1], lb.m[0][2]);
+            mt.vy = Vector(lb.m[1][0], lb.m[1][1], lb.m[1][2]);
+            mt.vz = Vector(lb.m[2][0], lb.m[2][1], lb.m[2][2]);
+            mt.pos = Vector(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
             next[l] = new NODER();
 
@@ -377,7 +375,7 @@ void NODER::Draw()
         return;
     if (max_view_dist > 0.f)
     {
-        CVECTOR cpos, cang;
+        Vector cpos, cang;
         float cpersp;
         rs->GetCamera(cpos, cang, cpersp);
         const float fdist = ~(cpos - cnt);
@@ -402,10 +400,10 @@ void NODER::Draw()
     }
     if (core.Controls->GetDebugAsyncKeyState(SHOW_SPHERES) < 0)
     {
-        CMatrix sm(0.0f, 0.0f, 0.0f, cnt.x, cnt.y, cnt.z);
-        CMatrix sc;
+        Matrix sm(0.0f, 0.0f, 0.0f, cnt.x, cnt.y, cnt.z);
+        Matrix sc;
         sc.m[0][0] = sc.m[1][1] = sc.m[2][2] = radius;
-        CMatrix rm = sc * sm;
+        Matrix rm = sc * sm;
         rs->SetTransform(D3DTS_WORLD, (D3DMATRIX *)&rm);
         sphere->Draw(0, 0, 0);
     }
@@ -583,7 +581,7 @@ void NODER::Link(entid_t id, bool transform)
     // modify loc_mtx of node
     if (transform)
     {
-        CMatrix glob_parent = next[nnext - 1]->glob_mtx;
+        Matrix glob_parent = next[nnext - 1]->glob_mtx;
         // glob_parent.Transposition();
         // next[nnext-1]->loc_mtx = mdl->mtx * glob_parent;
     }

@@ -14,18 +14,18 @@ class FirePlace
     FirePlace();
     ~FirePlace();
 
-    CVECTOR GetPos()
+    Vector GetPos()
     {
         Assert(GetShip());
         return *GetShip()->GetMatrix() * vOrigPos;
     };
 
-    void SetPos(CVECTOR &vPos)
+    void SetPos(Vector &vPos)
     {
         vOrigPos = vPos;
     };
 
-    float GetDistance(CVECTOR &vOtherPos)
+    float GetDistance(Vector &vOtherPos)
     {
         return sqrtf(~(GetPos() - vOtherPos));
     };
@@ -82,7 +82,7 @@ class FirePlace
     SEA_BASE *pSea;
     long iSoundID;
     long iBallCharacterIndex;
-    CVECTOR vOrigPos;
+    Vector vOrigPos;
     bool bActive;
     float fRunTime;
     std::string sParticleSmokeName, sParticleFireName, sSoundName;

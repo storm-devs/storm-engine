@@ -18,7 +18,7 @@ struct tAction
     long timePassed;
     float timeK;
     long actionTime;
-    CVECTOR destination, direction;
+    Vector destination, direction;
     SHIP_BASE *attackerShip;
     int hitIntoShip;
     void (SEA_OPERATOR::*actionMethod)(tAction *_action);
@@ -77,7 +77,7 @@ class SEA_OPERATOR : public Entity
     void FirstInit();
     bool IsTimeToActivate(bool _testControls = true);
     void SetIfMyShip(entid_t _shipID);
-    void HandleShipFire(entid_t _shipID, const char *_bortName, const CVECTOR &_destination, const CVECTOR &_direction);
+    void HandleShipFire(entid_t _shipID, const char *_bortName, const Vector &_destination, const Vector &_direction);
     void HandleShipHit();
     void HandleShipIdle();
     void StartNewAction();
@@ -89,11 +89,11 @@ class SEA_OPERATOR : public Entity
     SHIP_BASE *myShip, *enemyShip;
     long actionTime;
     bool ballTracked;
-    CVECTOR ballPosition, lastBallPosition, finalBallPosition;
+    Vector ballPosition, lastBallPosition, finalBallPosition;
 
     uint32_t idleTime, sinceLastActionTime;
     TActionBuffer actionBuffer;
-    CVECTOR cameraPos, cameraTargetPos;
+    Vector cameraPos, cameraTargetPos;
 };
 
 //--------------------------------------------------------------------

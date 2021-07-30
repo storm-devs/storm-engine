@@ -8,7 +8,6 @@
 #include "DataString.h"
 
 #include "../../ICommon/Names.h"
-#include "vmodule_api.h"
 
 #define HEADER "PSYS"
 #define VERSION "v3.5"

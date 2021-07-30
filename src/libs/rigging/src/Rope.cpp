@@ -5,7 +5,7 @@
 #include "shared/sail_msg.h"
 #include "ship_base.h"
 
-extern void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);
+extern void sailPrint(VDX9RENDER *rs, const Vector &pos3D, float rad, long line, const char *format, ...);
 
 ROPE::ROPE()
 {
@@ -118,7 +118,7 @@ void ROPE::Execute(uint32_t Delta_Time)
                 // DoMove(rlist[i]);
                 else if (rlist[i]->len != 0.f) // set all vertex to point(0,0,0)
                 {
-                    const auto nulVect = CVECTOR(0.f, 0.f, 0.f);
+                    const auto nulVect = Vector(0.f, 0.f, 0.f);
                     for (auto idx = rlist[i]->sv; idx < rlist[i]->sv + rlist[i]->nv; idx++)
                         vertBuf[idx].pos = nulVect;
                 }
@@ -146,7 +146,7 @@ void ROPE::Realize(uint32_t Delta_Time)
         else
         {
             // draw nature rope
-            CVECTOR cp, ca;
+            Vector cp, ca;
             float pr;
             RenderService->GetCamera(cp, ca, pr);
             pr = tanf(pr * .5f);
@@ -157,7 +157,7 @@ void ROPE::Realize(uint32_t Delta_Time)
             {
                 for (auto i = 0; i < groupQuantity; i++)
                     if (!gdata[i].bDeleted && gdata[i].nt != 0 && nVert != 0)
-                        if ((~(gdata[i].pMatWorld->Pos() - cp)) * pr < fMaxRopeDist)
+                        if ((~(gdata[i].pMatWorld->pos - cp)) * pr < fMaxRopeDist)
                         // if the distance to the ship is not more than the maximum
                         {
                             static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))
@@ -442,11 +442,10 @@ void ROPE::SetVertexes(ROPEDATA *pr, float dtime) const
 
     int vertnum = pr->sv;
 
-    CVECTOR cvb, cve;
     // Get begin point into Ship coordinate
-    gdata[pr->HostGroup].pMatWorld->MulToInv(*pr->bMatWorld * pr->pBeg, cvb);
+    Vector cvb = gdata[pr->HostGroup].pMatWorld->MulVertexByInverse(*pr->bMatWorld * pr->pBeg);
     // Get end point into Ship coordinate
-    gdata[pr->HostGroup].pMatWorld->MulToInv(*pr->eMatWorld * pr->pEnd, cve);
+    Vector cve = gdata[pr->HostGroup].pMatWorld->MulVertexByInverse(*pr->eMatWorld * pr->pEnd);
 
     // Set the first and last points of the rope
     vertBuf[vertnum].pos = cvb;
@@ -456,11 +455,11 @@ void ROPE::SetVertexes(ROPEDATA *pr, float dtime) const
 
     vertnum++;
 
-    const CVECTOR dtV = (cve - cvb - pr->cv) / static_cast<float>(pr->segquant);
-    const CVECTOR deepV = pr->vDeep * (4.f / static_cast<float>(pr->segquant * pr->segquant));
+    const Vector dtV = (cve - cvb - pr->cv) / static_cast<float>(pr->segquant);
+    const Vector deepV = pr->vDeep * (4.f / static_cast<float>(pr->segquant * pr->segquant));
     for (int segn = 0; segn <= pr->segquant; segn++)
     {
-        CVECTOR cv = cvb;
+        Vector cv = cvb;
         if (pr->bMakeWave)
             cv += deepV * static_cast<float>(segn * (pr->segquant - segn));
 
@@ -479,11 +478,11 @@ void ROPE::DoMove(ROPEDATA *pr)
     if(pr->bUse)
     {
         int vertnum=pr->sv;
-        CVECTOR cvb,cve,cv;
+        Vector cvb,cve,cv;
         // Get begin point into Ship coordinate
-        gdata[pr->HostGroup].pMatWorld->MulToInv(*pr->bMatWorld*pr->pBeg,cvb);
+        gdata[pr->HostGroup].pMatWorld->MulVertexByInverse(*pr->bMatWorld*pr->pBeg,cvb);
         // Get end point into Ship coordinate
-        gdata[pr->HostGroup].pMatWorld->MulToInv(*pr->eMatWorld*pr->pEnd,cve);
+        gdata[pr->HostGroup].pMatWorld->MulVertexByInverse(*pr->eMatWorld*pr->pEnd,cve);
 
         // Set the first and last points of the rope
         vertBuf[vertnum].pos=cvb;
@@ -491,13 +490,13 @@ void ROPE::DoMove(ROPEDATA *pr)
 
         cvb += pr->cv;
 
-        CVECTOR chV = pr->pOld - pr->pBeg;
+        Vector chV = pr->pOld - pr->pBeg;
         if( chV.x>MaxCh || chV.x<-MaxCh ||
             chV.y>MaxCh || chV.y<-MaxCh ||
             chV.z>MaxCh || chV.z<-MaxCh )
         {
             vertnum++;
-            CVECTOR dc = (cve - cvb - pr->cv)/(float)pr->segquant;
+            Vector dc = (cve - cvb - pr->cv)/(float)pr->segquant;
             for(int j=0; j<=pr->segquant; j++)
             {
                 // set new coordinates in the current section
@@ -642,7 +641,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
     }
 
     // now getting all two points
-    CVECTOR ce, cb;
+    Vector ce, cb;
     if (rd->bMatWorld != nullptr && rd->eMatWorld != nullptr)
     {
         cb = *rd->bMatWorld * rd->pBeg;
@@ -675,7 +674,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
             rd->segquant = static_cast<uint16_t>(rd->len / ROPE_SEG_LENGTH) + 1;
             rd->cv = (!(ce - cb)) * ROPE_END_LENGTH; // vector for rope edge length
             // Set normals with length equal the rope width
-            CVECTOR norm;
+            Vector norm;
             float cvert, chorz, svert, shorz;
             norm = ce - cb;
             cvert = norm.z / rd->len;
@@ -760,7 +759,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
 }
 
 // get the end point of the rope in the coordinates of the start point
-void ROPE::GetEndPoint(CVECTOR *cv, int ropenum, entid_t mdl_id)
+void ROPE::GetEndPoint(Vector *cv, int ropenum, entid_t mdl_id)
 {
     int rn;
 
@@ -783,9 +782,9 @@ void ROPE::GetEndPoint(CVECTOR *cv, int ropenum, entid_t mdl_id)
         return;
 
     if (bGetEnd)
-        rlist[rn]->bMatWorld->MulToInv(*rlist[rn]->eMatWorld * rlist[rn]->pEnd, *cv);
+        *cv = rlist[rn]->bMatWorld->MulVertexByInverse(*rlist[rn]->eMatWorld * rlist[rn]->pEnd);
     else
-        rlist[rn]->eMatWorld->MulToInv(*rlist[rn]->bMatWorld * rlist[rn]->pBeg, *cv);
+        *cv = rlist[rn]->eMatWorld->MulVertexByInverse(*rlist[rn]->bMatWorld * rlist[rn]->pBeg);
 }
 
 void ROPE::LoadIni()

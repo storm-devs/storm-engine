@@ -12,7 +12,7 @@ class IShipLights : public Entity
 
     virtual void AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bool bFlares) = 0;
     virtual void KillMast(VAI_OBJBASE *pObject, NODE *pNode, bool bNow) = 0;
-    virtual void AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos) = 0;
+    virtual void AddDynamicLights(VAI_OBJBASE *pObject, const Vector &vPos) = 0;
     virtual void SetLights(VAI_OBJBASE *pObject) = 0;
     virtual void UnSetLights(VAI_OBJBASE *pObject) = 0;
     virtual void SetLightsOff(VAI_OBJBASE *pObject, float fTime, bool bLights, bool bFlares, bool bNow) = 0;

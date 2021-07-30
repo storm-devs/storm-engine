@@ -95,16 +95,16 @@ void SINKEFFECT::Execute(uint32_t _dTime)
       {
         if (renderer && sea)
         {
-          static CVECTOR pos, ang, nose, head;
-          static CMatrix view;
-          //CVECTOR dir(randCentered(2.0f), -1.0f, randCentered(2.0f));
-          CVECTOR dir(0.0f, -1.0f, 0.0f);
+          static Vector pos, ang, nose, head;
+          static Matrix view;
+          //Vector dir(randCentered(2.0f), -1.0f, randCentered(2.0f));
+          Vector dir(0.0f, -1.0f, 0.0f);
 
           renderer->GetTransform(D3DTS_VIEW, view);
           view.Transposition();
-          nose = view.Vz();
-          //head = view.Vy();
-          pos = view.Pos();
+          nose = view.vz;
+          //head = view.vy;
+          pos = view.pos;
 
           pos += 10.0f * !nose;
           pos.y = sea->WaveXZ(pos.x, pos.y);
@@ -131,7 +131,7 @@ void SINKEFFECT::InitializeSinks()
 }
 
 //--------------------------------------------------------------------
-TSink *SINKEFFECT::TryToAddSink(const CVECTOR &_pos, float _r)
+TSink *SINKEFFECT::TryToAddSink(const Vector &_pos, float _r)
 {
     for (auto i = 0; i < sink_effect::MAX_SINKS; ++i)
     {

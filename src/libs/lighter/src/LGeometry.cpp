@@ -200,9 +200,9 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             }
             for (long v = 0; v < num; v++)
             {
-                auto *pos = (CVECTOR *)(pnt + v * stride);
+                auto *pos = (Vector *)(pnt + v * stride);
                 vrt[numVrt].p = *pos;
-                auto *nrm = (CVECTOR *)(pnt + v * stride + 3 * sizeof(float));
+                auto *nrm = (Vector *)(pnt + v * stride + 3 * sizeof(float));
                 vrt[numVrt].n = *nrm;
                 auto color = *(uint32_t *)(pnt + v * stride + 6 * sizeof(float));
                 auto l = ~vrt[numVrt].n;
@@ -369,7 +369,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
 void LGeometry::DrawNormals(VDX9RENDER *rs)
 {
     if (!drawbuf)
-        drawbuf = new CVECTOR[1024];
+        drawbuf = new Vector[1024];
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, 0xff00ff00);
     long p = 0;
     for (long i = 0; i < numVrt; i++)
@@ -379,13 +379,13 @@ void LGeometry::DrawNormals(VDX9RENDER *rs)
         p += 2;
         if (p >= 1024)
         {
-            rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ, 512, drawbuf, sizeof(CVECTOR), "DbgDrawLines");
+            rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ, 512, drawbuf, sizeof(Vector), "DbgDrawLines");
             p = 0;
         }
     }
     if (p > 1)
     {
-        rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ, p / 2, drawbuf, sizeof(CVECTOR), "DbgDrawLines");
+        rs->DrawPrimitiveUP(D3DPT_LINELIST, D3DFVF_XYZ, p / 2, drawbuf, sizeof(Vector), "DbgDrawLines");
     }
 }
 
@@ -409,7 +409,7 @@ void LGeometry::UpdateColors(VDX9RENDER *rs)
             }
             lockedVB = vrt[i].vbid;
         }
-        CVECTOR c = vrt[i].c * vrt[i].mc * 255.0f;
+        Vector c = vrt[i].c * vrt[i].mc * 255.0f;
         if (c.x < 0.0f)
             c.x = 0.0f;
         if (c.x > 255.0f)
@@ -431,7 +431,7 @@ void LGeometry::UpdateColors(VDX9RENDER *rs)
 }
 
 // Trace the ray
-float LGeometry::Trace(const CVECTOR &src, const CVECTOR &dst)
+float LGeometry::Trace(const Vector &src, const Vector &dst)
 {
     for (long i = 0; i < numObjects; i++)
     {
@@ -491,7 +491,7 @@ bool LGeometry::Save()
         long sv = 0;
         for (long j = 0, n = object[i].lBufSize; j < n; j++)
         {
-            CVECTOR c = vrt[pnt].c * vrt[pnt].mc * 255.0f;
+            Vector c = vrt[pnt].c * vrt[pnt].mc * 255.0f;
             pnt++;
             if (c.x < 0.0f)
                 c.x = 0.0f;

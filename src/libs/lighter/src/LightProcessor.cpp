@@ -175,7 +175,7 @@ void LightProcessor::UpdateLightsParam()
     auto &ls = *lights;
     float cs, att;
     float dst;
-    CVECTOR nrm;
+    Vector nrm;
     for (long i = 0; i < numVrt; i++)
     {
         auto &v = vrt[i];
@@ -289,15 +289,15 @@ void LightProcessor::ApplyTriangleShadows(Triangle &t)
                 float sky = 0.0;
                 const auto rad = geometry->radius;
                 const auto rdx = geometry->radius * 0.2f;
-                if (geometry->Trace(pnt, pnt + CVECTOR(0.0f, rad, 0.0f)) > 1.0f)
+                if (geometry->Trace(pnt, pnt + Vector(0.0f, rad, 0.0f)) > 1.0f)
                     sky += 1.0f / 5.0f;
-                if (geometry->Trace(pnt, pnt + CVECTOR(rdx, rad, 0.0f)) > 1.0f)
+                if (geometry->Trace(pnt, pnt + Vector(rdx, rad, 0.0f)) > 1.0f)
                     sky += 1.0f / 5.0f;
-                if (geometry->Trace(pnt, pnt + CVECTOR(-rdx, rad, 0.0f)) > 1.0f)
+                if (geometry->Trace(pnt, pnt + Vector(-rdx, rad, 0.0f)) > 1.0f)
                     sky += 1.0f / 5.0f;
-                if (geometry->Trace(pnt, pnt + CVECTOR(0.0f, rad, rdx)) > 1.0f)
+                if (geometry->Trace(pnt, pnt + Vector(0.0f, rad, rdx)) > 1.0f)
                     sky += 1.0f / 5.0f;
-                if (geometry->Trace(pnt, pnt + CVECTOR(0.0f, rad, -rdx)) > 1.0f)
+                if (geometry->Trace(pnt, pnt + Vector(0.0f, rad, -rdx)) > 1.0f)
                     sky += 1.0f / 5.0f;
                 sky *= t.sq;
                 vrt[t.i[0]].shadow[i].v += sky;
@@ -498,7 +498,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
     const auto num = ls.Num();
     auto *const vrt = geometry->vrt.data();
     const auto kBlur = window->kBlur;
-    CVECTOR c;
+    Vector c;
     for (long i = 0; i < num; i++)
     {
         if (!ls[i].isOn)

@@ -287,23 +287,23 @@ void NPCharacter::Update(float dltTime)
         }
         if (!fid)
             fid = "<none>";
-        location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, 3, 1.0f, 0xffffff, 0.5f, "id(%s)", id);
-        location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, 2, 1.0f, 0xffffff, 0.5f, "task(%s<-%s)",
+        location->Print(curPos + Vector(0.0f, height, 0.0f), rad, 3, 1.0f, 0xffffff, 0.5f, "id(%s)", id);
+        location->Print(curPos + Vector(0.0f, height, 0.0f), rad, 2, 1.0f, 0xffffff, 0.5f, "task(%s<-%s)",
                         GetTaskName(task.task), GetTaskName(lastSetTask));
         if (isDebugEx)
-            location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, 1, 1.0f, 0xffffff, 0.5f, "target(%s)", fid);
+            location->Print(curPos + Vector(0.0f, height, 0.0f), rad, 1, 1.0f, 0xffffff, 0.5f, "target(%s)", fid);
         if (isDebugEx)
-            location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, 0, 1.0f, 0xffffff, 0.5f, "cmd(%s)",
+            location->Print(curPos + Vector(0.0f, height, 0.0f), rad, 0, 1.0f, 0xffffff, 0.5f, "cmd(%s)",
                             GetCommandName(command.cmd));
         if (isDebugEx)
-            location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, -1, 1.0f, 0xffffff, 0.5f,
+            location->Print(curPos + Vector(0.0f, height, 0.0f), rad, -1, 1.0f, 0xffffff, 0.5f,
                             "pos(%.2f, %.2f, %.2f)", curPos.x, curPos.y, curPos.z);
         if (isDebugEx)
-            location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, -2, 1.0f, 0xffffff, 0.5f, "isJump = %s",
+            location->Print(curPos + Vector(0.0f, height, 0.0f), rad, -2, 1.0f, 0xffffff, 0.5f, "isJump = %s",
                             isJump ? "true" : "false");
         long line = 4;
         if (isDebugEx && command.cmd == aicmd_gotopoint)
-            location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
+            location->Print(curPos + Vector(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
                             "goto(%.2f, %.2f, %.2f)", command.pnt.x, command.pnt.y, command.pnt.z);
         if (isDebugEx && AttributesPointer)
         {
@@ -315,12 +315,12 @@ void NPCharacter::Update(float dltTime)
                     fid = atr->GetAttributeName(i);
                     id = atr->GetAttribute(i);
                     if (fid && id)
-                        location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
+                        location->Print(curPos + Vector(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
                                         "tmpl.%s(%s)", fid, id);
                 }
                 id = atr->GetThisAttr();
                 if (id)
-                    location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "tmpl(%s)",
+                    location->Print(curPos + Vector(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "tmpl(%s)",
                                     id);
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.type");
@@ -331,12 +331,12 @@ void NPCharacter::Update(float dltTime)
                     fid = atr->GetAttributeName(i);
                     id = atr->GetAttribute(i);
                     if (fid && id)
-                        location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
+                        location->Print(curPos + Vector(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
                                         "type.%s(%s)", fid, id);
                 }
                 id = atr->GetThisAttr();
                 if (id)
-                    location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "type(%s)",
+                    location->Print(curPos + Vector(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "type(%s)",
                                     id);
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.group");
@@ -345,15 +345,15 @@ void NPCharacter::Update(float dltTime)
                 id = atr->GetThisAttr();
                 if (!id)
                     id = "";
-                location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
+                location->Print(curPos + Vector(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
                                 "group(\"%s\")", id);
             }
         }
-        location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "wantToAttack = %s",
+        location->Print(curPos + Vector(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "wantToAttack = %s",
                         wantToAttack ? "true" : "false");
-        location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "wantToDefence = %s",
+        location->Print(curPos + Vector(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "wantToDefence = %s",
                         wantToDefence ? "true" : "false");
-        location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "wantToFire = %s)",
+        location->Print(curPos + Vector(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "wantToFire = %s)",
                         wantToFire ? "true" : "false");
     }
 }
@@ -377,20 +377,20 @@ void NPCharacter::SetEscapeTask(Character *c)
     SetRunMode(true);
     task.target = c->GetId();*/
 
-    CVECTOR vOurPos, vPos;
+    Vector vOurPos, vPos;
     c->GetPosition(vPos);
     GetPosition(vOurPos);
 
     auto fCurDist = sqrtf(~(vOurPos - vPos));
-    const CVECTOR vDir = !(vOurPos - vPos);
+    const Vector vDir = !(vOurPos - vPos);
 
     SetFightMode(false);
     SetRunMode(true);
     for (long i = 0; i < 32; i++)
     {
-        CMatrix mRot;
+        Matrix mRot;
         mRot.BuildRotateY(static_cast<float>(i / 32.0f) * PIm2);
-        CVECTOR vDir1 = mRot * vDir;
+        Vector vDir1 = mRot * vDir;
 
         task.to = vPos + vDir1 * (fMusketerDistance * 0.8f);
         if (CmdGotoPoint(task.to.x, task.to.y, task.to.z, NPC_STOP_GOTODIST * 2.0f))
@@ -654,20 +654,20 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
             memset(&task.target, 0, sizeof(task.target));
             // task.target = c->GetId();
 
-            CVECTOR vOurPos, vPos;
+            Vector vOurPos, vPos;
             c->GetPosition(vPos);
             GetPosition(vOurPos);
 
             const float fCurDist = sqrtf(~(vOurPos - vPos));
-            const CVECTOR vDir = !(vOurPos - vPos);
+            const Vector vDir = !(vOurPos - vPos);
 
             SetFightMode(false);
             SetRunMode(true);
             for (long i = 1; i < 9; i++)
             {
-                CMatrix mRot;
+                Matrix mRot;
                 mRot.BuildRotateY(static_cast<float>(i / 9.0f) * PIm2);
-                CVECTOR vDir1 = mRot * vDir;
+                Vector vDir1 = mRot * vDir;
 
                 task.to = vPos + vDir1 * fCurDist;
                 if (CmdGotoPoint(task.to.x, task.to.y, task.to.z, NPC_STOP_GOTODIST * 2.0f))
@@ -873,7 +873,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     static EnemyState enemies[MAX_CHARACTERS];
     long enemyCounter = 0;
     // Our direction
-    const CVECTOR dir(sinf(ay), 0.0f, cosf(ay));
+    const Vector dir(sinf(ay), 0.0f, cosf(ay));
     // Calculating enemies
     bool isFreeBack = isRecoilEnable;
     static const float backAng = -cosf(45.0f * (3.1415926535f / 180.0f));
@@ -993,7 +993,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
         }
     }
     // Check the full rebound capability
-    CVECTOR p = curPos;
+    Vector p = curPos;
     if (location->GetPtcData().Move(currentNode, curPos + dir * 2.0f, p) >= 0)
     {
         p -= curPos;

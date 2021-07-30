@@ -64,7 +64,7 @@ class ShipTracks : public Entity
       private:
         struct Track
         {
-            CVECTOR vPos;
+            Vector vPos;
             float fCos, fSin;
             float fTime;
             float fTV;
@@ -75,7 +75,7 @@ class ShipTracks : public Entity
 
         struct TrackVertex
         {
-            CVECTOR vPos;
+            Vector vPos;
             uint32_t dwColor;
             float tu, tv;
         };
@@ -83,7 +83,7 @@ class ShipTracks : public Entity
         bool bFirstExecute;
 
         float fCurTV;
-        CVECTOR vLastPos, vLastAng;
+        Vector vLastPos, vLastAng;
 
         std::vector<Track> aTrack1, aTrack2;
         long iTrackTexture1, iTrackTexture2;

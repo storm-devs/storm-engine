@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Cvector.h"
 #include "IVBufferManager.h"
 #include "TFlotsam.h"
 #include "TSinkSplash.h"
@@ -18,7 +17,7 @@ class TSink
 
     void Initialize(INIFILE *_ini, IDirect3DDevice9 *_device, SEA_BASE *sea, VDX9RENDER *_renderer);
     void Release();
-    void Start(const CVECTOR &_pos, float _radius);
+    void Start(const Vector &_pos, float _radius);
     void Process(uint32_t dTime);
     void Realize(uint32_t dTime);
     bool Enabled();
@@ -39,5 +38,5 @@ class TSink
     TFlotsam flotsams[sink_effect::MAX_FLOTSAMS];
     float distortDivider;
     float radius;
-    CVECTOR center;
+    Vector center;
 };

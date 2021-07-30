@@ -1,8 +1,8 @@
 #include "xi_changer.h"
 
 #include "core.h"
-
 #include "vfile_service.h"
+#include "VideoTexture.h"
 
 CXI_CHANGER::CXI_CHANGER()
 {

@@ -1,5 +1,4 @@
 #include "DataFloat.h"
-#include "vmodule_api.h"
 
 // constructor / destructor
 DataFloat::DataFloat()

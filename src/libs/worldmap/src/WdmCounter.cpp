@@ -9,6 +9,8 @@
 //============================================================================================
 
 #include "WdmCounter.h"
+
+#include "WdmObjects.h"
 #include "WorldMap.h"
 
 //============================================================================================
@@ -31,10 +33,10 @@ WdmCounter::WdmCounter()
 
     Assert(wdmObjects->rs);
     const auto kDef = wdmObjects->rs->GetHeightDeformator();
-    mtx.BuildMatrix(-0.1f, 0.0f, 0.0f, 1.4f, 0.9f * kDef, 40.0f);
-    mtx.Vx() *= -0.25f;
-    mtx.Vy() *= 0.25f;
-    mtx.Vz() *= -0.25f;
+    mtx.Build(-0.1f, 0.0f, 0.0f, 1.4f, 0.9f * kDef, 40.0f);
+    mtx.vx *= -0.25f;
+    mtx.vy *= 0.25f;
+    mtx.vz *= -0.25f;
 
     for (long i = 0; i < WMD_NUM_SKYS; i++)
         skytx[i] = -1;
@@ -123,15 +125,15 @@ void WdmCounter::Update(float dltTime)
 void WdmCounter::LRender(VDX9RENDER *rs)
 {
     // Camera matrix
-    static CMatrix view, prj, oldPrj;
+    static Matrix view, prj, oldPrj;
     rs->GetTransform(D3DTS_VIEW, view);
     rs->GetTransform(D3DTS_PROJECTION, oldPrj);
     float scrw, scrh;
     wdmObjects->GetVPSize(scrw, scrh);
-    // prj.BuildProjectionMatrix(0.1f, scrw, scrh, 10.0f, 100.0f);
-    prj.BuildProjectionMatrix(0.1f, 4.0f, 3.0f, 10.0f, 100.0f);
+    // prj.BuildProjection(0.1f, scrw, scrh, 10.0f, 100.0f);
+    prj.BuildProjection(0.1f, 4.0f, 3.0f, 10.0f, 100.0f);
     rs->SetTransform(D3DTS_PROJECTION, prj);
-    rs->SetTransform(D3DTS_VIEW, CMatrix());
+    rs->SetTransform(D3DTS_VIEW, Matrix());
     // Sky
     const long numSkys = sizeof(skyseq) / sizeof(long);
     if (dayCounter < 0)
@@ -282,7 +284,7 @@ bool WdmCounter::LoadModel(WdmRenderModel *&pnt, const char *name, const char *t
 
 void WdmCounter::DrawNum(VDX9RENDER *rs, WdmRenderModel *m, float u, float v)
 {
-    CMatrix mtx;
+    Matrix mtx;
     mtx.m[0][0] = 0.25f;
     mtx.m[2][0] = u;
     mtx.m[2][1] = v;

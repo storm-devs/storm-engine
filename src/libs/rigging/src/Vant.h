@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Matrix.h"
 #include "dx9render.h"
+#include "Entity.h"
 #include "geos.h"
-#include "vmodule_api.h"
 
 #include <filesystem>
 
@@ -15,7 +14,7 @@ class NODE;
 
 struct VANTVERTEX
 {
-    CVECTOR pos;
+    Vector pos;
     float tu, tv;
 };
 
@@ -90,14 +89,14 @@ class VANT_BASE : public Entity
     struct VANTDATA
     {
         bool bDeleted;
-        CVECTOR pUp, pLeft, pRight;
-        CMatrix *pUpMatWorld, *pDownMatWorld;
+        Vector pUp, pLeft, pRight;
+        Matrix *pUpMatWorld, *pDownMatWorld;
         uint32_t sv, nv, st, nt;
 
         int vantNum;
-        CVECTOR pos[VANT_EDGE];
+        Vector pos[VANT_EDGE];
 
-        CVECTOR pUpOld, pLeftOld, pUpStart, pLeftStart;
+        Vector pUpOld, pLeftOld, pUpStart, pLeftStart;
         int HostGroup;
     };
 
@@ -112,7 +111,7 @@ class VANT_BASE : public Entity
         long sVert, nVert;
         long sIndx, nIndx;
 
-        CMatrix *pMatWorld;
+        Matrix *pMatWorld;
         entid_t model_id;
         entid_t shipEI;
     };
@@ -126,7 +125,7 @@ class VANT_BASE : public Entity
     void SetAll();
     void SetAdd(int firstNum);
     void doMove();
-    bool VectCmp(CVECTOR v1, CVECTOR v2, float minCmpVal);
+    bool VectCmp(Vector v1, Vector v2, float minCmpVal);
     void FirstRun();
     void DoSTORM_DELETE();
 

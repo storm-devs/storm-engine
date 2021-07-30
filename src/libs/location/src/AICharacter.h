@@ -31,8 +31,8 @@ class AICharacter : public Character
 
     struct PathNode
     {
-        CVECTOR pos; // Point of arrival
-        CVECTOR nrm; // Path direction
+        Vector pos; // Point of arrival
+        Vector nrm; // Path direction
         float dst;   // Distance to the plane
         long node;   // Node to be reached
     };
@@ -40,9 +40,9 @@ class AICharacter : public Character
     struct Command
     {
         AICommand cmd;     // Command
-        CVECTOR pnt;       // Point for the command
+        Vector pnt;       // Point for the command
         long node;         // Node to go to
-        CVECTOR tpnt;      // The point we are going at the moment
+        Vector tpnt;      // The point we are going at the moment
         long tnode;        // The node we're on
         float radius;      // Radius to complete the task
         float waitTime;    // Waiting time (stand)
@@ -117,14 +117,14 @@ class AICharacter : public Character
     void CmdUpdateEscape(float dltTime);
 
     // Find the node index for a given coordinate
-    long FindNodeIndex(const CVECTOR &pos, float *hy = nullptr);
+    long FindNodeIndex(const Vector &pos, float *hy = nullptr);
     // Find direction where to go (orientation on the terrain)
     bool FindDirectional();
     // Find the pushing forces
     void CalcRepulsionForces();
     // Calculate the point defined by the intersection and lying on the edge
-    static bool FindIntersection(const CVECTOR &s, const CVECTOR &e, const CVECTOR &cur, const CVECTOR &to,
-                                 CVECTOR &res);
+    static bool FindIntersection(const Vector &s, const Vector &e, const Vector &cur, const Vector &to,
+                                 Vector &res);
     // Calculate angle from direction vector
     static float Angle(double vx, double vz, float defAy);
 
@@ -137,11 +137,11 @@ class AICharacter : public Character
     float collisionValue;
 
     // Control forces
-    CVECTOR force;      // The power of pushing
-    CVECTOR goForce;    // Force determining the direction of movement
-    CVECTOR separation; // Pushback force
-    CVECTOR alignment;  // Force of directions alignment
-    CVECTOR around;     // Character Traversal Strength
+    Vector force;      // The power of pushing
+    Vector goForce;    // Force determining the direction of movement
+    Vector separation; // Pushback force
+    Vector alignment;  // Force of directions alignment
+    Vector around;     // Character Traversal Strength
 
     bool bMusketer;
     bool bMusketerNoMove;

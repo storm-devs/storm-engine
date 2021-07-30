@@ -2,6 +2,7 @@
 
 #include "defines.h"
 #include "dx9render.h"
+#include "Entity.h"
 
 class ActivePerkShower : public Entity
 {

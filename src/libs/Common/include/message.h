@@ -1,10 +1,9 @@
 #pragma once
 
 #include <cstdarg>
-#include <cstring>
 #include <variant>
 
-#include "Cvector.h"
+#include "math3d.h"
 #include "entity.h"
 
 class VDATA;
@@ -12,7 +11,7 @@ class VDATA;
 namespace storm
 {
 using MessageParam = std::variant<uint8_t, uint16_t, uint32_t, long, float, double, ATTRIBUTES *, entid_t, VDATA *,
-                                  CVECTOR, std::string>;
+                                  Vector, std::string>;
 } // namespace storm
 
 class MESSAGE final
@@ -83,10 +82,10 @@ class MESSAGE final
         return get<VDATA *>(params_[index - 1]);
     }
 
-    CVECTOR CVector()
+    Vector Vec()
     {
         ValidateFormat('c');
-        return get<CVECTOR>(params_[index - 1]);
+        return get<Vector>(params_[index - 1]);
     }
 
     const std::string &String()
@@ -210,7 +209,7 @@ class MESSAGE final
         case 'e':
             return va_arg(args, VDATA *);
         case 'c':
-            return va_arg(args, CVECTOR);
+            return va_arg(args, Vector);
         case 's': {
             char *ptr = va_arg(args, char *);
             return std::string(ptr);

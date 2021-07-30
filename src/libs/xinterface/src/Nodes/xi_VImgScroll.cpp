@@ -229,10 +229,10 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected, uint32_t Delta_Time)
                 }
                 if (pos.bottom > m_rect.top && pos.top < m_rect.bottom)
                 {
-                    v[0].pos = CVECTOR(static_cast<float>(pos.left), static_cast<float>(pos.top), 1.f);
-                    v[1].pos = CVECTOR(static_cast<float>(pos.left), static_cast<float>(pos.bottom), 1.f);
-                    v[2].pos = CVECTOR(static_cast<float>(pos.right), static_cast<float>(pos.top), 1.f);
-                    v[3].pos = CVECTOR(static_cast<float>(pos.right), static_cast<float>(pos.bottom), 1.f);
+                    v[0].pos = Vector(static_cast<float>(pos.left), static_cast<float>(pos.top), 1.f);
+                    v[1].pos = Vector(static_cast<float>(pos.left), static_cast<float>(pos.bottom), 1.f);
+                    v[2].pos = Vector(static_cast<float>(pos.right), static_cast<float>(pos.top), 1.f);
+                    v[3].pos = Vector(static_cast<float>(pos.right), static_cast<float>(pos.bottom), 1.f);
                     v[0].tu = v[1].tu = rectTex.left;
                     v[2].tu = v[3].tu = rectTex.right;
                     v[0].tv = v[2].tv = rectTex.top;

@@ -10,10 +10,8 @@
 
 #pragma once
 
-#include "Matrix.h"
 #include "collide.h"
 #include "dx9render.h"
-#include "vmodule_api.h"
 #include <vector>
 
 class Lights : public Entity
@@ -61,7 +59,7 @@ class Lights : public Entity
 
     struct Vertex
     {
-        CVECTOR pos;
+        Vector pos;
         uint32_t color;
         float u, v;
     };
@@ -107,21 +105,21 @@ class Lights : public Entity
     // Find source index
     long FindLight(const char *name);
     // Add source to location
-    void AddLight(long index, const CVECTOR &pos);
+    void AddLight(long index, const Vector &pos);
     // Add lantern model
     bool AddLampModel(entid_t lampModel);
     //
     void DelAllLights();
 
     // Add portable source
-    long AddMovingLight(const char *type, const CVECTOR &pos);
+    long AddMovingLight(const char *type, const Vector &pos);
     // Put portable source in new position
-    void UpdateMovingLight(long id, const CVECTOR &pos);
+    void UpdateMovingLight(long id, const Vector &pos);
     // Remove portable source
     void DelMovingLight(long id);
 
     // Set light sources for the character
-    void SetCharacterLights(const CVECTOR *pos = nullptr);
+    void SetCharacterLights(const Vector *pos = nullptr);
 
     // Disable light sources set for the character
     void DelCharacterLights();

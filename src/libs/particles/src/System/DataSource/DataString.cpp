@@ -1,5 +1,4 @@
 #include "DataString.h"
-#include "vmodule_api.h"
 
 // constructor / destructor
 DataString::DataString()

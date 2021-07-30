@@ -15,7 +15,7 @@ LOCAL_COLLIDE *COLL::CreateLocalCollide(EntityManager::layer_index_t idx)
 //----------------------------------------------------------------------------------
 // Ray tracing
 //----------------------------------------------------------------------------------
-float COLL::Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst)
+float COLL::Trace(entid_t entity, const Vector &src, const Vector &dst)
 {
     auto *cob = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(entity));
     if (static_cast<Entity *>(cob) == nullptr)
@@ -28,7 +28,7 @@ float COLL::Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst)
 //----------------------------------------------------------------------------------
 // with enclusion list
 //----------------------------------------------------------------------------------
-float COLL::Trace(EntityManager::LayerIterators its, const CVECTOR &src, const CVECTOR &dst,
+float COLL::Trace(EntityManager::LayerIterators its, const Vector &src, const Vector &dst,
                   const entid_t *exclude_list, long entities)
 {
     auto best_res = 2.0f;
@@ -62,7 +62,7 @@ float COLL::Trace(EntityManager::LayerIterators its, const CVECTOR &src, const C
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-bool COLL::Clip(EntityManager::LayerIterators its, const PLANE *planes, long nplanes, const CVECTOR &center,
+bool COLL::Clip(EntityManager::LayerIterators its, const Plane *planes, long nplanes, const Vector &center,
                 float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, long entities)
 {
     auto retval = false;

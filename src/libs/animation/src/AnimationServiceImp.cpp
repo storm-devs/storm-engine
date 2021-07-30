@@ -544,8 +544,8 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         }
         delete[] prntIndeces;
         // Starting positions of bones
-        auto *vrt = new CVECTOR[header.nJoints];
-        if (!fio->_ReadFile(fileS, vrt, header.nJoints * sizeof(CVECTOR)))
+        auto *vrt = new Vector[header.nJoints];
+        if (!fio->_ReadFile(fileS, vrt, header.nJoints * sizeof(Vector)))
         {
             core.Trace("Incorrect start joints position block block in animation file: %s", fname);
             delete[] vrt;
@@ -559,8 +559,8 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         delete[] vrt;
 
         // Root bone positions
-        vrt = new CVECTOR[header.nFrames];
-        if (!fio->_ReadFile(fileS, vrt, header.nFrames * sizeof(CVECTOR)))
+        vrt = new Vector[header.nFrames];
+        if (!fio->_ReadFile(fileS, vrt, header.nFrames * sizeof(Vector)))
         {
             core.Trace("Incorrect root joint position block block in animation file: %s", fname);
             delete[] vrt;

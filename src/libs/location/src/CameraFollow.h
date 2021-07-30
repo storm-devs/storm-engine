@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "Matrix.h"
 #include "model.h"
 
 class LocationCamera;
@@ -19,10 +18,10 @@ class CameraFollow
 {
     struct EdgeInfo
     {
-        CVECTOR n; // Normal to plane
+        Vector n; // Normal to plane
         float d;   // Distance to the plane
-        CVECTOR s; // Start of the edge
-        CVECTOR e; // End of the edge
+        Vector s; // Start of the edge
+        Vector e; // End of the edge
     };
 
     // --------------------------------------------------------------------------------------------
@@ -43,21 +42,21 @@ class CameraFollow
     // Reinitialize camera position
     void BornCamera();
     // Calculate camera position for a given angle
-    void CalcPosition(float ang, float radius, float dax, CVECTOR &pos) const;
+    void CalcPosition(float ang, float radius, float dax, Vector &pos) const;
     // Estimate the radius in the desired direction for 1 sec
     float FindRadius(float curAng) const;
     // Consider polygon in radius search
-    static bool ApplyPoly(const CVECTOR *v, long n);
-    static void ApplyPolyFindNearest(EdgeInfo *e, long ne, const CVECTOR &pos);
+    static bool ApplyPoly(const Vector *v, long n);
+    static void ApplyPolyFindNearest(EdgeInfo *e, long ne, const Vector &pos);
     // Change radius
     void ChangeRadius(float dltTime, float radius);
     // Find the acceleration of camera stop when corner collision with patch
     void FindRotAccelCam();
 
     // Trace the ray taking into account cull and camera size
-    float Trace(const CVECTOR &src, const CVECTOR &dst);
+    float Trace(const Vector &src, const Vector &dst);
     // Trace a ray with cull
-    float SubTrace(const CVECTOR &src, const CVECTOR &dst) const;
+    float SubTrace(const Vector &src, const Vector &dst) const;
 
     void DrawDebug();
 
@@ -65,7 +64,7 @@ class CameraFollow
   public:
     LocationCamera *lc;
 
-    CVECTOR camPos, lookTo;
+    Vector camPos, lookTo;
     // Camera following the character
     float camay;        // Current camera direction
     float camradius;    // Current radius
@@ -77,13 +76,13 @@ class CameraFollow
 
     static float fndRadius;     // Current radius when searching
     static float fndMaxRadius;  // Maximum search radius
-    static CVECTOR fndCamDir;   // Normalized camera heading
-    static CVECTOR fndCamDirXZ; // Normalized heading to camera in XZ
-    static CVECTOR fndCamDirY;  // Normalized camera direction in Y
-    static CVECTOR fndCamPos;   // Observation point
+    static Vector fndCamDir;   // Normalized camera heading
+    static Vector fndCamDirXZ; // Normalized heading to camera in XZ
+    static Vector fndCamDirY;  // Normalized camera direction in Y
+    static Vector fndCamPos;   // Observation point
     static float fndcsAx;       // Cosine of the bounding angle in x
     static float fndkAx;        // 1/(1 - cos(ax))
     static float fndcsAy;       // Cosine of the y bounding angle
     static float fndkAy;        // 1/(1 - cos(ay))
-    static PLANE fndPlanes[32]; // Temporarily used face planes
+    static Plane fndPlanes[32]; // Temporarily used face planes
 };

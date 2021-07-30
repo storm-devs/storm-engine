@@ -12,6 +12,7 @@
 
 #include "WdmShip.h"
 #include "attributes.h"
+#include "WdmObjects.h"
 
 class WdmEnemyShip : public WdmShip
 {

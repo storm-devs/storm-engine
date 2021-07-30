@@ -11,6 +11,7 @@
 #include "WdmStorm.h"
 #include "WdmCamera.h"
 #include "WdmCloud.h"
+#include "WdmObjects.h"
 #include "WdmRenderModel.h"
 #include "WorldMap.h"
 
@@ -53,11 +54,11 @@ WdmStorm::WdmStorm()
     auto r =
         wdmObjects->stormBrnDistMin + rand() * (wdmObjects->stormBrnDistMax - wdmObjects->stormBrnDistMin) / RAND_MAX;
     // Position
-    pos = CVECTOR(((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos().x + r * sinf(ang), 30.0f,
-                  ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos().z + r * cosf(ang));
+    pos = Vector(((WdmRenderModel *)wdmObjects->playerShip)->mtx.pos.x + r * sinf(ang), 30.0f,
+                  ((WdmRenderModel *)wdmObjects->playerShip)->mtx.pos.z + r * cosf(ang));
     // Direction of movement
     // Direction to ship
-    dir = ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos() - pos;
+    dir = ((WdmRenderModel *)wdmObjects->playerShip)->mtx.pos - pos;
     dir.y = 0.0f;
     r = sqrtf(~dir);
     if (r > 0.0f)
@@ -69,8 +70,8 @@ WdmStorm::WdmStorm()
     dir.z += r * ang;
     // Ship direction
     r = rand() * 0.1f * WDM_STORM_DIR_DIS / RAND_MAX;
-    dir.x += ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Vz().x * r;
-    dir.z += ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Vz().z * r;
+    dir.x += ((WdmRenderModel *)wdmObjects->playerShip)->mtx.vz.x * r;
+    dir.z += ((WdmRenderModel *)wdmObjects->playerShip)->mtx.vz.z * r;
     // Normalize
     r = sqrtf(~dir);
     if (r > 0.0f)
@@ -161,7 +162,7 @@ void WdmStorm::Update(float dltTime)
     if (isActiveTime >= 0.0f)
         isActiveTime -= dltTime;
     // Direction vector to the ship
-    CVECTOR v; // = ((WdmRenderModel *)wdmObjects->playerShip)->mtx.Pos() - pos; v.y = 0.0f;
+    Vector v; // = ((WdmRenderModel *)wdmObjects->playerShip)->mtx.pos - pos; v.y = 0.0f;
     wdmObjects->GetWind(pos.x, pos.z, v);
     float r = sqrtf(~v);
     // Change the direction slightly towards the direction of the ship
@@ -173,8 +174,8 @@ void WdmStorm::Update(float dltTime)
         x /= r;
         z /= r;
     }
-    /*x += 0.1f*((WdmRenderModel *)wdmObjects->playerShip)->mtx.Vz().x;
-    z += 0.1f*((WdmRenderModel *)wdmObjects->playerShip)->mtx.Vz().z;
+    /*x += 0.1f*((WdmRenderModel *)wdmObjects->playerShip)->mtx.vz.x;
+    z += 0.1f*((WdmRenderModel *)wdmObjects->playerShip)->mtx.vz.z;
     float k = x*x + z*z;
     if(k > 0.0f){ k = 1.0f/sqrtf(k); x *= k; z *= k; }*/
     // Vector blending coefficient
@@ -244,8 +245,8 @@ void WdmStorm::Update(float dltTime)
         {
             // Rotate the cloud around the center
             const float rotAng = rotSpd[i] * dltTime;
-            CMatrix m(0.0f, rotAng, 0.0f);
-            cloudPos[i] = m * CVECTOR(cloudPos[i]);
+            Matrix m(0.0f, rotAng, 0.0f);
+            cloudPos[i] = m * Vector(cloudPos[i]);
             // Set alpha
             cloud[i]->globalAlpha = alpha;
             // Set position
@@ -258,15 +259,15 @@ void WdmStorm::LRender(VDX9RENDER *rs)
 {
     if (wdmObjects->isDebug)
     {
-        CMatrix mtr;
-        mtr.Pos() = pos;
-        mtr.Pos().y = 0.1f;
+        Matrix mtr;
+        mtr.pos = pos;
+        mtr.pos.y = 0.1f;
         wdmObjects->DrawCircle(mtr, wdmObjects->stormZone, 0x2f202040);
         for (long i = 0; i < num; i++)
             if (cloud[i])
             {
-                mtr.Pos() = pos + cloudPos[i];
-                mtr.Pos().y = 0.1f;
+                mtr.pos = pos + cloudPos[i];
+                mtr.pos.y = 0.1f;
                 wdmObjects->DrawCircle(mtr, WDM_STORM_CLOUDRAD, 0x4f000000);
             }
     }

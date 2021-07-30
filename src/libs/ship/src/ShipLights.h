@@ -71,7 +71,7 @@ class ShipLights : public IShipLights
         VAI_OBJBASE *pObject;
         NODE *pNode;
         bool bDynamicLight;
-        CVECTOR vPos, vCurPos;
+        Vector vPos, vCurPos;
         D3DLIGHT9 Light;
         float fCoronaIntensity;
         float fCurDistance;
@@ -130,7 +130,7 @@ class ShipLights : public IShipLights
     void AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bool bFlares) override;
     void SetLightsOff(VAI_OBJBASE *pObject, float fTime, bool bLights, bool bFlares, bool bNow) override;
     void KillMast(VAI_OBJBASE *pObject, NODE *pNode, bool bNow) override;
-    void AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos) override;
+    void AddDynamicLights(VAI_OBJBASE *pObject, const Vector &vPos) override;
     void SetLights(VAI_OBJBASE *pObject) override;
     void UnSetLights(VAI_OBJBASE *pObject) override;
 

@@ -103,7 +103,7 @@ void LocationEffects::Realize(uint32_t delta_time)
 uint64_t LocationEffects::ProcessMessage(MESSAGE &message)
 {
     const std::string &buf = message.String();
-    CVECTOR pos, dir;
+    Vector pos, dir;
     if (_stricmp(buf.c_str(), "Splashes") == 0)
     {
         pos.x = message.Float();
@@ -169,10 +169,10 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
 {
     if (num <= 0)
         return;
-    CMatrix camMtx;
+    Matrix camMtx;
     rs->GetTransform(D3DTS_VIEW, camMtx);
-    rs->SetTransform(D3DTS_VIEW, CMatrix());
-    rs->SetTransform(D3DTS_WORLD, CMatrix());
+    rs->SetTransform(D3DTS_VIEW, Matrix());
+    rs->SetTransform(D3DTS_WORLD, Matrix());
     rs->TextureSet(0, texture);
     long n = 0;
     for (long i = 0; i < num; i++)
@@ -196,15 +196,15 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
             u1 = static_cast<long>(static_cast<ParticleEx *>(parts)->frame) * u2;
             u2 += u1;
         }
-        buffer[n * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), size * (sn + cs), 0.0f);
+        buffer[n * 6 + 0].pos = pos + Vector(size * (-cs + sn), size * (sn + cs), 0.0f);
         buffer[n * 6 + 0].color = color;
         buffer[n * 6 + 0].u = u1;
         buffer[n * 6 + 0].v = 0.0f;
-        buffer[n * 6 + 1].pos = pos + CVECTOR(size * (-cs - sn), size * (sn - cs), 0.0f);
+        buffer[n * 6 + 1].pos = pos + Vector(size * (-cs - sn), size * (sn - cs), 0.0f);
         buffer[n * 6 + 1].color = color;
         buffer[n * 6 + 1].u = u1;
         buffer[n * 6 + 1].v = 1.0f;
-        buffer[n * 6 + 2].pos = pos + CVECTOR(size * (cs + sn), size * (-sn + cs), 0.0f);
+        buffer[n * 6 + 2].pos = pos + Vector(size * (cs + sn), size * (-sn + cs), 0.0f);
         buffer[n * 6 + 2].color = color;
         buffer[n * 6 + 2].u = u2;
         buffer[n * 6 + 2].v = 0.0f;
@@ -216,7 +216,7 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
         buffer[n * 6 + 4].color = color;
         buffer[n * 6 + 4].u = u1;
         buffer[n * 6 + 4].v = 1.0f;
-        buffer[n * 6 + 5].pos = pos + CVECTOR(size * (cs - sn), size * (-sn - cs), 0.0f);
+        buffer[n * 6 + 5].pos = pos + Vector(size * (cs - sn), size * (-sn - cs), 0.0f);
         buffer[n * 6 + 5].color = color;
         buffer[n * 6 + 5].u = u2;
         buffer[n * 6 + 5].v = 1.0f;
@@ -236,7 +236,7 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
     rs->SetTransform(D3DTS_VIEW, camMtx);
 }
 
-void LocationEffects::CreateSplash(const CVECTOR &pos, float power)
+void LocationEffects::CreateSplash(const Vector &pos, float power)
 {
     // Select the freed block
     long i;
@@ -258,8 +258,8 @@ void LocationEffects::CreateSplash(const CVECTOR &pos, float power)
         const auto ang = rand() * (LFX_PI * 2.0f / RAND_MAX);
         const auto r = rand() * (2.0f * LFX_SPLASHES_SRAD / static_cast<float>(RAND_MAX));
         const auto s = 1.0f + rand() * (3.0f / static_cast<float>(RAND_MAX));
-        spl.prt[i].dir = CVECTOR(0.3f * sinf(ang), s, 0.3f * cosf(ang));
-        spl.prt[i].pos = pos + CVECTOR(r * sinf(ang), 0.0f, r * cosf(ang));
+        spl.prt[i].dir = Vector(0.3f * sinf(ang), s, 0.3f * cosf(ang));
+        spl.prt[i].pos = pos + Vector(r * sinf(ang), 0.0f, r * cosf(ang));
         spl.prt[i].angle = 0.0f;
         spl.prt[i].alpha = 0.0f;
         spl.prt[i].dAng = ((rand() & 7) * (1.0f / 7.0f) - 0.5f) * 0.2f;
@@ -315,7 +315,7 @@ void LocationEffects::ProcessedChrSplash(float dltTime)
 // Flies near laterns
 // ---------------------------------------------------
 
-void LocationEffects::AddLampFlys(CVECTOR &pos)
+void LocationEffects::AddLampFlys(Vector &pos)
 {
     // occupy the array
     if (numFlys >= maxFlys)
@@ -357,10 +357,10 @@ void LocationEffects::AddLampFlys(CVECTOR &pos)
 
 void LocationEffects::ProcessedFlys(float dltTime)
 {
-    CMatrix view;
+    Matrix view;
     rs->GetTransform(D3DTS_VIEW, view);
     view.Transposition();
-    const CVECTOR cam = view.Pos();
+    const Vector cam = view.pos;
     const float dax = dltTime * 1.3f;
     const float day = dltTime * 1.4f;
     const float da = dltTime * 5.6f;
@@ -368,7 +368,7 @@ void LocationEffects::ProcessedFlys(float dltTime)
     for (long i = 0; i < numFlys; i++)
     {
         // Coefficient of visibility
-        CVECTOR dir = cam - flys[i].pos;
+        Vector dir = cam - flys[i].pos;
         float k = ~dir;
         if (k > 400.0f)
             continue;
@@ -398,7 +398,7 @@ void LocationEffects::ProcessedFlys(float dltTime)
             // Transparency
             f.alpha = k * 255.0f;
             // Colour
-            CVECTOR tmp = f.pos - flys[i].pos;
+            Vector tmp = f.pos - flys[i].pos;
             float dst = sqrtf(~tmp);
             if (dst > 0.0f)
                 tmp *= 1.0f / dst;
@@ -459,7 +459,7 @@ void LocationEffects::SGRelease()
     texHor = -1;
 }
 
-void LocationEffects::SGEnvPrt(const CVECTOR &pos, const CVECTOR &ndir)
+void LocationEffects::SGEnvPrt(const Vector &pos, const Vector &ndir)
 {
     SGInited();
     const long max = sizeof(flinders) / sizeof(flinders[0]);
@@ -493,7 +493,7 @@ void LocationEffects::SGEnvPrt(const CVECTOR &pos, const CVECTOR &ndir)
     }
 }
 
-void LocationEffects::SGBldPrt(const CVECTOR &pos, const CVECTOR &ndir)
+void LocationEffects::SGBldPrt(const Vector &pos, const Vector &ndir)
 {
     SGInited();
     const long max = sizeof(blood) / sizeof(blood[0]);
@@ -527,7 +527,7 @@ void LocationEffects::SGBldPrt(const CVECTOR &pos, const CVECTOR &ndir)
     }
 }
 
-void LocationEffects::SGFirePrt(const CVECTOR &pos, const CVECTOR &ndir)
+void LocationEffects::SGFirePrt(const Vector &pos, const Vector &ndir)
 {
     SGInited();
     const long max = sizeof(smoke) / sizeof(smoke[0]);
@@ -565,7 +565,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
 {
     if (!isShgInited)
         return;
-    CVECTOR winDir = 0.0f;
+    Vector winDir = 0.0f;
     VDATA *param = core.Event("EWhr_GetWindAngle", nullptr);
     if (param)
     {
@@ -685,11 +685,11 @@ void LocationEffects::ProcessedShotgun(float dltTime)
     {
         DrawParticles(smoke, numSmoke, sizeof(smoke[0]), texSmoke, "ShootParticles");
     }
-    CMatrix mtx;
+    Matrix mtx;
     rs->GetTransform(D3DTS_VIEW, mtx);
     mtx.Transposition();
     Particle prt;
-    prt.pos = mtx.Pos() + mtx.Vz() * 2.0f;
+    prt.pos = mtx.pos + mtx.vz * 2.0f;
     prt.angle = 0.0f;
     prt.size = 0.1f;
     prt.alpha = 255.0f;

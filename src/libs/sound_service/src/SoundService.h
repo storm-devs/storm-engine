@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Cvector.h"
 #include "SoundDefines.h"
 #include "VSoundService.h"
-#include "vmodule_api.h"
 #include <dx9render.h>
 #include <fmod.hpp>
 #include <string>
@@ -180,7 +178,7 @@ class SoundService : public VSoundService
 
     TSD_ID SoundPlay(const char *_name, eSoundType _type, eVolumeType _volumeType, bool _simpleCache = false,
                      bool _looped = false, bool _cached = false, long _time = 0,
-                     const CVECTOR *_startPosition = nullptr, float _minDistance = -1.0f, float _maxDistance = -1.0f,
+                     const Vector *_startPosition = nullptr, float _minDistance = -1.0f, float _maxDistance = -1.0f,
                      long _loopPauseTime = 0, float _volume = 1.0f, long _prior = 128) override;
 
     TSD_ID SoundDuplicate(TSD_ID _sourceID) override;
@@ -196,8 +194,8 @@ class SoundService : public VSoundService
     // Service functions
     void SetMasterVolume(float _fxVolume, float _musicVolume, float _speechVolume) override;
     void GetMasterVolume(float *_fxVolume, float *_musicVolume, float *_speechVolume) override;
-    void SetCameraPosition(const CVECTOR &_cameraPosition) override;
-    void SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_head) override;
+    void SetCameraPosition(const Vector &_cameraPosition) override;
+    void SetCameraOrientation(const Vector &_nose, const Vector &_head) override;
 
     // Schemes routines
     void ResetScheme() override;
@@ -206,9 +204,9 @@ class SoundService : public VSoundService
     void SetEnabled(bool _enabled) override;
 
     void DebugDraw();
-    void DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
+    void DebugPrint3D(const Vector &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
                       const char *format, ...) const;
-    void Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float fRadius, uint32_t dwColor2, float fRadius2) const;
+    void Draw2DCircle(const Vector &center, uint32_t dwColor, float fRadius, uint32_t dwColor2, float fRadius2) const;
 
     void ProcessFader(int idx);
 };

@@ -2,7 +2,6 @@
 
 #include "blast.h"
 #include "geometry.h"
-#include "vmodule_api.h"
 
 class VDATA;
 

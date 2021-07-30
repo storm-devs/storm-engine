@@ -296,17 +296,17 @@ bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long
     auto y = chr->curPos.y;
     auto z = chr->curPos.z;
     // Parameters for testing in the sector at x_z
-    CVECTOR N1, N2, N3;
+    Vector N1, N2, N3;
     float d1, d2, d3;
     if (angTest > 0.0f)
     {
-        CMatrix m(0.0f, chr->ay, 0.0f);
+        Matrix m(0.0f, chr->ay, 0.0f);
         auto ang = 0.5f * angTest * 3.141592654f / 180.0f;
-        N1 = m * CVECTOR(cosf(ang), 0.0f, sinf(ang));
+        N1 = m * Vector(cosf(ang), 0.0f, sinf(ang));
         d1 = N1 | chr->curPos;
-        N2 = m * CVECTOR(-cosf(-ang), 0.0f, -sinf(-ang));
+        N2 = m * Vector(-cosf(-ang), 0.0f, -sinf(-ang));
         d2 = N2 | chr->curPos;
-        N3 = m.Vz();
+        N3 = m.vz;
         d3 = N3 | chr->curPos;
     }
     // Parameters for testing in the sector by y_dist
@@ -392,12 +392,12 @@ bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long
 }
 
 // Find the best locator to continue walking the character
-long Supervisor::FindForvardLocator(LocatorArray *la, const CVECTOR &pos, const CVECTOR &norm, bool lookChr) const
+long Supervisor::FindForvardLocator(LocatorArray *la, const Vector &pos, const Vector &norm, bool lookChr) const
 {
     if (!la)
         return -1;
     const auto num = la->Num();
-    CVECTOR lpos;
+    Vector lpos;
     float maxcs;
     long l = -1;
     for (long i = 0; i < num; i++)
