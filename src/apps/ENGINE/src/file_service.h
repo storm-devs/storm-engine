@@ -16,6 +16,8 @@ class INIFILE_T : public INIFILE
         Search.Key = nullptr;
     }
 
+    ~INIFILE_T() override;
+
     SEARCH_DATA Search;
 
     IFS *ifs_PTR;
