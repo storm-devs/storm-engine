@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include <memory>
 
 #include "AnimalsDefines.h"
 #include "Matrix.h"
@@ -9,7 +11,7 @@
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES
 ///////////////////////////////////////////////////////////////////
-struct tSeagull
+struct TSeagull
 {
     CVECTOR center;
     float radius;
@@ -32,13 +34,13 @@ class TSeagulls
     TSeagulls();
     virtual ~TSeagulls();
 
-    uint64_t ProcessMessage(long _code, MESSAGE &message);
+    uint64_t ProcessMessage(const long _code, MESSAGE &message);
     void Init();
-    void Add(float _x, float _y, float _z);
-    void Realize(uint32_t dTime);
-    void Execute(uint32_t dTime);
+    void Add(const float _x, const float _y, const float _z);
+    void Realize(const uint32_t dTime);
+    void Execute(const uint32_t dTime);
 
-    void SetStartY(float _startY)
+    void SetStartY(const float _startY)
     {
         startY = _startY;
     }
@@ -48,7 +50,7 @@ class TSeagulls
     void Frighten();
 
     entid_t seagullModel;
-    tSeagull seagulls[SEAGULL_COUNT];
+    std::vector<TSeagull> seagulls;
     VDX9RENDER *renderService;
     VSoundService *soundService;
     bool enabled;

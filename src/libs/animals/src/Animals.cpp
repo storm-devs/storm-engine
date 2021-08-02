@@ -6,16 +6,9 @@ CREATE_CLASS(ANIMALS)
 
 ANIMALS::ANIMALS() : seagulls(nullptr), fishSchools(nullptr), butterflies(nullptr)
 {
-    seagulls = new TSeagulls();
-    fishSchools = new TFishSchools();
-    butterflies = new TButterflies();
-}
-
-ANIMALS::~ANIMALS()
-{
-    delete seagulls;
-    delete fishSchools;
-    delete butterflies;
+    seagulls = std::make_unique<TSeagulls>();
+    fishSchools = std::make_unique<TFishSchools>();
+    butterflies = std::make_unique<TButterflies>();
 }
 
 bool ANIMALS::Init()
@@ -42,28 +35,33 @@ uint64_t ANIMALS::ProcessMessage(MESSAGE &message)
     default:
         outValue = seagulls->ProcessMessage(code, message);
         if (outValue)
+        {
             return outValue;
+        }            
         outValue = fishSchools->ProcessMessage(code, message);
         if (outValue)
+        {
             return outValue;
+        }            
         outValue = butterflies->ProcessMessage(code, message);
         if (outValue)
+        {
             return outValue;
-
+        }      
         break;
     }
 
     return outValue;
 }
 
-void ANIMALS::Realize(uint32_t _dTime)
+void ANIMALS::Realize(const uint32_t _dTime)
 {
     seagulls->Realize(_dTime);
     fishSchools->Realize(_dTime);
     butterflies->Realize(_dTime);
 }
 
-void ANIMALS::Execute(uint32_t _dTime)
+void ANIMALS::Execute(const uint32_t _dTime)
 {
     seagulls->Execute(_dTime);
     fishSchools->Execute(_dTime);

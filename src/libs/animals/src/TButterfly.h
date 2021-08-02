@@ -40,10 +40,10 @@ class TButterfly
 {
   public:
     TButterfly();
-    virtual ~TButterfly();
+    virtual ~TButterfly() = default;
 
-    void Initialize(const CVECTOR &_center, float _radius, long _bufferIndex, int _tI, int _tJ);
-    void Calculate(long _dTime, COLLIDE *_collide, EntityManager::LayerIterators its);
+    void Initialize(const CVECTOR &_center, const float _radius, const long _bufferIndex, const int _tI, const int _tJ);
+    void Calculate(const long _dTime, COLLIDE *_collide, const EntityManager::LayerIterators its);
     void Effect(const CVECTOR &_position);
 
     static void SetCenter(const CVECTOR &_center)
@@ -60,8 +60,7 @@ class TButterfly
     {
         return centerPosition;
     }
-
-    void SetMinY(float _minY)
+    void SetMinY(const float _minY)
     {
         minY = _minY;
         maxY = minY + MAX_HEIGHT;

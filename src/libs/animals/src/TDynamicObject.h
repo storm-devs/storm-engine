@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+
 //#include <windows.h>
 #include "Cvector.h"
 
@@ -11,15 +14,15 @@
 class TDynamicObject
 {
   public:
-    TDynamicObject();
-    virtual ~TDynamicObject();
-    void Initialize(const CVECTOR &_center, float _radius);
-    void Calculate(TDynamicObject **a, int aCount, TDynamicObject **d, int dCount, float _k = 1.0f);
+    TDynamicObject() = default;
+    virtual ~TDynamicObject() = default;
+    void Initialize(const CVECTOR &_center, const float _radius);
+    void Calculate(std::vector<TDynamicObject *> &a, std::vector<TDynamicObject *> &d, const float _k = 1.0f);
     void SetXYZ(const CVECTOR &_pos);
 
     float GetAngle()
     {
-        return (float)atan2(velocity.z, velocity.x);
+        return static_cast<float>(atan2(velocity.z, velocity.x));
     }
 
     CVECTOR GetDirection()

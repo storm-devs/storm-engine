@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+
 #include "TSeagulls.h"
 //#include "TSharks.h"
 #include "TButterflies.h"
@@ -16,15 +19,15 @@ class ANIMALS : public Entity
 {
   public:
     ANIMALS();
-    ~ANIMALS() override;
+    ~ANIMALS() = default;
 
     bool Init() override;
     uint64_t ProcessMessage(MESSAGE &message) override;
-    virtual void Realize(uint32_t dTime);
-    virtual void Execute(uint32_t dTime);
+    virtual void Realize(const uint32_t dTime);
+    virtual void Execute(const uint32_t dTime);
     uint32_t AttributeChanged(ATTRIBUTES *pA) override;
 
-    void ProcessStage(Stage stage, uint32_t delta) override
+    void ProcessStage(const Stage stage, const uint32_t delta) override
     {
         switch (stage)
         {
@@ -42,8 +45,8 @@ class ANIMALS : public Entity
     }
 
   private:
-    TSeagulls *seagulls;
-    // TSharks      *sharks;
-    TFishSchools *fishSchools;
-    TButterflies *butterflies;
+    std::unique_ptr<TSeagulls> seagulls;
+    std::unique_ptr<TFishSchools> fishSchools;
+    std::unique_ptr<TButterflies> butterflies;
+    // std::shared_ptr<TSharks> sharks;
 };

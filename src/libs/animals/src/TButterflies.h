@@ -20,10 +20,10 @@ class TButterflies
     TButterflies();
     virtual ~TButterflies();
 
-    uint64_t ProcessMessage(long _code, MESSAGE &message);
+    uint64_t ProcessMessage(const long _code, MESSAGE &message);
     void Init();
-    void Realize(uint32_t dTime);
-    void Execute(uint32_t dTime);
+    void Realize(const uint32_t dTime);
+    void Execute(const uint32_t dTime);
 
   private:
     void LoadSettings();
@@ -32,7 +32,7 @@ class TButterflies
     COLLIDE *collide;
     IVBufferManager *ivManager;
     entid_t butterflyModel;
-    TButterfly butterflies[BUTTERFLY_COUNT];
+    std::vector<std::unique_ptr<TButterfly>> butterflies;
     long butterfliesCount;
 
     float maxDistance;

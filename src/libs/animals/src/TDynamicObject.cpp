@@ -2,17 +2,7 @@
 #include "rands.h"
 
 //--------------------------------------------------------------------
-TDynamicObject::TDynamicObject()
-{
-}
-
-//--------------------------------------------------------------------
-TDynamicObject::~TDynamicObject()
-{
-}
-
-//--------------------------------------------------------------------
-void TDynamicObject::Initialize(const CVECTOR &_center, float _radius)
+void TDynamicObject::Initialize(const CVECTOR &_center, const float _radius)
 {
     pos.x = _center.x + randCentered(_radius);
     pos.y = 0.0f;
@@ -22,33 +12,35 @@ void TDynamicObject::Initialize(const CVECTOR &_center, float _radius)
 }
 
 //--------------------------------------------------------------------
-void TDynamicObject::Calculate(TDynamicObject **a, int aCount, TDynamicObject **d, int dCount, float _k)
+void TDynamicObject::Calculate(std::vector<TDynamicObject *> &a, std::vector<TDynamicObject *> &d, const float _k)
 {
     // ang = fmod(ang, 2.0*PI);
 
     CVECTOR aEffect(0.0f, 0.0f, 0.0f);
     CVECTOR dEffect(0.0f, 0.0f, 0.0f);
-    TDynamicObject **effectObject;
-    int i;
 
-    for (i = 0, effectObject = a; i < aCount; i++, effectObject++)
+    for (auto& dynamicObject : a)
     {
-        if (!(*effectObject) || (this == *effectObject))
+        if (!dynamicObject || this == dynamicObject)
+        {
             continue;
-
-        aEffect += ATTRACT_FACTOR * ((*effectObject)->pos - pos);
+        }
+        aEffect += ATTRACT_FACTOR * (dynamicObject->pos - pos);
     }
 
-    for (i = 0, effectObject = d; i < dCount; i++, effectObject++)
+    for (auto& dynamicObject : d)
     {
-        if (!(*effectObject) || (this == *effectObject))
+        if (!dynamicObject || this == dynamicObject)
+        {
             continue;
+        }
 
-        CVECTOR delta;
-        delta = (*effectObject)->pos - pos;
+        auto delta = dynamicObject->pos - pos;
         auto d = static_cast<float>(sqrt(~delta));
         if (d < 1e-10f)
+        {
             d = 1e-10f;
+        }            
         dEffect += DEFLECT_FACTOR * !delta / d;
     }
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+
 #include "TDynamicObject.h"
 
 #define MAX_DYNAMIC_OBJECTS 150
@@ -9,17 +12,19 @@ class TDynamicSystem
 {
   public:
     TDynamicSystem();
-    virtual ~TDynamicSystem();
+    virtual ~TDynamicSystem() = default;
 
-    bool AddAttractor(TDynamicObject *_obj);
-    bool AddDeflector(TDynamicObject *_obj);
+    bool AddAttractor(TDynamicObject* _obj);
+    bool AddDeflector(TDynamicObject* _obj);
     void Recalculate();
 
     // void Draw(HDC _dc);
 
   protected:
-    TDynamicObject *attractors[MAX_DYNAMIC_OBJECTS];
-    TDynamicObject *deflectors[MAX_DYNAMIC_OBJECTS];
+    std::vector<TDynamicObject *> attractors;
+    std::vector<TDynamicObject *> deflectors;
+    //TDynamicObject *attractors[MAX_DYNAMIC_OBJECTS];
+    //TDynamicObject *deflectors[MAX_DYNAMIC_OBJECTS];
 };
 
 //--------------------------------------------------------------------

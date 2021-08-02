@@ -5,42 +5,29 @@
 //--------------------------------------------------------------------
 TDynamicSystem::TDynamicSystem()
 {
-    std::fill(attractors, attractors + MAX_DYNAMIC_OBJECTS, nullptr);
-    std::fill(deflectors, deflectors + MAX_DYNAMIC_OBJECTS, nullptr);
-}
-
-//--------------------------------------------------------------------
-TDynamicSystem::~TDynamicSystem()
-{
+    attractors.reserve(MAX_DYNAMIC_OBJECTS);
+    deflectors.reserve(MAX_DYNAMIC_OBJECTS);
 }
 
 //--------------------------------------------------------------------
 bool TDynamicSystem::AddAttractor(TDynamicObject *_obj)
 {
-    for (auto i = 0; i < MAX_DYNAMIC_OBJECTS; i++)
+    if (attractors.size() < MAX_DYNAMIC_OBJECTS)
     {
-        if (!attractors[i])
-        {
-            attractors[i] = _obj;
-            return true;
-        }
+        attractors.push_back(_obj);
+        return true;
     }
-
     return false;
 }
 
 //--------------------------------------------------------------------
 bool TDynamicSystem::AddDeflector(TDynamicObject *_obj)
 {
-    for (auto i = 0; i < MAX_DYNAMIC_OBJECTS; i++)
+    if (deflectors.size() < MAX_DYNAMIC_OBJECTS)
     {
-        if (!deflectors[i])
-        {
-            deflectors[i] = _obj;
-            return true;
-        }
+        deflectors.push_back(_obj);
+        return true;
     }
-
     return false;
 }
 
@@ -72,16 +59,16 @@ void TDynamicSystem::Draw(HDC _dc)
 //--------------------------------------------------------------------
 void TDynamicSystem::Recalculate()
 {
+    // Why does this start at 1 rather than 0?
     for (auto i = 1; i < MAX_DYNAMIC_OBJECTS; i++)
     {
         if (attractors[i])
         {
-            attractors[i]->Calculate(attractors, MAX_DYNAMIC_OBJECTS, deflectors, MAX_DYNAMIC_OBJECTS);
+            attractors[i]->Calculate(attractors, deflectors);
         }
-
         if (deflectors[i])
         {
-            deflectors[i]->Calculate(attractors, MAX_DYNAMIC_OBJECTS, deflectors, MAX_DYNAMIC_OBJECTS);
+            deflectors[i]->Calculate(attractors, deflectors);
         }
     }
 }

@@ -32,20 +32,20 @@ class TFishSchools : public TDynamicSystem
     TFishSchools();
     ~TFishSchools() override;
 
-    uint64_t ProcessMessage(long _code, MESSAGE &message);
+    uint64_t ProcessMessage(const long _code, MESSAGE &message);
     void Init();
-    void Realize(uint32_t dTime);
-    void Execute(uint32_t dTime);
+    void Realize(const uint32_t dTime);
+    void Execute(const uint32_t dTime);
 
   private:
     void LoadSettings();
 
     VDX9RENDER *renderService;
     entid_t fishSchoolModel;
-    TFishSchool *fishSchools[FISHSCHOOL_COUNT];
+    std::vector<std::unique_ptr<TFishSchool>> fishSchools;
     long shipsCount;
     long fishSchoolsCount;
-    TDynamicObject cameraObject;
+    std::unique_ptr<TDynamicObject> cameraObject = std::make_unique<TDynamicObject>();
 
     float maxDistance;
 
