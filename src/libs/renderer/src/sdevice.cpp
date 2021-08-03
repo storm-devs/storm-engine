@@ -27,6 +27,31 @@ CREATE_SCRIPTLIBRIARY(DX9RENDER_SCRIPT_LIBRIARY)
 
 DX9RENDER *DX9RENDER::pRS = nullptr;
 
+class LostDeviceSentinel : public SERVICE
+{
+    void RunStart() override
+    {
+        if (auto d3d9 = static_cast<IDirect3DDevice9 *>(DX9RENDER::pRS->GetD3DDevice()))
+        {
+            switch (d3d9->TestCooperativeLevel())
+            {
+            case D3DERR_DEVICENOTRESET:
+                if (!DX9RENDER::pRS->ResetDevice())
+                {
+                    core.stopFrameProcessing();
+                }
+                break;
+
+            case D3DERR_DEVICELOST:
+                core.stopFrameProcessing();
+                break;
+            }
+        }
+
+    }
+};
+CREATE_SERVICE(LostDeviceSentinel)
+
 uint32_t DX9SetTexturePath(VS_STACK *pS)
 {
     auto *pString = (VDATA *)pS->Pop();
@@ -274,7 +299,7 @@ uint32_t dwSoundBytesCached = 0;
 
 #define CHECKD3DERR(expr) ErrorHandler(expr, __FILE__, __LINE__, __func__, #expr)
 
-inline bool DX9RENDER::ErrorHandler(HRESULT hr, const char *file, unsigned line, const char *func, const char *expr)
+inline bool ErrorHandler(HRESULT hr, const char *file, unsigned line, const char *func, const char *expr)
 {
     if (hr != D3D_OK)
     {
@@ -379,8 +404,11 @@ static float fSin = 0.0f;
 
 bool DX9RENDER::Init()
 {
-    bDeviceLost = false;
-    // GUARD(DX9RENDER::Init)
+    if (auto *sentinelService = core.CreateService("LostDeviceSentinel"); !sentinelService)
+    {
+        throw std::runtime_error("Cannot create LostDeviceSentinel! Abort");
+    }
+
     char str[256];
     for (long i = 0; i < MAX_STEXTURES; i++)
         Textures[i].ref = NULL;
@@ -1139,7 +1167,7 @@ bool DX9RENDER::DX9EndScene()
 
     if (hRes == D3DERR_DEVICELOST)
     {
-        bDeviceLost = true;
+        LostRender();
     }
 
     if (bSafeRendering)
@@ -2206,9 +2234,6 @@ void DX9RENDER::RenderAnimation(long ib, void *src, long numVrts, long minv, lon
 //################################################################################
 void *DX9RENDER::LockVertexBuffer(long id, uint32_t dwFlags)
 {
-    if (bDeviceLost)
-        return nullptr;
-
     uint8_t *ptr;
     VertexBuffers[id].dwNumLocks++;
     if (CHECKD3DERR(VertexBuffers[id].buff->Lock(0, VertexBuffers[id].size, (VOID **)&ptr, dwFlags)))
@@ -2221,8 +2246,8 @@ void *DX9RENDER::LockVertexBuffer(long id, uint32_t dwFlags)
 //################################################################################
 void DX9RENDER::UnLockVertexBuffer(long id)
 {
-    VertexBuffers[id].dwNumLocks--;
-    CHECKD3DERR(VertexBuffers[id].buff->Unlock());
+        VertexBuffers[id].dwNumLocks--;
+        CHECKD3DERR(VertexBuffers[id].buff->Unlock());
 }
 
 long DX9RENDER::GetVertexBufferSize(long id)
@@ -2232,9 +2257,6 @@ long DX9RENDER::GetVertexBufferSize(long id)
 
 void *DX9RENDER::LockIndexBuffer(long id, uint32_t dwFlags)
 {
-    if (bDeviceLost)
-        return nullptr;
-
     uint8_t *ptr = nullptr;
     IndexBuffers[id].dwNumLocks++;
     if (CHECKD3DERR(IndexBuffers[id].buff->Lock(0, IndexBuffers[id].size, (VOID **)&ptr, dwFlags)))
@@ -2246,8 +2268,8 @@ void *DX9RENDER::LockIndexBuffer(long id, uint32_t dwFlags)
 
 void DX9RENDER::UnLockIndexBuffer(long id)
 {
-    IndexBuffers[id].dwNumLocks--;
-    CHECKD3DERR(IndexBuffers[id].buff->Unlock());
+        IndexBuffers[id].dwNumLocks--;
+        CHECKD3DERR(IndexBuffers[id].buff->Unlock());
 }
 
 //################################################################################
@@ -2336,18 +2358,38 @@ bool DX9RENDER::LoadState(ENTITY_STATE *state)
 
 void DX9RENDER::LostRender()
 {
+    if (resourcesReleased)
+    {
+        return;
+    }
+
+    const auto its = EntityManager::GetEntityIdIterators();
+    for (auto it = its.first; it != its.second; ++it)
+    {
+        if (!it->deleted && it->ptr != nullptr)
+        {
+            it->ptr->ProcessStage(Entity::Stage::lost_render);
+        }
+    }
+
     Release(pOriginalScreenSurface);
     Release(pOriginalDepthSurface);
     Release(rectsVBuffer);
     for (long b = 0; b < MAX_BUFFERS; b++)
     {
         if (VertexBuffers[b].buff)
+        {
             if (VertexBuffers[b].buff->Release() > 0)
                 __debugbreak();
+        }
         if (IndexBuffers[b].buff)
+        {
             if (IndexBuffers[b].buff->Release() > 0)
                 __debugbreak();
+        }
     }
+
+    resourcesReleased = true;
 }
 
 void DX9RENDER::RestoreRender()
@@ -2437,6 +2479,19 @@ void DX9RENDER::RestoreRender()
     }
     SetCommonStates();
     d3d9->GetGammaRamp(0, &DefaultRamp);
+
+    RecompileEffects();
+
+    const auto its = EntityManager::GetEntityIdIterators();
+    for (auto it = its.first; it != its.second; ++it)
+    {
+        if (!it->deleted && it->ptr != nullptr)
+        {
+            it->ptr->ProcessStage(Entity::Stage::restore_render);
+        }
+    }
+
+    resourcesReleased = false;
 }
 
 void DX9RENDER::RecompileEffects()
@@ -2456,27 +2511,12 @@ void DX9RENDER::RecompileEffects()
 
 bool DX9RENDER::ResetDevice()
 {
-    const auto its = EntityManager::GetEntityIdIterators();
-    for (auto it = its.first; it != its.second; ++it)
-    {
-        if (!it->deleted && it->ptr != nullptr)
-        {
-            static_cast<Entity *>(it->ptr)->ProcessStage(Entity::Stage::lost_render);
-        }
-    }
     LostRender();
 
     if (CHECKD3DERR(d3d9->Reset(&d3dpp)))
         return false;
 
     RestoreRender();
-    for (auto it = its.first; it != its.second; ++it)
-    {
-        if (!it->deleted && it->ptr != nullptr)
-        {
-            static_cast<Entity *>(it->ptr)->ProcessStage(Entity::Stage::restore_render);
-        }
-    }
 
     return true;
 }
@@ -2490,8 +2530,6 @@ void DX9RENDER::SetGLOWParams(float _fBlurBrushSize, long _GlowIntensity, long _
 
 void DX9RENDER::RunStart()
 {
-    bDeviceLost = true;
-
     auto *pScriptRender = static_cast<VDATA *>(core.GetScriptVariable("Render"));
     ATTRIBUTES *pARender = pScriptRender->GetAClass();
 
@@ -2529,19 +2567,6 @@ void DX9RENDER::RunStart()
             }
         }
     }
-
-    switch (d3d9->TestCooperativeLevel())
-    {
-    case D3DERR_DEVICENOTRESET:
-        if (!ResetDevice())
-            return;
-        break;
-    case D3DERR_DEVICELOST:
-        return;
-        break;
-    }
-
-    bDeviceLost = false;
 
     bNeedCopyToScreen = true;
     //------------------------------------------
@@ -3441,7 +3466,18 @@ HRESULT DX9RENDER::DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, UINT StartVer
 HRESULT DX9RENDER::Release(IUnknown *pObject)
 {
     if (pObject)
-        return pObject->Release();
+    {
+        if (*(void **)pObject == nullptr)
+        {
+            __debugbreak();
+        }
+        else
+        {
+            const auto result = pObject->Release();
+            pObject = nullptr;
+            return result;
+        }
+    }
 
     return D3D_OK;
 }
@@ -3464,10 +3500,9 @@ HRESULT DX9RENDER::GetCubeMapSurface(IDirect3DCubeTexture9 *ppCubeTexture, D3DCU
 
 HRESULT DX9RENDER::SetRenderTarget(IDirect3DSurface9 *pRenderTarget, IDirect3DSurface9 *pNewZStencil)
 {
-    HRESULT hr = CHECKD3DERR(d3d9->SetDepthStencilSurface(pNewZStencil));
-    hr = hr || CHECKD3DERR(d3d9->SetRenderTarget(0, pRenderTarget));
-
-    return hr;
+    auto result = !CHECKD3DERR(d3d9->SetDepthStencilSurface(pNewZStencil)) &&
+                  !CHECKD3DERR(d3d9->SetRenderTarget(0, pRenderTarget));
+    return result ? D3D_OK : S_FALSE;
 }
 
 HRESULT DX9RENDER::Clear(uint32_t Count, CONST D3DRECT *pRects, uint32_t Flags, D3DCOLOR Color, float Z,
@@ -4292,10 +4327,8 @@ bool DX9RENDER::SetRenderTarget(IDirect3DCubeTexture9 *pRenderTarget, uint32_t F
                                 IDirect3DSurface9 *pZStencil)
 {
     IDirect3DSurface9 *pSurface;
-    pRenderTarget->GetCubeMapSurface(static_cast<D3DCUBEMAP_FACES>(FaceType), dwLevel, &pSurface);
-    const bool bSuccess = D3D_OK == SetRenderTarget(pSurface, pZStencil);
-    Release(pSurface);
-    return bSuccess;
+    return !CHECKD3DERR(pRenderTarget->GetCubeMapSurface(static_cast<D3DCUBEMAP_FACES>(FaceType), dwLevel, &pSurface)) &&
+           !CHECKD3DERR(SetRenderTarget(pSurface, pZStencil)) && Release(pSurface) == D3D_OK;
 }
 
 void DX9RENDER::SetView(const CMatrix &mView)

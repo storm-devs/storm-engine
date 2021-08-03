@@ -121,6 +121,8 @@ void CORE::ReleaseBase()
 
 bool CORE::Run()
 {
+    stopFrameProcessing_ = false;
+
     const auto bDebugWindow = true;
     if (bDebugWindow && core.Controls && core.Controls->GetDebugAsyncKeyState(VK_F7) < 0)
         DumpEntitiesInfo();
@@ -174,6 +176,12 @@ bool CORE::Run()
     ProcessStateLoading();
 
     ProcessRunStart(SECTION_ALL);
+    if (stopFrameProcessing_)
+    {
+        // service asked to skip current frame processing
+        return true;
+    }
+
     ProcessExecute(); // transfer control to objects via Execute() function
     ProcessRealize(); // transfer control to objects via Realize() function
 
@@ -920,6 +928,11 @@ ScreenSize CORE::GetScreenSize() const noexcept
         return {800, 600};
     }
     }
+}
+
+void CORE::stopFrameProcessing()
+{
+    stopFrameProcessing_ = true;
 }
 
 void CORE::loadCompatibilitySettings(INIFILE &inifile)

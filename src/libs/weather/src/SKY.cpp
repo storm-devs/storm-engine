@@ -3,12 +3,35 @@
 #include "core.h"
 #include <attributes.h>
 
+namespace
+{
+
+struct SKYVERTEX
+{
+    CVECTOR pos;
+    uint32_t diffuse;
+    float tu, tv;
+    float tu2, tv2;
+};
+
+struct FOGVERTEX
+{
+    CVECTOR pos;
+    uint32_t diffuse;
+};
+
+FOGVERTEX CreateFogVertex(const CVECTOR &vPos)
+{
+    auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
+    Assert(pvData);
+
+    return {vPos, static_cast<uint32_t>(pvData->GetLong())};
+}
+
+}
+
 SKY::SKY()
 {
-    iSkyVertsID = -1;
-    iSkyIndexID = -1;
-    iFogVertsID = -1;
-    iFogIndexID = -1;
     fAngleY = 0.0f;
     pRS = nullptr;
     memset(TexturesID, -1, sizeof(TexturesID));
@@ -65,207 +88,175 @@ void SKY::SetDevice()
     Assert(pRS);
 }
 
-uint32_t SKY::CalcFogDiffuse(CVECTOR &vPos)
+void SKY::UpdateFogSphere(const bool initialize)
 {
-    auto fAlpha = vPos.y / 500.0f;
-    fAlpha = CLAMP(fAlpha);
-    const auto dwAlpha = 255 - static_cast<uint32_t>(fAlpha * 255.0f);
-    return ARGB(dwAlpha, 167, 153, 196);
-}
-
-void SKY::CreateFogSphere()
-{
-    long x, y, iNumLevels, iNumAngles, idx = 0;
-
-    const auto R = 2000.0f;
-    iNumLevels = 64;
-    iNumAngles = 8;
-    iFogNumVerts = iNumAngles * iNumLevels + 1;
-    auto *pVerts = new FOGVERTEX[iFogNumVerts];
-    iFogVertsID = pRS->CreateVertexBuffer(FOGVERTEX_FORMAT, iFogNumVerts * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
-    auto *pVertBuf = static_cast<FOGVERTEX *>(pRS->LockVertexBuffer(iFogVertsID));
-
-    iFogNumTrgs = 3 * (iNumAngles + (iNumLevels - 1) * iNumAngles * 2);
-    iFogIndexID = pRS->CreateIndexBuffer(iFogNumTrgs * 2);
-
-    auto *pTrgs = static_cast<uint16_t *>(pRS->LockIndexBuffer(iFogIndexID));
-    for (y = 0; y < iNumLevels; y++)
+    if (initialize)
     {
-        const auto h = y * R / iNumLevels;
-        const auto R1 = sqrtf(SQR(R) - SQR(h));
-        for (x = 0; x < iNumAngles; x++)
+        if (iFogVertsID < 0)
         {
-            const auto fCos = cosf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
-            const auto fSin = sinf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
-            const auto vPos = CVECTOR(R1 * fCos, h, R1 * fSin);
-            pVerts[idx].pos = vPos;
-            auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
-            Assert(pvData);
-            pVerts[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
-            // pVerts[idx].diffuse = CalcFogDiffuse(pVerts[idx].pos);
-
-            if (y == iNumLevels - 1)
-            {
-                *pTrgs++ = static_cast<uint16_t>(iFogNumVerts - 1);
-                *pTrgs++ = static_cast<uint16_t>(idx);
-                *pTrgs++ = static_cast<uint16_t>((x == iNumAngles - 1) ? idx - (iNumAngles - 1) : idx + 1);
-            }
-            else
-            {
-                *pTrgs++ = static_cast<uint16_t>(idx);
-                *pTrgs++ = static_cast<uint16_t>((x == iNumAngles - 1) ? idx - (iNumAngles - 1) : idx + 1);
-                *pTrgs++ = static_cast<uint16_t>(idx + iNumAngles);
-
-                *pTrgs++ = static_cast<uint16_t>((x == iNumAngles - 1) ? idx - (iNumAngles - 1) : idx + 1);
-                *pTrgs++ = static_cast<uint16_t>(idx + iNumAngles);
-                *pTrgs++ = static_cast<uint16_t>((x == iNumAngles - 1) ? idx + 1 : idx + iNumAngles + 1);
-            }
-            idx++;
+            iFogVertsID =
+                pRS->CreateVertexBuffer(FOGVERTEX_FORMAT, kFogVertsNum * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
+        }
+        if (iFogIndexID < 0)
+        {
+            iFogIndexID = pRS->CreateIndexBuffer(kFogTrgsNum * 2);
         }
     }
-    const auto vPos = CVECTOR(0.0f, R, 0.0f);
-    pVerts[idx].pos = vPos;
-    auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
-    Assert(pvData);
-    pVerts[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
-    if (pVerts)
-        memcpy(pVertBuf, pVerts, iFogNumVerts * sizeof(FOGVERTEX));
-    pRS->UnLockVertexBuffer(iFogVertsID);
-    pRS->UnLockIndexBuffer(iFogIndexID);
-
-    delete[] pVerts;
-}
-
-void SKY::UpdateFogSphere()
-{
-    if (iFogVertsID == -1)
+    else if (iFogVertsID < 0 || iFogIndexID < 0)
+    {
         return;
+    }
 
-    long x, y, iNumLevels, iNumAngles, idx = 0;
+    FOGVERTEX vertices[kFogVertsNum];
+    uint16_t indices[kFogTrgsNum];
+    auto *pIndices = indices;
 
-    CVECTOR vPos;
-    const auto R = 2000.0f;
-    iNumLevels = 64;
-    iNumAngles = 8;
-    iFogNumVerts = iNumAngles * iNumLevels + 1;
-    auto *const pVertBuf = static_cast<FOGVERTEX *>(pRS->LockVertexBuffer(iFogVertsID));
-
-    for (y = 0; y < iNumLevels; y++)
+    long idx = 0;
+    for (size_t y = 0; y < kNumLevels; y++)
     {
-        const auto h = y * R / iNumLevels;
-        const auto R1 = sqrtf(SQR(R) - SQR(h));
-        for (x = 0; x < iNumAngles; x++)
+        const auto h = y * kR / kNumLevels;
+        const auto R1 = sqrtf(SQR(kR) - SQR(h));
+        for (size_t x = 0; x < kNumAngles; x++)
         {
-            const auto fCos = cosf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
-            const auto fSin = sinf(static_cast<float>(x) / static_cast<float>(iNumAngles) * PIm2);
-            vPos = CVECTOR(R1 * fCos, h, R1 * fSin);
-            pVertBuf[idx].pos = vPos;
-            auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
-            Assert(pvData);
-            pVertBuf[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
+            const auto fCos = cosf(static_cast<float>(x) / static_cast<float>(kNumAngles) * PIm2);
+            const auto fSin = sinf(static_cast<float>(x) / static_cast<float>(kNumAngles) * PIm2);
+
+            vertices[idx] = CreateFogVertex(CVECTOR(R1 * fCos, h, R1 * fSin));
+
+            if (initialize)
+            {
+                if (y == kNumLevels - 1)
+                {
+                    *pIndices++ = static_cast<uint16_t>(kFogVertsNum - 1);
+                    *pIndices++ = static_cast<uint16_t>(idx);
+                    *pIndices++ = static_cast<uint16_t>((x == kNumAngles - 1) ? idx - (kNumAngles - 1) : idx + 1);
+                }
+                else
+                {
+                    *pIndices++ = static_cast<uint16_t>(idx);
+                    *pIndices++ = static_cast<uint16_t>((x == kNumAngles - 1) ? idx - (kNumAngles - 1) : idx + 1);
+                    *pIndices++ = static_cast<uint16_t>(idx + kNumAngles);
+
+                    *pIndices++ = static_cast<uint16_t>((x == kNumAngles - 1) ? idx - (kNumAngles - 1) : idx + 1);
+                    *pIndices++ = static_cast<uint16_t>(idx + kNumAngles);
+                    *pIndices++ = static_cast<uint16_t>((x == kNumAngles - 1) ? idx + 1 : idx + kNumAngles + 1);
+                }
+            }
 
             idx++;
         }
     }
-    vPos = CVECTOR(0.0f, R, 0.0f);
-    pVertBuf[idx].pos = vPos;
-    auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
-    Assert(pvData);
-    pVertBuf[idx].diffuse = static_cast<uint32_t>(pvData->GetLong());
+    vertices[idx] = CreateFogVertex(CVECTOR(0.0f, kR, 0.0f));
+
+    auto *vertBuf = static_cast<FOGVERTEX *>(pRS->LockVertexBuffer(iFogVertsID));
+    memcpy(vertBuf, vertices, kFogVertsNum * sizeof(FOGVERTEX));
     pRS->UnLockVertexBuffer(iFogVertsID);
+
+    if (initialize)
+    {
+        auto *indBuf = static_cast<uint16_t *>(pRS->LockIndexBuffer(iFogIndexID));
+        memcpy(indBuf, indices, kFogTrgsNum * 2);
+        pRS->UnLockIndexBuffer(iFogIndexID);
+    }
 }
 
-void SKY::GenerateSky()
+void SKY::GenerateSky(const bool initialize)
 {
-    SKYVERTEX Verts[SKY_NUM_VERTEX];
-    long i;
-    SKYVERTEX v[8];
+    if (initialize)
+    {
+        Release();
+        LoadTextures();
+    }
 
-    Release();
-
-    v[0].pos = CVECTOR(-1.0f, 0.0f, -1.0f);
-    v[1].pos = CVECTOR(1.0f, 0.0f, -1.0f);
-    v[2].pos = CVECTOR(1.0f, 0.0f, 1.0f);
-    v[3].pos = CVECTOR(-1.0f, 0.0f, 1.0f);
-    v[4].pos = CVECTOR(-1.0f, 1.0f, -1.0f);
-    v[5].pos = CVECTOR(1.0f, 1.0f, -1.0f);
-    v[6].pos = CVECTOR(1.0f, 1.0f, 1.0f);
-    v[7].pos = CVECTOR(-1.0f, 1.0f, 1.0f);
+    if (iSkyVertsID < 0)
+    {
+        iSkyVertsID = pRS->CreateVertexBuffer(SKYVERTEX_FORMAT, SKY_NUM_VERTEX * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
+        
+    }
+    if (iSkyIndexID < 0)
+    {
+        iSkyIndexID = pRS->CreateIndexBuffer(20 * 3 * 2);
+    }
 
     const auto fpdelta = 1.0f / 1024.0f;
     const auto fpdx = 1.0f - fpdelta; //.25f - fpdelta;
     const auto fp0 = fpdelta;
-    auto fp1 = 0.25f + fpdelta;
-    auto fp2 = 0.5f + fpdelta;
-    auto fp3 = 0.75f + fpdelta;
+    //auto fp1 = 0.25f + fpdelta;
+    //auto fp2 = 0.5f + fpdelta;
+    //auto fp3 = 0.75f + fpdelta;
     const auto fp4 = 1.0f - fpdelta;
 
-    Verts[0] = v[1];
+    const CVECTOR dir[8]{CVECTOR(-1.0f, 0.0f, -1.0f), CVECTOR(1.0f, 0.0f, -1.0f),  CVECTOR(1.0f, 0.0f, 1.0f),
+                 CVECTOR(-1.0f, 0.0f, 1.0f),  CVECTOR(-1.0f, 1.0f, -1.0f), CVECTOR(1.0f, 1.0f, -1.0f),
+                 CVECTOR(1.0f, 1.0f, 1.0f),   CVECTOR(-1.0f, 1.0f, 1.0f)};
+
+    SKYVERTEX Verts[SKY_NUM_VERTEX];
+    Verts[0].pos = dir[1];
     Verts[0].tu = fp4;
     Verts[0].tv = fp0 + fpdx;
-    Verts[1] = v[5];
+    Verts[1].pos = dir[5];
     Verts[1].tu = fp4;
     Verts[1].tv = fp0;
-    Verts[2] = v[4];
+    Verts[2].pos = dir[4];
     Verts[2].tu = fp0;
     Verts[2].tv = fp0;
-    Verts[3] = v[0];
+    Verts[3].pos = dir[0];
     Verts[3].tu = fp0;
     Verts[3].tv = fp0 + fpdx;
 
-    Verts[4] = v[2];
+    Verts[4].pos = dir[2];
     Verts[4].tu = fp4;
     Verts[4].tv = fp0 + fpdx;
-    Verts[5] = v[6];
+    Verts[5].pos = dir[6];
     Verts[5].tu = fp4;
     Verts[5].tv = fp0;
-    Verts[6] = v[5];
+    Verts[6].pos = dir[5];
     Verts[6].tu = fp0;
     Verts[6].tv = fp0;
-    Verts[7] = v[1];
+    Verts[7].pos = dir[1];
     Verts[7].tu = fp0;
     Verts[7].tv = fp0 + fpdx;
 
-    Verts[8] = v[3];
+    Verts[8].pos = dir[3];
     Verts[8].tu = fp4;
     Verts[8].tv = fp0 + fpdx;
-    Verts[9] = v[7];
+    Verts[9].pos = dir[7];
     Verts[9].tu = fp4;
     Verts[9].tv = fp0;
-    Verts[10] = v[6];
+    Verts[10].pos = dir[6];
     Verts[10].tu = fp0;
     Verts[10].tv = fp0;
-    Verts[11] = v[2];
+    Verts[11].pos = dir[2];
     Verts[11].tu = fp0;
     Verts[11].tv = fp0 + fpdx;
 
-    Verts[12] = v[0];
+    Verts[12].pos = dir[0];
     Verts[12].tu = fp4;
     Verts[12].tv = fp0 + fpdx;
-    Verts[13] = v[4];
+    Verts[13].pos = dir[4];
     Verts[13].tu = fp4;
     Verts[13].tv = fp0;
-    Verts[14] = v[7];
+    Verts[14].pos = dir[7];
     Verts[14].tu = fp0;
     Verts[14].tv = fp0;
-    Verts[15] = v[3];
+    Verts[15].pos = dir[3];
     Verts[15].tu = fp0;
     Verts[15].tv = fp0 + fpdx;
 
-    Verts[16] = v[5];
+    Verts[16].pos = dir[5];
     Verts[16].tu = fp0;
     Verts[16].tv = fp0;
-    Verts[17] = v[6];
+    Verts[17].pos = dir[6];
     Verts[17].tu = fp0;
     Verts[17].tv = fp4;
-    Verts[18] = v[7];
+    Verts[18].pos = dir[7];
     Verts[18].tu = fp4;
     Verts[18].tv = fp4;
-    Verts[19] = v[4];
+    Verts[19].pos = dir[4];
     Verts[19].tu = fp4;
     Verts[19].tv = fp0;
 
-    for (i = 0; i < 20; i++)
+    for (size_t i = 0; i < 20; i++)
     {
         Verts[i].diffuse = 0xFFFFFFFF;
         Verts[i].pos *= fSkySize;
@@ -274,15 +265,14 @@ void SKY::GenerateSky()
         Verts[i].tu2 = Verts[i].tu;
         Verts[i].tv2 = Verts[i].tv;
     }
-    iSkyVertsID = pRS->CreateVertexBuffer(SKYVERTEX_FORMAT, SKY_NUM_VERTEX * sizeof(SKYVERTEX), D3DUSAGE_WRITEONLY);
-    iSkyIndexID = pRS->CreateIndexBuffer(20 * 3 * 2);
+
     auto *pVertBuf = static_cast<SKYVERTEX *>(pRS->LockVertexBuffer(iSkyVertsID));
     if (pVertBuf)
         memcpy(pVertBuf, &Verts[0], sizeof(Verts));
     pRS->UnLockVertexBuffer(iSkyVertsID);
 
     auto *pTrgs = static_cast<uint16_t *>(pRS->LockIndexBuffer(iSkyIndexID));
-    for (i = 0; i < 10; i++)
+    for (size_t i = 0; i < 10; i++)
     {
         *pTrgs++ = static_cast<uint16_t>(i * 4) + 0;
         *pTrgs++ = static_cast<uint16_t>(i * 4) + 1;
@@ -293,8 +283,7 @@ void SKY::GenerateSky()
     }
     pRS->UnLockIndexBuffer(iSkyIndexID);
 
-    LoadTextures();
-    CreateFogSphere();
+    UpdateFogSphere(true);
 }
 
 void SKY::LoadTextures()
@@ -434,7 +423,7 @@ void SKY::Realize(uint32_t Delta_Time)
     D3DXMatrixTranslation(&pMatTranslate, vPos.x, vPos.y / 6.0f, vPos.z);
     D3DXMatrixMultiply(&pMatWorld, &pMatWorld, &pMatTranslate);
     pRS->SetTransform(D3DTS_WORLD, &pMatWorld);
-    pRS->DrawBuffer(iFogVertsID, sizeof(FOGVERTEX), iFogIndexID, 0, iFogNumVerts, 0, iFogNumTrgs / 3,
+    pRS->DrawBuffer(iFogVertsID, sizeof(FOGVERTEX), iFogIndexID, 0, kFogVertsNum, 0, kFogTrgsNum / 3,
                     sTechSkyFog.c_str());
 }
 
@@ -493,13 +482,13 @@ uint32_t SKY::AttributeChanged(ATTRIBUTES *pAttribute)
 
     if (*pAttribute == "isDone")
     {
-        GenerateSky();
+        GenerateSky(true);
         return 0;
     }
 
     if (*pAttribute == "TimeUpdate")
     {
-        UpdateFogSphere();
+        UpdateFogSphere(false);
         return 0;
     }
 
@@ -511,6 +500,11 @@ uint64_t SKY::ProcessMessage(MESSAGE &message)
     if (message.Long() == MSG_SEA_REFLECTION_DRAW)
         Realize(0);
     return 0;
+}
+
+void SKY::RestoreRender()
+{
+    GenerateSky(false);
 }
 
 void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)

@@ -656,6 +656,11 @@ uint64_t Grass::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
+void Grass::RestoreRender()
+{
+    CreateVertexDeclaration();
+}
+
 // Draw a block with coordinates on the minimap
 void Grass::RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlanes, long mx, long mz)
 {
@@ -959,19 +964,17 @@ long Grass::GetColor(CVECTOR color)
 
 void Grass::CreateVertexDeclaration() const
 {
-    if (vertexDecl_ != nullptr)
+    if (vertexDecl_ == nullptr)
     {
-        return;
+        constexpr D3DVERTEXELEMENT9 VertexElements[] = {
+            {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+            {0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
+            {0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 1},
+            {0, 20, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
+            D3DDECL_END()};
+
+        rs->CreateVertexDeclaration(VertexElements, &vertexDecl_);
     }
-
-    const D3DVERTEXELEMENT9 VertexElements[] = {
-        {0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-        {0, 12, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0},
-        {0, 16, D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 1},
-        {0, 20, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
-        D3DDECL_END()};
-
-    rs->CreateVertexDeclaration(VertexElements, &vertexDecl_);
 
     fx_ = rs->GetEffectPointer("Grass");
     if (fx_ != nullptr)

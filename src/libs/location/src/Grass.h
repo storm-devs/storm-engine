@@ -122,6 +122,8 @@ class Grass : public Entity
     //
     uint64_t ProcessMessage(MESSAGE &message) override;
 
+    void RestoreRender();
+
     void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
@@ -132,10 +134,9 @@ class Grass : public Entity
         case Stage::realize:
             Realize(delta);
             break;
-            /*case Stage::lost_render:
-              LostRender(delta); break;
-            case Stage::restore_render:
-              RestoreRender(delta); break;*/
+        case Stage::restore_render:
+            RestoreRender();
+            break;
         }
     }
 

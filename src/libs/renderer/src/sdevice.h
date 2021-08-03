@@ -250,7 +250,6 @@ class DX9RENDER : public VDX9RENDER
     std::stack<RenderTarget> stRenderTarget;
 
     bool TextureLoad(long texid);
-    bool ErrorHandler(HRESULT hr, const char *file, unsigned line, const char *func, const char *expr);
 
     bool MakeCapture();
     void SaveCaptureBuffers();
@@ -690,7 +689,6 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     long progressFramesCountY;
 
     D3DPRESENT_PARAMETERS d3dpp;
-    bool bDeviceLost;
 
     CMatrix mView, mWorld, mProjection;
 
@@ -698,6 +696,8 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     CVECTOR vViewRelationPos;
 
     bool bUseLargeBackBuffer;
+
+    bool resourcesReleased = false;
 
     bool IsInsideScene() override
     {
