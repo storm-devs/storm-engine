@@ -146,7 +146,7 @@ std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *s
             continue;
         }
         curPath = dirEntry.path();
-        if (storm::wildicmp(mask, curPath.filename().string().c_str()))
+        if (mask == nullptr || storm::wildicmp(mask, curPath.filename().u8string().c_str()))
         {
             if (getPaths)
             {
