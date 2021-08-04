@@ -2838,7 +2838,7 @@ char *XINTERFACE::SaveFileFind(long saveNum, char *buffer, size_t bufSize, long 
         }
 
         // start save file finding
-        const auto vFilePaths = fio->_GetFsPathsByMask(sSavePath, "*", true);
+        const auto vFilePaths = fio->_GetFsPathsByMask(sSavePath, nullptr, true);
         for (std::filesystem::path filePath : vFilePaths)
         {
             AddFindData(filePath);
