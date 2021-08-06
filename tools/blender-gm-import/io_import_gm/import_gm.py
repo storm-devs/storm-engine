@@ -976,6 +976,7 @@ def import_gm(
             ob.parent = armature_obj_pose
             modifier = ob.modifiers.new(type='ARMATURE', name="Armature")
             modifier.object = armature_obj_pose
+            modifier.use_deform_preserve_volume = True
             bpy.context.view_layer.objects.active = armature_obj_pose
 
             bpy.ops.pose.armature_apply(selected=False)
