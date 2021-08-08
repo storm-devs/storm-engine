@@ -777,6 +777,7 @@ def import_gm(
         armature_obj_pose_source = get_armature_obj(
             an_path, collection, 'POSE_SOURCE', fix_coas_man_head=fix_coas_man_head)
 
+    blender_objects = []
     for object in data['objects']:
         name = object.get('name')
 
@@ -794,6 +795,7 @@ def import_gm(
 
         me = bpy.data.meshes.new(name)
         ob = bpy.data.objects.new(name, me)
+        blender_objects.append(ob)
         ob.parent = root
 
         bm = bmesh.new()
@@ -979,33 +981,36 @@ def import_gm(
             modifier.use_deform_preserve_volume = True
             bpy.context.view_layer.objects.active = armature_obj_pose
 
-            bpy.ops.pose.armature_apply(selected=False)
+    if has_animation:
+        bpy.ops.pose.armature_apply(selected=False)
 
-            bpy.ops.object.mode_set(mode='POSE', toggle=False)
+        bpy.ops.object.mode_set(mode='POSE', toggle=False)
 
-            for pbone in armature_obj.data.bones:
-                bone_name = pbone.name
+        for pbone in armature_obj.data.bones:
+            bone_name = pbone.name
 
-                bone = armature_obj_pose.pose.bones[bone_name]
-                active = armature_obj_pose_source.pose.bones[bone_name]
+            bone = armature_obj_pose.pose.bones[bone_name]
+            active = armature_obj_pose_source.pose.bones[bone_name]
 
-                bone.location = getmat(
-                    bone, active, context, False).to_translation()
-                bone.rotation_quaternion = getmat(
-                    bone, active, context, not bone.id_data.data.bones[bone.name].use_inherit_rotation).to_3x3().to_quaternion()
+            bone.location = getmat(
+                bone, active, context, False).to_translation()
+            bone.rotation_quaternion = getmat(
+                bone, active, context, not bone.id_data.data.bones[bone.name].use_inherit_rotation).to_3x3().to_quaternion()
 
-                """ hack """
-                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+            """ hack """
+            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
-            bpy.context.view_layer.objects.active = ob
+        for blender_object in blender_objects:
+            bpy.context.view_layer.objects.active = blender_object
             bpy.ops.object.modifier_apply(modifier="Armature")
 
-            bpy.data.objects.remove(armature_obj_pose_source, do_unlink=True)
-            bpy.data.objects.remove(armature_obj_pose, do_unlink=True)
+        bpy.data.objects.remove(armature_obj_pose_source, do_unlink=True)
+        bpy.data.objects.remove(armature_obj_pose, do_unlink=True)
 
-            ob.parent = armature_obj
-            modifier = ob.modifiers.new(type='ARMATURE', name="Armature")
+        for blender_object in blender_objects:
+            blender_object.parent = armature_obj
+            modifier = blender_object.modifiers.new(type='ARMATURE', name="Armature")
             modifier.object = armature_obj
             modifier.use_deform_preserve_volume = True
 
