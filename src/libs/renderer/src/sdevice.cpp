@@ -1334,6 +1334,12 @@ long DX9RENDER::TextureCreate(UINT width, UINT height, UINT levels, uint32_t usa
     return t;
 }
 
+bool DX9RENDER::TextureIncReference(long texid)
+{
+    ++Textures[texid].ref;
+    return true;
+}
+
 bool DX9RENDER::TextureLoad(long t)
 {
     ProgressView();
