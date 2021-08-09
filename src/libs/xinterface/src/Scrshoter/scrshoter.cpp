@@ -144,35 +144,14 @@ bool SCRSHOTER::MakeScreenShot()
     // fill this texture from a copy of our render buffer
     if (hr == D3D_OK)
     {
-        // Create a set of ordinate indents
-        std::vector<size_t> pHorzOff(SS_TEXTURE_WIDTH);
-        std::vector<size_t> pVertOff(SS_TEXTURE_HEIGHT);
-        int nHorzSize, nVertSize;
-        if (static_cast<float>(desc.Width) / desc.Height < static_cast<float>(SS_TEXTURE_WIDTH) / SS_TEXTURE_HEIGHT)
-        {
-            nHorzSize = desc.Width;
-            nVertSize = desc.Width * SS_TEXTURE_HEIGHT / SS_TEXTURE_WIDTH;
-        }
-        else
-        {
-            nHorzSize = desc.Height * SS_TEXTURE_WIDTH / SS_TEXTURE_HEIGHT;
-            nVertSize = desc.Height;
-        }
-        // Fill in the horizontal offsets
-        for (n = 0; n < SS_TEXTURE_WIDTH; n++)
-            pHorzOff[n] = (n * desc.Width / SS_TEXTURE_WIDTH) * (inRect.Pitch / desc.Width);
-        // Fill in the vertical offsets
-        for (n = 0; n < SS_TEXTURE_HEIGHT; n++)
-            pVertOff[n] = n * desc.Height / SS_TEXTURE_HEIGHT;
-
         for (int vi = 0; vi < SS_TEXTURE_HEIGHT; vi++)
         {
-            const size_t vertical_offset = pVertOff[vi];
+            const size_t vertical_offset = vi * desc.Height / SS_TEXTURE_HEIGHT;
             auto *const pInPxl = static_cast<uint8_t *>(pIn) + inRect.Pitch * vertical_offset;
             auto *pOutPxl = (uint32_t *)(static_cast<uint8_t *>(pOut) + outRect.Pitch * vi);
             for (int hi = 0; hi < SS_TEXTURE_WIDTH; hi++)
             {
-                const size_t horizontal_offset = pHorzOff[hi];
+                const size_t horizontal_offset = (hi * desc.Width / SS_TEXTURE_WIDTH) * (inRect.Pitch / desc.Width);
                 pOutPxl[hi] = GetA8R8G8B8_FromFMT(&pInPxl[horizontal_offset], desc.Format);
             }
         }
