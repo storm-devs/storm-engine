@@ -15,15 +15,47 @@ correction_export_matrix = axis_conversion(
     from_forward='Y', from_up='Z', to_forward='X', to_up='Y')
 
 
+def get_material_data(object_data):
+    # TODO check if exists
+    obj_material = object_data.materials[0]
+
+    name = obj_material.name
+    textures = []
+
+    bsdf = obj_material.node_tree.links[0].from_node
+    # TODO check type? bsdf.type
+
+    base_color_node_output = bsdf.inputs['Base Color'].links[0].from_node
+    base_color_node_output_type = base_color_node_output.type
+
+    if base_color_node_output_type == 'TEX_IMAGE':
+        textures = [base_color_node_output.image.name]
+    elif base_color_node_output_type == 'MIX_RGB':
+        texture = base_color_node_output.inputs['Color1'].links[0].from_node.image.name
+        texture_normals = base_color_node_output.inputs['Color2'].links[
+            0].from_node.inputs['Color1'].links[0].from_node.image.name
+
+        textures = [texture, texture_normals]
+
+    return {
+        "name": name,
+        "textures": textures
+    }
+
+
 def remove_blender_name_postfix(name):
     return re.sub(r'.\d{3}', '', name)
 
-# TODO materials
-
 
 def prepare_globnames(objects, locators, materials, is_animated):
-    globnames = ['unknown material group',
-                 'telo_nogi_Body_SG', 'T_JackSparrow.tga']
+    globnames = ['unknown material group']
+
+    for material in materials:
+        name = material.get("name")
+        globnames.append(name)
+        textures = material.get("textures")
+        for texture in textures:
+            globnames.append(texture)
 
     for object in objects:
         name = remove_blender_name_postfix(object.name)
@@ -171,7 +203,6 @@ def export_gm(file_path=""):
 
     depsgraph = bpy.context.evaluated_depsgraph_get()
 
-
     obj_data = obj.data
 
     obj_vertices = obj_data.vertices
@@ -210,7 +241,6 @@ def export_gm(file_path=""):
         if x_is_mirrored:
             norm *= mathutils.Vector([-1, 1, 1])
         normals.append(norm)
-
 
     faces = []
     for face in bm.faces:
@@ -252,32 +282,6 @@ def export_gm(file_path=""):
             weights.append(weight_1)
             bone_ids.append((bone_2 << 8) | (bone_1 << 0))
 
-    # for vertex in obj_vertices:
-    #     pos = mathutils.Vector(vertex.co)
-    #     pos.rotate(correction_export_matrix)
-    #     if x_is_mirrored:
-    #         pos *= mathutils.Vector([-1, 1, 1])
-    #     vertices.append(pos)
-
-    #     norm = mathutils.Vector(vertex.normal)
-    #     norm.rotate(correction_export_matrix)
-    #     if x_is_mirrored:
-    #         norm *= mathutils.Vector([-1, 1, 1])
-    #     normals.append(norm)
-
-    #     weights.append(vertex.groups[0].weight)
-
-    #     bone_id = []
-    #     for vertex_group in vertex.groups:
-    #         print(vertex_group.group, vertex_group.weight,
-    #               obj_vertex_groups[vertex_group.group])
-    #         # TODO
-    #         vertex_group_name = obj_vertex_groups[vertex_group.group].name
-    #         vertex_group_id = vertex_group_name.replace('Bone', '')
-    #         bone_id.append(int(vertex_group_id))
-    #         print(vertex_group_id)
-    #     bone_ids.append((bone_id[1]<<8)|(bone_id[0]<<0))
-
     colors = [[127, 127, 127, 255]] * len(obj_vertices)
     uv_array = [[0, 0]] * len(obj_vertices)
     # faces = []
@@ -295,6 +299,33 @@ def export_gm(file_path=""):
             uv_array[index] = mathutils.Vector(
                 obj_uv_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
 
+    materials = []
+    # TODO
+    material = get_material_data(obj_data)
+    # TODO
+    materials = [material]
+
+    # TODO check
+    textures = []
+    for material in materials:
+        material_textures = material.get("textures")
+        for material_texture in material_textures:
+            if not (material_texture in textures):
+                textures.append(material_texture)
+
+
+    types = []
+    # TODO
+    for i in range(len(objects)):
+        if is_animated:
+            types.append(4)
+            continue
+        # if 2 textures:
+        #     types.append(1)
+        #     continue
+        types.append(0)
+
+    # TODO nested
     with open(file_path, 'wb') as file:
         header_version = 825110581
         file.write(struct.pack('<l', header_version))
@@ -303,8 +334,8 @@ def export_gm(file_path=""):
         header_flags = 0
         file.write(struct.pack('<l', header_flags))
 
-        # TODO materials
-        globnames = prepare_globnames(objects, locators, [], is_animated)
+        globnames = prepare_globnames(
+            objects, locators, materials, is_animated)
 
         globname = '\0'.join(globnames) + '\0'
 
@@ -314,10 +345,10 @@ def export_gm(file_path=""):
         header_names_quantity = len(globnames)
         file.write(struct.pack('<l', header_names_quantity))
 
-        header_ntextures = 1
+        header_ntextures = len(textures)
         file.write(struct.pack('<l', header_ntextures))
 
-        header_nmaterials = 1
+        header_nmaterials = len(materials)
         file.write(struct.pack('<l', header_nmaterials))
 
         header_nlights = 0
@@ -327,18 +358,22 @@ def export_gm(file_path=""):
         header_nlabels = len(locators)
         file.write(struct.pack('<l', header_nlabels))
 
+        # TODO
         header_nobjects = 1
         file.write(struct.pack('<l', header_nobjects))
 
         header_ntriangles = len(faces)
         file.write(struct.pack('<l', header_ntriangles))
 
+        # TODO
         header_nvrtbuffs = 1
         file.write(struct.pack('<l', header_nvrtbuffs))
 
+        # TODO
         header_bboxSize = write_vector(file, [2, 2, 2])
         header_bboxCenter = write_vector(file, [1, 1, 1])
 
+        # TODO
         header_radius = 1
         file.write(struct.pack('<f', header_radius))
 
@@ -350,18 +385,22 @@ def export_gm(file_path=""):
             file.write(struct.pack('<l', current_name_offset))
             current_name_offset = globname.index('\0', current_name_offset) + 1
 
+        # TODO
         for i in range(header_ntextures):
-            # TODO
+            current_texture_name = textures[i]
             current_texture_name_offset = globname.index(
-                'T_JackSparrow.tga' + '\0')
+                current_texture_name + '\0')
             file.write(struct.pack('<l', current_texture_name_offset))
 
         for i in range(header_nmaterials):
+            material = materials[i]
+
             material_group_name_idx = globname.index(
                 'unknown material group' + '\0')
             file.write(struct.pack('<l', material_group_name_idx))
 
-            material_name_idx = globname.index('telo_nogi_Body_SG' + '\0')
+            material_name = material.get("name")
+            material_name_idx = globname.index(material_name + '\0')
             file.write(struct.pack('<l', material_name_idx))
 
             material_diffuse = 0.8
@@ -376,17 +415,27 @@ def export_gm(file_path=""):
             material_selfIllum = 0
             file.write(struct.pack('<f', material_selfIllum))
 
-            # material_texture_type
-            file.write(struct.pack('<l', 1))
-            file.write(struct.pack('<l', 0))
-            file.write(struct.pack('<l', 0))
-            file.write(struct.pack('<l', 0))
+            material_textures = material.get("textures")
 
-            # material_texture
-            file.write(struct.pack('<l', 0))
-            file.write(struct.pack('<l', -1))
-            file.write(struct.pack('<l', -1))
-            file.write(struct.pack('<l', -1))
+            material_textures_types = [0,0,0,0]
+
+            if len(material_textures) == 1:
+                material_textures_types[0] = 1
+            if len(material_textures) == 2:
+                material_textures_types[0] = 1
+                material_textures_types[1] = 2
+
+            for material_textures_type in material_textures_types:
+                file.write(struct.pack('<l', material_textures_type))
+
+            material_textures_idxs = [-1,-1,-1,-1]
+
+            for i in range(len(material_textures)):
+                material_texture = material_textures[i]
+                material_textures_idxs[i] = textures.index(material_texture)
+            
+            for material_textures_idx in material_textures_idxs:
+                file.write(struct.pack('<l', material_textures_idx))
 
         # TODO fix for nested locators
         for locator in locators:
@@ -429,41 +478,48 @@ def export_gm(file_path=""):
                 file.write(struct.pack('<f', label_weight[i]))
 
         for i in range(header_nobjects):
-            object_group_name = remove_blender_name_postfix(objects[i].parent.name)
+            object_group_name = remove_blender_name_postfix(
+                objects[i].parent.name)
             object_group_name_idx = globname.index(object_group_name + '\0')
-            print(object_group_name_idx)
             file.write(struct.pack('<l', object_group_name_idx))
 
             object_name = remove_blender_name_postfix(objects[i].name)
             object_name_idx = globname.index(object_name + '\0')
-            print(object_name_idx)
             file.write(struct.pack('<l', object_name_idx))
 
             # TODO check
             object_flags = 3103
             file.write(struct.pack('<l', object_flags))
 
+            # TODO
             object_radius = 1
             file.write(struct.pack('<f', object_radius))
 
+            # TODO
             object_center = [1, 1, 1]
             write_vector(file, object_center)
 
+            # TODO
             object_vertex_buff = 0
             file.write(struct.pack('<l', object_vertex_buff))
 
+            # TODO
             object_ntriangles = len(faces)
             file.write(struct.pack('<l', object_ntriangles))
 
+            # TODO
             object_striangle = 0
             file.write(struct.pack('<l', object_striangle))
 
+            # TODO
             object_nvertices = len(vertices)
             file.write(struct.pack('<l', object_nvertices))
 
+            # TODO
             object_svertex = 0
             file.write(struct.pack('<l', object_svertex))
 
+            # TODO
             object_material = 0
             file.write(struct.pack('<l', object_material))
 
@@ -476,6 +532,7 @@ def export_gm(file_path=""):
             for i in range(4):
                 file.write(struct.pack('<l', object_bones[i]))
 
+            # TODO
             object_atriangles = 0
             file.write(struct.pack('<l', object_atriangles))
 
@@ -485,6 +542,7 @@ def export_gm(file_path=""):
                 file.write(struct.pack('<H', faces[i][j]))
 
         for i in range(header_nvrtbuffs):
+            # TODO
             vertex_buffer_type = 4
             file.write(struct.pack('<l', vertex_buffer_type))
 
@@ -496,9 +554,12 @@ def export_gm(file_path=""):
 
         # vertices
 
-        print(len(vertices),len(weights),len(bone_ids),len(normals),len(colors),len(uv_array))
+        print(len(vertices), len(weights), len(bone_ids),
+              len(normals), len(colors), len(uv_array))
+
         for i in range(len(vertices)):
-            vertex_type = 4
+            # TODO
+            vertex_type = types[0]
             if vertex_type == 0:
                 write_vertex0(file, vertices[i], normals[i], colors[i],
                               uv_array[i][0], uv_array[i][1])
