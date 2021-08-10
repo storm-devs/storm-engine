@@ -1668,7 +1668,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                         if (bNeg)
                                             real_var->value->Set(-atol(Token.GetData()), aindex);
                                         else
-                                            real_var->value->Set(static_cast<long>(atoll(Token.GetData())));
+                                            real_var->value->Set(static_cast<long>(atoll(Token.GetData())), aindex);
                                         aindex++;
                                         break;
                                     case FLOAT_NUMBER:
