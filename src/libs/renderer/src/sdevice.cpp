@@ -1327,7 +1327,7 @@ long DX9RENDER::TextureCreate(UINT width, UINT height, UINT levels, uint32_t usa
     Textures[t].name = nullptr;
     Textures[t].hash = 0;
     Textures[t].ref = 1;
-    Textures[t].dwSize = 0; // TODO
+    Textures[t].dwSize = width * height * 4; // Assuming 32-bit pixels
     Textures[t].isCubeMap = false;
     Textures[t].loaded = true;
 

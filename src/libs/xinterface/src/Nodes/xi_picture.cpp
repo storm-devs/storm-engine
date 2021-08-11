@@ -304,8 +304,15 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
 
     case 7: // set new picture by pointer to IDirect3DTexture9
     {
-        // TODO: Update script to pass id as integer
-        long pTex = message.GetCurrentFormatType() == 'p' ?  message.Pointer() : message.Long();
+        long pTex = -1;
+        if (message.GetCurrentFormatType() == 'p') {
+            // DEPRECATED
+            core.Trace("Warning! Setting an interface picture by pointer is deprecated. Please use integers instead.");
+            pTex = message.Pointer();
+        }
+        else {
+            pTex = message.Long();
+        }
         SetNewPictureByPointer(pTex);
     }
     break;
