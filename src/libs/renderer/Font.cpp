@@ -39,7 +39,7 @@ FONT::~FONT()
     if (RenderService)
     {
         if (TextureID >= 0)
-            RenderService->TextureRelease(TextureID);
+            RenderService->BGFXTextureRelease(TextureID);
         // core.FreeService("dx9render");
     }
 }

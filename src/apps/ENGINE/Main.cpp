@@ -206,7 +206,7 @@ int main(int argc, char **argv)
     // bgfx::setViewClear(0, BGFX_CLEAR_NONE, 0x303030ff, 1.0f, 0);
 
     bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
-    //bgfx::setViewRect(1, 0, 0, uint16_t(width), uint16_t(height));
+    bgfx::setViewRect(1, 0, 0, uint16_t(width), uint16_t(height));
     //bgfx::setViewRect(2, 0, 0, uint16_t(width), uint16_t(height));
 
     

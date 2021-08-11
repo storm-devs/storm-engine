@@ -192,8 +192,9 @@ class CXI_TABLE : public CINODE
 
     std::string m_sBorderIconGroupName;
     long m_idBorderTexture;
-    long m_idBorderVBuf;
-    long m_idBorderIBuf;
+
+    std::vector<XI_ONETEX_VERTEX> pVertices;
+
     long m_nBorderSubQ;
 
     long m_nBorderIcon_LeftTop;

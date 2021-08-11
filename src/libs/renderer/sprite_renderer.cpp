@@ -136,31 +136,8 @@ void SpriteRenderer::UpdateIndexBuffer(std::vector<uint16_t> indices){
     throw std::exception("Does not apply for static index buffers");
 }
 
-void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3> &vertices, 
-                                        glm::vec2 &u, 
-                                        glm::vec2 &v, 
-                                        uint32_t &color,
-                                        float depth)
+void SpriteRenderer::PushVertices(std::vector<SPRITE_VERTEX> vertices, float depth)
 {
-    // m_color[0] = m_color[1] = m_color[2] = m_color[3] = 1.0f;
-
-    // bgfx::setUniform(u_color, &m_color);
-    const bgfx::Memory *mem = bgfx::alloc(vertices.size() * sizeof(SPRITE_VERTEX));
-
-    SPRITE_VERTEX *vertex = (SPRITE_VERTEX *)mem->data;
-
-    int index = 0;
-
-    vertex[index + 0] = SPRITE_VERTEX{vertices[index + 0].x, vertices[index + 0].y, u.x, v.x /*, color*/}; // top left
-    vertex[index + 1] = SPRITE_VERTEX{vertices[index + 1].x, vertices[index + 1].y, u.y, v.x /*, color*/}; // top right
-    vertex[index + 2] =
-        SPRITE_VERTEX{vertices[index + 2].x, vertices[index + 2].y, u.x, v.y /*, color*/}; // bottom left
-    vertex[index + 3] =
-        SPRITE_VERTEX{vertices[index + 3].x, vertices[index + 3].y, u.y, v.y /*, color*/}; // bottom right
-
-    std::vector<SPRITE_VERTEX> storageVertices =
-        std::vector<SPRITE_VERTEX>{vertex[index + 0], vertex[index + 1], vertex[index + 2], vertex[index + 3]};
-
     if (m_spriteQueueCount >= m_spriteQueue.size())
     {
         uint32_t newSize = std::max(InitialQueueSize, (uint32_t)m_spriteQueue.size() * 2);
@@ -172,50 +149,10 @@ void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3> &vertices,
     SpriteInfo *sprite = &m_spriteQueue[m_spriteQueueCount];
 
     sprite->texture = Texture;
-    sprite->vertices = storageVertices;
+    sprite->vertices = vertices;
     sprite->depth = depth;
     ++m_spriteQueueCount;
 }
-
-
-void SpriteRenderer::UpdateVertexBuffer(std::vector<glm::vec3> &vertices, 
-                                        std::vector<std::pair<float, float>>& uv, 
-                                        uint32_t &color,
-                                        float depth)
-{
-    // m_color[0] = m_color[1] = m_color[2] = m_color[3] = 1.0f;
-
-    // bgfx::setUniform(u_color, &m_color);
-    const bgfx::Memory *mem = bgfx::alloc(vertices.size() * sizeof(SPRITE_VERTEX));
-
-    SPRITE_VERTEX *vertex = (SPRITE_VERTEX *)mem->data;
-
-    int index = 0;
-
-    vertex[index + 0] = SPRITE_VERTEX{vertices[index + 0].x, vertices[index + 0].y, uv[index + 0].first, uv[index + 0].second /*, color*/}; // top left
-    vertex[index + 1] = SPRITE_VERTEX{vertices[index + 1].x, vertices[index + 1].y, uv[index + 1].first, uv[index + 1].second /*, color*/}; // top right
-    vertex[index + 2] = SPRITE_VERTEX{vertices[index + 2].x, vertices[index + 2].y, uv[index + 2].first, uv[index + 2].second /*, color*/}; // bottom left
-    vertex[index + 3] = SPRITE_VERTEX{vertices[index + 3].x, vertices[index + 3].y, uv[index + 3].first, uv[index + 3].second /*, color*/}; // bottom right
-
-    std::vector<SPRITE_VERTEX> storageVertices =
-        std::vector<SPRITE_VERTEX>{vertex[index + 0], vertex[index + 1], vertex[index + 2], vertex[index + 3]};
-
-    if (m_spriteQueueCount >= m_spriteQueue.size())
-    {
-        uint32_t newSize = std::max(InitialQueueSize, (uint32_t)m_spriteQueue.size() * 2);
-        m_spriteQueue.resize(newSize);
-
-        m_sortedSprites.clear();
-    }
-
-    SpriteInfo *sprite = &m_spriteQueue[m_spriteQueueCount];
-
-    sprite->texture = Texture;
-    sprite->vertices = storageVertices;
-    sprite->depth = depth;
-    ++m_spriteQueueCount;
-}
-
 
 void SpriteRenderer::Submit()
 {
@@ -297,7 +234,7 @@ void SpriteRenderer::Submit()
         {
             if (pos > batchStart)
             {
-                // TODO maybe hax
+                bgfx::setViewFrameBuffer(0, BGFX_INVALID_HANDLE);
                 bgfx::setState(state);
                 bgfx::setTexture(0, s_texColor, *texture->textureHandle);
                 bgfx::setVertexBuffer(0, &vb);

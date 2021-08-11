@@ -1,11 +1,13 @@
 #include "xi_slideLine.h"
 
+#include "primitive_renderer.h"
+
+
 CXI_SLIDELINE::CXI_SLIDELINE()
 {
     m_idTexLine = -1;
     m_idTexSelLine = -1;
     m_idTexPointer = -1;
-    m_idVBuf = -1;
     m_nNodeType = NODETYPE_SLIDELINE;
     m_bMouseSelect = true;
     m_bDoChangeSlider = false;
@@ -20,36 +22,91 @@ void CXI_SLIDELINE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
-        if (m_idVBuf >= 0)
+        if (m_vertices.size() != 0)
         {
             DoMouseControl();
 
-            uint32_t dwOldTF;
+            /*uint32_t dwOldTF;
             m_rs->GetRenderState(D3DRS_TEXTUREFACTOR, &dwOldTF);
 
             if (m_bSelected)
                 m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFF808080);
             else
-                m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwDisableColor);
+                m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwDisableColor);*/
 
             if (m_idTexLine >= 0 && m_idTexSelLine >= 0)
             {
                 if (bSelected)
-                    m_rs->TextureSet(0, m_idTexSelLine);
+                {
+                
+                    //m_rs->TextureSet(0, m_idTexSelLine);
+                    auto texture = m_rs->GetBGFXTextureFromID(m_idTexSelLine);
+                    m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+                }
+                    
                 else
-                    m_rs->TextureSet(0, m_idTexLine);
-                m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONLYONETEX_VERTEX), 0, 2,
-                                    "iBlindPictures");
+                {
+                    
+                    //m_rs->TextureSet(0, m_idTexLine);
+                    auto texture = m_rs->GetBGFXTextureFromID(m_idTexLine);
+                    m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+                }
+
+                for (int i = 0; i < 4; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                               pV[i + 0].tu, pV[i + 0].tv});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                               pV[i + 2].tu, pV[i + 2].tv});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                               pV[i + 1].tu, pV[i + 1].tv});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                               pV[i + 3].tu, pV[i + 3].tv});
+
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+
+                //m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONLYONETEX_VERTEX), 0, 2, "iBlindPictures");
             }
 
             if (m_idTexPointer >= 0)
             {
-                m_rs->TextureSet(0, m_idTexPointer);
-                m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONLYONETEX_VERTEX), 4, 2,
-                                    "iBlindPictures");
+                //m_rs->TextureSet(0, m_idTexPointer);
+                
+                auto texture = m_rs->GetBGFXTextureFromID(m_idTexPointer);
+                m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+                
+                for (int i = 4; i < 8; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                               pV[i + 0].tu, pV[i + 0].tv});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                               pV[i + 2].tu, pV[i + 2].tv});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                               pV[i + 1].tu, pV[i + 1].tv});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                               pV[i + 3].tu, pV[i + 3].tv});
+
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+
+
+
+                //m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONLYONETEX_VERTEX), 4, 2, "iBlindPictures");
             }
 
-            m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, dwOldTF);
+            //m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, dwOldTF);
         }
     }
 }
@@ -64,10 +121,9 @@ bool CXI_SLIDELINE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
 
 void CXI_SLIDELINE::ReleaseAll()
 {
-    TEXTURE_RELEASE(m_rs, m_idTexLine);
-    TEXTURE_RELEASE(m_rs, m_idTexSelLine);
-    TEXTURE_RELEASE(m_rs, m_idTexPointer);
-    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idTexLine);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idTexSelLine);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idTexPointer);
 }
 
 int CXI_SLIDELINE::CommandExecute(int wActCode)
@@ -117,7 +173,7 @@ void CXI_SLIDELINE::ChangePosition(XYRECT &rNewPos)
 {
     m_rect = rNewPos;
 
-    auto *const pv = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto *const pv = m_vertices.data();
     if (pv)
     {
         pv[0].pos.x = pv[1].pos.x = static_cast<float>(m_rect.left);
@@ -134,7 +190,6 @@ void CXI_SLIDELINE::ChangePosition(XYRECT &rNewPos)
         pv[4].pos.y = pv[6].pos.y = static_cast<float>(m_rect.top + m_rect.bottom - m_nPointerHeight) / 2.f;
         pv[5].pos.y = pv[7].pos.y = static_cast<float>(m_rect.top + m_rect.bottom + m_nPointerHeight) / 2.f;
 
-        m_rs->UnLockVertexBuffer(m_idVBuf);
     }
 }
 
@@ -234,19 +289,18 @@ void CXI_SLIDELINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
 
     m_idTexLine = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "baseTexture", param, sizeof(param), ""))
-        m_idTexLine = m_rs->TextureCreate(param);
+        m_idTexLine = m_rs->BGFXTextureCreate(param);
 
     m_idTexSelLine = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "selectTexture", param, sizeof(param), ""))
-        m_idTexSelLine = m_rs->TextureCreate(param);
+        m_idTexSelLine = m_rs->BGFXTextureCreate(param);
 
     m_idTexPointer = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "pointerTexture", param, sizeof(param), ""))
-        m_idTexPointer = m_rs->TextureCreate(param);
+        m_idTexPointer = m_rs->BGFXTextureCreate(param);
 
-    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF, 8 * sizeof(XI_ONLYONETEX_VERTEX), D3DUSAGE_WRITEONLY);
-    if (m_idVBuf == -1)
-        throw std::runtime_error("can not create the vertex buffers");
+    m_vertices.reserve(8);
+    m_vertices.resize(8);
 
     m_nPointerWidth = GetIniLong(ini1, name1, ini2, name2, "pointerWidth", 8);
     m_nPointerHeight = GetIniLong(ini1, name1, ini2, name2, "pointerHeight", m_rect.bottom - m_rect.top);
@@ -272,7 +326,7 @@ void CXI_SLIDELINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
 
     m_dwDisableColor = GetIniARGB(ini1, name1, ini2, name2, "disablecolor", 0xA04C4C4C);
 
-    auto *pv = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto *pv = m_vertices.data();
     if (pv)
     {
         for (i = 0; i < 8; i++)
@@ -297,7 +351,6 @@ void CXI_SLIDELINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
         pv[4].pos.y = pv[6].pos.y = static_cast<float>(m_rect.top + m_rect.bottom - m_nPointerHeight) / 2.f;
         pv[5].pos.y = pv[7].pos.y = static_cast<float>(m_rect.top + m_rect.bottom + m_nPointerHeight) / 2.f;
 
-        m_rs->UnLockVertexBuffer(m_idVBuf);
     }
 
     m_bSelected = true;
@@ -317,12 +370,11 @@ void CXI_SLIDELINE::SetNewValue(long newValue)
     const auto right = static_cast<float>(m_rect.right - m_nBaseLeft + m_nPointerLeft - m_nPointerWidth);
     left = left + (right - left) / m_nGrateQuantity * m_nCurValue;
 
-    auto *pv = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto *pv = m_vertices.data();
     if (pv)
     {
         pv[4].pos.x = pv[5].pos.x = left;
         pv[6].pos.x = pv[7].pos.x = left + m_nPointerWidth;
-        m_rs->UnLockVertexBuffer(m_idVBuf);
     }
 
     ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_idInterface, "nodes");

@@ -196,30 +196,28 @@ void CXI_IMAGE::Draw()
         }   
         else
         {
+
             auto texture = m_rs->GetBGFXTextureFromID(m_nTextureID);
             m_rs->GetPrimitiveRenderer()->Texture = texture;
 
-            std::vector<glm::vec3> vertices;
+            {
+                auto pVertices = m_vrtx;
+                std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
 
-            vertices.push_back({m_vrtx[0].pos.x, m_vrtx[0].pos.y, m_vrtx[0].pos.z}); // top left
-            vertices.push_back({m_vrtx[2].pos.x, m_vrtx[2].pos.y, m_vrtx[2].pos.z}); // top right
-            vertices.push_back({m_vrtx[1].pos.x, m_vrtx[1].pos.y, m_vrtx[1].pos.z}); // bottom left
-            vertices.push_back({m_vrtx[3].pos.x, m_vrtx[3].pos.y, m_vrtx[3].pos.z}); // bottom right
-
-            std::vector<std::pair<float, float>> uv;
-            uv.push_back({m_vrtx[0].tu, m_vrtx[0].tv});
-            uv.push_back({m_vrtx[2].tu, m_vrtx[2].tv});
-            uv.push_back({m_vrtx[1].tu, m_vrtx[1].tv});
-            uv.push_back({m_vrtx[3].tu, m_vrtx[3].tv});
-
-            std::vector<uint32_t> colors;
-
-            colors.push_back(m_vrtx[0].color);
-            colors.push_back(m_vrtx[1].color);
-            colors.push_back(m_vrtx[2].color);
-            colors.push_back(m_vrtx[3].color);
-
-            m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[0].pos.x, pVertices[0].pos.y,
+                                                                 pVertices[0].pos.z, pVertices[0].tu, pVertices[0].tv,
+                                                                 pVertices[0].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[2].pos.x, pVertices[2].pos.y,
+                                                                 pVertices[2].pos.z, pVertices[2].tu, pVertices[2].tv,
+                                                                 pVertices[2].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[1].pos.x, pVertices[1].pos.y,
+                                                                 pVertices[1].pos.z, pVertices[1].tu, pVertices[1].tv,
+                                                                 pVertices[1].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[3].pos.x, pVertices[3].pos.y,
+                                                                 pVertices[3].pos.z, pVertices[3].tu, pVertices[3].tv,
+                                                                 pVertices[3].color});
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+            }
 
         }
 

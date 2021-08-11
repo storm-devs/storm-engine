@@ -4,6 +4,8 @@
 #include "xi_util.h"
 #include <stdio.h>
 
+#include "primitive_renderer.h"
+
 #define ALIGN_BOTTOM 16
 #define ALIGN_TOP 17
 #define NOTUSE_OFFSET -1000.f
@@ -56,7 +58,22 @@ void XI_TableLineDescribe::DrawSpecColor(float fTop) const
         v[2].pos.y = fTop;
         v[3].pos.x = fRight;
         v[3].pos.y = fBottom;
-        m_pTable->m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_NOTEX_FVF, 2, v, sizeof(XI_NOTEX_VERTEX), "iRectangle");
+
+        for (int i = 0; i < 4; i += 4)
+        {
+            std::vector<VERTEX_POSITION_COLOR> vertices;
+
+            auto pVertices = v;
+
+            vertices.push_back(VERTEX_POSITION_COLOR{pVertices[i + 0].pos.x, pVertices[i + 0].pos.y, pVertices[i + 0].pos.z, pVertices[i + 0].color});
+            vertices.push_back(VERTEX_POSITION_COLOR{pVertices[i + 2].pos.x, pVertices[i + 2].pos.y, pVertices[i + 2].pos.z, pVertices[i + 1].color});
+            vertices.push_back(VERTEX_POSITION_COLOR{pVertices[i + 1].pos.x, pVertices[i + 1].pos.y, pVertices[i + 1].pos.z, pVertices[i + 1].color});
+            vertices.push_back(VERTEX_POSITION_COLOR{pVertices[i + 3].pos.x, pVertices[i + 3].pos.y, pVertices[i + 3].pos.z, pVertices[i + 3].color});
+
+            m_pTable->m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+
+        //m_pTable->m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_NOTEX_FVF, 2, v, sizeof(XI_NOTEX_VERTEX), "iRectangle");
     }
 }
 
@@ -363,8 +380,6 @@ CXI_TABLE::CXI_TABLE()
     m_bBackPresent = false;
 
     m_idBorderTexture = -1;
-    m_idBorderVBuf = -1;
-    m_idBorderIBuf = -1;
     m_nBorderSubQ = 0;
 
     m_EditData.bAllEditable = true;
@@ -417,11 +432,33 @@ void CXI_TABLE::Draw(bool bSelected, uint32_t Delta_Time)
     m_SelectImg.Draw();
 
     // Drawing the frame
-    if (m_idBorderTexture != -1 && m_idBorderVBuf != -1 && m_idBorderIBuf != -1)
+    if (m_idBorderTexture != -1)
     {
-        m_rs->TextureSet(0, m_idBorderTexture);
-        m_rs->DrawBuffer(m_idBorderVBuf, sizeof(XI_ONETEX_VERTEX), m_idBorderIBuf, 0, m_nBorderSubQ * 4, 0,
-                         m_nBorderSubQ * 2, "iIcon");
+        //m_rs->TextureSet(0, m_idBorderTexture);
+
+        auto texture = m_rs->GetBGFXTextureFromID(m_idBorderTexture);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+        for (int i = 0; i < m_nBorderSubQ * 4; i += 4)
+        {
+            std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+            auto pV = pVertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                             pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                             pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                             pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                             pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+
+        /*m_rs->DrawBuffer(m_idBorderVBuf, sizeof(XI_ONETEX_VERTEX), m_idBorderIBuf, 0, m_nBorderSubQ * 4, 0,
+                         m_nBorderSubQ * 2, "iIcon");*/
     }
 
     // Line output
@@ -460,9 +497,7 @@ void CXI_TABLE::ReleaseAll()
     m_BackImg.Unload();
 
     // release border data
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sBorderIconGroupName.c_str(), m_idBorderTexture);
-    VERTEX_BUFFER_RELEASE(m_rs, m_idBorderVBuf);
-    INDEX_BUFFER_RELEASE(m_rs, m_idBorderIBuf);
+    BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sBorderIconGroupName.c_str(), m_idBorderTexture);
 
     // release fonts from list
     FONT_RELEASE(m_rs, m_nFontCellID);
@@ -842,48 +877,48 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     if (ReadIniString(ini1, name1, ini2, name2, "bordericongroup", param, sizeof(param), ""))
     {
         m_sBorderIconGroupName = param;
-        m_idBorderTexture = pPictureService->GetTextureID(param);
+        m_idBorderTexture = pPictureService->BGFXGetTextureID(param);
     }
     //
     m_nBorderIcon_LeftTop = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "borderlefttop", param, sizeof(param), ""))
-        m_nBorderIcon_LeftTop = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_LeftTop = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
     //
     m_nBorderIcon_LeftBottom = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "borderleftbottom", param, sizeof(param), ""))
-        m_nBorderIcon_LeftBottom = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_LeftBottom = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
     //
     m_nBorderIcon_RightTop = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "borderrighttop", param, sizeof(param), ""))
-        m_nBorderIcon_RightTop = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_RightTop = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
     //
     m_nBorderIcon_RightBottom = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "borderrightbottom", param, sizeof(param), ""))
-        m_nBorderIcon_RightBottom = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_RightBottom = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
     //
     m_nBorderIcon_Left = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "borderleft", param, sizeof(param), ""))
-        m_nBorderIcon_Left = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_Left = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
     //
     m_nBorderIcon_Right = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "borderright", param, sizeof(param), ""))
-        m_nBorderIcon_Right = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_Right = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
     //
     m_nBorderIcon_Top = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "bordertop", param, sizeof(param), ""))
-        m_nBorderIcon_Top = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_Top = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
     //
     m_nBorderIcon_Bottom = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "borderbottom", param, sizeof(param), ""))
-        m_nBorderIcon_Bottom = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_Bottom = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
     //
     m_nBorderIcon_VLine = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "bordervline", param, sizeof(param), ""))
-        m_nBorderIcon_VLine = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_VLine = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
     //
     m_nBorderIcon_HLine = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "borderhline", param, sizeof(param), ""))
-        m_nBorderIcon_HLine = pPictureService->GetImageNum(m_sBorderIconGroupName.c_str(), param);
+        m_nBorderIcon_HLine = pPictureService->BGFXGetImageNum(m_sBorderIconGroupName.c_str(), param);
 
     m_dwBorderColor = GetIniARGB(ini1, name1, ini2, name2, "bordercolor", ARGB(255, 128, 128, 128));
     m_nBorderWidth = GetIniLong(ini1, name1, ini2, name2, "borderwidth", 0);
@@ -1013,32 +1048,14 @@ void CXI_TABLE::UpdateBorders()
     if (m_nBorderSubQ != q) // rearranging buffers
     {
         m_nBorderSubQ = q;
-        VERTEX_BUFFER_RELEASE(m_rs, m_idBorderVBuf);
-        INDEX_BUFFER_RELEASE(m_rs, m_idBorderIBuf);
-
-        // index buffer
-        m_idBorderIBuf = m_rs->CreateIndexBuffer(q * 6 * sizeof(uint16_t));
-        Assert(m_idBorderIBuf != -1);
-        // fill in
-        auto *pT = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idBorderIBuf));
-        for (n = 0; n < q; n++)
-        {
-            pT[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
-            pT[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
-            pT[n * 6 + 2] = static_cast<uint16_t>(n * 4 + 2);
-            pT[n * 6 + 3] = static_cast<uint16_t>(n * 4 + 3);
-            pT[n * 6 + 4] = static_cast<uint16_t>(n * 4 + 1);
-            pT[n * 6 + 5] = static_cast<uint16_t>(n * 4 + 2);
-        }
-        m_rs->UnLockIndexBuffer(m_idBorderIBuf);
+        pVertices.clear();
 
         // vertex buffer
-        m_idBorderVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF, q * 4 * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
-        Assert(m_idBorderVBuf != -1);
+        pVertices.resize(q * 4);
     }
 
     // fill the vertex buffer
-    auto *pV = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idBorderVBuf));
+    auto pV = pVertices.data();
     // horizontal lines
     nTop = m_rect.top;
     for (r = 0, n = 0; r < m_nRowQuantity - 1; r++)
@@ -1105,8 +1122,6 @@ void CXI_TABLE::UpdateBorders()
                 m_rect.top + m_pntBorderCornerSize.y, m_nBorderWidth,
                 m_rect.bottom - m_rect.top - 2 * m_pntBorderCornerSize.y);
     n += 4;
-    // finish
-    m_rs->UnLockVertexBuffer(m_idBorderVBuf);
 }
 
 void CXI_TABLE::WriteSquare(XI_ONETEX_VERTEX *pV, long nImgID, uint32_t dwCol, long nX, long nY, long nW, long nH) const
@@ -1115,7 +1130,7 @@ void CXI_TABLE::WriteSquare(XI_ONETEX_VERTEX *pV, long nImgID, uint32_t dwCol, l
         return;
 
     FXYRECT uv;
-    pPictureService->GetTexturePos(nImgID, uv);
+    pPictureService->BGFXGetTexturePos(nImgID, uv);
 
     pV[0].color = dwCol;
     pV[0].pos.x = static_cast<float>(nX);

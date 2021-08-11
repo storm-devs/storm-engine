@@ -1,5 +1,8 @@
 #include "xi_title.h"
 
+#include "primitive_renderer.h"
+
+
 CXI_TITLE::CXI_TITLE()
 {
     m_sGroupName = nullptr;
@@ -7,10 +10,9 @@ CXI_TITLE::CXI_TITLE()
 
     m_idString = -1L;
 
-    m_idVBuf = -1L;
-    m_idIBuf = -1L;
     m_nVert = 0;
-    m_nIndx = 0;
+
+    pVert = nullptr;
 
     m_fontID = -1L;
     m_nNodeType = NODETYPE_TITLE;
@@ -25,8 +27,31 @@ void CXI_TITLE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
-        m_rs->TextureSet(0, m_idTex);
-        m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 0, m_nVert, 0, m_nIndx, "iTitle");
+        /*m_rs->TextureSet(0, m_idTex);
+        m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 0, m_nVert, 0, m_nIndx, "iTitle");*/
+
+        auto texture = m_rs->GetBGFXTextureFromID(m_idTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+        for (long n = 0; n < m_nVert; n += 4)
+        {
+            auto pVertices = pVert;
+            std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[n + 0].pos.x, pVertices[n + 0].pos.y,
+                                                             pVertices[n + 0].pos.z, pVertices[n + 0].tu,
+                                                             pVertices[n + 0].tv, pVertices[n + 0].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[n + 2].pos.x, pVertices[n + 2].pos.y,
+                                                             pVertices[n + 2].pos.z, pVertices[n + 2].tu,
+                                                             pVertices[n + 2].tv, pVertices[n + 2].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[n + 1].pos.x, pVertices[n + 1].pos.y,
+                                                             pVertices[n + 1].pos.z, pVertices[n + 1].tu,
+                                                             pVertices[n + 1].tv, pVertices[n + 1].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[n + 3].pos.x, pVertices[n + 3].pos.y,
+                                                             pVertices[n + 3].pos.z, pVertices[n + 3].tu,
+                                                             pVertices[n + 3].tv, pVertices[n + 3].color});
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
 
         // show title text
         if (m_idString != -1L)
@@ -47,16 +72,21 @@ bool CXI_TITLE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char
 
 void CXI_TITLE::ReleaseAll()
 {
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
+    BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
     STORM_DELETE(m_sGroupName);
     m_idString = -1L;
-    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
-    INDEX_BUFFER_RELEASE(m_rs, m_idIBuf);
 
     m_nVert = 0;
-    m_nIndx = 0;
 
-    FONT_RELEASE(m_rs, m_fontID);
+    delete[] pVert;
+
+    //FONT_RELEASE(m_rs, m_fontID);
+
+    if (m_rs != NULL && m_fontID != -1)
+    {
+        m_rs->UnloadFont(m_fontID);
+        m_fontID = -1;
+    }
 }
 
 int CXI_TITLE::CommandExecute(int wActCode)
@@ -142,7 +172,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
         if (m_sGroupName == nullptr)
             throw std::runtime_error("allocate memory error");
         memcpy(m_sGroupName, param, len);
-        m_idTex = pPictureService->GetTextureID(m_sGroupName);
+        m_idTex = pPictureService->BGFXGetTextureID(m_sGroupName);
     }
     else
     {
@@ -153,13 +183,13 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     FXYRECT centerRect, tiledRect, mediumRect;
     // get title images
     if (ReadIniString(ini1, name1, ini2, name2, "titleCenter", param, sizeof(param), ""))
-        pPictureService->GetTexturePos(m_sGroupName, param, centerRect);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, centerRect);
     else
         PZERO(&centerRect, sizeof(centerRect));
     if (ReadIniString(ini1, name1, ini2, name2, "titleMedium", param, sizeof(param), ""))
     {
-        pPictureService->GetTexturePos(m_sGroupName, param, mediumRect);
-        pPictureService->GetTexturePos(m_sGroupName, param, m_mRect);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, mediumRect);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_mRect);
     }
     else
     {
@@ -168,8 +198,8 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     }
     if (ReadIniString(ini1, name1, ini2, name2, "titleTiled", param, sizeof(param), ""))
     {
-        pPictureService->GetTexturePos(m_sGroupName, param, tiledRect);
-        pPictureService->GetTexturePos(m_sGroupName, param, m_tRect);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, tiledRect);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_tRect);
     }
     else
     {
@@ -187,30 +217,9 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
         m_nTiledQuantity = 0;
     const int rectangleQuantity = 1 + 2 + 2 * m_nTiledQuantity;
     m_nVert = 4 * rectangleQuantity;
-    m_nIndx = 6 * rectangleQuantity;
-    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF, m_nVert * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
-    m_idIBuf = m_rs->CreateIndexBuffer(m_nIndx * 2);
-    m_nIndx /= 3;
 
-    // fill index buffer
-    auto *const pIndex = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
-    if (pIndex == nullptr)
-        throw std::runtime_error("index buffer not create");
-    for (i = 0; i < rectangleQuantity; i++)
-    {
-        pIndex[i * 6 + 0] = i * 4;
-        pIndex[i * 6 + 1] = i * 4 + 1;
-        pIndex[i * 6 + 2] = i * 4 + 2;
-        pIndex[i * 6 + 3] = i * 4 + 2;
-        pIndex[i * 6 + 4] = i * 4 + 1;
-        pIndex[i * 6 + 5] = i * 4 + 3;
-    }
-    m_rs->UnLockIndexBuffer(m_idIBuf);
+    pVert = new XI_ONETEX_VERTEX[m_nVert];
 
-    // fill vertex buffer
-    auto *const pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
-    if (pVert == nullptr)
-        throw std::runtime_error("vertex buffer not create");
     for (i = 0; i < m_nVert; i++)
     {
         pVert[i].color = imgColor;
@@ -275,13 +284,11 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
         idx += 4;
         xpos += xposDelta;
     }
-    m_rs->UnLockVertexBuffer(m_idVBuf);
 }
 
-void CXI_TITLE::FillVertexBuffer() const
+void CXI_TITLE::FillVertexBuffer()
 {
     long i;
-    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
     if (pVert != nullptr)
     {
         // fill center rectangle (were string is showing)
@@ -330,7 +337,5 @@ void CXI_TITLE::FillVertexBuffer() const
             idx += 4;
             xpos += xposDelta;
         }
-
-        m_rs->UnLockVertexBuffer(m_idVBuf);
     }
 }

@@ -8,6 +8,8 @@
       "buildRoot": "${projectDir}\\build\\${name}",
       "cmakeCommandArgs": "-DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl",
       "buildCommandArgs": "",
+      "addressSanitizerEnabled": true,
+      "addressSanitizerRuntimeFlags": "windows_hook_legacy_allocators=true:halt_on_error=0",
       "enableClangTidyCodeAnalysis": true
     },
     {
@@ -18,8 +20,7 @@
       "buildRoot": "${projectDir}\\build\\${name}",
       "cmakeCommandArgs": "-DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl",
       "buildCommandArgs": "",
-      "enableClangTidyCodeAnalysis": true,
-      "variables": []
+      "enableClangTidyCodeAnalysis": true
     }
   ]
 }

@@ -2,6 +2,9 @@
 #include "../base_video.h"
 #include "Entity.h"
 
+#include "primitive_renderer.h"
+
+
 CXI_VIDEORECT::CXI_VIDEORECT()
 {
     m_rs = nullptr;
@@ -45,8 +48,21 @@ void CXI_VIDEORECT::Draw(bool bSelected, uint32_t Delta_Time)
                     v[i].pos.z = 1.f;
                 }
 
-                m_rs->SetTexture(0, pTex);
-                m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, v, sizeof(XI_ONETEX_VERTEX), "iVideo");
+                //m_rs->SetTexture(0, pTex);
+                /*m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, v, sizeof(XI_ONETEX_VERTEX), "iVideo");*/
+
+                /*std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{v[0].pos.x, v[0].pos.y, v[0].pos.z, v[0].tu, v[0].tv, v[0].color});
+                vertices.push_back(
+                    VERTEX_POSITION_TEXTURE_COLOR{v[2].pos.x, v[2].pos.y, v[2].pos.z, v[2].tu, v[2].tv, v[1].color});
+                vertices.push_back(
+                    VERTEX_POSITION_TEXTURE_COLOR{v[1].pos.x, v[1].pos.y, v[1].pos.z, v[1].tu, v[1].tv, v[2].color});
+                vertices.push_back(
+                    VERTEX_POSITION_TEXTURE_COLOR{v[3].pos.x, v[3].pos.y, v[3].pos.z, v[3].tu, v[3].tv, v[3].color});
+
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);*/
+
             }
         }
     }

@@ -1,4 +1,5 @@
 #include "bgfx_utils.h"
+
 #include "glm.hpp"
 #include "gtx/matrix_transform_2d.hpp"
 
@@ -868,7 +869,7 @@ bool DX9RENDER::DX9Clear(long type)
         return false;
 
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, dwBackColor, 1.0f, 0);
-    //bgfx::setViewClear(1, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, dwBackColor, 1.0f, 0);
+    bgfx::setViewClear(1, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH | BGFX_CLEAR_STENCIL, dwBackColor, 1.0f, 0);
 
     // if(CHECKD3DERR(d3d9->Clear(0L, NULL, type, 0x0, 1.0f, 0L))==true)    return false;
     return true;
@@ -1595,7 +1596,7 @@ bool DX9RENDER::BGFXTextureLoad(long t)
         switch (textureFormats[textureFI].txFormat)
         {
             case TXF_A8R8G8B8:
-                bgfxFormat = bgfx::TextureFormat::Enum::RGBA8;
+                bgfxFormat = bgfx::TextureFormat::Enum::BGRA8;
                 break;
             case TXF_R5G6B5:
                 bgfxFormat = bgfx::TextureFormat::Enum::R5G6B5;
@@ -4477,19 +4478,24 @@ void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, const glm::
     sprite->v = glm::vec2(minv, maxv);
     sprite->depth = depth;*/
 
-
     auto u = glm::vec2(minu, maxu);
     auto v = glm::vec2(minv, maxv);
 
-    auto uCoordinates = u;
-    auto vCoordinates = v;
-
     auto colors = color;
+
+    std::vector<SPRITE_VERTEX> vertices;
+
+    vertices.resize(4);
+
+    vertices[0] = SPRITE_VERTEX{points[0].x, points[0].y, u.x, v.x /*, color*/}; // top left
+    vertices[1] = SPRITE_VERTEX{points[1].x, points[1].y, u.y, v.x /*, color*/}; // top right
+    vertices[2] = SPRITE_VERTEX{points[2].x, points[2].y, u.x, v.y /*, color*/}; // bottom left
+    vertices[3] = SPRITE_VERTEX{points[3].x, points[3].y, u.y, v.y /*, color*/}; // bottom right
 
     m_spriteRenderer->Texture = texture;
 
     m_spriteRenderer->SetViewProjection();
-    m_spriteRenderer->UpdateVertexBuffer(points, uCoordinates, vCoordinates, colors, depth);
+    m_spriteRenderer->PushVertices(vertices, depth);
 
 }
 
@@ -4499,10 +4505,10 @@ void DX9RENDER::DrawSprites(std::shared_ptr<TextureResource> texture,
                  glm::vec2 &v,
                  uint32_t &color)
 {
-    m_spriteRenderer->Texture = texture;
+    /*m_spriteRenderer->Texture = texture;
     m_spriteRenderer->SetViewProjection();
     m_spriteRenderer->UpdateVertexBuffer(vertices, u, v, color);
-    m_spriteRenderer->Submit();
+    m_spriteRenderer->Submit();*/
 }
 
 

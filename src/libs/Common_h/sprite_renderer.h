@@ -1,13 +1,12 @@
+#ifndef SPRITE_RENDERER_DEF
+#define SPRITE_RENDERER_DEF
+
 #include "bgfx_utils.h"
 
 #include "glm.hpp"
 
 #include <vector>
 #include <map>
-
-
-#ifndef SPRITE_RENDERER_DEF
-#define SPRITE_RENDERER_DEF
 
 
 struct SPRITE_VERTEX
@@ -78,10 +77,7 @@ class SpriteRenderer
     void SetViewProjection();
 
     void UpdateIndexBuffer(std::vector<uint16_t> indices);
-    void UpdateVertexBuffer(std::vector<glm::vec3> &vertices, glm::vec2 &u, glm::vec2 &v, uint32_t &color,
-                            float depth = 0.0f);
-    void UpdateVertexBuffer(std::vector<glm::vec3> &vertices, std::vector<std::pair<float, float>>& uv, uint32_t &color,
-                            float depth = 0.0f);
+    void PushVertices(std::vector<SPRITE_VERTEX> vertices, float depth = 0.0f);
 
     void Submit();
 };

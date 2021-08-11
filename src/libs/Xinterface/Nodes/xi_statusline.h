@@ -26,15 +26,13 @@ class CXI_STATUSLINE : public CINODE
 
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
-    void Refresh() const;
+    void Refresh();
 
   protected:
     char *m_sGroupName;  // image list name
     long m_idTex;        // texture identificator
-    long m_vBuf;         // vertex buffer identificator
-    long m_iBuf;         // index buffer identificator
+    std::vector<XI_ONLYONETEX_VERTEX> m_vertices;
     long m_nVert;        // vertex quantity
-    long m_nIndx;        // index quantity
     float m_fLineOffset; // edge offset for frame
     FXYRECT m_texRect1;
     FXYRECT m_texRect2;

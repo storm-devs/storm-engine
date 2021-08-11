@@ -1,6 +1,9 @@
 #include "xi_slidepicture.h"
 #include <stdio.h>
 
+#include "primitive_renderer.h"
+
+
 void SetTextureCoordinate(XI_ONETEX_VERTEX v[4], FXYRECT tr, float angle)
 {
     if (angle == 0)
@@ -54,14 +57,58 @@ void CXI_SLIDEPICTURE::Draw(bool bSelected, uint32_t Delta_Time)
     if (m_bUse)
     {
         Update(Delta_Time);
-        m_rs->TextureSet(0, m_idTex);
-        m_rs->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
-        m_rs->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+        //m_rs->TextureSet(0, m_idTex);
+        //m_rs->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+        //m_rs->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+
+        auto texture = m_rs->GetBGFXTextureFromID(m_idTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
         if (strTechniqueName == nullptr)
-            m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX), "iVideo");
+        {
+            for (int i = 0; i < 4; i += 4)
+            {
+                std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                auto pV = m_v;
+
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                 pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                 pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                 pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                           pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+            }
+
+            //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX), "iVideo");
+        }            
         else
-            m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX),
-                                  strTechniqueName);
+        {
+            for (int i = 0; i < 4; i += 4)
+            {
+                std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                auto pV = m_v;
+
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                 pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                 pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                 pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                 pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+            }
+
+            //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX), strTechniqueName);
+        }
+            
     }
 }
 

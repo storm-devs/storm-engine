@@ -77,13 +77,23 @@ void CXI_PICTURE::Draw(bool bSelected, uint32_t Delta_Time)
                 
             if (textureSet)
             {
+                std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR(m_v[0].pos.x, m_v[0].pos.y, m_v[0].pos.z, m_v[0].tu,
+                                                                 m_v[0].tv, m_v[0].color));
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR(m_v[2].pos.x, m_v[2].pos.y, m_v[2].pos.z, m_v[2].tu,
+                                                                 m_v[2].tv, m_v[2].color));
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR(m_v[1].pos.x, m_v[1].pos.y, m_v[1].pos.z, m_v[1].tu,
+                                                                 m_v[1].tv, m_v[1].color));
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR(m_v[3].pos.x, m_v[3].pos.y, m_v[3].pos.z, m_v[3].tu,
+                                                                 m_v[3].tv, m_v[3].color));
+                m_rs->GetPrimitiveRenderer()->TestSubmit(vertices);
 
-                std::vector<glm::vec3> vertices;
+                /*std::vector<glm::vec3> vertices;
 
-                vertices.push_back({m_v[0].pos.x, m_v[0].pos.y, m_v[0].pos.z});          // top left
-                vertices.push_back({m_v[2].pos.x, m_v[2].pos.y, m_v[2].pos.z});          // top right
-                vertices.push_back({m_v[1].pos.x, m_v[1].pos.y, m_v[1].pos.z});          // bottom left
-                vertices.push_back({m_v[3].pos.x, m_v[3].pos.y, m_v[3].pos.z});          // bottom right
+                vertices.push_back({m_v[0].pos.x, m_v[0].pos.y, m_v[0].pos.z}); // top left
+                vertices.push_back({m_v[2].pos.x, m_v[2].pos.y, m_v[2].pos.z}); // top right
+                vertices.push_back({m_v[1].pos.x, m_v[1].pos.y, m_v[1].pos.z}); // bottom left
+                vertices.push_back({m_v[3].pos.x, m_v[3].pos.y, m_v[3].pos.z}); // bottom right
 
                 std::vector<std::pair<float, float>> uv;
                 uv.push_back({m_v[0].tu, m_v[0].tv});
@@ -98,7 +108,8 @@ void CXI_PICTURE::Draw(bool bSelected, uint32_t Delta_Time)
                 colors.push_back(m_v[2].color);
                 colors.push_back(m_v[3].color);
 
-                m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
+                m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);*/
+
             }
             
         }

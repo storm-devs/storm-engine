@@ -1,5 +1,8 @@
 #include "xi_rectangle.h"
 
+#include "primitive_renderer.h"
+
+
 CXI_RECTANGLE::CXI_RECTANGLE()
 {
     m_nNodeType = NODETYPE_RECTANGLE;
@@ -14,8 +17,28 @@ void CXI_RECTANGLE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
-        m_rs->TextureSet(0, 0);
-        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_NOTEX_FVF, 2, m_pVert, sizeof(XI_NOTEX_VERTEX), "iRectangle");
+        //m_rs->TextureSet(0, 0);
+
+        
+        for (int i = 0; i < 4; i += 4)
+        {
+            std::vector<VERTEX_POSITION_COLOR> vertices;
+
+            auto pV = m_pVert;
+
+            vertices.push_back(
+                VERTEX_POSITION_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z, pV[i + 0].color});
+            vertices.push_back(
+                VERTEX_POSITION_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z, pV[i + 0].color});
+            vertices.push_back(
+                VERTEX_POSITION_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z, pV[i + 0].color});
+            vertices.push_back(
+                VERTEX_POSITION_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z, pV[i + 0].color});
+
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+
+        //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_NOTEX_FVF, 2, m_pVert, sizeof(XI_NOTEX_VERTEX), "iRectangle");
         if (m_bBorder)
         {
             RS_LINE pLines[8];

@@ -1185,7 +1185,7 @@ void XINTERFACE::LoadIni()
 
     
     glm::mat4 proj(1);
-    bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(dwScreenWidth), float(dwScreenHeight), 0.0f, 0.0f, 1000.0f, 0.0f,
+    bx::mtxOrtho(glm::value_ptr(proj), 0.0f, float(dwScreenWidth), float(dwScreenHeight), 0.0f, 1.0f, 100.0f, 0.0f,
                  bgfx::getCaps()->homogeneousDepth);
 
     proj = glm::transpose(proj);

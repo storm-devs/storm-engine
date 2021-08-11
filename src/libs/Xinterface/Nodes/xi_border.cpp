@@ -46,28 +46,24 @@ void CXI_BORDER::Draw(bool bSelected, uint32_t Delta_Time)
             auto texture = m_rs->GetBGFXTextureFromID(m_idTex);
             m_rs->GetPrimitiveRenderer()->Texture = texture;
 
-            for (long n = 0; n < pV.size(); n += 4)
+        for (long n = 0; n < pV.size(); n += 4)
             {
-                std::vector<glm::vec3> vertices;
-                std::vector<std::pair<float, float>> uv;
-                std::vector<uint32_t> colors;
+                auto& pVertices = pV;
+                std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
 
-                vertices.push_back({pV[n + 0].pos.x, pV[n + 0].pos.y, pV[n + 0].pos.z}); 
-                vertices.push_back({pV[n + 1].pos.x, pV[n + 1].pos.y, pV[n + 1].pos.z}); 
-                vertices.push_back({pV[n + 2].pos.x, pV[n + 2].pos.y, pV[n + 2].pos.z}); 
-                vertices.push_back({pV[n + 3].pos.x, pV[n + 3].pos.y, pV[n + 3].pos.z}); 
-
-                uv.push_back({pV[n + 0].tu, pV[n + 0].tv});
-                uv.push_back({pV[n + 1].tu, pV[n + 1].tv});
-                uv.push_back({pV[n + 2].tu, pV[n + 2].tv});
-                uv.push_back({pV[n + 3].tu, pV[n + 3].tv});
-
-                colors.push_back(pV[n + 0].color);
-                colors.push_back(pV[n + 1].color);
-                colors.push_back(pV[n + 2].color);
-                colors.push_back(pV[n + 3].color);
-
-                m_rs->GetPrimitiveRenderer()->Submit(vertices, uv, colors);
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[n + 0].pos.x, pVertices[n + 0].pos.y,
+                                                                 pVertices[n + 0].pos.z, pVertices[n + 0].tu,
+                                                                 pVertices[n + 0].tv, pVertices[n + 0].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[n + 2].pos.x, pVertices[n + 2].pos.y,
+                                                                 pVertices[n + 2].pos.z, pVertices[n + 2].tu,
+                                                                 pVertices[n + 2].tv, pVertices[n + 2].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[n + 1].pos.x, pVertices[n + 1].pos.y,
+                                                                 pVertices[n + 1].pos.z, pVertices[n + 1].tu,
+                                                                 pVertices[n + 1].tv, pVertices[n + 1].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[n + 3].pos.x, pVertices[n + 3].pos.y,
+                                                                 pVertices[n + 3].pos.z, pVertices[n + 3].tu,
+                                                                 pVertices[n + 3].tv, pVertices[n + 3].color});
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
             }
         }
     }
@@ -374,6 +370,7 @@ void CXI_BORDER::FillVertexBuffers()
 
     pV.clear();
 
+    pV.reserve(32);
     pV.resize(32);
 
     // top line

@@ -2,6 +2,9 @@
 #include "../xinterface.h"
 #include "strutils.h"
 
+#include "primitive_renderer.h"
+
+
 CXI_ToolTip::CXI_ToolTip(VXSERVICE *pPicService, VSTRSERVICE *pStrService, XYPOINT &pntScrSize)
     : m_pntScreenSize(pntScrSize)
 {
@@ -43,9 +46,35 @@ void CXI_ToolTip::Draw()
 
     if (m_nSquareQ > 0)
     {
-        m_rs->TextureSet(0, m_nTextureID);
+        /*m_rs->TextureSet(0, m_nTextureID);
         m_rs->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, m_nSquareQ * 4, m_nSquareQ * 2, m_pI, D3DFMT_INDEX16, m_pV,
-                                     sizeof(XI_ONETEX_VERTEX), "iVideo");
+                                     sizeof(XI_ONETEX_VERTEX), "iVideo");*/
+
+        auto texture = m_rs->GetBGFXTextureFromID(m_nTextureID);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+        for (int i = 0; i < m_nSquareQ * 2; i += 4)
+        {
+            std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+            auto pV = m_pV;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                             pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                             pV[i + 2].tu,
+                                                             pV[i + 2].tv, pV[i + 2].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                             pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                             pV[i + 3].tu,
+                                                             pV[i + 3].tv, pV[i + 3].color});
+
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+
+        }
+
+
     }
 
     const auto nX = (m_rPos.left + m_rPos.right) / 2;
@@ -131,21 +160,21 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
         if (pDefIni->ReadString(pcToolTipType, "back_imagegroup", param, sizeof(param), ""))
         {
             m_sGroupName = param;
-            m_nTextureID = m_pPicService->GetTextureID(m_sGroupName.c_str());
+            m_nTextureID = m_pPicService->BGFXGetTextureID(m_sGroupName.c_str());
             if (pDefIni->ReadString(pcToolTipType, "back_imageleft", param, sizeof(param), ""))
             {
-                m_nPicIndex_Left = m_pPicService->GetImageNum(m_sGroupName.c_str(), param);
+                m_nPicIndex_Left = m_pPicService->BGFXGetImageNum(m_sGroupName.c_str(), param);
                 m_pPicService->GetTexturePos(m_nPicIndex_Left, m_uvBackLeft);
             }
             if (pDefIni->ReadString(pcToolTipType, "back_imageright", param, sizeof(param), ""))
             {
-                m_nPicIndex_Right = m_pPicService->GetImageNum(m_sGroupName.c_str(), param);
-                m_pPicService->GetTexturePos(m_nPicIndex_Right, m_uvBackRight);
+                m_nPicIndex_Right = m_pPicService->BGFXGetImageNum(m_sGroupName.c_str(), param);
+                m_pPicService->BGFXGetTexturePos(m_nPicIndex_Right, m_uvBackRight);
             }
             if (pDefIni->ReadString(pcToolTipType, "back_imagemiddle", param, sizeof(param), ""))
             {
-                m_nPicIndex_Middle = m_pPicService->GetImageNum(m_sGroupName.c_str(), param);
-                m_pPicService->GetTexturePos(m_nPicIndex_Middle, m_uvBackMiddle);
+                m_nPicIndex_Middle = m_pPicService->BGFXGetImageNum(m_sGroupName.c_str(), param);
+                m_pPicService->BGFXGetTexturePos(m_nPicIndex_Middle, m_uvBackMiddle);
             }
         }
         m_fTurnOnDelay = pDefIni->GetFloat(pcToolTipType, "turnondelay", m_fTurnOnDelay);
@@ -175,10 +204,7 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
         m_aSubText.size() * static_cast<long>(m_rs->CharHeight(m_nFontID) * m_fFontScale) + 2 * m_pntTextOffset.x;
 
     m_nSquareQ = 3;
-    CreateIndexBuffer();
     CreateVertexBuffer();
-    UpdateIndexBuffer();
-
     ReplaceRectangle(rectOwner.right, rectOwner.bottom);
 }
 
@@ -207,21 +233,12 @@ void CXI_ToolTip::MousePos(float fDeltaTime, long nX, long nY)
 
 void CXI_ToolTip::ReleaseAll()
 {
-    PICTURE_TEXTURE_RELEASE(m_pPicService, m_sGroupName.c_str(), m_nTextureID);
+    BGFX_PICTURE_TEXTURE_RELEASE(m_pPicService, m_sGroupName.c_str(), m_nTextureID);
     STORM_DELETE(m_pV);
     STORM_DELETE(m_pI);
     m_nSquareQ = 0;
     m_bDisableDraw = true;
     FONT_RELEASE(m_rs, m_nFontID);
-}
-
-void CXI_ToolTip::CreateIndexBuffer()
-{
-    if (m_nSquareQ > 0)
-    {
-        m_pI = new uint16_t[m_nSquareQ * 6];
-        Assert(m_pI);
-    }
 }
 
 void CXI_ToolTip::CreateVertexBuffer()
@@ -230,22 +247,6 @@ void CXI_ToolTip::CreateVertexBuffer()
     {
         m_pV = new XI_ONETEX_VERTEX[m_nSquareQ * 4];
         Assert(m_pV);
-    }
-}
-
-void CXI_ToolTip::UpdateIndexBuffer() const
-{
-    if (!m_pI)
-        return;
-    for (long n = 0; n < m_nSquareQ; n++)
-    {
-        m_pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
-        m_pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
-        m_pI[n * 6 + 2] = static_cast<uint16_t>(n * 4 + 2);
-
-        m_pI[n * 6 + 3] = static_cast<uint16_t>(n * 4 + 1);
-        m_pI[n * 6 + 4] = static_cast<uint16_t>(n * 4 + 3);
-        m_pI[n * 6 + 5] = static_cast<uint16_t>(n * 4 + 2);
     }
 }
 

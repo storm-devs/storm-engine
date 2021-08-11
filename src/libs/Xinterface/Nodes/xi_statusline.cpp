@@ -3,15 +3,15 @@
 
 #include "core.h"
 
+#include "primitive_renderer.h"
+
+
 CXI_STATUSLINE::CXI_STATUSLINE()
 {
     m_rs = nullptr;
     m_sGroupName = nullptr;
     m_idTex = -1L;
-    m_vBuf = -1L;
-    m_iBuf = -1L;
     m_nVert = 0;
-    m_nIndx = 0;
     m_nNodeType = NODETYPE_STATUSLINE;
 }
 
@@ -24,8 +24,29 @@ void CXI_STATUSLINE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
-        m_rs->TextureSet(0, m_idTex);
-        m_rs->DrawBuffer(m_vBuf, sizeof(XI_ONLYONETEX_VERTEX), m_iBuf, 0, m_nVert, 0, m_nIndx, "iStatusLine");
+        auto texture = m_rs->GetBGFXTextureFromID(m_idTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+        for (int i = 0; i < m_nVert; i += 4)
+        {
+            std::vector<VERTEX_POSITION_TEXTURE> vertices;
+
+            auto pV = m_vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                             pV[i + 0].tu, pV[i + 0].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                             pV[i + 2].tu, pV[i + 2].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                             pV[i + 1].tu, pV[i + 1].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                             pV[i + 3].tu, pV[i + 3].tv});
+
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+
+        //m_rs->TextureSet(0, m_idTex);
+        //m_rs->DrawBuffer(m_vBuf, sizeof(XI_ONLYONETEX_VERTEX), m_iBuf, 0, m_nVert, 0, m_nIndx, "iStatusLine");
     }
 }
 
@@ -40,9 +61,7 @@ bool CXI_STATUSLINE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const
 
 void CXI_STATUSLINE::ReleaseAll()
 {
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
-    VERTEX_BUFFER_RELEASE(m_rs, m_vBuf);
-    INDEX_BUFFER_RELEASE(m_rs, m_iBuf);
+    BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
     STORM_DELETE(m_sGroupName);
 }
 
@@ -61,22 +80,19 @@ void CXI_STATUSLINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
         const auto len = strlen(param) + 1;
         m_sGroupName = new char[len];
         memcpy(m_sGroupName, param, len);
-        m_idTex = pPictureService->GetTextureID(m_sGroupName);
+        m_idTex = pPictureService->BGFXGetTextureID(m_sGroupName);
     }
 
     // Calculate vertex and index quantity
     m_nVert = 2 * 4;
-    m_nIndx = 2 * 6;
     // Create vertex and index buffers
-    m_vBuf = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF, m_nVert * sizeof(XI_ONLYONETEX_VERTEX), D3DUSAGE_WRITEONLY);
-    m_iBuf = m_rs->CreateIndexBuffer(m_nIndx * 2);
-    m_nIndx /= 3;
+    m_vertices.reserve(m_nVert);
+    m_vertices.resize(m_nVert);
 
     // Lock vertex and index buffers and get pointers to this
-    auto *const pVBuf = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_vBuf));
-    auto *pIBuf = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_iBuf));
+    auto *const pVBuf = m_vertices.data();
 
-    if (pVBuf != nullptr && pIBuf != nullptr)
+    if (pVBuf != nullptr)
     {
         FXYRECT scrRect1, scrRect2;
 
@@ -107,26 +123,16 @@ void CXI_STATUSLINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
         // get texture coordinates
         fMediumX /= (m_rect.right - m_rect.left);
         if (ReadIniString(ini1, name1, ini2, name2, "filledPicture", param, sizeof(param), ""))
-            pPictureService->GetTexturePos(m_sGroupName, param, m_texRect1);
+            pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_texRect1);
         FXYRECT texRect1;
         memcpy(&texRect1, &m_texRect1, sizeof(FRECT));
         texRect1.right = m_texRect1.left + (m_texRect1.right - m_texRect1.left) * fMediumX;
         // .. other ..
         if (ReadIniString(ini1, name1, ini2, name2, "emptyPicture", param, sizeof(param), ""))
-            pPictureService->GetTexturePos(m_sGroupName, param, m_texRect2);
+            pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_texRect2);
         FXYRECT texRect2;
         memcpy(&texRect2, &m_texRect2, sizeof(FRECT));
         texRect2.left = m_texRect2.left + (m_texRect2.right - m_texRect2.left) * fMediumX;
-
-        // fill index buffer
-        pIBuf[0] = 0;
-        pIBuf[4] = pIBuf[1] = 1;
-        pIBuf[3] = pIBuf[2] = 2;
-        pIBuf[5] = 3; // filled rectangle
-        pIBuf[6] = 4;
-        pIBuf[10] = pIBuf[7] = 5;
-        pIBuf[9] = pIBuf[8] = 6;
-        pIBuf[11] = 7; // empty rectangle
 
         // fill vertex buffer
         for (auto i = 0; i < m_nVert; i++)
@@ -168,11 +174,6 @@ void CXI_STATUSLINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     }
     else
         throw std::runtime_error("Can't vertex or index buffer create");
-
-    if (pVBuf != nullptr)
-        m_rs->UnLockVertexBuffer(m_vBuf);
-    if (pIBuf != nullptr)
-        m_rs->UnLockIndexBuffer(m_iBuf);
 }
 
 bool CXI_STATUSLINE::IsClick(int buttonID, long xPos, long yPos)
@@ -213,11 +214,12 @@ uint32_t CXI_STATUSLINE::MessageProc(long msgcode, MESSAGE &message)
     return 0;
 }
 
-void CXI_STATUSLINE::Refresh() const
+void CXI_STATUSLINE::Refresh()
 {
-    if (m_vBuf == -1)
+    if (m_vertices.size() == 0)
         return;
-    auto *pVBuf = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_vBuf));
+
+    auto *pVBuf = m_vertices.data();
 
     auto *pAttr = core.Entity_GetAttributeClass(g_idInterface, "StatusLine");
     if (pAttr != nullptr)
@@ -284,7 +286,4 @@ void CXI_STATUSLINE::Refresh() const
         pVBuf[7].tu = texRect2.right;
         pVBuf[7].tv = texRect2.bottom;
     }
-
-    if (pVBuf != nullptr)
-        m_rs->UnLockVertexBuffer(m_vBuf);
 }
