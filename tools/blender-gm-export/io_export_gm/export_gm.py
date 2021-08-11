@@ -134,6 +134,8 @@ def export_gm(file_path=""):
     root = bpy.context.view_layer.objects.active
     root_children = root.children
 
+    collection = root.users_collection[0]
+
     is_animated = False
 
     objects = []
@@ -184,8 +186,7 @@ def export_gm(file_path=""):
     obj_uv_normals_layer = obj_data.uv_layers[1] if len(
         obj_data.uv_layers) > 1 else None
         
-    # TODO correct collection
-    bpy.data.collections[0].objects.link(obj)
+    collection.objects.link(obj)
     bpy.context.view_layer.objects.active = obj
     for modifier in obj.modifiers:
         bpy.ops.object.modifier_apply(modifier=modifier.name)
