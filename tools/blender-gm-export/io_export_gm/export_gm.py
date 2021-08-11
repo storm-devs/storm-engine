@@ -52,10 +52,12 @@ def prepare_globnames(objects, locators, materials, is_animated):
 
     for material in materials:
         name = material.get("name")
-        globnames.append(name)
+        if not (name in globnames):
+            globnames.append(name)
         textures = material.get("textures")
         for texture in textures:
-            globnames.append(texture)
+            if not (texture in globnames):
+                globnames.append(texture)
 
     for object in objects:
         name = remove_blender_name_postfix(object.name)
@@ -168,7 +170,7 @@ def export_gm(file_path=""):
 
     bpy.context.scene.frame_set(0)
 
-    depsgraph = bpy.context.evaluated_depsgraph_get()
+    # depsgraph = bpy.context.evaluated_depsgraph_get()
 
     # TODO multiple objects
     src_obj = objects[0]
@@ -179,12 +181,22 @@ def export_gm(file_path=""):
 
     obj_data = obj.data
     obj_uv_layer = obj_data.uv_layers[0]
+    obj_uv_normals_layer = obj_data.uv_layers[1] if len(
+        obj_data.uv_layers) > 1 else None
+        
+    # TODO correct collection
+    bpy.data.collections[0].objects.link(obj)
+    bpy.context.view_layer.objects.active = obj
+    for modifier in obj.modifiers:
+        bpy.ops.object.modifier_apply(modifier=modifier.name)
 
     bm = bmesh.new()
     bm.from_mesh(obj.data)
+    # bm.from_object(obj, depsgraph)
 
     bm.verts.ensure_lookup_table()
 
+    # TODO uv_normals
     for vertex in bm.verts:
         uv = []
         for loop in vertex.link_loops:
@@ -199,9 +211,9 @@ def export_gm(file_path=""):
                 bm.verts.index_update()
 
     bm.to_mesh(obj.data)
-    bm.free()
+    # bm.free()
 
-    depsgraph = bpy.context.evaluated_depsgraph_get()
+    # depsgraph = bpy.context.evaluated_depsgraph_get()
 
     obj_data = obj.data
 
@@ -218,16 +230,30 @@ def export_gm(file_path=""):
     obj_uv_normals_layer = obj_data.uv_layers[1] if len(
         obj_data.uv_layers) > 1 else None
 
+    materials = []
+    # TODO
+    material = get_material_data(obj_data)
+    # TODO
+    materials = [material]
+
+    # TODO check
+    textures = []
+    for material in materials:
+        material_textures = material.get("textures")
+        for material_texture in material_textures:
+            if not (material_texture in textures):
+                textures.append(material_texture)
+
     vertices = []
     normals = []
 
     weights = []
     bone_ids = []
 
-    bm = bmesh.new()
-    bm.from_object(obj, depsgraph)
+    # bm = bmesh.new()
+    # bm.from_object(obj, depsgraph)
 
-    bm.verts.ensure_lookup_table()
+    # bm.verts.ensure_lookup_table()
 
     for vertex in bm.verts:
         pos = mathutils.Vector(vertex.co)
@@ -249,6 +275,7 @@ def export_gm(file_path=""):
         face = [v2.index, v1.index, v3.index]
         faces.append(face)
 
+    obj.to_mesh_clear()
     bm.free()
 
     if is_animated:
@@ -284,8 +311,13 @@ def export_gm(file_path=""):
 
     colors = [[127, 127, 127, 255]] * len(obj_vertices)
     uv_array = [[0, 0]] * len(obj_vertices)
+
+    # TODO idx
+    if len(materials[0].get("textures")) == 2:
+        uv_normals_array = [[0, 0]] * len(obj_vertices)
     # faces = []
 
+    # TODO uv_normals
     for polygon in obj_polygons:
         # [v1, v2, v3] = polygon.vertices[:]
         # # opposite
@@ -299,21 +331,6 @@ def export_gm(file_path=""):
             uv_array[index] = mathutils.Vector(
                 obj_uv_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
 
-    materials = []
-    # TODO
-    material = get_material_data(obj_data)
-    # TODO
-    materials = [material]
-
-    # TODO check
-    textures = []
-    for material in materials:
-        material_textures = material.get("textures")
-        for material_texture in material_textures:
-            if not (material_texture in textures):
-                textures.append(material_texture)
-
-
     types = []
     # TODO
     for i in range(len(objects)):
@@ -324,6 +341,12 @@ def export_gm(file_path=""):
         #     types.append(1)
         #     continue
         types.append(0)
+
+    # TODO delete on error
+    bpy.data.objects.remove(obj, do_unlink=True)
+
+    # TODO set on error
+    bpy.context.view_layer.objects.active = root
 
     # TODO nested
     with open(file_path, 'wb') as file:
@@ -417,7 +440,7 @@ def export_gm(file_path=""):
 
             material_textures = material.get("textures")
 
-            material_textures_types = [0,0,0,0]
+            material_textures_types = [0, 0, 0, 0]
 
             if len(material_textures) == 1:
                 material_textures_types[0] = 1
@@ -428,12 +451,12 @@ def export_gm(file_path=""):
             for material_textures_type in material_textures_types:
                 file.write(struct.pack('<l', material_textures_type))
 
-            material_textures_idxs = [-1,-1,-1,-1]
+            material_textures_idxs = [-1, -1, -1, -1]
 
             for i in range(len(material_textures)):
                 material_texture = material_textures[i]
                 material_textures_idxs[i] = textures.index(material_texture)
-            
+
             for material_textures_idx in material_textures_idxs:
                 file.write(struct.pack('<l', material_textures_idx))
 
@@ -543,7 +566,7 @@ def export_gm(file_path=""):
 
         for i in range(header_nvrtbuffs):
             # TODO
-            vertex_buffer_type = 4
+            vertex_buffer_type = types[0]
             file.write(struct.pack('<l', vertex_buffer_type))
 
             vertex_buffer_stride = 36 + \
