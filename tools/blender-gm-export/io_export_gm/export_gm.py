@@ -309,23 +309,21 @@ def export_gm(file_path=""):
     uv_array = [[0, 0]] * len(obj_vertices)
 
     # TODO idx
-    if len(materials[0].get("textures")) == 2:
-        uv_normals_array = [[0, 0]] * len(obj_vertices)
-    # faces = []
+    has_uv_normals = len(materials[0].get("textures")) == 2 and obj_uv_normals_layer
+
+    uv_normals_array = [[0, 0]] * len(obj_vertices) if has_uv_normals else None
 
     # TODO uv_normals
     for polygon in obj_polygons:
-        # [v1, v2, v3] = polygon.vertices[:]
-        # # opposite
-        # face = [v2, v1, v3]
-        # faces.append(face)
-
         for i, index in enumerate(polygon.vertices):
             loop_index = polygon.loop_indices[i]
             [r, g, b, a] = obj_vertex_color.data[loop_index].color[:]
             colors[index] = [int(r*255), int(g*255), int(b*255), int(a*255)]
             uv_array[index] = mathutils.Vector(
                 obj_uv_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
+            if has_uv_normals:
+                uv_normals_array[index] = mathutils.Vector(
+                obj_uv_normals_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
 
     types = []
     # TODO
@@ -333,9 +331,9 @@ def export_gm(file_path=""):
         if is_animated:
             types.append(4)
             continue
-        # if 2 textures:
-        #     types.append(1)
-        #     continue
+        if has_uv_normals:
+            types.append(1)
+            continue
         types.append(0)
 
     # TODO delete on error
@@ -579,8 +577,9 @@ def export_gm(file_path=""):
             if vertex_type == 0:
                 write_vertex0(file, vertices[i], normals[i], colors[i],
                               uv_array[i][0], uv_array[i][1])
-            # if vertex_type == 1:
-            #     vertices[i].append(read_vertex1(file))
+            if vertex_type == 1:
+                write_vertex1(file, vertices[i], normals[i], colors[i],
+                              uv_array[i][0], uv_array[i][1], uv_normals_array[i][0], uv_normals_array[i][1])
             if vertex_type == 4:
                 write_avertex0(file, vertices[i], weights[i], bone_ids[i], normals[i],
                                colors[i], uv_array[i][0], uv_array[i][1])
