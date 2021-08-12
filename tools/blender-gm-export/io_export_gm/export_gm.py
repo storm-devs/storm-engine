@@ -15,6 +15,21 @@ correction_export_matrix = axis_conversion(
     from_forward='Y', from_up='Z', to_forward='X', to_up='Y')
 
 
+def prepare_vertices_with_multiple_uvs(bm_verts, uv_layer):
+    for vertex in bm_verts:
+        uv = []
+        for loop in vertex.link_loops:
+            loop_index = loop.index
+
+            if len(uv) == 0:
+                uv = uv_layer.data[loop_index].uv
+
+            if uv_layer.data[loop_index].uv != uv:
+                #print(uv, obj_uv_layer.data[loop_index].uv, loop.face.index)
+                bmesh.utils.loop_separate(loop)
+                bm_verts.index_update()
+
+
 def get_material_data(object_data):
     # TODO check if exists
     obj_material = object_data.materials[0]
@@ -172,8 +187,6 @@ def export_gm(file_path=""):
 
     bpy.context.scene.frame_set(0)
 
-    # depsgraph = bpy.context.evaluated_depsgraph_get()
-
     # TODO multiple objects
     src_obj = objects[0]
 
@@ -185,38 +198,25 @@ def export_gm(file_path=""):
     obj_uv_layer = obj_data.uv_layers[0]
     obj_uv_normals_layer = obj_data.uv_layers[1] if len(
         obj_data.uv_layers) > 1 else None
-        
+
     collection.objects.link(obj)
-    bpy.context.view_layer.objects.active = obj
-    for modifier in obj.modifiers:
-        bpy.ops.object.modifier_apply(modifier=modifier.name)
+
+    depsgraph = bpy.context.evaluated_depsgraph_get()
 
     bm = bmesh.new()
-    bm.from_mesh(obj.data)
-    # bm.from_object(obj, depsgraph)
+    bm.from_mesh(obj.evaluated_get(depsgraph).to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph))
 
     bm.verts.ensure_lookup_table()
 
-    # TODO uv_normals
-    for vertex in bm.verts:
-        uv = []
-        for loop in vertex.link_loops:
-            loop_index = loop.index
+    print(len(bm.verts), len(bm.faces))
 
-            if len(uv) == 0:
-                uv = obj_uv_layer.data[loop_index].uv
+    prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_layer)
 
-            if obj_uv_layer.data[loop_index].uv != uv:
-                print(uv, obj_uv_layer.data[loop_index].uv, loop.face.index)
-                bmesh.utils.loop_separate(loop)
-                bm.verts.index_update()
+    if obj_uv_normals_layer:
+        prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_normals_layer)
 
     bm.to_mesh(obj.data)
-    # bm.free()
-
-    # depsgraph = bpy.context.evaluated_depsgraph_get()
-
-    obj_data = obj.data
+    print(len(bm.verts), len(bm.faces))
 
     obj_vertices = obj_data.vertices
     obj_polygons = obj_data.polygons
@@ -250,11 +250,6 @@ def export_gm(file_path=""):
 
     weights = []
     bone_ids = []
-
-    # bm = bmesh.new()
-    # bm.from_object(obj, depsgraph)
-
-    # bm.verts.ensure_lookup_table()
 
     for vertex in bm.verts:
         pos = mathutils.Vector(vertex.co)
@@ -345,9 +340,6 @@ def export_gm(file_path=""):
 
     # TODO delete on error
     bpy.data.objects.remove(obj, do_unlink=True)
-
-    # TODO set on error
-    bpy.context.view_layer.objects.active = root
 
     # TODO nested
     with open(file_path, 'wb') as file:
