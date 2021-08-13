@@ -9,7 +9,19 @@ import bpy
 import mathutils
 from bpy.props import BoolProperty, EnumProperty, StringProperty
 from bpy.types import Operator
-from bpy_extras.io_utils import ImportHelper, axis_conversion
+from bpy_extras.io_utils import ExportHelper, axis_conversion
+
+bl_info = {
+    "name": "SeaDogs GM",
+    "description": "Export GM files",
+    "author": "Artess999",
+    "version": (0, 0, 1),
+    "blender": (2, 92, 0),
+    "location": "File > Export",
+    "warning": "",
+    "support": "COMMUNITY",
+    "category": "Export",
+}
 
 correction_export_matrix = axis_conversion(
     from_forward='Y', from_up='Z', to_forward='X', to_up='Y')
@@ -213,7 +225,7 @@ def write_avertex0(file, pos, weight, bone_id, norm, color, tu0, tv0,):
     file.write(struct.pack('<f', tv0))
 
 
-def export_gm(file_path=""):
+def export_gm(context, file_path=""):
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
     root = bpy.context.view_layer.objects.active
@@ -666,5 +678,42 @@ def export_gm(file_path=""):
                 write_avertex0(file, vertices[i], weights[i], bone_ids[i], normals[i],
                                colors[i], uv_array[i][0], uv_array[i][1])
 
+    return {'FINISHED'}
 
-export_gm(file_path='/Users/Artess/WebstormProjects/storm-engine/tools/blender-gm-import/PGG_Port_0.gm')
+
+class ExportGm(Operator, ExportHelper):
+    """This appears in the tooltip of the operator and in the generated docs"""
+    bl_idname = "export.gm"
+    bl_label = "Export GM"
+
+    # ExportHelper mixin class uses this
+    filename_ext = ".gm"
+
+    filter_glob: StringProperty(
+        default="*.gm",
+        options={'HIDDEN'},
+        maxlen=255,  # Max internal buffer length, longer would be clamped.
+    )
+
+    def execute(self, context):
+        return export_gm(context, self.filepath)
+
+
+def menu_func_export(self, context):
+    self.layout.operator(ExportGm.bl_idname,
+                         text="GM Export(.gm)")
+
+
+def register():
+    bpy.utils.register_class(ExportGm)
+    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+
+
+def unregister():
+    bpy.utils.unregister_class(ExportGm)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
+
+
+if __name__ == "__main__":
+    register()
+
