@@ -31,31 +31,37 @@ def prepare_vertices_with_multiple_uvs(bm_verts, uv_layer):
 
 
 def get_material_data(object_data):
-    # TODO check if exists
-    obj_material = object_data.materials[0]
+    try:
+        obj_material = object_data.materials[0]
 
-    name = obj_material.name
-    textures = []
+        name = remove_blender_name_postfix(obj_material.name)
+        textures = []
 
-    bsdf = obj_material.node_tree.links[0].from_node
-    # TODO check type? bsdf.type
+        bsdf = obj_material.node_tree.links[0].from_node
 
-    base_color_node_output = bsdf.inputs['Base Color'].links[0].from_node
-    base_color_node_output_type = base_color_node_output.type
+        base_color_node_output = bsdf.inputs['Base Color'].links[0].from_node
+        base_color_node_output_type = base_color_node_output.type
 
-    if base_color_node_output_type == 'TEX_IMAGE':
-        textures = [base_color_node_output.image.name]
-    elif base_color_node_output_type == 'MIX_RGB':
-        texture = base_color_node_output.inputs['Color1'].links[0].from_node.image.name
-        texture_normals = base_color_node_output.inputs['Color2'].links[
-            0].from_node.inputs['Color1'].links[0].from_node.image.name
+        if base_color_node_output_type == 'TEX_IMAGE':
+            textures = [remove_blender_name_postfix(
+                base_color_node_output.image.name)]
+        elif base_color_node_output_type == 'MIX_RGB':
+            texture = remove_blender_name_postfix(
+                base_color_node_output.inputs['Color1'].links[0].from_node.image.name)
+            texture_normals = remove_blender_name_postfix(base_color_node_output.inputs['Color2'].links[
+                0].from_node.inputs['Color1'].links[0].from_node.image.name)
 
-        textures = [texture, texture_normals]
+            textures = [texture, texture_normals]
 
-    return {
-        "name": name,
-        "textures": textures
-    }
+        return {
+            "name": name,
+            "textures": textures
+        }
+    except:
+        return {
+            "name": 'placeholder_material',
+            "textures": ['checker.tga']
+        }
 
 
 def remove_blender_name_postfix(name):
@@ -160,7 +166,14 @@ def export_gm(file_path=""):
     # TODO get list of childrens children
     for child in root_children:
         if child.type == 'EMPTY':
-            locators.append(child)
+            locator = child
+            locator_is_root = False
+            for child in locator.children:
+                if child.type == 'EMPTY':
+                    locator_is_root = True
+                    locators.append(child)
+            if not locator_is_root:
+                locators.append(locator)
         if child.type == 'MESH':
             objects.append(child)
         if child.type == 'ARMATURE':
@@ -204,7 +217,8 @@ def export_gm(file_path=""):
     depsgraph = bpy.context.evaluated_depsgraph_get()
 
     bm = bmesh.new()
-    bm.from_mesh(obj.evaluated_get(depsgraph).to_mesh(preserve_all_data_layers=True, depsgraph=depsgraph))
+    bm.from_mesh(obj.evaluated_get(depsgraph).to_mesh(
+        preserve_all_data_layers=True, depsgraph=depsgraph))
 
     bm.verts.ensure_lookup_table()
 
@@ -221,10 +235,10 @@ def export_gm(file_path=""):
     obj_vertices = obj_data.vertices
     obj_polygons = obj_data.polygons
 
-    # TODO check if exists
-    obj_vertex_color = obj_data.vertex_colors[0]
+    # TODO get active?
+    obj_vertex_color = obj_data.vertex_colors[0] if len(
+        obj_data.vertex_colors) > 0 else None
 
-    # TODO check if exists
     obj_vertex_groups = obj.vertex_groups
 
     obj_uv_layer = obj_data.uv_layers[0]
@@ -281,8 +295,6 @@ def export_gm(file_path=""):
             weight_1 = 0
             weight_2 = 0
             for vertex_group in vertex.groups:
-                # print(vertex_group.group, vertex_group.weight,
-                #       obj_vertex_groups[vertex_group.group])
                 current_weight = vertex_group.weight
 
                 vertex_group_name = obj_vertex_groups[vertex_group.group].name
@@ -309,24 +321,26 @@ def export_gm(file_path=""):
     uv_array = [[0, 0]] * len(obj_vertices)
 
     # TODO idx
-    has_uv_normals = len(materials[0].get("textures")) == 2 and obj_uv_normals_layer
+    has_uv_normals = len(materials[0].get(
+        "textures")) == 2 and obj_uv_normals_layer
 
     uv_normals_array = [[0, 0]] * len(obj_vertices) if has_uv_normals else None
 
-    # TODO uv_normals
     for polygon in obj_polygons:
         for i, index in enumerate(polygon.vertices):
             loop_index = polygon.loop_indices[i]
-            [r, g, b, a] = obj_vertex_color.data[loop_index].color[:]
-            colors[index] = [int(r*255), int(g*255), int(b*255), int(a*255)]
+            if obj_vertex_color:
+                [r, g, b, a] = obj_vertex_color.data[loop_index].color[:]
+                colors[index] = [int(r*255), int(g*255),
+                                 int(b*255), int(a*255)]
             uv_array[index] = mathutils.Vector(
                 obj_uv_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
             if has_uv_normals:
                 uv_normals_array[index] = mathutils.Vector(
-                obj_uv_normals_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
+                    obj_uv_normals_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
 
     types = []
-    # TODO
+
     for i in range(len(objects)):
         if is_animated:
             types.append(4)
@@ -552,7 +566,6 @@ def export_gm(file_path=""):
 
         for i in range(header_ntriangles):
             for j in range(3):
-                #print(i, j, faces[i][j])
                 file.write(struct.pack('<H', faces[i][j]))
 
         for i in range(header_nvrtbuffs):
@@ -565,8 +578,6 @@ def export_gm(file_path=""):
 
             vertex_buffer_size = len(vertices) * vertex_buffer_stride
             file.write(struct.pack('<l', vertex_buffer_size))
-
-        # vertices
 
         print(len(vertices), len(weights), len(bone_ids),
               len(normals), len(colors), len(uv_array))
