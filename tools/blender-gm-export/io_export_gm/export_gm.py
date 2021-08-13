@@ -14,6 +14,70 @@ from bpy_extras.io_utils import ImportHelper, axis_conversion
 correction_export_matrix = axis_conversion(
     from_forward='Y', from_up='Z', to_forward='X', to_up='Y')
 
+def get_bounding_box_coords(obj):
+    bound_box = obj.bound_box
+    x1 = 0
+    x2 = 0
+    y1 = 0
+    y2 = 0
+    z1 = 0
+    z2 = 0
+    
+    for [x,y,z] in bound_box:
+        if y < x1:
+            x1 = y
+        if y > x2:
+            x2 = y
+        if z < y1:
+            y1 = z
+        if z > y2:
+            y2 = z
+        if x < z1:
+            z1 = x
+        if x > z2:
+            z2 = x
+    
+    return {
+        "x1": x1,
+        "x2": x2,
+        "y1": y1,
+        "y2": y2,
+        "z1": z1,
+        "z2": z2,
+    }
+
+def get_box_size(bounding_box_coords):
+    x1 = bounding_box_coords.get("x1")
+    x2 = bounding_box_coords.get("x2")
+    y1 = bounding_box_coords.get("y1")
+    y2 = bounding_box_coords.get("y2")
+    z1 = bounding_box_coords.get("z1")
+    z2 = bounding_box_coords.get("z2")
+
+    return [x2 - x1, y2 - y1, z2 - z1]
+
+def get_box_center(bounding_box_coords):
+    x1 = bounding_box_coords.get("x1")
+    x2 = bounding_box_coords.get("x2")
+    y1 = bounding_box_coords.get("y1")
+    y2 = bounding_box_coords.get("y2")
+    z1 = bounding_box_coords.get("z1")
+    z2 = bounding_box_coords.get("z2")
+
+    return [(x2 + x1) / 2, (y2 + y1) / 2, (z2 + z1) / 2]
+
+def get_box_radius(box_center, vertices):
+    center_vector = mathutils.Vector(box_center)
+    box_radius = 0;
+    
+    for pos in vertices:
+        pos_vector = mathutils.Vector(pos)
+        [x, y, z] = center_vector - pos_vector
+        radius = math.sqrt(x * x + y * y + z * z)
+        if radius > box_radius:
+            box_radius = radius
+
+    return box_radius
 
 def prepare_vertices_with_multiple_uvs(bm_verts, uv_layer):
     for vertex in bm_verts:
@@ -350,6 +414,8 @@ def export_gm(file_path=""):
             continue
         types.append(0)
 
+    bounding_box = get_bounding_box_coords(obj)
+
     # TODO delete on error
     bpy.data.objects.remove(obj, do_unlink=True)
 
@@ -398,11 +464,15 @@ def export_gm(file_path=""):
         file.write(struct.pack('<l', header_nvrtbuffs))
 
         # TODO
-        header_bboxSize = write_vector(file, [2, 2, 2])
-        header_bboxCenter = write_vector(file, [1, 1, 1])
+        header_bboxSize = get_box_size(bounding_box)
+        write_vector(file, header_bboxSize)
 
         # TODO
-        header_radius = 1
+        header_bboxCenter = get_box_center(bounding_box)
+        write_vector(file, header_bboxCenter)
+
+        # TODO
+        header_radius = get_box_radius(header_bboxCenter, vertices)
         file.write(struct.pack('<f', header_radius))
 
         for c in globname:
@@ -520,12 +590,13 @@ def export_gm(file_path=""):
             file.write(struct.pack('<l', object_flags))
 
             # TODO
-            object_radius = 1
-            file.write(struct.pack('<f', object_radius))
+            object_center = get_box_center(bounding_box)
+            write_vector(file, object_center)
 
             # TODO
-            object_center = [1, 1, 1]
-            write_vector(file, object_center)
+            object_radius = get_box_radius(object_center, vertices)
+            file.write(struct.pack('<f', object_radius))
+            
 
             # TODO
             object_vertex_buff = 0
