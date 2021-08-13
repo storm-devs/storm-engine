@@ -1304,6 +1304,42 @@ long DX9RENDER::TextureCreate(const char *fname)
     return -1;
 }
 
+long DX9RENDER::TextureCreate(UINT width, UINT height, UINT levels, uint32_t usage, D3DFORMAT format, D3DPOOL pool)
+{
+    IDirect3DTexture9 *texture = nullptr;
+
+    const auto result = CreateTexture(width, height, levels, usage, format, pool, &texture);
+    if (CHECKD3DERR(result))
+    {
+        return -1;
+    }
+
+    long t;
+    for (t = 0; t < MAX_STEXTURES; t++)
+    {
+        if (Textures[t].ref == 0)
+        {
+            break;
+        }
+    }
+
+    Textures[t].d3dtex = texture;
+    Textures[t].name = nullptr;
+    Textures[t].hash = 0;
+    Textures[t].ref = 1;
+    Textures[t].dwSize = width * height * 4; // Assuming 32-bit pixels
+    Textures[t].isCubeMap = false;
+    Textures[t].loaded = true;
+
+    return t;
+}
+
+bool DX9RENDER::TextureIncReference(long texid)
+{
+    ++Textures[texid].ref;
+    return true;
+}
+
 bool DX9RENDER::TextureLoad(long t)
 {
     ProgressView();

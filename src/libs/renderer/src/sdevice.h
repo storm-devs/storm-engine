@@ -313,8 +313,10 @@ class DX9RENDER : public VDX9RENDER
 
     // DX9Render: Textures Section
     long TextureCreate(const char *fname) override;
+    long TextureCreate(UINT width, UINT height, UINT levels, uint32_t usage, D3DFORMAT format, D3DPOOL pool) override;
     bool TextureSet(long stage, long texid) override;
     bool TextureRelease(long texid) override;
+    bool TextureIncReference(long texid) override;
 
     // DX9Render: Fonts Section
     long Print(long x, long y, const char *format, ...) override;

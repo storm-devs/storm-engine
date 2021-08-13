@@ -7,7 +7,6 @@ CXI_PICTURE::CXI_PICTURE()
 {
     m_rs = nullptr;
     m_idTex = -1;
-    m_pD3D8Texture = nullptr;
     m_pTex = nullptr;
     m_nNodeType = NODETYPE_PICTURE;
     m_pcGroupName = nullptr;
@@ -52,12 +51,10 @@ void CXI_PICTURE::Draw(bool bSelected, uint32_t Delta_Time)
             ChangeColor(ptrOwner->GetBlendColor(m_dwBlindMin, m_dwBlindMax, m_fCurBlindTime));
         }
 
-        if (m_idTex != -1 || m_pTex || m_pD3D8Texture)
+        if (m_idTex != -1 || m_pTex)
         {
             if (m_idTex != -1)
                 m_rs->TextureSet(0, m_idTex);
-            else if (m_pD3D8Texture)
-                m_rs->SetTexture(0, m_pD3D8Texture);
             else
                 m_rs->SetTexture(0, m_pTex ? m_pTex->m_pTexture : nullptr);
             m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX), "iVideo");
@@ -307,7 +304,15 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
 
     case 7: // set new picture by pointer to IDirect3DTexture9
     {
-        auto *pTex = (IDirect3DBaseTexture9 *)message.Pointer();
+        long pTex = -1;
+        if (message.GetCurrentFormatType() == 'p') {
+            // DEPRECATED
+            core.Trace("Warning! Setting an interface picture by pointer is deprecated. Please use integers instead.");
+            pTex = message.Pointer();
+        }
+        else {
+            pTex = message.Long();
+        }
         SetNewPictureByPointer(pTex);
     }
     break;
@@ -324,10 +329,6 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
         {
             ReleasePicture();
             auto *pOtherPic = static_cast<CXI_PICTURE *>(pNod);
-            if (pOtherPic->m_pD3D8Texture)
-            {
-                SetNewPictureByPointer(pOtherPic->m_pD3D8Texture);
-            }
             if (pOtherPic->m_pcGroupName)
             {
                 m_pcGroupName = pOtherPic->m_pcGroupName;
@@ -371,7 +372,7 @@ void CXI_PICTURE::ChangeColor(uint32_t dwColor)
 
 void CXI_PICTURE::SetPictureSize(long &nWidth, long &nHeight)
 {
-    if (!m_pD3D8Texture && !m_pTex && m_idTex == -1)
+    if (!m_pTex && m_idTex == -1)
     {
         m_bUse = false;
         nWidth = nHeight = 0;
@@ -410,12 +411,14 @@ void CXI_PICTURE::SetPictureSize(long &nWidth, long &nHeight)
     ChangePosition(rNewPos);
 }
 
-void CXI_PICTURE::SetNewPictureByPointer(IDirect3DBaseTexture9 *pTex)
+void CXI_PICTURE::SetNewPictureByPointer(long textureId)
 {
-    if (pTex)
-        pTex->AddRef();
+    IDirect3DBaseTexture9 *texture = m_rs->GetTextureFromID(textureId);
+    m_rs->TextureIncReference(textureId);
+    if (texture)
+        texture->AddRef();
     ReleasePicture();
-    m_pD3D8Texture = pTex;
+    m_idTex = textureId;
 
     FXYRECT uv;
     uv.left = uv.top = 0.f;
@@ -426,9 +429,7 @@ void CXI_PICTURE::SetNewPictureByPointer(IDirect3DBaseTexture9 *pTex)
 void CXI_PICTURE::ReleasePicture()
 {
     PICTURE_TEXTURE_RELEASE(pPictureService, m_pcGroupName, m_idTex);
-    if (m_pD3D8Texture)
-        m_pD3D8Texture->Release();
-    m_pD3D8Texture = nullptr;
+
     STORM_DELETE(m_pcGroupName);
     TEXTURE_RELEASE(m_rs, m_idTex);
     VIDEOTEXTURE_RELEASE(m_rs, m_pTex);
