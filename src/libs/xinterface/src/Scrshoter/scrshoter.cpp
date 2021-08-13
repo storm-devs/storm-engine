@@ -25,11 +25,6 @@ uint32_t GetA8R8G8B8_FromFMT(void *p, uint32_t fmt)
     return retVal;
 }
 
-SCRSHOTER::SCRSHOTER()
-    : rs(nullptr), m_list(nullptr)
-{
-}
-
 SCRSHOTER::~SCRSHOTER()
 {
     if (textureIndex_ != -1 && rs != nullptr)
