@@ -75,10 +75,6 @@ class CORE
 
     char *State_file_name;
 
-    CRITICAL_SECTION lock;
-    void Start_CriticalSection();
-    void Leave_CriticalSection();
-
     TIMER Timer;
 
     COMPILER *Compiler;
@@ -158,10 +154,14 @@ class CORE
 
     [[nodiscard]] ScreenSize GetScreenSize() const noexcept;
 
+    void stopFrameProcessing();
+
   private:
     void loadCompatibilitySettings(INIFILE &inifile);
 
     storm::ENGINE_VERSION targetVersion_ = storm::ENGINE_VERSION::LATEST;
+
+    bool stopFrameProcessing_ = false;
 };
 
 // core instance

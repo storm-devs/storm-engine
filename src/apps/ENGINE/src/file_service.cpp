@@ -146,7 +146,7 @@ std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *s
             continue;
         }
         curPath = dirEntry.path();
-        if (storm::wildicmp(mask, curPath.filename().string().c_str()))
+        if (mask == nullptr || storm::wildicmp(mask, curPath.filename().u8string().c_str()))
         {
             if (getPaths)
             {
@@ -352,6 +352,21 @@ bool FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dw
 }
 
 //=================================================================================================
+
+INIFILE_T::~INIFILE_T()
+{
+    if (auto fileService = dynamic_cast<FILE_SERVICE *>(fio); fileService)
+    {
+        try
+        {
+            fileService->RefDec(ifs_PTR);
+        }
+        catch (const std::exception &e)
+        {
+            spdlog::error(e.what());
+        }
+    }
+}
 
 void INIFILE_T::AddString(const char *section_name, const char *key_name, const char *string)
 {

@@ -117,8 +117,10 @@ class VDX9RENDER : public SERVICE
 
     // DX9Render: Textures Section
     virtual long TextureCreate(const char *fname) = 0;
+    virtual long TextureCreate(UINT width, UINT height, UINT levels, uint32_t usage, D3DFORMAT format, D3DPOOL pool) = 0;
     virtual bool TextureSet(long stage, long texid) = 0;
     virtual bool TextureRelease(long texid) = 0;
+    virtual bool TextureIncReference(long texid) = 0;
 
     // DX9Render: Fonts Section
     virtual long Print(long x, long y, const char *format, ...) = 0;

@@ -42,6 +42,7 @@ STORM_SETUP(
     sink_effect
     sound
     sound_service
+    steam_api
     teleport
     tornado
     touch

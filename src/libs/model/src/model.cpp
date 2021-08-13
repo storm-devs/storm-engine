@@ -669,11 +669,13 @@ void MODELR::FindPlanes(const CMatrix &view, const CMatrix &proj)
 
 void MODELR::LostRender()
 {
+    root->ReleaseGeometry();
     rs->Release(d3dDestVB);
 }
 
 void MODELR::RestoreRender()
 {
+    root->RestoreGeometry();
     const long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1;
     if (nAniVerts)
         rs->CreateVertexBuffer(sizeof(GEOS::VERTEX0) * nAniVerts, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, fvf,

@@ -36,12 +36,11 @@ class CXI_PICTURE : public CINODE
     void SetNewPicture(bool video, const char *sNewTexName);
     void SetNewPictureFromDir(const char *dirName);
     void SetNewPictureByGroup(const char *groupName, const char *picName);
-    void SetNewPictureByPointer(IDirect3DBaseTexture9 *pTex);
+    void SetNewPictureByPointer(long pTex);
     void ReleasePicture();
 
     char *m_pcGroupName;
     long m_idTex;
-    IDirect3DBaseTexture9 *m_pD3D8Texture;
     CVideoTexture *m_pTex;
     XI_ONETEX_VERTEX m_v[4];
 

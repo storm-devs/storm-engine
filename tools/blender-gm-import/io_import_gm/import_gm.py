@@ -746,6 +746,7 @@ def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
 def import_gm(
     context,
     file_path="",
+    textures_path="",
     an_path="",
     fix_coas_man_head=False,
     convert_coas_to_potc_man=False,
@@ -753,7 +754,6 @@ def import_gm(
     report_func=None
 ):
     file_name = os.path.basename(file_path)[:-3]
-    textures_path = os.path.join(os.path.dirname(file_path), 'textures')
     data = parse_gm(file_path, report_func)
 
     xIsMirrored = data.get('xIsMirrored')
@@ -777,6 +777,7 @@ def import_gm(
         armature_obj_pose_source = get_armature_obj(
             an_path, collection, 'POSE_SOURCE', fix_coas_man_head=fix_coas_man_head)
 
+    blender_objects = []
     for object in data['objects']:
         name = object.get('name')
 
@@ -794,6 +795,7 @@ def import_gm(
 
         me = bpy.data.meshes.new(name)
         ob = bpy.data.objects.new(name, me)
+        blender_objects.append(ob)
         ob.parent = root
 
         bm = bmesh.new()
@@ -976,35 +978,39 @@ def import_gm(
             ob.parent = armature_obj_pose
             modifier = ob.modifiers.new(type='ARMATURE', name="Armature")
             modifier.object = armature_obj_pose
+            modifier.use_deform_preserve_volume = True
             bpy.context.view_layer.objects.active = armature_obj_pose
 
-            bpy.ops.pose.armature_apply(selected=False)
+    if has_animation:
+        bpy.ops.pose.armature_apply(selected=False)
 
-            bpy.ops.object.mode_set(mode='POSE', toggle=False)
+        bpy.ops.object.mode_set(mode='POSE', toggle=False)
 
-            for pbone in armature_obj.data.bones:
-                bone_name = pbone.name
+        for pbone in armature_obj.data.bones:
+            bone_name = pbone.name
 
-                bone = armature_obj_pose.pose.bones[bone_name]
-                active = armature_obj_pose_source.pose.bones[bone_name]
+            bone = armature_obj_pose.pose.bones[bone_name]
+            active = armature_obj_pose_source.pose.bones[bone_name]
 
-                bone.location = getmat(
-                    bone, active, context, False).to_translation()
-                bone.rotation_quaternion = getmat(
-                    bone, active, context, not bone.id_data.data.bones[bone.name].use_inherit_rotation).to_3x3().to_quaternion()
+            bone.location = getmat(
+                bone, active, context, False).to_translation()
+            bone.rotation_quaternion = getmat(
+                bone, active, context, not bone.id_data.data.bones[bone.name].use_inherit_rotation).to_3x3().to_quaternion()
 
-                """ hack """
-                bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+            """ hack """
+            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
-            bpy.context.view_layer.objects.active = ob
+        for blender_object in blender_objects:
+            bpy.context.view_layer.objects.active = blender_object
             bpy.ops.object.modifier_apply(modifier="Armature")
 
-            bpy.data.objects.remove(armature_obj_pose_source, do_unlink=True)
-            bpy.data.objects.remove(armature_obj_pose, do_unlink=True)
+        bpy.data.objects.remove(armature_obj_pose_source, do_unlink=True)
+        bpy.data.objects.remove(armature_obj_pose, do_unlink=True)
 
-            ob.parent = armature_obj
-            modifier = ob.modifiers.new(type='ARMATURE', name="Armature")
+        for blender_object in blender_objects:
+            blender_object.parent = armature_obj
+            modifier = blender_object.modifiers.new(type='ARMATURE', name="Armature")
             modifier.object = armature_obj
             modifier.use_deform_preserve_volume = True
 
@@ -1065,6 +1071,12 @@ class ImportGm(Operator, ImportHelper):
         maxlen=255,  # Max internal buffer length, longer would be clamped.
     )
 
+    textures_path: StringProperty(
+        name="Textures path",
+        description="Path to textures (relative or absolute)",
+        default="textures",
+    )
+
     an_name: StringProperty(
         name="Animation name",
         description="Must be in the same folder as model",
@@ -1088,10 +1100,12 @@ class ImportGm(Operator, ImportHelper):
 
     def execute(self, context):
         an_path = os.path.join(os.path.dirname(self.filepath), self.an_name)
+        textures_path = os.path.join(os.path.dirname(self.filepath), self.textures_path)
         if os.path.isfile(an_path):
             return import_gm(
                 context,
                 self.filepath,
+                textures_path=textures_path,
                 an_path=an_path,
                 fix_coas_man_head=self.fix_coas_man_head,
                 convert_coas_to_potc_man=self.convert_coas_to_potc_man,
@@ -1099,7 +1113,7 @@ class ImportGm(Operator, ImportHelper):
                 report_func=self.report
             )
 
-        return import_gm(context, self.filepath, report_func=self.report)
+        return import_gm(context, self.filepath, textures_path=textures_path, report_func=self.report)
 
 
 def menu_func_import(self, context):
