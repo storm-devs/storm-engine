@@ -40,6 +40,7 @@ class SoundService : public VSoundService
         eSoundType type;
 
         tSoundCache()
+            : type()
         {
             dwNameHash = 0;
             sound = nullptr;
@@ -63,6 +64,7 @@ class SoundService : public VSoundService
         std::string Name;
 
         tPlayedSound()
+            : sound_type(), fSoundVolume(0)
         {
             bFree = true;
             channel = nullptr;

@@ -252,11 +252,11 @@ bool XINTERFACE::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-void XINTERFACE::Execute(uint32_t Delta_Time)
+void XINTERFACE::Execute(uint32_t)
 {
     m_UtilContainer.FrameUpdate();
 
-    Delta_Time = core.GetRDeltaTime();
+    auto Delta_Time = core.GetRDeltaTime();
     if (!bActive)
         return;
     IncrementGameTime(Delta_Time);
@@ -319,14 +319,14 @@ void XINTERFACE::Execute(uint32_t Delta_Time)
         m_pMouseWeel->Set(0L);
 }
 
-void XINTERFACE::Realize(uint32_t Delta_Time)
+void XINTERFACE::Realize(uint32_t)
 {
     if (!m_bUse || !bActive)
         return;
 
     pRenderService->MakePostProcess();
 
-    Delta_Time = core.GetRDeltaTime();
+    auto Delta_Time = core.GetRDeltaTime();
 
     CMatrix moldv, moldp, moldw;
 
@@ -3520,9 +3520,11 @@ void CONTROLS_CONTAINER::Execute(uint32_t delta_time)
             }
             pDescr = pDescr->next;
         }
-        if (_stricmp(pCont->resultName, "ChrTurnH1") == 0)
+        //debug code
+        /*  if (_stricmp(pCont->resultName, "ChrTurnH1") == 0)
             if (cs.state != CST_INACTIVE)
-                cs.state = cs.state; //~!~ breakpoint?
+                cs.state = cs.state;
+        */
         core.Controls->SetControlState(pCont->resultName, cs);
         core.Controls->GetControlState(pCont->resultName, csPrev);
         pCont = pCont->next;

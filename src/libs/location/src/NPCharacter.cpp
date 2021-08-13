@@ -38,8 +38,10 @@
 // Construction, destruction
 // ============================================================================================
 
-NPCharacter::NPCharacter()
+NPCharacter::NPCharacter() : taskstack{}
 {
+    charactersGroups = {};
+    fMusketerTime = {};
     stackPointer = 0;
     task.task = npct_stay;
     lastSetTask = npct_unknow;

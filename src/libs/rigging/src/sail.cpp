@@ -35,6 +35,7 @@ float GetSailSpeed(int holeQ, int holeMax, float maxSpeed, float fSailHoleDepend
 }
 
 SAIL::SAIL()
+    : LastTraceGroup(0), tm()
 {
     // setting all general data to initial values
     // then rewritten from INI file
@@ -1204,9 +1205,9 @@ void SAIL::SetAllSails(int groupNum)
                 static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[groupNum].shipEI))->GetACharacter();
             ATTRIBUTES *pA = nullptr;
             // start installing textures on the sails
-            SetSailTextures(groupNum, core.Event("GetSailTextureData", "l", pACh->GetAttributeAsDword("index", -1)));
             if (pACh != nullptr)
             {
+                SetSailTextures(groupNum, core.Event("GetSailTextureData", "l", pACh->GetAttributeAsDword("index", -1)));
                 pA = pACh->FindAClass(pA, "ship.sails");
                 if (pA == nullptr)
                     pA = pACh->CreateSubAClass(pACh, "ship.sails");

@@ -52,6 +52,7 @@ bool CXI_QUESTTITLE::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufS
 }
 
 CXI_QUESTTITLE::CXI_QUESTTITLE()
+    : m_iconWidth(0), m_iconHeight(0), m_iconVOffset(0), m_texId(0), m_vertOffset(0)
 {
     m_nNodeType = NODETYPE_QTITLE;
 

@@ -185,7 +185,7 @@ inline bool IsValidUtf8(const std::string &str)
     {
         c = (unsigned char)str[i];
         // if (c==0x09 || c=='\n' || c=='\r' || (0x20 <= c && c <= 0x7e) ) n = 0; // is_printable_ascii
-        if (0x00 <= c && c <= 0x7f)
+        if (c <= 0x7f)
             n = 0; // 0bbbbbbb
         else if ((c & 0xE0) == 0xC0)
             n = 1; // 110bbbbb

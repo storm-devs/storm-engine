@@ -6,6 +6,7 @@ VDX9RENDER *ShipLights::pRS = nullptr;
 COLLIDE *ShipLights::pCollide = nullptr;
 
 ShipLights::ShipLights()
+    : fSunRoadFlareSize(0), dwCoronaSubTexX(0), dwCoronaSubTexY(0)
 {
     bLoadLights = false;
     bReflection = false;

@@ -58,8 +58,6 @@ class WdmCamera
     void CheckRange();
 
   private:
-    float scrollSpeed;
-    float rotateSpeed;
     float elasticAy;
 
     bool isFreeMode;

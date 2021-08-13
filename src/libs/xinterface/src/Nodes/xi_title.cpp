@@ -1,6 +1,7 @@
 #include "xi_title.h"
 
 CXI_TITLE::CXI_TITLE()
+    : m_fontColor(0), m_backColor(0), m_fontScale(0), m_nStringWidth(0), m_nTiledQuantity(0)
 {
     m_sGroupName = nullptr;
     m_idTex = -1L;

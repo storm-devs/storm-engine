@@ -29,6 +29,7 @@ bool TOUCH::Init()
 }
 
 TOUCH::TOUCH()
+    : pRS(nullptr), fCollisionDepth(0), iDeltaTime(0), pShips{}
 {
     iNumShips = 0;
     fScale = 6.0f;

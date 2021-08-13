@@ -177,6 +177,7 @@ bool CXI_QUESTTEXTS::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufS
 }
 
 CXI_QUESTTEXTS::CXI_QUESTTEXTS()
+    : m_vertOffset(0)
 {
     m_nNodeType = NODETYPE_QTEXTS;
 

@@ -10,7 +10,8 @@ CREATE_CLASS(SOUND)
 #define MSG_SOUND_ALIAS_ADD 77017 //"s"          alias_name
 
 //--------------------------------------------------------------------
-SOUND::SOUND() : soundService(nullptr)
+SOUND::SOUND()
+    : soundService(nullptr), renderer(nullptr)
 {
 }
 

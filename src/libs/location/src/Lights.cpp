@@ -17,6 +17,7 @@
 // ============================================================================================
 
 Lights::Lights()
+    : lighter_code(0), lampModels{}, buf{}
 {
     rs = nullptr;
     collide = nullptr;

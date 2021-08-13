@@ -35,7 +35,7 @@ class DataDescripion
     class DataDescripion__##Name : public DataDescripion                                                               \
     {                                                                                                                  \
       public:                                                                                                          \
-        virtual void CreateFields()                                                                                    \
+        void CreateFields() final                                                                                      \
         {                                                                                                              \
             Clear();
 

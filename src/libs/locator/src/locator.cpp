@@ -8,6 +8,7 @@ CREATE_CLASS(LOCATOR)
 CREATE_CLASS(BLAST)
 
 LOCATOR::LOCATOR()
+    : rs(nullptr), ParticlesID(0)
 {
     gs = nullptr;
     geo = nullptr;

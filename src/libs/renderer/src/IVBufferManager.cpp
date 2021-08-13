@@ -8,7 +8,7 @@ IVBufferManager::IVBufferManager(VDX9RENDER *renderer_, long vertex_type, int ve
       vertex_buffer_(
           renderer_->CreateVertexBuffer(vertex_type, max_size * vertex_count * vertex_size, D3DUSAGE_WRITEONLY)),
       vertex_type_(vertex_type), vertex_size_(vertex_size), index_count_(index_count), vertex_count_(vertex_count),
-      actual_size_(0)
+      actual_size_(0), locked_(false), indexes_(nullptr), vertices_(nullptr)
 {
     used_.resize(max_size, false);
 }

@@ -1,6 +1,7 @@
 #include "xi_imgcollection.h"
 
 CXI_IMGCOLLECTION::CXI_IMGCOLLECTION()
+    : m_bRelativeRect(false)
 {
     texl = -1;
     vBuf = -1;

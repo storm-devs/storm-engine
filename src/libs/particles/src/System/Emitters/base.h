@@ -22,6 +22,7 @@ class BaseEmitter : public IEmitter
         FieldList *pFields;
 
         structParticleType()
+            : Visible(false), MaxParticlesCount(0)
         {
             ActiveCount = 0;
             Remain = 0.0f;

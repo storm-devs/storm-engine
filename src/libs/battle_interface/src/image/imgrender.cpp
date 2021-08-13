@@ -3,6 +3,7 @@
 #include "string.h"
 
 BIImageRender::BIImageRender(VDX9RENDER *pRS)
+    : m_nBeginOutputPrioritet(0), m_nEndOutputPrioritet(0)
 {
     m_pRS = pRS;
     m_fHScale = m_fVScale = 1.f;

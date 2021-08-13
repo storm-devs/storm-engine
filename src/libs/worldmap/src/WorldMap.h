@@ -140,8 +140,6 @@ class WorldMap : public Entity
     ATTRIBUTES *aInfo;
     ATTRIBUTES *saveData;
 
-    WdmWaitMenu *waitMenu;
-
     // Event
     float encTime;
 

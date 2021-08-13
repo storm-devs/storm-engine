@@ -19,6 +19,7 @@
 // ============================================================================================
 
 Supervisor::Supervisor()
+    : character{}, colchr{}, numColChr(0), isDelete(false)
 {
     numCharacters = 0;
     time = 0.0f;

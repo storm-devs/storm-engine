@@ -106,7 +106,7 @@ float NODER::Update(CMatrix &mtx, CVECTOR &cnt)
     for (long l = 0; l < nnext; l++)
         if (next[l] != nullptr)
         {
-            CVECTOR cnt; //~!~
+            CVECTOR cnt; // TODO: huh? ~!~
             const auto r = static_cast<NODER *>(next[l])->Update(glob_mtx, cnt);
             const auto rad = sqrtf(~(cnt - center)) + r;
             if (rad > radius)

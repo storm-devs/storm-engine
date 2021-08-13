@@ -20,6 +20,7 @@
 CREATE_CLASS(Lighter)
 
 Lighter::Lighter()
+    : autoTrace(false), autoSmooth(false)
 {
     rs = nullptr;
     initCounter = 10;
@@ -124,31 +125,28 @@ void Lighter::PreparingData()
         clr = 1.0f;
     lights.AddAmbient(clr);
     // The sun
-    if (rs)
+    auto isLight = FALSE;
+    rs->GetLightEnable(0, &isLight);
+    D3DLIGHT9 lit;
+    if (isLight && rs->GetLight(0, &lit))
     {
-        auto isLight = FALSE;
-        rs->GetLightEnable(0, &isLight);
-        D3DLIGHT9 lit;
-        if (isLight && rs->GetLight(0, &lit))
+        CVECTOR clr, dir = !CVECTOR(1.0f, 1.0f, 1.0f);
+        clr.x = lit.Diffuse.r;
+        clr.y = lit.Diffuse.g;
+        clr.z = lit.Diffuse.b;
+        if (lit.Type == D3DLIGHT_DIRECTIONAL)
         {
-            CVECTOR clr, dir = !CVECTOR(1.0f, 1.0f, 1.0f);
-            clr.x = lit.Diffuse.r;
-            clr.y = lit.Diffuse.g;
-            clr.z = lit.Diffuse.b;
-            if (lit.Type == D3DLIGHT_DIRECTIONAL)
-            {
-                dir.x = -lit.Direction.x;
-                dir.y = -lit.Direction.y;
-                dir.z = -lit.Direction.z;
-            }
-            auto mx = dir.x > dir.y ? dir.x : dir.y;
-            mx = mx > dir.z ? mx : dir.z;
-            if (mx > 0.0f)
-                dir *= 1.0f / mx;
-            else
-                dir = 1.0f;
-            lights.AddWeaterLights(clr, dir);
+            dir.x = -lit.Direction.x;
+            dir.y = -lit.Direction.y;
+            dir.z = -lit.Direction.z;
         }
+        auto mx = dir.x > dir.y ? dir.x : dir.y;
+        mx = mx > dir.z ? mx : dir.z;
+        if (mx > 0.0f)
+            dir *= 1.0f / mx;
+        else
+            dir = 1.0f;
+        lights.AddWeaterLights(clr, dir);
     }
     lights.PostInit();
     // Geometry

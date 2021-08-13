@@ -4,6 +4,7 @@
 #include "core.h"
 
 CXI_STATUSLINE::CXI_STATUSLINE()
+    : m_fLineOffset(0)
 {
     m_rs = nullptr;
     m_sGroupName = nullptr;
@@ -218,6 +219,8 @@ void CXI_STATUSLINE::Refresh() const
     if (m_vBuf == -1)
         return;
     auto *pVBuf = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_vBuf));
+    if (!pVBuf)
+        return;
 
     auto *pAttr = core.Entity_GetAttributeClass(g_idInterface, "StatusLine");
     if (pAttr != nullptr)
@@ -285,6 +288,5 @@ void CXI_STATUSLINE::Refresh() const
         pVBuf[7].tv = texRect2.bottom;
     }
 
-    if (pVBuf != nullptr)
-        m_rs->UnLockVertexBuffer(m_vBuf);
+    m_rs->UnLockVertexBuffer(m_vBuf);
 }

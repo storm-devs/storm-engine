@@ -29,10 +29,6 @@ void S_STACK::Release()
 
 DATA *S_STACK::Push(DATA *pdataclass)
 {
-    if (Data_num > 1000)
-    {
-        Data_num = Data_num;
-    }
     if (Data_num > STACK_BUFFER_LIMIT)
         throw std::runtime_error("stack overflaw");
     if (Data_num >= Buffer_size)

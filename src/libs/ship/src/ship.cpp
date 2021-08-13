@@ -1452,6 +1452,7 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
 
     const entid_t temp_id = GetId();
     core.Send_Message(touch_id, "li", MSG_SHIP_CREATE, temp_id);
+    // TODO: this is wrong
     core.Send_Message(sea_id, "lic", MSG_SHIP_CREATE, temp_id,
                       CVECTOR(State.vPos.x + fXOffset, State.vPos.y, State.vPos.z + fZOffset));
 

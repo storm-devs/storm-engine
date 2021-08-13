@@ -206,10 +206,7 @@ bool COMPRESS::AAppendCode(char *&pDest, uint32_t &dwDestinationBufferSize, uint
         if (DestMask == 0)
         {
             dwDestinationBufferSize++;
-            if (pDest == nullptr)
-                pDest = static_cast<char *>(malloc(dwDestinationBufferSize));
-            else
-                pDest = static_cast<char *>(realloc(pDest, dwDestinationBufferSize));
+            pDest = static_cast<char *>(realloc(pDest, dwDestinationBufferSize));
 
             dwByteOffset++;
             DestMask = 0x80; // bin 10000000

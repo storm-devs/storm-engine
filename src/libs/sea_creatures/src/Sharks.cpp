@@ -386,7 +386,6 @@ inline void Sharks::Shark::IslandCollision(ISLAND_BASE *ib, long numPnt, float r
             }
             else
                 h = 0.0f;
-            h = 0.0f;
             vx -= x * (1.0f - h);
             vz -= z * (1.0f - h);
         }
@@ -534,31 +533,18 @@ bool Sharks::Init()
     for (long i = 0; i < numShakes; i++)
         if (!shark[i].Init(0.0f, 0.0f))
             return false;
-    // Execution layer
-    char execute[64];
-    char realize[64];
-    const char *attr = AttributesPointer->GetAttribute("execute");
-    if (attr && attr[0])
-        strcpy_s(execute, attr);
-    else
-        strcpy_s(execute, "execute");
-    attr = AttributesPointer->GetAttribute("realize");
-    if (attr && attr[0])
-        strcpy_s(realize, attr);
-    else
-        strcpy_s(realize, "realize");
     // Execution layers
     const long emdl = AttributesPointer->GetAttributeAsDword("executeModels", 77);
     const long rmdl = AttributesPointer->GetAttributeAsDword("realizeModels", 77);
     const long eprt = AttributesPointer->GetAttributeAsDword("executeParticles", 77);
     const long rprt = AttributesPointer->GetAttributeAsDword("realizeParticles", 100000);
     // Set the execution layers
-    EntityManager::AddToLayer(EXECUTE, GetId(), eprt);
-    EntityManager::AddToLayer(REALIZE, GetId(), rprt);
+    EntityManager::AddToLayer(SEA_EXECUTE, GetId(), eprt);
+    EntityManager::AddToLayer(SEA_REALIZE, GetId(), rprt);
     for (long i = 0; i < numShakes; i++)
     {
-        EntityManager::AddToLayer(EXECUTE, shark[i].model, emdl);
-        EntityManager::AddToLayer(REALIZE, shark[i].model, rmdl);
+        EntityManager::AddToLayer(SEA_EXECUTE, shark[i].model, emdl);
+        EntityManager::AddToLayer(SEA_REALIZE, shark[i].model, rmdl);
     }
     // Load the texture
     trackTx = rs->TextureCreate("Animals\\SharkTrack.tga");

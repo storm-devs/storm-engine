@@ -14,6 +14,7 @@
 #define MAX_MODELS 8192
 
 ModelProcessor::ModelProcessor(ParticleManager *pManager)
+    : Parser()
 {
     Particles.reserve(MAX_MODELS);
     pMasterManager = pManager;

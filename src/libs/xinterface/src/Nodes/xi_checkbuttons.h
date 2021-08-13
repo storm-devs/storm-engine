@@ -7,6 +7,7 @@
 struct ButtonDescribe
 {
     ButtonDescribe()
+        : bChoose(false), bDisable(false)
     {
         pImg = nullptr;
         bSetPos = false;

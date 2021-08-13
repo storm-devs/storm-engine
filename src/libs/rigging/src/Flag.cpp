@@ -745,7 +745,7 @@ void FLAG::DoSTORM_DELETE()
         VERTEX_BUFFER_RELEASE(RenderService, vBuf);
         INDEX_BUFFER_RELEASE(RenderService, iBuf);
         flagQuantity = groupQuantity = 0;
-        delete flist;
+        delete[] flist;
         flist = nullptr;
         delete gdata;
         gdata = nullptr;
@@ -896,7 +896,7 @@ void FLAG::SetAdd(int flagNum)
 
             flist[fn]->sv = nVert;
             flist[fn]->st = nIndx;
-            flist[fn]->vectQuant; //~!~
+            flist[fn]->vectQuant; // TODO: check this ~!~
             if (flist[fn]->triangle)
             {
                 nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 3);

@@ -21,6 +21,7 @@
 
 Player::Player()
 {
+    baterfl = {};
     lastChange = 10.0f;
     task.task = npct_none;
     activatedDialog = false;

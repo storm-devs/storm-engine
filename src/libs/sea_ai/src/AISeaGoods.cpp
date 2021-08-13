@@ -4,6 +4,7 @@
 CREATE_CLASS(AISeaGoods)
 
 AISeaGoods::AISeaGoods()
+    : TmpItem(), fDistanceMultiply(0)
 {
     pSea = nullptr;
     pGeoService = nullptr;

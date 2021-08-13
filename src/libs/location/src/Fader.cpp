@@ -21,6 +21,7 @@ long Fader::numberOfTips = 0;
 long Fader::currentTips = -1;
 
 Fader::Fader()
+    : fadeIn(false), isStart(false), isAutodelete(false), fadeSpeed(0), w(0), h(0)
 {
     rs = nullptr;
     isWork = false;
@@ -45,15 +46,12 @@ Fader::~Fader()
         renderTarget->Release();
     surface = nullptr;
     renderTarget = nullptr;
-    if (rs)
-    {
-        if (textureID >= 0)
-            rs->TextureRelease(textureID);
-        if (textureBackID >= 0)
-            rs->TextureRelease(textureBackID);
-        if (tipsID >= 0)
-            rs->TextureRelease(tipsID);
-    }
+    if (textureID >= 0)
+        rs->TextureRelease(textureID);
+    if (textureBackID >= 0)
+        rs->TextureRelease(textureBackID);
+    if (tipsID >= 0)
+        rs->TextureRelease(tipsID);
 }
 
 // Initialization
@@ -158,16 +156,13 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
             rs->TextureRelease(textureID);
         const std::string &_name = message.String();
         textureID = rs->TextureCreate(_name.c_str());
-        if (rs)
+        rs->SetProgressImage(_name.c_str());
+        // Hint texture
+        if (numberOfTips > 0)
         {
-            rs->SetProgressImage(_name.c_str());
-            // Hint texture
-            if (numberOfTips > 0)
-            {
-                const std::string texturePath = "interfaces\\int_border.tga";
-                tipsID = rs->TextureCreate(texturePath.c_str());
-                rs->SetTipsImage(texturePath.c_str());
-            }
+            const std::string texturePath = "interfaces\\int_border.tga";
+            tipsID = rs->TextureCreate(texturePath.c_str());
+            rs->SetTipsImage(texturePath.c_str());
         }
         break;
     }
@@ -176,19 +171,16 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
             rs->TextureRelease(textureBackID);
         const std::string &_name = message.String();
         textureBackID = rs->TextureCreate(_name.c_str());
-        if (rs)
+        rs->SetProgressBackImage(_name.c_str());
+        // Hint texture
+        if (numberOfTips > 0)
         {
-            rs->SetProgressBackImage(_name.c_str());
-            // Hint texture
-            if (numberOfTips > 0)
+            // sprintf_s(_name, "tips\\tips_%.4u.tga", rand() % numberOfTips);
+            auto *const pTipsName = rs->GetTipsImage();
+            if (pTipsName)
             {
-                // sprintf_s(_name, "tips\\tips_%.4u.tga", rand() % numberOfTips);
-                auto *const pTipsName = rs->GetTipsImage();
-                if (pTipsName)
-                {
-                    tipsID = rs->TextureCreate(pTipsName);
-                    // rs->SetTipsImage(_name);
-                }
+                tipsID = rs->TextureCreate(pTipsName);
+                // rs->SetTipsImage(_name);
             }
         }
         break;

@@ -15,6 +15,7 @@ struct DEFINFO
     char *name;
     uint32_t segment_id;
     uint32_t hash;
+    // TODO: maybe we need uint32_t here (and also change casts throughout the code):
     uintptr_t data4b;
     uint32_t deftype;
 };

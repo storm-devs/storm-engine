@@ -5,7 +5,8 @@
 
 CREATE_CLASS(SailorsEditor)
 
-SailorsEditor::SailorsEditor() : rs(nullptr), model(nullptr)
+SailorsEditor::SailorsEditor()
+    : rs(nullptr), sailors(0), shipID(0), pointID(0), model(nullptr)
 {
     cameraAng = 0.0f;
 

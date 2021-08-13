@@ -17,6 +17,7 @@ CREATE_CLASS(Sailors)
 
 //------------------------------------------------------------------------------------
 ShipMan::ShipMan()
+    : modelID(0), model(nullptr), ptTo(), dir(), targetWayPoint(0), lastTargetPoint(0), moveTo()
 {
     // GUARD_SAILORS(ShipMan::ShipMan())
 
@@ -34,7 +35,8 @@ ShipMan::ShipMan()
     jumpSpeedX = jumpSpeedY = 0;
 
     // UN//GUARD_SAILORS
-};
+}
+;
 //------------------------------------------------------------------------------------
 void ShipMan::Free() const
 {
@@ -1016,6 +1018,7 @@ void ShipWalk::Reset(){
 };
 //------------------------------------------------------------------------------------
 Sailors::Sailors()
+    : rs(nullptr)
 {
     // GUARD_SAILORS(Sailors::Sailors():shipWalk())
 
@@ -1025,7 +1028,8 @@ Sailors::Sailors()
     IsOnDeck = 0;
 
     // UN//GUARD_SAILORS
-};
+}
+;
 //------------------------------------------------------------------------------------
 Sailors::~Sailors()
 {

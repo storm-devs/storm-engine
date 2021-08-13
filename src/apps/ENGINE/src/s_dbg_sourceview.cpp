@@ -1231,7 +1231,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
             wchar_t StrW[1024];
             StrW[0] = 0;
-            GetWindowText(hwndEdit, StrW, sizeof(StrW));
+            GetWindowText(hwndEdit, StrW, sizeof(StrW) / sizeof(StrW[0]));
             if (!StrW[0])
                 return false;
 
@@ -1291,7 +1291,7 @@ INT_PTR CALLBACK FindDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
         {
             wchar_t StrW[1024];
             StrW[0] = 0;
-            GetWindowText((HWND)lParam, StrW, sizeof(StrW));
+            GetWindowText((HWND)lParam, StrW, sizeof(StrW) /  sizeof(StrW[0]));
             std::string Str = utf8::ConvertWideToUtf8(StrW);
             CDebug.SourceView->sFindStr = Str.c_str();
         }

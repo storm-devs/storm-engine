@@ -233,6 +233,9 @@ bool SEA::Init()
 
         const auto dwNumThreads = dwLogicals * dwCores - 1;
 
+        // this is important! removing reserve would lead to a race while mem relocating with potential dereferencing of freed memory
+        aEventCalcBlock.reserve(dwNumThreads);
+
         for (size_t i = 0; i < dwNumThreads; i++)
         {
             // HANDLE & hEvent = aEventCalcBlock[aEventCalcBlock.Add()];

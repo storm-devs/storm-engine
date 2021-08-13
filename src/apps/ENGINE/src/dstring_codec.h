@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cstdint>
 #include <cstring>
-#include <malloc.h>
-#include <stdint.h>
+#include <new>
 
 #define DHASH_TABLE_SIZE 255
 #define DHASH_SINGLESYM DHASH_TABLE_SIZE
@@ -11,22 +11,14 @@ class DSTRING_CODEC
 {
     struct HTSUBELEMENT
     {
-        HTSUBELEMENT()
-        {
-            pDString = nullptr;
-            nSize = 0;
-        };
+        HTSUBELEMENT() = default;
         char *pDString;
         uint32_t nSize;
     };
 
     struct HTDELEMENT
     {
-        HTDELEMENT()
-        {
-            ppDat = nullptr;
-            nStringsNum = 0;
-        };
+        HTDELEMENT() = default;
         HTSUBELEMENT *ppDat;
         uint32_t nStringsNum;
     };
@@ -83,10 +75,6 @@ class DSTRING_CODEC
             // nStringCode = (DHASH_SINGLESYM<<16)| (pString[0] & 0xffff);
             nStringCode = ((((unsigned char)pString[0]) << 8) & 0xffffff00) | (DHASH_SINGLESYM);
             bNew = true;
-            if (nStringCode >= 0xffffff)
-            {
-                __debugbreak();
-            }
             return nStringCode;
         }
 
@@ -115,6 +103,11 @@ class DSTRING_CODEC
         HTable[nTableIndex].nStringsNum++;
         HTable[nTableIndex].ppDat =
             (HTSUBELEMENT *)realloc(HTable[nTableIndex].ppDat, HTable[nTableIndex].nStringsNum * sizeof(HTSUBELEMENT));
+
+        if (HTable[nTableIndex].ppDat == nullptr)
+        {
+            throw std::bad_alloc();
+        }
 
         HTable[nTableIndex].ppDat[n].pDString = new char[nDataSize];
         HTable[nTableIndex].ppDat[n].nSize = nDataSize;

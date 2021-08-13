@@ -15,6 +15,7 @@ extern long g_iBallOwnerIdx;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 SAILONE::SAILONE()
+    : rollType(0), m_vMastTrace{}, m_fMaxAngle(0), m_fMinAngle(0)
 {
     RenderService = nullptr;
 

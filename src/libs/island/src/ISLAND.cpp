@@ -775,7 +775,7 @@ bool ISLAND::Mount(const std::string_view &fname, const std::string_view &fdir, 
     if (pNode)
         seabed_id = pNode->Unlink2Model();
     else
-        core.Trace("Island: island %s has no sea bed, check me!", fname);
+        core.Trace("Island: island %s has no sea bed, check me!", std::string(fname).c_str());
 
     EntityManager::AddToLayer(ISLAND_TRACE, model_id, 10);
     EntityManager::AddToLayer(ISLAND_TRACE, seabed_id, 10);
@@ -793,7 +793,7 @@ bool ISLAND::Mount(const std::string_view &fname, const std::string_view &fdir, 
     core.Send_Message(lighter_id, "ss", "LightPath", (char*)sLightPath);*/
 
     const auto lighter_id = EntityManager::GetEntityId("lighter");
-    core.Send_Message(lighter_id, "ssi", "AddModel", fname, model_id);
+    core.Send_Message(lighter_id, "ssi", "AddModel", std::string(fname).c_str(), model_id);
     const std::string sSeaBedName = std::string(fname) + "_seabed";
     core.Send_Message(lighter_id, "ssi", "AddModel", (char *)sSeaBedName.c_str(), seabed_id);
 

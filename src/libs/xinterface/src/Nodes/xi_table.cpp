@@ -9,6 +9,7 @@
 #define NOTUSE_OFFSET -1000.f
 
 XI_TableLineDescribe::XI_TableLineDescribe(CXI_TABLE *pTable)
+    : m_dwSpecColor(0)
 {
     m_pTable = pTable;
     m_nRowIndex = -1;
@@ -86,7 +87,7 @@ void XI_TableLineDescribe::SetData(long nRowIndex, ATTRIBUTES *pLA, bool bHeader
     {
         sprintf_s(pcAttrName, "td%d", c + 1);
         auto *const pA = (pLA ? pLA->GetAttributeClass(pcAttrName) : nullptr);
-        if (!pA && c >= m_pTable->m_nColQuantity)
+        if (!pA || c >= m_pTable->m_nColQuantity)
             break;
         XI_TableCellDescribe *pTD = nullptr;
         if (c >= m_aCell.size())

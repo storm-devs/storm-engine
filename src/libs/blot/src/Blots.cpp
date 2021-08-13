@@ -30,6 +30,7 @@ CVECTOR Blots::dir, Blots::normal;
 // ============================================================================================
 
 Blots::Blots()
+    : model(0), vrt{}
 {
     for (long i = 0; i < BLOTS_MAX; i++)
         blot[i].isUsed = 0;

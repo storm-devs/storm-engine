@@ -14,7 +14,8 @@ CREATE_CLASS(SEAFOAM)
 #define START_FADE_SPEED 5.f
 
 //--------------------------------------------------------------------
-SEAFOAM::SEAFOAM() : sea(nullptr), shipsCount(0), carcassTexture(0), isStorm(false), soundService(nullptr)
+SEAFOAM::SEAFOAM()
+    : seaID(0), sea(nullptr), shipsCount(0), carcassTexture(0), isStorm(false), soundService(nullptr)
 {
     psIni = nullptr;
     renderer = nullptr;

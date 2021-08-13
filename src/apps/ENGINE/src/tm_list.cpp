@@ -231,7 +231,7 @@ void TM_LIST::ProcessMessageBase(uint64_t iMsg, uint64_t wParam, uint64_t lParam
     LPNMLISTVIEW lpnmlv;
     RECT item_rect;
     uint32_t NotifyCode;
-    char TextEditBuffer[MAX_STR_SIZE];
+    char TextEditBuffer[MAX_STR_SIZE]{};
     uint16_t vKey;
 
     RECT EditPos;

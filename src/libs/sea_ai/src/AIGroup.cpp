@@ -119,14 +119,17 @@ void AIGroup::Execute(float fDeltaTime)
         {
             const auto fNewAng = FRAND(PIm2);
             auto *const pG = FindGroup(sLocationNearOtherGroup.c_str());
-            auto vNewGroupPos =
-                pG->vInitGroupPos + ((100.0f + FRAND(200.0f)) * CVECTOR(sinf(fNewAng), 0.0f, cosf(fNewAng)));
             if (pG)
+            {
+                auto vNewGroupPos =
+                    pG->vInitGroupPos + ((100.0f + FRAND(200.0f)) * CVECTOR(sinf(fNewAng), 0.0f, cosf(fNewAng)));
+
                 for (uint32_t i = 0; i < aGroupShips.size(); i++)
                 {
                     aGroupShips[i]->SetPos(vNewGroupPos);
                     aGroupShips[i]->CheckStartPosition();
                 }
+            }
         }
 
         if (isMainGroup())
@@ -276,6 +279,7 @@ void AIGroup::SailMainGroup(CVECTOR vPos, float fAngle, ATTRIBUTES *pACharacter)
         pAIShip->CheckStartPosition();
 
         // clear foam
+        // TODO: fix this. i and c are not correct
         core.Send_Message(eidSea, "lic", MSG_SHIP_CREATE, pAIShip->GetShipEID(),
                           pAIShip->GetShipBasePointer()->State.vPos);
     }

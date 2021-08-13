@@ -12,6 +12,7 @@ long Blood::nClipTQ;
 CVECTOR Blood::normal;
 
 Blood::Blood()
+    : pRS(nullptr), pCol(nullptr), pvBloodT{}
 {
     texID = -1;
     nStartT = 0;

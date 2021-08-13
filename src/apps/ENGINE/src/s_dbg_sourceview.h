@@ -32,7 +32,7 @@ class SOURCE_VIEW
     std::vector<uint32_t> pLineOffset;
     uint32_t nLinesNum;
     uint32_t nSourceFileSize;
-    uint32_t nTopLine;
+    int32_t nTopLine;
     int32_t nClientLinesSize;
     uint32_t nActiveLine;
     uint32_t nControlLine;

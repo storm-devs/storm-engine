@@ -28,6 +28,7 @@ static const char *sabergunBeltName = "sabergun_belt";
 static const char *sabergunFire = "sabersabgun_fire";
 
 BLADE::BLADE_INFO::BLADE_INFO()
+    : eid(0), vrt{}
 {
     locatorName = beltName;
     defLifeTime = 0.15f;

@@ -73,6 +73,7 @@ void GetQuotedString(char *inBuf, char *outBuf, long bufSize)
 }
 
 TMPTELEPORT::TMPTELEPORT()
+    : m_leftPos(0), m_topPos(0), m_deltaPos(0), m_showStrQuantity(0), m_nShowType(0)
 {
     rs = nullptr;
     m_descrArray = nullptr;

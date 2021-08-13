@@ -19,6 +19,7 @@
 // ============================================================================================
 
 PtcData::PtcData()
+    : isSlide(false), slideDir(), isBearing(false), stepPos{}
 {
     srand(GetTickCount());
     data = nullptr;
@@ -48,7 +49,7 @@ PtcData::PtcData()
 
 PtcData::~PtcData()
 {
-    delete data;
+    delete[] data;
     delete ctriangle;
     delete dbgTriangles;
     delete dbgEdges;

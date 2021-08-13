@@ -16,6 +16,7 @@
 // ============================================================================================
 
 WdmMerchantShip::WdmMerchantShip()
+    : isEnableSetDir(false)
 {
     shipType = wdmest_merchant;
     gotoPos = 0.0f;

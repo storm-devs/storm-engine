@@ -8,6 +8,7 @@
 
 // Constructor / destructor
 BaseEmitter::BaseEmitter(ParticleSystem *pSystem)
+    : Type(), Looped(false), Unique_GUID(0)
 {
     pEmitter = nullptr;
     Visible = true;

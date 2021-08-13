@@ -50,12 +50,12 @@ class VAI_INNEROBJ : public AIAttributesHolder
     }
 
     // set / get type of AI object
-    virtual void SetObjType(AI_OBJTYPE _ObjType)
+    void SetObjType(AI_OBJTYPE _ObjType)
     {
         ObjType = _ObjType;
     };
 
-    virtual AI_OBJTYPE GetObjType() const
+    AI_OBJTYPE GetObjType() const
     {
         return ObjType;
     };
@@ -177,12 +177,14 @@ class AIShip : public VAI_INNEROBJ
 
     struct AI_POINT
     {
-        AI_POINT(){};
+        AI_POINT() = default;
 
         AI_POINT(VAI_INNEROBJ *_pObj)
+            : fAngle(0)
         {
             pObj = _pObj;
-        };
+        }
+        ;
 
         bool operator==(const AI_POINT &pOtherPoint) const
         {

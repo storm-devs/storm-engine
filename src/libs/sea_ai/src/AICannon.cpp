@@ -5,6 +5,7 @@
 uint64_t dwTmpRDTSC;
 
 AICannon::AICannon()
+    : pAHolder(nullptr), eidParent(0), vPos(), vDir(), fSpeedV0(0), vEnemyPos()
 {
     bLoad = false;
     bEmpty = true;

@@ -124,12 +124,9 @@ SEPS_PS::~SEPS_PS()
 {
     long n;
     RenderService->Release(VBuffer);
-    if (RenderService)
-    {
-        for (n = 0; n < TexturesNum; n++)
-            RenderService->TextureRelease(TextureID[n]);
-        // core.FreeService("dx9render");
-    }
+    for (n = 0; n < TexturesNum; n++)
+        RenderService->TextureRelease(TextureID[n]);
+    // core.FreeService("dx9render");
     delete Particle;
     Particle = nullptr;
     delete pFlowTrack;

@@ -32,6 +32,7 @@ void SetVertexRectanglePos(XI_ONLYONETEX_VERTEX *pv, FXYRECT &posRect)
 }
 
 CXI_SCROLLER::CXI_SCROLLER()
+    : m_rollerHeight(0), m_fPos(0), m_fOffTexHeight(0), m_fOffHeight(0)
 {
     m_rs = nullptr;
     m_nNodeType = NODETYPE_SCROLLER;
