@@ -4,9 +4,11 @@
 
 ## Export .gm Blender
 
+Root locator must be placed in zero point (0, 0, 0)
+
 Apply modifiers to all objects / locators
 
-![choose.img](readme-img/modifiers.png)
+![modifiers.img](readme-img/modifiers.png)
 
 Select root locator
 
@@ -24,6 +26,16 @@ Mesh can be split into multiple meshes if it has more vertices than supported.
 
 The correct structure example (locators, meshes, textures, UV, shading) is presented on imported models
 
+### Locators
+
+If locator is parented to bone it must be parented this way
+
+![locator-bone.img](readme-img/locator-bone.png)
+
+If locator is parented to other locator it must be parented this way
+
+![locator.img](readme-img/locator.png)
+
 ### Textures
 
 Textures must be in .tga format
@@ -39,11 +51,11 @@ On models without animation might be one or two textures (main texture and textu
 1) One texture
 
 
-![choose.img](readme-img/single-texture.png)
+![single-texture.img](readme-img/single-texture.png)
 
 2) Two textures
 
-![choose.img](readme-img/two-textures.png)
+![two-textures.img](readme-img/two-textures.png)
 
 ## Issues
 

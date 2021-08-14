@@ -2,9 +2,11 @@
 
 ## Экспорт .gm из Blender
 
+Root локатор должен быть помещен в нулевую точку (0, 0, 0)
+
 Применить модификаторы ко всем локаторам / объектам
 
-![choose.img](readme-img/modifiers.png)
+![modifiers.img](readme-img/modifiers.png)
 
 Выбрать корневой локатор
 
@@ -22,6 +24,16 @@ File -> Export... -> GM Export(.gm)
 
 Корректную структуру (локаторы, меши, текстуры, uv, шейдинг) можно посмотреть на импортированных из игры моделях
 
+### Локаторы
+
+Если локатор присоединяется к кости (устанавливается родитель), то он должен быть присоединен следующим образом
+
+![locator-bone.img](readme-img/locator-bone.png)
+
+Если локатор присоединяется к другому локатору (устанавливается родитель), то он должен быть присоединен следующим образом
+
+![locator.img](readme-img/locator.png)
+
 ### Текстуры
 
 Текстуры должны быть в формате .tga
@@ -37,11 +49,11 @@ File -> Export... -> GM Export(.gm)
 1) Одна текстура
    
 
-![choose.img](readme-img/single-texture.png)
+![single-texture.img](readme-img/single-texture.png)
 
 2) две текстуры
 
-![choose.img](readme-img/two-textures.png)
+![two-textures.img](readme-img/two-textures.png)
 
 ## Issues
 
