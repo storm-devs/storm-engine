@@ -283,9 +283,12 @@ def parse_gm(file_path="", report_func=None):
         header_bboxCenter = read_vector(file)
         header_radius = struct.unpack("<f", file.read(4))[0]
 
-        globname = ''
-        for i in range(header_name_size):
-            globname += (struct.unpack("<s", file.read(1))[0]).decode("utf-8")
+        globname = file.read(header_name_size)
+        
+        try:
+            globname = globname.decode("utf-8")
+        except UnicodeDecodeError as error:
+            globname = globname.decode("cp1251")
 
         names_offsets = []
         for i in range(header_names_quantity):

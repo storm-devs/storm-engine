@@ -34,7 +34,7 @@ def get_bounding_box_coords(obj):
     y2 = 0
     z1 = 0
     z2 = 0
-    
+
     for [x,y,z] in bound_box:
         if y < x1:
             x1 = y
@@ -48,7 +48,7 @@ def get_bounding_box_coords(obj):
             z1 = x
         if x > z2:
             z2 = x
-    
+
     return {
         "x1": x1,
         "x2": x2,
@@ -81,7 +81,7 @@ def get_box_center(bounding_box_coords):
 def get_box_radius(box_center, vertices):
     center_vector = mathutils.Vector(box_center)
     box_radius = 0;
-    
+
     for pos in vertices:
         pos_vector = mathutils.Vector(pos)
         [x, y, z] = center_vector - pos_vector
@@ -342,7 +342,7 @@ def export_gm(context, file_path=""):
     bone_ids = []
 
     for vertex in bm.verts:
-        pos = mathutils.Vector(vertex.co)
+        pos = (obj.matrix_world @ mathutils.Vector(vertex.co)) - mathutils.Vector(obj.parent.matrix_world.translation)
         pos.rotate(correction_export_matrix)
         if x_is_mirrored:
             pos *= mathutils.Vector([-1, 1, 1])
@@ -562,7 +562,13 @@ def export_gm(context, file_path=""):
             label_flags = 0
             file.write(struct.pack('<l', label_flags))
 
-            label_m = correction_export_matrix.to_4x4() @ locator.matrix_basis
+            label_m = mathutils.Matrix(locator.matrix_world)
+            label_m.translation -= mathutils.Vector(locator.parent.matrix_world.translation)
+
+            label_m = correction_export_matrix.to_4x4() @ label_m
+            
+            if x_is_mirrored:
+                label_m.translation *= mathutils.Vector([-1,1,1])
 
             for i in range(4):
                 for j in range(4):
@@ -608,7 +614,7 @@ def export_gm(context, file_path=""):
             # TODO
             object_radius = get_box_radius(object_center, vertices)
             file.write(struct.pack('<f', object_radius))
-            
+
 
             # TODO
             object_vertex_buff = 0
