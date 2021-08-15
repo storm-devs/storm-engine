@@ -334,11 +334,14 @@ void Character::RTuner::Set(MODEL *model, VDX9RENDER *rs)
             n->SetTechnique("AnimationBlend");
         }
     }
-    if (auto *const location = character->GetLocation())
+    if (character->IsPlayer())
     {
-        auto *ls = location->GetLights();
-        if (ls)
-            ls->SetCharacterLights(&character->curPos);
+        if (auto *const location = character->GetLocation())
+        {
+            auto *ls = location->GetLights();
+            if (ls)
+                ls->SetCharacterLights(&character->curPos);
+        }
     }
 }
 
