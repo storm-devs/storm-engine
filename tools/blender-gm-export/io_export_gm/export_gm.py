@@ -342,7 +342,7 @@ def export_gm(context, file_path=""):
     bone_ids = []
 
     for vertex in bm.verts:
-        pos = mathutils.Vector(vertex.co)
+        pos = (obj.matrix_world @ mathutils.Vector(vertex.co)) - mathutils.Vector(obj.parent.matrix_world.translation)
         pos.rotate(correction_export_matrix)
         if x_is_mirrored:
             pos *= mathutils.Vector([-1, 1, 1])
@@ -562,10 +562,14 @@ def export_gm(context, file_path=""):
             label_flags = 0
             file.write(struct.pack('<l', label_flags))
 
-            label_m = correction_export_matrix.to_4x4() @ locator.matrix_basis
+            label_m = mathutils.Matrix(locator.matrix_basis)
+            label_m.translation -= mathutils.Vector(locator.parent.matrix_basis.translation)
+            
+            label_m = correction_export_matrix.to_4x4() @ label_m
+            
 
             if x_is_mirrored:
-                label_m.translation = label_m.translation * mathutils.Vector([-1,1,1])
+                label_m.translation *= mathutils.Vector([-1,1,1])
 
             for i in range(4):
                 for j in range(4):
