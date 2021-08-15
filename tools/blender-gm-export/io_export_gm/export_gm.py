@@ -562,9 +562,9 @@ def export_gm(context, file_path=""):
             label_flags = 0
             file.write(struct.pack('<l', label_flags))
 
-            label_m = mathutils.Matrix(locator.matrix_basis)
-            label_m.translation -= mathutils.Vector(locator.parent.matrix_basis.translation)
-            
+            label_m = mathutils.Matrix(locator.matrix_world)
+            label_m.translation -= mathutils.Vector(locator.parent.matrix_world.translation)
+
             label_m = correction_export_matrix.to_4x4() @ label_m
             
 
