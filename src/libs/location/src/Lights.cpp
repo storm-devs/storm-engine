@@ -10,8 +10,6 @@
 
 #include "Lights.h"
 
-#define LIGHTS_DEBUG
-
 // ============================================================================================
 // Construction, destruction
 // ============================================================================================
@@ -35,7 +33,6 @@ Lights::Lights()
 
 Lights::~Lights()
 {
-    aMovingLight.clear();
     for (long i = 0; i < numTypes; i++)
     {
         if (types[i].corona >= 0 && rs)
@@ -78,14 +75,7 @@ bool Lights::Init()
         }
         if (i == numTypes)
         {
-            // Add a new source
-            if (numTypes >= maxTypes)
-            {
-                maxTypes += 16;
-                types.resize(maxTypes);
-            }
-            // Zero down
-            memset(&types[numTypes], 0, sizeof(types[numTypes]));
+            types.push_back({});
             // Save the name
             const auto len = strlen(lName) + 1;
             types[numTypes].name = new char[len];
@@ -150,20 +140,18 @@ bool Lights::Init()
     EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
     EntityManager::AddToLayer(EXECUTE, GetId(), 10);
     EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(REALIZE, GetId(), 1001000);
+    EntityManager::AddToLayer(REALIZE, GetId(), -1000);
     return true;
 }
 
 // Execution
 void Lights::Execute(uint32_t delta_time)
 {
-#ifdef LIGHTS_DEBUG
-    if (core.Controls->GetDebugAsyncKeyState(VK_F11) < 0)
+    if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && core.Controls->GetDebugAsyncKeyState(VK_F11) < 0)
     {
         for (long i = 0; i < numTypes; i++)
             UpdateLightTypes(i);
     }
-#endif
     for (long i = 0; i < numLights; i++)
     {
         // See what is there
@@ -202,12 +190,45 @@ void Lights::Execute(uint32_t delta_time)
     }
 }
 
-// Drawing crowns
 void Lights::Realize(uint32_t delta_time)
 {
     // Camera position
     CVECTOR pos, ang;
     rs->GetCamera(pos, ang, ang.x);
+
+    ///////////////////
+    // Dynamic lighting augmentation
+    auto lightsAtPos = GetLightsAt(pos);
+
+    // 8 lights in total in D3D. 1 reserved for sun
+    uint32_t d3d_light_index = max_d3d_lights - max_d3d_custom_lights;
+    for (auto i = std::cbegin(lightsAtPos); i != std::cend(lightsAtPos); ++i)
+    {
+        if (d3d_light_index < max_d3d_lights)
+        {
+            // increase intensity
+            using intensity_type = decltype(lights[*i].intensity);
+            constexpr auto max_intensity = std::numeric_limits<intensity_type>::max();
+            if (auto attenuation = static_cast<intensity_type>(delta_time * 0.001f * max_intensity);
+                attenuation + lights[*i].intensity > max_intensity)
+            {
+                lights[*i].intensity = std::numeric_limits<decltype(lights[*i].intensity)>::max();
+            }
+            else
+            {
+                lights[*i].intensity += attenuation;
+            }
+
+            d3d_light_index++;
+        }
+        else
+        {
+            lights[*i].intensity = 0;
+        }
+    }
+
+    ////////////////
+    // Draw coronas
     CMatrix camMtx;
     rs->GetTransform(D3DTS_VIEW, camMtx);
     rs->SetTransform(D3DTS_VIEW, CMatrix());
@@ -232,6 +253,7 @@ void Lights::Realize(uint32_t delta_time)
         auto isVisible = d < l.coronaRange2;
         if (!isVisible)
             continue;
+
         // Visibility
         if (collide)
         {
@@ -339,6 +361,12 @@ void Lights::Realize(uint32_t delta_time)
         n = 0;
     }
     rs->SetTransform(D3DTS_VIEW, camMtx);
+
+    // Debug
+    if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && core.Controls->GetDebugAsyncKeyState(VK_SPACE) < 0)
+    {
+        PrintDebugInfo();
+    }
 }
 
 // Find source index
@@ -373,6 +401,7 @@ void Lights::AddLight(long index, const CVECTOR &pos)
     lights[numLights].itensDlt = 0.0f;
     lights[numLights].timeSlow = 0.0f;
     lights[numLights].type = index;
+    lights[numLights].intensity = 0;
 
     // Send a message to the lighter
     if (const auto eid = EntityManager::GetEntityId("Lighter"))
@@ -421,13 +450,7 @@ long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
     if (nType < 0)
         return -1;
 
-    MovingLight movingLight;
-    movingLight.id = idx;
-    movingLight.light = numLights;
-    aMovingLight.push_back(movingLight);
-    // long i = aMovingLight.Add();
-    // aMovingLight[i].id = idx;
-    // aMovingLight[i].light = numLights;
+    aMovingLight.emplace_back(idx, numLights);
     AddLight(nType, pos);
     return idx;
 }
@@ -436,6 +459,7 @@ long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
 void Lights::UpdateMovingLight(long id, const CVECTOR &pos)
 {
     for (long n = 0; n < aMovingLight.size(); n++)
+    {
         if (aMovingLight[n].id == id)
         {
             const auto i = aMovingLight[n].light;
@@ -443,6 +467,7 @@ void Lights::UpdateMovingLight(long id, const CVECTOR &pos)
                 lights[i].pos = *(D3DVECTOR *)&pos;
             return;
         }
+    }
 }
 
 // Remove portable source
@@ -460,89 +485,43 @@ void Lights::DelMovingLight(long id)
 }
 
 // Set light sources for the character
-void Lights::SetCharacterLights(const CVECTOR *const pos)
+void Lights::SetLightsAt(const CVECTOR &pos)
 {
-    // Filling the source array
-    long i;
-    long n;
-    if (pos)
+    // get lights at specified pos
+    auto const lightsAtPos = GetLightsAt(pos);
+
+    // unset all lights
+    UnsetLights();
+
+    // enable only involved lights
+    uint32_t d3d_light_index = max_d3d_lights - max_d3d_custom_lights;
+    for (auto i = std::cbegin(lightsAtPos); i != std::cend(lightsAtPos) && d3d_light_index < max_d3d_lights; ++i)
     {
-        std::vector<long> aLightsSort;
-        for (i = 0; i < numLights; i++)
-            aLightsSort.push_back(i);
-        for (i = 0; i < aMovingLight.size(); i++)
-        {
-            const auto it = std::find(aLightsSort.begin(), aLightsSort.end(), aMovingLight[i].light);
-            if (it != aLightsSort.end())
-                aLightsSort.erase(it);
-            aLightsSort.insert(aLightsSort.begin(), aMovingLight[i].light);
-        }
-
-        // Sort by distance
-        aLightsDstSort.clear();
-        for (n = 0; n < aLightsSort.size(); n++)
-        {
-            i = aLightsSort[n];
-
-            // Checking the distance
-            const auto dx = (pos->x - lights[i].pos.x);
-            const auto dy = (pos->y - lights[i].pos.y);
-            const auto dz = (pos->z - lights[i].pos.z);
-            const auto dst = dx * dx + dy * dy + dz * dz + 2.0f;
-            const float rng = types[lights[i].type].dxLight.Range;
-
-            if (dst <= rng * rng)
-            {
-                int j;
-                for (j = 0; j < aLightsDstSort.size(); j++)
-                {
-                    if (dst < aLightsDstSort[j].dst)
-                        break;
-                }
-
-                lt_elem le = {i, dst};
-                if (j == aLightsDstSort.size())
-                    aLightsDstSort.push_back(le);
-                else
-                    aLightsDstSort.insert(aLightsDstSort.begin() + j, le);
-
-                if (aLightsDstSort.size() == 8)
-                    aLightsDstSort.erase(aLightsDstSort.begin() + 7);
-            }
-        }
-    }
-
-    for (n = 0; n < aLightsDstSort.size(); n++)
-    {
-        i = aLightsDstSort[n].idx;
-
         // Setting the source
-        LightType &l = types[lights[i].type];
-        l.dxLight.Diffuse = lights[i].color;
-        l.dxLight.Position = lights[i].pos;
-        rs->SetLight(n + 1, &l.dxLight);
-        rs->LightEnable(n + 1, true);
-        lt[n + 1].light = i;
-        lt[n + 1].set = true;
-    }
+        LightType &l = types[lights[*i].type];
+        l.dxLight.Diffuse.r = lights[*i].color.r * static_cast<float>(lights[*i].intensity) / 255.0f;
+        l.dxLight.Diffuse.g = lights[*i].color.g * static_cast<float>(lights[*i].intensity) / 255.0f;
+        l.dxLight.Diffuse.b = lights[*i].color.b * static_cast<float>(lights[*i].intensity) / 255.0f;
+        l.dxLight.Position = lights[*i].pos;
 
-    // Turn off the rest
-    while (++n < 8)
-    {
-        lt[n].light = -1;
-        lt[n].set = false;
+        rs->SetLight(d3d_light_index, &l.dxLight);
+        rs->LightEnable(d3d_light_index, true);
+        lt[d3d_light_index].light = *i;
+        lt[d3d_light_index].set = true;
+
+        d3d_light_index++;
     }
 }
 
-// Disable light sources set for the character
-void Lights::DelCharacterLights()
+void Lights::UnsetLights()
 {
-    for (long i = 1; i < 8; i++)
+    for (auto i = max_d3d_lights - max_d3d_custom_lights; i < max_d3d_lights; i++)
     {
-        if (!lt[i].set)
-            continue;
-        lt[i].set = false;
-        rs->LightEnable(i, false);
+        if (lt[i].set)
+        {
+            lt[i].set = false;
+            rs->LightEnable(i, false);
+        }
     }
 }
 
@@ -606,5 +585,72 @@ void Lights::UpdateLightTypes(long i)
         if (lights[c].type != i)
             continue;
         lights[c].color = types[i].color;
+    }
+}
+
+void Lights::PrintDebugInfo()
+{
+    for (uint32_t i = 0; i < numLights; ++i)
+    {
+        auto lightPos = *(CVECTOR*)&lights[i].pos;
+        auto scale = 1.0f;
+
+        static CMatrix mtx, view, prj;
+        static D3DVIEWPORT9 vp;
+        MTX_PRJ_VECTOR vrt;
+        rs->GetTransform(D3DTS_VIEW, view);
+        rs->GetTransform(D3DTS_PROJECTION, prj);
+        mtx.EqMultiply(view, prj);
+        view.Transposition();
+        rs->GetViewport(&vp);
+        mtx.Projection(&lightPos, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
+                       sizeof(MTX_PRJ_VECTOR));
+        vrt.y -= rs->CharHeight(FONT_DEFAULT) / 2;
+
+        CVECTOR pos, ang;
+        rs->GetCamera(pos, ang, ang.x);
+        // visibility
+        const auto camPDist = -(pos.x * view.Vx().z + pos.y * view.Vy().z + pos.z * view.Vz().z);
+
+        auto &ls = lights[i];
+        auto &l = types[ls.type];
+        if (l.corona < 0)
+            continue;
+        // in the foreground
+        auto dist = ls.pos.x * view.Vx().z + ls.pos.y * view.Vy().z + ls.pos.z * view.Vz().z + camPDist;
+        if (dist < -2.0f * l.coronaSize)
+            continue;
+        // Distance
+        const auto dx = ls.pos.x - pos.x;
+        const auto dy = ls.pos.y - pos.y;
+        const auto dz = ls.pos.z - pos.z;
+        auto d = dx * dx + dy * dy + dz * dz;
+        auto isVisible = d < l.coronaRange2;
+        if (!isVisible)
+            continue;
+
+        rs->SetTransform(D3DTS_VIEW, CMatrix());
+        rs->SetTransform(D3DTS_WORLD, CMatrix());
+
+        rs->ExtPrint(FONT_DEFAULT, D3DCOLOR_ARGB(255, 255, 255, 255), 0x00000000, PR_ALIGN_CENTER, 
+            false, scale, 0, 0,
+                     static_cast<long>(vrt.x), static_cast<long>(vrt.y), fmt::format("{}", d).c_str());
+
+        // print idx
+        auto color = D3DCOLOR_ARGB(255, 233, 30, 30);
+        vrt.y -= 1.5 * rs->CharHeight(FONT_DEFAULT) / 2;
+        for (const auto [_, light] : lt)
+        {
+            if (i == light)
+            {
+                color = D3DCOLOR_ARGB(255, 30, 233, 30);
+            }
+        }
+        rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<long>(vrt.x),
+                     static_cast<long>(vrt.y),
+                     fmt::format("{}", i).c_str());
+
+        
+        rs->SetTransform(D3DTS_VIEW, view);
     }
 }

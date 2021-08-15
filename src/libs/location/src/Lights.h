@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include "Matrix.h"
+#include <vector>
+#include <set>
+
 #include "collide.h"
 #include "dx9render.h"
-#include "vmodule_api.h"
-#include <vector>
 
 class Lights : public Entity
 {
@@ -48,8 +48,10 @@ class Lights : public Entity
         float itensSlow;     // Necessary interpolated intensity
         float itensDlt;      // Interpolated intensity difference
         float i;             // Resulting intensity
-        long type;           // Source type index
         float corona;        // Crown transparency
+
+        long type; // Source type index
+        uint8_t intensity;
     };
 
     // Controllable (moving) source
@@ -120,11 +122,9 @@ class Lights : public Entity
     // Remove portable source
     void DelMovingLight(long id);
 
-    // Set light sources for the character
-    void SetCharacterLights(const CVECTOR *pos = nullptr);
-
-    // Disable light sources set for the character
-    void DelCharacterLights();
+    // Set lights at pos
+    void SetLightsAt(const CVECTOR &pos);
+    void UnsetLights();
 
     // Update source types
     void UpdateLightTypes(long i);
@@ -133,6 +133,31 @@ class Lights : public Entity
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
+
+    auto GetLightsAt(const CVECTOR &pos)
+    {
+        const auto dist = [&pos](const auto &light) {
+            const auto dx = (pos.x - light.pos.x);
+            const auto dy = (pos.y - light.pos.y);
+            const auto dz = (pos.z - light.pos.z);
+            return dx * dx + dy * dy + dz * dz + 2.0f;
+        };
+        const auto cmp = [&](const auto lhs, const auto rhs) { return dist(lights[lhs]) < dist(lights[rhs]); };
+
+        std::set<uint32_t, decltype(cmp)> sorted_lights(cmp);
+        for (uint32_t i = 0; i < numLights; i++)
+        {
+            sorted_lights.insert(i);
+        }
+
+        return sorted_lights;
+    }
+
+    void PrintDebugInfo();
+
+    constexpr static auto max_d3d_lights = 8U;
+    constexpr static auto max_d3d_custom_lights = max_d3d_lights - 1;
+
     VDX9RENDER *rs;
     COLLIDE *collide;
 
@@ -149,7 +174,7 @@ class Lights : public Entity
     long maxTypes;
     // Existing lighting sources
     std::vector<Light> lights;
-    long numLights;
+    uint32_t numLights;
     long maxLights;
     long lighter_code;
 
@@ -161,7 +186,4 @@ class Lights : public Entity
     long numLampModels;
 
     Vertex buf[6 * 1];
-
-    // Sorted array of sources for the last calculation
-    std::vector<lt_elem> aLightsDstSort;
 };
