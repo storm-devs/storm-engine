@@ -4,13 +4,11 @@
 
 ## Export .gm Blender
 
+If model has armature, it must be in pose position
+
+![pose.img](readme-img/pose.png)
+
 All meshes must be triangulated
-
-Root locator must be placed in zero point (0, 0, 0)
-
-Apply rotation and scale modifiers to Root locator and all objects
-
-![modifiers.img](readme-img/modifiers.png)
 
 Select root locator
 
@@ -29,6 +27,10 @@ Mesh can be split into multiple meshes if it has more vertices than supported.
 The correct structure example (locators, meshes, textures, UV, shading) is presented on imported models
 
 ### Locators and meshes
+
+All locators with children must have zero rotation
+
+![rotation.img](readme-img/rotation.png)
 
 If locator is parented to bone it must be parented this way
 

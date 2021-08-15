@@ -567,7 +567,6 @@ def export_gm(context, file_path=""):
 
             label_m = correction_export_matrix.to_4x4() @ label_m
             
-
             if x_is_mirrored:
                 label_m.translation *= mathutils.Vector([-1,1,1])
 
