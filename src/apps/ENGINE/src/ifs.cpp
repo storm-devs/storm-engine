@@ -605,7 +605,7 @@ bool IFS::FlushFile()
                 }
                 buff[0] = INI_LINEFEED[0];
                 buff[1] = INI_LINEFEED[1];
-                if (fs->_WriteFile(fileS, buff, 2))
+                if (!fs->_WriteFile(fileS, buff, 2))
                 {
                     throw std::runtime_error("Failed to write to file");
                 }
