@@ -650,11 +650,12 @@ void CXI_FORMATEDTEXT::ReleaseStringes()
     m_nAllTextStrings = 0;
 }
 
-bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, char *&pInStr, char *buf, int bufSize) const
+bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, const char *&pInStr, char *buf, int bufSize) const
 {
     if (pInStr == nullptr || buf == nullptr)
         return false;
-    char *pStart = pInStr;
+
+    const char *pStart = pInStr;
     int bYesEOL = 0;
     while (*pInStr != 0)
     {
@@ -750,12 +751,12 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, char *&pInStr, char *buf, int bu
     return true;
 }
 
-void CXI_FORMATEDTEXT::GetOneLine(int fontNum, char *pStr, char *buf, int bufSize) const
+void CXI_FORMATEDTEXT::GetOneLine(int fontNum, const char *pStr, char *buf, int bufSize) const
 {
     if (pStr == nullptr || buf == nullptr)
         return;
 
-    char *pStart = pStr;
+    const char *pStart = pStr;
     int bYesEOL = 0;
     while (*pStr != 0)
     {
@@ -881,7 +882,7 @@ long CXI_FORMATEDTEXT::AddFormatedText(const char *str)
             ;
 
     char newStr[512];
-    auto pstr = (char *)str;
+    auto pstr = str;
     long textQ = 0;
     bool tagState = false;
     uint32_t tagColor = m_dwColor;
@@ -1153,7 +1154,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
         VDATA *pvdat = message.ScriptVariablePointer();
         if (pvdat != nullptr)
         {
-            char *tmpStr = pvdat->GetString();
+            const char *tmpStr = pvdat->GetString();
             char buf[512];
             int n;
             for (n = 0; GetLineNext(m_idFont, tmpStr, buf, sizeof(buf)); n++)
@@ -1548,7 +1549,7 @@ void CXI_FORMATEDTEXT::InsertStringBefore(STRING_DESCRIBER *pNextDescr, const ch
         return;
 
     char newStr[512];
-    auto pstr = (char *)pSrcStr;
+    auto pstr = pSrcStr;
     long textQ = 0;
 
     // decompose the resulting string into lines that fit into the output area

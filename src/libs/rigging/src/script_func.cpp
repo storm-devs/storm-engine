@@ -163,7 +163,7 @@ uint32_t _RandomHole2Sail(VS_STACK *pS)
     const int _groupNum = pData->GetLong();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    char *_reyName = pData->GetString();
+    const char *_reyName = pData->GetString();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
     const int _chrIdx = pData->GetLong();
@@ -219,10 +219,10 @@ uint32_t _DeleteOneSailHole(VS_STACK *pS)
     const uint32_t _holeData = pData->GetLong();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    char *_reyName = pData->GetString();
+    const char *_reyName = pData->GetString();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    char *_groupName = pData->GetString();
+    const char *_groupName = pData->GetString();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
     const int _chrIdx = pData->GetLong();

@@ -23,9 +23,18 @@ struct is_iless
         return std::toupper(first) < std::toupper(second);
     }
 };
+
+struct is_iless_eq
+{
+    template <typename T1, typename T2 = T1> bool operator()(const T1 &first, const T2 &second) const
+    {
+        return std::toupper(first) <= std::toupper(second);
+    }
+};
+
 } // namespace detail
 
-template <typename Range1T, typename Range2T = Range1T> inline bool iEquals(const Range1T &first, const Range2T &second)
+template <typename Range1T, typename Range2T = Range1T> bool iEquals(const Range1T &first, const Range2T &second)
 {
     detail::is_iequal comp;
 
@@ -38,11 +47,28 @@ template <typename Range1T, typename Range2T = Range1T> inline bool iEquals(cons
     return std::equal(first_begin, first_end, second_begin, second_end, comp);
 }
 
-template <typename Range1T, typename Range2T = Range1T> inline bool iLess(const Range1T &first, const Range2T &second)
+template <typename Range1T, typename Range2T = Range1T> bool iLess(const Range1T &first, const Range2T &second)
 {
     return std::lexicographical_compare(std::begin(first), std::end(first), std::begin(second), std::end(second),
                                         detail::is_iless{});
 }
+
+template <typename Range1T, typename Range2T = Range1T> bool iLessOrEqual(const Range1T &first, const Range2T &second)
+{
+    return std::lexicographical_compare(std::begin(first), std::end(first), std::begin(second), std::end(second),
+                                        detail::is_iless_eq{});
+}
+
+template <typename Range1T, typename Range2T = Range1T> bool iGreater(const Range1T &first, const Range2T &second)
+{
+    return !iLessOrEqual(first, second);
+}
+
+template <typename Range1T, typename Range2T = Range1T> bool iGreaterOrEqual(const Range1T &first, const Range2T &second)
+{
+    return !iLess(first, second);
+}
+
 
 // The wildcmp function was taken from http://www.codeproject.com/KB/string/wildcmp.aspx; the
 // wildicmp (case insensitive wildcard comparison) was based on it.
