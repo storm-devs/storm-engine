@@ -1364,6 +1364,13 @@ bool DX9RENDER::TextureLoad(long t)
     auto fileS = fio->_CreateFile(fn, std::ios::binary | std::ios::in);
     if (!fileS.is_open())
     {
+        // try to load without '.tx' (e.g. raw Targa)
+        std::filesystem::path path_to_tex{fn};
+        path_to_tex.replace_extension();
+        if (exists(path_to_tex))
+        {
+            return TextureLoadUsingD3DX(path_to_tex.string().c_str(), t);
+        }
         if (bTrace)
         {
             core.Trace("Can't load texture %s", fn);
@@ -1666,6 +1673,30 @@ bool DX9RENDER::TextureLoad(long t)
     Textures[t].loaded = true;
     // Close the file
     fio->_CloseFile(fileS);
+    return true;
+}
+
+bool DX9RENDER::TextureLoadUsingD3DX(const char* path, long t)
+{
+    // TODO: reimplement the whole thing in a tidy way
+    IDirect3DTexture9 *pTex;
+    if(CHECKD3DERR(D3DXCreateTextureFromFileA(d3d9, path, &pTex)))
+    {
+        delete Textures[t].name;
+        Textures[t].name = nullptr;
+        return false;
+    }
+
+    D3DSURFACE_DESC desc;
+    pTex->GetLevelDesc(0, &desc);
+
+    Textures[t].hash = 0;
+    Textures[t].ref = 1;
+    Textures[t].d3dtex = pTex;
+    Textures[t].isCubeMap = false;
+    Textures[t].dwSize = desc.Height * desc.Width * 4;
+    Textures[t].loaded = true;
+
     return true;
 }
 

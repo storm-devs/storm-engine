@@ -250,6 +250,7 @@ class DX9RENDER : public VDX9RENDER
     std::stack<RenderTarget> stRenderTarget;
 
     bool TextureLoad(long texid);
+    bool TextureLoadUsingD3DX(const char* path, long texid);
 
     bool MakeCapture();
     void SaveCaptureBuffers();
