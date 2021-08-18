@@ -52,9 +52,9 @@ class DATA : public VDATA
   public:
     ATTRIBUTES *AttributesClass;
     // ATTRIBUTES Attributes;
-    DATA *GetReference();
-    void SetReference(DATA *pRef);
-    void SetAReference(ATTRIBUTES *pARef);
+    DATA *GetReference() override;
+    void SetReference(DATA *pRef) override;
+    void SetAReference(ATTRIBUTES *pARef) override;
     // void  SetReferenceFlag() {bRef = true;};
     void SetSegmentID(uint32_t id)
     {
@@ -72,81 +72,82 @@ class DATA : public VDATA
     DATA &operator=(const DATA &);
     DATA(S_TOKEN_TYPE _element_type);
     DATA(uint32_t num_of_elements, S_TOKEN_TYPE _element_type);
-    ~DATA();
-    void Set(long value);
-    void SetPtr(uintptr_t value);
-    bool GetPtr(uintptr_t &value);
+    ~DATA() override;
+    void Set(long value) override;
+    void SetPtr(uintptr_t value) override;
+    bool GetPtr(uintptr_t &value) override;
 
-    void Set(float value);
-    void Set(const std::string& value);
-    void Set(const char *attribute_name, const char *attribute_value);
-    bool Get(long &value);
-    bool Get(float &value);
-    bool Get(const char *&value);
-    bool Get(const char *attribute_name, const char *&value);
+    void Set(float value) override;
+    void Set(std::string value) override;
+    void Set(const char* value) override;
+    void Set(const char *attribute_name, const char *attribute_value) override;
+    bool Get(long &value) override;
+    bool Get(float &value) override;
+    bool Get(const char *&value) override;
+    bool Get(const char *attribute_name, const char *&value) override;
 
-    bool Set(long value, uint32_t index);
-    bool Set(float value, uint32_t index);
-    bool Set(const char *value, uint32_t index);
+    bool Set(long value, uint32_t index) override;
+    bool Set(float value, uint32_t index) override;
+    bool Set(const char *value, uint32_t index) override;
 
-    bool Get(long &value, uint32_t index);
-    bool Get(float &value, uint32_t index);
-    bool Get(const char *&value, uint32_t index);
+    bool Get(long &value, uint32_t index) override;
+    bool Get(float &value, uint32_t index) override;
+    bool Get(const char *&value, uint32_t index) override;
 
-    bool Set(const char *attribute_name, const char *attribute_value, uint32_t index);
-    bool Get(const char *attribute_name, const char *&value, uint32_t index);
+    bool Set(const char *attribute_name, const char *attribute_value, uint32_t index) override;
+    bool Get(const char *attribute_name, const char *&value, uint32_t index) override;
 
-    void Set(entid_t eid);
+    void Set(entid_t eid) override;
     void Get(entid_t &eid);
 
-    bool Set(entid_t eid, uint32_t index);
+    bool Set(entid_t eid, uint32_t index) override;
     bool Get(entid_t &eid, uint32_t index);
 
-    ATTRIBUTES *GetAClass();
-    ATTRIBUTES *GetAClass(uint32_t index);
+    ATTRIBUTES *GetAClass() override;
+    ATTRIBUTES *GetAClass(uint32_t index) override;
 
     void SetType(S_TOKEN_TYPE type, uint32_t array_size = 1);
     bool Convert(S_TOKEN_TYPE type);
     void Error(const char *);
-    DATA *GetArrayElement(uint32_t index);
+    DATA *GetArrayElement(uint32_t index) override;
 
     S_TOKEN_TYPE GetType()
     {
         return Data_type;
     };
-    uint32_t GetElementsNum();
-    void SetElementsNum(uint32_t asize);
+    uint32_t GetElementsNum() override;
+    void SetElementsNum(uint32_t asize) override;
 
-    bool IsArray()
+    bool IsArray() override
     {
         return bArray;
     };
-    bool IsReference();
-    bool IsAReference();
-    DATA *GetVarPointer();
+    bool IsReference() override;
+    bool IsAReference() override;
+    DATA *GetVarPointer() override;
     void ClearType();
 
-    entid_t GetObjectIDPTR()
+    entid_t GetObjectIDPTR() override
     {
         return object_id;
     }
 
     // operations
-    bool Inc();
-    bool Dec();
-    bool Copy(DATA *pV);
-    bool Copy(DATA *pV, uint32_t index);
-    bool CopyOnElement(DATA *pV, uint32_t index);
-    bool Inverse();
-    bool Power(long Deg);
-    bool Power(DATA *pV);
-    bool Multiply(DATA *pV);
-    bool Divide(DATA *pV);
-    bool Modul(DATA *pV);
-    bool Plus(DATA *pV);
-    bool Minus(DATA *pV);
-    bool Compare(DATA *pV, char opA, char opB);
-    bool Neg();
+    bool Inc() override;
+    bool Dec() override;
+    bool Copy(DATA *pV) override;
+    bool Copy(DATA *pV, uint32_t index) override;
+    bool CopyOnElement(DATA *pV, uint32_t index) override;
+    bool Inverse() override;
+    bool Power(long Deg) override;
+    bool Power(DATA *pV) override;
+    bool Multiply(DATA *pV) override;
+    bool Divide(DATA *pV) override;
+    bool Modul(DATA *pV) override;
+    bool Plus(DATA *pV) override;
+    bool Minus(DATA *pV) override;
+    bool Compare(DATA *pV, char opA, char opB) override;
+    bool Neg() override;
     bool CompareAndSetResult(DATA *pV, S_TOKEN_TYPE op);
 
     bool BoolConvert();
@@ -154,11 +155,11 @@ class DATA : public VDATA
 
     void BadIndex(uint32_t index, uint32_t array_size);
 
-    long GetLong();
-    uintptr_t GetPtr();
-    float GetFloat();
-    const char *GetString();
-    entid_t GetEntityID();
+    long GetLong() override;
+    uintptr_t GetPtr() override;
+    float GetFloat() override;
+    const char *GetString() override;
+    entid_t GetEntityID() override;
 
     void SetGlobalVarTableIndex(uint32_t index)
     {

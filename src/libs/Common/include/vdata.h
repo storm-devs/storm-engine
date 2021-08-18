@@ -18,7 +18,8 @@ class VDATA
     virtual void SetPtr(uintptr_t value) = 0;
     virtual bool GetPtr(uintptr_t &value) = 0;
     virtual void Set(float value) = 0;
-    virtual void Set(const std::string& value) = 0;
+    virtual void Set(std::string value) = 0;
+    virtual void Set(const char *value) = 0;
     virtual void Set(const char *attribute_name, const char *attribute_value) = 0;
     virtual bool Get(long &value) = 0;
     virtual bool Get(float &value) = 0;

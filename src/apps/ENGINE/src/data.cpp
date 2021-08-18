@@ -318,7 +318,7 @@ void DATA::Set(float value)
         Error("NAN ERROR");
 }
 
-void DATA::Set(const std::string &value)
+void DATA::Set(std::string value)
 {
     // if(bRef)
     if (Data_type == VAR_REFERENCE)
@@ -338,7 +338,37 @@ void DATA::Set(const std::string &value)
     }
     Data_type = VAR_STRING;
 
-    sValue = value;
+    sValue = std::move(value);
+}
+
+void DATA::Set(const char *value)
+{
+    // if(bRef)
+    if (Data_type == VAR_REFERENCE)
+    {
+        if (pReference)
+        {
+            pReference->Set(value);
+            return;
+        }
+        Error(UNINIT_REF);
+        return;
+    }
+    if (bArray)
+    {
+        Error(NO_INDEX);
+        return;
+    }
+    Data_type = VAR_STRING;
+
+    if (value != nullptr)
+    {
+        sValue = value;
+    }
+    else
+    {
+        sValue.clear();
+    }
 }
 
 void DATA::Set(const char *attribute_name, const char *attribute_value)
@@ -1055,12 +1085,12 @@ bool DATA::Convert(S_TOKEN_TYPE type)
         case NUMBER:
         case VAR_INTEGER:
             Data_type = VAR_INTEGER;
-            lValue = std::stoll(sValue);
+            lValue = std::atol(sValue.c_str());
             return true;
         case FLOAT_NUMBER:
         case VAR_FLOAT:
             Data_type = VAR_FLOAT;
-            fValue = std::stof(sValue);
+            fValue = std::atof(sValue.c_str());
             return true;
         case STRING:
         case VAR_STRING:
@@ -1101,7 +1131,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
             Set(AttributesClass->GetThisAttr());
             AttributesClass = nullptr;
             Data_type = VAR_INTEGER;
-            lValue = std::stoll(sValue);
+            lValue = std::atol(sValue.c_str());
             return true;
         case FLOAT_NUMBER:
         case VAR_FLOAT:
@@ -1112,7 +1142,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
             Set(AttributesClass->GetThisAttr());
             AttributesClass = nullptr;
             Data_type = VAR_FLOAT;
-            fValue = std::stof(sValue);
+            fValue = std::atof(sValue.c_str());
             return true;
         }
         break;
@@ -1647,7 +1677,7 @@ bool DATA::Plus(DATA *pV)
             Set(sValue + std::to_string(pV->lValue));
             break;
         case VAR_FLOAT:
-            Set(sValue + std::format("{:.5f}", pV->fValue));
+            Set(sValue + fmt::format("{:.5f}", pV->fValue));
             break;
         case VAR_STRING:
             Set(sValue + pV->sValue);
