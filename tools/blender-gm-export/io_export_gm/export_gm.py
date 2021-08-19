@@ -26,28 +26,38 @@ bl_info = {
 correction_export_matrix = axis_conversion(
     from_forward='Y', from_up='Z', to_forward='X', to_up='Y')
 
-def get_bounding_box_coords(obj):
-    bound_box = obj.bound_box
-    x1 = 0
-    x2 = 0
-    y1 = 0
-    y2 = 0
-    z1 = 0
-    z2 = 0
 
-    for [x,y,z] in bound_box:
-        if y < x1:
-            x1 = y
-        if y > x2:
-            x2 = y
-        if z < y1:
-            y1 = z
-        if z > y2:
-            y2 = z
-        if x < z1:
-            z1 = x
-        if x > z2:
-            z2 = x
+def get_bounding_box_coords(objects, x_is_mirrored):
+    bound_box = objects[0].bound_box
+
+    x1 = bound_box[0][1]
+    x2 = bound_box[0][1]
+    y1 = bound_box[0][2]
+    y2 = bound_box[0][2]
+    z1 = bound_box[0][0]
+    z2 = bound_box[0][0]
+
+    for obj in objects:
+        bound_box = obj.bound_box
+
+        for [x, y, z] in bound_box:
+            if y < x1:
+                x1 = y
+            if y > x2:
+                x2 = y
+            if z < y1:
+                y1 = z
+            if z > y2:
+                y2 = z
+            if x < z1:
+                z1 = x
+            if x > z2:
+                z2 = x
+
+    if x_is_mirrored:
+        tmp_x1 = x1
+        x1 = -x2
+        x2 = -tmp_x1
 
     return {
         "x1": x1,
@@ -57,6 +67,7 @@ def get_bounding_box_coords(obj):
         "z1": z1,
         "z2": z2,
     }
+
 
 def get_box_size(bounding_box_coords):
     x1 = bounding_box_coords.get("x1")
@@ -68,6 +79,7 @@ def get_box_size(bounding_box_coords):
 
     return [x2 - x1, y2 - y1, z2 - z1]
 
+
 def get_box_center(bounding_box_coords):
     x1 = bounding_box_coords.get("x1")
     x2 = bounding_box_coords.get("x2")
@@ -78,9 +90,10 @@ def get_box_center(bounding_box_coords):
 
     return [(x2 + x1) / 2, (y2 + y1) / 2, (z2 + z1) / 2]
 
+
 def get_box_radius(box_center, vertices):
     center_vector = mathutils.Vector(box_center)
-    box_radius = 0;
+    box_radius = 0
 
     for pos in vertices:
         pos_vector = mathutils.Vector(pos)
@@ -90,6 +103,7 @@ def get_box_radius(box_center, vertices):
             box_radius = radius
 
     return box_radius
+
 
 def prepare_vertices_with_multiple_uvs(bm_verts, uv_layer):
     for vertex in bm_verts:
@@ -141,7 +155,7 @@ def get_material_data(object_data):
 
 
 def remove_blender_name_postfix(name):
-    return re.sub(r'.\d{3}', '', name)
+    return re.sub(r'\.\d{3}', '', name)
 
 
 def prepare_globnames(objects, locators, materials, is_animated):
@@ -239,6 +253,31 @@ def export_gm(context, file_path=""):
     locators = []
     bones_list = []
 
+    vertices = []
+    # TODO rewrote
+    vertices_type = []
+    faces = []
+    normals = []
+
+    weights = []
+    bone_ids = []
+
+    colors = []
+
+    uv_array = []
+    uv_normals_array = []
+
+    types = []
+
+    bounding_boxes = []
+
+    materials = []
+    textures = []
+
+    objects_data = []
+
+    vertex_buffers = []
+
     # TODO get list of childrens children
     for child in root_children:
         if child.type == 'EMPTY':
@@ -268,7 +307,7 @@ def export_gm(context, file_path=""):
                     locators.append(child)
                 if child.type == 'MESH':
                     # TODO join?
-                    objects = [child]
+                    objects.append(child)
 
             break
 
@@ -277,159 +316,212 @@ def export_gm(context, file_path=""):
     bpy.context.scene.frame_set(0)
 
     # TODO multiple objects
-    src_obj = objects[0]
+    for object in objects:
+        faces_quantity = 0
+        vertices_quantity = 0
 
-    obj = src_obj.copy()
-    obj.data = src_obj.data.copy()
-    obj.animation_data_clear()
+        src_obj = object
 
-    obj_data = obj.data
-    obj_uv_layer = obj_data.uv_layers[0]
-    obj_uv_normals_layer = obj_data.uv_layers[1] if len(
-        obj_data.uv_layers) > 1 else None
+        obj = src_obj.copy()
+        obj.data = src_obj.data.copy()
+        obj.animation_data_clear()
 
-    collection.objects.link(obj)
+        obj_data = obj.data
+        obj_uv_layer = obj_data.uv_layers[0]
+        obj_uv_normals_layer = obj_data.uv_layers[1] if len(
+            obj_data.uv_layers) > 1 else None
 
-    depsgraph = bpy.context.evaluated_depsgraph_get()
+        collection.objects.link(obj)
 
-    bm = bmesh.new()
-    bm.from_mesh(obj.evaluated_get(depsgraph).to_mesh(
-        preserve_all_data_layers=True, depsgraph=depsgraph))
+        depsgraph = bpy.context.evaluated_depsgraph_get()
 
-    bm.verts.ensure_lookup_table()
+        bm = bmesh.new()
+        bm.from_mesh(obj.evaluated_get(depsgraph).to_mesh(
+            preserve_all_data_layers=True, depsgraph=depsgraph))
 
-    print(len(bm.verts), len(bm.faces))
+        bm.verts.ensure_lookup_table()
 
-    prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_layer)
+        print(len(bm.verts), len(bm.faces))
 
-    if obj_uv_normals_layer:
-        prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_normals_layer)
+        prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_layer)
 
-    bm.to_mesh(obj.data)
-    print(len(bm.verts), len(bm.faces))
+        if obj_uv_normals_layer:
+            prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_normals_layer)
 
-    obj_vertices = obj_data.vertices
-    obj_polygons = obj_data.polygons
+        bm.to_mesh(obj.data)
+        print(len(bm.verts), len(bm.faces))
 
-    # TODO get active?
-    obj_vertex_color = obj_data.vertex_colors[0] if len(
-        obj_data.vertex_colors) > 0 else None
+        obj_vertices = obj_data.vertices
+        obj_vertices_coords = []
+        obj_polygons = obj_data.polygons
 
-    obj_vertex_groups = obj.vertex_groups
+        # TODO get active?
+        obj_vertex_color = obj_data.vertex_colors[0] if len(
+            obj_data.vertex_colors) > 0 else None
 
-    obj_uv_layer = obj_data.uv_layers[0]
-    obj_uv_normals_layer = obj_data.uv_layers[1] if len(
-        obj_data.uv_layers) > 1 else None
+        obj_vertex_groups = obj.vertex_groups
 
-    materials = []
-    # TODO
-    material = get_material_data(obj_data)
-    # TODO
-    materials = [material]
+        obj_uv_layer = obj_data.uv_layers[0]
+        obj_uv_normals_layer = obj_data.uv_layers[1] if len(
+            obj_data.uv_layers) > 1 else None
+
+        material = get_material_data(obj_data)
+        if not material in materials:
+            materials.append(material)
+
+        vertices_quantity = len(bm.verts)
+
+        if vertices_quantity > 65536:
+            bpy.data.objects.remove(obj, do_unlink=True)
+            raise ValueError('Vertices_quantity bigger than 65536!')
+
+        for vertex in bm.verts:
+            pos = (obj.matrix_world @ mathutils.Vector(vertex.co)) - \
+                mathutils.Vector(obj.parent.matrix_world.translation)
+            pos.rotate(correction_export_matrix)
+            if x_is_mirrored:
+                pos *= mathutils.Vector([-1, 1, 1])
+            vertices.append(pos)
+            obj_vertices_coords.append(pos)
+
+            norm = mathutils.Vector(vertex.normal)
+            norm.rotate(correction_export_matrix)
+            if x_is_mirrored:
+                norm *= mathutils.Vector([-1, 1, 1])
+            normals.append(norm)
+
+        faces_quantity = len(bm.faces)
+        for face in bm.faces:
+            [v1, v2, v3] = face.verts[:]
+            # opposite
+            face = [v2.index, v1.index, v3.index]
+            faces.append(face)
+
+        obj.to_mesh_clear()
+        bm.free()
+
+        if is_animated:
+            for vertex in obj_vertices:
+                bone_1 = 0
+                bone_2 = 0
+                weight_1 = 0
+                weight_2 = 0
+                for vertex_group in vertex.groups:
+                    current_weight = vertex_group.weight
+
+                    vertex_group_name = obj_vertex_groups[vertex_group.group].name
+                    try:
+                        vertex_bone = next(
+                            filter(lambda x: x.name == vertex_group_name, bones_list))
+                        vertex_group_id = bones_list.index(vertex_bone)
+
+                        if current_weight > weight_1:
+                            weight_2 = weight_1
+                            weight_1 = current_weight
+                            bone_2 = bone_1
+                            bone_1 = int(vertex_group_id)
+                        elif current_weight > weight_2:
+                            weight_2 = current_weight
+                            bone_2 = int(vertex_group_id)
+                    except StopIteration as e:
+                        print(vertex_group_name + ' is missing in armature!')
+
+                weights.append(weight_1)
+                bone_ids.append((bone_2 << 8) | (bone_1 << 0))
+
+        obj_colors = [[127, 127, 127, 255]] * len(obj_vertices)
+        obj_uv_array = [[0, 0]] * len(obj_vertices)
+
+        has_uv_normals = len(material.get(
+            "textures")) == 2 and obj_uv_normals_layer
+
+        obj_uv_normals_array = [
+            [0, 0]] * len(obj_vertices) if has_uv_normals else [None] * len(obj_vertices)
+
+        for polygon in obj_polygons:
+            for i, index in enumerate(polygon.vertices):
+                loop_index = polygon.loop_indices[i]
+                if obj_vertex_color:
+                    [r, g, b, a] = obj_vertex_color.data[loop_index].color[:]
+                    obj_colors[index] = [int(r*255), int(g*255),
+                                         int(b*255), int(a*255)]
+                obj_uv_array[index] = mathutils.Vector(
+                    obj_uv_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
+                if has_uv_normals:
+                    obj_uv_normals_array[index] = mathutils.Vector(
+                        obj_uv_normals_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
+
+        colors += obj_colors
+        uv_array += obj_uv_array
+        uv_normals_array += obj_uv_normals_array
+
+        bounding_box = get_bounding_box_coords([obj], x_is_mirrored)
+        bounding_boxes.append(bounding_box)
+
+        center = get_box_center(bounding_box)
+        radius = get_box_radius(center, obj_vertices_coords)
+
+        type = 0
+        if is_animated:
+            type = 4
+        elif has_uv_normals:
+            type = 1
+        types.append(type)
+
+        vertices_type += [type] * vertices_quantity
+
+        if len(vertex_buffers) == 0:
+            vertex_buffers.append({
+                "type": type,
+                "index": 0,
+                "vertices_quantity": 0,
+            })
+
+        # TODO FIX IT, add all vertices data to buffer too
+        # current_vertex_buffer_idx = -1
+        # for idx in range(len(vertex_buffers)):
+        #     buffer_type = vertex_buffers[idx].get("type")
+        #     if buffer_type == type:
+        #         current_vertex_buffer_idx = idx
+        current_vertex_buffer_idx = len(vertex_buffers) - 1
+
+        # if vertex_buffers[current_vertex_buffer_idx].get("vertices_quantity") + vertices_quantity > 65536 or current_vertex_buffer_idx == -1:
+        if vertex_buffers[current_vertex_buffer_idx].get("vertices_quantity") + vertices_quantity > 65536 or vertex_buffers[current_vertex_buffer_idx].get("type") != type:
+            current_vertex_buffer_idx = len(vertex_buffers)
+            # TODO FIX IT, add all vertices data to buffer too
+            vertex_buffers.append({
+                "type": type,
+                "index": current_vertex_buffer_idx,
+                "vertices_quantity": 0,
+            })
+
+        current_vertex_buffer = vertex_buffers[current_vertex_buffer_idx]
+
+        current_vertex_buffer_vertices_quantity = current_vertex_buffer.get(
+            "vertices_quantity")
+
+        object_data = {
+            "vertex_buff": current_vertex_buffer.get("index"),
+            "ntriangles": faces_quantity,
+            "striangle": len(faces) - faces_quantity,
+            "nvertices": vertices_quantity,
+            "svertex": current_vertex_buffer_vertices_quantity,
+            "material": materials.index(material),
+            "center": center,
+            "radius": radius
+        }
+        objects_data.append(object_data)
+        current_vertex_buffer["vertices_quantity"] = current_vertex_buffer_vertices_quantity + vertices_quantity
+
+        # TODO delete on error
+        bpy.data.objects.remove(obj, do_unlink=True)
 
     # TODO check
-    textures = []
     for material in materials:
         material_textures = material.get("textures")
         for material_texture in material_textures:
             if not (material_texture in textures):
                 textures.append(material_texture)
-
-    vertices = []
-    normals = []
-
-    weights = []
-    bone_ids = []
-
-    for vertex in bm.verts:
-        pos = (obj.matrix_world @ mathutils.Vector(vertex.co)) - mathutils.Vector(obj.parent.matrix_world.translation)
-        pos.rotate(correction_export_matrix)
-        if x_is_mirrored:
-            pos *= mathutils.Vector([-1, 1, 1])
-        vertices.append(pos)
-
-        norm = mathutils.Vector(vertex.normal)
-        norm.rotate(correction_export_matrix)
-        if x_is_mirrored:
-            norm *= mathutils.Vector([-1, 1, 1])
-        normals.append(norm)
-
-    faces = []
-    for face in bm.faces:
-        [v1, v2, v3] = face.verts[:]
-        # opposite
-        face = [v2.index, v1.index, v3.index]
-        faces.append(face)
-
-    obj.to_mesh_clear()
-    bm.free()
-
-    if is_animated:
-        for vertex in obj_vertices:
-            bone_1 = 0
-            bone_2 = 0
-            weight_1 = 0
-            weight_2 = 0
-            for vertex_group in vertex.groups:
-                current_weight = vertex_group.weight
-
-                vertex_group_name = obj_vertex_groups[vertex_group.group].name
-                try:
-                    vertex_bone = next(
-                        filter(lambda x: x.name == vertex_group_name, bones_list))
-                    vertex_group_id = bones_list.index(vertex_bone)
-
-                    if current_weight > weight_1:
-                        weight_2 = weight_1
-                        weight_1 = current_weight
-                        bone_2 = bone_1
-                        bone_1 = int(vertex_group_id)
-                    elif current_weight > weight_2:
-                        weight_2 = current_weight
-                        bone_2 = int(vertex_group_id)
-                except StopIteration as e:
-                    print(vertex_group_name + ' is missing in armature!')
-
-            weights.append(weight_1)
-            bone_ids.append((bone_2 << 8) | (bone_1 << 0))
-
-    colors = [[127, 127, 127, 255]] * len(obj_vertices)
-    uv_array = [[0, 0]] * len(obj_vertices)
-
-    # TODO idx
-    has_uv_normals = len(materials[0].get(
-        "textures")) == 2 and obj_uv_normals_layer
-
-    uv_normals_array = [[0, 0]] * len(obj_vertices) if has_uv_normals else None
-
-    for polygon in obj_polygons:
-        for i, index in enumerate(polygon.vertices):
-            loop_index = polygon.loop_indices[i]
-            if obj_vertex_color:
-                [r, g, b, a] = obj_vertex_color.data[loop_index].color[:]
-                colors[index] = [int(r*255), int(g*255),
-                                 int(b*255), int(a*255)]
-            uv_array[index] = mathutils.Vector(
-                obj_uv_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
-            if has_uv_normals:
-                uv_normals_array[index] = mathutils.Vector(
-                    obj_uv_normals_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
-
-    types = []
-
-    for i in range(len(objects)):
-        if is_animated:
-            types.append(4)
-            continue
-        if has_uv_normals:
-            types.append(1)
-            continue
-        types.append(0)
-
-    bounding_box = get_bounding_box_coords(obj)
-
-    # TODO delete on error
-    bpy.data.objects.remove(obj, do_unlink=True)
 
     # TODO nested
     with open(file_path, 'wb') as file:
@@ -464,23 +556,21 @@ def export_gm(context, file_path=""):
         header_nlabels = len(locators)
         file.write(struct.pack('<l', header_nlabels))
 
-        # TODO
-        header_nobjects = 1
+        header_nobjects = len(objects)
         file.write(struct.pack('<l', header_nobjects))
 
         header_ntriangles = len(faces)
         file.write(struct.pack('<l', header_ntriangles))
 
-        # TODO
-        header_nvrtbuffs = 1
+        header_nvrtbuffs = len(vertex_buffers)
         file.write(struct.pack('<l', header_nvrtbuffs))
 
-        # TODO
-        header_bboxSize = get_box_size(bounding_box)
+        header_bounding_box = get_bounding_box_coords(objects, x_is_mirrored)
+        header_bboxSize = get_box_size(header_bounding_box)
         write_vector(file, header_bboxSize)
 
         # TODO
-        header_bboxCenter = get_box_center(bounding_box)
+        header_bboxCenter = get_box_center(header_bounding_box)
         write_vector(file, header_bboxCenter)
 
         # TODO
@@ -563,12 +653,13 @@ def export_gm(context, file_path=""):
             file.write(struct.pack('<l', label_flags))
 
             label_m = mathutils.Matrix(locator.matrix_world)
-            label_m.translation -= mathutils.Vector(locator.parent.matrix_world.translation)
+            label_m.translation -= mathutils.Vector(
+                locator.parent.matrix_world.translation)
 
             label_m = correction_export_matrix.to_4x4() @ label_m
-            
+
             if x_is_mirrored:
-                label_m.translation *= mathutils.Vector([-1,1,1])
+                label_m.translation *= mathutils.Vector([-1, 1, 1])
 
             for i in range(4):
                 for j in range(4):
@@ -594,6 +685,8 @@ def export_gm(context, file_path=""):
                 file.write(struct.pack('<f', label_weight[i]))
 
         for i in range(header_nobjects):
+            object_data = objects_data[i]
+
             object_group_name = remove_blender_name_postfix(
                 objects[i].parent.name)
             object_group_name_idx = globname.index(object_group_name + '\0')
@@ -607,37 +700,26 @@ def export_gm(context, file_path=""):
             object_flags = 3103
             file.write(struct.pack('<l', object_flags))
 
-            # TODO
-            object_center = get_box_center(bounding_box)
-            write_vector(file, object_center)
+            write_vector(file, object_data.get("center"))
 
-            # TODO
-            object_radius = get_box_radius(object_center, vertices)
-            file.write(struct.pack('<f', object_radius))
+            file.write(struct.pack('<f', object_data.get("radius")))
 
-
-            # TODO
-            object_vertex_buff = 0
+            object_vertex_buff = object_data.get("vertex_buff")
             file.write(struct.pack('<l', object_vertex_buff))
 
-            # TODO
-            object_ntriangles = len(faces)
+            object_ntriangles = object_data.get("ntriangles")
             file.write(struct.pack('<l', object_ntriangles))
 
-            # TODO
-            object_striangle = 0
+            object_striangle = object_data.get("striangle")
             file.write(struct.pack('<l', object_striangle))
 
-            # TODO
-            object_nvertices = len(vertices)
+            object_nvertices = object_data.get("nvertices")
             file.write(struct.pack('<l', object_nvertices))
 
-            # TODO
-            object_svertex = 0
+            object_svertex = object_data.get("svertex")
             file.write(struct.pack('<l', object_svertex))
 
-            # TODO
-            object_material = 0
+            object_material = object_data.get("material")
             file.write(struct.pack('<l', object_material))
 
             object_lights = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -657,23 +739,22 @@ def export_gm(context, file_path=""):
             for j in range(3):
                 file.write(struct.pack('<H', faces[i][j]))
 
-        for i in range(header_nvrtbuffs):
-            # TODO
-            vertex_buffer_type = types[0]
+        for vertex_buffer in vertex_buffers:
+            vertex_buffer_type = vertex_buffer.get("type")
             file.write(struct.pack('<l', vertex_buffer_type))
 
             vertex_buffer_stride = 36 + \
                 (vertex_buffer_type & 3) * 8 + (vertex_buffer_type >> 2) * 8
 
-            vertex_buffer_size = len(vertices) * vertex_buffer_stride
+            vertex_buffer_size = vertex_buffer.get(
+                "vertices_quantity") * vertex_buffer_stride
             file.write(struct.pack('<l', vertex_buffer_size))
 
         print(len(vertices), len(weights), len(bone_ids),
               len(normals), len(colors), len(uv_array))
 
         for i in range(len(vertices)):
-            # TODO
-            vertex_type = types[0]
+            vertex_type = vertices_type[i]
             if vertex_type == 0:
                 write_vertex0(file, vertices[i], normals[i], colors[i],
                               uv_array[i][0], uv_array[i][1])

@@ -63,8 +63,7 @@ On models without animation might be one or two textures (main texture and textu
 
 ## Issues
 
-This is the first version of export and only one mesh per model is supported at the moment.
-BSP currently is not supported.
+This is the first version of export and BSP currently is not supported.
 Export of weapons and characters are supported.
 
 ## Blender Plugin Installation
