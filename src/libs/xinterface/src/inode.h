@@ -318,6 +318,7 @@ class CINODE
 
     void GetRelativeRect(XYRECT &rect) const;
     void GetAbsoluteRect(XYRECT &rect, int at) const;
+    void GetAbsoluteRectForSave(XYRECT &rect, int at) const;
 
     static const char *GetSubStr(const char *inStr, char *buf, size_t bufSize, char devChar = ',');
     static bool GetMidStr(const char *inStr, char *buf, size_t bufSize, const char *begStr, const char *endStr);
@@ -337,6 +338,8 @@ class CINODE
     XYPOINT m_screenSize;
     XYRECT m_rect;
     XYRECT m_hostRect;
+
+    long m_nAbsoluteRectVal;
 
     bool m_bUse;
     bool m_bClickable;
