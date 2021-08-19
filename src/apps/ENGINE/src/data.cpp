@@ -1078,8 +1078,6 @@ bool DATA::Convert(S_TOKEN_TYPE type)
         }
         break;
     case VAR_STRING:
-        if (sValue.empty())
-            break;
         switch (type)
         {
         case NUMBER:
