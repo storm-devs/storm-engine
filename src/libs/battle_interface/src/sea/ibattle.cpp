@@ -75,9 +75,6 @@ BATTLE_INTERFACE::~BATTLE_INTERFACE()
 {
     // STORM_DELETE(m_pMessageIcons);
     STORM_DELETE(m_pShipIcon);
-    m_TextArray.clear();
-    m_LinesInfo.Release();
-    m_ImagesInfo.Release();
     STORM_DELETE(m_pShipInfoImages);
 }
 
