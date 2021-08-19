@@ -21,9 +21,6 @@ bool IBoardingStatus::Init()
         throw std::runtime_error("Can`t create render service");
     }
 
-    // core.SystemMessages(GetId(),true);
-    EntityManager::AddToLayer(REALIZE, GetId(), 0xFFFFFFFF);
-
     return true;
 }
 
