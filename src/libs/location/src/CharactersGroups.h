@@ -116,7 +116,7 @@ class CharactersGroups : public Entity
     // Checking the character detects others
     void CharacterVisibleCheck(Character *chr);
     // Check found characters for enemies
-    void FindEnemyFromFindList(Character *chr, Group *grp, long num, bool visCheck);
+    void FindEnemyFromFindList(Character *chr, Group *grp, bool visCheck);
     // Add or update an enemy
     bool AddEnemyTarget(Character *chr, Character *enemy, float maxtime = -1.0);
     // Remove all inactive or invalid targets
@@ -214,5 +214,5 @@ class CharactersGroups : public Entity
     float waveTime;              // Time since last wave launch
 
     // Character search array
-    Supervisor::FindCharacter fnd[MAX_CHARACTERS];
+    std::vector<Supervisor::FindCharacter> fnd;
 };

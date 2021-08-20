@@ -632,9 +632,8 @@ Player *Player::FindAttackCharacter()
 {
     auto *const location = GetLocation();
     // Find the surrounding characters
-    static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
-    static long num = 0;
-    if (!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_ATTACK_DIST * 1.1f))
+    auto fndCharacter = location->supervisor.FindCharacters(this, CHARACTER_ATTACK_DIST * 1.1f);
+    if (fndCharacter.empty())
         return nullptr;
     // Choosing the best
     float minDst;
@@ -645,7 +644,7 @@ Player *Player::FindAttackCharacter()
     const auto cdx = sinf(ay);
     const auto cdz = cosf(ay);
     long j = -1;
-    for (long i = 0; i < num; i++)
+    for (size_t i = 0; i < fndCharacter.size(); i++)
     {
         // Character
         auto &fc = fndCharacter[i];

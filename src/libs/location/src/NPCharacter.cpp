@@ -862,12 +862,9 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
         return;
     }
     // collect everyone around
-    static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
-    static long num = 0;
     auto *const location = GetLocation();
-    if (!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_ATTACK_DIST, 0.0f, 0.01f, 0.0f, false))
-        return;
-    if (!num)
+    auto fndCharacter = location->supervisor.FindCharacters(this, CHARACTER_ATTACK_DIST, 0.0f, 0.01f, 0.0f, false);
+    if (fndCharacter.empty())
         return;
     // our group
     const long grpIndex = chrGroup->FindGroupIndex(group);
@@ -879,7 +876,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     // Calculating enemies
     bool isFreeBack = isRecoilEnable;
     static const float backAng = -cosf(45.0f * (3.1415926535f / 180.0f));
-    for (long i = 0; i < num; i++)
+    for (size_t i = 0; i < fndCharacter.size(); i++)
     {
         // Character
         Supervisor::FindCharacter &fc = fndCharacter[i];

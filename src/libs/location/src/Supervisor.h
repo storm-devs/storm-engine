@@ -9,6 +9,7 @@
 // ============================================================================================
 
 #pragma once
+#include <vector>
 
 class Character;
 class LocatorArray;
@@ -33,8 +34,6 @@ class Supervisor
         Character *c;     // The character we were looking for
         float dx, dy, dz; // Vector from the character to us
         float d2;         // The square of the distance to the character in xz
-        float l, r, n;    // Distance to clipping planes (optional)
-        float sectDist;   // Distance to the sector
     };
 
     struct CharacterEx
@@ -53,9 +52,10 @@ class Supervisor
     // Check for free position
     bool CheckPosition(float x, float y, float z, Character *c) const;
     // Find characters by radius
-    bool FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long &numFndCharacters, Character *chr,
-                        float radius, float angTest = 0.0f, float nearPlane = 0.4f, float ax = 0.0f,
-                        bool isSort = false, bool lookCenter = false) const;
+    std::vector<FindCharacter> FindCharacters(Character *chr,
+                                              float radius, float angTest = 0.0f, float nearPlane = 0.4f,
+                                              float ax = 0.0f,
+                                              bool isSort = false, bool lookCenter = false) const;
 
     void Update(float dltTime);
     void PreUpdate(float dltTime) const;

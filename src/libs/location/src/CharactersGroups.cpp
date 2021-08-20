@@ -236,25 +236,26 @@ void CharactersGroups::CharacterVisibleCheck(Character *chr)
         return;
     auto *const grp = groups[gi];
     // Visible area
-    long num;
-    if (location->supervisor.FindCharacters(fnd, num, chr, grp->look, CGS_VIEWANGLE, 0.05f))
+    fnd = location->supervisor.FindCharacters(chr, grp->look, CGS_VIEWANGLE, 0.05f);
+    if (!fnd.empty())
     {
-        FindEnemyFromFindList(chr, grp, num, true);
+        FindEnemyFromFindList(chr, grp, true);
     }
     // Audible area
-    if (location->supervisor.FindCharacters(fnd, num, chr, grp->hear))
+    fnd = location->supervisor.FindCharacters(chr, grp->hear);
+    if (!fnd.empty())
     {
-        FindEnemyFromFindList(chr, grp, num, false);
+        FindEnemyFromFindList(chr, grp, false);
     }
 }
 
 // Check found characters for enemies
-void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, long num, bool visCheck)
+void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, bool visCheck)
 {
     Character *targets[MAX_CHARACTERS];
     long numTrg = 0;
     // For all found characters
-    for (long i = 0; i < num; i++)
+    for (size_t i = 0; i < fnd.size(); i++)
     {
         // Found character group
         const auto gi = GetCharacterGroup(fnd[i].c);
@@ -274,9 +275,9 @@ void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, long nu
         }
     }
     // Inform others about the detected targets
-    if (numTrg > 0 && location->supervisor.FindCharacters(fnd, num, chr, grp->say))
+    if (numTrg > 0 && !(fnd = location->supervisor.FindCharacters(chr, grp->say)).empty())
     {
-        for (long i = 0; i < num; i++)
+        for (size_t i = 0; i < fnd.size(); i++)
         {
             auto *const c = fnd[i].c;
             // If invisible, then skip it
@@ -700,10 +701,10 @@ void CharactersGroups::MsgAddTarget(MESSAGE &message)
     // Adding the enemy
     AddEnemyTarget(chr, enemy, message.Float());
     // Informing others about the new goal
-    long num = 0;
-    if (location->supervisor.FindCharacters(fnd, num, chr, groups[g1]->say))
+    fnd = location->supervisor.FindCharacters(chr, groups[g1]->say);
+    if (!fnd.empty())
     {
-        for (long i = 0; i < num; i++)
+        for (size_t i = 0; i < fnd.size(); i++)
         {
             auto *const c = fnd[i].c;
             // If invisible, then skip it

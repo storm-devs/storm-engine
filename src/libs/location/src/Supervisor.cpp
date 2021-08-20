@@ -283,13 +283,14 @@ bool Supervisor::CheckPosition(float x, float y, float z, Character *c) const
 }
 
 // Find characters by radius
-bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long &numFndCharacters, Character *chr,
+std::vector<Supervisor::FindCharacter> Supervisor::FindCharacters(Character *chr,
                                 float radius, float angTest, float nearPlane, float ax, bool isSort,
                                 bool lookCenter) const
 {
-    numFndCharacters = 0;
     if (!chr || radius < 0.0f)
-        return false;
+        return {};
+
+    auto found_characters = std::vector<FindCharacter>();
     // Test radius
     radius *= radius;
     // Character position
@@ -364,32 +365,18 @@ bool Supervisor::FindCharacters(FindCharacter fndCharacter[MAX_CHARACTERS], long
                 continue;
         }
         // Add
-        fndCharacter[numFndCharacters].c = character[i].c;
-        fndCharacter[numFndCharacters].dx = dx;
-        fndCharacter[numFndCharacters].dy = dy;
-        fndCharacter[numFndCharacters].dz = dz;
-        fndCharacter[numFndCharacters].d2 = d;
-        numFndCharacters++;
+        found_characters.emplace_back(character[i].c, dx, dy, dz, d);
     }
     if (isSort)
     {
-        for (long i = 0; i < numFndCharacters - 1; i++)
+        auto comparator = [](const auto &lhs, const auto &rhs)
         {
-            auto k = i;
-            for (auto j = i + 1; j < numFndCharacters; j++)
-            {
-                if (fndCharacter[k].d2 > fndCharacter[j].d2)
-                    k = j;
-            }
-            if (k != i)
-            {
-                auto fc = fndCharacter[i];
-                fndCharacter[i] = fndCharacter[k];
-                fndCharacter[k] = fc;
-            }
-        }
+            return lhs.d2 < rhs.d2;
+        };
+
+        std::ranges::sort(found_characters, comparator);
     }
-    return numFndCharacters != 0;
+    return found_characters;
 }
 
 // Find the best locator to continue walking the character
