@@ -3,7 +3,6 @@
 #include "battle_mancommand.h"
 #include "core.h"
 #include "shared/battle_interface/msg_control.h"
-#include "vmodule_api.h"
 
 BIManSign::BIManSign(entid_t BIEntityID, VDX9RENDER *pRS)
 {
@@ -470,10 +469,9 @@ void BIManSign::UpdateBuffers(long nShipQ)
     if ((m_nBackSquareQ + m_nManStateSquareQ + m_nGunChargeSquareQ + nManSquareQ + nAlarmSquareQ) != m_nSquareQ)
     {
         m_nSquareQ = m_nBackSquareQ + m_nManStateSquareQ + m_nGunChargeSquareQ + nManSquareQ + nAlarmSquareQ;
-        const long n = 6 * 4 + 1;
         VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
-        m_nVBufID =
-            m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, n * 4 * sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY);
+        m_nVBufID = m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, m_nSquareQ * 4 * sizeof(BI_COLOR_VERTEX),
+                                              D3DUSAGE_WRITEONLY);
     }
     // FillVertexBuffer();
 }
