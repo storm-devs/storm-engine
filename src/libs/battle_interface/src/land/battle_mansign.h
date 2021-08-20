@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#define MAX_MAN_QUANTITY 7
+#define MAX_MAN_QUANTITY 10
 
 class BIManCommandList;
 
