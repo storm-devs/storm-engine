@@ -25,6 +25,33 @@ CREATE_SCRIPTLIBRIARY(DX9RENDER_SCRIPT_LIBRIARY)
         a = NULL;                                                                                                      \
     }
 
+namespace
+{
+    void InvokeEntitiesLostRender()
+    {
+        const auto its = EntityManager::GetEntityIdIterators();
+        for (auto it = its.first; it != its.second; ++it)
+        {
+            if (!it->deleted && it->ptr != nullptr)
+            {
+                it->ptr->ProcessStage(Entity::Stage::lost_render);
+            }
+        }
+    }
+
+    void InvokeEntitiesRestoreRender()
+    {
+        const auto its = EntityManager::GetEntityIdIterators();
+        for (auto it = its.first; it != its.second; ++it)
+        {
+            if (!it->deleted && it->ptr != nullptr)
+            {
+                it->ptr->ProcessStage(Entity::Stage::restore_render);
+            }
+        }
+    }
+}
+
 DX9RENDER *DX9RENDER::pRS = nullptr;
 
 class LostDeviceSentinel : public SERVICE
@@ -2430,14 +2457,7 @@ void DX9RENDER::LostRender()
         return;
     }
 
-    const auto its = EntityManager::GetEntityIdIterators();
-    for (auto it = its.first; it != its.second; ++it)
-    {
-        if (!it->deleted && it->ptr != nullptr)
-        {
-            it->ptr->ProcessStage(Entity::Stage::lost_render);
-        }
-    }
+    InvokeEntitiesLostRender();
 
     Release(pOriginalScreenSurface);
     Release(pOriginalDepthSurface);
@@ -2549,14 +2569,7 @@ void DX9RENDER::RestoreRender()
 
     RecompileEffects();
 
-    const auto its = EntityManager::GetEntityIdIterators();
-    for (auto it = its.first; it != its.second; ++it)
-    {
-        if (!it->deleted && it->ptr != nullptr)
-        {
-            it->ptr->ProcessStage(Entity::Stage::restore_render);
-        }
-    }
+    InvokeEntitiesRestoreRender();
 
     resourcesReleased = false;
 }
@@ -2662,7 +2675,9 @@ void DX9RENDER::RunStart()
     // boal del_cheat
     if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && core.Controls->GetDebugAsyncKeyState(VK_F11) < 0)
     {
+        InvokeEntitiesLostRender();
         RecompileEffects();
+        InvokeEntitiesRestoreRender();
     }
 
     SetRenderState(D3DRS_FILLMODE, (core.Controls->GetDebugAsyncKeyState('F') < 0) ? D3DFILL_WIREFRAME : D3DFILL_SOLID);
