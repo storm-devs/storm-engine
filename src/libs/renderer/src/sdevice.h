@@ -13,8 +13,8 @@
 #include <stack>
 #include <vector>
 
-#define MAX_STEXTURES 1024
-#define MAX_BUFFERS 1024
+#define MAX_STEXTURES 10240
+#define MAX_BUFFERS 10240
 #define MAX_FONTS 256
 
 struct D3DERRORS
