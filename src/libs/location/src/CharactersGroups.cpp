@@ -252,8 +252,7 @@ void CharactersGroups::CharacterVisibleCheck(Character *chr)
 // Check found characters for enemies
 void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, bool visCheck)
 {
-    Character *targets[MAX_CHARACTERS];
-    long numTrg = 0;
+    std::vector<Character *> targets;
     // For all found characters
     for (size_t i = 0; i < fnd.size(); i++)
     {
@@ -270,12 +269,11 @@ void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, bool vi
         // Found an enemy, add
         if (AddEnemyTarget(chr, fnd[i].c))
         {
-            if (numTrg < MAX_CHARACTERS)
-                targets[numTrg++] = fnd[i].c;
+            targets.push_back(fnd[i].c);
         }
     }
     // Inform others about the detected targets
-    if (numTrg > 0 && !(fnd = location->supervisor.FindCharacters(chr, grp->say)).empty())
+    if (!targets.empty() && !(fnd = location->supervisor.FindCharacters(chr, grp->say)).empty())
     {
         for (size_t i = 0; i < fnd.size(); i++)
         {
@@ -291,7 +289,7 @@ void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, bool vi
             auto &r = FindRelation(grp->index, cgrp);
             if (r.curState != rs_friend)
                 continue;
-            for (long j = 0; j < numTrg; j++)
+            for (size_t j = 0; j < targets.size(); j++)
             {
                 if (grp->index != cgrp)
                 {
