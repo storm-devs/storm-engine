@@ -1,6 +1,6 @@
 # Blender AN export
 
-[Русская версия Readme](https://github.com/storm-devs/storm-engine/blob/develop/tools/blender-an-export/README_RUS.md)
+[Русская версия Readme](README_RUS.md)
 
 ## Export .an Blender
 Select an object with armature
@@ -23,6 +23,12 @@ In animations only root bone location could be changed
 Angle changes will work for all bones (Angles MUST be in quaternions)
 
 ![angles.img](readme-img/angles.png)
+
+Each bone in each frame should have keyframes location and rotation
+
+![keyframes1.img](readme-img/keyframes1.png)
+
+![keyframes2.img](readme-img/keyframes2.png)
 
 ## Blender Plugin Installation
 ```

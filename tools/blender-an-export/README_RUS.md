@@ -22,6 +22,13 @@ File -> Export... -> AN Export(.an)
 
 ![angles.img](readme-img/angles.png)
 
+У каждой кости должны быть в каждом кадре keyframes location и rotation
+
+![keyframes1.img](readme-img/keyframes1.png)
+
+![keyframes2.img](readme-img/keyframes2.png)
+
+
 ## Установка плагина в Blender
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Выбрать export_an.py из папки io_export_an -> Включить "Export: SeaDogs AN"
