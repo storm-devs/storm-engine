@@ -92,6 +92,8 @@ class Location : public Entity
   public:
     // Find locator group
     LocatorArray *FindLocatorsGroup(const char *gName);
+    // Find locator
+    bool CheckIfLocatorExists(const char *lName);
 
     // Get a character patch
     PtcData &GetPtcData();

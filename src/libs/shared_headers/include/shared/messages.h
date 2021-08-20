@@ -103,6 +103,7 @@
 // Radius of locators
 #define MSG_LOCATION_GRP_RADIUS 30125 // "lsf" set the radius to the locator group
 #define MSG_LOCATION_LOC_RADIUS 30126 // "lssf" set the radius to the locator
+#define MSG_LOCATION_LOC_EXISTS 30127 // "lssf" set the radius to the locator
 // Add light source
 #define MSG_LOCATION_ADD_LIGHT 30128 // "lsfff" source name, source position
 // Register locators

@@ -389,6 +389,12 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         la->SetLocatorRadius(i, message.Float());
         return 1;
     }
+    case MSG_LOCATION_LOC_EXISTS: {
+        const std::string &name = message.String();
+        if (CheckIfLocatorExists(name.c_str()))
+            return 1;
+        return 0;
+    }
     case MSG_LOCATION_CHECKENTRY:
         u0 = message.Float(); // x
         v0 = message.Float(); // y
@@ -440,6 +446,19 @@ LocatorArray *Location::FindLocatorsGroup(const char *gName)
             return locators[i];
     }
     return nullptr;
+}
+
+bool Location::CheckIfLocatorExists(const char *lName)
+{
+    for (long i = 0; i < numLocators; i++)
+    {
+        if (locators[i]->FindByName(lName) != -1)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 long Location::LoadStaticModel(const char *modelName, const char *tech, long level, bool useDynamicLights)
