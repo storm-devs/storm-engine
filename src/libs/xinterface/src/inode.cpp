@@ -276,6 +276,23 @@ void CINODE::GetAbsoluteRect(XYRECT &rect, int at) const
         rect.bottom += m_hostRect.top;
 }
 
+void CINODE::GetAbsoluteRectForSave(XYRECT &rect, int at) const
+{
+    if (!(at & ABSOLUTE_LEFT))
+        rect.left -= m_hostRect.left;
+    if (at & ABSOLUTE_RIGHT)
+        rect.right -= m_screenSize.x - m_hostRect.right + m_hostRect.left;
+    else
+        rect.right -= m_hostRect.left;
+
+    if (!(at & ABSOLUTE_TOP))
+        rect.top -= m_hostRect.top;
+    if (at & ABSOLUTE_BOTTOM)
+        rect.bottom -= m_screenSize.y - m_hostRect.bottom + m_hostRect.top;
+    else
+        rect.bottom -= m_hostRect.top;
+}
+
 const char *CINODE::GetSubStr(const char *inStr, char *buf, size_t bufSize, char devChar)
 {
     if (bufSize <= 0 || buf == nullptr)
@@ -472,8 +489,8 @@ bool CINODE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *n
 
     // get position
     m_rect = GetIniLongRect(ini1, name1, ini2, name2, "position", m_hostRect);
-    const int nAbsoluteRectVal = GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
-    GetAbsoluteRect(m_rect, nAbsoluteRectVal);
+    m_nAbsoluteRectVal = GetIniLong(ini1, name1, ini2, name2, "bAbsoluteRectangle", 0);
+    GetAbsoluteRect(m_rect, m_nAbsoluteRectVal);
 
     // glow cursor
     SetGlowCursor(GetIniBool(ini1, name1, ini2, name2, "bShowGlowCursor", true));
@@ -502,7 +519,7 @@ bool CINODE::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *n
         m_bUseUserGlowCursor = true;
         GetDataStr(param, "llll", &m_rectUserGlowCursor.left, &m_rectUserGlowCursor.top, &m_rectUserGlowCursor.right,
                    &m_rectUserGlowCursor.bottom);
-        GetAbsoluteRect(m_rectUserGlowCursor, nAbsoluteRectVal);
+        GetAbsoluteRect(m_rectUserGlowCursor, m_nAbsoluteRectVal);
     }
 
     if (ReadIniString(ini1, name1, ini2, name2, "GlowOffset", param, sizeof(param) - 1, ""))

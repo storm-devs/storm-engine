@@ -147,7 +147,11 @@ bool GIEditor::ProcessControl()
     if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 && core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 &&
         core.Controls->GetDebugAsyncKeyState('S') < 0)
     {
+        // save real rect to INI considering relative shift
+        const auto orig_rect = m_pEditableNode->m_rect;
+        m_pEditableNode->GetAbsoluteRectForSave(m_pEditableNode->m_rect, m_pEditableNode->m_nAbsoluteRectVal);
         m_pEditableNode->SaveParametersToIni();
+        m_pEditableNode->m_rect = orig_rect;
     }
 
     if (bMove || bSize)

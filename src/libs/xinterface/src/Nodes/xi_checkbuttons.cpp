@@ -25,45 +25,38 @@ CXI_CHECKBUTTONS::~CXI_CHECKBUTTONS()
 
 void CXI_CHECKBUTTONS::Draw(bool bSelected, uint32_t Delta_Time)
 {
-    float fX, fY;
-    float fX1, fY1;
-
     // Print lines
-    fX = static_cast<float>(m_rect.left);
-    fY = static_cast<float>(m_rect.top);
-    fX1 = fX;
-    fY1 = fY; // ugeen fix 2020
-    for (long n = 0; n < m_aButton.size(); n++)
+    for (auto &button : m_aButton)
     {
         // define the line color
         auto dwColor = m_dwNormalFontColor;
-        if (m_aButton[n]->bChoose)
+        if (button->bChoose)
             dwColor = m_dwSelectFontColor;
-        if (m_aButton[n]->bDisable)
+        if (button->bDisable)
             dwColor = m_dwDisableFontColor;
-        if (!m_bSelected)
-            dwColor = m_dwDisableFontColor; // ugeen 2016
 
-        if (m_bIndividualPos && m_aButton[n]->bSetPos)
+        auto fX = static_cast<float>(m_rect.left);
+        auto fY = static_cast<float>(m_rect.top);
+        if (m_bIndividualPos && button->bSetPos)
         {
-            fX = m_aButton[n]->pos.x + fX1; // ugeen fix
-            fY = m_aButton[n]->pos.y + fY1;
+            fX += button->pos.x;
+            fY += button->pos.y;
         }
 
-        if (m_aButton[n]->pImg)
+        if (button->pImg)
         {
-            m_aButton[n]->pImg->SetDifferentPosition(
+            button->pImg->SetDifferentPosition(
                 static_cast<long>(fX + m_fpIconOffset.x), static_cast<long>(fY + m_fpIconOffset.y),
                 static_cast<long>(m_fpIconSize.x), static_cast<long>(m_fpIconSize.y));
-            m_aButton[n]->pImg->Draw();
+            button->pImg->Draw();
         }
 
         // display all lines
-        for (long i = 0; i < m_aButton[n]->aStr.size(); i++)
+        for (auto &line : button->aStr)
         {
             m_rs->ExtPrint(m_nFontNum, dwColor, 0, PR_ALIGN_LEFT, true, m_fFontScale, m_screenSize.x, m_screenSize.y,
-                           static_cast<long>(fX + m_frTextOffset.left + m_aButton[n]->aStr[i].fX),
-                           static_cast<long>(fY + m_frTextOffset.top), "%s", m_aButton[n]->aStr[i].str.c_str());
+                           static_cast<long>(fX + m_frTextOffset.left + line.fX),
+                           static_cast<long>(fY + m_frTextOffset.top), "%s", line.str.c_str());
             fY += m_fTextLineHeight;
         }
 
@@ -221,8 +214,8 @@ int CXI_CHECKBUTTONS::CommandExecute(int wActCode)
 
 bool CXI_CHECKBUTTONS::IsClick(int buttonID, long xPos, long yPos)
 {
-    for (long n = 0; n < m_aButton.size(); n++)
-        if (m_aButton[n]->pImg && m_aButton[n]->pImg->IsPointInside(xPos, yPos))
+    for (auto &btn : m_aButton)
+        if (btn->pImg && btn->pImg->IsPointInside(xPos, yPos))
             return true;
     if (!m_bUse || !m_bClickable || xPos < m_rect.left || xPos > m_rect.right || yPos < m_rect.top ||
         yPos > m_rect.bottom)
@@ -521,8 +514,8 @@ void CXI_CHECKBUTTONS::UpdateTextInfo(long nButtonNum)
 {
     // get the full text
     std::string sAllText;
-    for (long n = 0; n < m_aButton[nButtonNum]->aStr.size(); n++)
-        sAllText += m_aButton[nButtonNum]->aStr[n].str;
+    for (auto &btn : m_aButton[nButtonNum]->aStr)
+        sAllText += btn.str;
 
     long nWidth = (m_rect.right - m_rect.left) - static_cast<long>(m_frTextOffset.right + m_frTextOffset.left);
     if (nWidth < 10)
@@ -536,7 +529,7 @@ void CXI_CHECKBUTTONS::UpdateTextInfo(long nButtonNum)
     {
         // m_aButton[nButtonNum]->aStr.Add();
         m_aButton[nButtonNum]->aStr[n].str = asOutStr[n];
-        const long nOffset = m_rs->StringWidth((char *)asOutStr[n].c_str(), m_nFontNum, m_fFontScale, 0);
+        const long nOffset = m_rs->StringWidth(asOutStr[n].c_str(), m_nFontNum, m_fFontScale, 0);
         switch (m_nFontAlignment)
         {
         case PR_ALIGN_LEFT:
