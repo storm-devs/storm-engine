@@ -46,9 +46,15 @@ void LocModelRealizer::Realize(uint32_t delta_time) const
         uint32_t dwLighting;
         if (lights)
         {
+            static CVECTOR camPos, camAng;
+            rs->GetCamera(camPos, camAng, camAng.x);
+
             rs->GetRenderState(D3DRS_LIGHTING, &dwLighting);
             rs->GetLightEnable(0, &bLight0Enable);
-            lights->SetCharacterLights();
+
+            // calc lightning at camera pos
+            lights->SetLightsAt(camPos);
+
             rs->SetRenderState(D3DRS_LIGHTING, TRUE);
             rs->LightEnable(0, TRUE);
         }
@@ -56,7 +62,7 @@ void LocModelRealizer::Realize(uint32_t delta_time) const
         pE->ProcessStage(Stage::realize, delta_time);
         if (lights)
         {
-            lights->DelCharacterLights();
+            lights->UnsetLights();
             rs->SetRenderState(D3DRS_LIGHTING, dwLighting);
             rs->LightEnable(0, bLight0Enable);
         }

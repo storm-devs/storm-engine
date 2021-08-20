@@ -338,7 +338,7 @@ void Character::RTuner::Set(MODEL *model, VDX9RENDER *rs)
     {
         auto *ls = location->GetLights();
         if (ls)
-            ls->SetCharacterLights(&character->curPos);
+            ls->SetLightsAt(character->curPos);
     }
 }
 
@@ -348,7 +348,7 @@ void Character::RTuner::Restore(MODEL *model, VDX9RENDER *rs)
     {
         auto *ls = location->GetLights();
         if (ls)
-            ls->DelCharacterLights();
+            ls->UnsetLights();
     }
     auto *n = model->GetNode(0);
     if (!n)
