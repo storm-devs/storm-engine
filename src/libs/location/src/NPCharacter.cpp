@@ -869,8 +869,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     // our group
     const long grpIndex = chrGroup->FindGroupIndex(group);
     // Enemy table
-    static EnemyState enemies[MAX_CHARACTERS];
-    long enemyCounter = 0;
+    auto enemies = std::vector<EnemyState>();
     // Our direction
     const CVECTOR dir(sinf(ay), 0.0f, cosf(ay));
     // Calculating enemies
@@ -904,17 +903,18 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
         if (chrGroup->FindRelation(grpIndex, grp).curState != CharactersGroups::rs_enemy)
             continue;
         // This is the enemy
-        enemies[enemyCounter].chr = chr;
+        auto &found_enemy = enemies.emplace_back();
+        found_enemy.chr = chr;
         // Where the enemy is looking and location relative to us
         if (fc.d2 > 0.0f)
         {
-            enemies[enemyCounter].look = -(sinf(chr->ay) * fc.dx + cosf(chr->ay) * fc.dz) / fc.d2;
-            enemies[enemyCounter].dir = (dir.x * fc.dx + dir.z * fc.dz) / fc.d2;
+            found_enemy.look = -(sinf(chr->ay) * fc.dx + cosf(chr->ay) * fc.dz) / fc.d2;
+            found_enemy.dir = (dir.x * fc.dx + dir.z * fc.dz) / fc.d2;
         }
         else
         {
-            enemies[enemyCounter].look = 0.0f;
-            enemies[enemyCounter].dir = 0.0f;
+            found_enemy.look = 0.0f;
+            found_enemy.dir = 0.0f;
         }
         // If necessary, analyze the goal
         if (wishAttact)
@@ -935,12 +935,11 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
                 energy = 0.0f;
             if (energy > 1.0f)
                 energy = 1.0f;
-            enemies[enemyCounter].state = 0.1f / (hp + 0.05f) + 0.2f / (energy + 0.5f);
+            found_enemy.state = 0.1f / (hp + 0.05f) + 0.2f / (energy + 0.5f);
         }
-        enemyCounter++;
     }
     // If there is no one malicious, do nothing
-    if (!enemyCounter)
+    if (enemies.empty())
         return;
     // If attack, then choose a suitable target for the attack.
     if (wishAttact)
@@ -948,7 +947,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
         float kSel;
         long counter = 0;
         Character *enemy = nullptr;
-        for (long i = 0, j = -1; i < enemyCounter; i++)
+        for (size_t i = 0; i < enemies.size(); i++)
         {
             EnemyState &es = enemies[i];
             const float k = es.state * 1.0f + (es.dir + 1.0f) * 0.5f;
@@ -978,7 +977,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     bool isBreakAttack = false;
     long attacked = 0;
     static const float attackAng = cosf(0.5f * CHARACTER_ATTACK_ANG * (3.1415926535f / 180.0f));
-    for (long i = 0; i < enemyCounter; i++)
+    for (size_t i = 0; i < enemies.size(); i++)
     {
         if (enemies[i].look >= attackAng)
         {
@@ -1026,7 +1025,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
             else
             {
                 // There is a choice - parry or bounce
-                if (PrTest(0.4f + enemyCounter * (0.1f + fightLevel * 0.1f)))
+                if (PrTest(0.4f + enemies.size() * (0.1f + fightLevel * 0.1f)))
                 {
                     Recoil();
                 }
