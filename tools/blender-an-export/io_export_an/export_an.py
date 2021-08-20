@@ -133,8 +133,10 @@ def export_an(context, file_path=""):
             rotation_quaternion_z.append(keyframe.co[1])
 
         for idx in range(len(rotation_quaternion_w)):
-            joint_angles.append([rotation_quaternion_w[idx], rotation_quaternion_x[idx],
-                                rotation_quaternion_y[idx], rotation_quaternion_z[idx]])
+            quat = mathutils.Quaternion([rotation_quaternion_w[idx], rotation_quaternion_x[idx],
+                                         rotation_quaternion_y[idx], rotation_quaternion_z[idx]])
+            quat.normalize()
+            joint_angles.append([quat.w, quat.x, quat.y, quat.z])
 
         joints_angles.append(joint_angles)
 
