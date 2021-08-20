@@ -19,9 +19,8 @@
 // ============================================================================================
 
 Supervisor::Supervisor()
-    : character{}, colchr{}, numColChr(0), isDelete(false)
+    : isDelete(false)
 {
-    numCharacters = 0;
     time = 0.0f;
     waveTime = 0.0f;
     curUpdate = 0;
@@ -31,7 +30,7 @@ Supervisor::Supervisor()
 Supervisor::~Supervisor()
 {
     isDelete = true;
-    for (long i = 0; i < numCharacters; i++)
+    for (size_t i = 0; i < character.size(); i++)
     {
         character[i].c->AlreadySTORM_DELETE();
         EntityManager::EraseEntity(character[i].c->GetId());
@@ -42,19 +41,19 @@ Supervisor::~Supervisor()
 void Supervisor::AddCharacter(Character *ch)
 {
     Assert(ch);
-    if (numCharacters >= MAX_CHARACTERS)
-        throw std::runtime_error("Number of characters amount to criticle value, don't create new character");
-    character[numCharacters].c = ch;
-    character[numCharacters++].lastTime = time;
+    character.emplace_back(ch, time);
+    colchr.resize(character.size() * character.size());
 }
 
 // Remove character from location
 void Supervisor::DelCharacter(Character *ch)
 {
-    for (long i = 0; i < numCharacters; i++)
+    for (size_t i = 0; i < character.size(); i++)
         if (character[i].c == ch)
         {
-            character[i] = character[--numCharacters];
+            character[i] = character.back();
+            character.pop_back();
+            colchr.resize(character.size() * character.size());
             return;
         }
 }
@@ -62,10 +61,10 @@ void Supervisor::DelCharacter(Character *ch)
 void Supervisor::Update(float dltTime)
 {
     // If there are no characters, do nothing
-    if (!numCharacters)
+    if (character.empty())
         return;
     // Moving characters
-    for (long i = 0; i < numCharacters; i++)
+    for (size_t i = 0; i < character.size(); i++)
     {
         character[i].c->Move(dltTime);
         character[i].c->colMove = 0.0f;
@@ -73,8 +72,8 @@ void Supervisor::Update(float dltTime)
     }
     // calculate the distances, and determine the interacting characters
     long chr = 0;
-    long i;
-    for (i = 0; i < numCharacters - 1; i++)
+    size_t i;
+    for (i = 0; i < character.size() - 1; i++)
     {
         // skip the dead
         if (character[i].c->liveValue < 0 || character[i].c->deadName)
@@ -82,7 +81,7 @@ void Supervisor::Update(float dltTime)
         character[i].c->startColCharacter = chr;
         auto curPos(character[i].c->curPos);
         const auto radius = character[i].c->radius;
-        for (auto j = i + 1; j < numCharacters; j++)
+        for (auto j = i + 1; j < character.size(); j++)
         {
             // skip the dead
             auto *ci = character[i].c;
@@ -188,17 +187,17 @@ void Supervisor::Update(float dltTime)
     }
     character[i].c->numColCharacter = 0;
     // Calculations
-    for (i = 0; i < numCharacters; i++)
+    for (i = 0; i < character.size(); i++)
         character[i].c->Calculate(dltTime);
     // Collision of characters and setting new coordinates
-    for (i = 0; i < numCharacters; i++)
+    for (i = 0; i < character.size(); i++)
         character[i].c->Update(dltTime);
 }
 
 void Supervisor::PreUpdate(float dltTime) const
 {
     // Resetting the state of the characters
-    for (long i = 0; i < numCharacters; i++)
+    for (size_t i = 0; i < character.size(); i++)
         character[i].c->Reset();
     core.Event("CharactersStateUpdate", "f", dltTime);
 }
@@ -211,12 +210,12 @@ void Supervisor::PostUpdate(float dltTime)
     // Correct the time when the limit is exceeded
     if (time > 10000.0f)
     {
-        for (long i = 0; i < numCharacters; i++)
+        for (size_t i = 0; i < character.size(); i++)
             character[i].lastTime -= time;
         time -= 10000.0f;
     }
     // If it's not time to update, skip the turn
-    if (curUpdate >= numCharacters)
+    if (curUpdate >= character.size())
     {
         if (waveTime < 0.1f)
             return;
@@ -224,11 +223,11 @@ void Supervisor::PostUpdate(float dltTime)
         curUpdate = 0;
     }
     // Executing the current character
-    if (numCharacters)
+    if (!character.empty())
     {
         for (long i = 0; i < 5; i++)
         {
-            if (curUpdate >= numCharacters)
+            if (curUpdate >= character.size())
                 break;
             const auto dlt = time - character[curUpdate].lastTime;
             character[curUpdate].lastTime = time;
@@ -244,7 +243,7 @@ void Supervisor::PostUpdate(float dltTime)
 // Set loading positions
 void Supervisor::SetSavePositions() const
 {
-    for (long i = 0; i < numCharacters; i++)
+    for (size_t i = 0; i < character.size(); i++)
     {
         if (!character[i].c)
             continue;
@@ -255,7 +254,7 @@ void Supervisor::SetSavePositions() const
 // Delete positions for loading
 void Supervisor::DelSavePositions(bool isTeleport) const
 {
-    for (long i = 0; i < numCharacters; i++)
+    for (size_t i = 0; i < character.size(); i++)
     {
         if (!character[i].c)
             continue;
@@ -266,7 +265,7 @@ void Supervisor::DelSavePositions(bool isTeleport) const
 // Check for free position
 bool Supervisor::CheckPosition(float x, float y, float z, Character *c) const
 {
-    for (long i = 0; i < numCharacters; i++)
+    for (size_t i = 0; i < character.size(); i++)
     {
         if (character[i].c == c)
             continue;
@@ -325,7 +324,7 @@ std::vector<Supervisor::FindCharacter> Supervisor::FindCharacters(Character *chr
     ax *= ax;
     auto testY = y + chr->height * 0.5f;
     // Viewing the characters
-    for (long i = 0; i < numCharacters; i++)
+    for (size_t i = 0; i < character.size(); i++)
     {
         // Exclude ourselves
         if (character[i].c == chr)

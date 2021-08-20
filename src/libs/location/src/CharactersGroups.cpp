@@ -204,7 +204,7 @@ void CharactersGroups::Execute(uint32_t delta_time)
     waveTime += dltTime;
     if (curExecuteChr >= 0)
     {
-        if (curExecuteChr < location->supervisor.numCharacters)
+        if (curExecuteChr < location->supervisor.character.size())
         {
             auto *const c = location->supervisor.character[curExecuteChr].c;
             CharacterVisibleCheck(c);
@@ -356,7 +356,7 @@ bool CharactersGroups::AddEnemyTarget(Character *chr, Character *enemy, float ma
 void CharactersGroups::RemoveAllInvalidTargets()
 {
     // Update goal lists
-    for (long i = 0; i < location->supervisor.numCharacters; i++)
+    for (size_t i = 0; i < location->supervisor.character.size(); i++)
     {
         RemoveInvalidTargets(location->supervisor.character[i].c);
     }
@@ -570,8 +570,8 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
     {
         CVECTOR pos, p;
         c->GetPosition(pos);
-        const auto numChr = location->supervisor.numCharacters;
-        auto *const cEx = location->supervisor.character;
+        const auto numChr = location->supervisor.character.size();
+        auto &cEx = location->supervisor.character;
         // choose the optimal goal
         float value;
         s = -1;
@@ -1180,7 +1180,7 @@ long CharactersGroups::GetCharacterGroup(Character *c)
 void CharactersGroups::ClearAllTargets() const
 {
     // Update goal lists
-    for (long i = 0; i < location->supervisor.numCharacters; i++)
+    for (size_t i = 0; i < location->supervisor.character.size(); i++)
     {
         location->supervisor.character[i].c->numTargets = 0;
     }

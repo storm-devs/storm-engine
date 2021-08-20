@@ -309,7 +309,7 @@ void Player::Update(float dltTime)
     if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
     {
         auto *const location = GetLocation();
-        for (long i = 0; i < location->supervisor.numCharacters; i++)
+        for (size_t i = 0; i < location->supervisor.character.size(); i++)
         {
             auto *const chr = location->supervisor.character[i].c;
             if (chr != this && chr)
@@ -770,8 +770,9 @@ void Player::FireFromShootgun()
                 auto *const e = EntityManager::GetEntityPointer(collide->GetObjectID());
                 if (e && e != this)
                 {
-                    long n, nm;
-                    for (n = 0, nm = location->supervisor.numCharacters; n < nm; n++)
+                    long nm;
+                    size_t n;
+                    for (n = 0, nm = location->supervisor.character.size(); n < nm; n++)
                     {
                         auto *c = static_cast<Player *>(location->supervisor.character[n].c);
                         if (c->Model() == e)

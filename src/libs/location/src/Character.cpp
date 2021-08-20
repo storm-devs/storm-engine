@@ -661,11 +661,6 @@ bool Character::Init()
     effects = EntityManager::GetEntityId("LocationEffects");
     soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
     // register our appearance in the location
-    if (location->supervisor.numCharacters >= MAX_CHARACTERS)
-    {
-        core.Trace("Many characters in location");
-        return false;
-    }
     location->supervisor.AddCharacter(this);
     // The sea
     sea = EntityManager::GetEntityId("sea");

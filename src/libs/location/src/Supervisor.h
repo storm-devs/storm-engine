@@ -82,10 +82,8 @@ class Supervisor
     long curUpdate;
 
   public:
-    CharacterEx character[MAX_CHARACTERS];
-    long numCharacters;
-    CharacterInfo colchr[MAX_CHARACTERS * MAX_CHARACTERS];
-    long numColChr;
+    std::vector<CharacterEx> character;
+    std::vector<CharacterInfo> colchr;
     bool isDelete;
     Character *player;
 };
