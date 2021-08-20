@@ -145,8 +145,7 @@ class Grass : public Entity
     // Set texture
     void SetTexture(const char *texName);
 
-    CharacterPos characters[MAX_CHARACTERS];
-    long numCharacters;
+    std::vector<CharacterPos> characters;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
@@ -192,8 +191,7 @@ class Grass : public Entity
     CVECTOR lColor; // Source color
     CVECTOR aColor; // Ambient light color
 
-    long blockChrs[32]; // Indexes of characters processed by the block
-    long numBlockChr;   // Number of characters processed by the block
+    std::vector<long> blockChrs; // Indexes of characters processed by the block
 
     float lodSelect; // Lod selection range factor (kLod = kLod^lodSelect)
     float winForce;  // Wind speed coefficient 0..1

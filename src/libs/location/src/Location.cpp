@@ -125,13 +125,13 @@ void Location::Execute(uint32_t delta_time)
     auto *grs = static_cast<Grass *>(EntityManager::GetEntityPointer(grass));
     if (grs)
     {
+        grs->characters.resize(supervisor.character.size());
         for (size_t i = 0; i < supervisor.character.size(); i++)
         {
             supervisor.character[i].c->GetGrassPosition(grs->characters[i].pos, grs->characters[i].lastPos);
             grs->characters[i].chr = supervisor.character[i].c;
             grs->characters[i].useCounter = 0;
         }
-        grs->numCharacters = supervisor.character.size();
     }
     // Location update
     locationTimeUpdate += dltTime;
