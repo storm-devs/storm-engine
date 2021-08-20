@@ -15,8 +15,6 @@ class Character;
 class LocatorArray;
 struct CVECTOR;
 
-#define MAX_CHARACTERS 64
-
 class Supervisor
 {
     friend Character;
