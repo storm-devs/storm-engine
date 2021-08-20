@@ -73,8 +73,7 @@ class CharactersGroups : public Entity
         float say;                 // The radius at which the character can inform neighbors about the danger
         long priority;             // Protection priority
         Relation *relations;       // Relationship list - the size corresponds to the group index in the list
-        entid_t c[MAX_CHARACTERS]; // List of characters in the group
-        long numChr;               // Number of characters in the group
+        std::vector<entid_t> c;    // List of characters in the group
     };
 
     // --------------------------------------------------------------------------------------------

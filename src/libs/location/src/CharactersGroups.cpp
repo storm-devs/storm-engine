@@ -175,21 +175,21 @@ void CharactersGroups::Execute(uint32_t delta_time)
                 }
             }
         }
-        if (playerGroup >= 0 && playerGroup != i && groups[i]->numChr > 0)
+        if (playerGroup >= 0 && playerGroup != i && !groups[i]->c.empty())
         {
             auto &rl = FindRelation(playerGroup, i);
             if (rl.curState != rs_enemy)
                 continue;
             if (playerAlarm < rl.alarm)
                 playerAlarm = rl.alarm;
-            long n;
-            for (n = 0; n < groups[i]->numChr; n++)
+            size_t n;
+            for (n = 0; n < groups[i]->c.size(); n++)
             {
                 auto *cg = static_cast<Character *>(EntityManager::GetEntityPointer(groups[i]->c[n]));
                 if (cg && cg->IsSetBlade())
                     break;
             }
-            if (n >= groups[i]->numChr)
+            if (n >= groups[i]->c.size())
                 continue;
             if (rl.isActive)
                 playerActive = true;
@@ -795,7 +795,6 @@ long CharactersGroups::RegistryGroup(const char *groupName)
     }
     else
         grp->relations = nullptr;
-    grp->numChr = 0;
     return numGroups - 1;
 }
 
@@ -942,12 +941,8 @@ bool CharactersGroups::MoveCharacterToGroup(MESSAGE &message)
     Assert(grp);
     // Remove the character from the previous group
     RemoveCharacterFromAllGroups(eid);
-    // Check for free space in the group
-    // boal fix for intel cpp if(grp->numChr >= sizeof(CharactersGroups::Group::c)/sizeof(Character *)) return false;
-    if (grp->numChr >= MAX_CHARACTERS)
-        return false; // fix
     // Place in the new
-    grp->c[grp->numChr++] = eid;
+    grp->c.push_back(eid);
     strcpy_s(chr->group, grpName.c_str());
     RemoveInvalidTargets(chr);
     return true;
@@ -1042,13 +1037,14 @@ void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
     for (long i = 0; i < numGroups; i++)
     {
         auto *g = groups[i];
-        auto *const cid = g->c;
-        for (long j = 0; j < g->numChr;)
+        auto &cid = g->c;
+        for (size_t j = 0; j < g->c.size();)
         {
             auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(cid[j]));
             if (c == nullptr || c == ch)
             {
-                cid[j] = cid[--g->numChr];
+                cid[j] = cid.back();
+                cid.pop_back();
             }
             else
                 j++;
@@ -1063,7 +1059,7 @@ void CharactersGroups::DeleteEmptyGroups()
     {
         Group *g = groups[i];
 
-        if (g->numChr == 0)
+        if (g->c.empty())
         {
             ReleaseGroup(g->name.name);
             --i; // the last group moved to this position
