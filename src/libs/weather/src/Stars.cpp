@@ -167,12 +167,11 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
         if (outfileS.is_open())
         {
             uint32_t dwFileLen = fio->_GetFileSize("resource\\star.dat");
-            if (dwFileLen == dwSize * (sizeof(Star) + sizeof(CVECTOR) + sizeof(uint32_t)))
+            const uint32_t stride = (sizeof(Star) + sizeof(CVECTOR) + sizeof(uint32_t));
+            if (dwFileLen == dwSize * stride)
             {
-                // aStars.AddElements(dwSize);
                 aStars.resize(aStars.size() + dwSize);
                 fio->_SetFilePointer(outfileS, 0, std::ios::beg);
-                fio->_ReadFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
                 fio->_ReadFile(outfileS, aStars.data(), sizeof(Star) * dwSize);
                 fio->_ReadFile(outfileS, pVPos, sizeof(CVECTOR) * dwSize);
                 fio->_ReadFile(outfileS, pVColors, sizeof(uint32_t) * dwSize);
