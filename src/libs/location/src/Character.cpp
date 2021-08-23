@@ -661,11 +661,6 @@ bool Character::Init()
     effects = EntityManager::GetEntityId("LocationEffects");
     soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
     // register our appearance in the location
-    if (location->supervisor.numCharacters >= MAX_CHARACTERS)
-    {
-        core.Trace("Many characters in location");
-        return false;
-    }
     location->supervisor.AddCharacter(this);
     // The sea
     sea = EntityManager::GetEntityId("sea");
@@ -1808,13 +1803,12 @@ void Character::Dead()
     Assert(dead);
     // spread weights depending on the direction
     const float _ay = ay;
-    static Supervisor::FindCharacter fnd[MAX_CHARACTERS];
-    static long numChr = 0;
     auto *const location = GetLocation();
     for (long i = 0; i < num; i++)
     {
         ay = _ay + dead[i].ang;
-        if (location->supervisor.FindCharacters(fnd, numChr, this, 2.0f, 0.0f, 0.0f))
+        auto fnd = location->supervisor.FindCharacters(this, 2.0f, 0.0f, 0.0f);
+        if (!fnd.empty())
             dead[i].p *= 0.1f;
         const float cs = cosf(dead[i].ang);
         const float sn = sinf(dead[i].ang);
@@ -4641,14 +4635,13 @@ Character *Character::FindDialogCharacter()
     if (IsFight() || liveValue < 0 || deadName)
         return nullptr;
     // Find the surrounding characters
-    static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
-    static long num = 0;
-    if (!location->supervisor.FindCharacters(fndCharacter, num, this, 3.0f))
+    auto fndCharacter = location->supervisor.FindCharacters(this, 3.0f);
+    if (fndCharacter.empty())
         return nullptr;
     // Choosing the best
     float minDst;
     long j = -1;
-    for (long i = 0; i < num; i++)
+    for (size_t i = 0; i < fndCharacter.size(); i++)
     {
         // Character
         Supervisor::FindCharacter &fc = fndCharacter[i];
@@ -4766,16 +4759,16 @@ inline void Character::CheckAttackHit()
         }
     }
     // Find the surrounding characters
-    static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
-    long num = 0;
     auto *const location = GetLocation();
-    if (!location->supervisor.FindCharacters(fndCharacter, num, this, attackDist, attackAng, 0.1f, 0.0f, false, true))
+    auto fndCharacter =
+        location->supervisor.FindCharacters(this, attackDist, attackAng, 0.1f, 0.0f, false, true);
+    if (fndCharacter.empty())
         return;
     // go through all the enemies
     bool isParry = false;
     bool isHrrrSound = true;
     bool isUseEnergy = true; // remove energy once boal
-    for (long i = 0; i < num; i++)
+    for (size_t i = 0; i < fndCharacter.size(); i++)
     {
         // Character
         Supervisor::FindCharacter &fc = fndCharacter[i];
@@ -4857,15 +4850,14 @@ Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest, bool bAbo
     }
 
     // Find the surrounding characters
-    static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
-    static long num = 0;
     auto *const location = GetLocation();
-    if (!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_FIGHT_FIREDIST, CHARACTER_FIGHT_FIREANG,
-                                             0.4f, 30.0f, false))
+    auto fndCharacter = location->supervisor.FindCharacters(this, CHARACTER_FIGHT_FIREDIST, CHARACTER_FIGHT_FIREANG,
+                                                            0.4f, 30.0f, false);
+    if (fndCharacter.empty())
         return nullptr;
     float minDst;
     long j = -1;
-    for (long i = 0; i < num; i++)
+    for (size_t i = 0; i < fndCharacter.size(); i++)
     {
         Supervisor::FindCharacter &fc = fndCharacter[i];
         if (fc.d2 <= 0.0f || fc.c->radius <= 0.0f)
@@ -4935,10 +4927,10 @@ void Character::FindNearCharacters(MESSAGE &message)
     const bool isSort = message.Long() != 0;
     // Looking for characters
     // Find the surrounding characters
-    static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
-    static long n = 0;
     auto *const location = GetLocation();
-    if (!location->supervisor.FindCharacters(fndCharacter, n, this, rad, viewAng, planeDist, ax, isSort))
+    auto fndCharacter = location->supervisor.FindCharacters(this, rad, viewAng, planeDist, ax, isSort);
+    auto n = fndCharacter.size();
+    if (fndCharacter.empty())
     {
         num->Set(0L);
         return;

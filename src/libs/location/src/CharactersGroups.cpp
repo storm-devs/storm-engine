@@ -175,21 +175,21 @@ void CharactersGroups::Execute(uint32_t delta_time)
                 }
             }
         }
-        if (playerGroup >= 0 && playerGroup != i && groups[i]->numChr > 0)
+        if (playerGroup >= 0 && playerGroup != i && !groups[i]->c.empty())
         {
             auto &rl = FindRelation(playerGroup, i);
             if (rl.curState != rs_enemy)
                 continue;
             if (playerAlarm < rl.alarm)
                 playerAlarm = rl.alarm;
-            long n;
-            for (n = 0; n < groups[i]->numChr; n++)
+            size_t n;
+            for (n = 0; n < groups[i]->c.size(); n++)
             {
                 auto *cg = static_cast<Character *>(EntityManager::GetEntityPointer(groups[i]->c[n]));
                 if (cg && cg->IsSetBlade())
                     break;
             }
-            if (n >= groups[i]->numChr)
+            if (n >= groups[i]->c.size())
                 continue;
             if (rl.isActive)
                 playerActive = true;
@@ -204,7 +204,7 @@ void CharactersGroups::Execute(uint32_t delta_time)
     waveTime += dltTime;
     if (curExecuteChr >= 0)
     {
-        if (curExecuteChr < location->supervisor.numCharacters)
+        if (curExecuteChr < location->supervisor.character.size())
         {
             auto *const c = location->supervisor.character[curExecuteChr].c;
             CharacterVisibleCheck(c);
@@ -236,25 +236,25 @@ void CharactersGroups::CharacterVisibleCheck(Character *chr)
         return;
     auto *const grp = groups[gi];
     // Visible area
-    long num;
-    if (location->supervisor.FindCharacters(fnd, num, chr, grp->look, CGS_VIEWANGLE, 0.05f))
+    fnd = location->supervisor.FindCharacters(chr, grp->look, CGS_VIEWANGLE, 0.05f);
+    if (!fnd.empty())
     {
-        FindEnemyFromFindList(chr, grp, num, true);
+        FindEnemyFromFindList(chr, grp, true);
     }
     // Audible area
-    if (location->supervisor.FindCharacters(fnd, num, chr, grp->hear))
+    fnd = location->supervisor.FindCharacters(chr, grp->hear);
+    if (!fnd.empty())
     {
-        FindEnemyFromFindList(chr, grp, num, false);
+        FindEnemyFromFindList(chr, grp, false);
     }
 }
 
 // Check found characters for enemies
-void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, long num, bool visCheck)
+void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, bool visCheck)
 {
-    Character *targets[MAX_CHARACTERS];
-    long numTrg = 0;
+    std::vector<Character *> targets;
     // For all found characters
-    for (long i = 0; i < num; i++)
+    for (size_t i = 0; i < fnd.size(); i++)
     {
         // Found character group
         const auto gi = GetCharacterGroup(fnd[i].c);
@@ -269,14 +269,13 @@ void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, long nu
         // Found an enemy, add
         if (AddEnemyTarget(chr, fnd[i].c))
         {
-            if (numTrg < MAX_CHARACTERS)
-                targets[numTrg++] = fnd[i].c;
+            targets.push_back(fnd[i].c);
         }
     }
     // Inform others about the detected targets
-    if (numTrg > 0 && location->supervisor.FindCharacters(fnd, num, chr, grp->say))
+    if (!targets.empty() && !(fnd = location->supervisor.FindCharacters(chr, grp->say)).empty())
     {
-        for (long i = 0; i < num; i++)
+        for (size_t i = 0; i < fnd.size(); i++)
         {
             auto *const c = fnd[i].c;
             // If invisible, then skip it
@@ -290,7 +289,7 @@ void CharactersGroups::FindEnemyFromFindList(Character *chr, Group *grp, long nu
             auto &r = FindRelation(grp->index, cgrp);
             if (r.curState != rs_friend)
                 continue;
-            for (long j = 0; j < numTrg; j++)
+            for (size_t j = 0; j < targets.size(); j++)
             {
                 if (grp->index != cgrp)
                 {
@@ -355,7 +354,7 @@ bool CharactersGroups::AddEnemyTarget(Character *chr, Character *enemy, float ma
 void CharactersGroups::RemoveAllInvalidTargets()
 {
     // Update goal lists
-    for (long i = 0; i < location->supervisor.numCharacters; i++)
+    for (size_t i = 0; i < location->supervisor.character.size(); i++)
     {
         RemoveInvalidTargets(location->supervisor.character[i].c);
     }
@@ -569,8 +568,8 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
     {
         CVECTOR pos, p;
         c->GetPosition(pos);
-        const auto numChr = location->supervisor.numCharacters;
-        auto *const cEx = location->supervisor.character;
+        const auto numChr = location->supervisor.character.size();
+        auto &cEx = location->supervisor.character;
         // choose the optimal goal
         float value;
         s = -1;
@@ -700,10 +699,10 @@ void CharactersGroups::MsgAddTarget(MESSAGE &message)
     // Adding the enemy
     AddEnemyTarget(chr, enemy, message.Float());
     // Informing others about the new goal
-    long num = 0;
-    if (location->supervisor.FindCharacters(fnd, num, chr, groups[g1]->say))
+    fnd = location->supervisor.FindCharacters(chr, groups[g1]->say);
+    if (!fnd.empty())
     {
-        for (long i = 0; i < num; i++)
+        for (size_t i = 0; i < fnd.size(); i++)
         {
             auto *const c = fnd[i].c;
             // If invisible, then skip it
@@ -794,7 +793,6 @@ long CharactersGroups::RegistryGroup(const char *groupName)
     }
     else
         grp->relations = nullptr;
-    grp->numChr = 0;
     return numGroups - 1;
 }
 
@@ -941,12 +939,8 @@ bool CharactersGroups::MoveCharacterToGroup(MESSAGE &message)
     Assert(grp);
     // Remove the character from the previous group
     RemoveCharacterFromAllGroups(eid);
-    // Check for free space in the group
-    // boal fix for intel cpp if(grp->numChr >= sizeof(CharactersGroups::Group::c)/sizeof(Character *)) return false;
-    if (grp->numChr >= MAX_CHARACTERS)
-        return false; // fix
     // Place in the new
-    grp->c[grp->numChr++] = eid;
+    grp->c.push_back(eid);
     strcpy_s(chr->group, grpName.c_str());
     RemoveInvalidTargets(chr);
     return true;
@@ -1041,13 +1035,14 @@ void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
     for (long i = 0; i < numGroups; i++)
     {
         auto *g = groups[i];
-        auto *const cid = g->c;
-        for (long j = 0; j < g->numChr;)
+        auto &cid = g->c;
+        for (size_t j = 0; j < g->c.size();)
         {
             auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(cid[j]));
             if (c == nullptr || c == ch)
             {
-                cid[j] = cid[--g->numChr];
+                cid[j] = cid.back();
+                cid.pop_back();
             }
             else
                 j++;
@@ -1062,7 +1057,7 @@ void CharactersGroups::DeleteEmptyGroups()
     {
         Group *g = groups[i];
 
-        if (g->numChr == 0)
+        if (g->c.empty())
         {
             ReleaseGroup(g->name.name);
             --i; // the last group moved to this position
@@ -1179,7 +1174,7 @@ long CharactersGroups::GetCharacterGroup(Character *c)
 void CharactersGroups::ClearAllTargets() const
 {
     // Update goal lists
-    for (long i = 0; i < location->supervisor.numCharacters; i++)
+    for (size_t i = 0; i < location->supervisor.character.size(); i++)
     {
         location->supervisor.character[i].c->numTargets = 0;
     }

@@ -309,7 +309,7 @@ void Player::Update(float dltTime)
     if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
     {
         auto *const location = GetLocation();
-        for (long i = 0; i < location->supervisor.numCharacters; i++)
+        for (size_t i = 0; i < location->supervisor.character.size(); i++)
         {
             auto *const chr = location->supervisor.character[i].c;
             if (chr != this && chr)
@@ -632,9 +632,8 @@ Player *Player::FindAttackCharacter()
 {
     auto *const location = GetLocation();
     // Find the surrounding characters
-    static Supervisor::FindCharacter fndCharacter[MAX_CHARACTERS];
-    static long num = 0;
-    if (!location->supervisor.FindCharacters(fndCharacter, num, this, CHARACTER_ATTACK_DIST * 1.1f))
+    auto fndCharacter = location->supervisor.FindCharacters(this, CHARACTER_ATTACK_DIST * 1.1f);
+    if (fndCharacter.empty())
         return nullptr;
     // Choosing the best
     float minDst;
@@ -645,7 +644,7 @@ Player *Player::FindAttackCharacter()
     const auto cdx = sinf(ay);
     const auto cdz = cosf(ay);
     long j = -1;
-    for (long i = 0; i < num; i++)
+    for (size_t i = 0; i < fndCharacter.size(); i++)
     {
         // Character
         auto &fc = fndCharacter[i];
@@ -771,8 +770,9 @@ void Player::FireFromShootgun()
                 auto *const e = EntityManager::GetEntityPointer(collide->GetObjectID());
                 if (e && e != this)
                 {
-                    long n, nm;
-                    for (n = 0, nm = location->supervisor.numCharacters; n < nm; n++)
+                    long nm;
+                    size_t n;
+                    for (n = 0, nm = location->supervisor.character.size(); n < nm; n++)
                     {
                         auto *c = static_cast<Player *>(location->supervisor.character[n].c);
                         if (c->Model() == e)

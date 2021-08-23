@@ -73,8 +73,7 @@ class CharactersGroups : public Entity
         float say;                 // The radius at which the character can inform neighbors about the danger
         long priority;             // Protection priority
         Relation *relations;       // Relationship list - the size corresponds to the group index in the list
-        entid_t c[MAX_CHARACTERS]; // List of characters in the group
-        long numChr;               // Number of characters in the group
+        std::vector<entid_t> c;    // List of characters in the group
     };
 
     // --------------------------------------------------------------------------------------------
@@ -116,7 +115,7 @@ class CharactersGroups : public Entity
     // Checking the character detects others
     void CharacterVisibleCheck(Character *chr);
     // Check found characters for enemies
-    void FindEnemyFromFindList(Character *chr, Group *grp, long num, bool visCheck);
+    void FindEnemyFromFindList(Character *chr, Group *grp, bool visCheck);
     // Add or update an enemy
     bool AddEnemyTarget(Character *chr, Character *enemy, float maxtime = -1.0);
     // Remove all inactive or invalid targets
@@ -214,5 +213,5 @@ class CharactersGroups : public Entity
     float waveTime;              // Time since last wave launch
 
     // Character search array
-    Supervisor::FindCharacter fnd[MAX_CHARACTERS];
+    std::vector<Supervisor::FindCharacter> fnd;
 };

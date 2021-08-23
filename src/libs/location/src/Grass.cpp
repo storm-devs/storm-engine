@@ -54,7 +54,6 @@ Grass::Grass()
     lodSelect = GRASS_BLK_LOD;
     winForce = 0.3f;
     winDir = !CVECTOR(0.0f, 0.0f, 1.0f);
-    numCharacters = 0;
 
     strcpy_s(textureName, GRASS_DEFTEXTURE);
 
@@ -617,7 +616,7 @@ void Grass::Realize(uint32_t delta_time)
 
     rs->SetRenderState(D3DRS_FOGDENSITY, dwOldFogDensity);
 
-    for (long i = 0; i < numCharacters; i++)
+    for (size_t i = 0; i < characters.size(); i++)
     {
         if (characters[i].useCounter > 2)
         {
@@ -694,8 +693,8 @@ void Grass::RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlane
     if (kLod < m_fMinGrassLod)
         kLod = m_fMinGrassLod;
     // Determine the characters that fall into the current block
-    numBlockChr = 0;
-    for (long i = 0; i < numCharacters; i++)
+    blockChrs.clear();
+    for (size_t i = 0; i < characters.size(); i++)
     {
         // skip falling out characters
         if (characters[i].pos.x + 0.9f < min.x)
@@ -711,7 +710,7 @@ void Grass::RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlane
         if (characters[i].pos.z - 0.9f > max.z)
             continue;
         // Add an index
-        blockChrs[numBlockChr++] = i;
+        blockChrs.push_back(i);
     }
     // Render block
     RenderBlock(mm, kLod);
@@ -831,7 +830,7 @@ inline void Grass::RenderBlock(GRSMiniMapElement &mme, float kLod)
             winx = (0.9f * winx + kwDirX) * kamp + wAddX;
             winz = (0.9f * winz + kwDirZ) * kamp + wAddZ;
             // take into account the characters
-            for (long chr = 0; chr < numBlockChr; chr++)
+            for (size_t chr = 0; chr < blockChrs.size(); chr++)
             {
                 CharacterPos &cp = characters[blockChrs[chr]];
                 if (fabsf(cp.pos.y - y) < 0.7f)
