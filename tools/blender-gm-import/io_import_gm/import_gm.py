@@ -1033,6 +1033,7 @@ def import_gm(
             locator_bone_idx = locator_data.get('boneIdx')
             locator = bpy.data.objects.new(locator_name, None)
             collection.objects.link(locator)
+            locator.empty_display_type = 'ARROWS'
             locator.parent = group_locator
             locator.matrix_basis = locator_m
             locator.empty_display_size = 0.5

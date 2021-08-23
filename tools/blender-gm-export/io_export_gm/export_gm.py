@@ -588,26 +588,34 @@ def export_gm(context, file_path=""):
             file.write(struct.pack('<s', c.encode("utf-8")))
 
         current_name_offset = 0
+        names_offsets = [current_name_offset]
         for i in range(header_names_quantity):
             file.write(struct.pack('<l', current_name_offset))
             current_name_offset = globname.index('\0', current_name_offset) + 1
+            names_offsets.append(current_name_offset)
+
+        index_by_names = {}
+        for i in range(header_names_quantity):
+            offset = names_offsets[i]
+            next_offset = header_name_size if i == header_names_quantity - \
+                1 else names_offsets[i + 1]
+            name = globname[offset:next_offset].replace('\0', '')
+            index_by_names[name] = offset
 
         # TODO
         for i in range(header_ntextures):
             current_texture_name = textures[i]
-            current_texture_name_offset = globname.index(
-                current_texture_name + '\0')
+            current_texture_name_offset = index_by_names.get(current_texture_name)
             file.write(struct.pack('<l', current_texture_name_offset))
 
         for i in range(header_nmaterials):
             material = materials[i]
 
-            material_group_name_idx = globname.index(
-                'unknown material group' + '\0')
+            material_group_name_idx = index_by_names.get('unknown material group')
             file.write(struct.pack('<l', material_group_name_idx))
 
             material_name = material.get("name")
-            material_name_idx = globname.index(material_name + '\0')
+            material_name_idx = index_by_names.get(material_name)
             file.write(struct.pack('<l', material_name_idx))
 
             material_diffuse = 0.8
@@ -650,10 +658,10 @@ def export_gm(context, file_path=""):
             label_group_name = remove_blender_name_postfix(locator.parent_bone) if is_animated else remove_blender_name_postfix(
                 locator.parent.name)
 
-            label_group_name_idx = globname.index(label_group_name + '\0')
+            label_group_name_idx = index_by_names.get(label_group_name)
             file.write(struct.pack('<l', label_group_name_idx))
 
-            label_name_idx = globname.index(label_name + '\0')
+            label_name_idx = index_by_names.get(label_name)
             file.write(struct.pack('<l', label_name_idx))
 
             label_flags = 0
@@ -696,11 +704,11 @@ def export_gm(context, file_path=""):
 
             object_group_name = remove_blender_name_postfix(
                 objects[i].parent.name)
-            object_group_name_idx = globname.index(object_group_name + '\0')
+            object_group_name_idx = index_by_names.get(object_group_name)
             file.write(struct.pack('<l', object_group_name_idx))
 
             object_name = remove_blender_name_postfix(objects[i].name)
-            object_name_idx = globname.index(object_name + '\0')
+            object_name_idx = index_by_names.get(object_name)
             file.write(struct.pack('<l', object_name_idx))
 
             # TODO check
