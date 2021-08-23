@@ -331,7 +331,7 @@ def export_gm(context, file_path=""):
 
         bm.verts.ensure_lookup_table()
 
-        print(len(bm.verts), len(bm.faces))
+        print(src_obj.name, len(bm.verts), len(bm.faces))
 
         prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_layer)
 
@@ -339,7 +339,7 @@ def export_gm(context, file_path=""):
             prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_normals_layer)
 
         bm.to_mesh(obj.data)
-        print(len(bm.verts), len(bm.faces))
+        print(src_obj.name, len(bm.verts), len(bm.faces))
 
         obj_vertices = obj_data.vertices
         obj_vertices_coords = []
@@ -364,7 +364,7 @@ def export_gm(context, file_path=""):
 
         if vertices_quantity > 65536:
             bpy.data.objects.remove(obj, do_unlink=True)
-            raise ValueError('Vertices_quantity bigger than 65536!')
+            raise ValueError(src_obj.name + ' vertices_quantity bigger than 65536!')
 
         for vertex in bm.verts:
             pos = (obj.matrix_world @ mathutils.Vector(vertex.co)) - \
