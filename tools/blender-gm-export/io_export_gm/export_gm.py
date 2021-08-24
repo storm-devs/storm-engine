@@ -331,7 +331,8 @@ def export_gm(context, file_path=""):
 
         bm.verts.ensure_lookup_table()
 
-        print(len(bm.verts), len(bm.faces))
+        print('\nBefore Blender mesh export preparations:')
+        print('Mesh name: ' + src_obj.name + ', vertices: ' + str(len(bm.verts)) + ', faces: ' + str(len(bm.faces)))
 
         prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_layer)
 
@@ -339,7 +340,8 @@ def export_gm(context, file_path=""):
             prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_normals_layer)
 
         bm.to_mesh(obj.data)
-        print(len(bm.verts), len(bm.faces))
+        print('After Blender mesh export preparations:')
+        print('Mesh name: ' + src_obj.name + ', vertices: ' + str(len(bm.verts)) + ', faces: ' + str(len(bm.faces)))
 
         obj_vertices = obj_data.vertices
         obj_vertices_coords = []
@@ -364,7 +366,7 @@ def export_gm(context, file_path=""):
 
         if vertices_quantity > 65536:
             bpy.data.objects.remove(obj, do_unlink=True)
-            raise ValueError('Vertices_quantity bigger than 65536!')
+            raise ValueError(src_obj.name + ' vertices_quantity bigger than 65536!')
 
         for vertex in bm.verts:
             pos = (obj.matrix_world @ mathutils.Vector(vertex.co)) - \
@@ -785,6 +787,8 @@ def export_gm(context, file_path=""):
                 if vertex_type == 4:
                     write_avertex0(file, buffer_vertices[i], buffer_weights[i], buffer_bone_ids[i], buffer_normals[i],
                                 buffer_colors[i], buffer_uv_array[i][0], buffer_uv_array[i][1])
+
+    print('\nGM Export finished successfully!');
 
     return {'FINISHED'}
 

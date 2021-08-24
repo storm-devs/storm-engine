@@ -156,7 +156,96 @@ coas_to_potc_man = {
     '122': '78'
 }
 
+coas_to_potc_woman = {
+  '0': '0',
+  '1': '1',
+  '2': '2',
+  '3': '3',
+  '4': '4',
+  '5': '5',
+  '6': '6',
+  '7': '7',
+  '8': '8',
+  '9': '9',
+  '10': '10',
+  '11': '11',
+  '12': '12',
+  '13': '13',
+  '14': '14',
+  '15': '15',
+  '16': '16',
+  '17': '17',
+  '18': '18',
+  '19': '19',
+  '20': '20',
+  '22': '21',
+  '23': '22',
+  '24': '23',
+  '25': '24',
+  '26': '25',
+  '38': '26',
+  '39': '27',
+  '40': '28',
+  '55': '29',
+  '56': '30',
+  '57': '31',
+  '68': '32',
+  '69': '33',
+  '70': '34',
+  '79': '35',
+  '80': '36',
+  '81': '37',
+  '82': '38',
+  '83': '39',
+  '84': '40',
+  '85': '41',
+  '86': '42',
+  '87': '43',
+  '88': '44',
+  '89': '45',
+  '90': '46',
+  '91': '47',
+  '92': '48',
+  '93': '49',
+  '94': '50',
+  '95': '51',
+  '96': '52',
+  '97': '53',
+  '98': '54',
+  '99': '55',
+  '100': '56',
+  '101': '57',
+  '102': '58',
+  '103': '59',
+  '104': '60',
+  '105': '61',
+  '106': '62',
+  '107': '63',
+  '108': '64',
+  '109': '65',
+  '110': '66',
+  '111': '67',
+  '112': '68',
+  '113': '69',
+  '114': '70',
+  '115': '71',
+  '116': '72',
+  '117': '73',
+  '118': '74',
+  '119': '75',
+  '120': '76',
+  '121': '77',
+  '122': '78',
+  '123': '79',
+  '124': '80',
+  '125': '81',
+  '126': '82',
+  '127': '83'
+}
+
 potc_to_coas_man = {value: key for key, value in coas_to_potc_man.items()}
+
+potc_to_coas_woman = {value: key for key, value in coas_to_potc_woman.items()}
 
 # taken from Copy Attributes Menu Addon by Bassam Kurdali, Fabian Fricke, Adam Wiseman
 def getmat(bone, active, context, ignoreparent):
@@ -754,6 +843,8 @@ def import_gm(
     fix_coas_man_head=False,
     convert_coas_to_potc_man=False,
     convert_potc_to_coas_man=False,
+    convert_coas_to_potc_woman=False,
+    convert_potc_to_coas_woman=False,
     report_func=None
 ):
     file_name = os.path.basename(file_path)[:-3]
@@ -940,11 +1031,18 @@ def import_gm(
                 first_bone_idx = bone_ids[x][0]
                 second_bone_idx = bone_ids[x][1]
 
-                if convert_coas_to_potc_man:
-                    converted_first_bone_idx = coas_to_potc_man.get(
-                        str(bone_ids[x][0]))
-                    converted_second_bone_idx = coas_to_potc_man.get(
-                        str(bone_ids[x][1]))
+                if convert_coas_to_potc_man or convert_coas_to_potc_woman:
+                    if convert_coas_to_potc_man:
+                        converted_first_bone_idx = coas_to_potc_man.get(
+                            str(bone_ids[x][0]))
+                        converted_second_bone_idx = coas_to_potc_man.get(
+                            str(bone_ids[x][1]))
+
+                    if convert_coas_to_potc_woman:
+                        converted_first_bone_idx = coas_to_potc_woman.get(
+                            str(bone_ids[x][0]))
+                        converted_second_bone_idx = coas_to_potc_woman.get(
+                            str(bone_ids[x][1]))
 
                     if converted_first_bone_idx is None:
                         converted_first_bone_idx = 16
@@ -957,6 +1055,10 @@ def import_gm(
                 if convert_potc_to_coas_man:
                     first_bone_idx = potc_to_coas_man.get(str(bone_ids[x][0]))
                     second_bone_idx = potc_to_coas_man.get(str(bone_ids[x][1]))
+
+                if convert_potc_to_coas_woman:
+                    first_bone_idx = potc_to_coas_woman.get(str(bone_ids[x][0]))
+                    second_bone_idx = potc_to_coas_woman.get(str(bone_ids[x][1]))
 
                 first_bone_name = "Bone" + str(first_bone_idx)
                 second_bone_name = "Bone" + str(second_bone_idx)
@@ -1045,6 +1147,10 @@ def import_gm(
                     bone = armature_obj.pose.bones["Bone" +
                                                    potc_to_coas_man.get(str(locator_bone_idx))]
 
+                if convert_potc_to_coas_woman:
+                    bone = armature_obj.pose.bones["Bone" +
+                                                   potc_to_coas_woman.get(str(locator_bone_idx))]
+
                 locator.parent_bone = bone.name
                 locator.parent_type = 'BONE'
                 locator.matrix_parent_inverse = bone.matrix.inverted()
@@ -1102,6 +1208,16 @@ class ImportGm(Operator, ImportHelper):
         default=False,
     )
 
+    convert_coas_to_potc_woman: BoolProperty(
+        name="Convert CoAS woman skeleton to PotC",
+        default=False,
+    )
+
+    convert_potc_to_coas_woman: BoolProperty(
+        name="Convert PotC woman skeleton to CoAS",
+        default=False,
+    )
+
     def execute(self, context):
         an_path = os.path.join(os.path.dirname(self.filepath), self.an_name)
         textures_path = os.path.join(os.path.dirname(self.filepath), self.textures_path)
@@ -1114,6 +1230,8 @@ class ImportGm(Operator, ImportHelper):
                 fix_coas_man_head=self.fix_coas_man_head,
                 convert_coas_to_potc_man=self.convert_coas_to_potc_man,
                 convert_potc_to_coas_man=self.convert_potc_to_coas_man,
+                convert_coas_to_potc_woman=self.convert_coas_to_potc_woman,
+                convert_potc_to_coas_woman=self.convert_potc_to_coas_woman,
                 report_func=self.report
             )
 
