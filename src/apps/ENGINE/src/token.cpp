@@ -281,8 +281,6 @@ S_KEYWORD Keywords[] = {
     "false",
     OP_BOOL_NEG,
     "!",
-    CLASS_DECL,
-    "class",
     IMPORT,
     "native",
     CALL,
@@ -1164,7 +1162,6 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
     case NUMBER:
     case FLOAT_NUMBER:
     case UNKNOWN:
-    case CLASS_DECL:
     case CONTINUE_COMMAND:
     case BREAK_COMMAND:
     case FUNCTION_RETURN:

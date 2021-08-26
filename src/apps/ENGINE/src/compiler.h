@@ -2,7 +2,6 @@
 
 #include "data.h"
 #include "message.h"
-#include "s_classtab.h"
 #include "s_deftab.h"
 #include "s_eventmsg.h"
 #include "s_eventtab.h"
@@ -113,7 +112,6 @@ class COMPILER : public VIRTUAL_COMPILER
     FuncInfo *pRun_fi; // running function info
     FuncTable FuncTab;
     VarTable VarTab;
-    S_CLASSTAB ClassTab;
     S_DEFTAB DefTab;
     S_STACK SStack;
     S_EVENTTAB EventTab;
