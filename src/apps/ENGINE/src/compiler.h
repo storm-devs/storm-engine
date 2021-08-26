@@ -3,7 +3,6 @@
 #include "data.h"
 #include "message.h"
 #include "s_classtab.h"
-#include "s_compress.h"
 #include "s_deftab.h"
 #include "s_eventmsg.h"
 #include "s_eventtab.h"
@@ -181,7 +180,6 @@ class COMPILER : public VIRTUAL_COMPILER
 
   public:
     bool bBreakOnError;
-    COMPRESS Compress;
 
     COMPILER();
     ~COMPILER();
