@@ -166,7 +166,7 @@ void COMPILER::Release()
     EventTab.Release();
     EventMsg.Release();
     SCodec.Release();
-    LibriaryFuncs.Release();
+    LibriaryFuncs.clear();
 
     delete pDebExpBuffer;
     pDebExpBuffer = nullptr;
@@ -1347,27 +1347,22 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
             DebugSourceLine = DSL_INI_VALUE;
             strcpy_s(DebugSourceFileName, Token.GetData());
             break;
-        case INCLUDE_LIBRIARY:
+        case INCLUDE_LIBRIARY: {
             SCRIPT_LIBRIARY *pLib;
-            SLIBHOLDER *pH;
-            bool bFound;
             VMA *pClass;
 
             //-----------------------------------------------------
             // check if already loaded
-            bFound = false;
-            for (n = 0; n < LibriaryFuncs.GetClassesNum(); n++)
+            auto name = Token.GetData();
+            auto comparator = [name](const auto &library)
             {
-                pH = LibriaryFuncs.Read(n);
-                if (_stricmp(pH->pName, Token.GetData()) == 0)
-                {
-                    // already loaded
-                    bFound = true;
-                    break;
-                }
-            }
-            if (bFound)
+                return _stricmp(library.name.c_str(), name) == 0;
+            };
+
+            if (std::ranges::find_if(LibriaryFuncs, comparator) != LibriaryFuncs.end())
+            {
                 break;
+            }
             //-----------------------------------------------------
 
             pClass = core.FindVMA(Token.GetData());
@@ -1381,12 +1376,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
             if (pLib)
                 pLib->Init();
 
-            pH = new SLIBHOLDER;
-            pH->pLib = pLib;
-            pH->SetName(Token.GetData());
-            LibriaryFuncs.Add(pH);
+            LibriaryFuncs.emplace_back(pLib, Token.GetData());
 
             break;
+        }
         case INCLIDE_FILE:
             if (Segment.Files_list->AddUnicalString(Token.GetData()))
             {
