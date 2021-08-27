@@ -1345,10 +1345,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
             //-----------------------------------------------------
             // check if already loaded
-            auto name = Token.GetData();
+            auto name = std::string_view(Token.GetData());
             auto comparator = [name](const auto &library)
             {
-                return _stricmp(library.name.c_str(), name) == 0;
+                return storm::iEquals(library.name, name);
             };
 
             if (std::ranges::find_if(LibriaryFuncs, comparator) != LibriaryFuncs.end())
