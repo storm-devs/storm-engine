@@ -330,6 +330,11 @@ void AnimationImp::BuildAnimationMatrices()
     {
         auto &bn = aniInfo->GetBone(j);
         matrix[j] = CMatrix(bn.start) * CMatrix(bn.matrix);
+        // inverse first column in advance
+        matrix[j].matrix[0] = -matrix[j].matrix[0];
+        matrix[j].matrix[4] = -matrix[j].matrix[4];
+        matrix[j].matrix[8] = -matrix[j].matrix[8];
+        matrix[j].matrix[12] = -matrix[j].matrix[12];
     }
 }
 

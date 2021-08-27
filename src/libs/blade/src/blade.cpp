@@ -78,11 +78,6 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
             mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
             auto mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
-
             CMatrix scl;
             scl.Vx().x = -1.0f;
             scl.Vy().y = 1.0f;
@@ -296,11 +291,6 @@ void BLADE::Realize(uint32_t Delta_Time)
             mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
             auto mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
-
             CMatrix scl;
             scl.Vx().x = -1.0f;
             scl.Vy().y = 1.0f;
@@ -412,10 +402,6 @@ void BLADE::GunFire()
             mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
             auto mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
             perMtx = mbn * mdl->mtx;
         }
 
@@ -634,11 +620,6 @@ void BLADE::TIEITEM_INFO::DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODE
             mt.Pos() = CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
             CMatrix mbn = mt * bones[lb.bones[0]];
-            mbn.Pos().x *= -1.0f;
-            mbn.Vx().x *= -1.0f;
-            mbn.Vy().x *= -1.0f;
-            mbn.Vz().x *= -1.0f;
-
             CMatrix scl;
             scl.Vx().x = -1.0f;
             scl.Vy().y = 1.0f;
