@@ -2,8 +2,6 @@
 
 #include "data.h"
 #include "message.h"
-#include "s_classtab.h"
-#include "s_compress.h"
 #include "s_deftab.h"
 #include "s_eventmsg.h"
 #include "s_eventtab.h"
@@ -14,7 +12,6 @@
 #include "script_libriary.h"
 #include "string_codec.h"
 #include "strings_list.h"
-#include "tclass_list.h"
 #include "token.h"
 
 #define COMPILER_LOG "compile"
@@ -67,31 +64,12 @@ struct DOUBLE_DWORD
 class SLIBHOLDER
 {
   public:
-    HINSTANCE hInst;
-    SCRIPT_LIBRIARY *pLib;
-    char *pName;
+    std::unique_ptr<SCRIPT_LIBRIARY> library;
+    std::string name;
 
-    SLIBHOLDER() : hInst(nullptr)
+    SLIBHOLDER(SCRIPT_LIBRIARY *library, std::string name)
+        : library(library), name(std::move(name))
     {
-        pLib = nullptr;
-        pName = nullptr;
-    };
-
-    ~SLIBHOLDER()
-    {
-        if (pLib)
-            delete pLib;
-        if (pName)
-            delete pName;
-    };
-
-    void SetName(const char *pFileName)
-    {
-        if (pName)
-            delete pName;
-        const auto len = strlen(pFileName) + 1;
-        pName = new char[len];
-        memcpy(pName, pFileName, len);
     }
 };
 
@@ -134,13 +112,12 @@ class COMPILER : public VIRTUAL_COMPILER
     FuncInfo *pRun_fi; // running function info
     FuncTable FuncTab;
     VarTable VarTab;
-    S_CLASSTAB ClassTab;
     S_DEFTAB DefTab;
     S_STACK SStack;
     S_EVENTTAB EventTab;
     // TCLASS_LIST<S_EVENTMSG> EventMsg;
     POSTEVENTS_LIST EventMsg;
-    TCLASS_LIST<SLIBHOLDER> LibriaryFuncs;
+    std::vector<SLIBHOLDER> LibriaryFuncs;
 
     STRING_CODEC SCodec;
 
@@ -181,7 +158,6 @@ class COMPILER : public VIRTUAL_COMPILER
 
   public:
     bool bBreakOnError;
-    COMPRESS Compress;
 
     COMPILER();
     ~COMPILER();

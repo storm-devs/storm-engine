@@ -48,8 +48,6 @@ COMPILER::COMPILER()
     pRunCodeBase = nullptr;
     SStack.SetVCompiler(this);
     VarTab.SetVCompiler(this);
-    ClassTab.SetVCompiler(this);
-    ClassTab.InitSystemClasses();
     srand(GetTickCount());
     bEntityUpdate = true;
     pDebExpBuffer = nullptr;
@@ -160,13 +158,12 @@ void COMPILER::Release()
 
     FuncTab.Release();
     VarTab.Release();
-    ClassTab.Release();
     DefTab.Release();
     SStack.Release();
     EventTab.Release();
     EventMsg.Release();
     SCodec.Release();
-    LibriaryFuncs.Release();
+    LibriaryFuncs.clear();
 
     delete pDebExpBuffer;
     pDebExpBuffer = nullptr;
@@ -801,7 +798,6 @@ void COMPILER::UnloadSegment(const char *segment_name)
             SegmentTable[n].bUnload = true;
             FuncTab.InvalidateBySegmentID(segment_id);
             VarTab.InvalidateBySegmentID(segment_id);
-            ClassTab.InvalidateBySegmentID(segment_id);
             EventTab.InvalidateBySegmentID(segment_id);
             DefTab.InvalidateBySegmentID(segment_id);
             if (SegmentTable[n].Files_list)
@@ -895,7 +891,6 @@ bool COMPILER::BC_LoadSegment(const char *file_name)
         SegmentTable.resize(SegmentsNum);
         FuncTab.InvalidateBySegmentID(id);
         VarTab.InvalidateBySegmentID(id);
-        ClassTab.InvalidateBySegmentID(id);
         EventTab.InvalidateBySegmentID(id);
         DefTab.InvalidateBySegmentID(id);
     }
@@ -1223,8 +1218,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     VarInfo vi = {};
     const VarInfo *real_var = nullptr;
     LocalVarInfo lvi;
-    CLASSINFO ci;
-    CLASSINFO cci;
     uint32_t SegmentSize;
     uint32_t Program_size;
     uint32_t func_code;
@@ -1240,7 +1233,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     STRINGS_LIST BlockTable;
     S_TOKEN_TYPE Token_type;
     DEFINFO di;
-    CLASS_COMPONENT cc;
 
     CompilerStage = CS_COMPILATION;
 
@@ -1347,27 +1339,22 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
             DebugSourceLine = DSL_INI_VALUE;
             strcpy_s(DebugSourceFileName, Token.GetData());
             break;
-        case INCLUDE_LIBRIARY:
+        case INCLUDE_LIBRIARY: {
             SCRIPT_LIBRIARY *pLib;
-            SLIBHOLDER *pH;
-            bool bFound;
             VMA *pClass;
 
             //-----------------------------------------------------
             // check if already loaded
-            bFound = false;
-            for (n = 0; n < LibriaryFuncs.GetClassesNum(); n++)
+            auto name = std::string_view(Token.GetData());
+            auto comparator = [name](const auto &library)
             {
-                pH = LibriaryFuncs.Read(n);
-                if (_stricmp(pH->pName, Token.GetData()) == 0)
-                {
-                    // already loaded
-                    bFound = true;
-                    break;
-                }
-            }
-            if (bFound)
+                return storm::iEquals(library.name, name);
+            };
+
+            if (std::ranges::find_if(LibriaryFuncs, comparator) != LibriaryFuncs.end())
+            {
                 break;
+            }
             //-----------------------------------------------------
 
             pClass = core.FindVMA(Token.GetData());
@@ -1381,12 +1368,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
             if (pLib)
                 pLib->Init();
 
-            pH = new SLIBHOLDER;
-            pH->pLib = pLib;
-            pH->SetName(Token.GetData());
-            LibriaryFuncs.Add(pH);
+            LibriaryFuncs.emplace_back(pLib, Token.GetData());
 
             break;
+        }
         case INCLIDE_FILE:
             if (Segment.Files_list->AddUnicalString(Token.GetData()))
             {
@@ -1842,158 +1827,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 Token.StepBack();
             }
             break;
-            // class declaration -------------------
-        case CLASS_DECL: {
-            if (bDotFlag)
-                break;
-
-            // get class name
-            Token.Get();
-            if (Token.GetData() == nullptr)
-            {
-                SetError("Invalid class name");
-                break;
-            }
-            memset(&ci, 0, sizeof(ci));
-
-            // const auto len = strlen(Token.GetData()) + 1;
-            // ci.name = (char *)new char[len];
-            // memcpy(ci.name, Token.GetData(), len);
-            ci.name = _strdup(Token.GetData());
-
-            // start processing class components
-            if (SkipAuxiliaryTokens() != BLOCK_IN)
-            {
-                SetError("missed '{'");
-                return false;
-            }
-
-            while (SkipAuxiliaryTokens() != BLOCK_OUT)
-            {
-                memset(&cc, 0, sizeof(cc));
-                Token.StepBack();             // step on last token, for ReGet operation
-                Token_type = Token.Get(true); // get with token string keeped
-
-                // get component class ID (class registred only and must be filled with data at the end
-                // of first pass)
-                memset(&cci, 0, sizeof(cci));
-                cci.name = Token.GetData();
-                cc.nID = ClassTab.AddClass(cci, true);
-
-                // start processing components with the same class type
-                do
-                {
-                    // now get the component name
-                    if (Token.Get() != UNKNOWN)
-                    {
-                        SetError("wrong variable or function name");
-                        return false;
-                    }
-                    // note: component name memory will be deleted by ClassTab
-
-                    const auto len = strlen(Token.GetData()) + 1;
-                    cc.name = static_cast<char *>(new char[len]);
-                    memcpy(cc.name, Token.GetData(), len);
-                    cc.nElements = 1; // assumed for all except arrays
-
-                    // now we determine type of component - variable or function
-                    switch (Token.Get())
-                    {
-                    case SEPARATOR: {
-                        // this is single variable declaration
-                        // add class component
-                        cc.nFlags = CCF_VARIABLE;
-                        ci.nComponentsNum++;
-                        // ci.pComponent = (CLASS_COMPONENT *)RESIZE(ci.pComponent, ci.nComponentsNum *
-                        // sizeof(CLASS_COMPONENT));
-                        auto *newPtr = new CLASS_COMPONENT[ci.nComponentsNum];
-                        memcpy(newPtr, ci.pComponent, (ci.nComponentsNum - 1) * sizeof(CLASS_COMPONENT));
-                        delete[] ci.pComponent;
-                        ci.pComponent = newPtr;
-
-                        ci.pComponent[ci.nComponentsNum - 1] = cc;
-                    }
-                    break;
-                    case OPEN_BRACKET:
-                        // this is function declaration
-                        // for now just skip
-                        while (Token.Get() != SEPARATOR)
-                        {
-                        }
-                        break;
-                    case SQUARE_OPEN_BRACKET: {
-                        // this is array declaration
-                        switch (Token.Get()) // array dimension
-                        {
-                        case NUMBER:
-                            cc.nElements = static_cast<long>(atoll(Token.GetData()));
-                            break;
-                        case UNKNOWN:
-                            if (!DefTab.GetDef(di, DefTab.FindDef(Token.GetData())))
-                            {
-                                SetError("invalid array size");
-                                return false;
-                            }
-                            if (di.deftype != NUMBER)
-                            {
-                                SetError("invalid array size");
-                                return false;
-                            }
-                            cc.nElements = di.data4b;
-                            break;
-                        default:
-                            SetError("invalid array size");
-                            return false;
-                        }
-
-                        Token.Get(); // square close bracket
-                        Token.Get(); // next token
-                        cc.nFlags = CCF_VARARRAY;
-                        ci.nComponentsNum++;
-                        // ci.pComponent = (CLASS_COMPONENT *)RESIZE(ci.pComponent, ci.nComponentsNum *
-                        // sizeof(CLASS_COMPONENT));
-                        auto *newPtr = new CLASS_COMPONENT[ci.nComponentsNum];
-                        memcpy(newPtr, ci.pComponent, (ci.nComponentsNum - 1) * sizeof(CLASS_COMPONENT));
-                        delete[] ci.pComponent;
-                        ci.pComponent = newPtr;
-
-                        ci.pComponent[ci.nComponentsNum - 1] = cc;
-                    }
-                    break;
-                    case COMMA: {
-                        // this is several variables declaration
-                        // add class component
-                        cc.nFlags = CCF_VARIABLE;
-                        ci.nComponentsNum++;
-                        // ci.pComponent = (CLASS_COMPONENT *)RESIZE(ci.pComponent, ci.nComponentsNum *
-                        // sizeof(CLASS_COMPONENT));
-                        auto *newPtr = new CLASS_COMPONENT[ci.nComponentsNum];
-                        memcpy(newPtr, ci.pComponent, (ci.nComponentsNum - 1) * sizeof(CLASS_COMPONENT));
-                        delete[] ci.pComponent;
-                        ci.pComponent = newPtr;
-
-                        ci.pComponent[ci.nComponentsNum - 1] = cc;
-                    }
-                    break;
-
-                    default:
-                        break;
-                    }
-                } while (Token.GetType() != SEPARATOR);
-            }
-
-            if (SkipAuxiliaryTokens() != SEPARATOR)
-            {
-                SetError("missed ';'");
-                return false;
-            }
-            ClassTab.AddClass(ci);
-
-            delete ci.pComponent;
-            delete ci.name;
-
-            break;
-        }
 
         case BLOCK_IN:
             inout++;
@@ -3603,30 +3436,6 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
             break;
         case DEFINE_COMMAND: // create define
 
-            break;
-
-        case CLASS_DECL:
-            // skip class declaration
-            Token.Get(); // class name
-            long nBalance;
-            if (SkipAuxiliaryTokens() != BLOCK_IN)
-            {
-                SetError("invalid class declaration");
-                return false;
-            }
-            nBalance = 1;
-            while (nBalance > 0)
-            {
-                switch (Token.Get())
-                {
-                case BLOCK_IN:
-                    nBalance++;
-                    break;
-                case BLOCK_OUT:
-                    nBalance--;
-                    break;
-                }
-            }
             break;
 
         default:
