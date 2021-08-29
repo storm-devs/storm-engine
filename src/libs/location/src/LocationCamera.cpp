@@ -365,6 +365,7 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
         }
         return 1;
     case MSG_CAMERA_FOLLOW:
+        forcedPos = false;
         if (wmode != cwm_follow)
         {
             oldPos = camPos;
@@ -374,11 +375,7 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
         wmode = cwm_follow;
         return 1;
     case MSG_CAMERA_TOPOS:
-        /*if(lockAx)
-        {
-          core.Send_Message(GetId(), "l", MSG_CAMERA_FOLLOW);
-          return 1;
-        }*/
+        forcedPos = false;
         fromLook.x = message.Float();
         fromLook.y = message.Float();
         fromLook.z = message.Float();
@@ -395,15 +392,20 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
     case MSG_CAMERA_MOVE:
         lockAx = true;
         lAx = message.Float();
-        break;
+        return 1;
     case MSG_CAMERA_FREE:
+        forcedPos = false;
         wmode = cwm_free;
         kMorph = 1.0f;
         return 1;
     case MSG_CAMERA_SLEEP:
         isSleep = message.Long() != 0;
         return 1;
+    case MSG_CAMERA_SET_RADIUS:
+        radius = message.Float();
+        return 1;
 
+    // internal
     case -1: {
         const auto fSpeed = message.Float();
         const auto fTime = message.Float();
@@ -412,8 +414,8 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
         const auto fAngSpeed = message.Float();
         const auto fAngMax = message.Float();
         TurnOnDynamicFov(fSpeed, fTime, fMin, fMax, fAngSpeed, fAngMax);
-    }
-    break;
+        return 1;
+    }    
 
     case -2: {
         const std::string &trackname = message.String();
@@ -421,12 +423,39 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
         LoadCameraTrack(trackname.c_str(), fTrackTime);
         auto *pA = message.AttributePointer();
         // SetTrackCameraPauses(pA);
+        return 1;
     }
-    break;
+
     case -3:
         TurnOffTrackCamera();
-        break;
+        return 1;
+
+    case -4:
+        // from point to point
+        fromLook.x = message.Float();
+        fromLook.y = message.Float();
+        fromLook.z = message.Float();
+        if (!message.Long())
+        {
+            oldPos = camPos;
+            oldLookTo = lookTo;
+            kMorph = 0.0f;
+        }
+        else
+            kMorph = 1.0f;
+        wmode = cwm_topos;
+
+        pos.x = message.Float();
+        pos.y = message.Float();
+        pos.z = message.Float();
+        forcedPos = true;
+
+        return 1;
+
+    default:
+        ;
     }
+
     return 0;
 }
 
@@ -448,7 +477,10 @@ bool LocationCamera::Set()
     if (!c)
         return false;
     // Character characteristics
-    c->GetPosition(pos);
+    if (!forcedPos)
+    {
+        c->GetPosition(pos);
+    }
     chay = c->GetAY();
     height = c->GetHeight();
     lheight = height * lookHeight;
