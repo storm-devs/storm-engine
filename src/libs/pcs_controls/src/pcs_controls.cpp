@@ -625,7 +625,7 @@ void PCS_CONTROLS::HandleEvent(const InputEvent &evt)
     else if (evt.type == InputEvent::MouseWheel)
     {
         auto dxdy = std::get<MousePos>(evt.data);
-        nMouseWheel += dxdy.y;
+        nMouseWheel += dxdy.y * WHEEL_DELTA; // Some code relies on nMouseWheel absolute value...
         core.Event("evMouseWeel", "l", static_cast<short>(dxdy.y));
     }
 }
