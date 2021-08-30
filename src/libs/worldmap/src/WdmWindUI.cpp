@@ -230,7 +230,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     long fh = rs->CharHeight(font);
 
     // rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 98.0f - fh*0.5f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, long(cx),
                  long(cy + (98.0f - fh * 0.5f) * resizeRatio), tbuf);
 
     // Centre
@@ -264,7 +264,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     tbuf[sizeof(tbuf) - 1] = 0;
     fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
 
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0,
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
                  long(cx - foodRumSpacing * resizeRatio), long(cy + 30.0f * resizeRatio), tbuf);
 
     // write the amount of rum
@@ -274,7 +274,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         tbuf[sizeof(tbuf) - 1] = 0;
         fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
 
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0,
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
                      long(cx + foodRumSpacing * resizeRatio), long(cy + 30.0f * resizeRatio), tbuf);
     }
 
@@ -296,7 +296,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
         fh = rs->CharHeight(font);
 
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, long(cx),
                      long(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
 
         _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
@@ -304,7 +304,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
         fh = rs->CharHeight(font);
 
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, 0, resizeRatio, 0, 0, long(cx),
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, long(cx),
                      long(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
     }
 
