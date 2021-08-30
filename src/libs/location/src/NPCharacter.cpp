@@ -145,9 +145,12 @@ bool NPCharacter::PostInit()
     if (vd && vd->Get(tmpBool))
         isFireEnable = tmpBool != 0;
     vd = core.Event("NPC_Event_StunChance", "i", GetId());
-    auto tmpLong = stunChance;
-    if (vd && vd->Get(tmpLong))
-        stunChance = tmpLong;
+    if (core.GetTargetEngineVersion() >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN)
+    {
+        auto tmpLong = stunChance;
+        if (vd && vd->Get(tmpLong))
+            stunChance = tmpLong;
+    }
     // Parameter normalization
     if (attackCur < 0.0f)
         attackCur = 0.0f;

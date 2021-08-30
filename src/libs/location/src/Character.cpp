@@ -4211,17 +4211,33 @@ void Character::UpdateAnimation()
                     fgtSetIndex = -1;
                     isFired = false;
                     break;
-                case fgt_hit_attack: // The reaction of hitting a character putting him into the stall
-                    if (rand() % 100 < stunChance)
+                case fgt_hit_attack: { // The reaction of hitting a character putting him into the stall
+                    const auto version = core.GetTargetEngineVersion();
+
+                    if (version == storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
                     {
-                        core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
-                        if (!(isSet = SetAction(hit[fgtSetIndex].name, hit[fgtSetIndex].tblend, 0.0f, 1.0f, true)))
+                        if (IsPlayer() && rand() % 100 >= 50)
                         {
-                            core.Trace("Character animation: not set fight attack hit action: \"%s\"",
-                                       hit[fgtSetIndex].name);
+                            break;
                         }
                     }
+
+                    if (version >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN)
+                    {
+                        if (rand() % 100 >= stunChance)
+                        {
+                            break;
+                        }
+                    }
+
+                    core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
+                    if (!(isSet = SetAction(hit[fgtSetIndex].name, hit[fgtSetIndex].tblend, 0.0f, 1.0f, true)))
+                    {
+                        core.Trace("Character animation: not set fight attack hit action: \"%s\"",
+                                   hit[fgtSetIndex].name);
+                    }
                     break;
+                }
                 case fgt_blockbreak: // The reaction of hitting a character putting him into the stall
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (!(isSet = SetAction(blockbreak.name, blockbreak.tblend, 0.0f, 1.0f, true)))
@@ -4254,16 +4270,32 @@ void Character::UpdateAnimation()
                         core.Trace("Character animation: not set fight round hit action: \"%s\"", hitRound.name);
                     }
                     break;
-                case fgt_hit_fire: // The reaction from the shot, putting him into stall
-                    if (rand() % 100 < stunChance)
+                case fgt_hit_fire: { // The reaction from the shot, putting him into stall
+                    const auto version = core.GetTargetEngineVersion();
+
+                    if (version == storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
                     {
-                        core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
-                        if (!(isSet = SetAction(hitFire.name, hitFire.tblend, 0.0f, 0.0f, true)))
+                        if (IsPlayer() && rand() % 100 >= 50)
                         {
-                            core.Trace("Character animation: not set fight fire hit action: \"%s\"", hitFire.name);
+                            break;
                         }
                     }
+
+                    if (version >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN)
+                    {
+                        if (rand() % 100 >= stunChance)
+                        {
+                            break;
+                        }
+                    }
+
+                    core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
+                    if (!(isSet = SetAction(hitFire.name, hitFire.tblend, 0.0f, 0.0f, true)))
+                    {
+                        core.Trace("Character animation: not set fight fire hit action: \"%s\"", hitFire.name);
+                    }
                     break;
+                }
                 case fgt_block: // Saber protection
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (_stricmp(pWeaponID, "topor") == 0)
