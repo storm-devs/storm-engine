@@ -60,6 +60,7 @@ SteamApiImpl::SteamApiImpl()
     catch (const std::exception &e)
     {
         core.Trace("%s", e.what());
+        std::exit(EXIT_FAILURE);
     }
     SteamApiImpl::InitAchievements();
     SteamApiImpl::InitSteamDLC();
