@@ -196,9 +196,10 @@ def read_save(file_name):
             var, cur_ptr = read_variable(buffer, cur_ptr, s_db, str_encoding, obj_id_format)
             vars[name] = var
 
-        # if 'oSeaSave' in vars:
-        #    seasave_data = vars['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value']
-        #    seasave.read_seasave(bytes.fromhex(seasave_data[8:]))
+        if 'oSeaSave' in vars:
+            seasave_data = vars['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value']
+            data = seasave.read_seasave(bytes.fromhex(seasave_data[8:]))
+            vars['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value'] = data
 
         save_data['vars'] = vars
 
