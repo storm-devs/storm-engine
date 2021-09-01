@@ -411,18 +411,18 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
         eTokenType = SEPARATOR;
         Program++;
         return eTokenType;
-    case 0xd:
+    case '\r':
         DISCARD_DATABUFFER
         eTokenType = DEBUG_LINEFEED;
         Program++;
-        if (Program[0] == 0xa)
+        if (Program[0] == '\n')
             Program++;
         return eTokenType;
-    case 0xa:
+    case '\n':
         DISCARD_DATABUFFER
         eTokenType = DEBUG_LINEFEED;
         Program++;
-        if (Program[0] == 0xd)
+        if (Program[0] == '\r')
             Program++;
         return eTokenType;
 
@@ -455,13 +455,13 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
             {
                 switch (sym)
                 {
-                case 0xd:
-                    if (Program[1] == 0xa)
+                case '\r':
+                    if (Program[1] == '\n')
                         Program++;
                     Lines_in_token++;
                     break;
-                case 0xa:
-                    if (Program[1] == 0xd)
+                case '\n':
+                    if (Program[1] == '\r')
                         Program++;
                     Lines_in_token++;
                     break;
@@ -533,12 +533,12 @@ S_TOKEN_TYPE TOKEN::FormatGet()
         eTokenType = SEPARATOR;
         Program++;
         return eTokenType;
-    case 0xd:
+    case '\r':
         // DISCARD_DATABUFFER
 
         eTokenType = DEBUG_LINEFEED;
         Program++;
-        if (Program[0] == 0xa)
+        if (Program[0] == '\n')
         {
             SetNTokenData(static_cast<char *>(Program - 1), 2);
             Program++;
@@ -546,12 +546,12 @@ S_TOKEN_TYPE TOKEN::FormatGet()
         else
             SetNTokenData(&sym, 1);
         return eTokenType;
-    case 0xa:
+    case '\n':
         // DISCARD_DATABUFFER
 
         eTokenType = DEBUG_LINEFEED;
         Program++;
-        if (Program[0] == 0xd)
+        if (Program[0] == '\r')
         {
             SetNTokenData(static_cast<char *>(Program - 1), 2);
             Program++;
@@ -591,13 +591,13 @@ S_TOKEN_TYPE TOKEN::FormatGet()
             {
                 switch (sym)
                 {
-                case 0xd:
-                    if (Program[1] == 0xa)
+                case '\r':
+                    if (Program[1] == '\n')
                         Program++;
                     Lines_in_token++;
                     break;
-                case 0xa:
-                    if (Program[1] == 0xd)
+                case '\n':
+                    if (Program[1] == '\r')
                         Program++;
                     Lines_in_token++;
                     break;
@@ -683,7 +683,7 @@ ptrdiff_t TOKEN::SetNTokenData(const char *pointer, ptrdiff_t Data_size)
 }
 
 // search throw the program code until find non significant argument character:
-// SPACE,TAB,0,'\0xd','\0xa'
+// SPACE,TAB,0,'\r','\n'
 // return number of significant symbols
 long TOKEN::StopArgument(const char *pointer, bool bKeepControlSymbols)
 {
@@ -714,14 +714,14 @@ long TOKEN::StopArgument(const char *pointer, bool bKeepControlSymbols)
         }
         if (bKeepControlSymbols)
         {
-            if (sym == 0x9 || sym == 0x20)
+            if (sym == '\t' || sym == ' ')
             {
                 if (size == 0)
                     return 1;
                 return size;
             }
         }
-        if (sym <= 0x20)
+        if (sym <= ' ')
             return size;
         if (sym == ';')
             return size;
@@ -904,14 +904,14 @@ void TOKEN::StartArgument(char *&pointer, bool bKeepControlSymbols)
         const auto sym = *pointer;
         if (sym == 0)
             return;
-        if (sym == 0xa || sym == 0xd)
+        if (sym == '\n' || sym == '\r')
             return;
         if (bKeepControlSymbols)
         {
-            if (sym == 0x9 || sym == 0x20)
+            if (sym == '\t' || sym == ' ')
                 return;
         }
-        if (sym <= 0x20)
+        if (sym <= ' ')
             pointer++;
         else
             return;
@@ -1113,7 +1113,7 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
         {
             sym = *Program;
             Program++;
-            if (sym == 0xd || sym == 0xa)
+            if (sym == '\r' || sym == '\n')
                 break;
         } while (sym != 0);
         SetNTokenData(pBase, Program - pBase);
