@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME window
-    TYPE library
-    DEPENDENCIES sdl2
+    TYPE storm_module
+    DEPENDENCIES common util sdl2
 )

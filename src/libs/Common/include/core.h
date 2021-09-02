@@ -156,12 +156,21 @@ class CORE
 
     void stopFrameProcessing();
 
+    void setRunning(bool isRunning);
+    [[nodiscard]] bool isRunning();
+
+    void setActive(bool isActive);
+    [[nodiscard]] bool isActive();
+
   private:
     void loadCompatibilitySettings(INIFILE &inifile);
 
-    storm::ENGINE_VERSION targetVersion_ = storm::ENGINE_VERSION::LATEST;
+    storm::ENGINE_VERSION targetVersion_{storm::ENGINE_VERSION::LATEST};
 
-    bool stopFrameProcessing_ = false;
+    bool stopFrameProcessing_{false};
+
+    bool isRunning_{true};
+    bool isActive_{true};
 };
 
 // core instance

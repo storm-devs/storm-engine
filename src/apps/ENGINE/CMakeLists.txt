@@ -7,7 +7,6 @@ STORM_SETUP(
     common
     diagnostics
     util
-    window
 
     # VM
     animals
@@ -48,6 +47,7 @@ STORM_SETUP(
     touch
     water_rings
     weather
+    window
     worldmap
     xinterface
 	

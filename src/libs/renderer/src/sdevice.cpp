@@ -5,7 +5,6 @@
 #include "Entity.h"
 #include "inlines.h"
 #include "s_import_func.h"
-#include "script_libriary.h"
 #include "texture.h"
 #include "v_s_stack.h"
 

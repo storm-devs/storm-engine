@@ -1,18 +1,13 @@
 #include "SDLWindow.hpp"
 
-#include <SDL_syswm.h>
 #include <map>
+
+#include <SDL_syswm.h>
 
 namespace storm
 {
-SDLWindow::SDLWindow(int width, int height, bool fullscreen) : fullscreen_(fullscreen)
+SDLWindow::SDLWindow()
 {
-    window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>>(
-        SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
-                         (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN),
-        [](SDL_Window *w) { SDL_DestroyWindow(w); });
-
-    sdlID_ = SDL_GetWindowID(window_.get());
     SDL_AddEventWatch(&SDLEventHandler, this);
 }
 
@@ -104,6 +99,25 @@ void *SDLWindow::OSHandle()
     return info.info.win.window;
 }
 
+bool SDLWindow::Init(int width, int height, bool fullscreen, const char * title)
+{
+    window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>>(
+        SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
+                         (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN),
+        [](SDL_Window *w) { SDL_DestroyWindow(w); });
+
+    sdlID_ = SDL_GetWindowID(window_.get());
+
+    fullscreen_ = fullscreen;
+
+    if (title != nullptr)
+    {
+        SetTitle(title);
+    }
+
+    return true;
+}
+
 SDL_Window *SDLWindow::SDLHandle()
 {
     return window_.get();
@@ -132,11 +146,6 @@ void SDLWindow::ProcessEvent(const SDL_WindowEvent &evt)
 
     for (auto handler : handlers_)
         handler.second(winEvent);
-}
-
-std::shared_ptr<OSWindow> OSWindow::Create(int width, int height, bool fullscreen)
-{
-    return std::make_shared<SDLWindow>(width, height, fullscreen);
 }
 
 int SDLWindow::SDLEventHandler(void *userdata, SDL_Event *evt)

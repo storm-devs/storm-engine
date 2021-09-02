@@ -21,32 +21,10 @@ namespace
 {
 
 constexpr char defaultLoggerName[] = "system";
-bool isHold = false;
-bool isRunning = false;
-bool bActive = true;
 
 storm::diag::LifecycleDiagnosticsService lifecycleDiagnostics;
 
 } // namespace
-
-void HandleWindowEvent(const storm::OSWindow::Event &event)
-{
-    if (event == storm::OSWindow::Closed)
-    {
-        isRunning = false;
-        core.Event("DestroyWindow", nullptr);
-    }
-    else if (event == storm::OSWindow::FocusGained)
-    {
-        bActive = true;
-        core.AppState(bActive);
-    }
-    else if (event == storm::OSWindow::FocusLost)
-    {
-        bActive = false;
-        core.AppState(bActive);
-    }
-}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
@@ -93,8 +71,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     uint32_t dwMaxFPS = 0;
     bool bSteam = false;
-    int width = 1024, height = 768;
-    bool fullscreen = false;
 
     if (ini)
     {
@@ -105,34 +81,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         {
             spdlog::set_level(spdlog::level::off);
         }
-        width = ini->GetLong(nullptr, "screen_x", 1024);
-        height = ini->GetLong(nullptr, "screen_y", 768);
-        fullscreen = ini->GetLong(nullptr, "full_screen", false) ? true : false;
         bSteam = ini->GetLong(nullptr, "Steam", 1) != 0;
     }
 
-    // evaluate SteamApi singleton
+    // Evaluate SteamApi singleton
     steamapi::SteamApi::getInstance(!bSteam);
 
-    std::shared_ptr<storm::OSWindow> window = storm::OSWindow::Create(width, height, fullscreen);
-    window->SetTitle("Sea Dogs");
-    core.Set_Hwnd(static_cast<HWND>(window->OSHandle()));
-    window->Subscribe(HandleWindowEvent);
-    window->Show();
-
-    /* Init stuff */
+    // Init core
     core.InitBase();
-
-    /* Message loop */
+ 
+    // Message loop
     auto dwOldTime = GetTickCount();
-
-    isRunning = true;
-    while (isRunning)
+    
+    while (core.isRunning())
     {
         SDL_PumpEvents();
         SDL_FlushEvents(0, SDL_LASTEVENT);
 
-        if (bActive)
+        if (core.isActive())
         {
             if (dwMaxFPS)
             {
@@ -143,10 +109,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                 dwOldTime = dwNewTime;
             }
             const auto runResult = core.Run();
-            if (!isHold && !runResult)
+            if (!runResult)
             {
-                isHold = true;
-                isRunning = false;
+                core.setRunning(false);
             }
 
             lifecycleDiagnostics.notifyAfterRun();
@@ -167,5 +132,5 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     SDL_Quit();
 
-    return 0;
+    return EXIT_SUCCESS;
 }

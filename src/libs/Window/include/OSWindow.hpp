@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <string>
 
 namespace storm
@@ -60,8 +59,5 @@ class OSWindow
 
     //! Os-depended window handler (i.e. HWND on Windows)
     virtual void *OSHandle() = 0;
-
-    //! Create new window
-    static std::shared_ptr<OSWindow> Create(int width, int height, bool fullscreen);
 };
 } // namespace storm

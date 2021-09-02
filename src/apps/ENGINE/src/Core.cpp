@@ -935,6 +935,26 @@ void CORE::stopFrameProcessing()
     stopFrameProcessing_ = true;
 }
 
+void CORE::setRunning(bool isRunning)
+{
+    isRunning_ = isRunning;
+}
+
+bool CORE::isRunning()
+{
+    return isRunning_;
+}
+
+void CORE::setActive(bool isActive)
+{
+    isActive_ = isActive;
+}
+
+bool CORE::isActive()
+{
+    return isActive_;
+}
+
 void CORE::loadCompatibilitySettings(INIFILE &inifile)
 {
     using namespace storm;
