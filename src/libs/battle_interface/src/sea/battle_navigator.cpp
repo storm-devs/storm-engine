@@ -203,7 +203,7 @@ void BATTLE_NAVIGATOR::Draw() const
         rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idCurChargeVBuf, sizeof(BI_ONETEXTURE_VERTEX), 0, 2,
                           m_bNotEnoughBallFlag ? "battle_texure_blend_tf" : "battle_rectangle");
     }
-    if (m_curPowder >= 0)
+    if (m_idPowderTexture >= 0 && m_curPowder >= 0)
     {
         rs->TextureSet(0, m_idPowderTexture);
         rs->SetRenderState(D3DRS_TEXTUREFACTOR, (BIUtils::g_dwBlinkColor << 24L) | 0xFFFFFF);
