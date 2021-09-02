@@ -129,6 +129,10 @@ class Input
     //! \return true if key is pressed
     virtual bool MouseKeyState(const MouseKey &key) const = 0;
 
+    //! Platform-specific multiplier to use for scaling
+    //! \return unsigned integer representing specific convenient value
+    virtual uint32_t GetWheelFactor() const = 0;
+
     //! Current controller button state
     //! \return true if button is pressed
     virtual bool ControllerButtonState(const ControllerButton &button) const = 0;

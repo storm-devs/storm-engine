@@ -421,6 +421,12 @@ bool SDLInput::MouseKeyState(const MouseKey &key) const
     return false;
 }
 
+uint32_t SDLInput::GetWheelFactor() const
+{
+    // TODO: use platform specific values
+    return WHEEL_DELTA;
+}
+
 int SDLInput::SDLEventHandler(void *userdata, SDL_Event *evt)
 {
     auto in = static_cast<SDLInput *>(userdata);
