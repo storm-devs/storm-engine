@@ -25,6 +25,9 @@ CXI_CHECKBUTTONS::~CXI_CHECKBUTTONS()
 
 void CXI_CHECKBUTTONS::Draw(bool bSelected, uint32_t Delta_Time)
 {
+    auto fX = static_cast<float>(m_rect.left);
+    auto fY = static_cast<float>(m_rect.top);
+
     // Print lines
     for (auto &button : m_aButton)
     {
@@ -36,13 +39,11 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected, uint32_t Delta_Time)
             dwColor = m_dwDisableFontColor;
         if (!m_bSelected)
             dwColor = m_dwDisableFontColor;
-        
-        auto fX = static_cast<float>(m_rect.left);
-        auto fY = static_cast<float>(m_rect.top);
+
         if (m_bIndividualPos && button->bSetPos)
         {
-            fX += button->pos.x;
-            fY += button->pos.y;
+            fX = static_cast<float>(m_rect.left) + button->pos.x;
+            fY = static_cast<float>(m_rect.top) + button->pos.y;
         }
 
         if (button->pImg)
