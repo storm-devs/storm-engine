@@ -975,6 +975,7 @@ void DATA::ClearType()
     AttributesClass = nullptr;
     Data_type = UNKNOWN;
     pReference = nullptr;
+    sValue.clear();
 }
 
 void DATA::SetType(S_TOKEN_TYPE _element_type, uint32_t array_size)
