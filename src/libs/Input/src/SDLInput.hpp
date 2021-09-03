@@ -18,6 +18,8 @@ class SDLInput : public Input
     bool KeyboardKeyState(const KeyboardKey &key) const override;
     bool MouseKeyState(const MouseKey &key) const override;
 
+    uint32_t GetWheelFactor() const override;
+
     bool ControllerButtonState(const ControllerButton &button) const override;
     int ControllerAxisValue(const ControllerAxis &axis) const override;
 
