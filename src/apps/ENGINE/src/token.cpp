@@ -3,6 +3,8 @@
 
 #include "defines.h"
 
+#include "utf8.h"
+
 #define DISCARD_DATABUFFER                                                                                             \
     {                                                                                                                  \
         if (pTokenData)                                                                                                \
@@ -409,21 +411,21 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
     case ';':
         DISCARD_DATABUFFER
         eTokenType = SEPARATOR;
-        Program++;
+        Program += utf8::u8_inc(Program);
         return eTokenType;
-    case 0xd:
+    case '\r':
         DISCARD_DATABUFFER
         eTokenType = DEBUG_LINEFEED;
-        Program++;
-        if (Program[0] == 0xa)
-            Program++;
+        Program += utf8::u8_inc(Program);
+        if (Program[0] == '\n')
+            Program += utf8::u8_inc(Program);
         return eTokenType;
-    case 0xa:
+    case '\n':
         DISCARD_DATABUFFER
         eTokenType = DEBUG_LINEFEED;
-        Program++;
-        if (Program[0] == 0xd)
-            Program++;
+        Program += utf8::u8_inc(Program);
+        if (Program[0] == '\r')
+            Program += utf8::u8_inc(Program);
         return eTokenType;
 
         // commented text
@@ -431,8 +433,8 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
         sym = Program[1];
         if (sym != '*')
             break;
-        Program++;
-        Program++;
+        Program += utf8::u8_inc(Program);
+        Program += utf8::u8_inc(Program);
 
         pBase = Program;
 
@@ -446,8 +448,8 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
                 {
                     SetNTokenData(pBase, Program - pBase);
                     eTokenType = COMMENT;
-                    Program++;
-                    Program++;
+                    Program += utf8::u8_inc(Program);
+                    Program += utf8::u8_inc(Program);
                     return eTokenType;
                 }
             }
@@ -455,19 +457,19 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
             {
                 switch (sym)
                 {
-                case 0xd:
-                    if (Program[1] == 0xa)
-                        Program++;
+                case '\r':
+                    if (Program[1] == '\n')
+                        Program += utf8::u8_inc(Program);
                     Lines_in_token++;
                     break;
-                case 0xa:
-                    if (Program[1] == 0xd)
-                        Program++;
+                case '\n':
+                    if (Program[1] == '\r')
+                        Program += utf8::u8_inc(Program);
                     Lines_in_token++;
                     break;
                 }
             }
-            Program++;
+            Program += utf8::u8_inc(Program);
         } while (sym != 0);
         counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
@@ -476,7 +478,7 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
         eTokenType = INVALID_TOKEN;
         return eTokenType;
     case '"':
-        Program++;
+        Program += utf8::u8_inc(Program);
         pBase = Program;
         do
         {
@@ -485,10 +487,10 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
             {
                 SetNTokenData(pBase, Program - pBase);
                 eTokenType = STRING;
-                Program++;
+                Program += utf8::u8_inc(Program);
                 return eTokenType;
             }
-            Program++;
+            Program += utf8::u8_inc(Program);
         } while (sym != 0);
         counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
@@ -531,30 +533,30 @@ S_TOKEN_TYPE TOKEN::FormatGet()
         SetNTokenData(";", 1);
 
         eTokenType = SEPARATOR;
-        Program++;
+        Program += utf8::u8_inc(Program);
         return eTokenType;
-    case 0xd:
+    case '\r':
         // DISCARD_DATABUFFER
 
         eTokenType = DEBUG_LINEFEED;
-        Program++;
-        if (Program[0] == 0xa)
+        Program += utf8::u8_inc(Program);
+        if (Program[0] == '\n')
         {
             SetNTokenData(static_cast<char *>(Program - 1), 2);
-            Program++;
+            Program += utf8::u8_inc(Program);
         }
         else
             SetNTokenData(&sym, 1);
         return eTokenType;
-    case 0xa:
+    case '\n':
         // DISCARD_DATABUFFER
 
         eTokenType = DEBUG_LINEFEED;
-        Program++;
-        if (Program[0] == 0xd)
+        Program += utf8::u8_inc(Program);
+        if (Program[0] == '\r')
         {
             SetNTokenData(static_cast<char *>(Program - 1), 2);
-            Program++;
+            Program += utf8::u8_inc(Program);
         }
         else
             SetNTokenData(&sym, 1);
@@ -566,8 +568,8 @@ S_TOKEN_TYPE TOKEN::FormatGet()
         sym = Program[1];
         if (sym != '*')
             break;
-        Program++;
-        Program++;
+        Program += utf8::u8_inc(Program);
+        Program += utf8::u8_inc(Program);
 
         // pBase = Program;
 
@@ -581,8 +583,8 @@ S_TOKEN_TYPE TOKEN::FormatGet()
                 {
                     // SetNTokenData(pBase,(DWORD)Program - (DWORD)pBase);
                     eTokenType = COMMENT;
-                    Program++;
-                    Program++;
+                    Program += utf8::u8_inc(Program);
+                    Program += utf8::u8_inc(Program);
                     SetNTokenData(pBase, Program - pBase);
                     return eTokenType;
                 }
@@ -591,19 +593,19 @@ S_TOKEN_TYPE TOKEN::FormatGet()
             {
                 switch (sym)
                 {
-                case 0xd:
-                    if (Program[1] == 0xa)
-                        Program++;
+                case '\r':
+                    if (Program[1] == '\n')
+                        Program += utf8::u8_inc(Program);
                     Lines_in_token++;
                     break;
-                case 0xa:
-                    if (Program[1] == 0xd)
-                        Program++;
+                case '\n':
+                    if (Program[1] == '\r')
+                        Program += utf8::u8_inc(Program);
                     Lines_in_token++;
                     break;
                 }
             }
-            Program++;
+            Program += utf8::u8_inc(Program);
         } while (sym != 0);
         counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
@@ -612,21 +614,21 @@ S_TOKEN_TYPE TOKEN::FormatGet()
         eTokenType = INVALID_TOKEN;
         return eTokenType;
     case '"':
-        // Program++;
+        // Program += utf8::u8_inc(Program);
         pBase = Program;
-        Program++;
+        Program += utf8::u8_inc(Program);
         do
         {
             sym = *Program;
             if (sym == '"')
             {
-                Program++;
+                Program += utf8::u8_inc(Program);
                 SetNTokenData(pBase, Program - pBase);
                 eTokenType = STRING;
-                // Program++;
+                // Program += utf8::u8_inc(Program);
                 return eTokenType;
             }
-            Program++;
+            Program += utf8::u8_inc(Program);
         } while (sym != 0);
         counter = Program - pBase;
         if (counter > INVALID_ARG_DCHARS)
@@ -683,7 +685,7 @@ ptrdiff_t TOKEN::SetNTokenData(const char *pointer, ptrdiff_t Data_size)
 }
 
 // search throw the program code until find non significant argument character:
-// SPACE,TAB,0,'\0xd','\0xa'
+// SPACE,TAB,0,'\r','\n'
 // return number of significant symbols
 long TOKEN::StopArgument(const char *pointer, bool bKeepControlSymbols)
 {
@@ -714,14 +716,14 @@ long TOKEN::StopArgument(const char *pointer, bool bKeepControlSymbols)
         }
         if (bKeepControlSymbols)
         {
-            if (sym == 0x9 || sym == 0x20)
+            if (sym == '\t' || sym == ' ')
             {
                 if (size == 0)
                     return 1;
                 return size;
             }
         }
-        if (sym <= 0x20)
+        if (sym <= ' ')
             return size;
         if (sym == ';')
             return size;
@@ -904,14 +906,14 @@ void TOKEN::StartArgument(char *&pointer, bool bKeepControlSymbols)
         const auto sym = *pointer;
         if (sym == 0)
             return;
-        if (sym == 0xa || sym == 0xd)
+        if (sym == '\n' || sym == '\r')
             return;
         if (bKeepControlSymbols)
         {
-            if (sym == 0x9 || sym == 0x20)
+            if (sym == '\t' || sym == ' ')
                 return;
         }
-        if (sym <= 0x20)
+        if (sym <= ' ')
             pointer++;
         else
             return;
@@ -1112,8 +1114,8 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
         do
         {
             sym = *Program;
-            Program++;
-            if (sym == 0xd || sym == 0xa)
+            Program += utf8::u8_inc(Program);
+            if (sym == '\r' || sym == '\n')
                 break;
         } while (sym != 0);
         SetNTokenData(pBase, Program - pBase);
