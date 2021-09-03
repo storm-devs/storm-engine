@@ -34,7 +34,9 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected, uint32_t Delta_Time)
             dwColor = m_dwSelectFontColor;
         if (button->bDisable)
             dwColor = m_dwDisableFontColor;
-
+        if (!m_bSelected)
+            dwColor = m_dwDisableFontColor;
+        
         auto fX = static_cast<float>(m_rect.left);
         auto fY = static_cast<float>(m_rect.top);
         if (m_bIndividualPos && button->bSetPos)
