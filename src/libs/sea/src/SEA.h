@@ -6,11 +6,8 @@
 #include "Sea_Base.h"
 #include "cvector4.h"
 #include "dx9render.h"
-
 #include "defines.h"
 
-#include "Intel.h"
-#include <vector>
 
 class SEA : public SEA_BASE
 {
@@ -82,8 +79,6 @@ class SEA : public SEA_BASE
 
     CVECTOR vCamPos, vSeaCenterPos, vWorldOffset;
 
-    static bool bIntel, bSSE, bSeaDebug;
-
     bool bStarted;
     bool bUnderSea;
     bool bUnderSeaEnable;
@@ -140,8 +135,6 @@ class SEA : public SEA_BASE
 
     bool bStop;
 
-    long iB1, iB2;
-
     float fFogSeaDensity, fFogStartDistance;
     CVECTOR vFogColor;
     bool bFogEnable;
@@ -165,8 +158,8 @@ class SEA : public SEA_BASE
     bool isVisibleBBox(const CVECTOR &vCenter, const CVECTOR &v1, const CVECTOR &v2);
     void CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, long &iMaxLOD, long &iMinLOD);
     inline float CalcLod(const float &x, const float &y, const float &z);
-    void WaveXZBlock(SeaBlock *pB);
-    void SSE_WaveXZBlock(SeaBlock *pB);
+    [[deprecated]] void WaveXZBlock(SeaBlock &pB);
+    void SSE_WaveXZBlock(SeaBlock &pB);
     SeaBlock *GetUndoneBlock();
     void PrepareIndicesForBlock(uint32_t dwBlockIndex);
 
@@ -181,17 +174,6 @@ class SEA : public SEA_BASE
     bool EnvMap_Render();
     void EnvMap_GetSideMatrix(D3DCUBEMAP_FACES Face, CMatrix &mView);
 
-    // HyperThreading
-    Intel intel;
-    HANDLE hEventCalcMaps;
-    std::vector<HANDLE> aEventCalcBlock;
-    std::vector<long> aThreadsTest;
-    std::vector<HANDLE> aThreads;
-    static bool bHyperThreading;
-    CRITICAL_SECTION cs, cs1;
-    long iBlocksDoneNum;
-
-    static uint32_t ThreadExecute(long iThreadIndex);
     void SFLB_CreateBuffers();
     void CreateVertexDeclaration();
 
@@ -245,9 +227,4 @@ class SEA : public SEA_BASE
 
     void LostRender();
     void RestoreRender();
-
-    // bool            Init();
-    // void            Realize(uint32_t Delta_Time);
-    // void            Execute(uint32_t Delta_Time);
-    // uint32_t cdecl    ProcessMessage(MESSAGE & message);
 };

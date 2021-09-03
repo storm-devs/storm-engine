@@ -1,7 +1,9 @@
 #include "sea.h"
 
-#include "core.h"
+#include <algorithm>
+#include <execution>
 
+#include "core.h"
 #include "SSE.h"
 #include "inlines.h"
 #include "shared/sea_ai/Script_defines.h"
@@ -38,10 +40,6 @@ CREATE_CLASS(SEA)
 #define GC_FREE 28
 
 SEA *SEA::pSea = nullptr;
-bool SEA::bIntel = false;
-bool SEA::bSSE = false;
-bool SEA::bHyperThreading = false;
-bool SEA::bSeaDebug = false;
 IDirect3DVertexDeclaration9 *SEA::vertexDecl_ = nullptr;
 
 SEA::SEA()
@@ -109,15 +107,7 @@ SEA::SEA()
 
     bTempFullMode = false;
 
-    // HyperThreading section
-    hEventCalcMaps = CreateEvent(nullptr, false, false, nullptr);
-
-    InitializeCriticalSection(&cs);
-    InitializeCriticalSection(&cs1);
-
     pSea = this;
-    bIntel = intel.IsIntelCPU();
-    bSSE = intel.IsSSE();
 
     bStop = false;
 
@@ -128,20 +118,6 @@ SEA::SEA()
 
 SEA::~SEA()
 {
-    DeleteCriticalSection(&cs);
-    DeleteCriticalSection(&cs1);
-
-    for (long i = 0; i < aThreads.size(); i++)
-    {
-        if (aThreads[i])
-            TerminateThread(aThreads[i], 0);
-        if (aEventCalcBlock[i])
-            CloseHandle(aEventCalcBlock[i]);
-    }
-
-    if (hEventCalcMaps)
-        CloseHandle(hEventCalcMaps);
-
     rs->Release(pReflection);
     rs->Release(pReflectionSunroad);
     rs->Release(pEnvMap);
@@ -209,50 +185,9 @@ bool SEA::Init()
 {
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     CreateVertexDeclaration();
-    auto bEnableSSE = false;
     {
         auto pEngineIni = fio->OpenIniFile(core.EngineIniFileName());
-        bHyperThreading = (pEngineIni) ? pEngineIni->GetLong(nullptr, "HyperThreading", 1) != 0 : false;
         bIniFoamEnable = (pEngineIni) ? pEngineIni->GetLong("Sea", "FoamEnable", 1) != 0 : false;
-        bEnableSSE = (pEngineIni) ? pEngineIni->GetLong(nullptr, "EnableSSE", 0) != 0 : false; // boal
-        bSeaDebug = (pEngineIni) ? pEngineIni->GetLong("Sea", "SeaDebug", 1) != 0 : false;
-    }
-    if (bEnableSSE)
-    {
-        bSSE = true; // boal
-    }
-
-    if (!bIntel)
-        bHyperThreading = false;
-
-    if (bHyperThreading)
-    {
-        uint32_t dwLogicals, dwCores, dwPhysicals;
-        intel.CPUCount(&dwLogicals, &dwCores, &dwPhysicals);
-        core.Trace("Total logical: %d, Total cores: %d, Total physical: %d", dwLogicals, dwCores, dwPhysicals);
-
-        const auto dwNumThreads = dwLogicals * dwCores - 1;
-
-        // this is important! removing reserve would lead to a race while mem relocating with potential dereferencing of freed memory
-        aEventCalcBlock.reserve(dwNumThreads);
-
-        for (size_t i = 0; i < dwNumThreads; i++)
-        {
-            // HANDLE & hEvent = aEventCalcBlock[aEventCalcBlock.Add()];
-            // hEvent = CreateEvent(null, false, false, null);
-            aEventCalcBlock.push_back(CreateEvent(nullptr, false, false, nullptr));
-
-            aThreads.push_back(HANDLE{});
-            auto &hThread = aThreads.back();
-            hThread = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(ThreadExecute),
-                                   reinterpret_cast<void *>(i), CREATE_SUSPENDED, nullptr);
-            SetThreadPriority(hThread, THREAD_PRIORITY_NORMAL);
-            ResumeThread(hThread);
-
-            aThreadsTest.push_back(long{});
-        }
-
-        bHyperThreading = dwNumThreads > 0;
     }
 
     iFoamTexture = rs->TextureCreate("weather\\sea\\pena\\pena.tga");
@@ -346,9 +281,6 @@ bool SEA::Init()
     BuildVolumeTexture();
 
     EditMode_Update();
-
-    core.Trace("Intel CPU: %s, SSE: %s, HyperThreading: %s", (bIntel) ? "Yes" : "No", (bSSE) ? "On" : "Off",
-               (bHyperThreading) ? "On" : "Off");
 
     return true;
 }
@@ -721,19 +653,7 @@ void SEA::CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, long &iMaxLOD, long
 
 void SEA::AddBlock(long iTX, long iTY, long iSize, long iLOD)
 {
-    aBlocks.push_back(SeaBlock{});
-    // SeaBlock * pB = &aBlocks[aBlocks.Add()];
-    SeaBlock *pB = &aBlocks.back();
-
-    pB->iTX = iTX;
-    pB->iTY = iTY;
-    pB->iSize = iSize;
-    pB->iLOD = iLOD;
-
-    pB->bInProgress = false;
-    pB->bDone = false;
-
-    pB->iSize0 = iSize >> iLOD;
+    aBlocks.emplace_back(0, 0, 0, 0, iSize >> iLOD, iTX, iTY, iSize, iLOD, 0, 0, 0, false, false);
 }
 
 void SEA::BuildTree(long iTX, long iTY, long iLev)
@@ -764,17 +684,6 @@ void SEA::BuildTree(long iTX, long iTY, long iLev)
     BuildTree(iTX + 1, iTY, iLev);
     BuildTree(iTX, iTY + 1, iLev);
     BuildTree(iTX + 1, iTY + 1, iLev);
-}
-
-inline void PrefetchNTA(uint32_t dwAddress)
-{
-    /*_asm
-    {
-      mov    eax, dwAddress
-      and esi, ~15d
-      //add esi, 128d
-      prefetchnta [esi]
-    }*/
 }
 
 // INTEL COMMENT:
@@ -1163,31 +1072,27 @@ void SEA::PrepareIndicesForBlock(uint32_t dwBlockIndex)
         }
 }
 
-void SEA::SSE_WaveXZBlock(SeaBlock *pB)
+void SEA::SSE_WaveXZBlock(SeaBlock &pB)
 {
-    // return;
-    if (!pB)
-        return;
-
     SeaVertex *vTmp[4];
     SeaVertex vFake;
 
     vFake.vPos.x = vCamPos.x + 1e+5f;
     vFake.vPos.z = vCamPos.z + 1e+5f;
 
-    float cx, cz, fStep = fGridStep * static_cast<float>(1 << pB->iLOD);
-    float fSize = fGridStep * pB->iSize;
-    long x, y, size0 = pB->iSize >> pB->iLOD;
+    float cx, cz, fStep = fGridStep * static_cast<float>(1 << pB.iLOD);
+    float fSize = fGridStep * pB.iSize;
+    long x, y, size0 = pB.iSize >> pB.iLOD;
 
-    float x1 = static_cast<float>(pB->iTX * pB->iSize) * fGridStep;
-    float y1 = static_cast<float>(pB->iTY * pB->iSize) * fGridStep;
+    float x1 = static_cast<float>(pB.iTX * pB.iSize) * fGridStep;
+    float y1 = static_cast<float>(pB.iTY * pB.iSize) * fGridStep;
     float x2 = x1 + static_cast<float>(size0) * fStep;
     float y2 = y1 + static_cast<float>(size0) * fStep;
 
-    pB->iX1 = fftoi(x1 / fGridStep);
-    pB->iX2 = fftoi(x2 / fGridStep);
-    pB->iY1 = fftoi(y1 / fGridStep);
-    pB->iY2 = fftoi(y2 / fGridStep);
+    pB.iX1 = fftoi(x1 / fGridStep);
+    pB.iX2 = fftoi(x2 / fGridStep);
+    pB.iY1 = fftoi(y1 / fGridStep);
+    pB.iY2 = fftoi(y2 / fGridStep);
 
     x1 += vSeaCenterPos.x;
     x2 += vSeaCenterPos.x;
@@ -1197,9 +1102,9 @@ void SEA::SSE_WaveXZBlock(SeaBlock *pB)
     // CVECTOR vNormal, vTmp;
     long iCurrentV = 0;
 
-    long iIStart1 = pB->iIStart;
-    const long iIFirst = pB->iIFirst;
-    const long iILast = pB->iILast;
+    long iIStart1 = pB.iIStart;
+    const long iIFirst = pB.iIFirst;
+    const long iILast = pB.iILast;
 
     // calculate
     for (cz = y1, y = 0; y <= size0; y++, cz += fStep)
@@ -1264,32 +1169,24 @@ void SEA::SSE_WaveXZBlock(SeaBlock *pB)
         }
     }
 
-    pB->bDone = true;
-
-    EnterCriticalSection(&cs1);
-    iBlocksDoneNum++;
-    LeaveCriticalSection(&cs1);
+    pB.bDone = true;
 }
 
-void SEA::WaveXZBlock(SeaBlock *pB)
+void SEA::WaveXZBlock(SeaBlock &pB)
 {
-    // return;
-    if (!pB)
-        return;
+    float cx, cz, fStep = fGridStep * static_cast<float>(1 << pB.iLOD);
+    float fSize = fGridStep * pB.iSize;
+    long x, y, size0 = pB.iSize >> pB.iLOD;
 
-    float cx, cz, fStep = fGridStep * static_cast<float>(1 << pB->iLOD);
-    float fSize = fGridStep * pB->iSize;
-    long x, y, size0 = pB->iSize >> pB->iLOD;
-
-    float x1 = static_cast<float>(pB->iTX * pB->iSize) * fGridStep;
-    float y1 = static_cast<float>(pB->iTY * pB->iSize) * fGridStep;
+    float x1 = static_cast<float>(pB.iTX * pB.iSize) * fGridStep;
+    float y1 = static_cast<float>(pB.iTY * pB.iSize) * fGridStep;
     float x2 = x1 + static_cast<float>(size0) * fStep;
     float y2 = y1 + static_cast<float>(size0) * fStep;
 
-    pB->iX1 = fftoi(x1 / fGridStep);
-    pB->iX2 = fftoi(x2 / fGridStep);
-    pB->iY1 = fftoi(y1 / fGridStep);
-    pB->iY2 = fftoi(y2 / fGridStep);
+    pB.iX1 = fftoi(x1 / fGridStep);
+    pB.iX2 = fftoi(x2 / fGridStep);
+    pB.iY1 = fftoi(y1 / fGridStep);
+    pB.iY2 = fftoi(y2 / fGridStep);
 
     x1 += vSeaCenterPos.x;
     x2 += vSeaCenterPos.x;
@@ -1298,9 +1195,9 @@ void SEA::WaveXZBlock(SeaBlock *pB)
 
     CVECTOR vNormal, vTmp;
 
-    long iIStart1 = pB->iIStart;
-    const long iIFirst = pB->iIFirst;
-    const long iILast = pB->iILast;
+    long iIStart1 = pB.iIStart;
+    const long iIFirst = pB.iIFirst;
+    const long iILast = pB.iILast;
 
     // calculate
     for (cz = y1, y = 0; y <= size0; y++, cz += fStep)
@@ -1329,11 +1226,8 @@ void SEA::WaveXZBlock(SeaBlock *pB)
         }
     }
 
-    pB->bDone = true;
+    pB.bDone = true;
 
-    EnterCriticalSection(&cs1);
-    iBlocksDoneNum++;
-    LeaveCriticalSection(&cs1);
 }
 
 SEA::SeaBlock *SEA::GetUndoneBlock()
@@ -1347,47 +1241,6 @@ SEA::SeaBlock *SEA::GetUndoneBlock()
             return pB;
         }
     return pB;
-}
-
-uint32_t SEA::ThreadExecute(long iThreadIndex)
-{
-    HANDLE hHandles[] = {pSea->hEventCalcMaps, pSea->aEventCalcBlock[iThreadIndex]};
-
-    while (true)
-    {
-        const uint32_t dwValue = WaitForMultipleObjects(ARRSIZE(hHandles), hHandles, false, INFINITE);
-
-        if (dwValue >= WAIT_OBJECT_0 && dwValue < WAIT_OBJECT_0 + ARRSIZE(hHandles))
-        {
-            const HANDLE hValue = hHandles[dwValue - WAIT_OBJECT_0];
-
-            if (hValue == pSea->hEventCalcMaps)
-            {
-            }
-
-            if (hValue == pSea->aEventCalcBlock[iThreadIndex])
-            {
-                while (true)
-                {
-                    EnterCriticalSection(&pSea->cs);
-                    SeaBlock *pB = pSea->GetUndoneBlock();
-                    LeaveCriticalSection(&pSea->cs);
-
-                    if (!pB)
-                        break;
-
-                    // if (SEA::bIntel && SEA::bSSE) // fix AMD
-                    if (bSSE)
-                        pSea->SSE_WaveXZBlock(pB);
-                    else
-                        pSea->WaveXZBlock(pB);
-
-                    pSea->iB2++;
-                    pSea->aThreadsTest[iThreadIndex]++;
-                }
-            }
-        }
-    }
 }
 
 void SEA::CalculateNormalMap(float fFrame, float fAmplitude, float *pfOut, std::vector<uint32_t *> &aFrames)
@@ -1522,9 +1375,6 @@ void SEA::Realize(uint32_t dwDeltaTime)
     vSeaCenterPos = CVECTOR(fBlockSize * (static_cast<long>(vCamPos.x / fBlockSize) - iNumBlocks), fMaxSeaHeight * 0.5f,
                             fBlockSize * (static_cast<long>(vCamPos.z / fBlockSize) - iNumBlocks));
 
-    iB1 = 0;
-    iB2 = 0;
-
     iVStart = 0;
     iTStart = 0;
     iIStart = 0;
@@ -1604,61 +1454,12 @@ void SEA::Realize(uint32_t dwDeltaTime)
     auto pVSea2 = static_cast<SeaVertex *>(rs->LockVertexBuffer(iVSeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK));
     pTriangles = static_cast<uint16_t *>(rs->LockIndexBuffer(iISeaBuffer, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK));
 
-    for (i = 0; i < aBlocks.size(); i++)
+    for (i = 0; i < aBlocks.size(); i++) {
         PrepareIndicesForBlock(i);
-    // for (i=0; i<aBlocks(); i++) SetBlock(i);
-
-    iBlocksDoneNum = 0;
-
-    bool bHT = false;
-
-    uint64_t dwBlockRDTSC;
-    RDTSC_B(dwBlockRDTSC);
-
-    if (bHyperThreading) // P4 / PRESCOTT Version
-    {
-        bHT = true;
-
-        for (long i = 0; i < aEventCalcBlock.size(); i++)
-        {
-            aThreadsTest[i] = 0;
-            SetEvent(aEventCalcBlock[i]);
-        }
-
-        while (true)
-        {
-            EnterCriticalSection(&cs);
-            SeaBlock *pB = GetUndoneBlock();
-            LeaveCriticalSection(&cs);
-            if (!pB)
-                break;
-            // if (bIntel && bSSE) // fix AMD
-            if (bSSE)
-                SSE_WaveXZBlock(pB);
-            else
-                WaveXZBlock(pB);
-            iB1++;
-        }
-
-        while (iBlocksDoneNum < aBlocks.size())
-            _mm_pause();
     }
-    else
-    {
-        while (true)
-        {
-            SeaBlock *pB = GetUndoneBlock();
-            if (!pB)
-                break;
-            // if (bIntel && bSSE) // fix AMD
-            if (bSSE)
-                SSE_WaveXZBlock(pB);
-            else
-                WaveXZBlock(pB);
-            iB1++;
-        }
-    }
-    RDTSC_E(dwBlockRDTSC);
+
+    std::for_each(std::execution::par_unseq, std::begin(aBlocks), std::end(aBlocks),
+                  [this](auto &i) { SSE_WaveXZBlock(i); });
 
     if (iVStart && iTStart)
         memcpy(pVSea2, pVSea, iVStart * sizeof(SeaVertex));
