@@ -159,6 +159,7 @@ class BATTLE_NAVIGATOR
     long m_idWindTex;       // wind
     long m_idBestCourseTex; // best direction pointers
     long m_idChargeTexture; // current cannon charge type
+    long m_idPowderTexture; // current gunpowder
     long m_idWindTexture;   // wind speed
     long m_idSailTexture;   // sail position / ship speed
     IDirect3DTexture9 *m_pIslandTexture;
@@ -206,6 +207,12 @@ class BATTLE_NAVIGATOR
     POINT m_ChargePos;
     POINT m_ChargeSize;
     long m_curCharge;
+    // gunpowder icon
+    POINT m_PowderGreed;
+    POINT m_PowderPos;
+    POINT m_PowderSize;
+    long m_curPowder;
+    bool m_bPowderRunOut; // for blinking
     // wind icon
     long m_curWindPic;
     POINT m_WindGreed;
