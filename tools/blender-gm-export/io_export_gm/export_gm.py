@@ -307,6 +307,8 @@ def export_gm(context, file_path=""):
 
     # TODO multiple objects
     for object in objects:
+        opposite = object.scale[0] * object.scale[1] * object.scale[2] < 0
+
         faces_quantity = 0
         vertices_quantity = 0
 
@@ -332,7 +334,8 @@ def export_gm(context, file_path=""):
         bm.verts.ensure_lookup_table()
 
         print('\nBefore Blender mesh export preparations:')
-        print('Mesh name: ' + src_obj.name + ', vertices: ' + str(len(bm.verts)) + ', faces: ' + str(len(bm.faces)))
+        print('Mesh name: ' + src_obj.name + ', vertices: ' +
+              str(len(bm.verts)) + ', faces: ' + str(len(bm.faces)))
 
         prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_layer)
 
@@ -341,7 +344,8 @@ def export_gm(context, file_path=""):
 
         bm.to_mesh(obj.data)
         print('After Blender mesh export preparations:')
-        print('Mesh name: ' + src_obj.name + ', vertices: ' + str(len(bm.verts)) + ', faces: ' + str(len(bm.faces)))
+        print('Mesh name: ' + src_obj.name + ', vertices: ' +
+              str(len(bm.verts)) + ', faces: ' + str(len(bm.faces)))
 
         obj_vertices = obj_data.vertices
         obj_vertices_coords = []
@@ -366,7 +370,8 @@ def export_gm(context, file_path=""):
 
         if vertices_quantity > 65536:
             bpy.data.objects.remove(obj, do_unlink=True)
-            raise ValueError(src_obj.name + ' vertices_quantity bigger than 65536!')
+            raise ValueError(
+                src_obj.name + ' vertices_quantity bigger than 65536!')
 
         for vertex in bm.verts:
             pos = (obj.matrix_world @ mathutils.Vector(vertex.co)) - \
@@ -388,7 +393,8 @@ def export_gm(context, file_path=""):
         for face in bm.faces:
             [v1, v2, v3] = face.verts[:]
             # opposite
-            face = [v2.index, v1.index, v3.index]
+            face = [v1.index, v2.index, v3.index] if opposite else [
+                v2.index, v1.index, v3.index]
             faces.append(face)
 
         obj.to_mesh_clear()
@@ -483,7 +489,6 @@ def export_gm(context, file_path=""):
 
         if vertex_buffers[current_vertex_buffer_idx].get("vertices_quantity") + vertices_quantity > 65536 or current_vertex_buffer_idx == -1:
             current_vertex_buffer_idx = len(vertex_buffers)
-            # TODO FIX IT, add all vertices data to buffer too
             vertex_buffers.append({
                 "type": type,
                 "index": current_vertex_buffer_idx,
@@ -607,13 +612,15 @@ def export_gm(context, file_path=""):
         # TODO
         for i in range(header_ntextures):
             current_texture_name = textures[i]
-            current_texture_name_offset = index_by_names.get(current_texture_name)
+            current_texture_name_offset = index_by_names.get(
+                current_texture_name)
             file.write(struct.pack('<l', current_texture_name_offset))
 
         for i in range(header_nmaterials):
             material = materials[i]
 
-            material_group_name_idx = index_by_names.get('unknown material group')
+            material_group_name_idx = index_by_names.get(
+                'unknown material group')
             file.write(struct.pack('<l', material_group_name_idx))
 
             material_name = material.get("name")
@@ -776,19 +783,19 @@ def export_gm(context, file_path=""):
             buffer_bone_ids = vertex_buffer.get("bone_ids")
             buffer_uv_array = vertex_buffer.get("uv_array")
             buffer_uv_normals_array = vertex_buffer.get("uv_normals_array")
-            
+
             for i in range(len(buffer_vertices)):
                 if vertex_type == 0:
                     write_vertex0(file, buffer_vertices[i], buffer_normals[i], buffer_colors[i],
-                                buffer_uv_array[i][0], buffer_uv_array[i][1])
+                                  buffer_uv_array[i][0], buffer_uv_array[i][1])
                 if vertex_type == 1:
                     write_vertex1(file, buffer_vertices[i], buffer_normals[i], buffer_colors[i],
-                                buffer_uv_array[i][0], buffer_uv_array[i][1], buffer_uv_normals_array[i][0], buffer_uv_normals_array[i][1])
+                                  buffer_uv_array[i][0], buffer_uv_array[i][1], buffer_uv_normals_array[i][0], buffer_uv_normals_array[i][1])
                 if vertex_type == 4:
                     write_avertex0(file, buffer_vertices[i], buffer_weights[i], buffer_bone_ids[i], buffer_normals[i],
-                                buffer_colors[i], buffer_uv_array[i][0], buffer_uv_array[i][1])
+                                   buffer_colors[i], buffer_uv_array[i][0], buffer_uv_array[i][1])
 
-    print('\nGM Export finished successfully!');
+    print('\nGM Export finished successfully!')
 
     return {'FINISHED'}
 
@@ -828,4 +835,3 @@ def unregister():
 
 if __name__ == "__main__":
     register()
-
