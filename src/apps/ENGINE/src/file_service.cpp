@@ -42,7 +42,7 @@ FILE_SERVICE::~FILE_SERVICE()
 
 std::fstream FILE_SERVICE::_CreateFile(const char *filename, std::ios::openmode mode)
 {
-    std::filesystem::path path = std::filesystem::u8path(filename);
+    const auto path = filename ? std::filesystem::u8path(filename) : std::filesystem::path();
     std::fstream fileS(path, mode);
     return fileS;
 }

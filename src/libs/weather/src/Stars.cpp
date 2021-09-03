@@ -142,7 +142,7 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
     fio->_CloseHandle(hFile);
     }*/
 
-    auto fileS = fio->_CreateFile("resource\\hic.dat", std::ios::binary | std::ios::in);
+    auto fileS = fio->_CreateFile(sCatalog, std::ios::binary | std::ios::in);
     if (fileS.is_open())
     {
         uint32_t dwSize;
