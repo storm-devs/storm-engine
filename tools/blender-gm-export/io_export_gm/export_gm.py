@@ -116,6 +116,8 @@ def prepare_vertices_with_multiple_uvs(bm_verts, uv_layer):
 
             if uv_layer.data[loop_index].uv != uv:
                 #print(uv, obj_uv_layer.data[loop_index].uv, loop.face.index)
+                #diff = uv_layer.data[loop_index].uv - uv
+                #if abs(diff[0]) >= 0.01 or abs(diff[1]) >= 0.01:
                 bmesh.utils.loop_separate(loop)
                 bm_verts.index_update()
 
@@ -305,6 +307,16 @@ def export_gm(context, file_path=""):
 
     bpy.context.scene.frame_set(0)
 
+    for object in objects:
+        if bpy.context.view_layer.objects.get(object.name):
+            bpy.context.view_layer.objects.active = object
+            bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+            bpy.ops.uv.select_all(action='SELECT')
+            bpy.ops.uv.seams_from_islands()
+            bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+    bpy.context.view_layer.objects.active = root
+
     # TODO multiple objects
     for object in objects:
         opposite = object.scale[0] * object.scale[1] * object.scale[2] < 0
@@ -337,10 +349,13 @@ def export_gm(context, file_path=""):
         print('Mesh name: ' + src_obj.name + ', vertices: ' +
               str(len(bm.verts)) + ', faces: ' + str(len(bm.faces)))
 
-        prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_layer)
+        # prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_layer)
 
-        if obj_uv_normals_layer:
-            prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_normals_layer)
+        # if obj_uv_normals_layer:
+        #     prepare_vertices_with_multiple_uvs(bm.verts, obj_uv_normals_layer)
+
+        seams = [e for e in bm.edges if e.seam]
+        bmesh.ops.split_edges(bm, edges=seams)
 
         bm.to_mesh(obj.data)
         print('After Blender mesh export preparations:')
