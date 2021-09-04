@@ -110,7 +110,7 @@ class LoggingService final
             std::unique_lock lock(mtx_);
             cv_.wait(lock, [this] { return flushRequested_; });
 
-            flushAll(terminate_.load());
+            flushAll(terminate_);
 
             flushRequested_ = false;
             cv_.notify_one();

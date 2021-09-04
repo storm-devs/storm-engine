@@ -44,24 +44,16 @@ class SteamApiImpl final : public SteamApi
 
 SteamApiImpl::SteamApiImpl()
 {
-    // TODO: handle outside
-    try
+    if (SteamAPI_RestartAppIfNecessary(223330))
     {
-        if (SteamAPI_RestartAppIfNecessary(223330))
-        {
-            throw std::runtime_error("SteamAPI: unable to restart app");
-        }
+        throw std::runtime_error("SteamAPI: unable to restart app");
+    }
 
-        if (!SteamAPI_Init())
-        {
-            throw std::runtime_error("SteamAPI: unable to init");
-        }
-    }
-    catch (const std::exception &e)
+    if (!SteamAPI_Init())
     {
-        core.Trace("%s", e.what());
-        std::exit(EXIT_FAILURE);
+        throw std::runtime_error("SteamAPI: unable to init");
     }
+
     SteamApiImpl::InitAchievements();
     SteamApiImpl::InitSteamDLC();
 }

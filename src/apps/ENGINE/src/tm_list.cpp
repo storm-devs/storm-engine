@@ -6,7 +6,7 @@
 #include <Windows.h>
 
 #define MAX_STR_SIZE 1024
-extern S_DEBUG CDebug;
+extern S_DEBUG * CDebug;
 
 static char TM_LIST_Buffer[MAX_STR_SIZE];
 
@@ -241,7 +241,7 @@ void TM_LIST::ProcessMessageBase(uint64_t iMsg, uint64_t wParam, uint64_t lParam
     case WM_SYSKEYDOWN:
         if (wParam == VK_F10)
         {
-            CDebug.SetTraceMode(TMODE_MAKESTEP_OVER);
+            CDebug->SetTraceMode(TMODE_MAKESTEP_OVER);
         }
         break;
     case WM_KEYDOWN:
@@ -249,16 +249,16 @@ void TM_LIST::ProcessMessageBase(uint64_t iMsg, uint64_t wParam, uint64_t lParam
             StartEditSelectedItem();
         if (wParam == VK_F10)
         {
-            CDebug.SetTraceMode(TMODE_MAKESTEP_OVER);
+            CDebug->SetTraceMode(TMODE_MAKESTEP_OVER);
         }
         if (wParam == VK_F11)
         {
-            CDebug.SetTraceMode(TMODE_MAKESTEP);
+            CDebug->SetTraceMode(TMODE_MAKESTEP);
         }
         if (wParam == VK_F5)
         {
-            CDebug.SetTraceMode(TMODE_CONTINUE);
-            ShowWindow(CDebug.hMain, SW_MINIMIZE);
+            CDebug->SetTraceMode(TMODE_CONTINUE);
+            ShowWindow(CDebug->hMain, SW_MINIMIZE);
         }
         break;
     case WM_COMMAND:
@@ -321,19 +321,19 @@ void TM_LIST::ProcessMessageBase(uint64_t iMsg, uint64_t wParam, uint64_t lParam
             if (vKey == VK_F4)
                 StartEditSelectedItem();
             if (vKey == 'O' && GetAsyncKeyState(VK_CONTROL) < 0)
-                CDebug.OpenNewFile();
+                CDebug->OpenNewFile();
             if (vKey == VK_F10)
             {
-                CDebug.SetTraceMode(TMODE_MAKESTEP_OVER);
+                CDebug->SetTraceMode(TMODE_MAKESTEP_OVER);
             }
             if (vKey == VK_F11)
             {
-                CDebug.SetTraceMode(TMODE_MAKESTEP);
+                CDebug->SetTraceMode(TMODE_MAKESTEP);
             }
             if (vKey == VK_F5)
             {
-                CDebug.SetTraceMode(TMODE_CONTINUE);
-                ShowWindow(CDebug.hMain, SW_MINIMIZE);
+                CDebug->SetTraceMode(TMODE_CONTINUE);
+                ShowWindow(CDebug->hMain, SW_MINIMIZE);
             }
             break;
         case NM_DBLCLK:

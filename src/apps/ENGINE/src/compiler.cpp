@@ -21,7 +21,7 @@
 
 // extern char * FuncNameTable[];
 extern INTFUNCDESC IntFuncTable[];
-extern S_DEBUG CDebug;
+extern S_DEBUG * CDebug;
 extern uint32_t dwNumberScriptCommandsExecuted;
 
 COMPILER::COMPILER()
@@ -189,7 +189,7 @@ void COMPILER::SetProgramDirectory(const char *dir_name)
         strcpy_s(ProgramDirectory, len, dir_name);
         strcat_s(ProgramDirectory, len, "\\");
     }
-    CDebug.SetProgramDirectory(dir_name);
+    CDebug->SetProgramDirectory(dir_name);
 }
 
 // load file into memory
@@ -384,7 +384,7 @@ void COMPILER::SetError(const char *data_PTR, ...)
     storm::logging::getOrCreateLogger(COMPILER_ERRORLOG)->error(ErrorBuffer);
 
     if (bBreakOnError)
-        CDebug.SetTraceMode(TMODE_MAKESTEP);
+        CDebug->SetTraceMode(TMODE_MAKESTEP);
 }
 
 void COMPILER::SetWarning(const char *data_PTR, ...)
@@ -665,7 +665,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
     bEventsBreak = false;
 
     uint32_t nTimeOnEvent = GetTickCount();
-    current_debug_mode = CDebug.GetTraceMode();
+    current_debug_mode = CDebug->GetTraceMode();
 
     pVD = nullptr;
     if (event_name == nullptr)
@@ -739,7 +739,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
     pRun_fi = nullptr;
 
     if (current_debug_mode == TMODE_CONTINUE)
-        CDebug.SetTraceMode(TMODE_CONTINUE);
+        CDebug->SetTraceMode(TMODE_CONTINUE);
     // SetFocus(core.App_Hwnd);        // VANO CHANGES
 
     RDTSC_E(dwRDTSC);
@@ -3595,7 +3595,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     mem_pfi = pRun_fi;
     mem_codebase = pRunCodeBase;
 
-    nDebugEnterMode = CDebug.GetTraceMode();
+    nDebugEnterMode = CDebug->GetTraceMode();
     uint64_t nTicks;
     if (call_fi.segment_id == INTERNAL_SEGMENT_ID)
     {
@@ -3648,7 +3648,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
     }
     if (nDebugEnterMode == TMODE_MAKESTEP)
     {
-        CDebug.SetTraceMode(TMODE_MAKESTEP);
+        CDebug->SetTraceMode(TMODE_MAKESTEP);
     }
 
     if (pVResult)
@@ -4209,46 +4209,46 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             memcpy(&nDebugTraceLineCode, &pCodeBase[ip], sizeof(uint32_t));
             if (bTraceMode)
             {
-                if (CDebug.GetTraceMode() == TMODE_MAKESTEP || CDebug.GetTraceMode() == TMODE_MAKESTEP_OVER)
+                if (CDebug->GetTraceMode() == TMODE_MAKESTEP || CDebug->GetTraceMode() == TMODE_MAKESTEP_OVER)
                 {
-                    if (CDebug.GetTraceMode() == TMODE_MAKESTEP_OVER && bDebugWaitForThisFunc == false)
+                    if (CDebug->GetTraceMode() == TMODE_MAKESTEP_OVER && bDebugWaitForThisFunc == false)
                         break;
 
-                    if (!CDebug.IsDebug())
-                        CDebug.OpenDebugWindow(core.GetAppInstance());
+                    if (!CDebug->IsDebug())
+                        CDebug->OpenDebugWindow(core.GetAppInstance());
                     // else
-                    ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
+                    ShowWindow(CDebug->GetWindowHandle(), SW_NORMAL);
 
-                    CDebug.SetTraceLine(nDebugTraceLineCode);
-                    CDebug.BreakOn(fi.decl_file_name.c_str(), nDebugTraceLineCode);
-                    CDebug.SetTraceMode(TMODE_WAIT);
-                    while (CDebug.GetTraceMode() == TMODE_WAIT)
+                    CDebug->SetTraceLine(nDebugTraceLineCode);
+                    CDebug->BreakOn(fi.decl_file_name.c_str(), nDebugTraceLineCode);
+                    CDebug->SetTraceMode(TMODE_WAIT);
+                    while (CDebug->GetTraceMode() == TMODE_WAIT)
                     {
                         Sleep(40);
                     }
-                    if (CDebug.GetTraceMode() == TMODE_MAKESTEP_OVER)
+                    if (CDebug->GetTraceMode() == TMODE_MAKESTEP_OVER)
                         bDebugWaitForThisFunc = true;
                     else
                         bDebugWaitForThisFunc = false;
                 }
-                else if (CDebug.Breaks.CanBreak())
+                else if (CDebug->Breaks.CanBreak())
                 {
                     // check for breakpoint
-                    if (CDebug.Breaks.Find(fi.decl_file_name.c_str(), nDebugTraceLineCode))
+                    if (CDebug->Breaks.Find(fi.decl_file_name.c_str(), nDebugTraceLineCode))
                     {
-                        if (!CDebug.IsDebug())
-                            CDebug.OpenDebugWindow(core.GetAppInstance());
+                        if (!CDebug->IsDebug())
+                            CDebug->OpenDebugWindow(core.GetAppInstance());
 
-                        ShowWindow(CDebug.GetWindowHandle(), SW_NORMAL);
-                        // CDebug.OpenDebugWindow(core.hInstance);
-                        CDebug.SetTraceMode(TMODE_WAIT);
-                        CDebug.BreakOn(fi.decl_file_name.c_str(), nDebugTraceLineCode);
+                        ShowWindow(CDebug->GetWindowHandle(), SW_NORMAL);
+                        // CDebug->OpenDebugWindow(core.hInstance);
+                        CDebug->SetTraceMode(TMODE_WAIT);
+                        CDebug->BreakOn(fi.decl_file_name.c_str(), nDebugTraceLineCode);
 
-                        while (CDebug.GetTraceMode() == TMODE_WAIT)
+                        while (CDebug->GetTraceMode() == TMODE_WAIT)
                         {
                             Sleep(40);
                         } // wait for debug thread decision
-                        if (CDebug.GetTraceMode() == TMODE_MAKESTEP_OVER)
+                        if (CDebug->GetTraceMode() == TMODE_MAKESTEP_OVER)
                             bDebugWaitForThisFunc = true;
                         else
                             bDebugWaitForThisFunc = false;
@@ -7330,5 +7330,5 @@ void COMPILER::FormatDialog(char *file_name)
 
 void STRING_CODEC::VariableChanged()
 {
-    CDebug.SetTraceMode(TMODE_MAKESTEP);
+    CDebug->SetTraceMode(TMODE_MAKESTEP);
 }
