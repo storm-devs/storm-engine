@@ -7,7 +7,9 @@
 namespace storm::logging
 {
 
-std::shared_ptr<spdlog::logger> getOrCreateLogger(const std::string &name,
+using logger_ptr = std::shared_ptr<spdlog::logger>;
+
+logger_ptr getOrCreateLogger(const std::string &name,
                                                   spdlog::level::level_enum level = spdlog::level::trace,
                                                   bool truncate = true);
 } // namespace storm::logging

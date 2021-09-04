@@ -177,14 +177,25 @@ void LifecycleDiagnosticsService::notifyAfterRun() const
     }
 }
 
+void LifecycleDiagnosticsService::setCrashInfoCollector(crash_info_collector f)
+{
+    collectCrashInfo_ = std::move(f);
+}
+
 sentry_value_t LifecycleDiagnosticsService::beforeCrash(const sentry_value_t event, void *, void *data)
 {
     const auto *self = static_cast<LifecycleDiagnosticsService *>(data);
 
-#ifndef STORM_DIAG_NO_FLUSH_ON_CRASH
-    // NB: STORM_DIAG_NO_FLUSH_ON_CRASH shall be defined when debugging stack corruption
+    // collect additional data
+    if (self->collectCrashInfo_)
+    {
+        self->collectCrashInfo_();
+    }
+
+    // terminate logging
     self->loggingService_->terminate();
-#endif
+
+    // archive logs for sentry backend
     _tsystem(self->archiveLogsCmd_.c_str());
 
     return event;

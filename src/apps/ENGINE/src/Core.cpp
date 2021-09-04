@@ -935,6 +935,11 @@ void CORE::stopFrameProcessing()
     stopFrameProcessing_ = true;
 }
 
+void CORE:: collectCrashInfo()
+{
+    Compiler->collectCallStack();
+}
+
 void CORE::loadCompatibilitySettings(INIFILE &inifile)
 {
     using namespace storm;

@@ -75,6 +75,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     {
         spdlog::error("Unable to initialize lifecycle service");
     }
+    else
+    {
+        lifecycleDiagnostics.setCrashInfoCollector([]() { core.collectCrashInfo(); });
+    }
 
     // Init stash
     create_directories(fs::GetSaveDataPath());

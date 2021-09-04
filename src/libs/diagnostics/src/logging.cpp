@@ -13,7 +13,7 @@ constexpr auto kLogExtension = ".log";
 namespace storm::logging
 {
 
-std::shared_ptr<spdlog::logger> getOrCreateLogger(const std::string &name, const spdlog::level::level_enum level,
+logger_ptr getOrCreateLogger(const std::string &name, const spdlog::level::level_enum level,
                                                   const bool truncate)
 {
     auto logger = spdlog::get(name);

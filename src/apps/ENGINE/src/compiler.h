@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string_view>
+#include <tuple>
+
 #include "data.h"
 #include "message.h"
 #include "s_deftab.h"
@@ -13,9 +16,10 @@
 #include "string_codec.h"
 #include "strings_list.h"
 #include "token.h"
+#include "logging.hpp"
 
-#define COMPILER_LOG "compile"
-#define COMPILER_ERRORLOG "error"
+#include "storm/ringbuffer_stack.hpp"
+
 #define BCODE_BUFFER_BLOCKSIZE 4096
 #define IOBUFFER_SIZE 65535
 
@@ -88,73 +92,6 @@ class COMPILER : public VIRTUAL_COMPILER
 {
     friend CORE;
     friend S_DEBUG;
-
-    COMPILER_STAGE CompilerStage;
-    STRINGS_LIST LabelTable;
-    // STRINGS_LIST EventTable;
-    STRINGS_LIST LabelUpdateTable;
-    TOKEN Token;
-    MESSAGE *pEventMessage;
-    std::vector<SEGMENT_DESC> SegmentTable;
-    uint32_t SegmentsNum;
-    uint32_t RunningSegmentID;
-    uint32_t InstructionPointer;
-
-    char *pBuffer;
-    uint32_t dwCurPointer, dwMaxSize;
-
-    char *ProgramDirectory;
-    bool bCompleted;
-    bool bEntityUpdate;
-    char *pDebExpBuffer;
-    uint32_t nDebExpBufferSize;
-
-    FuncInfo *pRun_fi; // running function info
-    FuncTable FuncTab;
-    VarTable VarTab;
-    S_DEFTAB DefTab;
-    S_STACK SStack;
-    S_EVENTTAB EventTab;
-    // TCLASS_LIST<S_EVENTMSG> EventMsg;
-    POSTEVENTS_LIST EventMsg;
-    std::vector<SLIBHOLDER> LibriaryFuncs;
-
-    STRING_CODEC SCodec;
-
-    bool bRuntimeLog;
-    uint32_t nRuntimeLogEventsBufferSize;
-    uint32_t nRuntimeLogEventsNum;
-    std::vector<uint32_t> pRuntimeLogEvent;
-    uint32_t nRuntimeTicks;
-
-    bool bFirstRun;
-    bool bScriptTrace;
-    bool bWriteCodeFile;
-    bool bDebugInfo;
-    char DebugSourceFileName[MAX_PATH];
-    char gs[MAX_PATH];
-    uint32_t DebugSourceLine;
-    char *pCompileTokenTempBuffer;
-
-    // HANDLE hSaveFileFileHandle;
-
-    bool bDebugExpressionRun;
-    bool bTraceMode;
-
-    bool bEventsBreak;
-
-    char DebugTraceFileName[MAX_PATH];
-    uint32_t nDebugTraceLineCode;
-
-    uint32_t nIOBufferSize;
-    uint32_t nIOFullSize;
-    char *pIOBuffer;
-
-    // script registers
-    DATA rAX;
-    DATA rBX;
-    DATA ExpressionResult;
-    ATTRIBUTES *rAP;
 
   public:
     bool bBreakOnError;
@@ -320,4 +257,86 @@ class COMPILER : public VIRTUAL_COMPILER
     bool CompileExpression_L7(SEGMENT_DESC &Segment);
 
     DATA *GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pTokenType = nullptr);
+
+    // writes down current script stack (internal functions+script functions+events) to logfile
+    // currently used for collecting additional crash info
+    // TODO: use it for internal errors also
+    void collectCallStack();
+
+private:
+    COMPILER_STAGE CompilerStage;
+    STRINGS_LIST LabelTable;
+    // STRINGS_LIST EventTable;
+    STRINGS_LIST LabelUpdateTable;
+    TOKEN Token;
+    MESSAGE *pEventMessage;
+    std::vector<SEGMENT_DESC> SegmentTable;
+    uint32_t SegmentsNum;
+    uint32_t RunningSegmentID;
+    uint32_t InstructionPointer;
+
+    char *pBuffer;
+    uint32_t dwCurPointer, dwMaxSize;
+
+    char *ProgramDirectory;
+    bool bCompleted;
+    bool bEntityUpdate;
+    char *pDebExpBuffer;
+    uint32_t nDebExpBufferSize;
+
+    FuncInfo *pRun_fi; // running function info
+    FuncTable FuncTab;
+    VarTable VarTab;
+    S_DEFTAB DefTab;
+    S_STACK SStack;
+    S_EVENTTAB EventTab;
+    // TCLASS_LIST<S_EVENTMSG> EventMsg;
+    POSTEVENTS_LIST EventMsg;
+    std::vector<SLIBHOLDER> LibriaryFuncs;
+
+    STRING_CODEC SCodec;
+
+    bool bRuntimeLog;
+    uint32_t nRuntimeLogEventsBufferSize;
+    uint32_t nRuntimeLogEventsNum;
+    std::vector<uint32_t> pRuntimeLogEvent;
+    uint32_t nRuntimeTicks;
+
+    bool bFirstRun;
+    bool bScriptTrace;
+    bool bWriteCodeFile;
+    bool bDebugInfo;
+    char DebugSourceFileName[MAX_PATH];
+    char gs[MAX_PATH];
+    uint32_t DebugSourceLine;
+    char *pCompileTokenTempBuffer;
+
+    // HANDLE hSaveFileFileHandle;
+
+    bool bDebugExpressionRun;
+    bool bTraceMode;
+
+    bool bEventsBreak;
+
+    char DebugTraceFileName[MAX_PATH];
+    uint32_t nDebugTraceLineCode;
+
+    uint32_t nIOBufferSize;
+    uint32_t nIOFullSize;
+    char *pIOBuffer;
+
+    // script registers
+    DATA rAX;
+    DATA rBX;
+    DATA ExpressionResult;
+    ATTRIBUTES *rAP;
+
+    // loggers
+    storm::logging::logger_ptr logTrace_;
+    storm::logging::logger_ptr logError_;
+    storm::logging::logger_ptr logStack_;
+
+    // stacks for debugging
+    // NB: pointers are safe as long as we pop elements before they expire
+    storm::guarded_ringbuffer_stack<std::tuple<const char *, size_t, const char *>> callStack_;
 };
