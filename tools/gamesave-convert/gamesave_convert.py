@@ -328,6 +328,13 @@ def write_save(save_data, filename):
 
     variables = save_data['vars']
     buffer = write_int8_16_32(len(variables), buffer)
+    if 'oSeaSave' in variables:
+        seasave_data = variables['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value']
+        seasave_buf = bytes()
+        seasave_buf = seasave.write_seasave(seasave_data, seasave_buf).hex()
+        seasave_size = f'{len(seasave_buf):08x}'  # as hexadecimal string without prefix 8 bytes long
+        variables['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value'] = seasave_size + seasave_buf
+
     for varname in variables:
         buffer = write_string(varname, buffer, str_encoding)
         buffer = write_variable(variables[varname], buffer, fileinfo_config)
@@ -568,6 +575,11 @@ def convert_107_to_173(save_data, s_db):
         if var['type'] == VarType.Object:
             for val in var['values']:
                 val['id'] = (sum(val['id']),)  # one item tuple
+
+        if name == 'oSeaSave':
+            seasave_data = var['values'][0]['attributes']['skip']['attributes']['save']['value']
+            seasave_data = seasave.convert_107_to_173(seasave_data)
+            var['values'][0]['attributes']['skip']['attributes']['save']['value'] = seasave_data
 
     # cleanup strings
     used_str = {}
