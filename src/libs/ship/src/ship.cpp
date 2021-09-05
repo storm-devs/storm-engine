@@ -1955,7 +1955,7 @@ void SHIP::Load(CSaveLoad *pSL)
     ExecuteLayer = pSL->LoadDword();
     const std::string sTmp = pSL->LoadString();
     strcpy_s(cShipIniName, sTmp.c_str());
-    pSL->LoadLong();
+    iShipPriorityExecute = pSL->LoadLong();
     fGravity = pSL->LoadFloat();
     fSailState = pSL->LoadFloat();
 
