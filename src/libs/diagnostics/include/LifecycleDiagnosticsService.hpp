@@ -53,7 +53,6 @@ class LifecycleDiagnosticsService final
     void setCrashInfoCollector(crash_info_collector f);
 
   private:
-    std::filesystem::path::string_type archiveLogsCmd_;
     bool initialized_{false};
     std::unique_ptr<LoggingService> loggingService_;
     crash_info_collector collectCrashInfo_;

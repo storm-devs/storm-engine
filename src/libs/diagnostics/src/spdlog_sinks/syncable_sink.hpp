@@ -1,9 +1,13 @@
 #pragma once
 
 #include <spdlog/common.h>
-#include <spdlog/details/file_helper.h>
 #include <spdlog/details/log_msg.h>
 #include <spdlog/sinks/sink.h>
+
+// TODO: write own helper or patch spdlog to retrieve fd (protected or getter)
+// this is basically spdlog::details::file_helper with additional getfd method
+// this may break down after spdlog update
+#include "file_helper.hpp"
 
 namespace storm::logging::sinks
 {
@@ -25,10 +29,11 @@ class syncable_sink final : public spdlog::sinks::sink
     void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override;
 
     void sync() const;
+    void terminate_immediately();
 
   protected:
     std::unique_ptr<spdlog::formatter> formatter_;
-    spdlog::details::file_helper file_helper_;
+    details::file_helper file_helper_;
 };
 
 } // namespace storm::spdlog_sinks

@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <string>
 
-#include <spdlog/spdlog.h>
+#include <spdlog/logger.h>
 
 namespace storm::logging
 {
