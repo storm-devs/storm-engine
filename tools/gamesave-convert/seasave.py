@@ -115,7 +115,7 @@ def read_aifort(buffer, cur_ptr):
     for _ in range(num_forts):
         pos_data = struct.unpack_from('3f', buffer, cur_ptr)
         pos = {'x': pos_data[0], 'y': pos_data[1], 'z': pos_data[2]}
-        cur_ptr += 3*4
+        cur_ptr += 3 * 4
 
         num_cannons = 4  # hardcode
         cannons = []
@@ -644,14 +644,14 @@ def read_deck_cam(buffer, cur_ptr):
         'cam_max_x': data[10],
         'cam_min_x': data[11],
         'default_height': data[12],
-        'g_vec1': { 'x': data[13], 'y': data[14], 'z': data[15] },
-        'g_vec2': { 'x': data[16], 'y': data[17], 'z': data[18] },
-        'g_vec3': { 'x': data[19], 'y': data[20], 'z': data[21] },
-        'cam_pos': { 'x': data[22], 'y': data[23], 'z': data[24] },
-        'cam_angle': { 'x': data[25], 'y': data[26], 'z': data[27] },
+        'g_vec1': {'x': data[13], 'y': data[14], 'z': data[15]},
+        'g_vec2': {'x': data[16], 'y': data[17], 'z': data[18]},
+        'g_vec3': {'x': data[19], 'y': data[20], 'z': data[21]},
+        'cam_pos': {'x': data[22], 'y': data[23], 'z': data[24]},
+        'cam_angle': {'x': data[25], 'y': data[26], 'z': data[27]},
         'eye_height': data[28]
     }
-    assert(len(data) == 29)
+    assert (len(data) == 29)
 
     deck_cam['screen_rect'], cur_ptr = read_buffer(buffer, cur_ptr)
 
@@ -663,7 +663,7 @@ def read_deck_cam(buffer, cur_ptr):
     deck_cam['is_on'] = data[2]
     deck_cam['is_active'] = data[3]
     deck_cam['perspective'] = data[4]
-    assert(len(data) == 5)
+    assert (len(data) == 5)
 
     deck_cam['character'], cur_ptr = read_attr_ptr(buffer, cur_ptr)
 
@@ -671,28 +671,28 @@ def read_deck_cam(buffer, cur_ptr):
 
 
 def read_free_cam(buffer, cur_ptr):
-    format = '3f3ffIIIf'
-    data = struct.unpack_from(format, buffer, cur_ptr)
-    cur_ptr += struct.calcsize(format)
+    fmt = '3f3ffIIIf'
+    data = struct.unpack_from(fmt, buffer, cur_ptr)
+    cur_ptr += struct.calcsize(fmt)
 
     free_cam = {
-        'pos': { 'x': data[0], 'y': data[1], 'z': data[2] },
-        'angle': { 'x': data[3], 'y': data[4], 'z': data[5] },
+        'pos': {'x': data[0], 'y': data[1], 'z': data[2]},
+        'angle': {'x': data[3], 'y': data[4], 'z': data[5]},
         'fov': data[6],
         'lock_x': data[7],
         'lock_y': data[8],
         'is_onland': data[9],
         'cam_onland_height': data[10]
     }
-    assert(len(data) == 11)
-    
+    assert (len(data) == 11)
+
     return free_cam, cur_ptr
 
 
 def read_ship_cam(buffer, cur_ptr):
-    format = 'II19f3f3ff4If'
-    data = struct.unpack_from(format, buffer, cur_ptr)
-    cur_ptr += struct.calcsize(format)
+    fmt = 'II19f3f3ff4If'
+    data = struct.unpack_from(fmt, buffer, cur_ptr)
+    cur_ptr += struct.calcsize(fmt)
 
     ship_cam = {
         'lock_x': data[0],
@@ -716,8 +716,8 @@ def read_ship_cam(buffer, cur_ptr):
         'height_angle_onship_sensitivity': data[18],
         'invert_mouse_x': data[19],
         'invert_mouse_y': data[20],
-        'center': { 'x': data[21], 'y': data[22], 'z': data[23] },
-        'angle': { 'x': data[24], 'y': data[25], 'z': data[26] },
+        'center': {'x': data[21], 'y': data[22], 'z': data[23]},
+        'angle': {'x': data[24], 'y': data[25], 'z': data[26]},
         'model_atan_y': data[27],
         'ship_code': data[28],
         'islands_init_count': data[29],
@@ -725,7 +725,7 @@ def read_ship_cam(buffer, cur_ptr):
         'is_active': data[31],
         'perspective': data[32]
     }
-    assert(len(data) == 33)
+    assert (len(data) == 33)
 
     ship_cam['character'], cur_ptr = read_attr_ptr(buffer, cur_ptr)
 
@@ -733,9 +733,9 @@ def read_ship_cam(buffer, cur_ptr):
 
 
 def read_fireplace(buffer, cur_ptr):
-    format = '3fIfI'
-    data = struct.unpack_from(format, buffer, cur_ptr)
-    cur_ptr += struct.calcsize(format)
+    fmt = '3fIfI'
+    data = struct.unpack_from(fmt, buffer, cur_ptr)
+    cur_ptr += struct.calcsize(fmt)
 
     particle_smoke_name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
     particle_fire_name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
