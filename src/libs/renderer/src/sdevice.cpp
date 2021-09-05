@@ -708,11 +708,8 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     // if(windowed) d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;//FLIP;
     // else d3dpp.SwapEffect = D3DSWAPEFFECT_FLIP;
 
-    if (!windowed)
-    {
-        d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
-        // d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
-    }
+    d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+    d3dpp.FullScreen_RefreshRateInHz = 0;
 
     if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING, &d3dpp, &d3d9) !=
         D3D_OK)
