@@ -330,10 +330,10 @@ def write_save(save_data, filename):
     buffer = write_int8_16_32(len(variables), buffer)
     if 'oSeaSave' in variables:
         seasave_data = variables['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value']
-        seasave_buf = bytes()
-        seasave_buf = seasave.write_seasave(seasave_data, seasave_buf).hex()
+        seasave_buf = bytearray()
+        seasave_buf = seasave.write_seasave(seasave_data, seasave_buf)
         seasave_size = f'{len(seasave_buf):08x}'  # as hexadecimal string without prefix 8 bytes long
-        variables['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value'] = seasave_size + seasave_buf
+        variables['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value'] = seasave_size + seasave_buf.hex()
 
     for varname in variables:
         buffer = write_string(varname, buffer, str_encoding)
