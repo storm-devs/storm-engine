@@ -311,6 +311,11 @@ rec_loop:;
         {
             const long face = (static_cast<long>(*(pface + 2)) << 16) | (static_cast<long>(*(pface + 1)) << 8) |
                               (static_cast<long>(*(pface + 0)) << 0);
+            // "fix" for broken models
+            if (face < 0 || face >= sizeof(trgclip) / sizeof(*trgclip))
+            {
+                continue;
+            }
 
             // this triangle was added before
             if (trgclip[face] != attempt)
