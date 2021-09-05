@@ -4,6 +4,8 @@
 #include "modelr.h"
 #include "shared/messages.h"
 
+#include <DirectXMath.h>
+
 CREATE_CLASS(MODELR)
 
 IDirect3DVertexBuffer9 *dest_vb;
@@ -40,8 +42,6 @@ MODELR::~MODELR()
 
 bool MODELR::Init()
 {
-    // GUARD(MODELR::Init)
-
     rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
@@ -50,7 +50,6 @@ bool MODELR::Init()
     if (!GeometyService)
         throw std::runtime_error("No service: geometry");
 
-    // UNGUARD
     return true;
 }
 
@@ -69,7 +68,6 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
     GEOS::VERTEX0 *dst;
     dest_vb->Lock(0, 0, (VOID **)&dst, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
 
-    CMatrix mtx;
     for (long v = 0; v < totVerts; v++)
     {
         // Vertex
@@ -80,28 +78,52 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
         auto &m2 = bones[(vrt.boneid >> 8) & 0xff];
         // Inverse blending coefficient
         const auto wNeg = 1.0f - vrt.weight;
-        mtx.matrix[0] = -(m1.matrix[0] * vrt.weight + m2.matrix[0] * wNeg);
-        mtx.matrix[1] = m1.matrix[1] * vrt.weight + m2.matrix[1] * wNeg;
-        mtx.matrix[2] = m1.matrix[2] * vrt.weight + m2.matrix[2] * wNeg;
-        mtx.matrix[4] = -(m1.matrix[4] * vrt.weight + m2.matrix[4] * wNeg);
-        mtx.matrix[5] = m1.matrix[5] * vrt.weight + m2.matrix[5] * wNeg;
-        mtx.matrix[6] = m1.matrix[6] * vrt.weight + m2.matrix[6] * wNeg;
-        mtx.matrix[8] = -(m1.matrix[8] * vrt.weight + m2.matrix[8] * wNeg);
-        mtx.matrix[9] = m1.matrix[9] * vrt.weight + m2.matrix[9] * wNeg;
-        mtx.matrix[10] = m1.matrix[10] * vrt.weight + m2.matrix[10] * wNeg;
-        mtx.matrix[12] = -(m1.matrix[12] * vrt.weight + m2.matrix[12] * wNeg);
-        mtx.matrix[13] = m1.matrix[13] * vrt.weight + m2.matrix[13] * wNeg;
-        mtx.matrix[14] = m1.matrix[14] * vrt.weight + m2.matrix[14] * wNeg;
+
+#ifdef __AVX__
+        // apparently, _mm256_set1_ps seems to be better using msvc with lat=~7+1*2+4+1*5+5+7+1*2==24 vs ~7+1*2+4+1*5+1+3+1*2==32 for _mm256_broadcast_ss
+        // TODO: check clang listings
+        const auto ymm0 = _mm256_set1_ps(vrt.weight);
+        const auto ymm1 = _mm256_set1_ps(wNeg);
+
+        const auto ymm2 = _mm256_add_ps(_mm256_mul_ps(_mm256_load_ps(&m1.matrix[0]), ymm0),
+                                        _mm256_mul_ps(_mm256_load_ps(&m2.matrix[0]), ymm1));
+        const auto ymm3 = _mm256_add_ps(_mm256_mul_ps(_mm256_load_ps(&m1.matrix[8]), ymm0),
+                                        _mm256_mul_ps(_mm256_load_ps(&m2.matrix[8]), ymm1));
+
+        const DirectX::XMMATRIX xmmtx(_mm256_castps256_ps128(ymm2), _mm256_extractf128_ps(ymm2, 1),
+                                      _mm256_castps256_ps128(ymm3), _mm256_extractf128_ps(ymm3, 1));
+#else
+        // pure SSE2
+        const auto xmm0 = _mm_set1_ps(vrt.weight);
+        const auto xmm1 = _mm_set1_ps(wNeg);
+
+        const auto xmm2 =
+            _mm_add_ps(_mm_mul_ps(_mm_load_ps(&m1.matrix[0]), xmm0), _mm_mul_ps(_mm_load_ps(&m2.matrix[0]), xmm1));
+        const auto xmm3 =
+            _mm_add_ps(_mm_mul_ps(_mm_load_ps(&m1.matrix[4]), xmm0), _mm_mul_ps(_mm_load_ps(&m2.matrix[4]), xmm1));
+        const auto xmm4 =
+            _mm_add_ps(_mm_mul_ps(_mm_load_ps(&m1.matrix[8]), xmm0), _mm_mul_ps(_mm_load_ps(&m2.matrix[8]), xmm1));
+        const auto xmm5 =
+            _mm_add_ps(_mm_mul_ps(_mm_load_ps(&m1.matrix[12]), xmm0), _mm_mul_ps(_mm_load_ps(&m2.matrix[12]), xmm1));
+
+
+        const DirectX::XMMATRIX xmmtx(xmm2, xmm3, xmm4, xmm5);
+#endif
+
         // Position
-        ((CVECTOR &)dstVrt.pos) = mtx * (CVECTOR &)vrt.pos;
+        XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3 *>(&dstVrt.pos),
+            XMVector3Transform(XMLoadFloat3(reinterpret_cast<DirectX::XMFLOAT3 *>(&vrt.pos)), xmmtx));
+
         // Normal
-        ((CVECTOR &)dstVrt.nrm) = mtx * (CVECTOR &)vrt.nrm;
+        XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3 *>(&dstVrt.nrm),
+            XMVector3Transform(XMLoadFloat3(reinterpret_cast<DirectX::XMFLOAT3 *>(&vrt.nrm)), xmmtx));
+
         // Rest
         dstVrt.color = vrt.color;
         dstVrt.tu = vrt.tu0;
         dstVrt.tv = vrt.tv0;
     }
-    //}
+
     dest_vb->Unlock();
     return dest_vb;
 }
