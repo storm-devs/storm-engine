@@ -228,7 +228,7 @@ def read_ship(buffer, cur_ptr):
     realize_layer, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
     execute_layer, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
     ship_name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
-    _ = struct.unpack_from('I', buffer, cur_ptr)[0]  # skip
+    ship_priority_execute = struct.unpack_from('I', buffer, cur_ptr)[0]
     cur_ptr += 4
     gravity = struct.unpack_from('f', buffer, cur_ptr)[0]
     cur_ptr += 4
@@ -338,6 +338,7 @@ def read_ship(buffer, cur_ptr):
         'realize_layer': realize_layer,
         'execute_layer': execute_layer,
         'ship_name': ship_name,
+        'ship_priority_execute': ship_priority_execute,
         'gravity': gravity,
         'sail_state': sail_state,
         'uni_idx': uni_idx,
@@ -697,7 +698,7 @@ def read_ship_cam(buffer, cur_ptr):
         'lock_x': data[0],
         'lock_y': data[1],
         'min_height_on_sea': data[2],
-        'max_height_on_sea': data[3],
+        'max_height_on_ship': data[3],
         'distance': data[4],
         'max_distance': data[5],
         'min_distance': data[6],
@@ -709,17 +710,17 @@ def read_ship_cam(buffer, cur_ptr):
         'angle_x_inertia': data[12],
         'angle_y_delta': data[13],
         'angle_y_inertia': data[14],
-        'distance_sensivity': data[15],
-        'azimuth_angle_sensivity': data[16],
-        'height_angle_sensivity': data[17],
-        'height_angle_onship_sensivity': data[18],
+        'distance_sensitivity': data[15],
+        'azimuth_angle_sensitivity': data[16],
+        'height_angle_sensitivity': data[17],
+        'height_angle_onship_sensitivity': data[18],
         'invert_mouse_x': data[19],
         'invert_mouse_y': data[20],
         'center': { 'x': data[21], 'y': data[22], 'z': data[23] },
         'angle': { 'x': data[24], 'y': data[25], 'z': data[26] },
         'model_atan_y': data[27],
         'ship_code': data[28],
-        'num_islands': data[29],
+        'islands_init_count': data[29],
         'is_on': data[30],
         'is_active': data[31],
         'perspective': data[32]
@@ -736,17 +737,20 @@ def read_fireplace(buffer, cur_ptr):
     data = struct.unpack_from(format, buffer, cur_ptr)
     cur_ptr += struct.calcsize(format)
 
+    particle_smoke_name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
+    particle_fire_name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
+    sound_name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
+
     fireplace = {
         'orig_pos': {'x': data[0], 'y': data[1], 'z': data[2]},
         'active': data[3],
         'run_time': data[4],
-        'ball_character_index': data[5]
+        'ball_character_index': data[5],
+        'particle_smoke_name': particle_smoke_name,
+        'particle_fire_name': particle_fire_name,
+        'sound_name': sound_name
     }
     assert (len(data) == 6)
-
-    particle_smoke_name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
-    particle_fire_name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
-    sound_name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
 
     return fireplace, cur_ptr
 
@@ -875,7 +879,7 @@ def write_ship(ship, buffer):
     buffer += struct.pack('I', ship['realize_layer'])
     buffer += struct.pack('I', ship['execute_layer'])
     buffer = write_string(ship['ship_name'], buffer)
-    # _ = struct.unpack_from('I', buffer, cur_ptr)[0]  # skip
+    buffer += struct.pack('I', ship['ship_priority_execute'])
     buffer += struct.pack('f', ship['gravity'])
     buffer += struct.pack('f', ship['sail_state'])
     buffer += struct.pack('I', ship['uni_idx'])
@@ -923,9 +927,6 @@ def write_ship(ship, buffer):
     buffer += struct.pack('I', len(ship['fireplaces']))
     for fireplace in ship['fireplaces']:
         buffer = write_fireplace(fireplace, buffer)
-
-    buffer += struct.pack('f', ship['x_heel'])
-    buffer += struct.pack('f', ship['z_heel'])
 
     return buffer
 
@@ -1156,7 +1157,7 @@ def write_ship_cam(cam, buffer):
     buffer += struct.pack('I', cam['lock_x'])
     buffer += struct.pack('I', cam['lock_y'])
     buffer += struct.pack('f', cam['min_height_on_sea'])
-    buffer += struct.pack('f', cam['max_height_on_sea'])
+    buffer += struct.pack('f', cam['max_height_on_ship'])
     buffer += struct.pack('f', cam['distance'])
     buffer += struct.pack('f', cam['max_distance'])
     buffer += struct.pack('f', cam['min_distance'])
@@ -1168,16 +1169,17 @@ def write_ship_cam(cam, buffer):
     buffer += struct.pack('f', cam['angle_x_inertia'])
     buffer += struct.pack('f', cam['angle_y_delta'])
     buffer += struct.pack('f', cam['angle_y_inertia'])
-    buffer += struct.pack('f', cam['distance_sensivity'])
-    buffer += struct.pack('f', cam['azimuth_angle_sensivity'])
-    buffer += struct.pack('f', cam['height_angle_sensivity'])
+    buffer += struct.pack('f', cam['distance_sensitivity'])
+    buffer += struct.pack('f', cam['azimuth_angle_sensitivity'])
+    buffer += struct.pack('f', cam['height_angle_sensitivity'])
+    buffer += struct.pack('f', cam['height_angle_onship_sensitivity'])
     buffer += struct.pack('f', cam['invert_mouse_x'])
     buffer += struct.pack('f', cam['invert_mouse_y'])
     buffer += struct.pack('3f', cam['center']['x'], cam['center']['y'], cam['center']['z'])
     buffer += struct.pack('3f', cam['angle']['x'], cam['angle']['y'], cam['angle']['z'])
     buffer += struct.pack('f', cam['model_atan_y'])
-    buffer += struct.pack('I', cam['ship_code'])
-    buffer += struct.pack('I', cam['num_islands'])
+    # buffer += struct.pack('I', cam['ship_code'])
+    buffer += struct.pack('I', cam['islands_init_count'])
     buffer += struct.pack('I', cam['is_on'])
     buffer += struct.pack('I', cam['is_active'])
     buffer += struct.pack('f', cam['perspective'])
@@ -1261,5 +1263,10 @@ def convert_107_to_173(seasave):
 
             strval = aiship['base_ship']['execute_layer']
             aiship['base_ship']['execute_layer'] = layers[strval]
+
+            del aiship['base_ship']['x_heel']
+            del aiship['base_ship']['z_heel']
+
+    del seasave['ship_cam']['ship_code']
 
     return seasave
