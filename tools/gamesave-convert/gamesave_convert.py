@@ -196,7 +196,7 @@ def read_save(file_name):
             var, cur_ptr = read_variable(buffer, cur_ptr, s_db, str_encoding, obj_id_format)
             vars[name] = var
 
-        if 'oSeaSave' in vars:
+        if 'oSeaSave' in vars and 'attributes' in vars['oSeaSave']['values'][0]['attributes']['skip']:
             seasave_data = vars['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value']
             data = seasave.read_seasave(bytes.fromhex(seasave_data[8:]))
             vars['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value'] = data
@@ -328,7 +328,7 @@ def write_save(save_data, filename):
 
     variables = save_data['vars']
     buffer = write_int8_16_32(len(variables), buffer)
-    if 'oSeaSave' in variables:
+    if 'oSeaSave' in variables and 'attributes' in variables['oSeaSave']['values'][0]['attributes']['skip']:
         seasave_data = variables['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value']
         seasave_buf = bytearray()
         seasave_buf = seasave.write_seasave(seasave_data, seasave_buf)
@@ -576,7 +576,7 @@ def convert_107_to_173(save_data, s_db):
             for val in var['values']:
                 val['id'] = (sum(val['id']),)  # one item tuple
 
-        if name == 'oSeaSave':
+        if name == 'oSeaSave' and 'attributes' in var['values'][0]['attributes']['skip']:
             seasave_data = var['values'][0]['attributes']['skip']['attributes']['save']['value']
             seasave_data = seasave.convert_107_to_173(seasave_data)
             var['values'][0]['attributes']['skip']['attributes']['save']['value'] = seasave_data
