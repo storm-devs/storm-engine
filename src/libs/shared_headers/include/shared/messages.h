@@ -201,6 +201,7 @@
 #define MSG_CAMERA_FREE 30514 // "l" free flight of the camera
 
 #define MSG_CAMERA_SLEEP 30520 // "ll" stop the camera (1) or resume (0)
+#define MSG_CAMERA_SET_RADIUS 30521 // "lf" set radius
 
 // Blots on the ship
 #define MSG_BLOTS_SETMODEL 30600 // "li" set the model, model_id
