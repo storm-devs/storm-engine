@@ -8,13 +8,6 @@
 #include "logging.hpp"
 #include "storm_assert.h"
 
-namespace
-{
-
-constexpr size_t CALLSTACK_SIZE = 64;
-
-}
-
 #define SKIP_COMMENT_TRACING
 #define TRACE_OFF
 #define INVALID_SEGMENT_INDEX 0xffffffff
@@ -31,7 +24,7 @@ extern INTFUNCDESC IntFuncTable[];
 extern S_DEBUG * CDebug;
 extern uint32_t dwNumberScriptCommandsExecuted;
 
-COMPILER::COMPILER() : callStack_(CALLSTACK_SIZE)
+COMPILER::COMPILER()
 {
     CompilerStage = CS_SYSTEM;
     LabelTable.SetStringDataSize(sizeof(uint32_t));
@@ -665,7 +658,8 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
 {
     // TODO: only do if stack debug if enabled (should be runtime configurable)
     // push event name to call stack
-    auto stack_guard = callStack_.push(std::make_tuple("", 0U, event_name));
+    storm::ringbuffer_stack_push_guard push_guard(callStack_);
+    push_guard.push(std::make_tuple("", 0U, event_name));
 
     uint32_t event_code;
     uint32_t func_code;
@@ -3558,7 +3552,8 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
 
     // TODO: only do if stack debug if enabled (should be runtime configurable)
     // push function details to call stack
-    auto stack_guard = callStack_.push(std::make_tuple(call_fi.decl_file_name.c_str(), call_fi.decl_line, call_fi.name.c_str()));
+    storm::ringbuffer_stack_push_guard push_guard(callStack_);
+    push_guard.push(std::make_tuple(call_fi.decl_file_name.c_str(), call_fi.decl_line, call_fi.name.c_str()));
 
     // number f arguments pushed into stack for this function call
     if (BC_TokenGet() != ARGS_NUM)
@@ -7094,7 +7089,7 @@ void COMPILER::collectCallStack()
     auto callStackCopy = callStack_;
     while (!callStackCopy.empty())
     {
-        const auto &record = callStackCopy.top();
+        const auto &record = callStackCopy.back();
 
         const auto &filename = std::get<0>(record);
         const auto &line = std::get<1>(record);

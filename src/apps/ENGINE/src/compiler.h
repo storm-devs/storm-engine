@@ -336,7 +336,8 @@ private:
     storm::logging::logger_ptr logError_;
     storm::logging::logger_ptr logStack_;
 
-    // stacks for debugging
+    // backtrace stack
     // NB: pointers are safe as long as we pop elements before they expire
-    storm::guarded_ringbuffer_stack<std::tuple<const char *, size_t, const char *>> callStack_;
+    static constexpr size_t CALLSTACK_SIZE = 64U;
+    storm::ringbuffer_stack<std::tuple<const char *, size_t, const char *>, CALLSTACK_SIZE> callStack_;
 };
