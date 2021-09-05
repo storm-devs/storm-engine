@@ -12,11 +12,12 @@ def read_buffer(buffer, cur_ptr):
 def read_string(buffer, cur_ptr, encoding):
     str_len = struct.unpack_from('I', buffer, cur_ptr)[0]
     cur_ptr += 4
-    if str_len == 0:
-        return None, cur_ptr
-    s = struct.unpack_from(f'{str_len-1}s', buffer, cur_ptr)[0]  # str_len-1 to skip trailing '\0'
-    s = s.decode(encoding)
-    cur_ptr += str_len
+    if str_len > 0:
+        s = struct.unpack_from(f'{str_len - 1}s', buffer, cur_ptr)[0]  # str_len-1 to skip trailing '\0'
+        s = s.decode(encoding)
+        cur_ptr += str_len
+    else:
+        s = ''
     return s, cur_ptr
 
 
@@ -795,13 +796,13 @@ def write_buffer(buf, buffer):
 
 
 def write_string(s, buffer):
-    if s is not None:
+    if s != '':
         s = s.encode('utf-8') + b'\x00'
         str_len = len(s)
         buffer += struct.pack('I', str_len)
         buffer += struct.pack(f'{str_len}s', s)
     else:
-        buffer += b'\x00'
+        buffer += struct.pack('I', 0)
     return buffer
 
 
