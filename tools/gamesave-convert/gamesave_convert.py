@@ -152,6 +152,10 @@ def read_save(file_name):
         file_info = struct.unpack('32s', f.read(32))[0]
         file_info = file_info[0:file_info.find(b'\x00')]
         file_info = file_info.decode('utf-8')
+
+        if file_info != 'ver 1.0.7':
+            return None, None
+
         save_data['file_info'] = file_info
 
         str_encoding = FILEINFO_CONFIG[file_info]['str_encoding']
@@ -632,15 +636,16 @@ def dump_save(save_data, filename):
         json.dump(copy, f, ensure_ascii=False, indent=4, default=fallback)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('input_file', help='name of a save file to convert', type=str)
-    args = parser.parse_args()
+def process_file(file):
+    file = os.path.abspath(file)
+    logging.info(f'processing file "{file}".')
 
-    input_file = os.path.abspath(args.input_file)
-    save_data, s_db = read_save(input_file)
+    save_data, s_db = read_save(file)
+    if save_data is None:
+        logging.warning(f'could not process file "{file}".')
+        return
 
-    filename, file_extension = os.path.splitext(input_file)
+    filename, file_extension = os.path.splitext(file)
 
     # dump_save(save_data, f'{filename}_read.json')
 
@@ -651,3 +656,11 @@ if __name__ == '__main__':
 
     output_file = filename + file_extension
     write_save(save_data, output_file)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input_file', help='name of a save file to convert', type=str)
+    args = parser.parse_args()
+
+    process_file(args.input_file)
