@@ -1,15 +1,15 @@
 [requires]
 zlib/1.2.11
-spdlog/1.8.5
-sdl2/2.0.14@bincrafters/stable
-sentry-native/0.4.9@storm/ports
+spdlog/1.9.2
+sentry-native/0.4.12
+sdl2/2.0.16@bincrafters/stable
 7za/19.00@storm/bin
 directx/9.0@storm/prebuilt
 fmod/2.1.7@storm/prebuilt
 steamworks/1.5.1@storm/prebuilt
 
 [build_requires]
-catch2/2.13.4
+catch2/2.13.7
 
 [generators]
 cmake
