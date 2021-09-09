@@ -2,10 +2,10 @@
 zlib/1.2.11
 spdlog/1.9.2
 sentry-native/0.4.12
+7zip/19.00
 sdl2/2.0.16@bincrafters/stable
-7za/19.00@storm/bin
 directx/9.0@storm/prebuilt
-fmod/2.1.7@storm/prebuilt
+fmod/2.1.11@storm/prebuilt
 steamworks/1.5.1@storm/prebuilt
 
 [build_requires]
