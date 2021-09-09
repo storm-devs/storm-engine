@@ -12,7 +12,7 @@ steamworks/1.5.1@storm/prebuilt
 catch2/2.13.7
 
 [generators]
-cmake
+cmake_multi
 
 [options]
 sdl2:sdl2main=False
