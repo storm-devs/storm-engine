@@ -27,6 +27,7 @@ conan_cmake_run(CONANFILE conanfile.py
     BASIC_SETUP CMAKE_TARGETS
     BUILD missing
     OPTIONS
+        output_directory=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
         crash_reports=${STORM_ENABLE_CRASH_REPORTS}
         steam=${STORM_ENABLE_STEAM}
 )
