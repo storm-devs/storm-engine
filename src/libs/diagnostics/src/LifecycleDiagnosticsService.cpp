@@ -62,7 +62,6 @@ class LoggingService final
 
             static auto terminate_handler = std::get_terminate();
             std::set_terminate([] {
-                spdlog::shutdown();
                 terminate_handler();
             });
 
