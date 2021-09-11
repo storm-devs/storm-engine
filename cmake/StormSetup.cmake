@@ -3,7 +3,21 @@ cmake_minimum_required(VERSION 3.19.0)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # ##############################################################################
-# add all subdirs using add_subdirectory ###
+# normalize specified booleans to be set to either True or False
+# ##############################################################################
+macro(normalize_booleans)
+set(argn "${ARGN}")
+foreach(arg IN LISTS argn)
+    if(${arg})
+	  set(${arg} True)
+	else()
+	  set(${arg} False)
+	endif()
+  endforeach()
+endmacro()
+
+# ##############################################################################
+# add all subdirs using add_subdirectory
 # ##############################################################################
 macro(_subdirlist out)
   file(
@@ -27,7 +41,7 @@ macro(add_all_subdirectories)
 endmacro()
 
 # ##############################################################################
-# setup individual project with globbing ###
+# setup individual project with globbing
 # ##############################################################################
 macro(_set_ide_folder target folder)
   set_target_properties(${target} PROPERTIES FOLDER ${folder})

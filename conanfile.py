@@ -8,8 +8,8 @@ class StormEngine(ConanFile):
     # build options provided by CMakeLists.txt that are used in conanfile.py
     options = {
         "output_directory": "ANY",
-        "crash_reports": ["ON", "OFF"],
-        "steam": ["ON", "OFF"]
+        "crash_reports": [True, False],
+        "steam": [True, False]
     }
 
     # dependencies used in deploy binaries
@@ -24,7 +24,7 @@ class StormEngine(ConanFile):
 
     # optional dependencies
     def requirements(self):
-        if self.options.steam == "ON":
+        if self.options.steam:
             self.requires("steamworks/1.5.1@storm/prebuilt")
 
     generators = "cmake_multi"
@@ -55,9 +55,9 @@ class StormEngine(ConanFile):
         else:
             self.__intall_lib("fmod.dll")
 
-        if self.options.crash_reports == "ON":
+        if self.options.crash_reports:
             self.__install_bin("crashpad_handler.exe")
             self.__install_bin("7za.exe")
 
-        if self.options.steam == "ON":
+        if self.options.steam:
             self.__intall_lib("steam_api64.dll")
