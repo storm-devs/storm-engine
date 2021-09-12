@@ -4,6 +4,7 @@ import struct
 import time
 import re
 import copy
+import ctypes
 
 import bmesh
 import bpy
@@ -587,7 +588,8 @@ def bsp_store(col, sroot, root):
         node["face"].append(face_bytes[0])
         node["face"].append(face_bytes[1])
         node["face"].append(face_bytes[2])
-    node["face"] = int.from_bytes(node.get("face"), byteorder='little', signed=False)
+    node["face"] = int.from_bytes(
+        node.get("face"), byteorder='little', signed=False)
 
     node["nfaces"] = root.get("tot_faces")
 
@@ -756,6 +758,15 @@ def write_avertex0(file, pos, weight, bone_id, norm, color, tu0, tv0,):
 
     file.write(struct.pack('<f', tu0))
     file.write(struct.pack('<f', tv0))
+
+
+def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
+    write_vector(file, norm)
+    file.write(struct.pack('<f', pd))
+    bitfields = (node & 0x3FFFFF) | ((sign & 0x1) << 22) | ((left & 0x1) << 23) | (
+        (nfaces & 0x1F) << 24) | ((right & 0x3) << 28) | ((type & 0x3) << 30)
+    file.write(struct.pack('<L', bitfields))
+    file.write(struct.pack('<l', face))
 
 
 # TODO bsp
@@ -1095,15 +1106,12 @@ def export_gm(context, file_path="", bsp=False):
             if not (material_texture in textures):
                 textures.append(material_texture)
 
-    if bsp:
-        col = build_bsp(col)
-
     # TODO nested
     with open(file_path, 'wb') as file:
         header_version = 825110581
         file.write(struct.pack('<l', header_version))
 
-        header_flags = 1 if bsp else 0
+        header_flags = 2 if bsp else 0
         file.write(struct.pack('<l', header_flags))
 
         globnames = prepare_globnames(
@@ -1354,6 +1362,27 @@ def export_gm(context, file_path="", bsp=False):
                     write_avertex0(file, buffer_vertices[i], buffer_weights[i], buffer_bone_ids[i], buffer_normals[i],
                                    buffer_colors[i], buffer_uv_array[i][0], buffer_uv_array[i][1])
 
+        if bsp:
+            sroot = build_bsp(col)
+
+            file.write(struct.pack('<l', col.get("ssize")))
+            file.write(struct.pack('<l', col.get("nvrts")))
+            file.write(struct.pack('<l', col.get("ntrgs")))
+
+            for root in sroot:
+                write_bsp_node(file, root.get("norm"), root.get("pd"), root.get("node"), root.get(
+                    "sign"), root.get("left"), root.get("nfaces"), root.get("right"), root.get("type"), root.get("face"))
+            
+            for vrt in col.get("vrt"):
+                write_vector(file, vrt)
+
+            for trg in col.get("trg"):
+                for vert_idx in trg:
+                    file.write(struct.pack('<B', (vert_idx>>0)&0xFF))
+                    file.write(struct.pack('<B', (vert_idx>>8)&0xFF))
+                    file.write(struct.pack('<B', (vert_idx>>16)&0xFF))
+
+
     print('\nGM Export finished successfully!')
 
     return {'FINISHED'}
@@ -1373,8 +1402,13 @@ class ExportGm(Operator, ExportHelper):
         maxlen=255,  # Max internal buffer length, longer would be clamped.
     )
 
+    BSP: BoolProperty(
+        name="BSP",
+        default=False,
+    )
+
     def execute(self, context):
-        return export_gm(context, self.filepath)
+        return export_gm(context, self.filepath, self.BSP)
 
 
 def menu_func_export(self, context):
