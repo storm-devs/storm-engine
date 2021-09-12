@@ -5,6 +5,7 @@ import time
 import re
 import copy
 import ctypes
+import sys
 
 import bmesh
 import bpy
@@ -12,6 +13,8 @@ import mathutils
 from bpy.props import BoolProperty, EnumProperty, StringProperty
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper, axis_conversion
+
+sys.setrecursionlimit(10000)
 
 bl_info = {
     "name": "SeaDogs GM",
@@ -28,11 +31,14 @@ bl_info = {
 MAX_TREE_DEPTH = 1024
 MAX_PLANES_CALCULATED = 256
 PRECISION = 0.00001
-LIE_PREC = 0.0001
+LIE_PREC = 0.00001
 MAX_PLANE_FACES = 15
+BSP_NODE_SIZE = 24
 
 correction_export_matrix = axis_conversion(
     from_forward='Y', from_up='Z', to_forward='X', to_up='Y')
+
+nodes_to_skip = 0
 
 
 def get_bounding_box_coords(objects, x_is_mirrored):
@@ -588,8 +594,10 @@ def bsp_store(col, sroot, root):
         node["face"].append(face_bytes[0])
         node["face"].append(face_bytes[1])
         node["face"].append(face_bytes[2])
-    node["face"] = int.from_bytes(
-        node.get("face"), byteorder='little', signed=False)
+
+    # TODO Must be signed=True?? FIXME 0xFFFFFFFF & overflow fix, delete later
+    # node["face"] = 0xFFFFFFFF & int.from_bytes(
+    #     node.get("face"), byteorder='little', signed=False)
 
     node["nfaces"] = root.get("tot_faces")
 
@@ -760,18 +768,44 @@ def write_avertex0(file, pos, weight, bone_id, norm, color, tu0, tv0,):
     file.write(struct.pack('<f', tv0))
 
 
-def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
-    write_vector(file, norm)
-    file.write(struct.pack('<f', pd))
-    bitfields = (node & 0x3FFFFF) | ((sign & 0x1) << 22) | ((left & 0x1) << 23) | (
-        (nfaces & 0x1F) << 24) | ((right & 0x3) << 28) | ((type & 0x3) << 30)
-    file.write(struct.pack('<L', bitfields))
-    # TODO was <l originally, but it ain't working; checkme!
-    file.write(struct.pack('<L', face))
+# def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
+#     write_vector(file, norm)
+#     file.write(struct.pack('<f', pd))
+#     bitfields = (node & 0x3FFFFF) | ((sign & 0x1) << 22) | ((left & 0x1) << 23) | (
+#         (nfaces & 0x1F) << 24) | ((right & 0x3) << 28) | ((type & 0x3) << 30)
+#     file.write(struct.pack('<L', bitfields))
+#     # TODO was <l originally, but it ain't working; checkme!
+#     file.write(struct.pack('<L', face))
 
+def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
+    global nodes_to_skip
+    if nodes_to_skip != 0:
+        nodes_to_skip -= 1
+    else:
+        write_vector(file, norm)
+        file.write(struct.pack('<f', pd))
+        bitfields = (node & 0x3FFFFF) | ((sign & 0x1) << 22) | ((left & 0x1) << 23) | (
+            (nfaces & 0x1F) << 24) | ((right & 0x3) << 28) | ((type & 0x3) << 30)
+        file.write(struct.pack('<L', bitfields))
+        for i in range(nfaces):
+            file.write(struct.pack('<B', face[i*3]))
+            file.write(struct.pack('<B', face[i*3+1]))
+            file.write(struct.pack('<B', face[i*3+2]))
+
+        if nfaces == 1:
+            file.write(struct.pack('<B', 0))
+        else:
+            exceeding_nodes_in_bytes = 3*(nfaces-1)-1
+            nodes_to_skip = math.ceil(exceeding_nodes_in_bytes/BSP_NODE_SIZE)
+            file.write(b'\x00' * (nodes_to_skip *
+                       BSP_NODE_SIZE - exceeding_nodes_in_bytes))
 
 # TODO bsp
+
+
 def export_gm(context, file_path="", bsp=False):
+    global nodes_to_skip
+
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
     root = bpy.context.view_layer.objects.active
@@ -1373,16 +1407,17 @@ def export_gm(context, file_path="", bsp=False):
             for root in sroot:
                 write_bsp_node(file, root.get("norm"), root.get("pd"), root.get("node"), root.get(
                     "sign"), root.get("left"), root.get("nfaces"), root.get("right"), root.get("type"), root.get("face"))
-            
+
             for vrt in col.get("vrt"):
                 write_vector(file, vrt)
 
             for trg in col.get("trg"):
                 for vert_idx in trg:
-                    file.write(struct.pack('<B', (vert_idx>>0)&0xFF))
-                    file.write(struct.pack('<B', (vert_idx>>8)&0xFF))
-                    file.write(struct.pack('<B', (vert_idx>>16)&0xFF))
+                    file.write(struct.pack('<B', (vert_idx >> 0) & 0xFF))
+                    file.write(struct.pack('<B', (vert_idx >> 8) & 0xFF))
+                    file.write(struct.pack('<B', (vert_idx >> 16) & 0xFF))
 
+            nodes_to_skip = 0
 
     print('\nGM Export finished successfully!')
 
