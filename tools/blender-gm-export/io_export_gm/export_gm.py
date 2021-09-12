@@ -16,7 +16,7 @@ bl_info = {
     "name": "SeaDogs GM",
     "description": "Export GM files",
     "author": "Artess999",
-    "version": (0, 0, 1),
+    "version": (0, 9, 9),
     "blender": (2, 92, 0),
     "location": "File > Export",
     "warning": "",
@@ -570,6 +570,7 @@ def bsp_fill_node(col, faces, nfaces):
 
 def bsp_store(col, sroot, root):
     node_idx = col.get("ndepth")[col.get("cdepth")]
+    # TODO: why deepcopy?
     node = copy.deepcopy(sroot[node_idx])
 
     node["sign"] = 0
@@ -577,15 +578,16 @@ def bsp_store(col, sroot, root):
     node["norm"] = root.get("norm")
     node["pd"] = root.get("pld")
 
-    # TODO MAGIC
-    # 	//store all faces
-    # 	unsigned char *a = (unsigned char *)&node->face;
-    # 	for (long f = 0; f < tot_faces; f++)
-    # 	{
-    # 		*(a++) = *(((unsigned char *)&_face[f]) + 0);
-    # 		*(a++) = *(((unsigned char *)&_face[f]) + 1);
-    # 		*(a++) = *(((unsigned char *)&_face[f]) + 2);
-    # 	}
+    faces = root.get("_face")
+    node["face"] = bytearray()
+    for i in range(root.get("tot_faces")):
+        # TODO: check if overflow does not happen here
+        # if it happens, this might be a point for invalid BSP faces
+        face_bytes = faces[i].to_bytes(4, "little")
+        node["face"].append(face_bytes[0])
+        node["face"].append(face_bytes[1])
+        node["face"].append(face_bytes[2])
+    node["face"] = int.from_bytes(node.get("face"), byteorder='little', signed=False)
 
     node["nfaces"] = root.get("tot_faces")
 
@@ -599,22 +601,16 @@ def bsp_store(col, sroot, root):
     node["node"] = 0
 
     if root.get("left") != None:
-        # TODO MAGIC
-        # node->node = left->Store();
         (sroot, num) = bsp_store(col, sroot, root.get("left"))
         node["node"] = num
         node["left"] = 1
 
     if root.get("right") != None:
         if root.get("left") is None:
-            # TODO MAGIC
-            # node->node = right->Store() - 1;
             (sroot, num) = bsp_store(col, sroot, root.get("right"))
             node["node"] = num - 1
             node["right"] = 1
         else:
-            # TODO MAGIC
-            # node->right = right->Store() - node->node;
             (sroot, num) = bsp_store(col, sroot, root.get("right"))
             node["right"] = num - node.get("node")
 
@@ -624,7 +620,7 @@ def bsp_store(col, sroot, root):
 
     # TODO MAGIC
     # return long(node - sroot);
-    return (sroot, 99999999)
+    return (sroot, node_idx)
 
 
 def build_bsp(col):
