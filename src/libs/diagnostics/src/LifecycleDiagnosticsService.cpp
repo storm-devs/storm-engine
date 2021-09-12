@@ -21,6 +21,28 @@
 #define _tsystem std::system
 #endif
 
+namespace
+{
+auto& getExecutableDir()
+{
+    static const auto executableDir = std::filesystem::path{std::filesystem::u8path(fio->_GetExecutableDirectory())};
+    return executableDir;
+}
+auto &getLogsArchive()
+{
+    static const auto logsArchive = fs::GetLogsPath().replace_extension(".7z");
+    return logsArchive;
+}
+
+auto assembleArchiveCmd()
+{
+    constexpr auto archiverBin = "7za.exe";
+    return _T("call \"") + (getExecutableDir() / archiverBin).native() + _T("\" a \"\\\\?\\") +
+           getLogsArchive().native() + _T("\" \"\\\\?\\") + fs::GetLogsPath().native() + _T("\"");
+}
+
+}
+
 namespace storm::diag
 {
 
@@ -40,7 +62,6 @@ class LoggingService final
 
             static auto terminate_handler = std::get_terminate();
             std::set_terminate([] {
-                spdlog::shutdown();
                 terminate_handler();
             });
 
@@ -85,18 +106,18 @@ class LoggingService final
     bool flushRequested_{false};
     std::atomic_bool terminate_{true};
 
-    void flushAll(bool doSync) const
+    void flushAll(const bool terminate) const
     {
-        spdlog::apply_all([doSync](std::shared_ptr<spdlog::logger> l) {
+        spdlog::apply_all([terminate](std::shared_ptr<spdlog::logger> l) {
             l->flush();
 
-            if (doSync)
+            if (terminate)
             {
                 for (auto &sink : l->sinks())
                 {
                     if (const auto syncable_sink = std::dynamic_pointer_cast<logging::sinks::syncable_sink>(sink))
                     {
-                        syncable_sink->sync();
+                        syncable_sink->terminate_immediately();
                     }
                 }
             }
@@ -134,19 +155,12 @@ LifecycleDiagnosticsService::Guard LifecycleDiagnosticsService::initialize(const
     if (!initialized_)
     {
         // TODO: make this crossplatform
-        const auto executableDir = std::filesystem::path{std::filesystem::u8path(fio->_GetExecutableDirectory())};
-        const auto logsArchive = fs::GetLogsPath().replace_extension(".7z");
-        constexpr auto archiverBin = "7za.exe";
-
         auto *options = sentry_options_new();
         sentry_options_set_dsn(options, "https://1798a1bcfb654cbd8ce157b381964525@o572138.ingest.sentry.io/5721165");
         sentry_options_set_database_path(options, (fs::GetStashPath() / "sentry-db").c_str());
-        sentry_options_set_handler_path(options, (executableDir / "crashpad_handler.exe").c_str());
-        sentry_options_add_attachment(options, logsArchive.c_str());
+        sentry_options_set_handler_path(options, (getExecutableDir() / "crashpad_handler.exe").c_str());
+        sentry_options_add_attachment(options, getLogsArchive().c_str());
         sentry_options_set_before_send(options, beforeCrash, this);
-
-        archiveLogsCmd_ = _T("call \"") + (executableDir / archiverBin).native() + _T("\" a \"") +
-                          logsArchive.native() + _T("\" \"") + fs::GetLogsPath().native() + _T("\"");
         sentry_options_set_system_crash_reporter_enabled(options, enableCrashReports);
 
         initialized_ = sentry_init(options) == 0;
@@ -177,15 +191,26 @@ void LifecycleDiagnosticsService::notifyAfterRun() const
     }
 }
 
+void LifecycleDiagnosticsService::setCrashInfoCollector(crash_info_collector f)
+{
+    collectCrashInfo_ = std::move(f);
+}
+
 sentry_value_t LifecycleDiagnosticsService::beforeCrash(const sentry_value_t event, void *, void *data)
 {
     const auto *self = static_cast<LifecycleDiagnosticsService *>(data);
 
-#ifndef STORM_DIAG_NO_FLUSH_ON_CRASH
-    // NB: STORM_DIAG_NO_FLUSH_ON_CRASH shall be defined when debugging stack corruption
+    // collect additional data
+    if (self->collectCrashInfo_)
+    {
+        self->collectCrashInfo_();
+    }
+    
+    // terminate logging
     self->loggingService_->terminate();
-#endif
-    _tsystem(self->archiveLogsCmd_.c_str());
+
+    // archive logs for sentry backend
+    _tsystem(assembleArchiveCmd().c_str());
 
     return event;
 }

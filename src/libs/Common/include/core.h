@@ -156,6 +156,8 @@ class CORE
 
     void stopFrameProcessing();
 
+    void collectCrashInfo();
+
   private:
     void loadCompatibilitySettings(INIFILE &inifile);
 

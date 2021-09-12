@@ -21,11 +21,39 @@ namespace
 {
 
 constexpr char defaultLoggerName[] = "system";
-bool isHold = false;
 bool isRunning = false;
 bool bActive = true;
 
 storm::diag::LifecycleDiagnosticsService lifecycleDiagnostics;
+
+void RunFrame()
+{
+    if (!core.Run())
+    {
+        isRunning = false;
+    }
+
+    lifecycleDiagnostics.notifyAfterRun();
+}
+
+#ifdef _WIN32
+void RunFrameWithOverflowCheck()
+{
+    __try
+    {
+        RunFrame();
+    }
+    __except ([](unsigned code, struct _EXCEPTION_POINTERS *ep) {
+        return code == EXCEPTION_STACK_OVERFLOW;
+    }(GetExceptionCode(), GetExceptionInformation()))
+    {
+        _resetstkoflw();
+        throw std::runtime_error("Stack overflow");
+    }
+}
+#else
+#define RunFrameWithOverflowCheck RunFrame
+#endif
 
 } // namespace
 
@@ -74,6 +102,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     if (!lifecycleDiagnosticsGuard)
     {
         spdlog::error("Unable to initialize lifecycle service");
+    }
+    else
+    {
+        lifecycleDiagnostics.setCrashInfoCollector([]() { core.collectCrashInfo(); });
     }
 
     // Init stash
@@ -152,14 +184,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
                     continue;
                 dwOldTime = dwNewTime;
             }
-            const auto runResult = core.Run();
-            if (!isHold && !runResult)
-            {
-                isHold = true;
-                isRunning = false;
-            }
 
-            lifecycleDiagnostics.notifyAfterRun();
+            RunFrameWithOverflowCheck();
         }
         else
         {

@@ -71,6 +71,12 @@ COMPILER::COMPILER()
     // bScriptTrace = false;
     bFirstRun = true;
     pBuffer = nullptr;
+
+    using storm::logging::getOrCreateLogger;
+    logTrace_ = getOrCreateLogger("compile");
+    logError_ = getOrCreateLogger("error");
+    logStack_ = getOrCreateLogger("script_stack");
+    logStack_->set_pattern("%v");
 }
 
 COMPILER::~COMPILER()
@@ -276,7 +282,7 @@ void COMPILER::Trace(const char *data_PTR, ...)
     va_start(args, data_PTR);
     _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     va_end(args);
-    storm::logging::getOrCreateLogger(COMPILER_LOG)->trace(LogBuffer);
+    logTrace_->trace(LogBuffer);
 }
 
 // write to compilation log file
@@ -292,7 +298,7 @@ void COMPILER::DTrace(const char *data_PTR, ...)
     va_start(args, data_PTR);
     _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     va_end(args);
-    storm::logging::getOrCreateLogger(COMPILER_LOG)->trace(LogBuffer);
+    logTrace_->trace(LogBuffer);
 }
 
 // append one block of code to another
@@ -381,7 +387,7 @@ void COMPILER::SetError(const char *data_PTR, ...)
     }
     va_end(args);
 
-    storm::logging::getOrCreateLogger(COMPILER_ERRORLOG)->error(ErrorBuffer);
+    logError_->error(ErrorBuffer);
 
     if (bBreakOnError)
         CDebug->SetTraceMode(TMODE_MAKESTEP);
@@ -407,7 +413,7 @@ void COMPILER::SetWarning(const char *data_PTR, ...)
     sprintf_s(ErrorBuffer, "WARNING in %s(%d): %s", DebugSourceFileName, DebugSourceLine + 1, LogBuffer);
     va_end(args);
 
-    storm::logging::getOrCreateLogger(COMPILER_ERRORLOG)->warn(ErrorBuffer);
+    logTrace_->warn(ErrorBuffer);
 }
 
 void COMPILER::LoadPreprocess()
@@ -650,6 +656,11 @@ void COMPILER::DelEventHandler(const char *event_name, const char *func_name)
 
 VDATA *COMPILER::ProcessEvent(const char *event_name)
 {
+    // TODO: only do if stack debug if enabled (should be runtime configurable)
+    // push event name to call stack
+    storm::ringbuffer_stack_push_guard push_guard(callStack_);
+    push_guard.push(std::make_tuple("", 0U, event_name));
+
     uint32_t event_code;
     uint32_t func_code;
     VDATA *pVD;
@@ -3538,6 +3549,11 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
         SetError("Invalid function call");
         return false;
     }
+
+    // TODO: only do if stack debug if enabled (should be runtime configurable)
+    // push function details to call stack
+    storm::ringbuffer_stack_push_guard push_guard(callStack_);
+    push_guard.push(std::make_tuple(call_fi.decl_file_name.c_str(), call_fi.decl_line, call_fi.name.c_str()));
 
     // number f arguments pushed into stack for this function call
     if (BC_TokenGet() != ARGS_NUM)
@@ -7065,6 +7081,35 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
         return nullptr;
     }
     return nullptr;
+}
+
+void COMPILER::collectCallStack()
+{
+    logStack_->trace("Call stack:");
+    auto callStackCopy = callStack_;
+    while (!callStackCopy.empty())
+    {
+        const auto &record = callStackCopy.back();
+
+        const auto &filename = std::get<0>(record);
+        const auto &line = std::get<1>(record);
+        const auto &name = std::get<2>(record);
+
+        if (filename[0] == '\0')
+        {
+            logStack_->trace("{} (EVENT)", name);
+        }
+        else if (strcmp(filename, "engine") == 0)
+        {
+            logStack_->trace("{} (INTERNAL FUNCTION)", name);
+        }
+        else
+        {
+            logStack_->trace("{} (FUNCTION) at {}:{}", name, filename, line);
+        }
+
+        callStackCopy.pop();
+    }
 }
 
 void COMPILER::FormatAllDialog(const char *directory_name)

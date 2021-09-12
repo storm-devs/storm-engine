@@ -1,5 +1,7 @@
 #include "logging.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include "spdlog_sinks/syncable_sink.hpp"
 #include "storm/fs.h"
 
@@ -13,7 +15,8 @@ constexpr auto kLogExtension = ".log";
 namespace storm::logging
 {
 
-std::shared_ptr<spdlog::logger> getOrCreateLogger(const std::string &name, const spdlog::level::level_enum level,
+// TODO: loggers with periodic flush shall be thread safe; we should measure performance diff and decide what to do
+logger_ptr getOrCreateLogger(const std::string &name, const spdlog::level::level_enum level,
                                                   const bool truncate)
 {
     auto logger = spdlog::get(name);

@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <filesystem>
+#include <functional>
 #include <memory>
 
 #define SENTRY_BUILD_STATIC 1
@@ -41,17 +42,20 @@ class LifecycleDiagnosticsService final
     };
 
   public:
+    using crash_info_collector = std::function<void()>;
+
     LifecycleDiagnosticsService();
     ~LifecycleDiagnosticsService();
 
     [[maybe_unused, nodiscard("This guard shall exist until stack unwind")]] Guard initialize(bool enableCrashReports);
     void terminate() const;
     void notifyAfterRun() const;
+    void setCrashInfoCollector(crash_info_collector f);
 
   private:
-    std::filesystem::path::string_type archiveLogsCmd_;
     bool initialized_{false};
     std::unique_ptr<LoggingService> loggingService_;
+    crash_info_collector collectCrashInfo_;
 
     static sentry_value_t beforeCrash(sentry_value_t event, void *, void *data);
 };
