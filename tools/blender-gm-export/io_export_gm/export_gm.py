@@ -28,7 +28,8 @@ bl_info = {
     "category": "Export",
 }
 
-MAX_TREE_DEPTH = 1024
+# TODO 1024 in sources
+MAX_TREE_DEPTH = 2048
 MAX_PLANES_CALCULATED = 256
 PRECISION = 0.00001
 LIE_PREC = 0.00001
@@ -243,6 +244,12 @@ def bsp_best_plane(col, faces, nfaces):
     gd = 1e20
 
     f = 0
+
+    min_l = 0
+    min_r = 0
+    min_c = 0
+    min_m = 0
+
     for f in range(min(nfaces, MAX_PLANES_CALCULATED)):
         l = 0
         r = 0
@@ -304,6 +311,11 @@ def bsp_best_empty_plane(col, faces, nfaces, epnorm, epdist):
     f = 0
 
     gd = 1e20
+
+    min_l = 0
+    min_r = 0
+    min_c = 0
+    min_m = 0
 
     for f in range(min(nfaces, MAX_PLANES_CALCULATED)):
         for e in range(3):
@@ -1439,7 +1451,7 @@ class ExportGm(Operator, ExportHelper):
     )
 
     BSP: BoolProperty(
-        name="BSP",
+        name="BSP (TEST SUPPORT, EXPERIMENTAL FEATURE)",
         default=False,
     )
 
