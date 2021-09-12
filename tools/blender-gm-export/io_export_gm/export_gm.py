@@ -766,7 +766,8 @@ def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
     bitfields = (node & 0x3FFFFF) | ((sign & 0x1) << 22) | ((left & 0x1) << 23) | (
         (nfaces & 0x1F) << 24) | ((right & 0x3) << 28) | ((type & 0x3) << 30)
     file.write(struct.pack('<L', bitfields))
-    file.write(struct.pack('<l', face))
+    # TODO was <l originally, but it ain't working; checkme!
+    file.write(struct.pack('<L', face))
 
 
 # TODO bsp
