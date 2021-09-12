@@ -61,11 +61,6 @@ On models without animation might be one or two textures (main texture and textu
 
 ![two-textures.img](readme-img/two-textures.png)
 
-## Issues
-
-This is the first version of export and BSP currently is not supported.
-Export of weapons and characters are supported.
-
 ## Blender Plugin Installation
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Select export_gm.py from io_export_gm folder -> Enable "Export: SeaDogs GM"

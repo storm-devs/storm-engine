@@ -59,11 +59,6 @@ File -> Export... -> GM Export(.gm)
 
 ![two-textures.img](readme-img/two-textures.png)
 
-## Issues
-
-Это первая версия экспорта, BSP не поддерживается в данный момент.
-Поддерживается экспорт оружия и персонажей.
-
 ## Установка плагина в Blender
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Выбрать export_gm.py из папки io_export_an -> Включить "Export: SeaDogs GM"
