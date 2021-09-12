@@ -1081,32 +1081,34 @@ void XINTERFACE::LoadIni()
     GlobalScreenRect.right = screenSize.width + GlobalScreenRect.left;
 
     sprintf_s(section, "COMMON");
-    /*
-        // set screen parameters
-        if (ini->GetLong(platform, "bDynamicScaling", 0) != 0)
-        {
-            POINT screen_size = pRenderService->GetScreenSize();
-            float aspect = float(screen_size.x) / float(screen_size.y);
-            fScale = 1.f;
-            dwScreenWidth = 600 * aspect;
-            dwScreenHeight = 600;
-            GlobalScreenRect.left = (dwScreenWidth - 800) / 2;
-            GlobalScreenRect.top = 0;
-            GlobalScreenRect.right = (dwScreenWidth + 800) / 2;
-            GlobalScreenRect.bottom = 600;
-        }
-        else
-        {
+
+    // set screen parameters
+    const auto &canvas_size = core.GetScreenSize();
+    if (ini->GetLong(platform, "bDynamicScaling", 0) != 0)
+    {
+        POINT screen_size = pRenderService->GetScreenSize();
+        float aspect = float(screen_size.x) / float(screen_size.y);
+        fScale = 1.f;
+        dwScreenWidth = static_cast<uint32_t>(canvas_size.height * aspect);
+        dwScreenHeight = canvas_size.height;
+        GlobalScreenRect.left = (dwScreenWidth - canvas_size.width) / 2;
+        GlobalScreenRect.top = 0;
+        GlobalScreenRect.right = (dwScreenWidth + canvas_size.width) / 2;
+        GlobalScreenRect.bottom = canvas_size.height;
+    }
+    else
+    {
         fScale = ini->GetFloat(platform, "fScale", 1.f);
-        if (fScale < MIN_SCALE || fScale > MAX_SCALE) fScale = 1.f;
-        dwScreenWidth = ini->GetLong(platform, "wScreenWidth", 800);
-        dwScreenHeight = ini->GetLong(platform, "wScreenHeight", 600);
+        if (fScale < MIN_SCALE || fScale > MAX_SCALE)
+            fScale = 1.f;
+        dwScreenWidth = ini->GetLong(platform, "wScreenWidth", canvas_size.width);
+        dwScreenHeight = ini->GetLong(platform, "wScreenHeight", canvas_size.height);
         GlobalScreenRect.left = ini->GetLong(platform, "wScreenLeft", 0);
-        GlobalScreenRect.top = ini->GetLong(platform, "wScreenTop", 600);
-        GlobalScreenRect.right = ini->GetLong(platform, "wScreenRight", 800);
+        GlobalScreenRect.top = ini->GetLong(platform, "wScreenTop", canvas_size.height);
+        GlobalScreenRect.right = ini->GetLong(platform, "wScreenRight", canvas_size.width);
         GlobalScreenRect.bottom = ini->GetLong(platform, "wScreenDown", 0);
-      }
-    */
+    }
+
     m_fpMouseOutZoneOffset.x = ini->GetFloat(section, "mouseOutZoneWidth", 0.f);
     m_fpMouseOutZoneOffset.y = ini->GetFloat(section, "mouseOutZoneHeight", 0.f);
     m_nMouseLastClickTimeMax = ini->GetLong(section, "mouseDblClickInterval", 300);
