@@ -180,116 +180,56 @@ def NODESIZE(a):
     return (1+(a*3+BSP_NODE_SIZE-4)/BSP_NODE_SIZE)
 
 
-def bsp_best_plane(col, faces, nfaces):
-    res0 = 0
-    res1 = 0
-    res2 = 0
-    best_plane = 0
-
-    gd = 1e20
-
-    f = 0
-
+class Build_bsp_node:
     min_l = 0
     min_r = 0
     min_c = 0
     min_m = 0
 
-    for f in range(min(nfaces, MAX_PLANES_CALCULATED)):
-        l = 0
-        r = 0
-        c = 0
-        m = 0
+    def __init__(self, col):
+        self.col = col
 
-        for i in range(nfaces):
-            normal = faces[f].get("normal")
-            plane_distance = faces[f].get("plane_distance")
-            f_trg = col.trg[faces[i].get("trg")]
+        self.right = None  # []
+        self.left = None  # []
+        self.norm = mathutils.Vector((0, 0, 0))
+        self.pld = 0
+        self.tot_faces = 0
+        self._face = []
 
-            res0 = normal.dot(col.vrt[f_trg[0]]) - plane_distance
-            res1 = normal.dot(col.vrt[f_trg[1]]) - plane_distance
-            res2 = normal.dot(col.vrt[f_trg[2]]) - plane_distance
+    def best_plane(self, faces, nfaces):
+        res0 = 0
+        res1 = 0
+        res2 = 0
+        best_plane = 0
 
-            if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
-                m += 1
-                continue
+        gd = 1e20
 
-            min_dist = 1e300
-            max_dist = -1e300
-            for v in range(faces[i].get("nvertices")):
-                dist = normal.dot(faces[i].get("vertices")[v]) - plane_distance
+        f = 0
 
-                if dist > max_dist:
-                    max_dist = dist
-                if dist < min_dist:
-                    min_dist = dist
-
-            if min_dist >= -PRECISION and max_dist >= -PRECISION:
-                r += 1
-                continue
-
-            if min_dist <= PRECISION and max_dist <= PRECISION:
-                l += 1
-                continue
-            c += 1
-
-        dist = 3.0 * c + 1.0 * abs(r - l)
-
-        if dist < gd:
-            gd = dist
-            best_plane = f
-            min_l = l
-            min_r = r
-            min_c = c
-            min_m = m
-
-    return (col, best_plane, min_l, min_r, min_c, min_m)
-
-
-def bsp_best_empty_plane(col, faces, nfaces, epnorm, epdist):
-    res0 = 0
-    res1 = 0
-    res2 = 0
-    f = 0
-
-    gd = 1e20
-
-    min_l = 0
-    min_r = 0
-    min_c = 0
-    min_m = 0
-
-    for f in range(min(nfaces, MAX_PLANES_CALCULATED)):
-        for e in range(3):
-            e1 = e + 1
-            if e1 == 3:
-                e1 = 0
-
-            edge = faces[f].get("vertices")[e1] - faces[f].get("vertices")[e]
-            bnormal = (faces[f].get(
-                "normal") * math.sqrt(edge.length_squared)).cross(edge).normalized()
-            bplane_distance = bnormal.dot(faces[f].get("vertices")[e])
-
+        for f in range(min(nfaces, MAX_PLANES_CALCULATED)):
             l = 0
             r = 0
             c = 0
             m = 0
 
             for i in range(nfaces):
-                f_trg = col.trg[faces[i].get("trg")]
+                normal = faces[f].get("normal")
+                plane_distance = faces[f].get("plane_distance")
+                f_trg = self.col.trg[faces[i].get("trg")]
 
-                res0 = bnormal.dot(col.vrt[f_trg[0]]) - bplane_distance
-                res1 = bnormal.dot(col.vrt[f_trg[1]]) - bplane_distance
-                res2 = bnormal.dot(col.vrt[f_trg[2]]) - bplane_distance
+                res0 = normal.dot(self.col.vrt[f_trg[0]]) - plane_distance
+                res1 = normal.dot(self.col.vrt[f_trg[1]]) - plane_distance
+                res2 = normal.dot(self.col.vrt[f_trg[2]]) - plane_distance
 
                 if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
-                    break
+                    m += 1
+                    continue
 
                 min_dist = 1e300
                 max_dist = -1e300
                 for v in range(faces[i].get("nvertices")):
-                    dist = bnormal.dot(faces[i].get("vertices")[
-                                       v]) - bplane_distance
+                    dist = normal.dot(faces[i].get(
+                        "vertices")[v]) - plane_distance
 
                     if dist > max_dist:
                         max_dist = dist
@@ -305,281 +245,343 @@ def bsp_best_empty_plane(col, faces, nfaces, epnorm, epdist):
                     continue
                 c += 1
 
-            if i < nfaces:
-                continue
-
             dist = 3.0 * c + 1.0 * abs(r - l)
 
-            if r > 0 and l > 0 and dist < gd:
+            if dist < gd:
                 gd = dist
-                min_l = l
-                min_r = r
-                min_c = c
-                min_m = m
-                epnorm = bnormal
-                epdist = bplane_distance
+                best_plane = f
+                Build_bsp_node.min_l = l
+                Build_bsp_node.min_r = r
+                Build_bsp_node.min_c = c
+                Build_bsp_node.min_m = m
 
-        return (col, epnorm, epdist, min_l, min_r, min_c, min_m)
+        return best_plane
 
+    def best_empty_plane(self, faces, nfaces, epnorm, epdist):
+        res0 = 0
+        res1 = 0
+        res2 = 0
+        f = 0
 
-def bsp_fill_node(col, faces, nfaces):
-    (col, best_plane, min_l, min_r, min_c,
-     min_m) = bsp_best_plane(col, faces, nfaces)
+        gd = 1e20
 
-    norm = faces[best_plane].get("normal")
-    pld = norm.dot(col.vrt[col.trg[faces[best_plane].get("trg")][0]])
+        for f in range(min(nfaces, MAX_PLANES_CALCULATED)):
+            for e in range(3):
+                e1 = e + 1
+                if e1 == 3:
+                    e1 = 0
 
-    if min_m > MAX_PLANE_FACES:
-        (col, norm, pld, min_l, min_r, min_c, min_m) = bsp_best_empty_plane(
-            col, faces, nfaces, norm, pld)
-        best_plane = -1
+                edge = faces[f].get("vertices")[e1] - \
+                    faces[f].get("vertices")[e]
+                bnormal = (faces[f].get(
+                    "normal") * math.sqrt(edge.length_squared)).cross(edge).normalized()
+                bplane_distance = bnormal.dot(faces[f].get("vertices")[e])
 
-    rlist = []
-    llist = []
+                l = 0
+                r = 0
+                c = 0
+                m = 0
 
-    col.cur_node = col.cur_node + 1
-    col.cur_depth = col.cur_depth + 1
+                for i in range(nfaces):
+                    f_trg = self.col.trg[faces[i].get("trg")]
 
-    if col.cur_depth > col.max_depth:
-        col.max_depth = col.cur_depth
+                    res0 = bnormal.dot(self.col.vrt[f_trg[0]]) - bplane_distance
+                    res1 = bnormal.dot(self.col.vrt[f_trg[1]]) - bplane_distance
+                    res2 = bnormal.dot(self.col.vrt[f_trg[2]]) - bplane_distance
 
-    if col.cur_depth > 1000:
-        print("cur_depth > 1000 interrupt")
+                    if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
+                        break
 
-    tot_faces = 0
+                    min_dist = 1e300
+                    max_dist = -1e300
+                    for v in range(faces[i].get("nvertices")):
+                        dist = bnormal.dot(faces[i].get("vertices")[
+                            v]) - bplane_distance
 
-    _face = []
+                        if dist > max_dist:
+                            max_dist = dist
+                        if dist < min_dist:
+                            min_dist = dist
 
-    l = 0
-    r = 0
+                    if min_dist >= -PRECISION and max_dist >= -PRECISION:
+                        r += 1
+                        continue
 
-    for i in range(nfaces):
-        res = []
+                    if min_dist <= PRECISION and max_dist <= PRECISION:
+                        l += 1
+                        continue
+                    c += 1
 
-        f_trg_idx = faces[i].get("trg")
-        f_trg = col.trg[f_trg_idx]
+                if i < nfaces:
+                    continue
 
-        res.append(norm.dot(col.vrt[f_trg[0]]) - pld)
-        res.append(norm.dot(col.vrt[f_trg[1]]) - pld)
-        res.append(norm.dot(col.vrt[f_trg[2]]) - pld)
+                dist = 3.0 * c + 1.0 * abs(r - l)
 
-        if abs(res[0]) < LIE_PREC and abs(res[1]) < LIE_PREC and abs(res[2]) < LIE_PREC:
-            # for loop c++ increment hack
-            tf = -1
-            has_break = False
+                if r > 0 and l > 0 and dist < gd:
+                    gd = dist
+                    Build_bsp_node.min_l = l
+                    Build_bsp_node.min_r = r
+                    Build_bsp_node.min_c = c
+                    Build_bsp_node.min_m = m
+                    epnorm = bnormal
+                    epdist = bplane_distance
 
-            for tf in range(tot_faces):
-                if _face[tf] == f_trg_idx:
-                    has_break = True
+            return (epnorm, epdist)
+
+    def fill_node(self, faces, nfaces):
+        best_plane = self.best_plane(faces, nfaces)
+
+        self.norm = faces[best_plane].get("normal")
+        self.pld = self.norm.dot(self.col.vrt[self.col.trg[faces[best_plane].get("trg")][0]])
+
+        if Build_bsp_node.min_m > MAX_PLANE_FACES:
+            (self.norm, self.pld) = self.best_empty_plane(faces, nfaces, self.norm, self.pld)
+            best_plane = -1
+
+        rlist = []
+        llist = []
+
+        self.col.cur_node += 1
+        self.col.cur_depth += 1
+
+        if self.col.cur_depth > self.col.max_depth:
+            self.col.max_depth = self.col.cur_depth
+
+        if self.col.cur_depth > 1000:
+            print("cur_depth > 1000 interrupt")
+
+        self.tot_faces = 0
+
+        self._face = []
+
+        l = 0
+        r = 0
+
+        for i in range(nfaces):
+            res = []
+
+            f_trg_idx = faces[i].get("trg")
+            f_trg = self.col.trg[f_trg_idx]
+
+            res.append(self.norm.dot(self.col.vrt[f_trg[0]]) - self.pld)
+            res.append(self.norm.dot(self.col.vrt[f_trg[1]]) - self.pld)
+            res.append(self.norm.dot(self.col.vrt[f_trg[2]]) - self.pld)
+
+            if abs(res[0]) < LIE_PREC and abs(res[1]) < LIE_PREC and abs(res[2]) < LIE_PREC:
+                # for loop c++ increment hack
+                tf = -1
+                has_break = False
+
+                for tf in range(self.tot_faces):
+                    if self._face[tf] == f_trg_idx:
+                        has_break = True
+                        break
+
+                # for loop c++ increment hack
+                if not has_break:
+                    tf += 1
+
+                if tf == self.tot_faces:
+                    self.tot_faces += 1
+                    self._face.append(f_trg_idx)
+
+                continue
+
+            vdist = [None] * 256
+            min_did = 0
+            max_did = 0
+            min_dist = 1e300
+            max_dist = -1e300
+
+            for v in range(faces[i].get("nvertices")):
+                vdist[v] = self.norm.dot(faces[i].get("vertices")[v]) - self.pld
+
+                if vdist[v] > max_dist:
+                    max_dist = vdist[v]
+                    max_did = v
+
+                if vdist[v] < min_dist:
+                    min_dist = vdist[v]
+                    min_did = v
+
+            if min_dist >= -PRECISION and max_dist >= -PRECISION:
+                r += 1
+                rlist.append(faces[i])
+                continue
+
+            if min_dist <= PRECISION and max_dist <= PRECISION:
+                l += 1
+                llist.append(faces[i])
+                continue
+
+            right_face = copy.deepcopy(faces[i])
+
+            while vdist[max_did] > -PRECISION:
+                max_did -= 1
+                if max_did == -1:
+                    max_did = faces[i].get("nvertices") - 1
+
+            right_face["nvertices"] = 0
+            right_face["vertices"] = []
+
+            # do .. while hack
+            while True:
+                right_face["nvertices"] += 1
+
+                if vdist[max_did] <= -PRECISION:
+                    v = max_did + 1
+                    if v == faces[i].get("nvertices"):
+                        v = 0
+
+                    d = vdist[max_did] / (vdist[max_did] - vdist[v])
+                    right_face["vertices"].append(faces[i].get("vertices")[
+                        max_did] + d * (faces[i].get("vertices")[v] - faces[i].get("vertices")[max_did]))
+                else:
+                    right_face["vertices"].append(
+                        faces[i].get("vertices")[max_did])
+
+                max_did += 1
+                if max_did == faces[i].get("nvertices"):
+                    max_did = 0
+
+                if vdist[max_did] <= -PRECISION:
                     break
 
-            # for loop c++ increment hack
-            if not has_break:
-                tf += 1
+            right_face["nvertices"] += 1
+            v = max_did - 1
 
-            if tf == tot_faces:
-                tot_faces += 1
-                _face.append(f_trg_idx)
+            if v == -1:
+                v = faces[i].get("nvertices") - 1
 
-            continue
-
-        vdist = [None] * 256
-        min_did = 0
-        max_did = 0
-        min_dist = 1e300
-        max_dist = -1e300
-
-        for v in range(faces[i].get("nvertices")):
-            vdist[v] = norm.dot(faces[i].get("vertices")[v]) - pld
-
-            if vdist[v] > max_dist:
-                max_dist = vdist[v]
-                max_did = v
-
-            if vdist[v] < min_dist:
-                min_dist = vdist[v]
-                min_did = v
-
-        if min_dist >= -PRECISION and max_dist >= -PRECISION:
+            d = vdist[max_did] / (vdist[max_did] - vdist[v])
+            right_face["vertices"].append(faces[i].get("vertices")[
+                max_did] + d * (faces[i].get("vertices")[v] - faces[i].get("vertices")[max_did]))
             r += 1
-            rlist.append(faces[i])
-            continue
+            rlist.append(right_face)
 
-        if min_dist <= PRECISION and max_dist <= PRECISION:
+            # left, lol
+            right_face = copy.deepcopy(faces[i])
+
+            while vdist[min_did] < PRECISION:
+                min_did -= 1
+                if min_did == -1:
+                    min_did = faces[i].get("nvertices") - 1
+
+            right_face["nvertices"] = 0
+            right_face["vertices"] = []
+
+            # do .. while hack
+            while True:
+                right_face["nvertices"] += 1
+
+                if vdist[min_did] >= PRECISION:
+                    v = min_did + 1
+                    if v == faces[i].get("nvertices"):
+                        v = 0
+
+                    d = vdist[min_did] / (vdist[min_did] - vdist[v])
+                    right_face["vertices"].append(faces[i].get("vertices")[
+                        min_did] + d * (faces[i].get("vertices")[v] - faces[i].get("vertices")[min_did]))
+                else:
+                    right_face["vertices"].append(
+                        faces[i].get("vertices")[min_did])
+
+                min_did += 1
+                if min_did == faces[i].get("nvertices"):
+                    min_did = 0
+
+                if vdist[min_did] >= PRECISION:
+                    break
+
+            right_face["nvertices"] += 1
+            v = min_did - 1
+
+            if v == -1:
+                v = faces[i].get("nvertices") - 1
+
+            d = vdist[min_did] / (vdist[min_did] - vdist[v])
+            right_face["vertices"].append(faces[i].get("vertices")[
+                min_did] + d * (faces[i].get("vertices")[v] - faces[i].get("vertices")[min_did]))
             l += 1
-            llist.append(faces[i])
-            continue
+            llist.append(right_face)
 
-        right_face = copy.deepcopy(faces[i])
+        self.col.ssize += int(NODESIZE(self.tot_faces))
+        self.col.ndepth[self.col.cur_depth] += int(NODESIZE(self.tot_faces))
 
-        while vdist[max_did] > -PRECISION:
-            max_did -= 1
-            if max_did == -1:
-                max_did = faces[i].get("nvertices") - 1
-
-        right_face["nvertices"] = 0
-        right_face["vertices"] = []
-
-        # do .. while hack
-        while True:
-            right_face["nvertices"] += 1
-
-            if vdist[max_did] <= -PRECISION:
-                v = max_did + 1
-                if v == faces[i].get("nvertices"):
-                    v = 0
-
-                d = vdist[max_did] / (vdist[max_did] - vdist[v])
-                right_face["vertices"].append(faces[i].get("vertices")[
-                                              max_did] + d * (faces[i].get("vertices")[v] - faces[i].get("vertices")[max_did]))
-            else:
-                right_face["vertices"].append(
-                    faces[i].get("vertices")[max_did])
-
-            max_did += 1
-            if max_did == faces[i].get("nvertices"):
-                max_did = 0
-
-            if vdist[max_did] <= -PRECISION:
-                break
-
-        right_face["nvertices"] += 1
-        v = max_did - 1
-
-        if v == -1:
-            v = faces[i].get("nvertices") - 1
-
-        d = vdist[max_did] / (vdist[max_did] - vdist[v])
-        right_face["vertices"].append(faces[i].get("vertices")[
-                                      max_did] + d * (faces[i].get("vertices")[v] - faces[i].get("vertices")[max_did]))
-        r += 1
-        rlist.append(right_face)
-
-        # left, lol
-        right_face = copy.deepcopy(faces[i])
-
-        while vdist[min_did] < PRECISION:
-            min_did -= 1
-            if min_did == -1:
-                min_did = faces[i].get("nvertices") - 1
-
-        right_face["nvertices"] = 0
-        right_face["vertices"] = []
-
-        # do .. while hack
-        while True:
-            right_face["nvertices"] += 1
-
-            if vdist[min_did] >= PRECISION:
-                v = min_did + 1
-                if v == faces[i].get("nvertices"):
-                    v = 0
-
-                d = vdist[min_did] / (vdist[min_did] - vdist[v])
-                right_face["vertices"].append(faces[i].get("vertices")[
-                                              min_did] + d * (faces[i].get("vertices")[v] - faces[i].get("vertices")[min_did]))
-            else:
-                right_face["vertices"].append(
-                    faces[i].get("vertices")[min_did])
-
-            min_did += 1
-            if min_did == faces[i].get("nvertices"):
-                min_did = 0
-
-            if vdist[min_did] >= PRECISION:
-                break
-
-        right_face["nvertices"] += 1
-        v = min_did - 1
-
-        if v == -1:
-            v = faces[i].get("nvertices") - 1
-
-        d = vdist[min_did] / (vdist[min_did] - vdist[v])
-        right_face["vertices"].append(faces[i].get("vertices")[
-                                      min_did] + d * (faces[i].get("vertices")[v] - faces[i].get("vertices")[min_did]))
-        l += 1
-        llist.append(right_face)
-
-    col.ssize += int(NODESIZE(tot_faces))
-    col.ndepth[col.cur_depth] += int(NODESIZE(tot_faces))
-
-    if r > 0:
-        right = bsp_fill_node(col, rlist, r)
-    else:
-        right = None
-
-    if l > 0:
-        left = bsp_fill_node(col, llist, l)
-    else:
-        left = None
-
-    col.cur_depth -= 1
-
-    return {
-        "right": right,
-        "left": left,
-        "norm": norm,
-        "pld": pld,
-        "tot_faces": tot_faces,
-        "_face": _face
-    }
-
-
-def bsp_store(col, sroot, root):
-    node_idx = col.ndepth[col.cdepth]
-    # TODO: why deepcopy?
-    node = copy.deepcopy(sroot[node_idx])
-
-    node["sign"] = 0
-    node["type"] = 0
-    node["norm"] = root.get("norm")
-    node["pd"] = root.get("pld")
-
-    faces = root.get("_face")
-    node["face"] = bytearray()
-    for i in range(root.get("tot_faces")):
-        # TODO: check if overflow does not happen here
-        # if it happens, this might be a point for invalid BSP faces
-        face_bytes = faces[i].to_bytes(4, "little")
-        node["face"].append(face_bytes[0])
-        node["face"].append(face_bytes[1])
-        node["face"].append(face_bytes[2])
-
-    # TODO Must be signed=True?? FIXME 0xFFFFFFFF & overflow fix, delete later
-    # node["face"] = 0xFFFFFFFF & int.from_bytes(
-    #     node.get("face"), byteorder='little', signed=False)
-
-    node["nfaces"] = root.get("tot_faces")
-
-    if node["nfaces"] > MAX_PLANE_FACES:
-        print("Internal error: too many faces on the BSP node")
-
-    col.ndepth[col.cdepth] += node["nfaces"]
-    col.cdepth += 1
-
-    node["left"] = 0
-    node["node"] = 0
-
-    if root.get("left") != None:
-        (sroot, num) = bsp_store(col, sroot, root.get("left"))
-        node["node"] = num
-        node["left"] = 1
-
-    if root.get("right") != None:
-        if root.get("left") is None:
-            (sroot, num) = bsp_store(col, sroot, root.get("right"))
-            node["node"] = num - 1
-            node["right"] = 1
+        if r > 0:
+            self.right = Build_bsp_node(self.col)
+            self.right.fill_node(rlist, r)
         else:
-            (sroot, num) = bsp_store(col, sroot, root.get("right"))
-            node["right"] = num - node.get("node")
+            self.right = None
 
-    col.cdepth -= 1
+        if l > 0:
+            self.left = Build_bsp_node(self.col)
+            self.left.fill_node(llist, l)
+        else:
+            self.left = None
 
-    sroot[node_idx] = node
+        self.col.cur_depth -= 1
 
-    return (sroot, node_idx)
+    def store(self, sroot):
+        node_idx = self.col.ndepth[self.col.cdepth]
+        # TODO: why deepcopy?
+        node = copy.deepcopy(sroot[node_idx])
+
+        node["sign"] = 0
+        node["type"] = 0
+        node["norm"] = self.norm
+        node["pd"] = self.pld
+
+        faces = self._face
+        node["face"] = bytearray()
+        for i in range(self.tot_faces):
+            # TODO: check if overflow does not happen here
+            # if it happens, this might be a point for invalid BSP faces
+            face_bytes = faces[i].to_bytes(4, "little")
+            node["face"].append(face_bytes[0])
+            node["face"].append(face_bytes[1])
+            node["face"].append(face_bytes[2])
+
+        # TODO Must be signed=True?? FIXME 0xFFFFFFFF & overflow fix, delete later
+        # node["face"] = 0xFFFFFFFF & int.from_bytes(
+        #     node.get("face"), byteorder='little', signed=False)
+
+        node["nfaces"] = self.tot_faces
+
+        if node["nfaces"] > MAX_PLANE_FACES:
+            print("Internal error: too many faces on the BSP node")
+
+        self.col.ndepth[self.col.cdepth] += node["nfaces"]
+        self.col.cdepth += 1
+
+        node["left"] = 0
+        node["node"] = 0
+
+        if self.left != None:
+            (sroot, num) = self.left.store(sroot)
+            node["node"] = num
+            node["left"] = 1
+
+        if self.right != None:
+            if self.left is None:
+                (sroot, num) = self.right.store(sroot)
+                node["node"] = num - 1
+                node["right"] = 1
+            else:
+                (sroot, num) = self.right.store(sroot)
+                node["right"] = num - node.get("node")
+
+        self.col.cdepth -= 1
+
+        sroot[node_idx] = node
+
+        return (sroot, node_idx)
+
+    def clear_static_fields():
+        Build_bsp_node.min_l = 0
+        Build_bsp_node.min_r = 0
+        Build_bsp_node.min_c = 0
+        Build_bsp_node.min_m = 0
 
 
 class Collide:
@@ -661,8 +663,8 @@ class Collide:
             faces.append(face)
 
         self.ssize = 0
-        #  TODO self
-        root = bsp_fill_node(self, faces, self.ntrgs)
+        root = Build_bsp_node(self)
+        root.fill_node(faces, self.ntrgs)
 
         prv = 0
         for d in range(self.max_depth):
@@ -680,8 +682,7 @@ class Collide:
             "type": 0,
             "face": 0,
         }] * self.ssize
-        #  TODO self
-        (sroot, num) = bsp_store(self, sroot, root)
+        (sroot, num) = root.store(sroot)
 
         return sroot
 
@@ -1404,6 +1405,7 @@ def export_gm(context, file_path="", bsp=False):
                     file.write(struct.pack('<B', (vert_idx >> 16) & 0xFF))
 
             nodes_to_skip = 0
+            Build_bsp_node.clear_static_fields()
 
     print('\nGM Export finished successfully!')
 
