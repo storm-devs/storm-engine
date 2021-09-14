@@ -43,12 +43,12 @@ jobs:
       with:
         files: build\${{ matrix.configuration }}\bin
         recursive: true
-        dest: ${{ matrix.configuration }}.zip
+        dest: storm-engine.${{ matrix.configuration }}-steam-${{ matrix.enable_steam }}.zip
     - name: Publish release
       uses: softprops/action-gh-release@v1
       with:
         draft: true
-        files: ${{ matrix.configuration }}.zip
+        files: storm-engine.${{ matrix.configuration }}-steam-${{ matrix.enable_steam }}.zip
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
