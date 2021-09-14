@@ -691,6 +691,11 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     long progressFramesCountX;
     long progressFramesCountY;
 
+    // new renderer settings
+    bool vSyncEnabled;
+    uint32_t msaa;
+
+
     D3DPRESENT_PARAMETERS d3dpp;
 
     CMatrix mView, mWorld, mProjection;
