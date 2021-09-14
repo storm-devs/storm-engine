@@ -22,6 +22,8 @@
 #define MSG_MODEL_SET_FOG 20511
 #define MSG_MODEL_SET_MAX_VIEW_DIST 20512
 
+#define MSG_MODEL_SUBSTITUTE_GEOMETRY_NODE 20600 // "ss", geometry, new model name
+
 //============================================================================================
 // blade messages
 //============================================================================================

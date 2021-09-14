@@ -393,6 +393,19 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         if (root)
             root->SetMaxViewDist(message.Float());
         break;
+    case MSG_MODEL_SUBSTITUTE_GEOMETRY_NODE: {
+        auto &&geometry_node = message.String();
+        auto &&new_model_name = message.String();
+
+        if (auto *node = FindNode(geometry_node.c_str()))
+        {
+            node->SubstituteGeometry(new_model_name);
+        }
+        else
+        {
+            spdlog::trace("MODELR: Cannot substitute geometry node {}", geometry_node);
+        }
+    }
     }
     return 1;
 }

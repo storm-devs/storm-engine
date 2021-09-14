@@ -6,7 +6,6 @@
 
 VGEOMETRY *NODER::gs = nullptr;
 VDX9RENDER *NODER::rs = nullptr;
-static long nlab = 0;
 long NODER::depth = -1;
 long NODER::node;
 extern long clip_nps;
@@ -15,7 +14,6 @@ extern const CVECTOR *clip_c;
 extern float clip_r;
 extern GEOS::ADD_POLYGON_FUNC clip_geosap;
 extern ADD_POLYGON_FUNC clip_ap;
-char nm[256];
 GEOS::PLANE clip_gp[256];
 NODE *bestTraceNode = nullptr;
 GEOS *clipGeo;
@@ -43,7 +41,7 @@ bool AddPolygon(const GEOS::VERTEX *vr, long nv)
 //-------------------------------------------------------------------
 bool NODER::Clip()
 {
-    if (isReleaed)
+    if (isReleased)
         return false;
 
     // check for bounding spheres intersection
@@ -122,7 +120,7 @@ float NODER::Update(CMatrix &mtx, CVECTOR &cnt)
 //----------------------------------------------------------
 float NODER::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
-    if (isReleaed)
+    if (isReleased)
         return 2.0f;
     // check for bounding spheres intersection
     const auto lmn = dst - src;
@@ -174,10 +172,6 @@ NODER::NODER()
     nnext = 0;
     next = nullptr;
     parent = nullptr;
-    sys_modelName = nullptr;
-    sys_TexPath = nullptr;
-    sys_LightPath = nullptr;
-    sys_lmPath = nullptr;
 
     max_view_dist = 0.f;
 }
@@ -185,6 +179,7 @@ NODER::NODER()
 bool NODER::Init(const char *lightPath, const char *pname, const char *oname, const CMatrix &m, const CMatrix &globm,
                  NODER *par, const char *lmPath)
 {
+    isReleased = false;
     name[0] = 0;
     technique[0] = 0;
     geoMaterialFunc = nullptr;
@@ -193,44 +188,28 @@ bool NODER::Init(const char *lightPath, const char *pname, const char *oname, co
     loc_mtx = m;
     glob_mtx.EqMultiply(loc_mtx, globm);
 
-    nlab++;
-    if (oname[0] == 0)
-        sprintf_s(nm, "%s", pname);
+    if (pname == nullptr)
+    {
+        throw std::runtime_error(fmt::format("NODER::Init: got nullptr model name"));
+    }
+    sys_modelName_base = pname;
+
+    if (oname && oname[0])
+        sys_modelName_full = fmt::format("{}_{}", sys_modelName_base, oname);
     else
-        sprintf_s(nm, "%s_%s", pname, oname);
+        sys_modelName_full = sys_modelName_base;
+    
+    if (lightPath)
+        sys_LightPath = lightPath;
 
-    char lp[256];
-    // sprintf_s(lp, "%s\\%s", lightPath, nm);
-    sprintf_s(lp, "%s", lightPath);
+    if (lmPath)
+        sys_lmPath = lmPath;
 
-    auto len = strlen(nm) + 1;
-    sys_modelName = new char[len];
-    memcpy(sys_modelName, nm, len);
+    sys_TexPath = gs->GetTexturePath();
 
-    len = strlen(lp) + 1;
-    sys_LightPath = new char[len];
-    memcpy(sys_LightPath, lp, len);
-
-    len = strlen(lmPath) + 1;
-    sys_lmPath = new char[len];
-    memcpy(sys_lmPath, lmPath, len);
-
-    const auto *const tPath = gs->GetTexturePath();
-    len = strlen(tPath) + 1;
-    sys_TexPath = new char[len];
-    memcpy(sys_TexPath, tPath, len);
-
-    isReleaed = false;
-
-    geo = gs->CreateGeometry(nm, lp, 0, lmPath);
+    geo = gs->CreateGeometry(sys_modelName_full.c_str(), sys_LightPath.c_str(), 0, lmPath);
     if (!geo)
     {
-        delete sys_modelName;
-        sys_modelName = nullptr;
-        delete sys_LightPath;
-        sys_LightPath = nullptr;
-        delete sys_lmPath;
-        sys_lmPath = nullptr;
         return false;
     }
 
@@ -305,19 +284,15 @@ NODER::~NODER()
             delete next[l];
     if (nnext > 0)
         free(next);
-    delete sys_modelName;
-    delete sys_LightPath;
-    delete sys_lmPath;
-    delete sys_TexPath;
 }
 
 void NODER::ReleaseGeometry()
 {
-    if (isReleaed)
+    if (isReleased)
         return;
     delete geo;
     geo = nullptr;
-    isReleaed = true;
+    isReleased = true;
     for (long i = 0; i < nnext; i++)
     {
         if (!next[i])
@@ -328,21 +303,21 @@ void NODER::ReleaseGeometry()
 
 void NODER::RestoreGeometry()
 {
-    if (!isReleaed)
+    if (!isReleased)
         return;
 
     const auto *const tPath = gs->GetTexturePath();
     const auto len = strlen(tPath) + 1;
     auto *const ttPath = new char[len];
     memcpy(ttPath, tPath, len);
-    gs->SetTexturePath(sys_TexPath);
-    geo = gs->CreateGeometry(sys_modelName, sys_LightPath, 0, sys_lmPath);
+    gs->SetTexturePath(sys_TexPath.c_str());
+    geo = gs->CreateGeometry(sys_modelName_full.c_str(), sys_LightPath.c_str(), 0, sys_lmPath.c_str());
     gs->SetTexturePath(ttPath);
     delete[] ttPath;
     if (!geo)
-        throw std::runtime_error("No geometry");
+        throw std::runtime_error(fmt::format("Cannot restore geometry {}", sys_modelName_full));
 
-    isReleaed = false;
+    isReleased = false;
     for (long i = 0; i < nnext; i++)
     {
         if (!next[i])
@@ -359,7 +334,7 @@ GEOS::PLANE TViewPlane[4];
 
 void NODER::Draw()
 {
-    if (isReleaed)
+    if (isReleased)
         return;
 
     const auto cnt = glob_mtx * center;
@@ -616,4 +591,11 @@ void NODER::SetMaxViewDist(float fDist)
     for (long n = 0; n < nnext; n++)
         if (next[n])
             static_cast<NODER *>(next[n])->SetMaxViewDist(fDist);
+}
+
+void NODER::SubstituteGeometry(const std::string &new_model)
+{
+    sys_modelName_full = fmt::format("{}_{}", sys_modelName_base, new_model);
+    ReleaseGeometry();
+    RestoreGeometry();
 }

@@ -151,27 +151,22 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
         const auto eidModel = message.EntityID();
         const auto nNation = message.Long();
 
-        MODEL *host_mdl;
-        host_mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(eidModel));
+        MODEL *host_mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(eidModel));
         if (host_mdl == nullptr)
         {
             core.Trace("Missing INIT message to FLAG: bad MODEL");
+            return 0;
         }
 
         if (groupQuantity == 0)
         {
             gdata = new GROUPDATA[1];
-            if (gdata == nullptr)
-                throw std::runtime_error("Not memory allocation");
-
             groupQuantity = 1;
         }
         else
         {
             auto *const oldgdata = gdata;
             gdata = new GROUPDATA[groupQuantity + 1];
-            if (gdata == nullptr)
-                throw std::runtime_error("Not memory allocation");
             memcpy(gdata, oldgdata, sizeof(GROUPDATA) * groupQuantity);
             delete oldgdata;
             groupQuantity++;
