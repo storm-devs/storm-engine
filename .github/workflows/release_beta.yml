@@ -1,20 +1,9 @@
-name: CI Build
+name: Prepare BETA release
 
 on:
   push:
-    branches:
-      - develop
-    paths-ignore:
-      - 'docs/**'
-      - 'tools/**'
-      - '*.md'
-  pull_request:
-    branches:
-      - develop
-    paths-ignore:
-      - 'docs/**'
-      - 'tools/**'
-      - '*.md'
+    tags:
+      - "beta[0-9]+"
 
 jobs:
   build-windows:
@@ -49,3 +38,14 @@ jobs:
       with:
         name: storm-engine.${{ matrix.configuration }}-steam-${{ matrix.enable_steam}}
         path: build\${{ matrix.configuration }}\bin
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        draft: true
+        files: build\${{ matrix.configuration }}
+    - name: Upload debug symbols
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+        run: npm install @sentry/cli
+        run: ./node_modules/.bin/sentry-cli --auth-token ${{ secrets.SENTRY_AUTH_TOKEN }} upload-dif --org storm-devs --project storm-engine "build\${{ matrix.configuration }}\bin"
