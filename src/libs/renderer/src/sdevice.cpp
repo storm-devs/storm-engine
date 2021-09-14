@@ -2,10 +2,9 @@
 
 #include "core.h"
 
-#include "Entity.h"
+#include "entity.h"
 #include "inlines.h"
 #include "s_import_func.h"
-#include "script_libriary.h"
 #include "texture.h"
 #include "v_s_stack.h"
 
@@ -483,6 +482,18 @@ bool DX9RENDER::Init()
             stencil_format = D3DFMT_D16;
         }
 
+        // new renderer settings
+        vSyncEnabled = ini->GetLong(nullptr, "vsync", 0);
+        msaa = ini->GetLong(nullptr, "msaa", D3DMULTISAMPLE_16_SAMPLES);
+        if (msaa != D3DMULTISAMPLE_NONE)
+        {
+            if (msaa < D3DMULTISAMPLE_2_SAMPLES || msaa > D3DMULTISAMPLE_16_SAMPLES)
+            {
+                msaa = D3DMULTISAMPLE_16_SAMPLES;
+            }
+        }
+
+
         // stencil_format = D3DFMT_D24S8;
         if (!InitDevice(bWindow, core.GetAppHWND(), screen_size.x, screen_size.y))
             return false;
@@ -686,17 +697,15 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     }
 
     d3dpp.MultiSampleType = D3DMULTISAMPLE_NONE;
-    // d3dpp.MultiSampleType = D3DMULTISAMPLEMODE_4X ;
-    /*uint32_t n;
-    for(n=D3DMULTISAMPLE_16_SAMPLES;n>=D3DMULTISAMPLE_3_SAMPLES;n--)
+    for (auto samples = msaa; msaa > D3DMULTISAMPLE_2_SAMPLES; samples--)
     {
-    if(SUCCEEDED(d3d->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,
-    d3dpp.BackBufferFormat,false,(D3DMULTISAMPLE_TYPE)n)))
-    {
-    d3dpp.MultiSampleType = (D3DMULTISAMPLE_TYPE)n;
-    break;
+        if (SUCCEEDED(d3d->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, d3dpp.BackBufferFormat, false,
+                                                      static_cast<D3DMULTISAMPLE_TYPE>(samples), nullptr)))
+        {
+            d3dpp.MultiSampleType = static_cast<D3DMULTISAMPLE_TYPE>(samples);
+            break;
+        }
     }
-    }//*/
 
     if (bBackBufferCanLock)
         d3dpp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
@@ -708,19 +717,27 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     // if(windowed) d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;//FLIP;
     // else d3dpp.SwapEffect = D3DSWAPEFFECT_FLIP;
 
-    if (!windowed)
+    if (vSyncEnabled)
     {
         d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
-        // d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+    }
+    else
+    {
+        d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
     }
 
-    if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING, &d3dpp, &d3d9) !=
-        D3D_OK)
+    if (CHECKD3DERR(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_HARDWARE_VERTEXPROCESSING,
+                                      &d3dpp, &d3d9)))
     {
-        // if(CHECKD3DERR(E_FAIL)==true)    return false;
-        if (CHECKD3DERR(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-                                          &d3dpp, &d3d9)) == true)
-            return false;
+        if (CHECKD3DERR(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING,
+                                          &d3dpp, &d3d9)))
+        {
+            if (CHECKD3DERR(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
+                                              D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3d9)))
+            {
+                return false;
+            }
+        }
     }
     effects_.setDevice(d3d9);
 
@@ -3085,6 +3102,9 @@ void DX9RENDER::SetCommonStates()
     SetRenderState(D3DRS_LIGHTING, FALSE); // TRUE);
     SetRenderState(D3DRS_COLORVERTEX, TRUE);
     SetRenderState(D3DRS_SPECULARENABLE, FALSE); // TRUE);
+
+    // AA
+    SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 }
 
 HRESULT DX9RENDER::GetViewport(D3DVIEWPORT9 *pViewport)
@@ -3740,6 +3760,23 @@ HRESULT DX9RENDER::StretchRect(IDirect3DSurface9 *pSourceSurface, const RECT *pS
 
 HRESULT DX9RENDER::GetRenderTargetData(IDirect3DSurface9 *pRenderTarget, IDirect3DSurface9 *pDestSurface)
 {
+    D3DSURFACE_DESC desc;
+    if (CHECKD3DERR(pRenderTarget->GetDesc(&desc)))
+        return static_cast<HRESULT>(false);
+
+    if (desc.MultiSampleType != D3DMULTISAMPLE_NONE)
+    {
+        IDirect3DSurface9 *pNonsampledSurface = nullptr;
+
+        CHECKD3DERR(d3d9->CreateRenderTarget(desc.Width, desc.Height, desc.Format, D3DMULTISAMPLE_NONE, 0, FALSE,
+                                             &pNonsampledSurface, nullptr));
+        CHECKD3DERR(d3d9->StretchRect(pRenderTarget, nullptr, pNonsampledSurface, nullptr, D3DTEXF_NONE));
+        
+        const auto result = CHECKD3DERR(d3d9->GetRenderTargetData(pNonsampledSurface, pDestSurface));
+        pNonsampledSurface->Release();
+        return result;
+    }
+
     return CHECKD3DERR(d3d9->GetRenderTargetData(pRenderTarget, pDestSurface));
 }
 
