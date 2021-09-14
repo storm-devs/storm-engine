@@ -285,9 +285,12 @@ class Build_bsp_node:
                 for i in range(nfaces):
                     f_trg = self.col.trg[faces[i].get("trg")]
 
-                    res0 = bnormal.dot(self.col.vrt[f_trg[0]]) - bplane_distance
-                    res1 = bnormal.dot(self.col.vrt[f_trg[1]]) - bplane_distance
-                    res2 = bnormal.dot(self.col.vrt[f_trg[2]]) - bplane_distance
+                    res0 = bnormal.dot(
+                        self.col.vrt[f_trg[0]]) - bplane_distance
+                    res1 = bnormal.dot(
+                        self.col.vrt[f_trg[1]]) - bplane_distance
+                    res2 = bnormal.dot(
+                        self.col.vrt[f_trg[2]]) - bplane_distance
 
                     if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
                         break
@@ -332,10 +335,12 @@ class Build_bsp_node:
         best_plane = self.best_plane(faces, nfaces)
 
         self.norm = faces[best_plane].get("normal")
-        self.pld = self.norm.dot(self.col.vrt[self.col.trg[faces[best_plane].get("trg")][0]])
+        self.pld = self.norm.dot(
+            self.col.vrt[self.col.trg[faces[best_plane].get("trg")][0]])
 
         if Build_bsp_node.min_m > MAX_PLANE_FACES:
-            (self.norm, self.pld) = self.best_empty_plane(faces, nfaces, self.norm, self.pld)
+            (self.norm, self.pld) = self.best_empty_plane(
+                faces, nfaces, self.norm, self.pld)
             best_plane = -1
 
         rlist = []
@@ -394,7 +399,8 @@ class Build_bsp_node:
             max_dist = -1e300
 
             for v in range(faces[i].get("nvertices")):
-                vdist[v] = self.norm.dot(faces[i].get("vertices")[v]) - self.pld
+                vdist[v] = self.norm.dot(
+                    faces[i].get("vertices")[v]) - self.pld
 
                 if vdist[v] > max_dist:
                     max_dist = vdist[v]
@@ -598,7 +604,15 @@ class Collide:
         self.ndepth = [0] * MAX_TREE_DEPTH
 
     def add_mesh(self, vertices, faces):
-        vertices_quantity = len(vertices)
+        prepared_vertices = []
+        for vert in vertices:
+            x = round(vert[0], 7)
+            y = round(vert[1], 7)
+            z = round(vert[2], 7)
+
+            prepared_vertices.append(mathutils.Vector((x, y, z)))
+
+        vertices_quantity = len(prepared_vertices)
         faces_quantity = len(faces)
         ref = [0] * vertices_quantity
 
@@ -615,7 +629,7 @@ class Collide:
                 has_break = False
 
                 for vert_idx_1 in range(self.nvrts):
-                    if vertices[vert_idx] == self.vrt[vert_idx_1]:
+                    if prepared_vertices[vert_idx] == self.vrt[vert_idx_1]:
                         has_break = True
                         break
 
@@ -625,7 +639,7 @@ class Collide:
 
                 if vert_idx_1 == self.nvrts:
                     self.nvrts += 1
-                    self.vrt.append(mathutils.Vector(vertices[vert_idx]))
+                    self.vrt.append(prepared_vertices[vert_idx])
 
                 ref[vert_idx] = vert_idx_1
 
