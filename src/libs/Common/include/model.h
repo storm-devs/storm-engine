@@ -4,7 +4,6 @@
 #include "Matrix.h"
 #include "geos.h"
 #include "object.h"
-#include "vmodule_api.h"
 
 class NODER;
 
@@ -53,6 +52,8 @@ class NODE
                       const CMatrix &globm, NODER *par, const char *lmPath) = 0;
 
     virtual float Trace(const CVECTOR &src, const CVECTOR &dst) = 0;
+
+    virtual void SubstituteGeometry(const std::string& new_model) = 0;
 };
 
 class VDX9RENDER;

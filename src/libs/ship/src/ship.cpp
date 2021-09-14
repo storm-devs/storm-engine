@@ -1301,8 +1301,15 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         core.Send_Message(GetModelEID(), "ls", MSG_MODEL_SET_TECHNIQUE, sTech.c_str());
         //       MODEL * pModel = GetModel();
         //       NODE* pNode = pModel->GetNode(0);
+        break;
     }
-    break;
+    case MSG_MODEL_SUBSTITUTE_GEOMETRY_NODE: {
+        auto &&geometry_node = message.String();
+        auto &&new_model_name = message.String();
+        core.Send_Message(GetModelEID(), "lss", MSG_MODEL_SUBSTITUTE_GEOMETRY_NODE, geometry_node.c_str(),
+                          new_model_name.c_str());
+        break;
+    }
     }
     return 0;
 }

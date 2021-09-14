@@ -1,16 +1,19 @@
 #pragma once
 
+#include <string>
+
 #include "dx9render.h"
 #include "geometry.h"
 #include "model.h"
 
 class NODER : public NODE
 {
-    char *sys_modelName;
-    char *sys_LightPath;
-    char *sys_TexPath;
-    char *sys_lmPath;
-    bool isReleaed;
+    std::string sys_modelName_base;
+    std::string sys_modelName_full;
+    std::string sys_LightPath;
+    std::string sys_TexPath;
+    std::string sys_lmPath;
+    bool isReleased;
 
     static long depth, node;
     uintptr_t idGeoGroup; // id of "geometry" string
@@ -54,11 +57,15 @@ class NODER : public NODE
 
     void SetTechnique(const char *name) override;
     const char *GetTechnique() override;
+    
+    // replace only this node model without touching anything else
+    void SubstituteGeometry(const std::string &new_model) override;
 
     void ReleaseGeometry();
     void RestoreGeometry();
 
     void SetMaxViewDist(float fDist);
+
 };
 
 #define MODEL_ANI_MAXBUFFERS 16
