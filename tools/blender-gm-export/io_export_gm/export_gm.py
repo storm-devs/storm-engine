@@ -604,15 +604,15 @@ class Collide:
         self.ndepth = [0] * MAX_TREE_DEPTH
 
     def add_mesh(self, vertices, faces):
-        prepared_vertices = []
-        for vert in vertices:
-            x = round(vert[0], 7)
-            y = round(vert[1], 7)
-            z = round(vert[2], 7)
+        # prepared_vertices = []
+        # for vert in vertices:
+        #     x = round(vert[0], 7)
+        #     y = round(vert[1], 7)
+        #     z = round(vert[2], 7)
 
-            prepared_vertices.append(mathutils.Vector((x, y, z)))
+        #     prepared_vertices.append(mathutils.Vector((x, y, z)))
 
-        vertices_quantity = len(prepared_vertices)
+        vertices_quantity = len(vertices)
         faces_quantity = len(faces)
         ref = [0] * vertices_quantity
 
@@ -629,7 +629,7 @@ class Collide:
                 has_break = False
 
                 for vert_idx_1 in range(self.nvrts):
-                    if prepared_vertices[vert_idx] == self.vrt[vert_idx_1]:
+                    if vertices[vert_idx] == self.vrt[vert_idx_1]:
                         has_break = True
                         break
 
@@ -639,7 +639,7 @@ class Collide:
 
                 if vert_idx_1 == self.nvrts:
                     self.nvrts += 1
-                    self.vrt.append(prepared_vertices[vert_idx])
+                    self.vrt.append(vertices[vert_idx])
 
                 ref[vert_idx] = vert_idx_1
 
