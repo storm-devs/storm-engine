@@ -541,6 +541,15 @@ void WorldMap::Realize(uint32_t delta_time)
     // renew the wind
     wdmObjects->UpdateWind(dltTime);
     wdmObjects->isNextDayUpdate = false;
+    // Notify scripts about wind change
+    auto wind_dir = CVECTOR();
+    auto x = 0.0f;
+    auto z = 0.0f;
+    auto ay = 0.0f;
+    wdmObjects->playerShip->GetPosition(x, z, ay);
+    const auto wind_force = wdmObjects->GetWind(x, z, wind_dir);
+    const auto ang = atan2(wind_dir.x, wind_dir.z);
+    core.Event("WorldMap_GetWindParameters", "ff", wind_force, ang);
     // Checking the update attribute of the encounter
     if (AttributesPointer)
     {
