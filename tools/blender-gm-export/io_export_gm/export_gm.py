@@ -373,18 +373,10 @@ class Build_bsp_node:
             res.append(self.norm.dot(self.col.vrt[f_trg[2]]) - self.pld)
 
             if abs(res[0]) < LIE_PREC and abs(res[1]) < LIE_PREC and abs(res[2]) < LIE_PREC:
-                # for loop c++ increment hack
-                tf = -1
-                has_break = False
-
-                for tf in range(self.tot_faces):
-                    if self._face[tf] == f_trg_idx:
-                        has_break = True
-                        break
-
-                # for loop c++ increment hack
-                if not has_break:
-                    tf += 1
+                try:
+                    tf = self._face.index(f_trg_idx)
+                except ValueError:
+                    tf = self.tot_faces
 
                 if tf == self.tot_faces:
                     self.tot_faces += 1
@@ -620,22 +612,13 @@ class Collide:
             for vert in face:
                 ref[vert] += 1
 
-        # TODO Akella source was so messy, need to rewrote
         for vert_idx in range(vertices_quantity):
             if ref[vert_idx] > 0:
 
-                # for loop c++ increment hack
-                vert_idx_1 = -1
-                has_break = False
-
-                for vert_idx_1 in range(self.nvrts):
-                    if vertices[vert_idx] == self.vrt[vert_idx_1]:
-                        has_break = True
-                        break
-
-                # for loop c++ increment hack
-                if not has_break:
-                    vert_idx_1 += 1
+                try:
+                    vert_idx_1 = self.vrt.index(vertices[vert_idx])
+                except ValueError:
+                    vert_idx_1 = self.nvrts
 
                 if vert_idx_1 == self.nvrts:
                     self.nvrts += 1
