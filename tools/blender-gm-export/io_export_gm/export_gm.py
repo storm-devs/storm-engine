@@ -180,6 +180,51 @@ def NODESIZE(a):
     return (1+(a*3+BSP_NODE_SIZE-4)/BSP_NODE_SIZE)
 
 
+class CVECTOR:
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.value = [x, y, z]
+
+    def __getitem__(self, key):
+        return self.value[key]
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return str(self.value)
+
+    def __eq__(v1, v2):
+        return (v1.x==v2.x and v1.y==v2.y and v1.z==v2.z)
+
+    def __add__(v1, v2):
+        return CVECTOR(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z)
+
+    def __sub__(self, other):
+        return CVECTOR(self.x - other.x, self.y - other.y, self.z - other.z)
+
+    def __mul__(v1, f):
+        return CVECTOR(v1.x*f, v1.y*f, v1.z*f)
+
+    def __rmul__(self, other):
+        return self * other
+
+    def cross(v1, v2):
+        return CVECTOR(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x)
+
+    def normalized(v):
+        len = 1.0/math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z)
+        return CVECTOR(v.x*len, v.y*len, v.z*len)
+
+    def dot(v1, v2):
+        return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z
+
+    def length_squared(v):
+        return v.x*v.x + v.y*v.y + v.z*v.z
+
+
 class Build_bsp_node:
     min_l = 0
     min_r = 0
@@ -191,7 +236,7 @@ class Build_bsp_node:
 
         self.right = None  # []
         self.left = None  # []
-        self.norm = mathutils.Vector((0, 0, 0))
+        self.norm = CVECTOR(0, 0, 0)
         self.pld = 0
         self.tot_faces = 0
         self._face = []
@@ -274,7 +319,7 @@ class Build_bsp_node:
                 edge = faces[f].get("vertices")[e1] - \
                     faces[f].get("vertices")[e]
                 bnormal = (faces[f].get(
-                    "normal") * math.sqrt(edge.length_squared)).cross(edge).normalized()
+                    "normal") * math.sqrt(edge.length_squared())).cross(edge).normalized()
                 bplane_distance = bnormal.dot(faces[f].get("vertices")[e])
 
                 l = 0
@@ -549,7 +594,7 @@ class Build_bsp_node:
         if node["nfaces"] > MAX_PLANE_FACES:
             print("Internal error: too many faces on the BSP node")
 
-        self.col.ndepth[self.col.cdepth] += node["nfaces"]
+        self.col.ndepth[self.col.cdepth] += int(NODESIZE(node["nfaces"]))
         self.col.cdepth += 1
 
         node["left"] = 0
@@ -596,15 +641,18 @@ class Collide:
         self.ndepth = [0] * MAX_TREE_DEPTH
 
     def add_mesh(self, vertices, faces):
-        # prepared_vertices = []
-        # for vert in vertices:
-        #     x = round(vert[0], 7)
-        #     y = round(vert[1], 7)
-        #     z = round(vert[2], 7)
+        prepared_vertices = []
+        for vert in vertices:
+            x = vert[0]
+            y = vert[1]
+            z = vert[2]
+            # x = round(vert[0], 7)
+            # y = round(vert[1], 7)
+            # z = round(vert[2], 7)
 
-        #     prepared_vertices.append(mathutils.Vector((x, y, z)))
+            prepared_vertices.append(CVECTOR(x, y, z))
 
-        vertices_quantity = len(vertices)
+        vertices_quantity = len(prepared_vertices)
         faces_quantity = len(faces)
         ref = [0] * vertices_quantity
 
@@ -616,13 +664,13 @@ class Collide:
             if ref[vert_idx] > 0:
 
                 try:
-                    vert_idx_1 = self.vrt.index(vertices[vert_idx])
+                    vert_idx_1 = self.vrt.index(prepared_vertices[vert_idx])
                 except ValueError:
                     vert_idx_1 = self.nvrts
 
                 if vert_idx_1 == self.nvrts:
                     self.nvrts += 1
-                    self.vrt.append(vertices[vert_idx])
+                    self.vrt.append(prepared_vertices[vert_idx])
 
                 ref[vert_idx] = vert_idx_1
 
@@ -669,7 +717,7 @@ class Collide:
             self.ndepth[d] = prv
 
         sroot = [{
-            "norm": mathutils.Vector((0, 0, 0)),
+            "norm": CVECTOR(0, 0, 0),
             "pd": 0,
             "node": 0,
             "sign": 0,
