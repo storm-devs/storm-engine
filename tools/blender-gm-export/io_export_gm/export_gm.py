@@ -594,7 +594,7 @@ class Build_bsp_node:
         if node["nfaces"] > MAX_PLANE_FACES:
             print("Internal error: too many faces on the BSP node")
 
-        self.col.ndepth[self.col.cdepth] += node["nfaces"]
+        self.col.ndepth[self.col.cdepth] += int(NODESIZE(node["nfaces"]))
         self.col.cdepth += 1
 
         node["left"] = 0
