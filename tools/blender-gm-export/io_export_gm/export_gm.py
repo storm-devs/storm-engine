@@ -1,15 +1,14 @@
-import math
-import os
+from math import sqrt, ceil
 import struct
 import time
 import re
 import copy
-import ctypes
 import sys
 
 import bmesh
 import bpy
 import mathutils
+from collections import defaultdict
 from bpy.props import BoolProperty, EnumProperty, StringProperty
 from bpy.types import Operator
 from bpy_extras.io_utils import ExportHelper, axis_conversion
@@ -114,7 +113,7 @@ def get_box_radius(box_center, vertices):
     for pos in vertices:
         pos_vector = mathutils.Vector(pos)
         [x, y, z] = center_vector - pos_vector
-        radius = math.sqrt(x * x + y * y + z * z)
+        radius = sqrt(x * x + y * y + z * z)
         if radius > box_radius:
             box_radius = radius
 
@@ -197,7 +196,7 @@ class CVECTOR:
         return str(self.value)
 
     def __eq__(v1, v2):
-        return (v1.x==v2.x and v1.y==v2.y and v1.z==v2.z)
+        return (v1.x == v2.x and v1.y == v2.y and v1.z == v2.z)
 
     def __add__(v1, v2):
         return CVECTOR(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z)
@@ -215,9 +214,9 @@ class CVECTOR:
         return CVECTOR(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x)
 
     def normalized(v):
-        sqrt = math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z)
-        if sqrt != 0:
-            len = 1.0/sqrt
+        vec_sqrt = sqrt(v.x*v.x + v.y*v.y + v.z*v.z)
+        if vec_sqrt != 0:
+            len = 1.0/vec_sqrt
             return CVECTOR(v.x*len, v.y*len, v.z*len)
         else:
             return CVECTOR(0, 0, 0)
@@ -246,6 +245,10 @@ class Build_bsp_node:
         self._face = []
 
     def best_plane(self, faces, nfaces):
+        col = self.col
+        col_vrt = col.vrt
+        col_trg = col.trg
+
         res0 = 0
         res1 = 0
         res2 = 0
@@ -261,14 +264,15 @@ class Build_bsp_node:
             c = 0
             m = 0
 
-            for i in range(nfaces):
-                normal = faces[f].get("normal")
-                plane_distance = faces[f].get("plane_distance")
-                f_trg = self.col.trg[faces[i].get("trg")]
+            normal = faces[f].get("normal")
+            plane_distance = faces[f].get("plane_distance")
 
-                res0 = normal.dot(self.col.vrt[f_trg[0]]) - plane_distance
-                res1 = normal.dot(self.col.vrt[f_trg[1]]) - plane_distance
-                res2 = normal.dot(self.col.vrt[f_trg[2]]) - plane_distance
+            for i in range(nfaces):
+                f_trg = col_trg[faces[i].get("trg")]
+
+                res0 = normal.dot(col_vrt[f_trg[0]]) - plane_distance
+                res1 = normal.dot(col_vrt[f_trg[1]]) - plane_distance
+                res2 = normal.dot(col_vrt[f_trg[2]]) - plane_distance
 
                 if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
                     m += 1
@@ -307,6 +311,10 @@ class Build_bsp_node:
         return best_plane
 
     def best_empty_plane(self, faces, nfaces, epnorm, epdist):
+        col = self.col
+        col_vrt = col.vrt
+        col_trg = col.trg
+        
         res0 = 0
         res1 = 0
         res2 = 0
@@ -323,7 +331,7 @@ class Build_bsp_node:
                 edge = faces[f].get("vertices")[e1] - \
                     faces[f].get("vertices")[e]
                 bnormal = (faces[f].get(
-                    "normal") * math.sqrt(edge.length_squared())).cross(edge).normalized()
+                    "normal") * sqrt(edge.length_squared())).cross(edge).normalized()
                 bplane_distance = bnormal.dot(faces[f].get("vertices")[e])
 
                 l = 0
@@ -332,14 +340,14 @@ class Build_bsp_node:
                 m = 0
 
                 for i in range(nfaces):
-                    f_trg = self.col.trg[faces[i].get("trg")]
+                    f_trg = col_trg[faces[i].get("trg")]
 
                     res0 = bnormal.dot(
-                        self.col.vrt[f_trg[0]]) - bplane_distance
+                        col_vrt[f_trg[0]]) - bplane_distance
                     res1 = bnormal.dot(
-                        self.col.vrt[f_trg[1]]) - bplane_distance
+                        col_vrt[f_trg[1]]) - bplane_distance
                     res2 = bnormal.dot(
-                        self.col.vrt[f_trg[2]]) - bplane_distance
+                        col_vrt[f_trg[2]]) - bplane_distance
 
                     if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
                         break
@@ -381,11 +389,16 @@ class Build_bsp_node:
             return (epnorm, epdist)
 
     def fill_node(self, faces, nfaces):
+        col = self.col
+        col_vrt = col.vrt
+        col_trg = col.trg
+        col_ndepth = col.ndepth
+
         best_plane = self.best_plane(faces, nfaces)
 
         self.norm = faces[best_plane].get("normal")
         self.pld = self.norm.dot(
-            self.col.vrt[self.col.trg[faces[best_plane].get("trg")][0]])
+            col_vrt[col_trg[faces[best_plane].get("trg")][0]])
 
         if Build_bsp_node.min_m > MAX_PLANE_FACES:
             (self.norm, self.pld) = self.best_empty_plane(
@@ -395,13 +408,13 @@ class Build_bsp_node:
         rlist = []
         llist = []
 
-        self.col.cur_node += 1
-        self.col.cur_depth += 1
+        col.cur_node += 1
+        col.cur_depth += 1
 
-        if self.col.cur_depth > self.col.max_depth:
-            self.col.max_depth = self.col.cur_depth
+        if col.cur_depth > col.max_depth:
+            col.max_depth = col.cur_depth
 
-        if self.col.cur_depth > 1000:
+        if col.cur_depth > 1000:
             print("cur_depth > 1000 interrupt")
 
         self.tot_faces = 0
@@ -415,11 +428,11 @@ class Build_bsp_node:
             res = []
 
             f_trg_idx = faces[i].get("trg")
-            f_trg = self.col.trg[f_trg_idx]
+            f_trg = col_trg[f_trg_idx]
 
-            res.append(self.norm.dot(self.col.vrt[f_trg[0]]) - self.pld)
-            res.append(self.norm.dot(self.col.vrt[f_trg[1]]) - self.pld)
-            res.append(self.norm.dot(self.col.vrt[f_trg[2]]) - self.pld)
+            res.append(self.norm.dot(col_vrt[f_trg[0]]) - self.pld)
+            res.append(self.norm.dot(col_vrt[f_trg[1]]) - self.pld)
+            res.append(self.norm.dot(col_vrt[f_trg[2]]) - self.pld)
 
             if abs(res[0]) < LIE_PREC and abs(res[1]) < LIE_PREC and abs(res[2]) < LIE_PREC:
                 try:
@@ -552,25 +565,28 @@ class Build_bsp_node:
             l += 1
             llist.append(right_face)
 
-        self.col.ssize += int(NODESIZE(self.tot_faces))
-        self.col.ndepth[self.col.cur_depth] += int(NODESIZE(self.tot_faces))
+        col.ssize += int(NODESIZE(self.tot_faces))
+        col_ndepth[col.cur_depth] += int(NODESIZE(self.tot_faces))
 
         if r > 0:
-            self.right = Build_bsp_node(self.col)
+            self.right = Build_bsp_node(col)
             self.right.fill_node(rlist, r)
         else:
             self.right = None
 
         if l > 0:
-            self.left = Build_bsp_node(self.col)
+            self.left = Build_bsp_node(col)
             self.left.fill_node(llist, l)
         else:
             self.left = None
 
-        self.col.cur_depth -= 1
+        col.cur_depth -= 1
 
     def store(self, sroot):
-        node_idx = self.col.ndepth[self.col.cdepth]
+        col = self.col
+        col_ndepth = col.ndepth
+
+        node_idx = col_ndepth[col.cdepth]
         # TODO: why deepcopy?
         node = copy.deepcopy(sroot[node_idx])
 
@@ -598,8 +614,8 @@ class Build_bsp_node:
         if node["nfaces"] > MAX_PLANE_FACES:
             print("Internal error: too many faces on the BSP node")
 
-        self.col.ndepth[self.col.cdepth] += int(NODESIZE(node["nfaces"]))
-        self.col.cdepth += 1
+        col_ndepth[col.cdepth] += int(NODESIZE(node["nfaces"]))
+        col.cdepth += 1
 
         node["left"] = 0
         node["node"] = 0
@@ -618,7 +634,7 @@ class Build_bsp_node:
                 (sroot, num) = self.right.store(sroot)
                 node["right"] = num - node.get("node")
 
-        self.col.cdepth -= 1
+        col.cdepth -= 1
 
         sroot[node_idx] = node
 
@@ -690,7 +706,7 @@ class Collide:
         faces = []
 
         for t in range(self.ntrgs):
-            face = {}
+            face = defaultdict()
 
             vertices = []
             nvertices = 3
@@ -845,7 +861,7 @@ def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
             file.write(struct.pack('<B', 0))
         else:
             exceeding_nodes_in_bytes = 3*(nfaces-1)-1
-            nodes_to_skip = math.ceil(exceeding_nodes_in_bytes/BSP_NODE_SIZE)
+            nodes_to_skip = ceil(exceeding_nodes_in_bytes/BSP_NODE_SIZE)
             file.write(b'\x00' * (nodes_to_skip *
                        BSP_NODE_SIZE - exceeding_nodes_in_bytes))
 
