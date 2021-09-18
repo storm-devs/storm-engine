@@ -249,6 +249,11 @@ class Build_bsp_node:
         col_vrt = col.vrt
         col_trg = col.trg
 
+        min_l = Build_bsp_node.min_l
+        min_r = Build_bsp_node.min_r
+        min_c = Build_bsp_node.min_c
+        min_m = Build_bsp_node.min_m
+
         res0 = 0
         res1 = 0
         res2 = 0
@@ -302,10 +307,15 @@ class Build_bsp_node:
             if dist < gd:
                 gd = dist
                 best_plane = f
-                Build_bsp_node.min_l = l
-                Build_bsp_node.min_r = r
-                Build_bsp_node.min_c = c
-                Build_bsp_node.min_m = m
+                min_l = l
+                min_r = r
+                min_c = c
+                min_m = m
+        
+        Build_bsp_node.min_l = min_l
+        Build_bsp_node.min_r = min_r
+        Build_bsp_node.min_c = min_c
+        Build_bsp_node.min_m = min_m
 
         return best_plane
 
