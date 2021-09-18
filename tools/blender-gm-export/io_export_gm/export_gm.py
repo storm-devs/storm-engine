@@ -582,52 +582,59 @@ class Build_bsp_node:
         col_ndepth = col.ndepth
 
         node_idx = col_ndepth[col.cdepth]
-        # TODO: why deepcopy?
-        node = copy.deepcopy(sroot[node_idx])
 
-        node["sign"] = 0
-        node["type"] = 0
-        node["norm"] = self.norm
-        node["pd"] = self.pld
+        norm = self.norm
+        pd = self.pld
 
         faces = self._face
-        node["face"] = bytearray()
+        face = bytearray()
         for i in range(self.tot_faces):
             # TODO: check if overflow does not happen here
             # if it happens, this might be a point for invalid BSP faces
             face_bytes = faces[i].to_bytes(4, "little")
-            node["face"].append(face_bytes[0])
-            node["face"].append(face_bytes[1])
-            node["face"].append(face_bytes[2])
+            face.append(face_bytes[0])
+            face.append(face_bytes[1])
+            face.append(face_bytes[2])
 
-        node["nfaces"] = self.tot_faces
+        nfaces = self.tot_faces
 
-        if node["nfaces"] > MAX_PLANE_FACES:
+        if nfaces > MAX_PLANE_FACES:
             print("Internal error: too many faces on the BSP node")
 
-        col_ndepth[col.cdepth] += int(NODESIZE(node["nfaces"]))
+        col_ndepth[col.cdepth] += int(NODESIZE(nfaces))
         col.cdepth += 1
 
-        node["left"] = 0
-        node["node"] = 0
+        right = 0
+        left = 0
+        node = 0
 
         if self.left != None:
             (sroot, num) = self.left.store(sroot)
-            node["node"] = num
-            node["left"] = 1
+            node = num
+            left = 1
 
         if self.right != None:
             if self.left is None:
                 (sroot, num) = self.right.store(sroot)
-                node["node"] = num - 1
-                node["right"] = 1
+                node = num - 1
+                right = 1
             else:
                 (sroot, num) = self.right.store(sroot)
-                node["right"] = num - node["node"]
+                right = num - node
 
         col.cdepth -= 1
 
-        sroot[node_idx] = node
+        sroot[node_idx] = {
+            "norm": norm,
+            "pd": pd,
+            "node": node,
+            "sign": 0,
+            "left": left,
+            "nfaces": nfaces,
+            "right": right,
+            "type": 0,
+            "face": face,
+        }
 
         return (sroot, node_idx)
 
