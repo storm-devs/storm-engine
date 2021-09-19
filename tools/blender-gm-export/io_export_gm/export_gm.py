@@ -285,14 +285,14 @@ class Build_bsp_node:
                     dot = normal.dot(col_vrt[f_trg[0]])
                     res0 = dot - plane_distance
                     normal_dot[f_trg[0]] = dot
-                
+
                 if normal_dot[f_trg[1]] != None:
                     res1 = normal_dot[f_trg[1]] - plane_distance
                 else:
                     dot = normal.dot(col_vrt[f_trg[1]])
                     normal_dot[f_trg[1]] = dot
                     res1 = dot - plane_distance
-                
+
                 if normal_dot[f_trg[2]] != None:
                     res2 = normal_dot[f_trg[2]] - plane_distance
                 else:
@@ -332,7 +332,7 @@ class Build_bsp_node:
                 min_r = r
                 min_c = c
                 min_m = m
-        
+
         Build_bsp_node.min_l = min_l
         Build_bsp_node.min_r = min_r
         Build_bsp_node.min_c = min_c
@@ -570,7 +570,8 @@ class Build_bsp_node:
                     right_face["vertices"].append(faces[i]["vertices"][
                         min_did] + d * (faces[i]["vertices"][v] - faces[i]["vertices"][min_did]))
                 else:
-                    right_face["vertices"].append(faces[i]["vertices"][min_did])
+                    right_face["vertices"].append(
+                        faces[i]["vertices"][min_did])
 
                 min_did += 1
                 if min_did == faces[i]["nvertices"]:
@@ -709,7 +710,6 @@ class Collide:
             for vert in face:
                 prepared_face_append(vert + raw_vertices_quantity)
             raw_faces_append(prepared_face)
-        
 
     def add_mesh(self, vertices, faces):
         vertices_quantity = len(vertices)
@@ -725,7 +725,8 @@ class Collide:
         for vert_idx in range(vertices_quantity):
             if ref[vert_idx] > 0:
                 cur_vert = vertices[vert_idx]
-                cur_vert_id = '%s %s %s' % (cur_vert[0], cur_vert[1], cur_vert[2])
+                cur_vert_id = '%s %s %s' % (
+                    cur_vert[0], cur_vert[1], cur_vert[2])
 
                 try:
                     vert_idx_1 = index_by_vrt[cur_vert_id]
@@ -745,9 +746,10 @@ class Collide:
             self.trg.append(temp_face)
         self.ntrgs += faces_quantity
 
-
     def build_bsp(self):
         normals_dot_append = self.normals_dot.append
+
+        self.add_mesh(self.raw_vertices, self.raw_faces)
 
         faces = []
 
@@ -915,10 +917,10 @@ def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
 
 
 def export_gm(context, file_path="", bsp=False):
+    global nodes_to_skip
+
     # pr = cProfile.Profile()
     # pr.enable()
-
-    global nodes_to_skip
 
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 
@@ -1211,7 +1213,7 @@ def export_gm(context, file_path="", bsp=False):
 
         if bsp:
             atriangles += faces_quantity
-            col.add_mesh(obj_vertices_coords, obj_faces)
+            col.add_raw_mesh(obj_vertices_coords, obj_faces)
 
         object_data = {
             "vertex_buff": current_vertex_buffer.get("index"),
