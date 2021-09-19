@@ -727,8 +727,6 @@ class Collide:
                     vert_idx_1 = self.vrt.index(vertices[vert_idx])
                 except ValueError:
                     vert_idx_1 = self.nvrts
-
-                if vert_idx_1 == self.nvrts:
                     self.nvrts += 1
                     self.vrt.append(vertices[vert_idx])
 
