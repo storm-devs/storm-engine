@@ -4,6 +4,7 @@ import time
 import re
 import copy
 import sys
+import cProfile
 
 import bmesh
 import bpy
@@ -911,6 +912,9 @@ def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
 
 
 def export_gm(context, file_path="", bsp=False):
+    # pr = cProfile.Profile()
+    # pr.enable()
+
     global nodes_to_skip
 
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
@@ -1515,6 +1519,9 @@ def export_gm(context, file_path="", bsp=False):
 
             nodes_to_skip = 0
             Build_bsp_node.clear_static_fields()
+
+    # pr.disable()
+    # pr.print_stats(2)
 
     print('\nGM Export finished successfully!')
 
