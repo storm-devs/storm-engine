@@ -720,15 +720,20 @@ class Collide:
             for vert in face:
                 ref[vert] += 1
 
+        index_by_vrt = defaultdict()
+
         for vert_idx in range(vertices_quantity):
             if ref[vert_idx] > 0:
+                cur_vert = vertices[vert_idx]
+                cur_vert_id = '%s %s %s' % (cur_vert[0], cur_vert[1], cur_vert[2])
 
                 try:
-                    vert_idx_1 = self.vrt.index(vertices[vert_idx])
-                except ValueError:
+                    vert_idx_1 = index_by_vrt[cur_vert_id]
+                except:
                     vert_idx_1 = self.nvrts
                     self.nvrts += 1
-                    self.vrt.append(vertices[vert_idx])
+                    self.vrt.append(cur_vert)
+                    index_by_vrt[cur_vert_id] = vert_idx_1
 
                 ref[vert_idx] = vert_idx_1
 
