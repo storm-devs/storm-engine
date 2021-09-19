@@ -248,6 +248,7 @@ class Build_bsp_node:
         col = self.col
         col_vrt = col.vrt
         col_trg = col.trg
+        col_normals_dot = col.normals_dot
 
         min_l = Build_bsp_node.min_l
         min_r = Build_bsp_node.min_r
@@ -270,14 +271,33 @@ class Build_bsp_node:
             m = 0
 
             normal = faces[f]["normal"]
+            trg = faces[f]["trg"]
+            normal_dot = col_normals_dot[trg]
             plane_distance = faces[f]["plane_distance"]
 
             for i in range(nfaces):
                 f_trg = col_trg[faces[i]["trg"]]
 
-                res0 = normal.dot(col_vrt[f_trg[0]]) - plane_distance
-                res1 = normal.dot(col_vrt[f_trg[1]]) - plane_distance
-                res2 = normal.dot(col_vrt[f_trg[2]]) - plane_distance
+                if normal_dot[f_trg[0]] != None:
+                    res0 = normal_dot[f_trg[0]] - plane_distance
+                else:
+                    dot = normal.dot(col_vrt[f_trg[0]])
+                    res0 = dot - plane_distance
+                    normal_dot[f_trg[0]] = dot
+                
+                if normal_dot[f_trg[1]] != None:
+                    res1 = normal_dot[f_trg[1]] - plane_distance
+                else:
+                    dot = normal.dot(col_vrt[f_trg[1]])
+                    normal_dot[f_trg[1]] = dot
+                    res1 = dot - plane_distance
+                
+                if normal_dot[f_trg[2]] != None:
+                    res2 = normal_dot[f_trg[2]] - plane_distance
+                else:
+                    dot = normal.dot(col_vrt[f_trg[2]])
+                    normal_dot[f_trg[2]] = dot
+                    res2 = dot - plane_distance
 
                 if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
                     m += 1
@@ -667,6 +687,7 @@ class Collide:
         self.tnode = 0
         self.max_depth = 0
         self.ndepth = [0] * MAX_TREE_DEPTH
+        self.normals_dot = []
 
     def add_mesh(self, vertices, faces):
         prepared_vertices = []
@@ -710,7 +731,10 @@ class Collide:
             self.trg.append(temp_face)
         self.ntrgs += faces_quantity
 
+
     def build_bsp(self):
+        normals_dot_append = self.normals_dot.append
+
         faces = []
 
         for t in range(self.ntrgs):
@@ -734,6 +758,8 @@ class Collide:
             face["trg"] = t
 
             faces.append(face)
+
+            normals_dot_append([None] * self.nvrts)
 
         self.ssize = 0
         root = Build_bsp_node(self)
