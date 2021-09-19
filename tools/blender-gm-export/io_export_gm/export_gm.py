@@ -688,20 +688,30 @@ class Collide:
         self.max_depth = 0
         self.ndepth = [0] * MAX_TREE_DEPTH
         self.normals_dot = []
+        self.raw_vertices = []
+        self.raw_faces = []
+
+    def add_raw_mesh(self, vertices, faces):
+        raw_faces = self.raw_faces
+        raw_faces_append = raw_faces.append
+
+        raw_vertices = self.raw_vertices
+        raw_vertices_quantity = len(raw_vertices)
+        raw_vertices_append = raw_vertices.append
+
+        for vert in vertices:
+            raw_vertices_append(CVECTOR(vert[0], vert[1], vert[2]))
+
+        for face in faces:
+            prepared_face = []
+            prepared_face_append = prepared_face.append
+            for vert in face:
+                prepared_face_append(vert + raw_vertices_quantity)
+            raw_faces_append(prepared_face)
+        
 
     def add_mesh(self, vertices, faces):
-        prepared_vertices = []
-        for vert in vertices:
-            x = vert[0]
-            y = vert[1]
-            z = vert[2]
-            # x = round(vert[0], 7)
-            # y = round(vert[1], 7)
-            # z = round(vert[2], 7)
-
-            prepared_vertices.append(CVECTOR(x, y, z))
-
-        vertices_quantity = len(prepared_vertices)
+        vertices_quantity = len(vertices)
         faces_quantity = len(faces)
         ref = [0] * vertices_quantity
 
@@ -713,13 +723,13 @@ class Collide:
             if ref[vert_idx] > 0:
 
                 try:
-                    vert_idx_1 = self.vrt.index(prepared_vertices[vert_idx])
+                    vert_idx_1 = self.vrt.index(vertices[vert_idx])
                 except ValueError:
                     vert_idx_1 = self.nvrts
 
                 if vert_idx_1 == self.nvrts:
                     self.nvrts += 1
-                    self.vrt.append(prepared_vertices[vert_idx])
+                    self.vrt.append(vertices[vert_idx])
 
                 ref[vert_idx] = vert_idx_1
 
