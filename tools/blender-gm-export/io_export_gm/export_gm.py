@@ -2,13 +2,12 @@ from math import sqrt, ceil
 import struct
 import time
 import re
-import copy
 import sys
 import cProfile
 
 import bmesh
 import bpy
-import mathutils
+from mathutils import Vector, Matrix
 from collections import defaultdict
 from bpy.props import BoolProperty, EnumProperty, StringProperty
 from bpy.types import Operator
@@ -108,11 +107,11 @@ def get_box_center(bounding_box_coords):
 
 
 def get_box_radius(box_center, vertices):
-    center_vector = mathutils.Vector(box_center)
+    center_vector = Vector(box_center)
     box_radius = 0
 
     for pos in vertices:
-        pos_vector = mathutils.Vector(pos)
+        pos_vector = Vector(pos)
         [x, y, z] = center_vector - pos_vector
         radius = sqrt(x * x + y * y + z * z)
         if radius > box_radius:
@@ -240,7 +239,7 @@ class Build_bsp_node:
 
         self.right = None  # []
         self.left = None  # []
-        self.norm = CVECTOR(0, 0, 0)
+        self.norm = Vector((0, 0, 0))
         self.pld = 0
         self.tot_faces = 0
         self._face = []
@@ -360,7 +359,7 @@ class Build_bsp_node:
 
                 edge = faces[f]["vertices"][e1] - faces[f]["vertices"][e]
                 bnormal = (
-                    faces[f]["normal"] * sqrt(edge.length_squared())).cross(edge).normalized()
+                    faces[f]["normal"] * sqrt(edge.length_squared)).cross(edge).normalized()
                 bplane_distance = bnormal.dot(faces[f]["vertices"][e])
 
                 l = 0
@@ -453,10 +452,14 @@ class Build_bsp_node:
         r = 0
 
         for i in range(nfaces):
+            cur_face = faces[i]
+            cur_face_normal = cur_face["normal"]
+            cur_face_plane_distance = cur_face["plane_distance"]
+            cur_face_trg = cur_face["trg"]
+            
             res = []
 
-            f_trg_idx = faces[i]["trg"]
-            f_trg = col_trg[f_trg_idx]
+            f_trg = col_trg[cur_face_trg]
 
             res.append(self.norm.dot(col_vrt[f_trg[0]]) - self.pld)
             res.append(self.norm.dot(col_vrt[f_trg[1]]) - self.pld)
@@ -464,13 +467,13 @@ class Build_bsp_node:
 
             if abs(res[0]) < LIE_PREC and abs(res[1]) < LIE_PREC and abs(res[2]) < LIE_PREC:
                 try:
-                    tf = self._face.index(f_trg_idx)
+                    tf = self._face.index(cur_face_trg)
                 except ValueError:
                     tf = self.tot_faces
 
                 if tf == self.tot_faces:
                     self.tot_faces += 1
-                    self._face.append(f_trg_idx)
+                    self._face.append(cur_face_trg)
 
                 continue
 
@@ -480,8 +483,8 @@ class Build_bsp_node:
             min_dist = 1e300
             max_dist = -1e300
 
-            for v in range(faces[i]["nvertices"]):
-                vdist[v] = self.norm.dot(faces[i]["vertices"][v]) - self.pld
+            for v in range(cur_face["nvertices"]):
+                vdist[v] = self.norm.dot(cur_face["vertices"][v]) - self.pld
 
                 if vdist[v] > max_dist:
                     max_dist = vdist[v]
@@ -493,20 +496,26 @@ class Build_bsp_node:
 
             if min_dist >= -PRECISION and max_dist >= -PRECISION:
                 r += 1
-                rlist.append(faces[i])
+                rlist.append(cur_face)
                 continue
 
             if min_dist <= PRECISION and max_dist <= PRECISION:
                 l += 1
-                llist.append(faces[i])
+                llist.append(cur_face)
                 continue
 
-            right_face = copy.deepcopy(faces[i])
+            right_face = {
+                "nvertices": 0,
+                "vertices": [],
+                "normal": cur_face_normal,
+                "plane_distance": cur_face_plane_distance,
+                "trg": cur_face_trg
+            }
 
             while vdist[max_did] > -PRECISION:
                 max_did -= 1
                 if max_did == -1:
-                    max_did = faces[i]["nvertices"] - 1
+                    max_did = cur_face["nvertices"] - 1
 
             right_face["nvertices"] = 0
             right_face["vertices"] = []
@@ -517,18 +526,18 @@ class Build_bsp_node:
 
                 if vdist[max_did] <= -PRECISION:
                     v = max_did + 1
-                    if v == faces[i]["nvertices"]:
+                    if v == cur_face["nvertices"]:
                         v = 0
 
                     d = vdist[max_did] / (vdist[max_did] - vdist[v])
-                    right_face["vertices"].append(faces[i]["vertices"][max_did] + d * (
-                        faces[i]["vertices"][v] - faces[i]["vertices"][max_did]))
+                    right_face["vertices"].append(cur_face["vertices"][max_did] + d * (
+                        cur_face["vertices"][v] - cur_face["vertices"][max_did]))
                 else:
                     right_face["vertices"].append(
-                        faces[i]["vertices"][max_did])
+                        cur_face["vertices"][max_did])
 
                 max_did += 1
-                if max_did == faces[i]["nvertices"]:
+                if max_did == cur_face["nvertices"]:
                     max_did = 0
 
                 if vdist[max_did] <= -PRECISION:
@@ -538,21 +547,27 @@ class Build_bsp_node:
             v = max_did - 1
 
             if v == -1:
-                v = faces[i]["nvertices"] - 1
+                v = cur_face["nvertices"] - 1
 
             d = vdist[max_did] / (vdist[max_did] - vdist[v])
-            right_face["vertices"].append(faces[i]["vertices"][
-                max_did] + d * (faces[i]["vertices"][v] - faces[i]["vertices"][max_did]))
+            right_face["vertices"].append(cur_face["vertices"][
+                max_did] + d * (cur_face["vertices"][v] - cur_face["vertices"][max_did]))
             r += 1
             rlist.append(right_face)
 
             # left, lol
-            right_face = copy.deepcopy(faces[i])
+            right_face = {
+                "nvertices": 0,
+                "vertices": [],
+                "normal": cur_face_normal,
+                "plane_distance": cur_face_plane_distance,
+                "trg": cur_face_trg
+            }
 
             while vdist[min_did] < PRECISION:
                 min_did -= 1
                 if min_did == -1:
-                    min_did = faces[i]["nvertices"] - 1
+                    min_did = cur_face["nvertices"] - 1
 
             right_face["nvertices"] = 0
             right_face["vertices"] = []
@@ -563,18 +578,18 @@ class Build_bsp_node:
 
                 if vdist[min_did] >= PRECISION:
                     v = min_did + 1
-                    if v == faces[i]["nvertices"]:
+                    if v == cur_face["nvertices"]:
                         v = 0
 
                     d = vdist[min_did] / (vdist[min_did] - vdist[v])
-                    right_face["vertices"].append(faces[i]["vertices"][
-                        min_did] + d * (faces[i]["vertices"][v] - faces[i]["vertices"][min_did]))
+                    right_face["vertices"].append(cur_face["vertices"][
+                        min_did] + d * (cur_face["vertices"][v] - cur_face["vertices"][min_did]))
                 else:
                     right_face["vertices"].append(
-                        faces[i]["vertices"][min_did])
+                        cur_face["vertices"][min_did])
 
                 min_did += 1
-                if min_did == faces[i]["nvertices"]:
+                if min_did == cur_face["nvertices"]:
                     min_did = 0
 
                 if vdist[min_did] >= PRECISION:
@@ -584,11 +599,11 @@ class Build_bsp_node:
             v = min_did - 1
 
             if v == -1:
-                v = faces[i]["nvertices"] - 1
+                v = cur_face["nvertices"] - 1
 
             d = vdist[min_did] / (vdist[min_did] - vdist[v])
-            right_face["vertices"].append(faces[i]["vertices"][
-                min_did] + d * (faces[i]["vertices"][v] - faces[i]["vertices"][min_did]))
+            right_face["vertices"].append(cur_face["vertices"][
+                min_did] + d * (cur_face["vertices"][v] - cur_face["vertices"][min_did]))
             l += 1
             llist.append(right_face)
 
@@ -699,10 +714,8 @@ class Collide:
 
         raw_vertices = self.raw_vertices
         raw_vertices_quantity = len(raw_vertices)
-        raw_vertices_append = raw_vertices.append
 
-        for vert in vertices:
-            raw_vertices_append(CVECTOR(vert[0], vert[1], vert[2]))
+        raw_vertices += vertices
 
         for face in faces:
             prepared_face = []
@@ -787,7 +800,7 @@ class Collide:
             self.ndepth[d] = prv
 
         sroot = [{
-            "norm": CVECTOR(0, 0, 0),
+            "norm": Vector((0, 0, 0)),
             "pd": 0,
             "node": 0,
             "sign": 0,
@@ -1077,18 +1090,18 @@ def export_gm(context, file_path="", bsp=False):
                 src_obj.name + ' vertices_quantity bigger than 65536!')
 
         for vertex in bm.verts:
-            pos = (obj.matrix_world @ mathutils.Vector(vertex.co)) - \
-                mathutils.Vector(obj.parent.matrix_world.translation)
+            pos = (obj.matrix_world @ Vector(vertex.co)) - \
+                Vector(obj.parent.matrix_world.translation)
             pos.rotate(correction_export_matrix)
             if x_is_mirrored:
-                pos *= mathutils.Vector([-1, 1, 1])
+                pos *= Vector([-1, 1, 1])
             vertices.append(pos)
             obj_vertices_coords.append(pos)
 
-            norm = mathutils.Vector(vertex.normal)
+            norm = Vector(vertex.normal)
             norm.rotate(correction_export_matrix)
             if x_is_mirrored:
-                norm *= mathutils.Vector([-1, 1, 1])
+                norm *= Vector([-1, 1, 1])
             normals.append(norm)
             obj_normals.append(norm)
 
@@ -1152,11 +1165,11 @@ def export_gm(context, file_path="", bsp=False):
                     [r, g, b, a] = obj_vertex_color.data[loop_index].color[:]
                     obj_colors[index] = [int(r*255), int(g*255),
                                          int(b*255), int(a*255)]
-                obj_uv_array[index] = mathutils.Vector(
-                    obj_uv_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
+                obj_uv_array[index] = Vector(
+                    obj_uv_layer.data[loop_index].uv) * Vector([1, -1])
                 if has_uv_normals:
-                    obj_uv_normals_array[index] = mathutils.Vector(
-                        obj_uv_normals_layer.data[loop_index].uv) * mathutils.Vector([1, -1])
+                    obj_uv_normals_array[index] = Vector(
+                        obj_uv_normals_layer.data[loop_index].uv) * Vector([1, -1])
 
         bounding_box = get_bounding_box_coords([obj], x_is_mirrored)
         bounding_boxes.append(bounding_box)
@@ -1384,14 +1397,14 @@ def export_gm(context, file_path="", bsp=False):
             label_flags = 0
             file.write(struct.pack('<l', label_flags))
 
-            label_m = mathutils.Matrix(locator.matrix_world)
-            label_m.translation -= mathutils.Vector(
+            label_m = Matrix(locator.matrix_world)
+            label_m.translation -= Vector(
                 locator.parent.matrix_world.translation)
 
             label_m = correction_export_matrix.to_4x4() @ label_m
 
             if x_is_mirrored:
-                label_m.translation *= mathutils.Vector([-1, 1, 1])
+                label_m.translation *= Vector([-1, 1, 1])
 
             for i in range(4):
                 for j in range(4):
