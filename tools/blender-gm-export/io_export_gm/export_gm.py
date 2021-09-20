@@ -299,7 +299,8 @@ class Build_bsp_node:
                     normal_dot[f_trg[2]] = dot
                     res2 = dot - plane_distance
 
-                if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
+                # if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
+                if res0 < LIE_PREC and -res0 < LIE_PREC and res1 < LIE_PREC and -res1 < LIE_PREC and res2 < LIE_PREC and -res2 < LIE_PREC:
                     m += 1
                     continue
 
@@ -377,7 +378,8 @@ class Build_bsp_node:
                     res2 = bnormal.dot(
                         col_vrt[f_trg[2]]) - bplane_distance
 
-                    if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
+                    # if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
+                    if res0 < LIE_PREC and -res0 < LIE_PREC and res1 < LIE_PREC and -res1 < LIE_PREC and res2 < LIE_PREC and -res2 < LIE_PREC:
                         break
 
                     min_dist = 1e300
@@ -456,16 +458,15 @@ class Build_bsp_node:
             cur_face_normal = cur_face["normal"]
             cur_face_plane_distance = cur_face["plane_distance"]
             cur_face_trg = cur_face["trg"]
-            
-            res = []
 
             f_trg = col_trg[cur_face_trg]
 
-            res.append(self.norm.dot(col_vrt[f_trg[0]]) - self.pld)
-            res.append(self.norm.dot(col_vrt[f_trg[1]]) - self.pld)
-            res.append(self.norm.dot(col_vrt[f_trg[2]]) - self.pld)
+            res0 = self.norm.dot(col_vrt[f_trg[0]]) - self.pld
+            res1 = self.norm.dot(col_vrt[f_trg[1]]) - self.pld
+            res2 = self.norm.dot(col_vrt[f_trg[2]]) - self.pld
 
-            if abs(res[0]) < LIE_PREC and abs(res[1]) < LIE_PREC and abs(res[2]) < LIE_PREC:
+            # if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
+            if res0 < LIE_PREC and -res0 < LIE_PREC and res1 < LIE_PREC and -res1 < LIE_PREC and res2 < LIE_PREC and -res2 < LIE_PREC:
                 try:
                     tf = self._face.index(cur_face_trg)
                 except ValueError:
