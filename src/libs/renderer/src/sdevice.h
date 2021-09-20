@@ -694,7 +694,7 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     // new renderer settings
     bool vSyncEnabled;
     uint32_t msaa;
-
+    uint32_t videoAdapterIndex;
 
     D3DPRESENT_PARAMETERS d3dpp;
 

@@ -484,6 +484,7 @@ bool DX9RENDER::Init()
 
         // new renderer settings
         vSyncEnabled = ini->GetLong(nullptr, "vsync", 0);
+
         msaa = ini->GetLong(nullptr, "msaa", D3DMULTISAMPLE_16_SAMPLES);
         if (msaa != D3DMULTISAMPLE_NONE)
         {
@@ -493,6 +494,7 @@ bool DX9RENDER::Init()
             }
         }
 
+        videoAdapterIndex = ini->GetLong(nullptr, "adapter", std::numeric_limits<long>::max());
 
         // stencil_format = D3DFMT_D24S8;
         if (!InitDevice(bWindow, core.GetAppHWND(), screen_size.x, screen_size.y))
@@ -726,13 +728,34 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
         d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
     }
 
-    if (CHECKD3DERR(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_HARDWARE_VERTEXPROCESSING,
+    // Choose desired video adapter
+    auto adapters_num = d3d->GetAdapterCount();
+    if (videoAdapterIndex > adapters_num - 1)
+        videoAdapterIndex = adapters_num - 1;
+
+    spdlog::info("Querying available DirectX 9 adapters... detected {}:", adapters_num);
+    for (UINT i = 0; i != adapters_num; ++i)
+    {
+        D3DCAPS9 caps;
+        d3d->GetDeviceCaps(i, D3DDEVTYPE_HAL, &caps);
+        if (caps.DeviceType == D3DDEVTYPE_HAL)
+        {
+            D3DADAPTER_IDENTIFIER9 id;
+            d3d->GetAdapterIdentifier(i, 0, &id);
+            spdlog::info("{}: {}", i, id.Description);
+        }
+    }
+    spdlog::info("Using adapter with index {} (configurable by setting adapter=<index> inside engine.ini)",
+             videoAdapterIndex);
+
+    // Create device
+    if (CHECKD3DERR(d3d->CreateDevice(videoAdapterIndex, D3DDEVTYPE_HAL, hwnd, D3DCREATE_HARDWARE_VERTEXPROCESSING,
                                       &d3dpp, &d3d9)))
     {
-        if (CHECKD3DERR(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING,
+        if (CHECKD3DERR(d3d->CreateDevice(videoAdapterIndex, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING,
                                           &d3dpp, &d3d9)))
         {
-            if (CHECKD3DERR(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
+            if (CHECKD3DERR(d3d->CreateDevice(videoAdapterIndex, D3DDEVTYPE_HAL, hwnd,
                                               D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3d9)))
             {
                 return false;
