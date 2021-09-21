@@ -21,6 +21,11 @@
 #define _tsystem std::system
 #endif
 
+#ifdef _WIN32
+#include "logging.hpp"
+#include "seh_extractor.hpp"
+#endif
+
 namespace
 {
 auto& getExecutableDir()
@@ -196,15 +201,28 @@ void LifecycleDiagnosticsService::setCrashInfoCollector(crash_info_collector f)
     collectCrashInfo_ = std::move(f);
 }
 
-sentry_value_t LifecycleDiagnosticsService::beforeCrash(const sentry_value_t event, void *, void *data)
+sentry_value_t LifecycleDiagnosticsService::beforeCrash(const sentry_value_t event, void * hint, void *closure)
 {
-    const auto *self = static_cast<LifecycleDiagnosticsService *>(data);
+    const auto *self = static_cast<LifecycleDiagnosticsService *>(closure);
 
-    // collect additional data
+    // collect engine data
     if (self->collectCrashInfo_)
     {
         self->collectCrashInfo_();
     }
+
+#ifdef _WIN32
+    // collect exception data
+    if (hint != nullptr)
+    {
+        if(const seh_extractor seh(static_cast<EXCEPTION_POINTERS *>(hint)); seh.is_abnormal())
+        {
+            static auto logger = logging::getOrCreateLogger("exceptions");
+            logger->set_pattern("%v");
+            seh.sink([](const char *msg) { logger->trace(msg); });
+        }
+    }
+#endif
     
     // terminate logging
     self->loggingService_->terminate();
