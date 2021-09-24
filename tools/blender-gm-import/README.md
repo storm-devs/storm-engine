@@ -23,6 +23,22 @@ In case of missing texture in Blender will be created gray-colored placeholder w
 
 ![placeholder.img](readme-img/placeholder.png)
 
+## Model import with animation
+
+To import model with animation, you have to add a file with animation (.an) to the same folder as the model
+
+E.g.:
+```
+C/
+    example-folder/
+        model.gm
+        man.an
+```
+
+Then during import setup you must specify animation file in the field `Animation name`
+
+![animation-name.img](readme-img/animation-name.png)
+
 ## Blender Plugin Installation
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Select import_gm.py from io_import_gm folder -> Enable "Import: SeaDogs GM"

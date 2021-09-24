@@ -64,6 +64,13 @@ File -> Export... -> GM Export(.gm)
 Edit -> Preferences... -> Add-ons -> Install... -> Выбрать export_gm.py из папки io_export_an -> Включить "Export: SeaDogs GM"
 ```
 
+## Issues
+
+Так как импорт с BSP очень медленный в Blender, была написана утилита bsp-patcher.exe.
+При импорте с BSP предпочтительнее использовать ее
+
+[bsp-patcher](../bsp-patcher)
+
 ## Автор
 
 [Artess999](https://github.com/Artess999)
