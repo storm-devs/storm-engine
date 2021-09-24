@@ -21,6 +21,22 @@ C/
 
 ![placeholder.img](readme-img/placeholder.png)
 
+## Импорт модели с анимацией
+
+Для импорта модели с анимацией необходимо добавить .an файл с анимацией в ту же папку, что и модель
+
+Пример:
+```
+C/
+    example-folder/
+        model.gm
+        man.an
+```
+
+Затем при импорте в Blender необходимо указать файл с анимацией в поле `Animation name`
+
+![animation-name.img](readme-img/animation-name.png)
+
 ## Установка плагина в Blender
 ```
 Edit -> Preferences... -> Add-ons -> Install... -> Выбрать import_gm.py из папки io_import_gm -> Включить "Import: SeaDogs GM"
