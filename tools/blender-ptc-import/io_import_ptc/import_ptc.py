@@ -185,7 +185,7 @@ def import_ptc(context, file_path=""):
         ob.data.materials.append(mtl)
 
         for vertex in ptc.vertex:
-            vtx = bm.verts.new([vertex.x, vertex.y, vertex.z])
+            vtx = bm.verts.new([-vertex.x, vertex.y, vertex.z])
 
         bm.verts.ensure_lookup_table()
         for f in objects_triangles:
@@ -194,7 +194,7 @@ def import_ptc(context, file_path=""):
                     (bm.verts[f.i[0]], bm.verts[f.i[1]], bm.verts[f.i[2]]))
                 face.material_index = 0
                 normal = ptc.normal[f.n]
-                face.normal = mathutils.Vector((normal.x, normal.y, normal.z))
+                face.normal = mathutils.Vector((-normal.x, normal.y, normal.z))
 
             except Exception as e:
                 print(str(e))
