@@ -4235,18 +4235,23 @@ void DX9RENDER::ProgressView()
 
     TextureSet(0, backTexture);
     if (backTexture < 0)
+    {
         for (i = 0; i < 4; i++)
             v[i].color = 0;
-    if (backTexture >= 0 && progressTipsTexture >= 0)
-    {
-        TextureSet(1, progressTipsTexture);
-        DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]),
-                        "ProgressBackTechWithTips");
     }
     else
     {
-        DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]),
-                        "ProgressBackTech");
+        if (progressTipsTexture >= 0)
+        {
+            TextureSet(1, progressTipsTexture);
+            DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]),
+                            "ProgressBackTechWithTips");
+        }
+        else
+        {
+            DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]),
+                            "ProgressBackTech");
+        }
     }
     if (backTexture < 0)
         for (i = 0; i < 4; i++)
