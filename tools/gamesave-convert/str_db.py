@@ -36,15 +36,16 @@ def get_str(db, i):
     entry = db[row_id][elem_id]
     return entry
 
+
 def create_db(str_list, str_encoding):
     db = []
     for i in range(HASH_TABLE_SIZE):
         db.append([])
 
-    for str in str_list:
-        h = hash(str, str_encoding)
+    for s in str_list:
+        h = hash(s, str_encoding)
         row_id = h % HASH_TABLE_SIZE
-        db[row_id].append(str)
+        db[row_id].append(s)
 
     return db
 

@@ -6120,7 +6120,7 @@ char *COMPILER::ReadString()
 
     char *pBuffer = new char[n];
     ReadData(pBuffer, n);
-    Assert(utf8::IsValidUtf8(pBuffer));
+    //Assert(utf8::IsValidUtf8(pBuffer));
     return pBuffer;
 }
 
@@ -6613,7 +6613,7 @@ bool COMPILER::LoadState(std::fstream &fileS)
         pString = ReadString();
         if (pString)
         {
-            Assert(utf8::IsValidUtf8(pString));
+            //Assert(utf8::IsValidUtf8(pString));
             SCodec.Convert(pString);
             delete[] pString;
         }
