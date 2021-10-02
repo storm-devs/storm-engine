@@ -55,7 +55,7 @@ def read_string(buffer, cur_ptr, encoding):
     if str_len == 0:
         return None, cur_ptr
     s = struct.unpack_from(f'{str_len - 1}s', buffer, cur_ptr)[0]  # str_len-1 to skip trailing '\0'
-    s = s.decode(encoding)
+    s = s.decode(encoding, 'ignore')  # leave the character out in case of a decoding error
     cur_ptr += str_len
     return s, cur_ptr
 
