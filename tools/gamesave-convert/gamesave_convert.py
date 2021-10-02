@@ -323,7 +323,7 @@ def write_save(save_data, filename):
     strings = save_data['strings']
     buffer = write_int8_16_32(len(strings), buffer)
     for s in strings.keys():
-        buffer = write_string(s, buffer, str_encoding)
+        buffer = write_string(s, buffer, 'cp1251')
 
     segments = save_data['segments']
     buffer = write_int8_16_32(len(segments), buffer)
@@ -584,42 +584,6 @@ def convert_107_to_173(save_data, s_db):
             seasave_data = var['values'][0]['attributes']['skip']['attributes']['save']['value']
             seasave_data = seasave.convert_107_to_173(seasave_data)
             var['values'][0]['attributes']['skip']['attributes']['save']['value'] = seasave_data
-
-    # cleanup strings
-    used_str = {}
-
-    def visit_attribute(hierarchy, name, a):
-        used_str[name] = used_str[name] + 1 if name in used_str else 1
-        if not name.isascii():
-            logging.warning(f'non ascii attribute name "{name}" in {".".join(hierarchy)}')
-        if 'attributes' in a:
-            for attr_name, attr in a['attributes'].items():
-                visit_attribute([*hierarchy, name], attr_name, attr)
-
-    for name, var in save_data['vars'].items():
-        if var['type'] == VarType.Object:
-            for i, val in enumerate(var['values']):
-                root_attr_name, root_attr = next(iter(val['attributes'].items()))
-                visit_attribute([f'{name}[{i}]'], root_attr_name, root_attr)
-
-    # s_db = str_db.remove_unused(s_db, used_str, 'cp1251')
-    s_db = str_db.create_db(used_str.keys(), 'utf-8')
-    save_data['strings'] = {}
-    for s in used_str.keys():
-        save_data['strings'][s] = str_db.get_int(s_db, s, 'utf-8')
-
-    # assign new name codes to attributes
-    def fix_attribute(name, a):
-        a['name_code'] = str_db.get_int(s_db, name, 'utf-8')
-        if 'attributes' in a:
-            for attr_name, attr in a['attributes'].items():
-                fix_attribute(attr_name, attr)
-
-    for name, var in save_data['vars'].items():
-        if var['type'] == VarType.Object:
-            for val in var['values']:
-                root_attr_name, root_attr = next(iter(val['attributes'].items()))
-                fix_attribute(root_attr_name, root_attr)
 
     return save_data, s_db
 
