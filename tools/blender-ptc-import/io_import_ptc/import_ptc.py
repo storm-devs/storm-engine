@@ -191,7 +191,7 @@ def import_ptc(context, file_path=""):
         for f in objects_triangles:
             try:
                 face = bm.faces.new(
-                    (bm.verts[f.i[0]], bm.verts[f.i[1]], bm.verts[f.i[2]]))
+                    (bm.verts[f.i[1]], bm.verts[f.i[0]], bm.verts[f.i[2]])) # opposite
                 face.material_index = 0
                 normal = ptc.normal[f.n]
                 face.normal = mathutils.Vector((-normal.x, normal.y, normal.z))
