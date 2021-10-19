@@ -346,6 +346,10 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
                 if (!input_->KeyboardKeyState(VK_MENU))
                     pressed = input_->KeyboardKeyState(system_code);
             }
+            else if (system_code == VK_SHIFT)
+            {
+                pressed = input_->KeyboardKeyState(VK_LSHIFT) || input_->KeyboardKeyState(VK_RSHIFT);
+            }
             else
                 pressed = input_->KeyboardKeyState(system_code);
 
