@@ -192,7 +192,10 @@ void Location::Realize(uint32_t delta_time)
         Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%.0f", message[i].hit);
     }
     // Drawing bars over characters
-    DrawEnemyBars();
+    if (bDrawBars)
+    {
+        DrawEnemyBars();
+    }
     enemyBarsCount = 0;
 }
 
