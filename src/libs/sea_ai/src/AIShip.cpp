@@ -323,9 +323,9 @@ bool AIShip::isCanFire(const CVECTOR &vFirePos) const
                 continue;
             if (AIShips[i]->GetTouchController()->isCollision2D(vOurPos, vFirePos))
                 return false;
-            if (AIShips[i]->GetTouchController()->isCollision2D(vOurPos, v1))
+            if (AIShips[i]->GetTouchController()->isCollision2D(vOurPos, vOurPos + v1))
                 return false;
-            if (AIShips[i]->GetTouchController()->isCollision2D(vOurPos, v2))
+            if (AIShips[i]->GetTouchController()->isCollision2D(vOurPos, vOurPos + v2))
                 return false;
         }
 
