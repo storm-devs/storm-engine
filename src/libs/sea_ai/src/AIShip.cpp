@@ -305,15 +305,14 @@ void AIShip::CheckStartPosition() const
 bool AIShip::isCanFire(const CVECTOR &vFirePos) const
 {
     CVECTOR v1, v2, vOurPos;
-    float fAng, fCos, fSin, fDist;
+    float fAng, fCos, fSin;
 
     vOurPos = GetPos();
 
     fAng = 8.0f * PI / 180.0f;
     fCos = cosf(fAng), fSin = sinf(fAng);
-    fDist = sqrtf(~(vOurPos - vFirePos));
 
-    v1 = v2 = fDist * !(vFirePos - vOurPos);
+    v1 = v2 = vFirePos - vOurPos;
     RotateAroundY(v1.x, v1.z, fCos, fSin);
     RotateAroundY(v2.x, v2.z, -fCos, -fSin);
 
