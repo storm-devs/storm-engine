@@ -314,7 +314,7 @@ bool AIShip::isCanFire(const CVECTOR &vFirePos) const
 
     v1 = v2 = vFirePos - vOurPos;
     RotateAroundY(v1.x, v1.z, fCos, fSin);
-    RotateAroundY(v2.x, v2.z, -fCos, -fSin);
+    RotateAroundY(v2.x, v2.z, fCos, -fSin);
 
     for (uint32_t i = 0; i < AIShips.size(); i++)
         if (this != AIShips[i] && isFriend(*AIShips[i]))
