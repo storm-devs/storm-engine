@@ -350,6 +350,11 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
             {
                 pressed = input_->KeyboardKeyState(VK_LSHIFT) || input_->KeyboardKeyState(VK_RSHIFT);
             }
+            else if (system_code == VK_RETURN)
+            {
+                pressed = input_->KeyboardSDLKeyState(SDL_SCANCODE_RETURN) ||
+                          input_->KeyboardSDLKeyState(SDL_SCANCODE_RETURN2);
+            }
             else
                 pressed = input_->KeyboardKeyState(system_code);
 

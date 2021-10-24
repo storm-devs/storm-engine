@@ -16,6 +16,7 @@ class SDLInput : public Input
     void Unsubscribe(int id) override;
 
     bool KeyboardKeyState(const KeyboardKey &key) const override;
+    bool KeyboardSDLKeyState(const SDL_Scancode &key) const override;
     bool MouseKeyState(const MouseKey &key) const override;
 
     uint32_t GetWheelFactor() const override;
@@ -28,6 +29,7 @@ class SDLInput : public Input
     void ProcessEvent(const SDL_Event &event);
     void OpenController();
 
+private:
     std::map<int, EventHandler> handlers_;
     const uint8_t *keyStates_;
     std::unique_ptr<SDL_GameController, std::function<void(SDL_GameController *)>> controller_;
