@@ -353,7 +353,7 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
             else if (system_code == VK_RETURN)
             {
                 pressed = input_->KeyboardSDLKeyState(SDL_SCANCODE_RETURN) ||
-                          input_->KeyboardSDLKeyState(SDL_SCANCODE_RETURN2);
+                          input_->KeyboardSDLKeyState(SDL_SCANCODE_KP_ENTER);
             }
             else
                 pressed = input_->KeyboardKeyState(system_code);
