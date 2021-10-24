@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <SDL_scancode.h>
 #include <variant>
 
 namespace storm
@@ -124,6 +125,7 @@ class Input
     //! Current keyboard key state
     //! \return true if key is pressed
     virtual bool KeyboardKeyState(const KeyboardKey &key) const = 0;
+    virtual bool KeyboardSDLKeyState(const SDL_Scancode &key) const = 0;
 
     //! Current mouse key state
     //! \return true if key is pressed

@@ -392,6 +392,11 @@ bool SDLInput::KeyboardKeyState(const KeyboardKey &key) const
     return keyStates_[keyToSDL(key)] != 0;
 }
 
+bool SDLInput::KeyboardSDLKeyState(const SDL_Scancode &key) const
+{
+    return keyStates_[key] != 0;
+}
+
 bool SDLInput::ControllerButtonState(const ControllerButton &button) const
 {
     if (!controller_)
