@@ -24,6 +24,7 @@ CREATE_CLASS(CoastFoam)
 
 ISLAND::ISLAND()
 {
+    dynamicLightsOn = false; //dynamic lighting
     bForeignModels = false;
     pRS = nullptr;
     pGS = nullptr;
@@ -102,7 +103,7 @@ void ISLAND::Realize(uint32_t Delta_Time)
     pRS->GetRenderState(D3DRS_AMBIENT, &dwAmbientOld);
     pRS->GetRenderState(D3DRS_LIGHTING, &bLighting);
 
-    pRS->SetRenderState(D3DRS_LIGHTING, false);
+    pRS->SetRenderState(D3DRS_LIGHTING, dynamicLightsOn);
     dwAmbient = dwAmbientOld & 0xFF;
 
     CVECTOR vCamPos, vCamAng;
@@ -144,25 +145,28 @@ void ISLAND::Realize(uint32_t Delta_Time)
         pModel->ProcessStage(Stage::realize, Delta_Time);
         pRS->SetRenderState(D3DRS_LIGHTING, true);
         D3DLIGHT9 lt, ltold;
-        ZERO(lt);
-        lt.Type = D3DLIGHT_POINT;
-        lt.Diffuse.a = 0.0f;
-        lt.Diffuse.r = 1.0f;
-        lt.Diffuse.g = 1.0f;
-        lt.Diffuse.b = 1.0;
-        lt.Ambient.r = 1.0f;
-        lt.Ambient.g = 1.0f;
-        lt.Ambient.b = 1.0f;
-        lt.Specular.r = 1.0f;
-        lt.Specular.g = 1.0f;
-        lt.Specular.b = 1.0f;
-        lt.Position.x = 0.0f;
-        lt.Position.y = 0.0f;
-        lt.Position.z = 0.0f;
-        lt.Attenuation0 = 1.0f;
-        lt.Range = 1e9f;
         pRS->GetLight(0, &ltold);
-        pRS->SetLight(0, &lt);
+        if (!dynamicLightsOn)
+        {
+            ZERO(lt);
+            lt.Type = D3DLIGHT_POINT;
+            lt.Diffuse.a = 0.0f;
+            lt.Diffuse.r = 1.0f;
+            lt.Diffuse.g = 1.0f;
+            lt.Diffuse.b = 1.0;
+            lt.Ambient.r = 1.0f;
+            lt.Ambient.g = 1.0f;
+            lt.Ambient.b = 1.0f;
+            lt.Specular.r = 1.0f;
+            lt.Specular.g = 1.0f;
+            lt.Specular.b = 1.0f;
+            lt.Position.x = 0.0f;
+            lt.Position.y = 0.0f;
+            lt.Position.z = 0.0f;
+            lt.Attenuation0 = 1.0f;
+            lt.Range = 1e9f;
+            pRS->SetLight(0, &lt);
+        }
         for (uint32_t k = 0; k < aForts.size(); k++)
         {
             auto *const ent = EntityManager::GetEntityPointer(aForts[k]);
@@ -176,7 +180,7 @@ void ISLAND::Realize(uint32_t Delta_Time)
             static_cast<MODEL *>(ent)->mtx = mOld;
         }
         pRS->SetLight(0, &ltold);
-        pRS->SetRenderState(D3DRS_LIGHTING, false);
+        pRS->SetRenderState(D3DRS_LIGHTING, dynamicLightsOn);
         pRS->SetRenderState(D3DRS_ZWRITEENABLE, true);
     }
     pRS->SetRenderState(D3DRS_FOGDENSITY, F2DW(fOldFogDensity));
@@ -764,6 +768,11 @@ bool ISLAND::Mount(const std::string_view &fname, const std::string_view &fdir, 
     const std::string pathStr = path.string();
     // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
     // sRealFileName.Format("%s\\%s", fdir, fname); sRealFileName.CheckPath();
+
+    //switch dynamic light on/off + diag message if you need  --->
+    dynamicLightsOn = AttributesPointer->GetAttributeAsDword("dynamicLightsOn", 0);
+    //core.Trace("ISLAND: island %s, dynamicLightsOn = %d", std::string(fname).c_str(), dynamicLightsOn);
+    // <---
 
     model_id = EntityManager::CreateEntity("MODELR");
     core.Send_Message(model_id, "ls", MSG_MODEL_SET_LIGHT_PATH, AttributesPointer->GetAttribute("LightingPath"));
