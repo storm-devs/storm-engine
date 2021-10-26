@@ -61,6 +61,7 @@ class ISLAND : public ISLAND_BASE
     entid_t model_id, seabed_id;
 
     bool bFirstRealize;
+    bool dynamicLightsOn; 		//dynamic lighting
 
     std::string cModelsDir, cModelsID, cFoamDir;
 
