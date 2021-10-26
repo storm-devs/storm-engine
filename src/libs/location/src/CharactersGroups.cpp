@@ -815,7 +815,10 @@ void CharactersGroups::ReleaseGroup(const char *groupName)
         groups[othergrp]->relations[idxgrp] = groups[idxgrp]->relations[othergrp];
 
     if (idxgrp < numGroups - 1)
+    {
         groups[idxgrp]->relations[idxgrp] = groups[idxgrp]->relations[numGroups - 1];
+        groups[idxgrp]->index = idxgrp;
+    }
 
     numGroups--;
 }
