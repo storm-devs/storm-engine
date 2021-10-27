@@ -206,6 +206,8 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
     const auto sailEI = EntityManager::GetEntityId("sail");
     const auto flagEI = EntityManager::GetEntityId("flag");
     const auto vantEI = EntityManager::GetEntityId("vant");
+    const auto vantlEI = EntityManager::GetEntityId("vantl");
+    const auto vantzEI = EntityManager::GetEntityId("vantz");
 
     // find the attributes
     VAI_OBJBASE *pVAI = nullptr;
@@ -241,6 +243,10 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         // go through all the ropes of this mast and turn them off
         if (vantEI)
             core.Send_Message(vantEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
+        if (vantlEI)
+            core.Send_Message(vantlEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
+        if (vantzEI)
+            core.Send_Message(vantzEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
         auto mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
         if (mdl != nullptr)
             for (i = 0; i < 10000; i++)
