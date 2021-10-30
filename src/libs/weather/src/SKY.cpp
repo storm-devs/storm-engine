@@ -730,8 +730,10 @@ uint32_t SKY::GetPixelColor(IDirect3DTexture9 *pTex, float fu, float fv) const
 
     D3DSURFACE_DESC texdesc;
     pRS->GetLevelDesc(pTex, 0, &texdesc);
-    const auto x = static_cast<long>(texdesc.Width * fu);
-    const auto y = static_cast<long>(texdesc.Height * fv);
+    const auto x = static_cast<long>(Bring2Range(0.0f, static_cast<float>(texdesc.Width - 1), 0.0f,
+                                                 static_cast<float>(texdesc.Width), texdesc.Width * fu));
+    const auto y = static_cast<long>(Bring2Range(0.0f, static_cast<float>(texdesc.Height - 1), 0.0f,
+                                                 static_cast<float>(texdesc.Height), texdesc.Height * fv));
 
     D3DLOCKED_RECT lockRect;
     if ((hok = pRS->LockRect(pTex, 0, &lockRect, nullptr, D3DLOCK_READONLY)) == D3D_OK)
