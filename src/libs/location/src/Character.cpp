@@ -4781,6 +4781,10 @@ inline void Character::CheckAttackHit()
     }
     // Find the surrounding characters
     auto *const location = GetLocation();
+    if (!location)
+    {
+        return;
+    }
     auto fndCharacter =
         location->supervisor.FindCharacters(this, attackDist, attackAng, 0.1f, 0.0f, false, true);
     if (fndCharacter.empty())
