@@ -109,6 +109,8 @@ class BIShipIcon
     // FRECT m_rShipUV;
     BIFPOINT m_pntShipOffset;
     FPOINT m_pntShipIconSize;
+    uint32_t m_dwShipNCols;
+    uint32_t m_dwShipNRows;
 
     struct ShipDescr
     {
