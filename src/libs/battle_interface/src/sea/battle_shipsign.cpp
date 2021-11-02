@@ -283,6 +283,9 @@ void BIShipIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
         if (pcTmp)
             sscanf(pcTmp, "%f,%f", &m_pntShipIconSize.x, &m_pntShipIconSize.y);
 
+        m_dwShipNCols = pA->GetAttributeAsDword("xsize");
+        m_dwShipNRows = pA->GetAttributeAsDword("ysize");
+
         for (n = 0; n < MAX_SHIP_QUANTITY; n++)
         {
             sprintf_s(param, sizeof(param), "iconoffset%d", n + 1);
@@ -765,8 +768,8 @@ void BIShipIcon::GetShipUVFromPictureIndex(long nPicIndex, FRECT &rUV)
 {
     // TODO: Make picture count configurable
     const float pictureCount = core.GetTargetEngineVersion() >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN ? 16.f : 8.f;
-    const float pictureWidth = 1.0f / pictureCount;
-    const float pictureHeight = 1.0f / pictureCount;
+    const float pictureWidth = m_dwShipNCols ? 1.0f / m_dwShipNCols : 1.0f / pictureCount;
+    const float pictureHeight = m_dwShipNRows ? 1.0f / m_dwShipNRows : 1.0f / pictureCount;
 
     const float ny = std::floor(static_cast<float>(nPicIndex) / pictureCount);
     const float nx = static_cast<float>(nPicIndex) - ny * pictureCount;
