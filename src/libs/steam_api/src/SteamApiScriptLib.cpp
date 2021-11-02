@@ -97,103 +97,112 @@ uint32_t activateGameOverlayDlc(VS_STACK *pS)
 
 uint32_t slSetAchievement(VS_STACK *pS)
 {
-    auto pStr = (VDATA *)pS->Pop();
-    const char *nm = nullptr;
-    long ret = 0;
-    if (!pStr->Get(nm))
-        return IFUNCRESULT_FAILED;
-    if (nm && nm[0])
+    auto pStr = pS->Pop();
+    const auto nm = pStr->GetString();
+    if (!nm)
     {
-        auto pReturn = (VDATA *)pS->Push();
-        if (!pReturn)
-            return IFUNCRESULT_FAILED;
-
-        ret = SteamApi::getInstance().SetAchievementState(nm);
-
-        pReturn->Set(ret);
-        return IFUNCRESULT_OK;
+        return IFUNCRESULT_FAILED;
     }
+
+    const auto name = std::string(nm);
+
+    auto pReturn = pS->Push();
+    if (!pReturn)
+    {
+        return IFUNCRESULT_FAILED;
+    }
+
+    const long ret = SteamApi::getInstance().SetAchievementState(name.c_str());
+    pReturn->Set(ret);
+
     return IFUNCRESULT_OK;
 }
 
 uint32_t slGetAchievement(VS_STACK *pS)
 {
-    auto pStr = (VDATA *)pS->Pop();
-    const char *nm = nullptr;
-    long ret = 0;
-    if (!pStr->Get(nm))
-        return IFUNCRESULT_FAILED;
-
-    if (nm && nm[0])
+    auto pStr = pS->Pop();
+    const auto nm = pStr->GetString();
+    if (!nm)
     {
-        auto pReturn = (VDATA *)pS->Push();
-        if (!pReturn)
-            return IFUNCRESULT_FAILED;
-
-        ret = SteamApi::getInstance().SetAchievementState(nm);
-
-        pReturn->Set(ret);
-        return IFUNCRESULT_OK;
+        return IFUNCRESULT_FAILED;
     }
+
+    const auto name = std::string(nm);
+
+    auto pReturn = pS->Push();
+    if (!pReturn)
+    {
+        return IFUNCRESULT_FAILED;
+    }
+
+    const long ret = SteamApi::getInstance().GetAchievementState(name.c_str());
+    pReturn->Set(ret);
+
     return IFUNCRESULT_OK;
 }
 
 uint32_t slSetStat(VS_STACK *pS)
 {
-    auto pInt = (VDATA *)pS->Pop();
+    auto pInt = pS->Pop();
     long val = 0;
-    long ret = 0;
     if (!pInt->Get(val))
-        return IFUNCRESULT_FAILED;
-
-    auto pStr = (VDATA *)pS->Pop();
-    const char *nm = nullptr;
-    if (!pStr->Get(nm))
-        return IFUNCRESULT_FAILED;
-
-    if (nm && nm[0])
     {
-        auto pReturn = (VDATA *)pS->Push();
-        if (!pReturn)
-            return IFUNCRESULT_FAILED;
-
-        ret = SteamApi::getInstance().SetStatValue(nm, val);
-
-        pReturn->Set(ret);
-        return IFUNCRESULT_OK;
+        return IFUNCRESULT_FAILED;
     }
+
+    auto pStr = pS->Pop();
+    const auto nm = pStr->GetString();
+    if (!nm)
+    {
+        return IFUNCRESULT_FAILED;
+    }
+
+    const auto name = std::string(nm);
+
+    auto pReturn = pS->Push();
+    if (!pReturn)
+    {
+        return IFUNCRESULT_FAILED;
+    }
+
+    const long ret = SteamApi::getInstance().SetStatValue(name.c_str(), val);
+    pReturn->Set(ret);
+
     return IFUNCRESULT_OK;
 }
 
 uint32_t slGetStat(VS_STACK *pS)
 {
-    auto pStr = (VDATA *)pS->Pop();
-    const char *nm = nullptr;
-    long ret = 0;
-    if (!pStr->Get(nm))
-        return IFUNCRESULT_FAILED;
-    if (nm && nm[0])
+    auto pStr = pS->Pop();
+    const auto nm = pStr->GetString();
+    if (!nm)
     {
-        auto pReturn = (VDATA *)pS->Push();
-        if (!pReturn)
-            return IFUNCRESULT_FAILED;
-
-        ret = SteamApi::getInstance().GetStatValue(nm);
-
-        pReturn->Set(ret);
-        return IFUNCRESULT_OK;
+        return IFUNCRESULT_FAILED;
     }
+
+    const auto name = std::string(nm);
+
+    auto pReturn = pS->Push();
+    if (!pReturn)
+    {
+        return IFUNCRESULT_FAILED;
+    }
+
+    const long ret = SteamApi::getInstance().GetStatValue(name.c_str());
+    pReturn->Set(ret);
+
     return IFUNCRESULT_OK;
 }
 
 uint32_t slStoreStats(VS_STACK *pS)
 {
-    long ret = 0;
-    auto pReturn = (VDATA *)pS->Push();
+    auto pReturn = pS->Push();
     if (!pReturn)
+    {
         return IFUNCRESULT_FAILED;
+    }
 
-    ret = SteamApi::getInstance().StoreStats();
+    const long ret = SteamApi::getInstance().StoreStats();
 
     pReturn->Set(ret);
     return IFUNCRESULT_OK;
@@ -201,40 +210,43 @@ uint32_t slStoreStats(VS_STACK *pS)
 
 uint32_t slClearAchievement(VS_STACK *pS)
 {
-    auto pStr = (VDATA *)pS->Pop();
-    const char *nm = nullptr;
-    long ret = 0;
-    if (!pStr->Get(nm))
-        return IFUNCRESULT_FAILED;
-
-    if (nm && nm[0])
+    auto pStr = pS->Pop();
+    const auto nm = pStr->GetString();
+    if (!nm)
     {
-        auto pReturn = (VDATA *)pS->Push();
-        if (!pReturn)
-            return IFUNCRESULT_FAILED;
-
-        ret = SteamApi::getInstance().ClearAchievement(nm);
-
-        pReturn->Set(ret);
-        return IFUNCRESULT_OK;
+        return IFUNCRESULT_FAILED;
     }
+
+    const auto name = std::string(nm);
+
+    auto pReturn = pS->Push();
+    if (!pReturn)
+    {
+        return IFUNCRESULT_FAILED;
+    }
+
+    const long ret = SteamApi::getInstance().ClearAchievement(name.c_str());
+    pReturn->Set(ret);
+
     return IFUNCRESULT_OK;
 }
 
 uint32_t slResetStats(VS_STACK *pS)
 {
-    auto pInt = (VDATA *)pS->Pop();
+    auto pInt = pS->Pop();
     long val = 0;
-    long ret = 0;
     if (!pInt->Get(val))
+    {
         return IFUNCRESULT_FAILED;
+    }
 
-    auto pReturn = (VDATA *)pS->Push();
+    auto pReturn = pS->Push();
     if (!pReturn)
+    {
         return IFUNCRESULT_FAILED;
+    }
 
-    ret = SteamApi::getInstance().ResetStats(val);
-
+    const long ret = SteamApi::getInstance().ResetStats(val);
     pReturn->Set(ret);
 
     return IFUNCRESULT_OK;
