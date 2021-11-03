@@ -22,7 +22,7 @@ VGEOMETRY *SHIP::pGS = nullptr;
 
 SHIP::SHIP()
 {
-    pShipsLights = nullptr;
+    shipLights = invalid_entity;
     vSpeedAccel = 0.0f;
     uniIDX = 0;
     bUse = false;
@@ -510,7 +510,7 @@ void SHIP::SetDead()
         bDead = true;
         EntityManager::RemoveFromLayer(SEA_REFLECTION2, GetId());
 
-        if (pShipsLights)
+        if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
             pShipsLights->SetDead(this);
     }
 }
@@ -970,7 +970,7 @@ void SHIP::MastFall(mast_t *pM)
                     core.Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pMast->pNode, GetId(), GetModelEID());
                     EntityManager::AddToLayer(ExecuteLayer, ent, iShipPriorityExecute + 1);
                     EntityManager::AddToLayer(RealizeLayer, ent, iShipPriorityRealize + 1);
-                    if (pShipsLights)
+                    if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
                     {
                         pShipsLights->KillMast(this, pMast->pNode, false);
                     }
@@ -1108,7 +1108,7 @@ void SHIP::Realize(uint32_t dtime)
 
 void SHIP::SetLights()
 {
-    if (pShipsLights)
+    if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
     {
         pShipsLights->SetLights(this);
     }
@@ -1116,7 +1116,7 @@ void SHIP::SetLights()
 
 void SHIP::UnSetLights()
 {
-    if (pShipsLights)
+    if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
     {
         pShipsLights->UnSetLights(this);
     }
@@ -1124,7 +1124,7 @@ void SHIP::UnSetLights()
 
 void SHIP::Fire(const CVECTOR &vPos)
 {
-    if (pShipsLights)
+    if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
     {
         pShipsLights->AddDynamicLights(this, vPos);
     }
@@ -1264,13 +1264,13 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         const auto bLigths = message.Long() != 0;
         const auto bFlares = message.Long() != 0;
         const auto bNow = message.Long() != 0;
-        if (pShipsLights)
+        if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
             pShipsLights->SetLightsOff(this, fTime, bLigths, bFlares, bNow);
     }
     break;
     case MSG_MAST_DELGEOMETRY: {
         auto *const pNode = (NODE *)message.Pointer();
-        if (pShipsLights)
+        if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
         {
             pShipsLights->KillMast(this, pNode, true);
         }
@@ -1521,16 +1521,14 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     }
 
     // Add lights and flares
-    if (const auto eidTmp = EntityManager::GetEntityId("shiplights"))
+    if (shipLights = EntityManager::GetEntityId("shiplights"))
     {
-        pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(eidTmp));
+        const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights));
 
         pShipsLights->AddLights(this, GetModel(), bLights, bFlares);
         pShipsLights->ProcessStage(Stage::execute, 0);
     }
-
-    if (!pShipsLights)
-    {
+    else {
         spdlog::warn("Mounted ship with no active ShipsLights");
     }
 
@@ -1545,7 +1543,7 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     // add masts
     BuildMasts();
 
-    if (pShipsLights)
+    if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
     {
         for (long i = 0; i < iNumMasts; i++)
         {

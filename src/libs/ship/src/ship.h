@@ -93,7 +93,7 @@ class SHIP : public SHIP_BASE
     float fUpperShipAY, fUpperShipY;
 
     // Ships lights
-    IShipLights *pShipsLights;
+    entid_t shipLights;
 
     // Fire places
     std::vector<FirePlace> aFirePlaces;
