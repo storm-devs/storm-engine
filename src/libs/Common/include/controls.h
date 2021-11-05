@@ -202,6 +202,11 @@ class CONTROLS
         return GetKeyState(vk);
     }
 
+    virtual bool IsKeyPressed(int vk)
+    {
+        return GetKeyState(vk) < 0;
+    }
+
     // Get the keystroke buffer per frame (taking into account the language)
     virtual long GetKeyBufferLength()
     {

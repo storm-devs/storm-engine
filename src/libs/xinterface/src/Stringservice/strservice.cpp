@@ -1514,6 +1514,26 @@ uint32_t _IsKeyPressed(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
+uint32_t IsVirtualKeyPressed(VS_STACK *stack)
+{
+    auto data = stack->Pop();
+    if (!data)
+    {
+        return IFUNCRESULT_FAILED;
+    }
+
+    const auto key_code = data->GetLong();
+
+    data = stack->Push();
+    if (!data)
+    {
+        return IFUNCRESULT_FAILED;
+    }
+
+    data->Set(static_cast<long>(core.Controls->IsKeyPressed(key_code)));
+    return IFUNCRESULT_OK;
+}
+
 uint32_t _RegistryExitKey(VS_STACK *pS)
 {
     // get input data
@@ -1721,6 +1741,12 @@ bool SCRIPT_INTERFACE_FUNCTIONS::Init()
     sIFuncInfo.pFuncName = "XI_IsKeyPressed";
     sIFuncInfo.nArguments = 1;
     sIFuncInfo.pFuncAddress = _IsKeyPressed;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.pReturnValueName = "bool";
+    sIFuncInfo.pFuncName = "XI_IsVirtualKeyPressed";
+    sIFuncInfo.nArguments = 1;
+    sIFuncInfo.pFuncAddress = IsVirtualKeyPressed;
     core.SetScriptFunction(&sIFuncInfo);
 
     sIFuncInfo.pReturnValueName = "void";

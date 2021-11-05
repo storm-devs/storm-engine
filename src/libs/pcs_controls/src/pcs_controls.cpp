@@ -607,6 +607,11 @@ short PCS_CONTROLS::GetDebugKeyState(int vk)
     return (m_bIsOffDebugKeys ? 0 : input_->KeyboardKeyState(vk) ? -1 : 0);
 }
 
+bool PCS_CONTROLS::IsKeyPressed(int vk)
+{
+    return input_->KeyboardKeyState(vk);
+}
+
 void PCS_CONTROLS::HandleEvent(const InputEvent &evt)
 {
     if (evt.type == InputEvent::KeyboardKeyDown)
