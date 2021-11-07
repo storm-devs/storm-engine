@@ -86,6 +86,8 @@ class PCS_CONTROLS : public CONTROLS
     short GetDebugKeyState(int vk) override;
     bool m_bIsOffDebugKeys;
 
+    bool IsKeyPressed(int vk) override;
+
     void HandleEvent(const storm::InputEvent &evt);
 
     // Get the keystroke buffer per frame (taking into account the language)
