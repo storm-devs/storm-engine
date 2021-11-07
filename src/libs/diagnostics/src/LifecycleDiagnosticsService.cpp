@@ -9,6 +9,7 @@
 #include "storm/fs.h"
 #include "vfile_service.h"
 #include "spdlog_sinks/syncable_sink.hpp"
+#include "watermark.hpp"
 
 #ifdef _UNICODE
 #include <tchar.h>
@@ -162,6 +163,7 @@ LifecycleDiagnosticsService::Guard LifecycleDiagnosticsService::initialize(const
         // TODO: make this crossplatform
         auto *options = sentry_options_new();
         sentry_options_set_dsn(options, "https://1798a1bcfb654cbd8ce157b381964525@o572138.ingest.sentry.io/5721165");
+        sentry_options_set_release(options, STORM_BUILD_WATERMARK_STRING);
         sentry_options_set_database_path(options, (fs::GetStashPath() / "sentry-db").c_str());
         sentry_options_set_handler_path(options, (getExecutableDir() / "crashpad_handler.exe").c_str());
         sentry_options_add_attachment(options, getLogsArchive().c_str());

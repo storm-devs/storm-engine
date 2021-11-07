@@ -6,6 +6,7 @@
 #include "file_service.h"
 #include "s_debug.h"
 #include "storm/fs.h"
+#include "watermark.hpp"
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
@@ -101,7 +102,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 #endif
     if (!lifecycleDiagnosticsGuard)
     {
-        spdlog::error("Unable to initialize lifecycle service");
+        MessageBoxA(nullptr, "Unable to initialize lifecycle service!", "Warning", MB_ICONWARNING);
     }
     else
     {
@@ -113,6 +114,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     // Init logging
     spdlog::set_default_logger(storm::logging::getOrCreateLogger(defaultLoggerName));
+    spdlog::info("Logging system initialized. Running on {}", STORM_BUILD_WATERMARK_STRING);
 
     // Init core
     core.Init();

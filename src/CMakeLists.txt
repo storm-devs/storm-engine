@@ -10,6 +10,10 @@ if(STORM_ENABLE_CRASH_REPORTS)
 	add_definitions(-DSTORM_ENABLE_CRASH_REPORTS=1)
 endif()
 
+if(STORM_WATERMARK_FILE)
+  add_definitions(-DSTORM_WATERMARK_FILE="${STORM_WATERMARK_FILE}")
+endif()
+
 if (MSVC)
     # Always generate PDBs
     add_compile_options(/Zi)
