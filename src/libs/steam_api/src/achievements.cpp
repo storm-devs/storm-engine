@@ -86,6 +86,8 @@ Achievement_t g_Achievements[] = {
     //    _ACH_ID( ACH_72, "ach_72" ),
     //    _ACH_ID( ACH_73, "ach_73" ),
     _ACH_ID(ACH_79, "ach_79"),
+    _ACH_ID(ACH_80, "ach_80"),
+    _ACH_ID(ACH_81, "ach_81"),
 };
 
 Stat_t g_Stats[] = {
@@ -163,6 +165,8 @@ Stat_t g_Stats[] = {
     //    _STAT_ID(72, STAT_INT, "stat_72"),
     //    _STAT_ID(73, STAT_INT, "stat_73"),
     _STAT_ID(79, STAT_INT, "stat_79"),
+    _STAT_ID(80, STAT_INT, "stat_80"),
+    _STAT_ID(81, STAT_INT, "stat_81"),
 };
 
 CSteamStatsAchievements::CSteamStatsAchievements(int NumAchievements)
