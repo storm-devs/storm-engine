@@ -603,7 +603,30 @@ void PCS_CONTROLS::ClearKeyBuffer()
 short PCS_CONTROLS::GetDebugAsyncKeyState(int vk)
 {
     // -1 because WinAPI sets msb when key pressed, so old code expects negative value
-    return (m_bIsOffDebugKeys ? 0 : input_->KeyboardKeyState(vk) ? -1 : 0);
+    if (m_bIsOffDebugKeys)
+    {
+        return 0;
+    }
+
+    auto pressed = false;
+    if (vk == VK_LBUTTON)
+    {
+        pressed = input_->MouseKeyState(MouseKey::Left);
+    }
+    else if (vk == VK_RBUTTON)
+    {
+        pressed = input_->MouseKeyState(MouseKey::Right);
+    }
+    else if (vk == VK_MBUTTON)
+    {
+        pressed = input_->MouseKeyState(MouseKey::Middle);
+    }
+    else
+    {
+        pressed = input_->KeyboardKeyState(vk);
+    }
+
+    return pressed ? -1 : 0;
 }
 
 short PCS_CONTROLS::GetDebugKeyState(int vk)
