@@ -432,7 +432,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
     long slen, slen2;
     char sVarName[64];
-    char sBuff2[2];
+    std::string utf8_character;
 
     switch (func_code)
     {
@@ -665,17 +665,18 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV2 = pV2->GetVarPointer(); // string
         pV->Get(TempLong1);
         pV2->Get(pChar);
-        if (static_cast<uint32_t>(TempLong1) >= strlen(pChar))
+        if (static_cast<uint32_t>(TempLong1) >= utf8::Utf8StringLength(pChar))
         {
             pV = SStack.Push();
             pV->Set("");
             pVResult = pV;
             return pV;
         }
-        sBuff2[0] = pChar[TempLong1];
-        sBuff2[1] = 0;
+        TempLong = utf8::u8_offset(pChar, TempLong1); // begin
+        TempLong2 = utf8::u8_inc(pChar + TempLong); // len
+        utf8_character = std::string(pChar + TempLong, TempLong2);
         pV = SStack.Push();
-        pV->Set(sBuff2);
+        pV->Set(utf8_character.c_str());
         pVResult = pV;
         return pV;
 
