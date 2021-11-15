@@ -304,31 +304,32 @@ void AIShip::CheckStartPosition() const
 
 bool AIShip::isCanFire(const CVECTOR &vFirePos) const
 {
-    CVECTOR v1, v2, vOurPos;
-    float fAng, fCos, fSin, fDist;
+    const auto vOurPos = GetPos();
 
-    vOurPos = GetPos();
+    const auto fAng = 8.0f * PI / 180.0f;
+    const auto fCos = cosf(fAng);
+    const auto fSin = sinf(fAng);
 
-    fAng = 8.0f * PI / 180.0f;
-    fCos = cosf(fAng), fSin = sinf(fAng);
-    fDist = sqrtf(~(vOurPos - vFirePos));
-
-    v1 = v2 = fDist * !(vFirePos - vOurPos);
+    auto v1 = (vFirePos - vOurPos) / fCos;
     RotateAroundY(v1.x, v1.z, fCos, fSin);
-    RotateAroundY(v2.x, v2.z, -fCos, -fSin);
 
-    for (uint32_t i = 0; i < AIShips.size(); i++)
-        if (this != AIShips[i] && isFriend(*AIShips[i]))
+    auto v2 = (vFirePos - vOurPos) / fCos;
+    RotateAroundY(v2.x, v2.z, fCos, -fSin);
+
+    for (auto &AIShip : AIShips)
+    {
+        if (this != AIShip && isFriend(*AIShip))
         {
-            if (AIShips[i]->isDead())
+            if (AIShip->isDead())
                 continue;
-            if (AIShips[i]->GetTouchController()->isCollision2D(vOurPos, vFirePos))
+            if (AIShip->GetTouchController()->isCollision2D(vOurPos, vFirePos))
                 return false;
-            if (AIShips[i]->GetTouchController()->isCollision2D(vOurPos, v1))
+            if (AIShip->GetTouchController()->isCollision2D(vOurPos, vOurPos + v1))
                 return false;
-            if (AIShips[i]->GetTouchController()->isCollision2D(vOurPos, v2))
+            if (AIShip->GetTouchController()->isCollision2D(vOurPos, vOurPos + v2))
                 return false;
         }
+    }
 
     return true;
 }
