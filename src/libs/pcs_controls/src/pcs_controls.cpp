@@ -333,27 +333,7 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
         }
         else
         {
-            bool pressed = false;
-
-            if (system_code == VK_LBUTTON)
-                pressed = input_->MouseKeyState(MouseKey::Left);
-            else if (system_code == VK_RBUTTON)
-                pressed = input_->MouseKeyState(MouseKey::Right);
-            else if (system_code == VK_MBUTTON)
-                pressed = input_->MouseKeyState(MouseKey::Middle);
-            else if (system_code == VK_TAB)
-            {
-                if (!input_->KeyboardKeyState(VK_MENU))
-                    pressed = input_->KeyboardKeyState(system_code);
-            }
-            else if (system_code == VK_SHIFT)
-            {
-                pressed = input_->KeyboardKeyState(VK_LSHIFT) || input_->KeyboardKeyState(VK_RSHIFT);
-            }
-            else
-                pressed = input_->KeyboardKeyState(system_code);
-
-            if (pressed)
+            if (IsKeyPressed(system_code))
             {
                 ControlsTab[system_code].state.lValue = 1;
                 ControlsTab[system_code].state.fValue = static_cast<float>(ControlsTab[system_code].state.lValue);
@@ -598,18 +578,46 @@ void PCS_CONTROLS::ClearKeyBuffer()
 short PCS_CONTROLS::GetDebugAsyncKeyState(int vk)
 {
     // -1 because WinAPI sets msb when key pressed, so old code expects negative value
-    return (m_bIsOffDebugKeys ? 0 : input_->KeyboardKeyState(vk) ? -1 : 0);
+    if (m_bIsOffDebugKeys)
+    {
+        return 0;
+    }
+
+    return IsKeyPressed(vk) ? -1 : 0;
 }
 
 short PCS_CONTROLS::GetDebugKeyState(int vk)
 {
-    // -1 because WinAPI sets msb when key pressed, so old code expects negative value
-    return (m_bIsOffDebugKeys ? 0 : input_->KeyboardKeyState(vk) ? -1 : 0);
+    return GetDebugAsyncKeyState(vk);
 }
 
 bool PCS_CONTROLS::IsKeyPressed(int vk)
 {
-    return input_->KeyboardKeyState(vk);
+    auto pressed = false;
+    if (vk == VK_LBUTTON)
+        pressed = input_->MouseKeyState(MouseKey::Left);
+    else if (vk == VK_RBUTTON)
+        pressed = input_->MouseKeyState(MouseKey::Right);
+    else if (vk == VK_MBUTTON)
+        pressed = input_->MouseKeyState(MouseKey::Middle);
+    else if (vk == VK_TAB)
+    {
+        if (!input_->KeyboardKeyState(VK_MENU))
+            pressed = input_->KeyboardKeyState(vk);
+    }
+    else if (vk == VK_SHIFT)
+    {
+        pressed = input_->KeyboardKeyState(VK_LSHIFT) || input_->KeyboardKeyState(VK_RSHIFT);
+    }
+    else if (vk == VK_RETURN)
+    {
+        pressed = input_->KeyboardSDLKeyState(SDL_SCANCODE_RETURN) ||
+                  input_->KeyboardSDLKeyState(SDL_SCANCODE_KP_ENTER);
+    }
+    else
+        pressed = input_->KeyboardKeyState(vk);
+
+    return pressed;
 }
 
 void PCS_CONTROLS::HandleEvent(const InputEvent &evt)
