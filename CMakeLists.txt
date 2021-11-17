@@ -13,6 +13,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
 
+set(STORM_WATERMARK_FILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/watermark.hpp CACHE FILEPATH "Include file containing build revision, etc." FORCE)
+
 ### Set up third-party dependencies
 set(ENV{CONAN_REVISIONS_ENABLED} 1)
 conan_add_remote(NAME bincrafters
@@ -29,6 +31,7 @@ conan_cmake_run(CONANFILE conanfile.py
     BUILD missing
     OPTIONS
         output_directory=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+        watermark_file=${STORM_WATERMARK_FILE}
         crash_reports=${STORM_ENABLE_CRASH_REPORTS}
         steam=${STORM_ENABLE_STEAM}
 )
