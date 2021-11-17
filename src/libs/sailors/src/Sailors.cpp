@@ -455,7 +455,7 @@ void ShipMan::SetAnimation(uint32_t dltTime, ShipState &shipState)
 {
     // GUARD_SAILORS(ShipMan::SetAnimation())
 
-    if (mode == lastMode && model->GetAnimation()->Player(0).IsPlaying())
+    if (auto ani = model->GetAnimation(); mode == lastMode && ani && ani->Player(0).IsPlaying())
         return;
     float ran;
 
