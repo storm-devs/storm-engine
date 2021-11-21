@@ -6120,6 +6120,10 @@ char *COMPILER::ReadString()
 
     char *pBuffer = new char[n];
     ReadData(pBuffer, n);
+    if (!utf8::IsValidUtf8(pBuffer))
+    {
+        spdlog::warn("Deserializing invalid utf8 string: {}", pBuffer);
+    }
     return pBuffer;
 }
 
@@ -6205,6 +6209,25 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
         // load array elements
         for (uint32_t n = 0; n < nElementsNum; n++)
         {
+            if (bSkipVariable)
+            {
+                if (eType == S_TOKEN_TYPE::VAR_INTEGER)
+                    ReadData(nullptr, sizeof(long));
+                else if (eType == S_TOKEN_TYPE::VAR_FLOAT)
+                    ReadData(nullptr, sizeof(float));
+                else if (eType == S_TOKEN_TYPE::VAR_STRING)
+                    ReadString();
+                else if (eType == S_TOKEN_TYPE::VAR_OBJECT)
+                {
+                    ReadData(nullptr, sizeof(uint64_t));
+                    ATTRIBUTES TA(&SCodec);
+                    ReadAttributesData(&TA, nullptr);
+                }
+                else
+                    Assert(false);
+                continue;
+            }
+
             if (!ReadVariable(name, /*code,*/ true, n))
                 return false;
         }
@@ -6593,7 +6616,6 @@ bool COMPILER::LoadState(std::fstream &fileS)
         pString = ReadString();
         if (pString)
         {
-            Assert(utf8::IsValidUtf8(pString));
             SCodec.Convert(pString);
             delete[] pString;
         }
@@ -6610,7 +6632,6 @@ bool COMPILER::LoadState(std::fstream &fileS)
     for (n = 0; n < nSegments2Load; n++)
     {
         char *pSegmentName = ReadString();
-        Assert(utf8::IsValidUtf8(pSegmentName));
         if (!BC_LoadSegment(pSegmentName))
             return false;
         delete[] pSegmentName;
@@ -6626,7 +6647,6 @@ bool COMPILER::LoadState(std::fstream &fileS)
             SetError("missing variable name");
             return false;
         }
-        Assert(utf8::IsValidUtf8(pString));
         ReadVariable(pString /*,n*/);
 
         delete[] pString;
