@@ -131,7 +131,7 @@ def read_aifort(buffer, cur_ptr):
 
         num_mortars = 4  # hardcode
         mortars = []
-        for _ in range(num_cannons):
+        for _ in range(num_mortars):
             mortar, cur_ptr = read_aicannon(buffer, cur_ptr)
             mortars.append(mortar)
 

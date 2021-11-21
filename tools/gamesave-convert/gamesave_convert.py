@@ -1,12 +1,6 @@
 #!python
 
-# Python 3.7: Dictionary iteration order is guaranteed to be in order of insertion
 import sys
-
-MIN_PYTHON = (3, 7)
-if sys.version_info < MIN_PYTHON:
-    sys.exit("Python {'.'.join([str(n) for n in MIN_PYTHON])} or later is required.")
-
 import argparse
 import os
 import struct
@@ -16,6 +10,11 @@ from enum import Enum
 
 import str_db
 import seasave
+
+# Python 3.7: Dictionary iteration order is guaranteed to be in order of insertion
+MIN_PYTHON = (3, 7)
+if sys.version_info < MIN_PYTHON:
+    sys.exit("Python {'.'.join([str(n) for n in MIN_PYTHON])} or later is required.")
 
 FILEINFO_CONFIG = {
     'ver 1.0.7': {'str_encoding': 'cp1251', 'obj_id_format': 'QQQ'},
@@ -91,8 +90,7 @@ def read_value(var_type, buffer, cur_ptr, s_db, str_encoding, obj_id_format):
     elif var_type == VarType.String:
         v, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
     elif var_type == VarType.Object:
-        v = {}
-        v['id'] = struct.unpack_from(obj_id_format, buffer, cur_ptr)
+        v = {'id': struct.unpack_from(obj_id_format, buffer, cur_ptr)}
         cur_ptr += struct.calcsize(obj_id_format)
         attributes = {}
         attr, cur_ptr = read_attributes_data(buffer, cur_ptr, s_db, str_encoding)
@@ -178,8 +176,10 @@ def read_save(file_name):
         for _ in range(num_strings):
             s, cur_ptr = read_string(buffer, cur_ptr, str_encoding)
             if s is not None:
-                #if not s.isascii():
-                    #logging.warning(f'non ascii string: {s} (cp1251: {s.encode("cp1251").hex(" ")}, utf-8: {s.encode("utf-8").hex(" ")})')
+                # if not s.isascii():
+                #   logging.warning(f'non ascii string: {s}
+                #       (cp1251: {s.encode("cp1251").hex(" ")},
+                #       utf-8: {s.encode("utf-8").hex(" ")})')
                 strings.append(s)
 
         s_db = str_db.create_db(strings, str_encoding)
@@ -280,8 +280,8 @@ def write_value(var_type, value, buffer, fileinfo_config):
     elif var_type == VarType.String:
         buffer = write_string(value, buffer, fileinfo_config['str_encoding'])
     elif var_type == VarType.Object:
-        id = value['id']
-        buffer += struct.pack(fileinfo_config['obj_id_format'], *id)
+        obj_id = value['id']
+        buffer += struct.pack(fileinfo_config['obj_id_format'], *obj_id)
         root_attr = next(iter(value['attributes']))
         buffer = write_attributes_data(value['attributes'][root_attr], buffer, fileinfo_config['str_encoding'])
     elif var_type == VarType.Reference:
@@ -315,7 +315,6 @@ def write_save(save_data, filename):
     file_info = save_data['file_info']
     fileinfo_config = FILEINFO_CONFIG[file_info]
     str_encoding = fileinfo_config['str_encoding']
-    obj_id_format = fileinfo_config['obj_id_format']
 
     buffer = bytearray()
     buffer = write_string(save_data['program_dir'], buffer, str_encoding)
@@ -337,7 +336,8 @@ def write_save(save_data, filename):
         seasave_buf = bytearray()
         seasave_buf = seasave.write_seasave(seasave_data, seasave_buf)
         seasave_size = f'{len(seasave_buf):08x}'  # as hexadecimal string without prefix 8 bytes long
-        variables['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value'] = seasave_size + seasave_buf.hex()
+        variables['oSeaSave']['values'][0]['attributes']['skip']['attributes']['save']['value'] = \
+            seasave_size + seasave_buf.hex()
 
     for varname in variables:
         buffer = write_string(varname, buffer, str_encoding)
