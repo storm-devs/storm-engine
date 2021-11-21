@@ -6120,7 +6120,10 @@ char *COMPILER::ReadString()
 
     char *pBuffer = new char[n];
     ReadData(pBuffer, n);
-    Assert(utf8::IsValidUtf8(pBuffer));
+    if (!utf8::IsValidUtf8(pBuffer))
+    {
+        spdlog::warn("Deserializing invalid utf8 string: {}", pBuffer);
+    }
     return pBuffer;
 }
 
@@ -6613,7 +6616,6 @@ bool COMPILER::LoadState(std::fstream &fileS)
         pString = ReadString();
         if (pString)
         {
-            Assert(utf8::IsValidUtf8(pString));
             SCodec.Convert(pString);
             delete[] pString;
         }
@@ -6630,7 +6632,6 @@ bool COMPILER::LoadState(std::fstream &fileS)
     for (n = 0; n < nSegments2Load; n++)
     {
         char *pSegmentName = ReadString();
-        Assert(utf8::IsValidUtf8(pSegmentName));
         if (!BC_LoadSegment(pSegmentName))
             return false;
         delete[] pSegmentName;
