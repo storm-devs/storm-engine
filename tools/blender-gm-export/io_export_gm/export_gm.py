@@ -27,19 +27,8 @@ bl_info = {
     "category": "Export",
 }
 
-# TODO 1024 in sources
-MAX_TREE_DEPTH = 2048
-MAX_PLANES_CALCULATED = 256
-PRECISION = 0.00001
-# TODO 0.0001 or 0.00001 in different sources
-LIE_PREC = 0.0001
-MAX_PLANE_FACES = 15
-BSP_NODE_SIZE = 24
-
 correction_export_matrix = axis_conversion(
     from_forward='Y', from_up='Z', to_forward='X', to_up='Y')
-
-nodes_to_skip = 0
 
 
 def get_bounding_box_coords(objects, x_is_mirrored):
@@ -175,647 +164,6 @@ def remove_blender_name_postfix(name):
     return re.sub(r'\.\d{3}', '', name)
 
 
-def NODESIZE(a):
-    return (1+(a*3+BSP_NODE_SIZE-4)/BSP_NODE_SIZE)
-
-
-class CVECTOR:
-    def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.value = [x, y, z]
-
-    def __getitem__(self, key):
-        return self.value[key]
-
-    def __str__(self):
-        return str(self.value)
-
-    def __repr__(self):
-        return str(self.value)
-
-    def __eq__(v1, v2):
-        return (v1.x == v2.x and v1.y == v2.y and v1.z == v2.z)
-
-    def __add__(v1, v2):
-        return CVECTOR(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z)
-
-    def __sub__(self, other):
-        return CVECTOR(self.x - other.x, self.y - other.y, self.z - other.z)
-
-    def __mul__(v1, f):
-        return CVECTOR(v1.x*f, v1.y*f, v1.z*f)
-
-    def __rmul__(self, other):
-        return self * other
-
-    def cross(v1, v2):
-        return CVECTOR(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x)
-
-    def normalized(v):
-        vec_sqrt = sqrt(v.x*v.x + v.y*v.y + v.z*v.z)
-        if vec_sqrt != 0:
-            len = 1.0/vec_sqrt
-            return CVECTOR(v.x*len, v.y*len, v.z*len)
-        else:
-            return CVECTOR(0, 0, 0)
-
-    def dot(v1, v2):
-        return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z
-
-    def length_squared(v):
-        return v.x*v.x + v.y*v.y + v.z*v.z
-
-
-class Build_bsp_node:
-    min_l = 0
-    min_r = 0
-    min_c = 0
-    min_m = 0
-
-    def __init__(self, col):
-        self.col = col
-
-        self.right = None  # []
-        self.left = None  # []
-        self.norm = Vector((0, 0, 0))
-        self.pld = 0
-        self.tot_faces = 0
-        self._face = []
-
-    def best_plane(self, faces, nfaces):
-        col = self.col
-        col_vrt = col.vrt
-        col_trg = col.trg
-        col_normals_dot = col.normals_dot
-
-        min_l = Build_bsp_node.min_l
-        min_r = Build_bsp_node.min_r
-        min_c = Build_bsp_node.min_c
-        min_m = Build_bsp_node.min_m
-
-        res0 = 0
-        res1 = 0
-        res2 = 0
-        best_plane = 0
-
-        gd = 1e20
-
-        f = 0
-
-        for f in range(min(nfaces, MAX_PLANES_CALCULATED)):
-            l = 0
-            r = 0
-            c = 0
-            m = 0
-
-            normal = faces[f]["normal"]
-            trg = faces[f]["trg"]
-            normal_dot = col_normals_dot[trg]
-            plane_distance = faces[f]["plane_distance"]
-
-            for i in range(nfaces):
-                f_trg = col_trg[faces[i]["trg"]]
-
-                if normal_dot[f_trg[0]] != None:
-                    res0 = normal_dot[f_trg[0]] - plane_distance
-                else:
-                    dot = normal.dot(col_vrt[f_trg[0]])
-                    res0 = dot - plane_distance
-                    normal_dot[f_trg[0]] = dot
-
-                if normal_dot[f_trg[1]] != None:
-                    res1 = normal_dot[f_trg[1]] - plane_distance
-                else:
-                    dot = normal.dot(col_vrt[f_trg[1]])
-                    normal_dot[f_trg[1]] = dot
-                    res1 = dot - plane_distance
-
-                if normal_dot[f_trg[2]] != None:
-                    res2 = normal_dot[f_trg[2]] - plane_distance
-                else:
-                    dot = normal.dot(col_vrt[f_trg[2]])
-                    normal_dot[f_trg[2]] = dot
-                    res2 = dot - plane_distance
-
-                # if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
-                if res0 < LIE_PREC and -res0 < LIE_PREC and res1 < LIE_PREC and -res1 < LIE_PREC and res2 < LIE_PREC and -res2 < LIE_PREC:
-                    m += 1
-                    continue
-
-                min_dist = 1e300
-                max_dist = -1e300
-                for v in range(faces[i]["nvertices"]):
-                    dist = normal.dot(faces[i]["vertices"][v]) - plane_distance
-
-                    if dist > max_dist:
-                        max_dist = dist
-                    if dist < min_dist:
-                        min_dist = dist
-
-                if min_dist >= -PRECISION and max_dist >= -PRECISION:
-                    r += 1
-                    continue
-
-                if min_dist <= PRECISION and max_dist <= PRECISION:
-                    l += 1
-                    continue
-                c += 1
-
-            dist = 3.0 * c + 1.0 * abs(r - l)
-
-            if dist < gd:
-                gd = dist
-                best_plane = f
-                min_l = l
-                min_r = r
-                min_c = c
-                min_m = m
-
-        Build_bsp_node.min_l = min_l
-        Build_bsp_node.min_r = min_r
-        Build_bsp_node.min_c = min_c
-        Build_bsp_node.min_m = min_m
-
-        return best_plane
-
-    def best_empty_plane(self, faces, nfaces, epnorm, epdist):
-        col = self.col
-        col_vrt = col.vrt
-        col_trg = col.trg
-
-        res0 = 0
-        res1 = 0
-        res2 = 0
-        f = 0
-
-        gd = 1e20
-
-        for f in range(min(nfaces, MAX_PLANES_CALCULATED)):
-            for e in range(3):
-                e1 = e + 1
-                if e1 == 3:
-                    e1 = 0
-
-                edge = faces[f]["vertices"][e1] - faces[f]["vertices"][e]
-                bnormal = (
-                    faces[f]["normal"] * sqrt(edge.length_squared)).cross(edge).normalized()
-                bplane_distance = bnormal.dot(faces[f]["vertices"][e])
-
-                l = 0
-                r = 0
-                c = 0
-                m = 0
-
-                for i in range(nfaces):
-                    f_trg = col_trg[faces[i]["trg"]]
-
-                    res0 = bnormal.dot(
-                        col_vrt[f_trg[0]]) - bplane_distance
-                    res1 = bnormal.dot(
-                        col_vrt[f_trg[1]]) - bplane_distance
-                    res2 = bnormal.dot(
-                        col_vrt[f_trg[2]]) - bplane_distance
-
-                    # if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
-                    if res0 < LIE_PREC and -res0 < LIE_PREC and res1 < LIE_PREC and -res1 < LIE_PREC and res2 < LIE_PREC and -res2 < LIE_PREC:
-                        break
-
-                    min_dist = 1e300
-                    max_dist = -1e300
-                    for v in range(faces[i]["nvertices"]):
-                        dist = bnormal.dot(
-                            faces[i]["vertices"][v]) - bplane_distance
-
-                        if dist > max_dist:
-                            max_dist = dist
-                        if dist < min_dist:
-                            min_dist = dist
-
-                    if min_dist >= -PRECISION and max_dist >= -PRECISION:
-                        r += 1
-                        continue
-
-                    if min_dist <= PRECISION and max_dist <= PRECISION:
-                        l += 1
-                        continue
-                    c += 1
-
-                if i < nfaces:
-                    continue
-
-                dist = 3.0 * c + 1.0 * abs(r - l)
-
-                if r > 0 and l > 0 and dist < gd:
-                    gd = dist
-                    Build_bsp_node.min_l = l
-                    Build_bsp_node.min_r = r
-                    Build_bsp_node.min_c = c
-                    Build_bsp_node.min_m = m
-                    epnorm = bnormal
-                    epdist = bplane_distance
-
-            return (epnorm, epdist)
-
-    def fill_node(self, faces, nfaces):
-        col = self.col
-        col_vrt = col.vrt
-        col_trg = col.trg
-        col_ndepth = col.ndepth
-
-        best_plane = self.best_plane(faces, nfaces)
-
-        self.norm = faces[best_plane]["normal"]
-        self.pld = self.norm.dot(col_vrt[col_trg[faces[best_plane]["trg"]][0]])
-
-        if Build_bsp_node.min_m > MAX_PLANE_FACES:
-            (self.norm, self.pld) = self.best_empty_plane(
-                faces, nfaces, self.norm, self.pld)
-            best_plane = -1
-
-        rlist = []
-        llist = []
-
-        col.cur_node += 1
-        col.cur_depth += 1
-
-        if col.cur_depth > col.max_depth:
-            col.max_depth = col.cur_depth
-
-        if col.cur_depth > 1000:
-            print("cur_depth > 1000 interrupt")
-
-        self.tot_faces = 0
-
-        self._face = []
-
-        l = 0
-        r = 0
-
-        for i in range(nfaces):
-            cur_face = faces[i]
-            cur_face_normal = cur_face["normal"]
-            cur_face_plane_distance = cur_face["plane_distance"]
-            cur_face_trg = cur_face["trg"]
-
-            f_trg = col_trg[cur_face_trg]
-
-            res0 = self.norm.dot(col_vrt[f_trg[0]]) - self.pld
-            res1 = self.norm.dot(col_vrt[f_trg[1]]) - self.pld
-            res2 = self.norm.dot(col_vrt[f_trg[2]]) - self.pld
-
-            # if abs(res0) < LIE_PREC and abs(res1) < LIE_PREC and abs(res2) < LIE_PREC:
-            if res0 < LIE_PREC and -res0 < LIE_PREC and res1 < LIE_PREC and -res1 < LIE_PREC and res2 < LIE_PREC and -res2 < LIE_PREC:
-                try:
-                    tf = self._face.index(cur_face_trg)
-                except ValueError:
-                    tf = self.tot_faces
-
-                if tf == self.tot_faces:
-                    self.tot_faces += 1
-                    self._face.append(cur_face_trg)
-
-                continue
-
-            vdist = [None] * 256
-            min_did = 0
-            max_did = 0
-            min_dist = 1e300
-            max_dist = -1e300
-
-            for v in range(cur_face["nvertices"]):
-                vdist[v] = self.norm.dot(cur_face["vertices"][v]) - self.pld
-
-                if vdist[v] > max_dist:
-                    max_dist = vdist[v]
-                    max_did = v
-
-                if vdist[v] < min_dist:
-                    min_dist = vdist[v]
-                    min_did = v
-
-            if min_dist >= -PRECISION and max_dist >= -PRECISION:
-                r += 1
-                rlist.append(cur_face)
-                continue
-
-            if min_dist <= PRECISION and max_dist <= PRECISION:
-                l += 1
-                llist.append(cur_face)
-                continue
-
-            right_face = {
-                "nvertices": 0,
-                "vertices": [],
-                "normal": cur_face_normal,
-                "plane_distance": cur_face_plane_distance,
-                "trg": cur_face_trg
-            }
-
-            while vdist[max_did] > -PRECISION:
-                max_did -= 1
-                if max_did == -1:
-                    max_did = cur_face["nvertices"] - 1
-
-            right_face["nvertices"] = 0
-            right_face["vertices"] = []
-
-            # do .. while hack
-            while True:
-                right_face["nvertices"] += 1
-
-                if vdist[max_did] <= -PRECISION:
-                    v = max_did + 1
-                    if v == cur_face["nvertices"]:
-                        v = 0
-
-                    d = vdist[max_did] / (vdist[max_did] - vdist[v])
-                    right_face["vertices"].append(cur_face["vertices"][max_did] + d * (
-                        cur_face["vertices"][v] - cur_face["vertices"][max_did]))
-                else:
-                    right_face["vertices"].append(
-                        cur_face["vertices"][max_did])
-
-                max_did += 1
-                if max_did == cur_face["nvertices"]:
-                    max_did = 0
-
-                if vdist[max_did] <= -PRECISION:
-                    break
-
-            right_face["nvertices"] += 1
-            v = max_did - 1
-
-            if v == -1:
-                v = cur_face["nvertices"] - 1
-
-            d = vdist[max_did] / (vdist[max_did] - vdist[v])
-            right_face["vertices"].append(cur_face["vertices"][
-                max_did] + d * (cur_face["vertices"][v] - cur_face["vertices"][max_did]))
-            r += 1
-            rlist.append(right_face)
-
-            # left, lol
-            right_face = {
-                "nvertices": 0,
-                "vertices": [],
-                "normal": cur_face_normal,
-                "plane_distance": cur_face_plane_distance,
-                "trg": cur_face_trg
-            }
-
-            while vdist[min_did] < PRECISION:
-                min_did -= 1
-                if min_did == -1:
-                    min_did = cur_face["nvertices"] - 1
-
-            right_face["nvertices"] = 0
-            right_face["vertices"] = []
-
-            # do .. while hack
-            while True:
-                right_face["nvertices"] += 1
-
-                if vdist[min_did] >= PRECISION:
-                    v = min_did + 1
-                    if v == cur_face["nvertices"]:
-                        v = 0
-
-                    d = vdist[min_did] / (vdist[min_did] - vdist[v])
-                    right_face["vertices"].append(cur_face["vertices"][
-                        min_did] + d * (cur_face["vertices"][v] - cur_face["vertices"][min_did]))
-                else:
-                    right_face["vertices"].append(
-                        cur_face["vertices"][min_did])
-
-                min_did += 1
-                if min_did == cur_face["nvertices"]:
-                    min_did = 0
-
-                if vdist[min_did] >= PRECISION:
-                    break
-
-            right_face["nvertices"] += 1
-            v = min_did - 1
-
-            if v == -1:
-                v = cur_face["nvertices"] - 1
-
-            d = vdist[min_did] / (vdist[min_did] - vdist[v])
-            right_face["vertices"].append(cur_face["vertices"][
-                min_did] + d * (cur_face["vertices"][v] - cur_face["vertices"][min_did]))
-            l += 1
-            llist.append(right_face)
-
-        col.ssize += int(NODESIZE(self.tot_faces))
-        col_ndepth[col.cur_depth] += int(NODESIZE(self.tot_faces))
-
-        if r > 0:
-            self.right = Build_bsp_node(col)
-            self.right.fill_node(rlist, r)
-        else:
-            self.right = None
-
-        if l > 0:
-            self.left = Build_bsp_node(col)
-            self.left.fill_node(llist, l)
-        else:
-            self.left = None
-
-        col.cur_depth -= 1
-
-    def store(self, sroot):
-        col = self.col
-        col_ndepth = col.ndepth
-
-        node_idx = col_ndepth[col.cdepth]
-
-        norm = self.norm
-        pd = self.pld
-
-        faces = self._face
-        face = bytearray()
-        for i in range(self.tot_faces):
-            # TODO: check if overflow does not happen here
-            # if it happens, this might be a point for invalid BSP faces
-            face_bytes = faces[i].to_bytes(4, "little")
-            face.append(face_bytes[0])
-            face.append(face_bytes[1])
-            face.append(face_bytes[2])
-
-        nfaces = self.tot_faces
-
-        if nfaces > MAX_PLANE_FACES:
-            print("Internal error: too many faces on the BSP node")
-
-        col_ndepth[col.cdepth] += int(NODESIZE(nfaces))
-        col.cdepth += 1
-
-        right = 0
-        left = 0
-        node = 0
-
-        if self.left != None:
-            (sroot, num) = self.left.store(sroot)
-            node = num
-            left = 1
-
-        if self.right != None:
-            if self.left is None:
-                (sroot, num) = self.right.store(sroot)
-                node = num - 1
-                right = 1
-            else:
-                (sroot, num) = self.right.store(sroot)
-                right = num - node
-
-        col.cdepth -= 1
-
-        sroot[node_idx] = {
-            "norm": norm,
-            "pd": pd,
-            "node": node,
-            "sign": 0,
-            "left": left,
-            "nfaces": nfaces,
-            "right": right,
-            "type": 0,
-            "face": face,
-        }
-
-        return (sroot, node_idx)
-
-    def clear_static_fields():
-        Build_bsp_node.min_l = 0
-        Build_bsp_node.min_r = 0
-        Build_bsp_node.min_c = 0
-        Build_bsp_node.min_m = 0
-
-
-class Collide:
-    def __init__(self):
-        self.nvrts = 0
-        self.vrt = []
-        self.ntrgs = 0
-        self.trg = []
-        self.cur_node = -1
-        self.cur_depth = 0
-        self.cdepth = 0
-        self.tnode = 0
-        self.max_depth = 0
-        self.ndepth = [0] * MAX_TREE_DEPTH
-        self.normals_dot = []
-        self.raw_vertices = []
-        self.raw_faces = []
-
-    def add_raw_mesh(self, vertices, faces):
-        raw_faces = self.raw_faces
-        raw_faces_append = raw_faces.append
-
-        raw_vertices = self.raw_vertices
-        raw_vertices_quantity = len(raw_vertices)
-
-        raw_vertices += vertices
-
-        for face in faces:
-            prepared_face = []
-            prepared_face_append = prepared_face.append
-            for vert in face:
-                prepared_face_append(vert + raw_vertices_quantity)
-            raw_faces_append(prepared_face)
-
-    def add_mesh(self, vertices, faces):
-        vertices_quantity = len(vertices)
-        faces_quantity = len(faces)
-        ref = [0] * vertices_quantity
-
-        for face in faces:
-            for vert in face:
-                ref[vert] += 1
-
-        index_by_vrt = defaultdict()
-
-        for vert_idx in range(vertices_quantity):
-            if ref[vert_idx] > 0:
-                cur_vert = vertices[vert_idx]
-                cur_vert_id = '%s %s %s' % (
-                    cur_vert[0], cur_vert[1], cur_vert[2])
-
-                try:
-                    vert_idx_1 = index_by_vrt[cur_vert_id]
-                except:
-                    vert_idx_1 = self.nvrts
-                    self.nvrts += 1
-                    self.vrt.append(cur_vert)
-                    index_by_vrt[cur_vert_id] = vert_idx_1
-
-                ref[vert_idx] = vert_idx_1
-
-        # add triangles and relink vrtindex
-        for face in faces:
-            temp_face = []
-            for vert in face:
-                temp_face.append(ref[vert])
-            self.trg.append(temp_face)
-        self.ntrgs += faces_quantity
-
-    def build_bsp(self):
-        normals_dot_append = self.normals_dot.append
-
-        self.add_mesh(self.raw_vertices, self.raw_faces)
-
-        faces = []
-
-        for t in range(self.ntrgs):
-            face = defaultdict()
-
-            vertices = []
-            nvertices = 3
-
-            for i in range(3):
-                vertices.append(self.vrt[self.trg[t][i]])
-
-            normal = ((vertices[1] - vertices[0])
-                      .cross(vertices[2] - vertices[0])).normalized()
-
-            plane_distance = vertices[0].dot(normal)
-
-            face["nvertices"] = nvertices
-            face["vertices"] = vertices
-            face["normal"] = normal
-            face["plane_distance"] = plane_distance
-            face["trg"] = t
-
-            faces.append(face)
-
-            normals_dot_append([None] * self.nvrts)
-
-        self.ssize = 0
-        root = Build_bsp_node(self)
-        root.fill_node(faces, self.ntrgs)
-
-        prv = 0
-        for d in range(self.max_depth):
-            prv += self.ndepth[d]
-            self.ndepth[d] = prv
-
-        sroot = [{
-            "norm": Vector((0, 0, 0)),
-            "pd": 0,
-            "node": 0,
-            "sign": 0,
-            "left": 0,
-            "nfaces": 0,
-            "right": 0,
-            "type": 0,
-            "face": 0,
-        }] * self.ssize
-        (sroot, num) = root.store(sroot)
-
-        return sroot
-
-
 def prepare_globnames(objects, locators, materials, is_animated):
     globnames = ['unknown material group']
 
@@ -897,42 +245,7 @@ def write_avertex0(file, pos, weight, bone_id, norm, color, tu0, tv0,):
     file.write(struct.pack('<f', tv0))
 
 
-# def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
-#     write_vector(file, norm)
-#     file.write(struct.pack('<f', pd))
-#     bitfields = (node & 0x3FFFFF) | ((sign & 0x1) << 22) | ((left & 0x1) << 23) | (
-#         (nfaces & 0x1F) << 24) | ((right & 0x3) << 28) | ((type & 0x3) << 30)
-#     file.write(struct.pack('<L', bitfields))
-#     # TODO was <l originally, but it ain't working; checkme!
-#     file.write(struct.pack('<L', face))
-
-def write_bsp_node(file, norm, pd, node, sign, left, nfaces, right, type, face):
-    global nodes_to_skip
-    if nodes_to_skip != 0:
-        nodes_to_skip -= 1
-    else:
-        write_vector(file, norm)
-        file.write(struct.pack('<f', pd))
-        bitfields = (node & 0x3FFFFF) | ((sign & 0x1) << 22) | ((left & 0x1) << 23) | (
-            (nfaces & 0x1F) << 24) | ((right & 0x3) << 28) | ((type & 0x3) << 30)
-        file.write(struct.pack('<L', bitfields))
-        for i in range(nfaces):
-            file.write(struct.pack('<B', face[i*3]))
-            file.write(struct.pack('<B', face[i*3+1]))
-            file.write(struct.pack('<B', face[i*3+2]))
-
-        if nfaces == 1:
-            file.write(struct.pack('<B', 0))
-        else:
-            exceeding_nodes_in_bytes = 3*(nfaces-1)-1
-            nodes_to_skip = ceil(exceeding_nodes_in_bytes/BSP_NODE_SIZE)
-            file.write(b'\x00' * (nodes_to_skip *
-                       BSP_NODE_SIZE - exceeding_nodes_in_bytes))
-
-
-def export_gm(context, file_path="", bsp=False):
-    global nodes_to_skip
-
+def export_gm(context, file_path="", triangulate=False):
     # pr = cProfile.Profile()
     # pr.enable()
 
@@ -965,8 +278,6 @@ def export_gm(context, file_path="", bsp=False):
     vertex_buffers = []
 
     atriangles = 0
-
-    col = Collide()
 
     # TODO get list of childrens children
     for child in root_children:
@@ -1002,9 +313,6 @@ def export_gm(context, file_path="", bsp=False):
             break
 
     x_is_mirrored = not is_animated
-
-    if is_animated:
-        bsp = False
 
     bpy.context.scene.frame_set(0)
 
@@ -1043,6 +351,9 @@ def export_gm(context, file_path="", bsp=False):
         bm = bmesh.new()
         bm.from_mesh(obj.evaluated_get(depsgraph).to_mesh(
             preserve_all_data_layers=True, depsgraph=depsgraph))
+
+        if triangulate:
+            bmesh.ops.triangulate(bm, faces=bm.faces[:])
 
         bm.verts.ensure_lookup_table()
 
@@ -1225,10 +536,6 @@ def export_gm(context, file_path="", bsp=False):
         current_vertex_buffer_vertices_quantity = current_vertex_buffer.get(
             "vertices_quantity")
 
-        if bsp:
-            atriangles += faces_quantity
-            col.add_raw_mesh(obj_vertices_coords, obj_faces)
-
         object_data = {
             "vertex_buff": current_vertex_buffer.get("index"),
             "ntriangles": faces_quantity,
@@ -1265,7 +572,7 @@ def export_gm(context, file_path="", bsp=False):
         header_version = 825110581
         file.write(struct.pack('<l', header_version))
 
-        header_flags = 2 if bsp else 0
+        header_flags = 0
         file.write(struct.pack('<l', header_flags))
 
         globnames = prepare_globnames(
@@ -1516,29 +823,6 @@ def export_gm(context, file_path="", bsp=False):
                     write_avertex0(file, buffer_vertices[i], buffer_weights[i], buffer_bone_ids[i], buffer_normals[i],
                                    buffer_colors[i], buffer_uv_array[i][0], buffer_uv_array[i][1])
 
-        if bsp:
-            sroot = col.build_bsp()
-
-            file.write(struct.pack('<l', col.ssize))
-            file.write(struct.pack('<l', col.nvrts))
-            file.write(struct.pack('<l', col.ntrgs))
-
-            for root in sroot:
-                write_bsp_node(file, root.get("norm"), root.get("pd"), root.get("node"), root.get(
-                    "sign"), root.get("left"), root.get("nfaces"), root.get("right"), root.get("type"), root.get("face"))
-
-            for vrt in col.vrt:
-                write_vector(file, vrt)
-
-            for trg in col.trg:
-                for vert_idx in trg:
-                    file.write(struct.pack('<B', (vert_idx >> 0) & 0xFF))
-                    file.write(struct.pack('<B', (vert_idx >> 8) & 0xFF))
-                    file.write(struct.pack('<B', (vert_idx >> 16) & 0xFF))
-
-            nodes_to_skip = 0
-            Build_bsp_node.clear_static_fields()
-
     # pr.disable()
     # pr.print_stats(2)
 
@@ -1561,13 +845,13 @@ class ExportGm(Operator, ExportHelper):
         maxlen=255,  # Max internal buffer length, longer would be clamped.
     )
 
-    BSP: BoolProperty(
-        name="BSP (TEST SUPPORT, EXPERIMENTAL FEATURE)",
-        default=False,
+    triangulate: BoolProperty(
+        name="triangulate",
+        default=True,
     )
 
     def execute(self, context):
-        return export_gm(context, self.filepath, self.BSP)
+        return export_gm(context, self.filepath, self.triangulate)
 
 
 def menu_func_export(self, context):
