@@ -13,4 +13,5 @@ When BSP will be added message `BSP patch finished succesfully!` will appear
 ## Author
 
 [Artess999](https://github.com/Artess999)
+Nick Chirkov (original BSP code)
 
