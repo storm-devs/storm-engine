@@ -6863,7 +6863,8 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
         return nullptr;
     }
 
-    if (fio->_GetFileSize(file_name) < sizeof(EXTDATA_HEADER) + sizeof(uint32_t))
+    const auto file_size = fio->_GetFileSize(file_name);
+    if (file_size < sizeof(EXTDATA_HEADER) + sizeof(uint32_t))
     {
         data_size = 0;
         fio->_CloseFile(fileS);
@@ -6874,7 +6875,7 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
     RDTSC_B(dw2);
     EXTDATA_HEADER exdh;
     fio->_ReadFile(fileS, &exdh, sizeof(exdh));
-    if (exdh.dwExtDataSize <= 0)
+    if (exdh.dwExtDataSize <= 0 || file_size < exdh.dwExtDataOffset + sizeof(uint32_t))
     {
         data_size = 0;
         fio->_CloseFile(fileS);
@@ -6884,7 +6885,7 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
     uint32_t dwPackLen;
     fio->_SetFilePointer(fileS, exdh.dwExtDataOffset, std::ios::beg);
     fio->_ReadFile(fileS, &dwPackLen, sizeof(dwPackLen));
-    if (dwPackLen == 0 || dwPackLen > 0x8000000)
+    if (dwPackLen == 0 || file_size < exdh.dwExtDataOffset + sizeof(uint32_t) + dwPackLen)
     {
         data_size = 0;
         fio->_CloseFile(fileS);
