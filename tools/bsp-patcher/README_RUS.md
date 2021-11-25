@@ -11,4 +11,5 @@
 ## Автор
 
 [Artess999](https://github.com/Artess999)
+Nick Chirkov (original BSP code)
 
