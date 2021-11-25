@@ -245,7 +245,7 @@ def write_avertex0(file, pos, weight, bone_id, norm, color, tu0, tv0,):
     file.write(struct.pack('<f', tv0))
 
 
-def export_gm(context, file_path=""):
+def export_gm(context, file_path="", triangulate=False):
     # pr = cProfile.Profile()
     # pr.enable()
 
@@ -351,6 +351,9 @@ def export_gm(context, file_path=""):
         bm = bmesh.new()
         bm.from_mesh(obj.evaluated_get(depsgraph).to_mesh(
             preserve_all_data_layers=True, depsgraph=depsgraph))
+
+        if triangulate:
+            bmesh.ops.triangulate(bm, faces=bm.faces[:])
 
         bm.verts.ensure_lookup_table()
 
@@ -842,13 +845,13 @@ class ExportGm(Operator, ExportHelper):
         maxlen=255,  # Max internal buffer length, longer would be clamped.
     )
 
-    # BSP: BoolProperty(
-    #     name="BSP (TEST SUPPORT, EXPERIMENTAL FEATURE)",
-    #     default=False,
-    # )
+    triangulate: BoolProperty(
+        name="triangulate",
+        default=True,
+    )
 
     def execute(self, context):
-        return export_gm(context, self.filepath)
+        return export_gm(context, self.filepath, self.triangulate)
 
 
 def menu_func_export(self, context):
