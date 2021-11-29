@@ -1083,21 +1083,9 @@ void XINTERFACE::LoadIni()
     sprintf_s(section, "COMMON");
 
     // set screen parameters
-    const auto &canvas_size = core.GetScreenSize();
-    if (ini->GetLong(platform, "bDynamicScaling", 0) != 0)
+    if (ini->GetLong(platform, "bDynamicScaling", 0) == 0)
     {
-        POINT screen_size = pRenderService->GetScreenSize();
-        float aspect = float(screen_size.x) / float(screen_size.y);
-        fScale = 1.f;
-        dwScreenWidth = static_cast<uint32_t>(canvas_size.height * aspect);
-        dwScreenHeight = canvas_size.height;
-        GlobalScreenRect.left = (dwScreenWidth - canvas_size.width) / 2;
-        GlobalScreenRect.top = 0;
-        GlobalScreenRect.right = (dwScreenWidth + canvas_size.width) / 2;
-        GlobalScreenRect.bottom = canvas_size.height;
-    }
-    else
-    {
+        const auto &canvas_size = core.GetScreenSize();
         fScale = ini->GetFloat(platform, "fScale", 1.f);
         if (fScale < MIN_SCALE || fScale > MAX_SCALE)
             fScale = 1.f;
