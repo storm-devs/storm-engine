@@ -103,7 +103,8 @@ void CAviPlayer::Realize(uint32_t delta_time)
         m_bFirstDraw = false;
     }
 
-    if ((hr = pSample->Update(0, nullptr, nullptr, NULL)) == S_OK)
+    hr = pSample->Update(0, nullptr, nullptr, NULL);
+    if (hr == S_OK)
     {
         hr = pVideoSurface->Lock(nullptr, &ddsd, 0, nullptr);
         if (hr != S_OK)
@@ -134,6 +135,14 @@ void CAviPlayer::Realize(uint32_t delta_time)
             rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_AVIVIDEO_FVF, 2, v, sizeof(XI_AVIVIDEO_VERTEX), "battle_icons");
         }
     }
+    else if (hr == MS_S_ENDOFSTREAM && bLoop)
+    {
+        CleanupInterfaces();
+        if(!GetInterfaces() || !PlayMedia(filename.c_str()))
+        {
+            m_bContinue = false;
+        }
+    }
     else
     {
         m_bContinue = false;
@@ -147,13 +156,20 @@ uint64_t CAviPlayer::ProcessMessage(MESSAGE &message)
     case MSG_SET_VIDEO_PLAY: {
         const std::string &param = message.String();
         const std::string vidName = fmt::format("{}\\{}", VIDEO_DIRECTORY, param);
+        filename = vidName;
         if (!PlayMedia(vidName.c_str()))
         {
             CleanupInterfaces();
             core.PostEvent("ievntEndVideo", 1, nullptr);
         }
+        break;
     }
-    break;
+    case MSG_SET_VIDEO_FLAGS: {
+        constexpr auto loop_flag = 1 << 0;
+        auto flags = message.Long();
+        bLoop = flags & loop_flag;
+        break;
+    }
     }
     return 0;
 }

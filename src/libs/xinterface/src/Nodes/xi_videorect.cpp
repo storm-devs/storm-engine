@@ -66,6 +66,7 @@ void CXI_VIDEORECT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
 {
     char param[255];
 
+    m_dwFlags = GetIniLong(ini1, name1, ini2, name2, "flags", 0);
     m_rectTex = GetIniFloatRect(ini1, name1, ini2, name2, "textureRect", FXYRECT(0.f, 0.f, 1.f, 1.f));
     m_dwColor = GetIniARGB(ini1, name1, ini2, name2, "color", ARGB(255, 128, 128, 128));
     if (ReadIniString(ini1, name1, ini2, name2, "videoFile", param, sizeof(param), ""))
@@ -132,5 +133,6 @@ void CXI_VIDEORECT::StartVideoPlay(const char *videoFileName)
     m_rectTex.top = 1.f - m_rectTex.top;
     if (auto *const ptr = EntityManager::GetEntityPointer(m_eiVideo))
         static_cast<xiBaseVideo *>(ptr)->SetShowVideo(false);
+    core.Send_Message(m_eiVideo, "ll", MSG_SET_VIDEO_FLAGS, m_dwFlags);
     core.Send_Message(m_eiVideo, "ls", MSG_SET_VIDEO_PLAY, videoFileName);
 }
