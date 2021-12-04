@@ -122,7 +122,7 @@ void seh_extractor::sink(const sink_func f, EXCEPTION_RECORD *next) const
     }
 
     // sink exc magic
-    const auto [_,size] = std::format_to_n(buf, _countof(buf), "magic={} (classified {})", magic, check_magic(magic));
+    const auto [_,size] = std::format_to_n(buf, _countof(buf), "magic={:#x} (classified {})", magic, check_magic(magic));
     buf[size] = '\0';
     f(buf);
 
