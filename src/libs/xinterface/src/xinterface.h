@@ -269,7 +269,7 @@ class XINTERFACE : public XINTERFACE_BASE
     void IncrementGameTime(uint32_t dwDeltaTime);
     // Options functions
     void SaveOptionsFile(const char *fileName, ATTRIBUTES *pAttr);
-    void LoadOptionsFile(const char *fileName, ATTRIBUTES *pAttr);
+    void LoadOptionsFile(std::string_view filename, ATTRIBUTES *pAttr);
     //
     int LoadIsExist();
     //
