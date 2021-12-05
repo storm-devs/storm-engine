@@ -80,4 +80,7 @@ class CAviPlayer : public xiBaseVideo
 
     bool m_bFirstDraw;
     bool m_bMakeUninitializeDD;
+
+    std::string filename;
+    bool bLoop{false};
 };
