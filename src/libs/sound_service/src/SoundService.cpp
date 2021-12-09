@@ -209,6 +209,8 @@ void SoundService::RunStart()
                 CHECKFMODERR(OGG_sound[1]->release());
                 OGG_sound[1] = nullptr;
             }
+
+            core.Event("SoundEnded", "l", i + 1);
         }
     }
     ProcessSoundSchemes();
