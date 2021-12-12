@@ -683,7 +683,7 @@ class Character : public Entity
 
     // Procedural head look
     HeadLookState curHeadLookState;
-    Character *headLookChrTarget;
+    entid_t headLookChrTarget;
     CVECTOR headLookPointTarget;
     float curHeadAX;
     float curHeadAY;

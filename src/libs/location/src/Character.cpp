@@ -611,7 +611,7 @@ Character::Character()
 
     // Procedural head look
     curHeadLookState = headlook_default;
-    headLookChrTarget = nullptr;
+    headLookChrTarget = {};
     headLookPointTarget = 0.0f;
     curHeadAX = 0.0f;
     curHeadAY = 0.0f;
@@ -810,12 +810,9 @@ uint64_t Character::ProcessMessage(MESSAGE &message)
     case MSG_CHARACTER_HEADLOOK_CAMERA:
         curHeadLookState = headlook_camera;
         return 1;
-    case MSG_CHARACTER_HEADLOOK_CHARACTER: {
+    case MSG_CHARACTER_HEADLOOK_CHARACTER:
         curHeadLookState = headlook_character;
-
-        const entid_t chr = message.EntityID();
-        headLookChrTarget = static_cast<Character *>(EntityManager::GetEntityPointer(chr));
-    }
+        headLookChrTarget = message.EntityID();
         return 1;
     case MSG_CHARACTER_HEADLOOK_POINT: {
         curHeadLookState = headlook_point;
@@ -2511,8 +2508,12 @@ void Character::Update(float dltTime)
             CVECTOR targetPos = 0.0f;
             if (curHeadLookState == headlook_character)
             {
-                headLookChrTarget->GetPosition(targetPos);
-                targetPos += CVECTOR(0.0f, headLookChrTarget->GetHeight(), 0.0f); // Look at chr's face
+                auto *targetChrPtr = static_cast<Character *>(EntityManager::GetEntityPointer(headLookChrTarget));
+                if (targetChrPtr)
+                {
+                    targetChrPtr->GetPosition(targetPos);
+                    targetPos += CVECTOR(0.0f, targetChrPtr->GetHeight(), 0.0f); // Look at chr's face
+                }
             }
             else
                 targetPos = headLookPointTarget;
