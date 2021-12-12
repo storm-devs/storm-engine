@@ -41,6 +41,10 @@ AnimationImp::AnimationImp(long id, AnimationInfo *animationInfo)
     isUserBlend = true;
     // Procedural head look
     isControllableHead = false;
+    headBoneIndex = 16;
+    const char *dataStr = GetData("Head bone index");
+    if (dataStr)
+        headBoneIndex = atol(dataStr);
     customHeadAX = 0.0f;
     customHeadAY = 0.0f;
 }
@@ -277,7 +281,7 @@ void AnimationImp::BuildAnimationMatrices()
                 }
 
                 // Procedural head look
-                if (j == 16 && isControllableHead)
+                if (j == headBoneIndex && isControllableHead)
                 {
                     inmtx.RotateX(customHeadAX);
                     inmtx.RotateY(customHeadAY);
@@ -313,7 +317,7 @@ void AnimationImp::BuildAnimationMatrices()
                     inmtx.Pos() = bn.pos[f] + ki * (bn.pos[f + 1] - bn.pos[f]);
 
                 // Procedural head look
-                if (j == 16 && isControllableHead)
+                if (j == headBoneIndex && isControllableHead)
                 {
                     inmtx.RotateX(customHeadAX);
                     inmtx.RotateY(customHeadAY);
@@ -349,7 +353,7 @@ void AnimationImp::BuildAnimationMatrices()
                     inmtx.Pos() = bn.pos[f] + ki * (bn.pos[f + 1] - bn.pos[f]);
 
                 // Procedural head look
-                if (j == 16 && isControllableHead)
+                if (j == headBoneIndex && isControllableHead)
                 {
                     inmtx.RotateX(customHeadAX);
                     inmtx.RotateY(customHeadAY);

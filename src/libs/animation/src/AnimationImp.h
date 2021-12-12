@@ -141,6 +141,7 @@ class AnimationImp final : public Animation
     static AnimationServiceImp *aniService;
 	// Procedural head look
     bool isControllableHead;
+    long headBoneIndex;
     float customHeadAX;
     float customHeadAY;
 };
