@@ -21,6 +21,7 @@ You need to install [Conan](https://conan.io/downloads.html) and add it to the `
 - C++ CMake Tools for Windows
 - C++ Clang Compiler for Windows
 - C++ MFC for latest v142 build tools (x86 & x64)
+- Windows 10 SDK
 
 Open the repo root as a CMake project in Visual Studio 2019 and select `engine.exe` as a startup item.
 
