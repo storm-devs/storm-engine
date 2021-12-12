@@ -251,6 +251,15 @@ class Character : public Entity
     //--------------------------------------------------------------------------------------------
     // Character animation
     //--------------------------------------------------------------------------------------------
+  protected:
+    // Procedural head look
+    enum HeadLookState
+    {
+        headlook_default,
+        headlook_camera,
+        headlook_character,
+        headlook_point,
+    };
 
     //--------------------------------------------------------------------------------------------
     // Character commands
@@ -671,6 +680,13 @@ class Character : public Entity
     Location *GetLocation();
 
     long eventId = {};
+
+    // Procedural head look
+    HeadLookState curHeadLookState;
+    entid_t headLookChrTarget;
+    CVECTOR headLookPointTarget;
+    float curHeadAX;
+    float curHeadAY;
 
   public:
     bool isPlayerEnemy;
