@@ -1,3 +1,5 @@
+#include "storm/xinterface/options_parser.hpp"
+
 #include "xinterface.h"
 #include "BackScene/backscene.h"
 #include "HelpChooser/HelpChooser.h"
@@ -965,7 +967,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     case MSG_INTERFACE_LOADOPTIONS: {
         const std::string &param = message.String();
         ATTRIBUTES *pA = message.AttributePointer();
-        LoadOptionsFile(param.c_str(), pA);
+        LoadOptionsFile(param, pA);
     }
     break;
 
@@ -3226,61 +3228,36 @@ void XINTERFACE::SaveOptionsFile(const char *fileName, ATTRIBUTES *pAttr)
     fio->_CloseFile(fileS);
 }
 
-void XINTERFACE::LoadOptionsFile(const char *fileName, ATTRIBUTES *pAttr)
+void XINTERFACE::LoadOptionsFile(std::string_view fileName, ATTRIBUTES *pAttr)
 {
-    char FullPath[MAX_PATH];
+    constexpr const unsigned int OPTION_NAME_MAX_LENGTH = 512;
+    constexpr const unsigned int OPTION_VALUE_MAX_LENGTH = 1024;
 
-    if (fileName == nullptr || pAttr == nullptr)
+    if (fileName.empty() || pAttr == nullptr)
     {
         return;
     }
-    strcpy_s(FullPath, fileName);
 
-    auto fileS = fio->_CreateFile(FullPath, std::ios::binary | std::ios::in);
+    auto fileS = fio->_CreateFile(fileName.data(), std::ios::binary | std::ios::in);
     if (!fileS.is_open())
     {
         return;
     }
 
-    const uint32_t dwSaveSize = fio->_GetFileSize(FullPath);
-    if (dwSaveSize == 0)
+    const uint32_t fileSize = fio->_GetFileSize(fileName.data());
+    if (fileSize == 0)
     {
         core.Event("evntOptionsBreak");
         fio->_CloseFile(fileS);
         return;
     }
 
-    auto pOutBuffer = new char[dwSaveSize + 1];
-    pOutBuffer[dwSaveSize] = '\0';
-    if (pOutBuffer)
+    std::string buffer(fileSize + 1, '\0'); // + 1 for '\0'
+    fio->_ReadFile(fileS, buffer.data(), fileSize);
+    if (pAttr) //~!~
     {
-        fio->_ReadFile(fileS, pOutBuffer, dwSaveSize);
-        if (pAttr) //~!~
-        {
-            char *pBuf = pOutBuffer;
-            auto msvsHasNodiscardReturnValue = std::remove(pBuf, pBuf + std::strlen(pBuf) + 1, '\r'); // + 1 for '\0'
-            while (pBuf && *pBuf != 0)
-            {
-                char param1[512], param2[512];
-                param1[0] = param2[0] = 0;
-                sscanf(pBuf, "%[^=]=%[^\n]", param1, param2);
-                if (param1[0] != '\0' && param2[0] != '\0')
-                {
-                    ATTRIBUTES *pA = pAttr->CreateSubAClass(pAttr, param1);
-                    pA->SetValue(param2);
-                }
-                // pBuf += strlen(param1)+strlen(param2);
-                while (*pBuf && *pBuf != 13 && *pBuf != 10)
-                {
-                    pBuf++;
-                }
-                while (*pBuf && (*pBuf == 13 || *pBuf == 10))
-                {
-                    pBuf++;
-                }
-            }
-        }
-        delete[] pOutBuffer;
+        storm::removeCarriageReturn(buffer);
+        storm::parseOptions(buffer, *pAttr);
     }
 
     fio->_CloseFile(fileS);
