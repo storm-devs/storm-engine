@@ -608,6 +608,13 @@ Character::Character()
 
     m_pcHandLightLocator = "Saber_hand";
     m_nHandLightID = -1;
+
+    // Procedural head look
+    curHeadLookState = HeadLookState::dflt;
+    headLookChrTarget = {};
+    headLookPointTarget = 0.0f;
+    curHeadAX = 0.0f;
+    curHeadAY = 0.0f;
 }
 
 Character::~Character()
@@ -794,6 +801,26 @@ uint64_t Character::ProcessMessage(MESSAGE &message)
         if (mhp < 0.0f)
             mhp = 0.0f;
         location->AddDamageMessage(curPos + CVECTOR(0.0f, height, 0.0f), hit, chp, mhp);
+    }
+        return 1;
+    // Procedural head look
+    case MSG_CHARACTER_HEADLOOK_DEFAULT:
+        curHeadLookState = HeadLookState::dflt;
+        return 1;
+    case MSG_CHARACTER_HEADLOOK_CAMERA:
+        curHeadLookState = HeadLookState::camera;
+        return 1;
+    case MSG_CHARACTER_HEADLOOK_CHARACTER:
+        curHeadLookState = HeadLookState::character;
+        headLookChrTarget = message.EntityID();
+        return 1;
+    case MSG_CHARACTER_HEADLOOK_POINT: {
+        curHeadLookState = HeadLookState::point;
+
+        float x = message.Float();
+        float y = message.Float();
+        float z = message.Float();
+        headLookPointTarget = CVECTOR(x, y, z);
     }
         return 1;
     default:
@@ -2449,6 +2476,107 @@ void Character::Update(float dltTime)
     if (m_nHandLightID >= 0)
     {
         location->GetLights()->UpdateMovingLight(m_nHandLightID, GetHandLightPos());
+    }
+
+    // Procedural head look
+
+    Animation *ani = m->GetAnimation();
+    if (!ani)
+        return;
+    
+    bool isControllableHead = ani->IsControllableHead();
+
+    if (curHeadLookState != HeadLookState::dflt || isControllableHead)
+    {
+        const float headMovSpeed = 4.0f;
+
+        float destHeadAX = 0.0f;
+        float destHeadAY = 0.0f;
+
+        if (curHeadLookState == HeadLookState::camera)
+        {
+            destHeadAX = camAng.x - 0.2f;
+            destHeadAY = atan2(sin(ay - camAng.y), cos(ay - camAng.y));
+        }
+        else if (curHeadLookState == HeadLookState::character || curHeadLookState == HeadLookState::point)
+        {
+            bool hasTarget = true;
+            CVECTOR targetPos = 0.0f;
+
+            if (curHeadLookState == HeadLookState::character)
+            {
+                auto *targetChrPtr = static_cast<Character *>(EntityManager::GetEntityPointer(headLookChrTarget));
+
+                if (targetChrPtr)
+                {
+                    targetChrPtr->GetPosition(targetPos);
+                    targetPos += CVECTOR(0.0f, targetChrPtr->GetHeight(), 0.0f); // Look at chr's face
+                }
+                else
+                {
+                    hasTarget = false;
+                    curHeadLookState = HeadLookState::dflt;
+                }
+            }
+            else
+                targetPos = headLookPointTarget;
+
+            if (hasTarget)
+            {
+                CVECTOR dist = targetPos - (curPos + CVECTOR(0.0f, height, 0.0f));
+                float angX = -atan2(dist.y, sqrt(dist.x * dist.x + dist.z * dist.z));
+                float angY = atan2(dist.x, dist.z);
+
+                destHeadAX = angX;
+                destHeadAY = atan2(sin(ay - angY), cos(ay - angY));
+            }
+        }
+
+        if (destHeadAX < -0.6f)
+            destHeadAX = -0.6f;
+        else if (destHeadAX > 0.4f)
+            destHeadAX = 0.4f;
+
+        if (destHeadAY < -1.0f)
+            destHeadAY = -1.0f;
+        else if (destHeadAY > 1.0f)
+            destHeadAY = 1.0f;
+
+        if (curHeadAX < destHeadAX)
+        {
+            curHeadAX += headMovSpeed * dltTime;
+            if (curHeadAX > destHeadAX)
+                curHeadAX = destHeadAX;
+        }
+        else if (curHeadAX > destHeadAX)
+        {
+            curHeadAX -= headMovSpeed * dltTime;
+            if (curHeadAX < destHeadAX)
+                curHeadAX = destHeadAX;
+        }
+
+        if (curHeadAY < destHeadAY)
+        {
+            curHeadAY += headMovSpeed * dltTime;
+            if (curHeadAY > destHeadAY)
+                curHeadAY = destHeadAY;
+        }
+        else if (curHeadAY > destHeadAY)
+        {
+            curHeadAY -= headMovSpeed * dltTime;
+            if (curHeadAY < destHeadAY)
+                curHeadAY = destHeadAY;
+        }
+
+        ani->RotateHead(curHeadAX, curHeadAY);
+
+        if (curHeadLookState == HeadLookState::dflt)
+        {
+            if (curHeadAX == destHeadAX && curHeadAY == destHeadAY)
+                ani->HeadControl(false);
+        }
+        else if (!isControllableHead)
+            ani->HeadControl(true);
     }
 }
 

@@ -65,6 +65,10 @@ class AnimationImp final : public Animation
     // Allow custom blending coefficients in ActionPlayer
     bool UserBlend(bool isBlend = true) override;
     bool IsUserBlend() override;
+	// Procedural head look
+    bool HeadControl(bool isControllable) override;
+    bool IsControllableHead() override;
+    void RotateHead(float x, float y) override;
 
     //--------------------------------------------------------------------------------------------
     // AnimationImp
@@ -135,6 +139,11 @@ class AnimationImp final : public Animation
     AnimationEventListener *ae_listenersExt;
     // Animation Service Pointer
     static AnimationServiceImp *aniService;
+	// Procedural head look
+    bool isControllableHead;
+    long headBoneIndex;
+    float customHeadAX;
+    float customHeadAY;
 };
 
 //============================================================================================

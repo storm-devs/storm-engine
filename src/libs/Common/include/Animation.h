@@ -200,6 +200,10 @@ class Animation
     // Allow custom blending coefficients in ActionPlayer
     virtual bool UserBlend(bool isBlend = true) = 0;
     virtual bool IsUserBlend() = 0;
+    // Procedural head look
+    virtual bool HeadControl(bool isControllable) = 0;
+    virtual bool IsControllableHead() = 0;
+    virtual void RotateHead(float x, float y) = 0;
 };
 
 // ============================================================================================

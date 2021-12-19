@@ -187,6 +187,12 @@
 #define MSG_CHARACTER_VIEWDAMAGE 30372
 #define MSG_CHARACTER_EX_MSG 30373
 
+// Procedural head look
+#define MSG_CHARACTER_HEADLOOK_DEFAULT 30380    // "l" default (ani)
+#define MSG_CHARACTER_HEADLOOK_CAMERA 30381     // "l" follow the camera
+#define MSG_CHARACTER_HEADLOOK_CHARACTER 30382  // "li" follow another character
+#define MSG_CHARACTER_HEADLOOK_POINT 30383      // "lfff" follow a point
+
 // Setting tasks for the character
 #define MSG_NPCHARACTER_SETTASK 30400
 #define MSG_NPCHARACTER_PUSHTASK 30401

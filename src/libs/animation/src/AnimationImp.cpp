@@ -39,6 +39,14 @@ AnimationImp::AnimationImp(long id, AnimationInfo *animationInfo)
     isAutoNormalize = true;
     // Custom blending
     isUserBlend = true;
+    // Procedural head look
+    isControllableHead = false;
+    headBoneIndex = 16;
+    const char *dataStr = GetData("Head bone index");
+    if (dataStr)
+        headBoneIndex = atol(dataStr);
+    customHeadAX = 0.0f;
+    customHeadAY = 0.0f;
 }
 
 AnimationImp::~AnimationImp()
@@ -173,6 +181,25 @@ bool AnimationImp::IsUserBlend()
     return isUserBlend;
 }
 
+// Procedural head look
+bool AnimationImp::HeadControl(bool isControllable)
+{
+    const auto b = isControllableHead;
+    isControllableHead = isControllable;
+    return b;
+}
+
+bool AnimationImp::IsControllableHead()
+{
+    return isControllableHead;
+}
+
+void AnimationImp::RotateHead(float x, float y)
+{
+    customHeadAX = x;
+    customHeadAY = y;
+}
+
 //--------------------------------------------------------------------------------------------
 // AnimationImp
 //--------------------------------------------------------------------------------------------
@@ -253,6 +280,13 @@ void AnimationImp::BuildAnimationMatrices()
                     inmtx.Pos() = p0 + kBlend * (p1 - p0);
                 }
 
+                // Procedural head look
+                if (j == headBoneIndex && isControllableHead)
+                {
+                    inmtx.RotateX(customHeadAX);
+                    inmtx.RotateY(customHeadAY);
+                }
+
                 if (bn.parent)
                     bn.matrix.EqMultiply(inmtx, CMatrix(bn.parent->matrix));
                 else
@@ -282,6 +316,13 @@ void AnimationImp::BuildAnimationMatrices()
                 if (j == 0)
                     inmtx.Pos() = bn.pos[f] + ki * (bn.pos[f + 1] - bn.pos[f]);
 
+                // Procedural head look
+                if (j == headBoneIndex && isControllableHead)
+                {
+                    inmtx.RotateX(customHeadAX);
+                    inmtx.RotateY(customHeadAY);
+                }
+
                 if (bn.parent)
                     bn.matrix.EqMultiply(inmtx, CMatrix(bn.parent->matrix));
                 else
@@ -310,6 +351,13 @@ void AnimationImp::BuildAnimationMatrices()
                 inmtx.Pos() = bn.pos0;
                 if (j == 0)
                     inmtx.Pos() = bn.pos[f] + ki * (bn.pos[f + 1] - bn.pos[f]);
+
+                // Procedural head look
+                if (j == headBoneIndex && isControllableHead)
+                {
+                    inmtx.RotateX(customHeadAX);
+                    inmtx.RotateY(customHeadAY);
+                }
 
                 if (bn.parent)
                     bn.matrix.EqMultiply(inmtx, CMatrix(bn.parent->matrix));
