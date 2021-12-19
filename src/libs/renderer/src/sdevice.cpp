@@ -3402,7 +3402,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
     for (uint32_t cnt = 0; cnt < dwRectsNum;)
     {
         // Number of rectangles to draw at a time
-        uint32_t drawCount = dwRectsNum;
+        uint32_t drawCount = dwRectsNum - cnt;
         if (drawCount > rectsVBuffer_SizeInRects)
             drawCount = rectsVBuffer_SizeInRects;
         // Buffer
