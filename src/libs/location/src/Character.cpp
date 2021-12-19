@@ -610,7 +610,7 @@ Character::Character()
     m_nHandLightID = -1;
 
     // Procedural head look
-    curHeadLookState = headlook_default;
+    curHeadLookState = HeadLookState::dflt;
     headLookChrTarget = {};
     headLookPointTarget = 0.0f;
     curHeadAX = 0.0f;
@@ -805,17 +805,17 @@ uint64_t Character::ProcessMessage(MESSAGE &message)
         return 1;
     // Procedural head look
     case MSG_CHARACTER_HEADLOOK_DEFAULT:
-        curHeadLookState = headlook_default;
+        curHeadLookState = HeadLookState::dflt;
         return 1;
     case MSG_CHARACTER_HEADLOOK_CAMERA:
-        curHeadLookState = headlook_camera;
+        curHeadLookState = HeadLookState::camera;
         return 1;
     case MSG_CHARACTER_HEADLOOK_CHARACTER:
-        curHeadLookState = headlook_character;
+        curHeadLookState = HeadLookState::character;
         headLookChrTarget = message.EntityID();
         return 1;
     case MSG_CHARACTER_HEADLOOK_POINT: {
-        curHeadLookState = headlook_point;
+        curHeadLookState = HeadLookState::point;
 
         float x = message.Float();
         float y = message.Float();
@@ -2486,46 +2486,50 @@ void Character::Update(float dltTime)
     
     bool isControllableHead = ani->IsControllableHead();
 
-    if (curHeadLookState != headlook_default || isControllableHead)
+    if (curHeadLookState != HeadLookState::dflt || isControllableHead)
     {
         const float headMovSpeed = 4.0f;
 
         float destHeadAX = 0.0f;
         float destHeadAY = 0.0f;
 
-        switch (curHeadLookState)
+        if (curHeadLookState == HeadLookState::camera)
         {
-        case headlook_default:
-            break;
-
-        case headlook_camera:
             destHeadAX = camAng.x - 0.2f;
             destHeadAY = atan2(sin(ay - camAng.y), cos(ay - camAng.y));
-            break;
-
-        case headlook_character:
-        case headlook_point: {
+        }
+        else if (curHeadLookState == HeadLookState::character || curHeadLookState == HeadLookState::point)
+        {
+            bool hasTarget = true;
             CVECTOR targetPos = 0.0f;
-            if (curHeadLookState == headlook_character)
+
+            if (curHeadLookState == HeadLookState::character)
             {
                 auto *targetChrPtr = static_cast<Character *>(EntityManager::GetEntityPointer(headLookChrTarget));
+
                 if (targetChrPtr)
                 {
                     targetChrPtr->GetPosition(targetPos);
                     targetPos += CVECTOR(0.0f, targetChrPtr->GetHeight(), 0.0f); // Look at chr's face
                 }
+                else
+                {
+                    hasTarget = false;
+                    curHeadLookState = HeadLookState::dflt;
+                }
             }
             else
                 targetPos = headLookPointTarget;
 
-            CVECTOR dist = targetPos - (curPos + CVECTOR(0.0f, height, 0.0f));
-            float angX = -atan2(dist.y, sqrt(dist.x * dist.x + dist.z * dist.z));
-            float angY = atan2(dist.x, dist.z);
+            if (hasTarget)
+            {
+                CVECTOR dist = targetPos - (curPos + CVECTOR(0.0f, height, 0.0f));
+                float angX = -atan2(dist.y, sqrt(dist.x * dist.x + dist.z * dist.z));
+                float angY = atan2(dist.x, dist.z);
 
-            destHeadAX = angX;
-            destHeadAY = atan2(sin(ay - angY), cos(ay - angY));
-        }
-            break;
+                destHeadAX = angX;
+                destHeadAY = atan2(sin(ay - angY), cos(ay - angY));
+            }
         }
 
         if (destHeadAX < -0.6f)
@@ -2566,7 +2570,7 @@ void Character::Update(float dltTime)
 
         ani->RotateHead(curHeadAX, curHeadAY);
 
-        if (curHeadLookState == headlook_default)
+        if (curHeadLookState == HeadLookState::dflt)
         {
             if (curHeadAX == destHeadAX && curHeadAY == destHeadAY)
                 ani->HeadControl(false);

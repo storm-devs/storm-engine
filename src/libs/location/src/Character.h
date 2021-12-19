@@ -253,12 +253,12 @@ class Character : public Entity
     //--------------------------------------------------------------------------------------------
   protected:
     // Procedural head look
-    enum HeadLookState
+    enum class HeadLookState
     {
-        headlook_default,
-        headlook_camera,
-        headlook_character,
-        headlook_point,
+        dflt,
+        camera,
+        character,
+        point,
     };
 
     //--------------------------------------------------------------------------------------------
