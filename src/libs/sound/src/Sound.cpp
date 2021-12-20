@@ -51,8 +51,10 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
     float minD, maxD;
     long loopPauseTime;
     float v1, v2, v3;
+    float pitch;
     float volume;
     VDATA *vd1, *vd2, *vd3;
+    VDATA *pd;
     uint32_t outValue = 0;
 
     switch (code)
@@ -71,6 +73,15 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
         vd1->Set(v1);
         vd2->Set(v2);
         vd3->Set(v3);
+        break;
+    case MSG_SOUND_SET_PITCH:
+        pitch = message.Float();
+        soundService->SetPitch(pitch);
+        break;
+    case MSG_SOUND_GET_PITCH:
+        pitch = soundService->GetPitch();
+        pd = message.ScriptVariablePointer();
+        pd->Set(pitch);
         break;
     case MSG_SOUND_SET_CAMERA_POSITION:
         vector.x = message.Float();

@@ -65,6 +65,8 @@ class VSoundService : public SERVICE
     // Service functions
     virtual void SetMasterVolume(float _fxVolume, float _musicVolume, float _speechVolume) = 0;
     virtual void GetMasterVolume(float *_fxVolume, float *_musicVolume, float *_speechVolume) = 0;
+    virtual void SetPitch(float _pitch) = 0;
+    virtual float GetPitch() = 0;
     virtual void SetCameraPosition(const CVECTOR &_cameraPosition) = 0;
     virtual void SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_head) = 0;
 

@@ -295,6 +295,8 @@
 #define MSG_SOUND_SET_CAMERA_ORIENTATION 77002
 #define MSG_SOUND_SET_MASTER_VOLUME 77021 //"fff"       FX, music, speech volumes
 #define MSG_SOUND_GET_MASTER_VOLUME 77022 //"eee"       FX, music, speech volumes
+#define MSG_SOUND_SET_PITCH 77031 // "lf" set pitch
+#define MSG_SOUND_GET_PITCH 77032 // "le" get pitch
 
 // Sound management routines
 //"sl[llllfff]" file_name, type, simple_cache?, looped?, cached?, fade_in_time, start_x, start_y, start_y

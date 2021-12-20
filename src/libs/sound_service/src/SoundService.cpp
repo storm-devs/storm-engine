@@ -35,6 +35,8 @@ SoundService::SoundService()
     fMusicVolume = 0.5f;
     fSpeechVolume = 0.5f;
 
+    fPitch = 1.0f;
+
     bShowDebugInfo = false;
     OGG_sound[0] = nullptr;
     OGG_sound[1] = nullptr;
@@ -440,6 +442,8 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
         CHECKFMODERR(PlayingSounds[SoundIdx].channel->setVolume(0));
     }
 
+    CHECKFMODERR(PlayingSounds[SoundIdx].channel->setPitch(fPitch));
+
     PlayingSounds[SoundIdx].Name = std::move(SoundName);
     PlayingSounds[SoundIdx].sound_type = _type;
 
@@ -744,6 +748,31 @@ void SoundService::GetMasterVolume(float *_fxVolume, float *_musicVolume, float 
     *_speechVolume = fSpeechVolume;
     if (TRACE_INFORMATION)
         core.Trace("Get master volume");
+}
+
+void SoundService::SetPitch(float _pitch)
+{
+    fPitch = (_pitch >= 0.0f) ? _pitch : 0.0f;
+
+    for (int i = 0; i < MAX_SOUNDS_SLOTS; i++)
+    {
+        if (PlayingSounds[i].bFree)
+            continue;
+
+        const auto status = CHECKFMODERR(PlayingSounds[i].channel->setPitch(fPitch));
+        if (status != FMOD_OK)
+            PlayingSounds[i].bFree = true;
+    }
+
+    if (TRACE_INFORMATION)
+        core.Trace("Set pitch");
+}
+
+float SoundService::GetPitch()
+{
+    if (TRACE_INFORMATION)
+        core.Trace("Get pitch");
+    return fPitch;
 }
 
 TSD_ID SoundService::SoundDuplicate(TSD_ID _sourceID)
