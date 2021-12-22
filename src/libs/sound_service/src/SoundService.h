@@ -166,6 +166,8 @@ class SoundService : public VSoundService
     float fMusicVolume;
     float fSpeechVolume;
 
+    float fPitch;
+
   public:
     SoundService();
     ~SoundService() override;
@@ -198,6 +200,8 @@ class SoundService : public VSoundService
     // Service functions
     void SetMasterVolume(float _fxVolume, float _musicVolume, float _speechVolume) override;
     void GetMasterVolume(float *_fxVolume, float *_musicVolume, float *_speechVolume) override;
+    void SetPitch(float _pitch) override;
+    float GetPitch() override;
     void SetCameraPosition(const CVECTOR &_cameraPosition) override;
     void SetCameraOrientation(const CVECTOR &_nose, const CVECTOR &_head) override;
 
