@@ -105,7 +105,7 @@ bool Grass::Init()
 
     // boal shader selection -->
     isGrassLightsOn = 1;
-    if (auto *param = core.Event("GOpt_isGrassLightsOn", nullptr))
+    if (auto *param = core.Event("GOpt_isGrassLightsOn"))
     {
         param->Get(isGrassLightsOn);
     }
@@ -270,7 +270,7 @@ void Grass::Execute(uint32_t delta_time)
         initForce++;
     }
 
-    VDATA *param = core.Event("GOpt_GetGrassQuality", nullptr);
+    VDATA *param = core.Event("GOpt_GetGrassQuality");
     long res = rq_full;
     if (param && param->Get(res))
     {
@@ -287,7 +287,7 @@ void Grass::Execute(uint32_t delta_time)
     if (quality == rq_off)
         return;
     // Wind parameters
-    param = core.Event("EWhr_GetWindAngle", nullptr);
+    param = core.Event("EWhr_GetWindAngle");
     if (param)
     {
         float ang;
@@ -307,7 +307,7 @@ void Grass::Execute(uint32_t delta_time)
         winDir.x = sinf(ang);
         winDir.z = cosf(ang);
     }
-    param = core.Event("EWhr_GetWindSpeed", nullptr);
+    param = core.Event("EWhr_GetWindSpeed");
     if (param)
     {
         float spd;

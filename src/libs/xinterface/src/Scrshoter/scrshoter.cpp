@@ -68,10 +68,10 @@ void SCRSHOTER::Realize(uint32_t Delta_Time)
         if (!MakeScreenShot())
         {
             core.Trace("ERROR!!! screen shot create error");
-            core.Event("makescrshot", nullptr);
+            core.Event("makescrshot");
         }
         else
-            core.Event("makescrshot", nullptr);
+            core.Event("makescrshot");
 }
 
 bool SCRSHOTER::MakeScreenShot()

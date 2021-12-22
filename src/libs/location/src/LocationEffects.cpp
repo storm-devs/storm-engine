@@ -567,7 +567,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
     if (!isShgInited)
         return;
     CVECTOR winDir = 0.0f;
-    VDATA *param = core.Event("EWhr_GetWindAngle", nullptr);
+    VDATA *param = core.Event("EWhr_GetWindAngle");
     if (param)
     {
         float ang;
@@ -576,7 +576,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
         winDir.x = sinf(ang);
         winDir.z = cosf(ang);
     }
-    param = core.Event("EWhr_GetWindSpeed", nullptr);
+    param = core.Event("EWhr_GetWindSpeed");
     if (param)
     {
         float spd;

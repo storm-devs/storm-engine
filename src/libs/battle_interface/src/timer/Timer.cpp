@@ -129,6 +129,6 @@ void BITimer::CloseTimer(bool bTimeOut)
     m_pForeImage->CutSide(0.f, 0.f, 0.f, 0.f);
     if (bTimeOut)
     {
-        core.Event((char *)m_sEventName.c_str(), nullptr);
+        core.Event(m_sEventName);
     }
 }

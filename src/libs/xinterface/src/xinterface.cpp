@@ -2000,7 +2000,7 @@ void XINTERFACE::DoControl()
         core.Controls->GetControlState((char *)m_asExitKey[nExitKey].c_str(), cs);
         if (cs.state == CST_ACTIVATED)
         {
-            core.Event("exitCancel", nullptr);
+            core.Event("exitCancel");
             break;
         }
     }
@@ -2202,7 +2202,7 @@ void XINTERFACE::DoControl()
             if (m_pCurNode == nullptr)
             {
                 if (wActCode == ACTION_DEACTIVATE)
-                    core.Event("exitCancel", nullptr);
+                    core.Event("exitCancel");
                 return;
             }
 
