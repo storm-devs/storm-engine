@@ -47,8 +47,8 @@ class StormEngine(ConanFile):
         else:
             self.__intall_lib("fmod.dll")
 
+        self.__install_bin("crashpad_handler.exe")
         if self.options.crash_reports:
-            self.__install_bin("crashpad_handler.exe")
             self.__install_bin("7za.exe")
 
         if self.options.steam:
