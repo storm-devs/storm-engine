@@ -23,6 +23,7 @@
 #define MSG_MODEL_SET_MAX_VIEW_DIST 20512
 
 #define MSG_MODEL_SUBSTITUTE_GEOMETRY_NODE 20600 // "ss", geometry, new model name
+#define MSG_MODEL_PLAY_ACTION 20601 // "lls", player, action name
 
 //============================================================================================
 // blade messages

@@ -405,6 +405,19 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         {
             spdlog::trace("MODELR: Cannot substitute geometry node {}", geometry_node);
         }
+        break;
+    }
+
+    case MSG_MODEL_PLAY_ACTION: {
+        if (!ani)
+        {
+            return 0;
+        }
+
+        auto &player = ani->Player(message.Long());
+        player.SetAction(message.String().c_str());
+        player.Play();
+        break;
     }
     }
     return 1;
