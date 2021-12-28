@@ -12,8 +12,8 @@
 
 #include "core.h"
 
-#include "Character.h"
-#include "Location.h"
+#include "character.h"
+#include "location.h"
 #include "entity.h"
 #include "sea_base.h"
 #include "shared/messages.h"

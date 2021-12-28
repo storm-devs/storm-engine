@@ -10,7 +10,7 @@
 
 #include "Player.h"
 
-#include "Location.h"
+#include "location.h"
 #include "LocationCamera.h"
 #include "collide.h"
 #include "shared/messages.h"

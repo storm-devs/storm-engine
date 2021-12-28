@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Character.h"
+#include "character.h"
 #include "Island_Base.h"
 #include "Sd2_h/SaveLoad.h"
 #include "collide.h"

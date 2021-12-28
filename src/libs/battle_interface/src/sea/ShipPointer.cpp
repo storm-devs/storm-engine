@@ -1,6 +1,6 @@
 #include "ShipPointer.h"
 #include "../bi_defines.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "message.h"
 #include "shared/battle_interface/msg_control.h"

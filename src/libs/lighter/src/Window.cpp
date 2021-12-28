@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "Window.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "shared/messages.h"
 #include <cstdint>

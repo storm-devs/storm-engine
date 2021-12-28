@@ -1,5 +1,5 @@
 #include "IBoardingStatus.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "message.h"
 #include "shared/battle_interface/log_msg.h"

@@ -1,5 +1,5 @@
 #include "FirePlace.h"
-#include "Entity.h"
+#include "entity.h"
 #include "Sd2_h/SaveLoad.h"
 #include "core.h"
 #include "shared/messages.h"

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../icommon/types.h"
-#include "fieldlist.h"
+#include "../../ICommon/Types.h"
+#include "FieldList.h"
 #include <vector>
 
 class DataObject;

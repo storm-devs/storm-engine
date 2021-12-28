@@ -1,6 +1,6 @@
 #include "itementity.h"
 #include "../Utils.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "message.h"
 #include "model.h"

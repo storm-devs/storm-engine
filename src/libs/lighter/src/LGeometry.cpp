@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "LGeometry.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 
 #include <corecrt_io.h>

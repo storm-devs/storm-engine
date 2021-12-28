@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Cvector.h"
-#include "Matrix.h"
+#include "matrix.h"
 #include "dx9render.h"
 #include "geometry.h"
 

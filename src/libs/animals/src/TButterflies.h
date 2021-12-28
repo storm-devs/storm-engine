@@ -2,8 +2,8 @@
 
 #include "AnimalsDefines.h"
 #include "Animation.h"
-#include "IVBufferManager.h"
-#include "Matrix.h"
+#include "iv_buffer_manager.h"
+#include "matrix.h"
 #include "TButterfly.h"
 #include "collide.h"
 #include "dx9render.h"

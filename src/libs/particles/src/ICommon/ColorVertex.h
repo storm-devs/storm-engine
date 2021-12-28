@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math3d/color.h"
+#include "math3d/Color.h"
 
 struct ColorVertex
 {

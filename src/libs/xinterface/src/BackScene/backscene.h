@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../xdefines.h"
-#include "Entity.h"
-#include "Matrix.h"
+#include "entity.h"
+#include "matrix.h"
 #include "dx9render.h"
 
 class MODEL;

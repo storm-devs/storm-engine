@@ -12,7 +12,7 @@
 
 #include "Animation.h"
 #include "Island_Base.h"
-#include "Matrix.h"
+#include "matrix.h"
 #include "dx9render.h"
 #include "sea_base.h"
 #include "ship_base.h"

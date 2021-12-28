@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "Tornado.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 
 CREATE_CLASS(Tornado)

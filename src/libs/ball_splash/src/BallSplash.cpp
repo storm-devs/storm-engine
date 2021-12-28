@@ -1,4 +1,4 @@
-#include "BallSplash.H"
+#include "BallSplash.h"
 #include "shared/messages.h"
 #include <stdio.h>
 

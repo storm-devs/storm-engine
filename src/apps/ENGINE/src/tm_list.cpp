@@ -3,7 +3,7 @@
 #include "defines.h"
 #include "s_debug.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 #define MAX_STR_SIZE 1024
 extern S_DEBUG * CDebug;

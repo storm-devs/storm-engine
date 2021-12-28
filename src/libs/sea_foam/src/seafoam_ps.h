@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Matrix.h"
+#include "matrix.h"
 #include "dx9render.h"
 #include "geometry.h"
 #include "vfile_service.h"

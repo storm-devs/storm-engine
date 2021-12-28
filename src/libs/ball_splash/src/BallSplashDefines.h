@@ -3,7 +3,7 @@
 #include "rands.h"
 #include <stdlib.h>
 
-#include <Windows.h>
+#include <windows.h>
 #include <d3d9types.h>
 
 #define BALLSPLASH_TRACE_INFORMATION

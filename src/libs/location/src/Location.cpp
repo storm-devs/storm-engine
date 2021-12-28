@@ -8,11 +8,11 @@
 //
 //============================================================================================
 
-#include "Location.h"
+#include "location.h"
 
 #include "core.h"
 
-#include "Character.h"
+#include "character.h"
 #include "Grass.h"
 #include "Lights.h"
 

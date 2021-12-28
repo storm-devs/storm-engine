@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../icommon/memfile.h"
+#include "../../ICommon/MemFile.h"
 
 #include <string>
 

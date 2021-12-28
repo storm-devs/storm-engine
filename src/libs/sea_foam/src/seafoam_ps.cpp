@@ -2,7 +2,7 @@
 
 #include "core.h"
 
-#include "Entity.h"
+#include "entity.h"
 #include "object.h"
 
 SEAFOAM_PS::SEAFOAM_PS() : enableEmit(true)

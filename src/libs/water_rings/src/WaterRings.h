@@ -6,7 +6,7 @@
 #include "sea_base.h"
 #include "vmodule_api.h"
 //#include "..\geom_lib\geos.h"
-#include "IVBufferManager.h"
+#include "iv_buffer_manager.h"
 
 namespace waterrings
 {

@@ -1,4 +1,4 @@
-#include "Rain.h"
+#include "rain.h"
 
 RAIN::RAIN()
 {

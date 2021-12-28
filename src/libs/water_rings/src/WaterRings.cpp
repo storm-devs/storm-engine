@@ -3,7 +3,7 @@
 
 #include "defines.h"
 
-#include "IVBufferManager.h"
+#include "iv_buffer_manager.h"
 
 CREATE_CLASS(WaterRings)
 

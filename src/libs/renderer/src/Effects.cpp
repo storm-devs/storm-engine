@@ -1,4 +1,4 @@
-#include "Effects.h"
+#include "effects.h"
 
 #include "core.h"
 #include <DxErr.h>

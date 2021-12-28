@@ -2,7 +2,7 @@
 
 #include "core.h"
 #include <CommCtrl.h>
-#include <Windows.h>
+#include <windows.h>
 
 #include <string>
 #include <unordered_map>

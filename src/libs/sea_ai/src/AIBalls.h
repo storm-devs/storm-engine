@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AIHelper.h"
-#include "Character.h"
+#include "character.h"
 #include "Sd2_h/CannonTrace.h"
 #include "vmodule_api.h"
 #include "vparticle_system.h"

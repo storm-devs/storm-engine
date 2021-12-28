@@ -2,7 +2,7 @@
 
 //#include <windows.h>
 #include "Cvector.h"
-#include "Entity.h"
+#include "entity.h"
 
 class VPARTICLE_SYSTEM
 {

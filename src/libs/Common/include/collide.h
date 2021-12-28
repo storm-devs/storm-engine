@@ -2,7 +2,7 @@
 
 #include "Cvector.h"
 
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "object.h"
 #include "types3d.h"

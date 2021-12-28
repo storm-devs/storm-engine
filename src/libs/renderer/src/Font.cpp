@@ -1,4 +1,4 @@
-#include "Font.h"
+#include "font.h"
 #include "core.h"
 #include "defines.h"
 #include "utf8.h"

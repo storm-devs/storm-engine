@@ -11,7 +11,7 @@
 #pragma once
 
 #include "Animation.h"
-#include "Entity.h"
+#include "entity.h"
 
 class Location;
 class Animation;

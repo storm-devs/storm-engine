@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AnimalsDefines.h"
-#include "Matrix.h"
+#include "matrix.h"
 #include "VSoundService.h"
 #include "dx9render.h"
 #include "message.h"

@@ -9,8 +9,8 @@
 //============================================================================================
 
 #include "Supervisor.h"
-#include "Character.h"
-#include "Entity.h"
+#include "character.h"
+#include "entity.h"
 #include "LocatorArray.h"
 #include "core.h"
 

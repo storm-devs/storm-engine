@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Matrix.h"
+#include "matrix.h"
 #include "storm_assert.h"
 
 class LocatorArray

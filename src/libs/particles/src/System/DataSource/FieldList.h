@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../icommon/memfile.h"
-#include "../../icommon/types.h"
-#include "../datadesc/data_desc.h"
-#include "math3d.h"
+#include "../../ICommon/MemFile.h"
+#include "../../ICommon/Types.h"
+#include "../DataDesc/data_desc.h"
+#include "math3D.h"
 #include <string>
 #include <vector>
 

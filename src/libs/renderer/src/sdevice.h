@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Effects.h"
-#include "Font.h"
-#include "VideoTexture.h"
+#include "effects.h"
+#include "font.h"
+#include "video_texture.h"
 #include "defines.h"
 #include "dx9render.h"
 #include "vmodule_api.h"

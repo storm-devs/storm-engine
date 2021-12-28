@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Windows.h"
+#include "windows.h"
 #include "d3d9types.h"
 
 #define SINK_SPLASH_TRACE_INFORMATION

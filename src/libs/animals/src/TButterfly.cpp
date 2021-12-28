@@ -1,5 +1,5 @@
 #include "TButterfly.h"
-#include "Matrix.h"
+#include "matrix.h"
 #include "core.h"
 #include "rands.h"
 

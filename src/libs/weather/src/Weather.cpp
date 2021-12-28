@@ -1,7 +1,7 @@
 #include "Weather.h"
 #include "Astronomy.h"
 #include "Lightning.h"
-#include "SunGlow.h"
+#include "sun_glow.h"
 #include "WaterFlare.h"
 #include "inlines.h"
 

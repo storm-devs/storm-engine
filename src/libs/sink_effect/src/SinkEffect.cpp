@@ -1,5 +1,5 @@
-#include "SinkEffect.H"
-#include "Entity.h"
+#include "SinkEffect.h"
+#include "entity.h"
 #include "core.h"
 #include "shared/messages.h"
 #include "ship_base.h"

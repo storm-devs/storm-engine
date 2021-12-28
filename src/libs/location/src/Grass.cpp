@@ -12,7 +12,7 @@
 
 #include "core.h"
 
-#include "Character.h"
+#include "character.h"
 #include "defines.h"
 #include "entity.h"
 

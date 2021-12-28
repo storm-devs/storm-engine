@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "CharacterAnimationKipper.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "dx9render.h"
 

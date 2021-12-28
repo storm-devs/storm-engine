@@ -3,8 +3,8 @@
 
 #include "core.h"
 
-#include "Character.h"
-#include "Entity.h"
+#include "character.h"
+#include "entity.h"
 #include "inlines.h"
 #include "shared/messages.h"
 #include "shared/sea_ai/Script_defines.h"

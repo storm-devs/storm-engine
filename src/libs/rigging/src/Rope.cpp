@@ -1,5 +1,5 @@
 #include "Rope.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "defines.h"
 #include "shared/sail_msg.h"

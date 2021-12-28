@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VideoTexture.h"
+#include "video_texture.h"
 
 //-----------------------------------------------------------------------------
 // Name: class VideoToTexture

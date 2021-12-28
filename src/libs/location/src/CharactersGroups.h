@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include "Matrix.h"
+#include "matrix.h"
 #include "vmodule_api.h"
 
-#include "Character.h"
-#include "Location.h"
+#include "character.h"
+#include "location.h"
 
 class Location;
 class Character;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../bi_defines.h"
-#include "Weather_Base.h"
+#include "weather_base.h"
 
 #define RADIAL_QUANTITY 36
 #define BI_DEFAULT_COLOR 0xFF0010C0

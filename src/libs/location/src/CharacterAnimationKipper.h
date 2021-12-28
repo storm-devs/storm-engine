@@ -11,7 +11,7 @@
 #pragma once
 
 #include "Animation.h"
-#include "Entity.h"
+#include "entity.h"
 #include "vmodule_api.h"
 
 class VDX9RENDER;

@@ -1,6 +1,6 @@
 #include "Flag.h"
-#include "Entity.h"
-#include "Weather_Base.h"
+#include "entity.h"
+#include "weather_base.h"
 #include "core.h"
 #include "defines.h"
 #include "shared/sail_msg.h"

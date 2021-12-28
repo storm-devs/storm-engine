@@ -3,8 +3,8 @@
 // ************************************************************************
 #pragma once
 
-#include "Sea_Base.h"
-#include "cvector4.h"
+#include "sea_base.h"
+#include "CVector4.h"
 #include "dx9render.h"
 #include "defines.h"
 

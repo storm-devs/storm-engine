@@ -1,5 +1,5 @@
 #include "LocationScriptLib.h"
-#include "Entity.h"
+#include "entity.h"
 #include "Fader.h"
 #include "SteamApi.hpp"
 #include "core.h"

@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "SAILONE.h"
-#include "Entity.h"
+#include "entity.h"
 #include "Sd2_h/VAI_ObjBase.h"
 #include "core.h"
 #include "defines.h"

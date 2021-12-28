@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Rain.h"
-#include "SKY.h"
-#include "Weather_Base.h"
+#include "rain.h"
+#include "sky.h"
+#include "weather_base.h"
 #include "typedef.h"
 #include <stdio.h>
 

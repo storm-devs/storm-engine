@@ -1,5 +1,5 @@
 #include "seps.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "object.h"
 

@@ -2,7 +2,7 @@
 
 #include "Cvector.h"
 #include "EntityManager.h"
-#include "IVBufferManager.h"
+#include "iv_buffer_manager.h"
 #include "collide.h"
 #include "model.h"
 

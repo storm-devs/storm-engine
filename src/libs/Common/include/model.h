@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Animation.h"
-#include "Matrix.h"
+#include "matrix.h"
 #include "geos.h"
 #include "object.h"
 

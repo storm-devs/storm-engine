@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Nodes/xi_tooltips.h"
-#include "VideoTexture.h"
+#include "video_texture.h"
 #include "core.h"
 #include "defines.h"
 #include "dx9render.h"

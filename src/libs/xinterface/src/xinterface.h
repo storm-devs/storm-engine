@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Matrix.h"
+#include "matrix.h"
 #include "Nodes/xi_util.h"
 #include "QuestFileReader//QuestFileReader.h"
 #include "dx9render.h"

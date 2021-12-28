@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Attributes.h"
+#include "attributes.h"
 #include "storm_assert.h"
 
 inline char *GetFirstName(ATTRIBUTES *pACharacter)

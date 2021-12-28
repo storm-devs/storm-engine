@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "AICharacter.h"
-#include "Entity.h"
+#include "ai_character.h"
+#include "entity.h"
 #include "core.h"
 
 class NPCharacter : public AICharacter

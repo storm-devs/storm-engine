@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "Sharks.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "geometry.h"
 #include "shared/messages.h"

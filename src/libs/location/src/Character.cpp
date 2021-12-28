@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "Character.h"
+#include "character.h"
 #include "CharactersGroups.h"
 #include "Lights.h"
 

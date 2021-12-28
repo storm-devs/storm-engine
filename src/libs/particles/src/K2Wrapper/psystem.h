@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Cvector.h"
-#include "Matrix.h"
+#include "matrix.h"
 #include "vmodule_api.h"
 #include "vparticle_system.h"
 

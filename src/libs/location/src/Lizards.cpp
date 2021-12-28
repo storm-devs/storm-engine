@@ -9,7 +9,7 @@
 //============================================================================================
 
 #include "Lizards.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 
 Lizards::Lizards()

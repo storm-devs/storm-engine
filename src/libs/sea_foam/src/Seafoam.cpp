@@ -1,7 +1,7 @@
 #include "Seafoam.h"
 #include "shared/messages.h"
 
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "defines.h"
 

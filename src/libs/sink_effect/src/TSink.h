@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Cvector.h"
-#include "IVBufferManager.h"
+#include "iv_buffer_manager.h"
 #include "TFlotsam.h"
 #include "TSinkSplash.h"
 #include "dx9render.h"

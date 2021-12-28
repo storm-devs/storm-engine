@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dx9render.h"
-#include "matrix.h"
+#include "Matrix.h"
 #include "vmodule_api.h"
 //#include "iimage.h"
 

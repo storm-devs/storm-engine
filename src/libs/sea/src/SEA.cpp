@@ -1,4 +1,4 @@
-#include "sea.h"
+#include "SEA.h"
 
 #include <algorithm>
 #include <execution>

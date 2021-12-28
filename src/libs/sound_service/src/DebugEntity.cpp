@@ -1,5 +1,5 @@
 #include "DebugEntity.h"
-#include "Entity.h"
+#include "entity.h"
 #include "SoundService.h"
 #include "core.h"
 

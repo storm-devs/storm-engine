@@ -1,5 +1,5 @@
 #include "Blood.h"
-#include "Character.h"
+#include "character.h"
 #include "defines.h"
 
 #define BLOOD_RADIUS 1.f        // blood stain size

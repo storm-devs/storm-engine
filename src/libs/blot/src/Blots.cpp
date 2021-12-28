@@ -12,7 +12,7 @@
 
 #include "core.h"
 
-#include "Entity.h"
+#include "entity.h"
 #include "shared/messages.h"
 
 CREATE_CLASS(Blots)

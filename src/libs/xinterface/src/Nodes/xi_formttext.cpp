@@ -1,6 +1,6 @@
 #include "xi_formttext.h"
 #include "../xinterface.h"
-#include "Entity.h"
+#include "entity.h"
 #include "utf8.h"
 #include "xi_scroller.h"
 #include <stdio.h>

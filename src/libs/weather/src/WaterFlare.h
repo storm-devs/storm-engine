@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Typedef.h"
-#include "Weather_base.h"
+#include "typedef.h"
+#include "weather_base.h"
 
 class WATERFLARE : public Entity
 {

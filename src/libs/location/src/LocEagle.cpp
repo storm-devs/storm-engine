@@ -9,8 +9,8 @@
 //============================================================================================
 
 #include "LocEagle.h"
-#include "Entity.h"
-#include "Location.h"
+#include "entity.h"
+#include "location.h"
 #include "core.h"
 #include "geometry.h"
 #include "shared/messages.h"

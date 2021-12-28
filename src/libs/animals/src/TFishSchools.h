@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AnimalsDefines.h"
-#include "Matrix.h"
+#include "matrix.h"
 #include "TDynamicObject.h"
 #include "TDynamicSystem.h"
 #include "dx9render.h"

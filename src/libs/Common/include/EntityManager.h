@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "entity.h"
 #include "shared/layers.h"
 #include "vmodule_api.h"
 

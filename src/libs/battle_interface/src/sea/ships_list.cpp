@@ -3,7 +3,7 @@
 
 #include "core.h"
 
-#include "Entity.h"
+#include "entity.h"
 #include "shared/battle_interface/msg_control.h"
 //#include "battle_command.h"
 

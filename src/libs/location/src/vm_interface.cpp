@@ -8,7 +8,7 @@
 #include "LocCrabs.h"
 #include "LocEagle.h"
 #include "LocRats.h"
-#include "Location.h"
+#include "location.h"
 #include "LocationCamera.h"
 #include "LocationEffects.h"
 #include "LocationScriptLib.h"

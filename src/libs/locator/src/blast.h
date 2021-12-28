@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Matrix.h"
+#include "matrix.h"
 #include "Sd2_h/CannonTrace.h"
 #include "blast.h"
 #include "dx9render.h"

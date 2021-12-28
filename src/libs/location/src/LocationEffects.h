@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "Entity.h"
-#include "Matrix.h"
+#include "entity.h"
+#include "matrix.h"
 #include "vmodule_api.h"
 
 class MESSAGE;

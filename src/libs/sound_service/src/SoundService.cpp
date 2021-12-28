@@ -1,6 +1,6 @@
 #include "SoundService.h"
-#include "Entity.h"
-#include "Matrix.h"
+#include "entity.h"
+#include "matrix.h"
 #include "defines.h"
 #include "rands.h"
 #include "vfile_service.h"

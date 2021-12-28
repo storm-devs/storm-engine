@@ -8,7 +8,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Matrix.h"
+#include "matrix.h"
 #include "dx9render.h"
 #include "sail_base.h"
 

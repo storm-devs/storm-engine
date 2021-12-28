@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Windows.h>
+#include <windows.h>
 #include <cstdint>
 
 #define BM_BIND_LEFT 1

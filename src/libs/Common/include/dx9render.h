@@ -4,8 +4,8 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#include "Entity.h"
-#include "Matrix.h"
+#include "entity.h"
+#include "matrix.h"
 #include "service.h"
 #include "storm_assert.h"
 #include "types3d.h"

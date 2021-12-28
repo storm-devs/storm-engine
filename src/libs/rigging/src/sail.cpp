@@ -2,7 +2,7 @@
 
 #include "core.h"
 
-#include "Weather_Base.h"
+#include "weather_base.h"
 #include "defines.h"
 #include "entity.h"
 #include "shared/battle_interface/msg_control.h"
