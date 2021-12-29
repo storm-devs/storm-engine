@@ -25,52 +25,36 @@ extern S_DEBUG * CDebug;
 extern uint32_t dwNumberScriptCommandsExecuted;
 
 COMPILER::COMPILER()
+    : bBreakOnError(false), pRunCodeBase(nullptr), CompilerStage(CS_SYSTEM), pEventMessage(nullptr), SegmentsNum(0), InstructionPointer(0),
+      pBuffer(nullptr), ProgramDirectory(nullptr), bCompleted(false), bEntityUpdate(true),
+      pDebExpBuffer(nullptr), nDebExpBufferSize(0), pRun_fi(nullptr), bRuntimeLog(false), nRuntimeLogEventsBufferSize(0),
+      nRuntimeLogEventsNum(0), nRuntimeTicks(0), bFirstRun(true), bWriteCodeFile(false),
+      bDebugInfo(false), DebugSourceLine(0), pCompileTokenTempBuffer(nullptr), bDebugExpressionRun(false),
+      bTraceMode(true), nDebugTraceLineCode(0), nIOBufferSize(0), pIOBuffer(nullptr), rAP(nullptr)
+    
 {
-    CompilerStage = CS_SYSTEM;
     LabelTable.SetStringDataSize(sizeof(uint32_t));
     LabelUpdateTable.SetStringDataSize(sizeof(DOUBLE_DWORD));
-    ProgramDirectory = nullptr;
-    pEventMessage = nullptr;
-    bCompleted = false;
-    SegmentsNum = 0;
+
     //    FuncTab.KeepNameMode(true);    // true for displaying internal functions names
     //    VarTab.KeepNameMode(false);
     //    EventTab.KeepNameMode(false);
     //    DefTab.KeepNameMode(false);
     InitInternalFunctions();
-    bWriteCodeFile = false;
-    bDebugInfo = false;
+
     strcpy_s(DebugSourceFileName, "<no debug information>");
-    DebugSourceLine = 0;
-    InstructionPointer = 0;
-    pCompileTokenTempBuffer = nullptr;
-    pRun_fi = nullptr;
-    pRunCodeBase = nullptr;
+
     SStack.SetVCompiler(this);
     VarTab.SetVCompiler(this);
     srand(GetTickCount());
-    bEntityUpdate = true;
-    pDebExpBuffer = nullptr;
-    nDebExpBufferSize = 0;
-    bDebugExpressionRun = false;
-    bTraceMode = true;
+
     DebugTraceFileName[0] = 0;
-    nDebugTraceLineCode = 0;
-    bBreakOnError = false;
-    bRuntimeLog = false;
-    nRuntimeLogEventsNum = 0;
-    nRuntimeTicks = 0;
-    nRuntimeLogEventsBufferSize = 0;
-    nIOBufferSize = 0;
-    pIOBuffer = nullptr;
 
     rAX.SetVCompiler(this);
     rBX.SetVCompiler(this);
     ExpressionResult.SetVCompiler(this);
-    rAP = nullptr;
+
     // bScriptTrace = false;
-    bFirstRun = true;
-    pBuffer = nullptr;
 
     using storm::logging::getOrCreateLogger;
     logTrace_ = getOrCreateLogger("compile");
@@ -7018,7 +7002,7 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
         pVar = SStack.Read();
         return pVar;
     case VARIABLE:
-        real_var = VarTab.GetVar(*((uint32_t *)&pCodeBase[ip]));
+        real_var = VarTab.GetVar(*reinterpret_cast<const uint32_t *>(&pCodeBase[ip]));
         if (real_var == nullptr)
         {
             SetError("Global variable not found");
@@ -7031,7 +7015,7 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
         }
         return real_var->value.get();
     case LOCAL_VARIABLE:
-        pVar = SStack.Read(pRun_fi->stack_offset, *((uint32_t *)&pCodeBase[ip]));
+        pVar = SStack.Read(pRun_fi->stack_offset, *reinterpret_cast<const uint32_t *>(&pCodeBase[ip]));
         if (pVar == nullptr)
         {
             SetError("Local variable not found");
@@ -7090,7 +7074,6 @@ void COMPILER::PrintoutUsage()
         logTrace_->debug("Script Function Time Usage[func name/code(release mode) : ticks]");
         for (size_t m = 0; m < FuncTab.GetFuncNum(); m++)
         {
-            DWORD nFuncCode = 0;
             FuncInfo fi;
             for (size_t n = 0; n < FuncTab.GetFuncNum(); n++)
             {
@@ -7116,7 +7099,7 @@ void COMPILER::PrintoutUsage()
                     logTrace_->debug("  average ticks  : {}", static_cast<float>(fi.usage_time) / fi.number_of_calls);
                 }
 
-                FuncTab.AddTime(nFuncCode, ~fi.usage_time);
+                FuncTab.AddTime(n, ~fi.usage_time);
                 logTrace_->debug("");
             }
         }
