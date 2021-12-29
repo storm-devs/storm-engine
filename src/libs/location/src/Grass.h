@@ -175,6 +175,8 @@ class Grass : public Entity
 
     // Minimap
     GRSMiniMapElement *miniMap;
+    // Full non-empty cached minimap
+    std::vector<std::pair<long, long>> cachedMiniMap;
     // Minimap sizes
     long miniX, miniZ;
     // Starting position of the map

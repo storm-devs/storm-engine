@@ -219,6 +219,10 @@ bool Grass::LoadData(const char *patchName)
         startX = hdr.startX;
         startZ = hdr.startZ;
         numElements = elements;
+
+        cachedMiniMap.clear();
+        cachedMiniMap.reserve(miniX * miniZ);
+
         // Correcting the position of the blades of grass from local to world
         for (long z = 0; z < miniZ; z++)
         {
@@ -233,6 +237,15 @@ bool Grass::LoadData(const char *patchName)
                 {
                     el[i].x += cx;
                     el[i].z += cz;
+                }
+            }
+
+            // cache non-empty blocks
+            for (long x = 0; x < miniX; x++)
+            {
+                if (miniMap[z * miniX + x].num[0] != 0)
+                {
+                    cachedMiniMap.emplace_back(x, z);
                 }
             }
         }
@@ -585,29 +598,27 @@ void Grass::Realize(uint32_t delta_time)
     // Preparing blocks for rendering
     numPoints = 0;
     rs->SetTransform(D3DTS_WORLD, CMatrix());
-
-    // core.Trace("%d %d %d %d %d %d", left, top, bottom, right, camx, camz);
-    /*for (long mx = left, mz; mx <= camx; mx++)
+    
+    if (right != miniX - 1 || bottom != miniZ - 1)
     {
-      for (mz = top; mz <= camz; mz++) render(mz, mx);
-      for (mz = bottom; mz > camz; mz--) render(mz, mx);
-    }
-    for (long mx = right, mz; mx > camx; mx--)
-    {
-      for (mz = top; mz <= camz; mz++) render(mz, mx);
-      for (mz = bottom; mz > camz; mz--) render(mz, mx);
-    }*/
-    for (auto mx = left; mx < right; mx++)
-    {
-        for (auto mz = top; mz < bottom; mz++)
+        for (auto mx = left; mx < right; mx++)
         {
-            GRSMiniMapElement &mm = miniMap[mz * miniX + mx];
-
-            // Checking for the block
-            if (mm.num[0] != 0)
+            for (auto mz = top; mz < bottom; mz++)
             {
-                RenderBlock(pos, plane, numPlanes, mx, mz);
+                GRSMiniMapElement &mm = miniMap[mz * miniX + mx];
+
+                // Checking for the block
+                if (mm.num[0] != 0)
+                {
+                    RenderBlock(pos, plane, numPlanes, mx, mz);
+                }
             }
+        }
+    } else
+    {
+        for (const auto& [mx, mz] : cachedMiniMap)
+        {
+            RenderBlock(pos, plane, numPlanes, mx, mz);
         }
     }
 
