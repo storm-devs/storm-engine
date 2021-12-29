@@ -3,6 +3,8 @@
 
 #include "storm/string_compare.hpp"
 
+#include <fast_float/fast_float.h>
+
 const char *UNINIT_REF = {"Using reference variable without initializing"};
 const char *INVALID_REF_OP = {"Invalid operation on reference object"};
 const char *NO_INDEX = {"Missed array index"};
@@ -1084,12 +1086,12 @@ bool DATA::Convert(S_TOKEN_TYPE type)
         case NUMBER:
         case VAR_INTEGER:
             Data_type = VAR_INTEGER;
-            lValue = std::atol(sValue.c_str());
+            std::from_chars(sValue.data(), sValue.data() + sValue.length(), lValue);
             return true;
         case FLOAT_NUMBER:
         case VAR_FLOAT:
             Data_type = VAR_FLOAT;
-            fValue = std::atof(sValue.c_str());
+            from_chars(sValue.data(), sValue.data() + sValue.length(), fValue, fast_float::fixed);
             return true;
         case STRING:
         case VAR_STRING:
@@ -1130,7 +1132,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
             Set(AttributesClass->GetThisAttr());
             AttributesClass = nullptr;
             Data_type = VAR_INTEGER;
-            lValue = std::atol(sValue.c_str());
+            std::from_chars(sValue.data(), sValue.data() + sValue.length(), lValue);
             return true;
         case FLOAT_NUMBER:
         case VAR_FLOAT:
@@ -1141,7 +1143,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
             Set(AttributesClass->GetThisAttr());
             AttributesClass = nullptr;
             Data_type = VAR_FLOAT;
-            fValue = std::atof(sValue.c_str());
+            from_chars(sValue.data(), sValue.data() + sValue.length(), fValue, fast_float::fixed);
             return true;
         }
         break;
