@@ -1,5 +1,5 @@
 #pragma once
 
-#include "particles/iparticlemanager.h"
-#include "particles/iparticlesservice.h"
-#include "particles/iparticlesystem.h"
+#include "particles/i_particle_manager.h"
+#include "particles/i_particle_service.h"
+#include "particles/i_particle_system.h"

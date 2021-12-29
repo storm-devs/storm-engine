@@ -1,7 +1,7 @@
 #include "base.h"
-#include "../../ICommon/Names.h"
-#include "../DataSource/DataGraph.h"
-#include "../DataSource/DataString.h"
+#include "../../i_common/names.h"
+#include "../data_source/data_graph.h"
+#include "../data_source/data_string.h"
 #include "math3d/Quaternion.h"
 
 #define INTERPOLATION_STEPS 32.0f

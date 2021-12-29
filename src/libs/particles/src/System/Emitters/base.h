@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../ICommon/IEmitter.h"
-#include "../../ICommon/Types.h"
-#include "../DataSource/DataSource.h"
-#include "../ParticleSystem/particlesystem.h"
+#include "../../i_common/i_emitter.h"
+#include "../../i_common/types.h"
+#include "../data_source/data_source.h"
+#include "../particle_system/particle_system.h"
 #include "math3D.h"
 
 class DataGraph;
