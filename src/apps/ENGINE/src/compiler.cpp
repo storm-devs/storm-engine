@@ -86,59 +86,6 @@ COMPILER::~COMPILER()
 
 void COMPILER::Release()
 {
-    // DWORD m;
-    // FUNCINFO fi;
-
-    // debug log
-    /*    if(bRuntimeLog)
-      {
-        double fMaxTime;
-        DWORD nFuncCode;
-        trace("Script Function Time Usage[func name/code(release mode) : ticks]");
-        for(m=0;m<FuncTab.GetFuncNum();m++)
-        {
-          fMaxTime = 0;
-          nFuncCode = 0;
-          for(n=0;n<FuncTab.GetFuncNum();n++)
-          {
-            FuncTab.GetFuncX(fi,n);
-            if(fi.fTimeUsage == -1.0) continue;
-            if(fMaxTime <= fi.fTimeUsage)
-            {
-              fMaxTime = fi.fTimeUsage;
-              nFuncCode = n;
-            }
-            //if(fi.name)    trace("  %s : %f",fi.name,fi.fTimeUsage);
-            //else trace("  %d : %f",n,fi.fTimeUsage);
-          }
-
-          FuncTab.GetFuncX(fi,nFuncCode);
-          if(fi.name)    trace("  %s",fi.name); else trace("  %d",n);
-          trace("  ticks summary  : %.0f",fi.fTimeUsage);
-          trace("  calls          : %d",fi.nNumberOfCalls);
-          if(fi.nNumberOfCalls != 0) trace("  average ticks  : %.0f",fi.fTimeUsage/fi.nNumberOfCalls);
-
-
-          FuncTab.SetTimeUsage(nFuncCode,-1.0);
-          trace("");
-
-          //if(fi.name)    trace("  %s : %f",fi.name,fi.fTimeUsage);
-          //else trace("  %d : %f",n,fi.fTimeUsage);
-        }
-
-        if(pRuntimeLogEvent)
-        {
-          trace("Script Run Time Log [sec : ms]");
-          for(n=0;n<nRuntimeLogEventsNum;n++)
-          {
-            trace("  %d : %d",n,pRuntimeLogEvent[n]);
-          }
-        }
-        bRuntimeLog = false;
-      }
-    */
-    //--------------------------------------------------------
-
     for (uint32_t n = 0; n < SegmentsNum; n++)
     {
         delete SegmentTable[n].name;
@@ -1089,6 +1036,8 @@ void COMPILER::ProcessFrame(uint32_t DeltaTime)
         }
     }
     EventMsg.RemoveInvalidated();
+
+    PrintoutUsage();
 }
 
 void COMPILER::ResizeBCodeBuffer(SEGMENT_DESC &Segment, uint32_t add_size)
@@ -7104,7 +7053,7 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
     return nullptr;
 }
 
-void COMPILER::collectCallStack()
+void COMPILER::CollectCallStack() const
 {
     logStack_->trace("Call stack:");
     auto callStackCopy = callStack_;
@@ -7130,6 +7079,53 @@ void COMPILER::collectCallStack()
         }
 
         callStackCopy.pop();
+    }
+}
+
+void COMPILER::PrintoutUsage()
+{
+    if (bRuntimeLog && core.Controls->GetDebugAsyncKeyState(VK_BACK) < 0 &&
+        core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+    {
+        logTrace_->debug("Script Function Time Usage[func name/code(release mode) : ticks]");
+        for (size_t m = 0; m < FuncTab.GetFuncNum(); m++)
+        {
+            DWORD nFuncCode = 0;
+            FuncInfo fi;
+            for (size_t n = 0; n < FuncTab.GetFuncNum(); n++)
+            {
+                FuncTab.GetFuncX(fi, n);
+                if (fi.number_of_calls == 0)
+                {
+                    continue;
+                }
+
+                FuncTab.GetFunc(fi, n);
+                if (!fi.name.empty())
+                {
+                    logTrace_->debug("  {}", fi.name);
+                }
+                else
+                {
+                    logTrace_->debug("  {}", n);
+                }
+                logTrace_->debug("  ticks summary  : {}", fi.usage_time);
+                logTrace_->debug("  calls          : {}", fi.number_of_calls);
+                if (fi.number_of_calls != 0)
+                {
+                    logTrace_->debug("  average ticks  : {}", static_cast<float>(fi.usage_time) / fi.number_of_calls);
+                }
+
+                FuncTab.AddTime(nFuncCode, ~fi.usage_time);
+                logTrace_->debug("");
+            }
+        }
+
+        logTrace_->debug("Script Run Time Log [sec : ms]");
+        for (size_t n = 0; n < nRuntimeLogEventsNum; n++)
+        {
+            logTrace_->debug("  %d : %d", n, pRuntimeLogEvent[n]);
+        }
     }
 }
 
