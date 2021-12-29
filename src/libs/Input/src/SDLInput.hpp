@@ -25,7 +25,7 @@ class SDLInput : public Input
     int ControllerAxisValue(const ControllerAxis &axis) const override;
 
   private:
-    static int SDLEventHandler(void *userdata, SDL_Event *evt);
+    static int SDLCALL SDLEventHandler(void *userdata, SDL_Event *evt);
     void ProcessEvent(const SDL_Event &event);
     void OpenController();
 
