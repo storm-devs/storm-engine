@@ -48,8 +48,8 @@ bool iEquals(const Range1T &first, const Range2T &second, const size_t count)
     const auto first_end = std::end(first_normalized);
     const auto second_end = std::end(second_normalized);
 
-    const auto first_length = std::distance(first_begin, first_end) - 1;
-    const auto second_length = std::distance(first_begin, first_end) - 1;
+    const auto first_length = std::distance(first_begin, first_end);
+    const auto second_length = std::distance(second_begin, second_end);
     if (first_length < count || second_length < count)
     {
         if (first_length != second_length)
@@ -64,7 +64,7 @@ bool iEquals(const Range1T &first, const Range2T &second, const size_t count)
     }
     else
     {
-        return std::equal(first_begin, first_end, second_begin, second_end, comp);
+        return std::equal(first_begin, first_begin + count, second_begin, second_begin + count, comp);
     }
 }
 
