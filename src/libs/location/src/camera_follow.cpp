@@ -8,9 +8,9 @@
 //
 //============================================================================================
 
-#include "CameraFollow.h"
+#include "camera_follow.h"
 #include "character.h"
-#include "LocationCamera.h"
+#include "location_camera.h"
 
 //============================================================================================
 

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "PtcData.h"
+#include "ptc_data.h"
 #include "wdm_render_model.h"
 #include "geometry.h"
 

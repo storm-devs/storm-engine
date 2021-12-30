@@ -9,8 +9,8 @@
 //============================================================================================
 
 #include "character.h"
-#include "CharactersGroups.h"
-#include "Lights.h"
+#include "characters_groups.h"
+#include "lights.h"
 
 #include "VSoundService.h"
 #include "defines.h"

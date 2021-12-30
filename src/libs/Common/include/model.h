@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Animation.h"
+#include "animation.h"
 #include "matrix.h"
 #include "geos.h"
 #include "object.h"

@@ -8,8 +8,8 @@
 //
 //============================================================================================
 
-#include "CharactersGroups.h"
-#include "NPCharacter.h"
+#include "characters_groups.h"
+#include "np_character.h"
 #include "storm_assert.h"
 
 #define CGS_LOOK 15.0f

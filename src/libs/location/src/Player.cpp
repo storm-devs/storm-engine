@@ -8,10 +8,10 @@
 //
 //============================================================================================
 
-#include "Player.h"
+#include "player.h"
 
 #include "location.h"
-#include "LocationCamera.h"
+#include "location_camera.h"
 #include "collide.h"
 #include "shared/messages.h"
 

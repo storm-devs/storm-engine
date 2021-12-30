@@ -13,7 +13,7 @@
 #include "dx9render.h"
 #include "vmodule_api.h"
 
-#include "LocRat.h"
+#include "loc_rat.h"
 
 class LocRats : public Entity
 {

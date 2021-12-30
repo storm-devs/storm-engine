@@ -1,6 +1,6 @@
-#include "ModelRealizer.h"
+#include "model_realizer.h"
 #include "CVector4.h"
-#include "Lights.h"
+#include "lights.h"
 
 // ============================================================================================
 // Construction, destruction

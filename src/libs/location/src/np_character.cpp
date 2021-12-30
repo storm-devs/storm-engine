@@ -8,8 +8,8 @@
 //
 //============================================================================================
 
-#include "NPCharacter.h"
-#include "CharactersGroups.h"
+#include "np_character.h"
+#include "characters_groups.h"
 #include "defines.h"
 #include "shared/messages.h"
 

@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "LocLife.h"
+#include "loc_life.h"
 #include "character.h"
 #include "entity.h"
 #include "location.h"

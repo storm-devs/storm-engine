@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AnimalsDefines.h"
-#include "Animation.h"
+#include "animation.h"
 #include "iv_buffer_manager.h"
 #include "matrix.h"
 #include "TButterfly.h"

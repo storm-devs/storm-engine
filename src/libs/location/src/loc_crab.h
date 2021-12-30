@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "LocLife.h"
+#include "loc_life.h"
 
 class LocCrab : public LocLife
 {

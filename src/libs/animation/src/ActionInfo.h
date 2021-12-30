@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Animation.h"
+#include "animation.h"
 #include "Bone.h"
 #include <string>
 #include <unordered_map>

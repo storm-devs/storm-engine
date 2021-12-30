@@ -11,7 +11,7 @@
 #pragma once
 
 #include "ActionPlayerImp.h"
-#include "Animation.h"
+#include "animation.h"
 #include "AnimationInfo.h"
 #include "AnimationTimerImp.h"
 

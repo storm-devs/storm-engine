@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "Fader.h"
+#include "fader.h"
 #include "core.h"
 #include "entity.h"
 #include "shared/messages.h"

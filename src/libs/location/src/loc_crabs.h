@@ -7,7 +7,7 @@
 #include "dx9render.h"
 #include "vmodule_api.h"
 
-#include "LocCrab.h"
+#include "loc_crab.h"
 
 class LocCrabs : public Entity
 {

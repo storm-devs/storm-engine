@@ -1,26 +1,32 @@
 //============================================================================================
-//    LocCrabs
+//    Spirenkov Maxim, 2003
+//--------------------------------------------------------------------------------------------
+//
+//--------------------------------------------------------------------------------------------
+//    LocRats
+//--------------------------------------------------------------------------------------------
+//
 //============================================================================================
 
-#include "LocCrabs.h"
+#include "loc_rats.h"
 #include "entity.h"
 #include "core.h"
 
 //============================================================================================
 
-LocCrabs::LocCrabs()
+LocRats::LocRats()
 {
-    num = sizeof(crab) / sizeof(LocCrab);
+    num = sizeof(rat) / sizeof(LocRat);
 }
 
-LocCrabs::~LocCrabs()
+LocRats::~LocRats()
 {
 }
 
 //============================================================================================
 
 // Initialization
-bool LocCrabs::Init()
+bool LocRats::Init()
 {
     // Location Pointer
     const auto loc = EntityManager::GetEntityId("location");
@@ -35,33 +41,33 @@ bool LocCrabs::Init()
 }
 
 // Messages
-uint64_t LocCrabs::ProcessMessage(MESSAGE &message)
+uint64_t LocRats::ProcessMessage(MESSAGE &message)
 {
-    long num = message.Long();
+    auto num = message.Long();
     if (num < 1)
         num = 1;
-    if (num > sizeof(crab) / sizeof(LocCrab))
-        num = sizeof(crab) / sizeof(LocCrab);
+    if (num > sizeof(rat) / sizeof(LocRat))
+        num = sizeof(rat) / sizeof(LocRat);
     // Location Pointer
     const auto loc = EntityManager::GetEntityId("location");
     auto *location = (Location *)EntityManager::GetEntityPointer(loc);
     if (!location)
         return 0;
-    // start crabs
+    // Init rats
     for (long i = 0; i < num; i++)
-        crab[i].Init(location);
+        rat[i].Init(location);
     return 1;
 }
 
 // Execution
-void LocCrabs::Execute(uint32_t delta_time)
+void LocRats::Execute(uint32_t delta_time)
 {
 }
 
 // Drawing
-void LocCrabs::Realize(uint32_t delta_time)
+void LocRats::Realize(uint32_t delta_time)
 {
-    float dltTime = delta_time * 0.001f;
+    const auto dltTime = delta_time * 0.001f;
     for (long i = 0; i < num; i++)
-        crab[i].Update(dltTime);
+        rat[i].Update(dltTime);
 }

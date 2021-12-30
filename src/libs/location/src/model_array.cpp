@@ -10,7 +10,7 @@
 
 #include "geometry.h"
 
-#include "ModelArray.h"
+#include "model_array.h"
 #include "core.h"
 #include "entity.h"
 #include "shared/messages.h"

@@ -8,10 +8,10 @@
 //
 //============================================================================================
 
-#include "Supervisor.h"
+#include "supervisor.h"
 #include "character.h"
 #include "entity.h"
-#include "LocatorArray.h"
+#include "locator_array.h"
 #include "core.h"
 
 // ============================================================================================

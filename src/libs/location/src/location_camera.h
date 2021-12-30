@@ -11,13 +11,13 @@
 #pragma once
 
 #include "matrix.h"
-#include "PathTracks.h"
+#include "path_tracks.h"
 #include "dx9render.h"
 #include "vmodule_api.h"
 #include <string>
 #include <vector>
 
-#include "CameraFollow.h"
+#include "camera_follow.h"
 
 class MODEL;
 class Character;

@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "LocationCamera.h"
+#include "location_camera.h"
 
 #include "core.h"
 

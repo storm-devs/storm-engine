@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Animation.h"
+#include "animation.h"
 
 class AnimationImp;
 class ActionInfo;

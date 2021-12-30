@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Animation.h"
+#include "animation.h"
 #include "AnimationInfo.h"
 #include "vmodule_api.h"
 

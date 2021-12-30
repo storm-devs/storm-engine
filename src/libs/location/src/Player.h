@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "NPCharacter.h"
+#include "np_character.h"
 
 class LocationCamera;
 

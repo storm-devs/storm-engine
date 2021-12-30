@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "LocLife.h"
+#include "loc_life.h"
 
 class LocRat : public LocLife
 {

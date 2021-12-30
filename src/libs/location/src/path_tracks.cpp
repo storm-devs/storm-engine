@@ -6,11 +6,11 @@
 // PathTracks
 //============================================================================================
 
-#include "PathTracks.h"
+#include "path_tracks.h"
 
 #include "core.h"
 
-#include "CameraTracksFile.h"
+#include "camera_tracks_file.h"
 #include "vfile_service.h"
 #include "vmodule_api.h"
 

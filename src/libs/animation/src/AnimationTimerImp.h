@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Animation.h"
+#include "animation.h"
 
 #define ANITM_PLAYERSMAX ((ANI_MAX_ACTIONS + 31) >> 5)
 

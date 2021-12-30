@@ -13,7 +13,7 @@
 #include "dx9render.h"
 #include "vmodule_api.h"
 
-#include "Lizard.h"
+#include "lizard.h"
 
 class Lizards : public Entity
 {

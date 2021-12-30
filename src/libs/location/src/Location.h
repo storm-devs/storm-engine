@@ -14,10 +14,10 @@
 #include "vmodule_api.h"
 #include <cstdint>
 
-#include "LocatorArray.h"
-#include "ModelArray.h"
-#include "PtcData.h"
-#include "Supervisor.h"
+#include "locator_array.h"
+#include "model_array.h"
+#include "ptc_data.h"
+#include "supervisor.h"
 
 class MODEL;
 class Lights;

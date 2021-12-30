@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../bi_defines.h"
-#include "Animation.h"
+#include "animation.h"
 #include "vparticle_system.h"
 #include <string>
 

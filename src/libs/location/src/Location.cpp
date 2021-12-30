@@ -13,8 +13,8 @@
 #include "core.h"
 
 #include "character.h"
-#include "Grass.h"
-#include "Lights.h"
+#include "grass.h"
+#include "lights.h"
 
 #include "CVector4.h"
 #include "defines.h"

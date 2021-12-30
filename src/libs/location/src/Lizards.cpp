@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "Lizards.h"
+#include "lizards.h"
 #include "entity.h"
 #include "core.h"
 

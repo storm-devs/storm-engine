@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "PtcData.h"
+#include "ptc_data.h"
 #include "core.h"
 #include "dx9render.h"
 #include "storm_assert.h"

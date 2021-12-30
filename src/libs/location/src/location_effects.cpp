@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "LocationEffects.h"
+#include "location_effects.h"
 #include "core.h"
 #include "dx9render.h"
 

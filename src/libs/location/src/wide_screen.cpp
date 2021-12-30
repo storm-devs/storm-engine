@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "WideScreen.h"
+#include "wide_screen.h"
 #include "entity.h"
 #include "core.h"
 

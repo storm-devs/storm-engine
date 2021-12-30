@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Supervisor.h"
+#include "supervisor.h"
 #include "dx9render.h"
 #include "grs.h"
 #include "vmodule_api.h"

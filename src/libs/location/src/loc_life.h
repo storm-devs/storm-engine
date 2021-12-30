@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Animation.h"
+#include "animation.h"
 #include "entity.h"
 
 class Location;

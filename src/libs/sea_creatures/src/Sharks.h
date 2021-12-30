@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Animation.h"
+#include "animation.h"
 #include "Island_Base.h"
 #include "matrix.h"
 #include "dx9render.h"
