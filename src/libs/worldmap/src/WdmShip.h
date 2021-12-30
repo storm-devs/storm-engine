@@ -49,6 +49,7 @@ class WdmShip : public WdmRenderModel
     void Teleport(float x, float z, float ay);
     void GetPosition(float &x, float &z, float &ay) const;
     void SetMaxSpeed(float k);
+    void SetSpeedModifier(float modifier);
 
     bool Load(const char *modelName) override;
     // Calculations
@@ -81,6 +82,7 @@ class WdmShip : public WdmRenderModel
     float ax, ay, az;
     float dltAx, dltAz;
     float speed, turnspd;
+    float speed_modifier_;
     float baseV;
     float kMaxSpeed;
     CVECTOR rspeed;

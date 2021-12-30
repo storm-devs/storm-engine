@@ -625,6 +625,12 @@ uint64_t WorldMap::ProcessMessage(MESSAGE &message)
     case MSG_WORLDMAP_SET_COORDINATES:
         wdmObjects->coordinate = message.String();
         break;
+    case MSG_WORLDMAP_SET_PLAYER_SHIP_SPEED_MODIFIER:
+        if (wdmObjects->playerShip)
+        {
+            wdmObjects->playerShip->SetSpeedModifier(message.Float());
+        }
+        break;
     }
     return 0;
 }

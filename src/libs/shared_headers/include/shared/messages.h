@@ -244,6 +244,7 @@
 #define MSG_WORLDMAP_SET_NATION_FLAG 31150 // "ll" nation
 // Print line with coordinates
 #define MSG_WORLDMAP_SET_COORDINATES 31151 // "ls" coordinates string
+#define MSG_WORLDMAP_SET_PLAYER_SHIP_SPEED_MODIFIER 31152 // "lf" modifier
 
 // ============================================================================================
 // Effects

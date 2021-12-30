@@ -24,7 +24,7 @@
 // Construction, destruction
 // ============================================================================================
 
-WdmShip::WdmShip()
+WdmShip::WdmShip() : speed_modifier_(1.0f)
 {
     modelL05 = 6.0f;
     modelW05 = 1.9f;
@@ -103,6 +103,11 @@ void WdmShip::SetMaxSpeed(float k)
     kMaxSpeed = k;
 }
 
+void WdmShip::SetSpeedModifier(float modifier)
+{
+    speed_modifier_ = modifier;
+}
+
 void WdmShip::Update(float dltTime)
 {
     if (dltTime > WDM_SHIP_CLAMPDTIME)
@@ -127,6 +132,7 @@ void WdmShip::ShipUpdate(float dltTime)
         speed = WDM_SHIP_MAX_SPEED * kMaxSpeed;
     if (speed < -0.4f * WDM_SHIP_MAX_SPEED * kMaxSpeed)
         speed = -0.4f * WDM_SHIP_MAX_SPEED * kMaxSpeed;
+    speed *= speed_modifier_;
     if (turnspd > WDM_SHIP_MAX_TURNSPD)
         turnspd = WDM_SHIP_MAX_TURNSPD;
     if (turnspd < -WDM_SHIP_MAX_TURNSPD)
