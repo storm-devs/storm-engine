@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "Sharks.h"
+#include "sharks.h"
 #include "entity.h"
 #include "core.h"
 #include "geometry.h"

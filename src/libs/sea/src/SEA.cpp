@@ -1,12 +1,12 @@
-#include "SEA.h"
+#include "sea.h"
 
 #include <algorithm>
 #include <execution>
 
 #include "core.h"
-#include "SSE.h"
+#include "sse.h"
 #include "inlines.h"
-#include "shared/sea_ai/Script_defines.h"
+#include "shared/sea_ai/script_defines.h"
 #include "tga.h"
 #include "vfile_service.h"
 

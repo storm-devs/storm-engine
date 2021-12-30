@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SeafoamDefines.h"
-#include "TCarcass.h"
+#include "seafoam_defines.h"
+#include "t_carcass.h"
 #include "VSoundService.h"
 #include "dx9render.h"
 #include "geos.h"

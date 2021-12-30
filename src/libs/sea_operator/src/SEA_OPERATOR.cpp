@@ -1,4 +1,4 @@
-#include "SEA_OPERATOR.h"
+#include "sea_operator.h"
 
 #include "core.h"
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "AIBalls.h"
-#include "AIFort.h"
-#include "AIHelper.h"
+#include "ai_balls.h"
+#include "ai_fort.h"
+#include "ai_helper.h"
 
 class SEA_AI : public Entity
 {

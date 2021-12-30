@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ShipCamera.h"
+#include "ship_camera.h"
 #include <vector>
 
 class SEA_CAMERAS : public Entity

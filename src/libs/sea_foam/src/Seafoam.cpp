@@ -1,4 +1,4 @@
-#include "Seafoam.h"
+#include "seafoam.h"
 #include "shared/messages.h"
 
 #include "entity.h"
