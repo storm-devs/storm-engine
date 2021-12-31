@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//inode.h"
+#include "../inode.h"
 
 // scroll image
 class CXI_SCROLLIMAGE : public CINODE

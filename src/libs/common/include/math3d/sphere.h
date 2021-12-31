@@ -8,8 +8,8 @@
 
 #pragma pack(push, 1)
 
-#include "Vector.h"
-#include "Vector4.h"
+#include "vector.h"
+#include "vector4.h"
 
 // Class for representing a sphere in 3D space
 class Sphere

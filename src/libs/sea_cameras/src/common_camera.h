@@ -1,7 +1,7 @@
 #pragma once
 
 #include "entity.h"
-#include "sd2_h//VAI_ObjBase.h"
+#include "sd2_h/vai_objbase.h"
 #include "core.h"
 #include "v_module_api.h"
 

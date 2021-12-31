@@ -1,7 +1,7 @@
 #include "sailors_editor.h"
 
 #include "shared/messages.h"
-#include "shared/sea_ai/Script_defines.h"
+#include "shared/sea_ai/script_defines.h"
 
 CREATE_CLASS(SailorsEditor)
 

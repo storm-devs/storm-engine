@@ -4,10 +4,10 @@
 //------------------------------------------------------------------------------------
 // micuss, 2004
 //------------------------------------------------------------------------------------
-#include "Sailors.h"
+#include "sailors.h"
 
 #include "shared/messages.h"
-#include "shared/sea_ai/Script_defines.h"
+#include "shared/sea_ai/script_defines.h"
 
 CREATE_CLASS(Sailors)
 

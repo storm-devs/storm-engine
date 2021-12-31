@@ -1,8 +1,8 @@
 #pragma once
 
 #include "dx9render.h"
-#include "math3D.h"
-#include "math3d/Quaternion.h"
+#include "math3d.h"
+#include "math3d/quaternion.h"
 
 class PathTracks
 {

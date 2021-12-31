@@ -1,4 +1,4 @@
-// SAILONE.h: interface for the SAILONE class.
+// sailone.h: interface for the SAILONE class.
 //
 //////////////////////////////////////////////////////////////////////
 

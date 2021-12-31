@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//inode.h"
+#include "../inode.h"
 
 // picture
 class CXI_LRCHANGER : public CINODE

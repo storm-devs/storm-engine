@@ -1,10 +1,10 @@
-// SAILONE.cpp: implementation of the SAILONE class.
+// sailone.cpp: implementation of the SAILONE class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "SAILONE.h"
+#include "sailone.h"
 #include "entity.h"
-#include "sd2_h//VAI_ObjBase.h"
+#include "sd2_h/vai_objbase.h"
 #include "core.h"
 #include "defines.h"
 #include "sail.h"

@@ -8,7 +8,7 @@
 #include "../system/particle_system/particle_system.h"
 
 #include "../i_common/i_emitter.h"
-#include "../i_common/Names.h"
+#include "../i_common/names.h"
 #include "../system/data_source/data_string.h"
 #include "defines.h"
 

@@ -10,7 +10,7 @@
 #include "core.h"
 
 #include "debug_entity.h"
-#include "math3d/Color.h"
+#include "math3d/color.h"
 
 CREATE_SERVICE(SoundService)
 

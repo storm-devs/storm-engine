@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sailors.h"
+#include "sailors.h"
 #include <string>
 
 class Menu

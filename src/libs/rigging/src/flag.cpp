@@ -1,4 +1,4 @@
-#include "Flag.h"
+#include "flag.h"
 #include "entity.h"
 #include "weather_base.h"
 #include "core.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//inode.h"
+#include "../inode.h"
 
 // video
 class CXI_TWOPICTURE : public CINODE

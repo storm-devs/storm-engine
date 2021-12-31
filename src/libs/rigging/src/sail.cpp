@@ -8,7 +8,7 @@
 #include "shared/battle_interface/msg_control.h"
 #include "shared/mast_msg.h"
 #include "shared/sail_msg.h"
-#include "shared/sea_ai/Script_defines.h"
+#include "shared/sea_ai/script_defines.h"
 #include "ship_base.h"
 #include "v_file_service.h"
 

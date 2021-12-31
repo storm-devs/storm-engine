@@ -8,8 +8,8 @@
 
 #pragma pack(push, 1)
 
-#include "Plane.h"
-#include "Vector.h"
+#include "plane.h"
+#include "vector.h"
 
 // Class for representing a triangle in 3D space
 class Triangle

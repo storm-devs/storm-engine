@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ai_flow_graph.h"
-#include "Island_Base.h"
+#include "island_base.h"
 #include "collide.h"
 #include "dx9render.h"
 #include "geometry.h"

@@ -1,5 +1,5 @@
 #include "p_system.h"
-#include "math3d/Matrix.h"
+#include "math3d/matrix.h"
 #include "particles.h"
 #include "particles/i_particle_system.h"
 

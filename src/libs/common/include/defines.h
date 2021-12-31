@@ -23,7 +23,7 @@ inline unsigned long HashNoCase(const char *str)
 } // namespace TOREMOVE
 
 // includes
-#include "math3D.h"
+#include "math3d.h"
 #include <cstdint>
 #include <cstring>
 

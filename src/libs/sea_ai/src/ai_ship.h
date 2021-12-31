@@ -9,7 +9,6 @@
 #include "ai_ship_task_controller.h"
 #include "ai_ship_touch_controller.h"
 #include "ship_base.h"
-//#include "AITemplate.h"
 #include "ai_flow_graph.h"
 #include "ai_helper.h"
 

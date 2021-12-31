@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//inode.h"
+#include "../inode.h"
 
 // edit box
 class CXI_EDITBOX : public CINODE

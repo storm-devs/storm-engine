@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//inode.h"
+#include "../inode.h"
 
 class CXI_IMAGE;
 

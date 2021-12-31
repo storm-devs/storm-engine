@@ -1,9 +1,9 @@
-#include "ISLAND.h"
-#include "Foam.h"
+#include "island.h"
+#include "foam.h"
 #include "weather_base.h"
 #include "inlines.h"
 #include "shared/messages.h"
-#include "shared/sea_ai/Script_defines.h"
+#include "shared/sea_ai/script_defines.h"
 #include "tga.h"
 #include <cstdio>
 

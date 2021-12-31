@@ -1,4 +1,4 @@
-#include "ISLAND.h"
+#include "island.h"
 #include "inlines.h"
 
 MapZipper::MapZipper()

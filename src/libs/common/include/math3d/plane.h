@@ -8,7 +8,7 @@
 
 #pragma pack(push, 1)
 
-#include "Vector.h"
+#include "vector.h"
 
 // Class for representing a plane in 3D space
 class Plane

@@ -8,7 +8,7 @@
 #pragma once
 
 #include "dx9render.h"
-#include "math3d/Matrix.h"
+#include "math3d/matrix.h"
 
 #include "../../i_common/particle.h"
 #include "../data_source/field_list.h"

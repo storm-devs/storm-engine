@@ -2,7 +2,7 @@
 #include "../../i_common/names.h"
 #include "../data_source/data_graph.h"
 #include "../data_source/data_string.h"
-#include "math3d/Quaternion.h"
+#include "math3d/quaternion.h"
 
 #define INTERPOLATION_STEPS 32.0f
 

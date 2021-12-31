@@ -1,5 +1,5 @@
-#include "MAST.h"
-#include "Island_Base.h"
+#include "mast.h"
+#include "island_base.h"
 #include "shared/mast_msg.h"
 #include "shared/sail_msg.h"
 #include "ship_base.h"

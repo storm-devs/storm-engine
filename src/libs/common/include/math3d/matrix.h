@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "Plane.h"
-#include "Vector4.h"
+#include "plane.h"
+#include "vector4.h"
 
 //============================================================================================
 

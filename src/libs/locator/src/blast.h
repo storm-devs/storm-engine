@@ -1,7 +1,7 @@
 #pragma once
 
 #include "matrix.h"
-#include "sd2_h//cannon_trace.h"
+#include "sd2_h/cannon_trace.h"
 #include "blast.h"
 #include "dx9render.h"
 #include "geometry.h"

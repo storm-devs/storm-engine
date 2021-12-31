@@ -6,7 +6,7 @@
 #include "controls.h"
 #include "core.h"
 #include "entity.h"
-#include "math3d/Sphere.h"
+#include "math3d/sphere.h"
 #include "message.h"
 #include "shared/battle_interface/msg_control.h"
 #include "shared/events.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math3D.h"
+#include "math3d.h"
 
 class DataGraph;
 class DataColor;

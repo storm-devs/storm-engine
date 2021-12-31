@@ -13,7 +13,7 @@
 #include "l_geometry.h"
 #include "lighter_lights.h"
 #include "oct_tree.h"
-#include "Window.h"
+#include "window.h"
 
 class VDX9RENDER;
 

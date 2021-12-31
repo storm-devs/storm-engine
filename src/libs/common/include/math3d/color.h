@@ -10,9 +10,9 @@
 
 #include <stdint.h>
 
-#include "../math3D.h"
-#include "Vector.h"
-#include "Vector4.h"
+#include "../math3d.h"
+#include "vector.h"
+#include "vector4.h"
 
 // Color representation class (float)
 class Color

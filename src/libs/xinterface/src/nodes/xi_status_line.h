@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//inode.h"
+#include "../inode.h"
 
 // static inactive images into one object
 class CXI_STATUSLINE : public CINODE

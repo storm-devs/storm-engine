@@ -1,5 +1,5 @@
 #pragma once
-#include "shared/sea_ai/Script_defines.h"
+#include "shared/sea_ai/script_defines.h"
 
 // ============================================================================
 // master class AIShipTaskController

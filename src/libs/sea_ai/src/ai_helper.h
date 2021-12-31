@@ -1,8 +1,8 @@
 #pragma once
 
 #include "character.h"
-#include "Island_Base.h"
-#include "sd2_h//save_load.h"
+#include "island_base.h"
+#include "sd2_h/save_load.h"
 #include "collide.h"
 #include "dx9render.h"
 #include <vector>

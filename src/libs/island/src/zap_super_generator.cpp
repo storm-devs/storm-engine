@@ -1,4 +1,4 @@
-#include "ISLAND.h"
+#include "island.h"
 #include "tga.h"
 #include "v_file_service.h"
 

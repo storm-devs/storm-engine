@@ -8,7 +8,7 @@
 #pragma once
 
 #include "dx9render.h"
-#include "math3d/Matrix.h"
+#include "math3d/matrix.h"
 #include "particles/gmx_qsort.h"
 
 #include "../../i_common/particle.h"

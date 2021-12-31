@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Input.hpp>
+#include <input.hpp>
 #include <SDL.h>
 #include <map>
 

@@ -1,7 +1,7 @@
 #include "back_scene.h"
 #include "../xinterface.h"
 #include "geometry.h"
-#include "math3d/Matrix.h"
+#include "math3d/matrix.h"
 #include "model.h"
 #include "shared/messages.h"
 

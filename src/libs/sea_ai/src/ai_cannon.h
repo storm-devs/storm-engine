@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ai_helper.h"
-#include "sd2_h//VAI_ObjBase.h"
+#include "sd2_h/vai_objbase.h"
 
 // ============================================================================
 // Master class AICannon

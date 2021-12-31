@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..//inode.h"
+#include "../inode.h"
 
 // text collection
 class CXI_STRCOLLECTION : public CINODE
