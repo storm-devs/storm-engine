@@ -34,28 +34,72 @@ struct is_iless_eq
 
 } // namespace detail
 
+template <typename Range1T, typename Range2T = Range1T>
+bool iEquals(const Range1T &first, const Range2T &second, const size_t count)
+{
+    detail::is_iequal comp;
+
+    const auto &first_normalized = std::is_pointer<Range1T>::value ? std::string_view(first) : first;
+    const auto &second_normalized = std::is_pointer<Range1T>::value ? std::string_view(second) : second;
+
+    const auto first_begin = std::begin(first_normalized);
+    const auto second_begin = std::begin(second_normalized);
+
+    const auto first_end = std::end(first_normalized);
+    const auto second_end = std::end(second_normalized);
+
+    const auto first_length = std::distance(first_begin, first_end);
+    const auto second_length = std::distance(second_begin, second_end);
+    if (first_length < count || second_length < count)
+    {
+        if (first_length != second_length)
+        {
+            return false;
+        }
+        else
+        {
+            return std::equal(first_begin, first_begin + first_length, second_begin, second_begin + second_length,
+                              comp);
+        }
+    }
+    else
+    {
+        return std::equal(first_begin, first_begin + count, second_begin, second_begin + count, comp);
+    }
+}
+
 template <typename Range1T, typename Range2T = Range1T> bool iEquals(const Range1T &first, const Range2T &second)
 {
     detail::is_iequal comp;
 
-    const auto first_begin = std::begin(first);
-    const auto second_begin = std::begin(second);
+    const auto &first_normalized = std::is_pointer<Range1T>::value ? std::string_view(first) : first;
+    const auto &second_normalized = std::is_pointer<Range1T>::value ? std::string_view(second) : second;
 
-    const auto first_end = std::end(first);
-    const auto second_end = std::end(second);
+    const auto first_begin = std::begin(first_normalized);
+    const auto second_begin = std::begin(second_normalized);
+
+    const auto first_end = std::end(first_normalized);
+    const auto second_end = std::end(second_normalized);
 
     return std::equal(first_begin, first_end, second_begin, second_end, comp);
 }
 
 template <typename Range1T, typename Range2T = Range1T> bool iLess(const Range1T &first, const Range2T &second)
 {
-    return std::lexicographical_compare(std::begin(first), std::end(first), std::begin(second), std::end(second),
-                                        detail::is_iless{});
+    const auto &first_normalized = std::is_pointer<Range1T>::value ? std::string_view(first) : first;
+    const auto &second_normalized = std::is_pointer<Range1T>::value ? std::string_view(second) : second;
+
+    return std::lexicographical_compare(std::begin(first_normalized), std::end(first_normalized),
+                                        std::begin(second_normalized), std::end(second_normalized), detail::is_iless{});
 }
 
 template <typename Range1T, typename Range2T = Range1T> bool iLessOrEqual(const Range1T &first, const Range2T &second)
 {
-    return std::lexicographical_compare(std::begin(first), std::end(first), std::begin(second), std::end(second),
+    const auto &first_normalized = std::is_pointer<Range1T>::value ? std::string_view(first) : first;
+    const auto &second_normalized = std::is_pointer<Range1T>::value ? std::string_view(second) : second;
+
+    return std::lexicographical_compare(std::begin(first_normalized), std::end(first_normalized),
+                                        std::begin(second_normalized), std::end(second_normalized),
                                         detail::is_iless_eq{});
 }
 
