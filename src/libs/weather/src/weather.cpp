@@ -1,8 +1,8 @@
-#include "Weather.h"
-#include "Astronomy.h"
-#include "Lightning.h"
+#include "weather.h"
+#include "astronomy.h"
+#include "lightning.h"
 #include "sun_glow.h"
-#include "WaterFlare.h"
+#include "water_flare.h"
 #include "inlines.h"
 
 CREATE_CLASS(WEATHER)

@@ -1,7 +1,7 @@
 #include <io.h>
 
 #include "core.h"
-#include "sdevice.h"
+#include "s_device.h"
 #include "tga.h"
 
 void DX9RENDER::PrepareCapture()

@@ -8,11 +8,11 @@
 // Model bone containing its animation
 // ============================================================================================
 
-#include "Bone.h"
+#include "bone.h"
 
 #include "core.h"
 #include "storm_assert.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 // ============================================================================================
 // Construction, destruction

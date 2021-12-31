@@ -2,14 +2,14 @@
 #include <windows.h>
 
 // common includes
-#include "EntityManager.h"
+#include "entity_manager.h"
 #include "controls.h"
 #include "engine_version.hpp"
 #include "message.h"
 #include "services_list.h"
 #include "timer.h"
-#include "vdata.h"
-#include "vfile_service.h"
+#include "v_data.h"
+#include "v_file_service.h"
 
 #define ENGINE_SCRIPT_VERSION 54128
 

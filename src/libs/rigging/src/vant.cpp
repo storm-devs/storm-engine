@@ -4,7 +4,7 @@
 #include "defines.h"
 #include "shared/sail_msg.h"
 #include "ship_base.h"
-#include "vfile_service.h"
+#include "v_file_service.h"
 
 static const char *RIGGING_INI_FILE = "resource\\ini\\rigging.ini";
 

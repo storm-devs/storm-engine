@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "LightProcessor.h"
+#include "light_processor.h"
 
 class Lighter : public Entity
 {

@@ -12,7 +12,7 @@
 
 #include "entity.h"
 #include "matrix.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 class MESSAGE;
 class VDX9RENDER;

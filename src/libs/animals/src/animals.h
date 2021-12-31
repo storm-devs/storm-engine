@@ -1,9 +1,9 @@
 #pragma once
 
-#include "TSeagulls.h"
+#include "t_seagulls.h"
 //#include "TSharks.h"
-#include "TButterflies.h"
-#include "TFishSchools.h"
+#include "t_butterflies.h"
+#include "t_fish_schools.h"
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES

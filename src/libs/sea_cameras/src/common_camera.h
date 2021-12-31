@@ -1,9 +1,9 @@
 #pragma once
 
 #include "entity.h"
-#include "Sd2_h/VAI_ObjBase.h"
+#include "sd2_h//VAI_ObjBase.h"
 #include "core.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 class COMMON_CAMERA : public Entity
 {

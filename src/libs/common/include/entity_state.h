@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Windows.h>
+#include <windows.h>
 #include <cstdint>
 
 class ENTITY_STATE_GEN

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Sd2_h/CannonTrace.h"
-#include "vmodule_api.h"
+#include "sd2_h//cannon_trace.h"
+#include "v_module_api.h"
 
 class SEA_BASE : public CANNON_TRACE_BASE
 {

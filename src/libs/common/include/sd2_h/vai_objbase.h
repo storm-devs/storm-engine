@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Cvector.h"
-#include "../Matrix.h"
+#include "../c_vector.h"
+#include "../matrix.h"
 #include "../model.h"
-#include "../vmodule_api.h"
-#include "CannonTrace.h"
+#include "../v_module_api.h"
+#include "cannon_trace.h"
 
 class CSaveLoad;
 

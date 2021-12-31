@@ -12,7 +12,7 @@
 
 #include "matrix.h"
 #include "model.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 #include <string>
 
 class Location;

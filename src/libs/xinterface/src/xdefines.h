@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Cvector.h"
-#include "QuestFileReader//QuestFileReader.h"
+#include "c_vector.h"
+#include "quest_file_reader/quest_file_reader.h"
 #include "dx9render.h"
 #include "shared/interface/messages.h"
-#include "stringService.h"
-#include "vxservice.h"
-#include <EntityManager.h>
+#include "string_service.h"
+#include "vx_service.h"
+#include <entity_manager.h>
 
 #define ALPHA(x) ((x) >> 24)
 #define RED(x) (((x) >> 16) & 0xFF)

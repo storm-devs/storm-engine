@@ -6,7 +6,7 @@
 #include "dx9render.h"
 #include "geometry.h"
 #include "model.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 class MapZipper
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ai_ship.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 // ============================================================================
 // Master class AIGroup

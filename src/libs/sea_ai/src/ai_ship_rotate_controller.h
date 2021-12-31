@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Sd2_h/VAI_ObjBase.h"
-#include "vmodule_api.h"
+#include "sd2_h//VAI_ObjBase.h"
+#include "v_module_api.h"
 
 // ============================================================================
 // master class AIShipRotateController

@@ -9,5 +9,5 @@
 #include "geos.h"
 #include "shared/messages.h"
 #include "shared/sea_ai/Script_defines.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 #include <stdio.h>

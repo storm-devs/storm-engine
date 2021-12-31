@@ -1,9 +1,9 @@
-#include "Utils.h"
+#include "utils.h"
 
 #include "core.h"
 
-#include "image/imgrender.h"
-#include "vmodule_api.h"
+#include "image/img_render.h"
+#include "v_module_api.h"
 
 // extern data
 entid_t BIUtils::idBattleInterface;

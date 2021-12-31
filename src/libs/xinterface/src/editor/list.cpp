@@ -1,5 +1,5 @@
 #include "list.h"
-#include "../Nodes/xi_image.h"
+#include "../nodes/xi_image.h"
 #include "editor_defines.h"
 #include <defines.h>
 

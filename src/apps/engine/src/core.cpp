@@ -1,6 +1,6 @@
 #include "core.h"
 
-#include "SteamApi.hpp"
+#include "steam_api_impl.hpp"
 #include "compiler.h"
 #include "controls.h"
 #include "storm/fs.h"

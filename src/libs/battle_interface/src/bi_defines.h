@@ -3,7 +3,7 @@
 #include "defines.h"
 #include "dx9render.h"
 #include "storm_assert.h"
-#include "vdata.h"
+#include "v_data.h"
 
 #define INI_FILE_NAME "resource\\ini\\interfaces\\battle_interface.ini"
 

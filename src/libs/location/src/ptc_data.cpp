@@ -12,7 +12,7 @@
 #include "core.h"
 #include "dx9render.h"
 #include "storm_assert.h"
-#include "vfile_service.h"
+#include "v_file_service.h"
 
 // ============================================================================================
 // Construction, destruction

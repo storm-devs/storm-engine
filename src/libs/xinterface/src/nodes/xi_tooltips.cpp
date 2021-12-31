@@ -1,6 +1,6 @@
 #include "xi_tooltips.h"
 #include "../xinterface.h"
-#include "strutils.h"
+#include "str_utils.h"
 
 CXI_ToolTip::CXI_ToolTip(VXSERVICE *pPicService, VSTRSERVICE *pStrService, XYPOINT &pntScrSize)
     : m_pntScreenSize(pntScrSize)

@@ -1,6 +1,6 @@
 #include "script_libriary_test.h"
 #include "vano_files.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 CREATE_SCRIPTLIBRIARY(SCRIPT_LIBRIARY_TEST)
 

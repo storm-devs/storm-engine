@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cvector.h"
-#include "sd2_h/VAI_ObjBase.h"
-#include "vmodule_api.h"
+#include "c_vector.h"
+#include "sd2_h//VAI_ObjBase.h"
+#include "v_module_api.h"
 
 struct SHIP_STATE
 {

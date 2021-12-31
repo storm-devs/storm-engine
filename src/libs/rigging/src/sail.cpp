@@ -10,7 +10,7 @@
 #include "shared/sail_msg.h"
 #include "shared/sea_ai/Script_defines.h"
 #include "ship_base.h"
-#include "vfile_service.h"
+#include "v_file_service.h"
 
 #define WIND_SPEED_MAX 12.f
 

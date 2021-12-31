@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Cvector.h"
+#include "c_vector.h"
 
 #include "entity.h"
 #include "core.h"
 #include "object.h"
 #include "types3d.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 class LOCAL_COLLIDE
 {

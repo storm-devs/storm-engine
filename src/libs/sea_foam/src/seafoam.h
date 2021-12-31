@@ -2,7 +2,7 @@
 
 #include "seafoam_defines.h"
 #include "t_carcass.h"
-#include "VSoundService.h"
+#include "v_sound_service.h"
 #include "dx9render.h"
 #include "geos.h"
 #include "model.h"

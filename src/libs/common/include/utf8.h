@@ -4,7 +4,7 @@
 #include <cstring>
 #include <string>
 
-#include <Windows.h>
+#include <windows.h>
 
 namespace utf8
 {

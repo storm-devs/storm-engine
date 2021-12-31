@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dtimer.h"
-#include "vmodule_api.h"
+#include "d_timer.h"
+#include "v_module_api.h"
 
 class AIShip;
 

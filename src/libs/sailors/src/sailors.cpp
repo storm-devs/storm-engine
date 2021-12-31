@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------
 //    Sailors, SailorsWayPoints, SailorsEditor, SailorsMenu, ShipWalk.c, SailorsMain
-//    BattleInterface.c, ShipDead.c, SeaPeople.h
+//    BattleInterface.c, ShipDead.c, sea_people.h
 //------------------------------------------------------------------------------------
 // micuss, 2004
 //------------------------------------------------------------------------------------

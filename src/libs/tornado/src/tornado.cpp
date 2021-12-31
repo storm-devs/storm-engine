@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "Tornado.h"
+#include "tornado.h"
 #include "entity.h"
 #include "core.h"
 

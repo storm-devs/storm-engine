@@ -3,7 +3,7 @@
 
 #include "core.h"
 
-#include "../Utils.h"
+#include "../utils.h"
 #include "entity.h"
 #include "Island_Base.h"
 #include "shared/battle_interface/msg_control.h"

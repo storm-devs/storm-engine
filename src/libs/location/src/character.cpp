@@ -12,14 +12,14 @@
 #include "characters_groups.h"
 #include "lights.h"
 
-#include "VSoundService.h"
+#include "v_sound_service.h"
 #include "defines.h"
 #include "geometry.h"
 #include "sea_base.h"
 #include "shared/messages.h"
 
 #include "core.h"
-#include "vdata.h"
+#include "v_data.h"
 
 //============================================================================================
 

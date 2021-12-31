@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "LTypes.h"
-#include "LighterLights.h"
+#include "l_types.h"
+#include "lighter_lights.h"
 #include "dx9render.h"
 
 class Window

@@ -13,7 +13,7 @@
 #include "supervisor.h"
 #include "dx9render.h"
 #include "grs.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 #define MSG_GRASS_LOAD_DATA 40666
 #define MSG_GRASS_SET_TEXTURE 41666

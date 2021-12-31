@@ -9,11 +9,11 @@
 #include "sea_base.h"
 #include "ship_base.h"
 
-#include "FirePlace.h"
-#include "ShipLights.h"
+#include "fire_place.h"
+#include "ship_lights.h"
 
-#include "Sd2_h/SaveLoad.h"
-#include "dtimer.h"
+#include "sd2_h//save_load.h"
+#include "d_timer.h"
 #include "ship_msg.h"
 #include <vector>
 

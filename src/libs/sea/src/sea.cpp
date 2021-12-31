@@ -8,7 +8,7 @@
 #include "inlines.h"
 #include "shared/sea_ai/script_defines.h"
 #include "tga.h"
-#include "vfile_service.h"
+#include "v_file_service.h"
 
 CREATE_CLASS(SEA)
 

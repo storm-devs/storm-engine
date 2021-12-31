@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ai_helper.h"
-#include "dtimer.h"
+#include "d_timer.h"
 #include "geometry.h"
 #include "sea_base.h"
 #include "ship_base.h"

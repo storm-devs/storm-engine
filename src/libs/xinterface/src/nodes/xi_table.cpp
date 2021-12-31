@@ -1,5 +1,5 @@
 #include "xi_table.h"
-#include "strutils.h"
+#include "str_utils.h"
 #include "xi_scroller.h"
 #include "xi_util.h"
 #include <stdio.h>

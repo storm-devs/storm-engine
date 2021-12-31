@@ -1,9 +1,9 @@
 #include "xi_scroller.h"
 #include "../xinterface.h"
 #include "entity.h"
-#include "xi_formttext.h"
-#include "xi_questtexts.h"
-#include "xi_questtitles.h"
+#include "xi_formt_text.h"
+#include "xi_quest_texts.h"
+#include "xi_quest_titles.h"
 #include "xi_table.h"
 #include <stdio.h>
 

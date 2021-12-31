@@ -1,4 +1,4 @@
-#include "Lightning.h"
+#include "lightning.h"
 
 LIGHTNING::LIGHTNING()
 {

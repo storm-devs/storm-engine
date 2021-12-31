@@ -11,7 +11,7 @@
 #pragma once
 
 #include "entity.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 #include <string>
 
 #define WDMAP_MAXOBJECTS 4096

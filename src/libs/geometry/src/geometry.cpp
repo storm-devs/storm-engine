@@ -1,6 +1,6 @@
 #include "core.h"
 
-#include "geometry_R.h"
+#include "geometry_r.h"
 
 CREATE_SERVICE(GEOMETRY)
 

@@ -6,7 +6,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <format>
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <fileapi.h>
 #include <io.h>

@@ -1,7 +1,7 @@
-#include "VSoundService.h"
+#include "v_sound_service.h"
 #include "shared/messages.h"
 
-#include "Sound.h"
+#include "sound.h"
 
 #include "core.h"
 

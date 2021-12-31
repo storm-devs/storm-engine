@@ -2,7 +2,7 @@
 
 #include "core.h"
 
-#include "../Nodes/xi_image.h"
+#include "../nodes/xi_image.h"
 #include "../xinterface.h"
 #include "list.h"
 

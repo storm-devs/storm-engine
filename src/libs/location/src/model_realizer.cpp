@@ -1,5 +1,5 @@
 #include "model_realizer.h"
-#include "CVector4.h"
+#include "c_vector4.h"
 #include "lights.h"
 
 // ============================================================================================

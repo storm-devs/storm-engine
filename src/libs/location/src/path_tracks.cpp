@@ -11,8 +11,8 @@
 #include "core.h"
 
 #include "camera_tracks_file.h"
-#include "vfile_service.h"
-#include "vmodule_api.h"
+#include "v_file_service.h"
+#include "v_module_api.h"
 
 //============================================================================================
 

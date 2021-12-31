@@ -1,6 +1,6 @@
-#include "Astronomy.h"
+#include "astronomy.h"
 #include "weather_base.h"
-#include "vfile_service.h"
+#include "v_file_service.h"
 
 Astronomy::STARS::STARS()
 {

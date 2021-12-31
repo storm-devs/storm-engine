@@ -8,7 +8,7 @@
 //
 //============================================================================================
 
-#include "Debris.h"
+#include "debris.h"
 #include "entity.h"
 #include "core.h"
 #include "geometry.h"

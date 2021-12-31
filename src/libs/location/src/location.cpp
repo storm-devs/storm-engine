@@ -16,7 +16,7 @@
 #include "grass.h"
 #include "lights.h"
 
-#include "CVector4.h"
+#include "c_vector4.h"
 #include "defines.h"
 #include "shared/messages.h"
 

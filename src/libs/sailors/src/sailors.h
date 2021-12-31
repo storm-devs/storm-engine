@@ -4,7 +4,7 @@
 #include "dx9render.h"
 #include "model.h"
 #include "ship_base.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 #include "sea_base.h"
 
@@ -15,8 +15,8 @@ const float CLIMB_SPEED = 0.065f;
 const float JUMP_SPEED_X_MASTFALL = 3.0f;
 const float JUMP_SPEED_Y_EXPLOSION = 30.0f;
 
-#include "SailorsWayPoints.h"
-#include "shared/sea_ai/SeaPeople.h"
+#include "sailors_way_points.h"
+#include "shared/sea_ai/sea_people.h"
 
 #define CREW2VISIBLE(n) 5.0f * logf(n) //???
 #define SHIP_BLACK_PEARL 164

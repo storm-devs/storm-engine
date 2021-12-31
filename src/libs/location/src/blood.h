@@ -2,7 +2,7 @@
 
 #include "collide.h"
 #include "dx9render.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 #include <vector>
 
 #define MAX_BLOOD_TRIANGLES 10000

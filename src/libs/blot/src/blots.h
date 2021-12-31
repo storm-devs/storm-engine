@@ -12,7 +12,7 @@
 
 #include "dx9render.h"
 #include "model.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 #define BLOTS_NTRGS 32    // Triangles in 1 blot
 #define BLOTS_MAX 256     // Total blots

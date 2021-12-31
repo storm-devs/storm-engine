@@ -1,7 +1,7 @@
-#include "LifecycleDiagnosticsService.hpp"
+#include "lifecycle_diagnostics_service.hpp"
 #include "logging.hpp"
 
-#include "SteamApi.hpp"
+#include "steam_api_impl.hpp"
 #include "compiler.h"
 #include "file_service.h"
 #include "s_debug.h"
@@ -11,7 +11,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
-#include <OSWindow.hpp>
+#include <os_window.hpp>
 #include <SDL.h>
 
 VFILE_SERVICE *fio = nullptr;

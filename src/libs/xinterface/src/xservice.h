@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vxservice.h"
+#include "vx_service.h"
 #include "xdefines.h"
 
 class XSERVICE : public VXSERVICE

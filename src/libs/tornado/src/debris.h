@@ -11,8 +11,8 @@
 #pragma once
 
 #include "matrix.h"
-#include "Pillar.h"
-#include "VSoundService.h"
+#include "pillar.h"
+#include "v_sound_service.h"
 #include "model.h"
 
 class Debris

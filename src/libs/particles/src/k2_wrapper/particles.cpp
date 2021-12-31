@@ -5,7 +5,7 @@
 #include "particles/i_particle_manager.h"
 #include "particles/i_particle_service.h"
 #include "particles/i_particle_system.h"
-#include "psystem.h"
+#include "p_system.h"
 #include "shared/messages.h"
 
 PARTICLES::PARTICLES()

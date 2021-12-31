@@ -1,5 +1,5 @@
 #include "image.h"
-#include "imgrender.h"
+#include "img_render.h"
 
 BIImage::BIImage(VDX9RENDER *rs, BIImageMaterial *pMaterial)
     : m_BasePos(), m_BaseUV(), m_dwColor(0), m_eType()

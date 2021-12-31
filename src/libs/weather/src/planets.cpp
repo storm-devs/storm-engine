@@ -1,4 +1,4 @@
-#include "Astronomy.h"
+#include "astronomy.h"
 #include "weather_base.h"
 
 Astronomy::PLANETS::PLANETS()

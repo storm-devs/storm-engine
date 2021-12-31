@@ -4,7 +4,7 @@
 #include "../../manager/particle_manager.h"
 #include "../data_source/data_source.h"
 #include "particles/i_particle_system.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 class IEmitter;
 

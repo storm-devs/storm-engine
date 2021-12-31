@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include "Debris.h"
-#include "NoiseCloud.h"
-#include "TornadoParticles.h"
+#include "debris.h"
+#include "noise_cloud.h"
+#include "tornado_particles.h"
 
 class Tornado : public Entity
 {

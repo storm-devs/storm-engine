@@ -2,7 +2,7 @@
 
 #include "core.h"
 
-#include "vfile_service.h"
+#include "v_file_service.h"
 
 void SetRectanglePos(XI_ONETEX_VERTEX v[4], const FXYPOINT &center, const FXYPOINT &size)
 {

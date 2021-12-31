@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ai_flow_graph.h"
-#include "sd2_h/VAI_ObjBase.h"
-#include "vmodule_api.h"
+#include "sd2_h//VAI_ObjBase.h"
+#include "v_module_api.h"
 
 // ============================================================================
 // master class AIShipMoveController

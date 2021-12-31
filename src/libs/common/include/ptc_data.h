@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include "Cvector.h"
+#include "c_vector.h"
 #include "ptc.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 #define PTCDATA_MAXSTEPS 32
 

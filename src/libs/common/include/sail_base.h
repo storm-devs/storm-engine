@@ -1,5 +1,5 @@
 #pragma once
-#include "Sd2_h/CannonTrace.h"
+#include "sd2_h//cannon_trace.h"
 
 class NODE;
 

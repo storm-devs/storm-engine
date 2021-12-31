@@ -2,8 +2,8 @@
 
 #include "core.h"
 
-#include "vfile_service.h"
-#include "vmodule_api.h"
+#include "v_file_service.h"
+#include "v_module_api.h"
 
 bool ReadingAlreadyComplete;
 
