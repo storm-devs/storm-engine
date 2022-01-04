@@ -88,11 +88,15 @@ bool SoundService::Init()
         return false;
     }
     core.Trace("Using FMOD %08x", FMOD_VERSION);
-
     CHECKFMODERR(system->setSoftwareChannels(64));
     CHECKFMODERR(system->setOutput(FMOD_OUTPUTTYPE_AUTODETECT));
     CHECKFMODERR(system->init(MAX_SOUNDS_SLOTS, FMOD_INIT_NORMAL, nullptr));
     CHECKFMODERR(system->set3DSettings(1.0, DISTANCEFACTOR, 1.0f));
+
+    if (const auto ini = fio->OpenIniFile(core.EngineIniFileName()))
+    {
+        fadeTimeInSeconds = ini->GetFloat("sound", "fade_time", 0.5f);
+    }
 
     SoundsActive = 2; // 0 and 1 are special
 
@@ -828,6 +832,64 @@ TSD_ID SoundService::SoundDuplicate(TSD_ID _sourceID)
 
 void SoundService::SetEnabled(bool _enabled)
 {
+}
+
+void SoundService::SetActiveWithFade(const bool active)
+{
+    if (fadeTimeInSeconds == 0.0f)
+    {
+        return;
+    }
+
+    if (active)
+    {
+        system->mixerResume();
+    }
+
+    FMOD::ChannelGroup* mastergroup;
+    CHECKFMODERR(system->getMasterChannelGroup(&mastergroup));
+    unsigned long long parentclock;
+    int rate;
+    system->getSoftwareFormat(&rate, nullptr, nullptr);
+    mastergroup->getDSPClock(nullptr, &parentclock);
+
+    const auto dsp_clock_start = parentclock;
+    const auto dsp_clock_end = static_cast<unsigned long long>(parentclock + fadeTimeInSeconds * rate);
+
+    if (active)
+    {
+        mastergroup->setDelay(dsp_clock_start, 0, false);
+    }
+
+    for (const auto& PlayingSound : PlayingSounds)
+    {
+        if (PlayingSound.bFree)
+            continue;
+
+        float volume = 0.0f;
+
+        if (PlayingSound.type == VOLUME_FX)
+        {
+            volume = fFXVolume;
+        }
+        else if (PlayingSound.type == VOLUME_MUSIC)
+        {
+            volume = fMusicVolume;
+        }
+        else if (PlayingSound.type == VOLUME_SPEECH)
+        {
+            volume = fSpeechVolume;
+        }
+
+        PlayingSound.channel->addFadePoint(dsp_clock_start, active ? 0.0f : volume);
+        PlayingSound.channel->addFadePoint(dsp_clock_end, active ? volume : 0.0f);
+    }
+
+    if (!active)
+    {
+        mastergroup->setDelay(dsp_clock_start, dsp_clock_end, false);
+        system->mixerSuspend();
+    }
 }
 
 void SoundService::SoundStop(TSD_ID _id, long _time)

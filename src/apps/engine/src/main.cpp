@@ -5,6 +5,7 @@
 #include "compiler.h"
 #include "file_service.h"
 #include "s_debug.h"
+#include "v_sound_service.h"
 #include "storm/fs.h"
 #include "watermark.hpp"
 
@@ -69,11 +70,19 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
     {
         bActive = true;
         core.AppState(bActive);
+        if (const auto soundService = static_cast<VSoundService *>(core.CreateService("SoundService")))
+        {
+            soundService->SetActiveWithFade(true);
+        }
     }
     else if (event == storm::OSWindow::FocusLost)
     {
         bActive = false;
         core.AppState(bActive);
+        if (const auto soundService = static_cast<VSoundService *>(core.CreateService("SoundService")))
+        {
+            soundService->SetActiveWithFade(false);
+        }
     }
 }
 

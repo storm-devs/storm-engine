@@ -76,6 +76,9 @@ class VSoundService : public SERVICE
 
     virtual void SetEnabled(bool _enabled) = 0;
     virtual void LoadAliasFile(const char *_filename) = 0;
+
+    virtual void SetActiveWithFade(bool active) = 0;
+
     tSoundStatistics soundStatistics;
 };
 
