@@ -17,7 +17,7 @@ using tSoundDriverDescriptor = struct
     char driverName[COMMON_STRING_LENGTH];
 };
 
-using TSD_ID = uint32_t;
+using TSD_ID = int32_t;
 
 using tSoundStatistics = struct
 {

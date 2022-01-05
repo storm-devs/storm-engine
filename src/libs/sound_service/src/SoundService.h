@@ -4,11 +4,13 @@
 #include "SoundDefines.h"
 #include "VSoundService.h"
 #include "vmodule_api.h"
+
 #include <dx9render.h>
 #include <fmod.hpp>
+
 #include <string>
 
-#define MAX_SOUNDS_SLOTS 1024
+#define MAX_SOUNDS_SLOTS 4095
 
 class INIFILE;
 // debug....
@@ -20,9 +22,6 @@ class SoundVisualisationEntity;
 
 class SoundService : public VSoundService
 {
-    static FMOD_RESULT ErrorHandler(FMOD_RESULT result, const char *file, unsigned line, const char *func,
-                                    const char *expr);
-
     VDX9RENDER *rs = nullptr;
 
     bool bShowDebugInfo;
@@ -77,6 +76,7 @@ class SoundService : public VSoundService
     };
 
     tPlayedSound PlayingSounds[MAX_SOUNDS_SLOTS];
+    TSD_ID SoundsActive{};
 
     struct PlayedOGG
     {
@@ -160,7 +160,7 @@ class SoundService : public VSoundService
 
     //----------------------------------------------------------------------------
 
-    int FindEmptySlot() const;
+    TSD_ID FindEmptySlot();
 
     float fFXVolume;
     float fMusicVolume;
@@ -217,4 +217,7 @@ class SoundService : public VSoundService
     void Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float fRadius, uint32_t dwColor2, float fRadius2) const;
 
     void ProcessFader(int idx);
+
+    void FreeSound(TSD_ID idx);
+    [[nodiscard]] bool IsFree(TSD_ID idx) const;
 };
