@@ -285,9 +285,13 @@ void Fader::Realize(uint32_t delta_time)
             eventEnd = true;
         }
     }
+
     auto color = (static_cast<uint32_t>((fadeIn ? (1.0f - alpha) : alpha) * 255.0f) << 24);
     if (textureBackID >= 0)
+    {
         color |= 0x00ffffff;
+    }
+
     drawbuf[0].x = 0.0f;
     drawbuf[0].y = 0.0f;
     drawbuf[0].z = 0.5f;
@@ -330,48 +334,56 @@ void Fader::Realize(uint32_t delta_time)
     drawbuf[5].color = color;
     drawbuf[5].u = 1.0f;
     drawbuf[5].v = 1.0f;
-    rs->TextureSet(0, textureBackID);
-    rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2,
-                        drawbuf, sizeof(drawbuf[0]), "Fader");
+
+    if (textureBackID >= 0)
+    {
+        rs->TextureSet(0, textureBackID);
+        rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
+                            D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2, drawbuf,
+                            sizeof(drawbuf[0]), "Fader");
+    }
 
     if (textureID >= 0)
-        color |= 0x00ffffff;
-
-    float dy = 0.0f;
-    float dx = ((float(w) - (4.0f * float(h) / 3.0f)) / 2.0f);
-    if (dx < 10.0f)
-        dx = 0.0f;
-    else
     {
-        dy = 25.0f;
-        dx = ((float(w) - (4.0f * (float(h) - 2.0f * dy) / 3.0f)) / 2.0f);
+        float dy = 0.0f;
+        float dx = ((float(w) - (4.0f * float(h) / 3.0f)) / 2.0f);
+        if (dx < 10.0f)
+            dx = 0.0f;
+        else
+        {
+            dy = 25.0f;
+            dx = ((float(w) - (4.0f * (float(h) - 2.0f * dy) / 3.0f)) / 2.0f);
+        }
+
+        drawbuf[0].x = 0.0f + dx;
+        drawbuf[0].y = 0.0f + dy;
+        drawbuf[1].x = w - dx;
+        drawbuf[1].y = 0.0f + dy;
+        drawbuf[2].x = 0.0f + dx;
+        drawbuf[2].y = h - dy;
+        drawbuf[3].x = 0.0f + dx;
+        drawbuf[3].y = h - dy;
+        drawbuf[4].x = w - dx;
+        drawbuf[4].y = 0.0f + dy;
+        drawbuf[5].x = w - dx;
+        drawbuf[5].y = h - dy;
+
+        rs->TextureSet(0, textureID);
+        if (tipsID >= 0)
+        {
+            rs->TextureSet(1, tipsID);
+            rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
+                                D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2, drawbuf,
+                                sizeof(drawbuf[0]), "FaderWithTips");
+        }
+        else
+        {
+            rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
+                                D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2, drawbuf,
+                                sizeof(drawbuf[0]), "Fader");
+        }
     }
 
-    drawbuf[0].x = 0.0f + dx;
-    drawbuf[0].y = 0.0f + dy;
-    drawbuf[1].x = w - dx;
-    drawbuf[1].y = 0.0f + dy;
-    drawbuf[2].x = 0.0f + dx;
-    drawbuf[2].y = h - dy;
-    drawbuf[3].x = 0.0f + dx;
-    drawbuf[3].y = h - dy;
-    drawbuf[4].x = w - dx;
-    drawbuf[4].y = 0.0f + dy;
-    drawbuf[5].x = w - dx;
-    drawbuf[5].y = h - dy;
-
-    rs->TextureSet(0, textureID);
-    if (tipsID >= 0)
-    {
-        rs->TextureSet(1, tipsID);
-        rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2,
-                            drawbuf, sizeof(drawbuf[0]), "FaderWithTips");
-    }
-    else
-    {
-        rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2,
-                            drawbuf, sizeof(drawbuf[0]), "Fader");
-    }
     // Increase alpha
     if (!endFade)
     {
