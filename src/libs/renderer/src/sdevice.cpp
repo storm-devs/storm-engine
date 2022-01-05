@@ -731,7 +731,7 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     // Choose desired video adapter
     auto adapters_num = d3d->GetAdapterCount();
     if (videoAdapterIndex > adapters_num - 1)
-        videoAdapterIndex = adapters_num - 1;
+        videoAdapterIndex = 0U;
 
     spdlog::info("Querying available DirectX 9 adapters... detected {}:", adapters_num);
     for (UINT i = 0; i != adapters_num; ++i)
@@ -742,7 +742,7 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
         {
             D3DADAPTER_IDENTIFIER9 id;
             d3d->GetAdapterIdentifier(i, 0, &id);
-            spdlog::info("{}: {}", i, id.Description);
+            spdlog::info("{}: {} ({}) ", i, id.Description, id.DeviceName);
         }
     }
     spdlog::info("Using adapter with index {} (configurable by setting adapter=<index> inside engine.ini)",
