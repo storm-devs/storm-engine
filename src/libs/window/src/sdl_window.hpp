@@ -1,7 +1,7 @@
 #pragma once
 
 #include <os_window.hpp>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <map>
 
 namespace storm

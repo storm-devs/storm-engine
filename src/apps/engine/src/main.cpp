@@ -12,7 +12,7 @@
 #include <spdlog/spdlog.h>
 
 #include <os_window.hpp>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 VFILE_SERVICE *fio = nullptr;
 S_DEBUG *CDebug = nullptr;

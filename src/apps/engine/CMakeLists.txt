@@ -54,7 +54,7 @@ STORM_SETUP(
     # external
     fast_float
     sentry-native
-    sdl2
+    sdl
     zlib
 
     # system

@@ -1,9 +1,9 @@
 #include "sdl_input.hpp"
 
-#include <SDL.h>
-#include <SDL_system.h>
-#include <SDL_video.h>
-#include <windows.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_system.h>
+#include <SDL2/SDL_video.h>
+#include <Windows.h>
 #include <map>
 
 namespace storm
