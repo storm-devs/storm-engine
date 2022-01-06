@@ -14,7 +14,7 @@ enum FUNCTION_CODE
     FUNC_RAND,
     FUNC_FRAND,
     FUNC_CREATE_CLASS,
-    FUNC_CREATE_Entity,
+    FUNC_CREATE_ENTITY,
     FUNC_DELETE_Entity,
     FUNC_SET_EVENT_HANDLER,
     FUNC_EXIT_PROGRAM,
@@ -1529,17 +1529,14 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             break;
         }
         pV->Get(TempLong1);
-        TempLong2 = ((TempLong1 + 1) * rand()) / RAND_MAX;
-        if (TempLong2 > TempLong1)
-            TempLong2 = TempLong1;
+        TempLong2 = rand() % (TempLong1 + 1);
         pV = SStack.Push();
-        // TempLong2 = TempLong1; // ***
         pV->Set(TempLong2);
         pVResult = pV;
         return pV;
 
         // create entity
-    case FUNC_CREATE_Entity:
+    case FUNC_CREATE_ENTITY:
 
         pV2 = SStack.Pop(); // class name
         if (!pV2)

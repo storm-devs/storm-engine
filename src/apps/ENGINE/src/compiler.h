@@ -261,7 +261,10 @@ class COMPILER : public VIRTUAL_COMPILER
     // writes down current script stack (internal functions+script functions+events) to logfile
     // currently used for collecting additional crash info
     // TODO: use it for internal errors also
-    void collectCallStack();
+    void CollectCallStack() const;
+
+    // printout script functions usage
+    void PrintoutUsage();
 
 private:
     COMPILER_STAGE CompilerStage;

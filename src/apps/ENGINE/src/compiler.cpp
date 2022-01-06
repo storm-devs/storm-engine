@@ -25,52 +25,36 @@ extern S_DEBUG * CDebug;
 extern uint32_t dwNumberScriptCommandsExecuted;
 
 COMPILER::COMPILER()
+    : bBreakOnError(false), pRunCodeBase(nullptr), CompilerStage(CS_SYSTEM), pEventMessage(nullptr), SegmentsNum(0), InstructionPointer(0),
+      pBuffer(nullptr), ProgramDirectory(nullptr), bCompleted(false), bEntityUpdate(true),
+      pDebExpBuffer(nullptr), nDebExpBufferSize(0), pRun_fi(nullptr), bRuntimeLog(false), nRuntimeLogEventsBufferSize(0),
+      nRuntimeLogEventsNum(0), nRuntimeTicks(0), bFirstRun(true), bWriteCodeFile(false),
+      bDebugInfo(false), DebugSourceLine(0), pCompileTokenTempBuffer(nullptr), bDebugExpressionRun(false),
+      bTraceMode(true), nDebugTraceLineCode(0), nIOBufferSize(0), pIOBuffer(nullptr), rAP(nullptr)
+    
 {
-    CompilerStage = CS_SYSTEM;
     LabelTable.SetStringDataSize(sizeof(uint32_t));
     LabelUpdateTable.SetStringDataSize(sizeof(DOUBLE_DWORD));
-    ProgramDirectory = nullptr;
-    pEventMessage = nullptr;
-    bCompleted = false;
-    SegmentsNum = 0;
+
     //    FuncTab.KeepNameMode(true);    // true for displaying internal functions names
     //    VarTab.KeepNameMode(false);
     //    EventTab.KeepNameMode(false);
     //    DefTab.KeepNameMode(false);
     InitInternalFunctions();
-    bWriteCodeFile = false;
-    bDebugInfo = false;
+
     strcpy_s(DebugSourceFileName, "<no debug information>");
-    DebugSourceLine = 0;
-    InstructionPointer = 0;
-    pCompileTokenTempBuffer = nullptr;
-    pRun_fi = nullptr;
-    pRunCodeBase = nullptr;
+
     SStack.SetVCompiler(this);
     VarTab.SetVCompiler(this);
     srand(GetTickCount());
-    bEntityUpdate = true;
-    pDebExpBuffer = nullptr;
-    nDebExpBufferSize = 0;
-    bDebugExpressionRun = false;
-    bTraceMode = true;
+
     DebugTraceFileName[0] = 0;
-    nDebugTraceLineCode = 0;
-    bBreakOnError = false;
-    bRuntimeLog = false;
-    nRuntimeLogEventsNum = 0;
-    nRuntimeTicks = 0;
-    nRuntimeLogEventsBufferSize = 0;
-    nIOBufferSize = 0;
-    pIOBuffer = nullptr;
 
     rAX.SetVCompiler(this);
     rBX.SetVCompiler(this);
     ExpressionResult.SetVCompiler(this);
-    rAP = nullptr;
+
     // bScriptTrace = false;
-    bFirstRun = true;
-    pBuffer = nullptr;
 
     using storm::logging::getOrCreateLogger;
     logTrace_ = getOrCreateLogger("compile");
@@ -86,59 +70,6 @@ COMPILER::~COMPILER()
 
 void COMPILER::Release()
 {
-    // DWORD m;
-    // FUNCINFO fi;
-
-    // debug log
-    /*    if(bRuntimeLog)
-      {
-        double fMaxTime;
-        DWORD nFuncCode;
-        trace("Script Function Time Usage[func name/code(release mode) : ticks]");
-        for(m=0;m<FuncTab.GetFuncNum();m++)
-        {
-          fMaxTime = 0;
-          nFuncCode = 0;
-          for(n=0;n<FuncTab.GetFuncNum();n++)
-          {
-            FuncTab.GetFuncX(fi,n);
-            if(fi.fTimeUsage == -1.0) continue;
-            if(fMaxTime <= fi.fTimeUsage)
-            {
-              fMaxTime = fi.fTimeUsage;
-              nFuncCode = n;
-            }
-            //if(fi.name)    trace("  %s : %f",fi.name,fi.fTimeUsage);
-            //else trace("  %d : %f",n,fi.fTimeUsage);
-          }
-
-          FuncTab.GetFuncX(fi,nFuncCode);
-          if(fi.name)    trace("  %s",fi.name); else trace("  %d",n);
-          trace("  ticks summary  : %.0f",fi.fTimeUsage);
-          trace("  calls          : %d",fi.nNumberOfCalls);
-          if(fi.nNumberOfCalls != 0) trace("  average ticks  : %.0f",fi.fTimeUsage/fi.nNumberOfCalls);
-
-
-          FuncTab.SetTimeUsage(nFuncCode,-1.0);
-          trace("");
-
-          //if(fi.name)    trace("  %s : %f",fi.name,fi.fTimeUsage);
-          //else trace("  %d : %f",n,fi.fTimeUsage);
-        }
-
-        if(pRuntimeLogEvent)
-        {
-          trace("Script Run Time Log [sec : ms]");
-          for(n=0;n<nRuntimeLogEventsNum;n++)
-          {
-            trace("  %d : %d",n,pRuntimeLogEvent[n]);
-          }
-        }
-        bRuntimeLog = false;
-      }
-    */
-    //--------------------------------------------------------
-
     for (uint32_t n = 0; n < SegmentsNum; n++)
     {
         delete SegmentTable[n].name;
@@ -1089,6 +1020,8 @@ void COMPILER::ProcessFrame(uint32_t DeltaTime)
         }
     }
     EventMsg.RemoveInvalidated();
+
+    PrintoutUsage();
 }
 
 void COMPILER::ResizeBCodeBuffer(SEGMENT_DESC &Segment, uint32_t add_size)
@@ -7069,7 +7002,7 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
         pVar = SStack.Read();
         return pVar;
     case VARIABLE:
-        real_var = VarTab.GetVar(*((uint32_t *)&pCodeBase[ip]));
+        real_var = VarTab.GetVar(*reinterpret_cast<const uint32_t *>(&pCodeBase[ip]));
         if (real_var == nullptr)
         {
             SetError("Global variable not found");
@@ -7082,7 +7015,7 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
         }
         return real_var->value.get();
     case LOCAL_VARIABLE:
-        pVar = SStack.Read(pRun_fi->stack_offset, *((uint32_t *)&pCodeBase[ip]));
+        pVar = SStack.Read(pRun_fi->stack_offset, *reinterpret_cast<const uint32_t *>(&pCodeBase[ip]));
         if (pVar == nullptr)
         {
             SetError("Local variable not found");
@@ -7104,7 +7037,7 @@ DATA *COMPILER::GetOperand(const char *pCodeBase, uint32_t &ip, S_TOKEN_TYPE *pT
     return nullptr;
 }
 
-void COMPILER::collectCallStack()
+void COMPILER::CollectCallStack() const
 {
     logStack_->trace("Call stack:");
     auto callStackCopy = callStack_;
@@ -7130,6 +7063,52 @@ void COMPILER::collectCallStack()
         }
 
         callStackCopy.pop();
+    }
+}
+
+void COMPILER::PrintoutUsage()
+{
+    if (bRuntimeLog && core.Controls->GetDebugAsyncKeyState(VK_BACK) < 0 &&
+        core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+    {
+        logTrace_->debug("Script Function Time Usage[func name/code(release mode) : ticks]");
+        for (size_t m = 0; m < FuncTab.GetFuncNum(); m++)
+        {
+            FuncInfo fi;
+            for (size_t n = 0; n < FuncTab.GetFuncNum(); n++)
+            {
+                FuncTab.GetFuncX(fi, n);
+                if (fi.number_of_calls == 0)
+                {
+                    continue;
+                }
+
+                FuncTab.GetFunc(fi, n);
+                if (!fi.name.empty())
+                {
+                    logTrace_->debug("  {}", fi.name);
+                }
+                else
+                {
+                    logTrace_->debug("  {}", n);
+                }
+                logTrace_->debug("  ticks summary  : {}", fi.usage_time);
+                logTrace_->debug("  calls          : {}", fi.number_of_calls);
+                if (fi.number_of_calls != 0)
+                {
+                    logTrace_->debug("  average ticks  : {}", static_cast<float>(fi.usage_time) / fi.number_of_calls);
+                }
+
+                FuncTab.AddTime(n, ~fi.usage_time);
+                logTrace_->debug("");
+            }
+        }
+
+        logTrace_->debug("Script Run Time Log [sec : ms]");
+        for (size_t n = 0; n < nRuntimeLogEventsNum; n++)
+        {
+            logTrace_->debug("  %d : %d", n, pRuntimeLogEvent[n]);
+        }
     }
 }
 

@@ -65,6 +65,8 @@ class FuncTable
     FuncTable() = default;
     ~FuncTable();
 
+    // get func num
+    size_t GetFuncNum() const;
     // get func index by name
     size_t FindFunc(const std::string &func_name) const;
     // add func to table, returns func index

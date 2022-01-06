@@ -34,7 +34,7 @@ class SDLWindow : public OSWindow
     void ProcessEvent(const SDL_WindowEvent &evt);
 
   private:
-    static int SDLEventHandler(void *userdata, SDL_Event *evt);
+    static int SDLCALL SDLEventHandler(void *userdata, SDL_Event *evt);
 
     std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>> window_ = nullptr;
     uint32_t sdlID_;

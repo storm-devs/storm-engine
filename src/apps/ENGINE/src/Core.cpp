@@ -937,7 +937,7 @@ void CORE::stopFrameProcessing()
 
 void CORE:: collectCrashInfo()
 {
-    Compiler->collectCallStack();
+    Compiler->CollectCallStack();
 }
 
 void CORE::loadCompatibilitySettings(INIFILE &inifile)
