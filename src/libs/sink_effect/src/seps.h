@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Matrix.h"
+#include "matrix.h"
 #include "dx9render.h"
 #include "geometry.h"
-#include "vfile_service.h"
-#include "vmodule_api.h"
+#include "v_file_service.h"
+#include "v_module_api.h"
 
 #define MAX_PS_TEXTURES 8
 #define VERTEXS_ON_PARTICLE 6

@@ -1,11 +1,11 @@
 #include "ship.h"
-#include "AIFlowGraph.h"
-#include "Track.h"
+#include "ai_flow_graph.h"
+#include "track.h"
 #include "inlines.h"
 #include "shared/mast_msg.h"
 #include "shared/messages.h"
 #include "shared/sail_msg.h"
-#include "shared/sea_ai/Script_defines.h"
+#include "shared/sea_ai/script_defines.h"
 #include "shared/sound.h"
 
 CREATE_CLASS(SHIP)

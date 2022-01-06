@@ -1,12 +1,12 @@
 #include "storm/xinterface/options_parser.hpp"
 
 #include "xinterface.h"
-#include "BackScene/backscene.h"
-#include "HelpChooser/HelpChooser.h"
-#include "InfoHandler.h"
-#include "Nodes/all_xinode.h"
-#include "Stringservice/obj_strservice.h"
-#include "Stringservice/strservice.h"
+#include "back_scene/back_scene.h"
+#include "help_chooser/help_chooser.h"
+#include "info_handler.h"
+#include "nodes/all_xi_node.h"
+#include "string_service/obj_str_service.h"
+#include "string_service/str_service.h"
 #include "xservice.h"
 #include <cstdio>
 

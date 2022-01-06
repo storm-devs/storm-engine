@@ -1,5 +1,5 @@
 #include "script_func.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "s_import_func.h"
 #include "sail.h"

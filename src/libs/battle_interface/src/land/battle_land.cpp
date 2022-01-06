@@ -1,5 +1,5 @@
 #include "battle_land.h"
-#include "battle_mansign.h"
+#include "battle_man_sign.h"
 #include "core.h"
 #include "message.h"
 #include "shared/battle_interface/msg_control.h"

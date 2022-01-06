@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Matrix.h"
-#include "Nodes/xi_util.h"
-#include "QuestFileReader//QuestFileReader.h"
+#include "matrix.h"
+#include "nodes/xi_util.h"
+#include "quest_file_reader/quest_file_reader.h"
 #include "dx9render.h"
 #include "editor/editor.h"
 #include "inode.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 #include <filesystem>
 

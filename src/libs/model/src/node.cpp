@@ -1,6 +1,6 @@
 //#define SHOW_SPHERES 'Q'
 
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "modelr.h"
 

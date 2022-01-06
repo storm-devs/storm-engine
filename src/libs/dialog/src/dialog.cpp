@@ -1,9 +1,9 @@
 #include "dialog.h"
-#include "VSoundService.h"
+#include "v_sound_service.h"
 #include "core.h"
 #include "defines.h"
 
-#include "vfile_service.h"
+#include "v_file_service.h"
 
 CREATE_CLASS(DIALOG)
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../bi_defines.h"
-#include "Sd2_h/VAI_ObjBase.h"
+#include "sd2_h/vai_objbase.h"
 
 class SHIP_DESCRIBE_LIST
 {

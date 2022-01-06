@@ -3,7 +3,7 @@
 #include "collide.h"
 #include "dx9render.h"
 #include "model.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 class Shadow : public Entity
 {

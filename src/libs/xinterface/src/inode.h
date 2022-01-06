@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Nodes/xi_tooltips.h"
-#include "VideoTexture.h"
+#include "nodes/xi_tooltips.h"
+#include "video_texture.h"
 #include "core.h"
 #include "defines.h"
 #include "dx9render.h"
-#include "vfile_service.h"
-#include "vmodule_api.h"
-#include "vxservice.h"
+#include "v_file_service.h"
+#include "v_module_api.h"
+#include "vx_service.h"
 
 class CXI_ToolTip;
 

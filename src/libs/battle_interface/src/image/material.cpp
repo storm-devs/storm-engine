@@ -1,7 +1,7 @@
 #include "material.h"
 #include "../bi_defines.h"
 #include "image.h"
-#include "imgrender.h"
+#include "img_render.h"
 
 BIImageMaterial::BIImageMaterial(VDX9RENDER *pRS, BIImageRender *pImgRender)
 {

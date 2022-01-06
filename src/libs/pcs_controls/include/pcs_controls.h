@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ControlTree.h"
-#include "KeyBuffer.h"
+#include "control_tree.h"
+#include "key_buffer.h"
 
 #include <memory>
 

@@ -3,11 +3,11 @@
 
 #include "core.h"
 
-#include "Character.h"
-#include "Entity.h"
+#include "character.h"
+#include "entity.h"
 #include "inlines.h"
 #include "shared/messages.h"
-#include "shared/sea_ai/Script_defines.h"
+#include "shared/sea_ai/script_defines.h"
 
 #define ISLAND_CODE -1
 #define INVALID_SHIP_IDX 0xACACAC

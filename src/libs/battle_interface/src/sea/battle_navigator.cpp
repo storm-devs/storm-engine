@@ -3,9 +3,9 @@
 
 #include "core.h"
 
-#include "../Utils.h"
-#include "Entity.h"
-#include "Island_Base.h"
+#include "../utils.h"
+#include "entity.h"
+#include "island_base.h"
 #include "shared/battle_interface/msg_control.h"
 #include "ship_base.h"
 #include "ships_list.h"

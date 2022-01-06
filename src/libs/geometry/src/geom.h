@@ -9,7 +9,7 @@ Import library class
 ******************************************************************************/
 #pragma once
 
-#include "Rdf.h"
+#include "rdf.h"
 #include "geos.h"
 
 #define EPSILON 4e-7

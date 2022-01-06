@@ -1,7 +1,7 @@
 #include "battle_command.h"
-#include "Utils.h"
+#include "utils.h"
 #include "core.h"
-#include "image/imgrender.h"
+#include "image/img_render.h"
 #include "sea/ships_list.h"
 #include "shared/battle_interface/msg_control.h"
 
