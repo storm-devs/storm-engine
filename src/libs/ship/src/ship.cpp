@@ -1612,7 +1612,6 @@ void SHIP::CalcRealBoxsize()
     for (long i = 0;; i++)
     {
         NODE *pN = pM->GetNode(i);
-        i++;
         if (!pN)
             break;
         pN->geo->GetInfo(ginfo);
