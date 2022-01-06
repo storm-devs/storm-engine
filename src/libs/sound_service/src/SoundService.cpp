@@ -19,7 +19,10 @@ CREATE_CLASS(SoundVisualisationEntity)
 #define DISTANCEFACTOR 1.0f
 #define CHECKFMODERR(expr) ErrorHandler(expr, __FILE__, __LINE__, __func__, #expr)
 
-FMOD_RESULT SoundService::ErrorHandler(const FMOD_RESULT result, const char *file, unsigned line, const char *func,
+namespace
+{
+
+FMOD_RESULT ErrorHandler(const FMOD_RESULT result, const char *file, unsigned line, const char *func,
                                        const char *expr)
 {
     if (result != FMOD_OK)
@@ -28,6 +31,8 @@ FMOD_RESULT SoundService::ErrorHandler(const FMOD_RESULT result, const char *fil
     }
     return result;
 }
+
+} // namespace
 
 SoundService::SoundService()
 {
@@ -89,6 +94,8 @@ bool SoundService::Init()
     CHECKFMODERR(system->init(MAX_SOUNDS_SLOTS, FMOD_INIT_NORMAL, nullptr));
     CHECKFMODERR(system->set3DSettings(1.0, DISTANCEFACTOR, 1.0f));
 
+    SoundsActive = 2; // 0 and 1 are special
+
     InitAliases();
     CreateEntityIfNeed();
 
@@ -105,8 +112,9 @@ void SoundService::RunEnd()
 
 void SoundService::ProcessFader(int idx)
 {
-    if (PlayingSounds[idx].bFree)
+    if (IsFree(idx))
         return;
+
     if (fabsf(PlayingSounds[idx].fFaderCurrentVolume - PlayingSounds[idx].fFaderNeedVolume) < 0.001f)
     {
         if (PlayingSounds[idx].fFaderDeltaInSec < 0)
@@ -148,9 +156,23 @@ void SoundService::ProcessFader(int idx)
     PlayingSounds[idx].channel->setVolume(PlayingSounds[idx].fFaderCurrentVolume);
 }
 
+void SoundService::FreeSound(const TSD_ID idx)
+{
+    PlayingSounds[idx].bFree = true;
+    if (idx >= 2 && idx < SoundsActive)
+    {
+        std::swap(PlayingSounds[idx], PlayingSounds[SoundsActive - 1]);
+        --SoundsActive;
+    }
+}
+
+bool SoundService::IsFree(const TSD_ID idx) const
+{
+    return PlayingSounds[idx].bFree;
+}
+
 void SoundService::RunStart()
 {
-    FMOD_RESULT status;
     CreateEntityIfNeed();
 
     if (rs)
@@ -172,21 +194,25 @@ void SoundService::RunStart()
     ProcessFader(1);
 
     // release the sounds that have played ...
-    for (auto i = 0; i < MAX_SOUNDS_SLOTS; i++)
+    for (TSD_ID i = 0; i < SoundsActive; i++)
     {
-        if (PlayingSounds[i].bFree)
+        if (IsFree(i))
+        {
             continue;
+        }
 
         // If it's just paused, don't need to touch it ...
         bool paused = true;
 
-        status = PlayingSounds[i].channel->getPaused(&paused);
+        FMOD_RESULT status = PlayingSounds[i].channel->getPaused(&paused);
         if (status != FMOD_OK)
         {
-            if (TRACE_INFORMATION)
+            if constexpr (TRACE_INFORMATION)
                 core.Trace("PlayingSounds[%d].channel 0x%08X %s paused %d status %d", i, PlayingSounds[i].channel,
                            PlayingSounds[i].Name.c_str(), paused, status);
-            PlayingSounds[i].bFree = true;
+            FreeSound(i);
+            --i;
+
             continue;
         }
 
@@ -198,35 +224,43 @@ void SoundService::RunStart()
 
         if (!is_playing || status != FMOD_OK)
         {
-            PlayingSounds[i].bFree = true;
             PlayingSounds[i].channel = nullptr;
 
-            if (i == 0 && OGG_sound[0] != nullptr)
+            if (i == 0)
             {
-                CHECKFMODERR(OGG_sound[0]->release());
-                OGG_sound[0] = nullptr;
+                if (OGG_sound[0] != nullptr)
+                {
+                    CHECKFMODERR(OGG_sound[0]->release());
+                    OGG_sound[0] = nullptr;
+                }
             }
-            if (i == 1 && OGG_sound[1] != nullptr)
+            else if (i == 1)
             {
-                CHECKFMODERR(OGG_sound[1]->release());
-                OGG_sound[1] = nullptr;
+                if (OGG_sound[1] != nullptr)
+                {
+                    CHECKFMODERR(OGG_sound[1]->release());
+                    OGG_sound[1] = nullptr;
+                }
             }
 
+            FreeSound(i);
             core.Event("SoundEnded", "l", i + 1);
+
+            --i;
         }
     }
     ProcessSoundSchemes();
 }
 
-int SoundService::FindEmptySlot() const
+TSD_ID SoundService::FindEmptySlot()
 {
-    for (auto i = 2; i < MAX_SOUNDS_SLOTS; i++)
+    if (SoundsActive > MAX_SOUNDS_SLOTS)
     {
-        if (PlayingSounds[i].bFree)
-            return i;
+        core.Trace("SoundService::FindEmptySlot(): no empty slots");
+        return -1;
     }
-    core.Trace("SoundService::FindEmptySlot(): no empty slots");
-    return -1;
+
+    return SoundsActive++;
 }
 
 const char *SoundService::GetRandomName(tAlias *_alias) const
@@ -257,7 +291,7 @@ const char *SoundService::GetRandomName(tAlias *_alias) const
 int SoundService::GetAliasIndexByName(const char *szAliasName)
 {
     const uint32_t dwSearchHash = TOREMOVE::HashNoCase(szAliasName);
-    for (uint32_t i = 0; i < Aliases.size(); i++)
+    for (size_t i = 0; i < Aliases.size(); i++)
     {
         if (Aliases[i].dwNameHash == dwSearchHash)
         {
@@ -288,7 +322,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
         {
             // play sound from the alias ...
             FileName = GetRandomName(&Aliases[AliasIdx]);
-            if (TRACE_INFORMATION)
+            if constexpr (TRACE_INFORMATION)
                 core.Trace("Play sound from alias %s", FileName.c_str());
 
             _minDistance = Aliases[AliasIdx].fMinDistance;
@@ -458,7 +492,6 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     }
 
     PlayingSounds[SoundIdx].bFree = false;
-
     // set the looping ..
     if (_looped)
     {
@@ -470,7 +503,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     }
 
     // ---------- loop through all sounds looking for the one with the same channel --------------
-    for (uint32_t j = 0; j < MAX_SOUNDS_SLOTS; j++)
+    for (TSD_ID j = 0; j < MAX_SOUNDS_SLOTS; j++)
     {
         if (j == SoundIdx)
             continue;
@@ -479,7 +512,8 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
         {
             // note that the sound is thrown out ...
             // so as not to stop him ...
-            PlayingSounds[j].bFree = true;
+            FreeSound(j);
+            --j;
         }
     }
     // Returning the sound ID ...
@@ -492,7 +526,7 @@ void SoundService::SoundSet3DParam(TSD_ID _id, eSoundMessage _message, const voi
         return;
     _id--;
 
-    if (PlayingSounds[_id].bFree)
+    if (IsFree(_id))
         return;
 
     auto vVelocity = CVECTOR(0.0f, 0.0f, 0.0f);
@@ -500,15 +534,13 @@ void SoundService::SoundSet3DParam(TSD_ID _id, eSoundMessage _message, const voi
     switch (_message)
     {
     case SM_MAX_DISTANCE: {
-        float maxDistance;
-        maxDistance = *((float *)_op);
+        float maxDistance = *((float *)_op);
         CHECKFMODERR(PlayingSounds[_id].channel->set3DMinMaxDistance(NULL, maxDistance));
         break;
     }
 
     case SM_MIN_DISTANCE: {
-        float minDistance;
-        minDistance = *((float *)_op);
+        float minDistance = *((float *)_op);
         CHECKFMODERR(PlayingSounds[_id].channel->set3DMinMaxDistance(minDistance, NULL));
         break;
     }
@@ -531,7 +563,7 @@ void SoundService::SoundRestart(TSD_ID _id)
     if (_id == 0)
         return;
     _id--;
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("Sound restart !");
 }
 
@@ -540,7 +572,7 @@ void SoundService::SoundRelease(TSD_ID _id)
     if (_id == 0)
         return;
     _id--;
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("Sound release !");
 }
 
@@ -548,10 +580,12 @@ void SoundService::SoundSetVolume(TSD_ID _id, float _volume)
 {
     if (_id == 0)
     {
-        for (auto i = 0; i < MAX_SOUNDS_SLOTS; i++)
+        for (TSD_ID i = 0; i < SoundsActive; i++)
         {
-            if (PlayingSounds[i].bFree)
+            if (IsFree(i))
+            {
                 continue;
+            }
 
             PlayingSounds[i].fSoundVolume = _volume;
 
@@ -583,7 +617,7 @@ void SoundService::SoundSetVolume(TSD_ID _id, float _volume)
     }
 
     _id--;
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("Sound set volume !");
     if (_id <= 1)
     {
@@ -593,7 +627,7 @@ void SoundService::SoundSetVolume(TSD_ID _id, float _volume)
         }
     }
 
-    if (PlayingSounds[_id].bFree)
+    if (IsFree(_id))
         return;
 
     PlayingSounds[_id].fSoundVolume = _volume;
@@ -621,24 +655,27 @@ bool SoundService::SoundIsPlaying(TSD_ID _id)
     if (_id == 0)
         return false;
     _id--;
-    return !PlayingSounds[_id].bFree;
+    return !IsFree(_id);
 }
 
 void SoundService::SoundResume(TSD_ID _id, long _time /* = 0*/)
 {
     if (_id == 0 || _id == 1 || _id == -1)
     {
-        for (auto i = 0; i < MAX_SOUNDS_SLOTS; i++)
+        for (TSD_ID i = 0; i < SoundsActive; i++)
         {
-            if (PlayingSounds[i].bFree)
+            if (IsFree(i))
+            {
                 continue;
+            }
+
             CHECKFMODERR(PlayingSounds[i].channel->setPaused(false));
         }
         return;
     }
 
     _id--;
-    if (PlayingSounds[_id].bFree)
+    if (IsFree(_id))
     {
         core.Trace("Can't sound resume %d !!!! Sound is not playing !!!!", _id);
         return;
@@ -651,7 +688,7 @@ float SoundService::SoundGetPosition(TSD_ID _id)
     if (_id == 0)
         return 0;
     _id--;
-    if (PlayingSounds[_id].bFree)
+    if (IsFree(_id))
         return 0;
 
     unsigned int SoundPositionInMilisecond;
@@ -705,12 +742,13 @@ void SoundService::SetMasterVolume(float _fxVolume, float _musicVolume, float _s
     fMusicVolume = _musicVolume;
     fSpeechVolume = _speechVolume;
 
-    for (int i = 0; i < MAX_SOUNDS_SLOTS; i++)
+    for (TSD_ID i = 0; i < SoundsActive; i++)
     {
-        if (PlayingSounds[i].bFree)
+        if (IsFree(i))
         {
             continue;
         }
+
 
         // update volume.....
         float _volume = PlayingSounds[i].fSoundVolume;
@@ -734,10 +772,11 @@ void SoundService::SetMasterVolume(float _fxVolume, float _musicVolume, float _s
         const auto status = CHECKFMODERR(PlayingSounds[i].channel->setVolume(_volume));
         if (status != FMOD_OK)
         {
-            PlayingSounds[i].bFree = true;
+            FreeSound(i);
+            --i;
         }
     }
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("Set master volume");
 }
 
@@ -746,7 +785,7 @@ void SoundService::GetMasterVolume(float *_fxVolume, float *_musicVolume, float 
     *_fxVolume = fFXVolume;
     *_musicVolume = fMusicVolume;
     *_speechVolume = fSpeechVolume;
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("Get master volume");
 }
 
@@ -754,23 +793,28 @@ void SoundService::SetPitch(float _pitch)
 {
     fPitch = (_pitch >= 0.0f) ? _pitch : 0.0f;
 
-    for (int i = 0; i < MAX_SOUNDS_SLOTS; i++)
+    for (TSD_ID i = 0; i < SoundsActive; i++)
     {
-        if (PlayingSounds[i].bFree)
+        if (IsFree(i))
+        {
             continue;
+        }
 
         const auto status = CHECKFMODERR(PlayingSounds[i].channel->setPitch(fPitch));
         if (status != FMOD_OK)
-            PlayingSounds[i].bFree = true;
+        {
+            FreeSound(i);
+            --i;
+        }
     }
 
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("Set pitch");
 }
 
 float SoundService::GetPitch()
 {
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("Get pitch");
     return fPitch;
 }
@@ -789,7 +833,6 @@ void SoundService::SetEnabled(bool _enabled)
 void SoundService::SoundStop(TSD_ID _id, long _time)
 {
     bool is_playing; // boal fix
-    FMOD_RESULT status;
 
     if (_id == 0)
     {
@@ -832,10 +875,13 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
             start = 0;
         }
 
-        for (int i = start; i < MAX_SOUNDS_SLOTS; i++)
+     for (TSD_ID i = 0; i < SoundsActive; i++)
         {
-            if (PlayingSounds[i].bFree)
+            if (IsFree(i))
+            {
                 continue;
+            }
+
 
             if (i <= 1)
             {
@@ -844,14 +890,15 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
                 SetOGGPosition(PlayingSounds[i].Name.c_str(), OGGpos);
             }
 
-            status = PlayingSounds[i].channel->isPlaying(&is_playing);
+            FMOD_RESULT status = PlayingSounds[i].channel->isPlaying(&is_playing);
             if (!is_playing || status != FMOD_OK) // boal fix
             {
-                if (TRACE_INFORMATION)
+                if constexpr (TRACE_INFORMATION)
                     core.Trace("PlayingSounds[%d].channel 0x%08X %s status %d", i, PlayingSounds[i].channel,
                                PlayingSounds[i].Name.c_str(), status);
 
-                PlayingSounds[i].bFree = true;
+                FreeSound(i);
+                --i;
             }
             else
             {
@@ -880,7 +927,7 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
     _id--;
 
     // Delete the selected
-    if (PlayingSounds[_id].bFree)
+    if (IsFree(_id))
         return;
 
     if (_time > 0)
@@ -901,12 +948,12 @@ void SoundService::SoundStop(TSD_ID _id, long _time)
         }
 
         auto status = FMOD_OK;
-        if (!PlayingSounds[_id].bFree) // boal fix
+        if (!IsFree(_id)) // boal fix
         {
             status = CHECKFMODERR(PlayingSounds[_id].channel->isPlaying(&is_playing));
             if (!is_playing || status != FMOD_OK) // boal fix
             {
-                PlayingSounds[_id].bFree = true;
+                FreeSound(_id);
             }
             else
             {
@@ -943,7 +990,7 @@ void SoundService::AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in
         snd.fProbability = DEFAULT_PROBABILITY;
         snd.FileName = tempString2;
 
-        if (TRACE_INFORMATION)
+        if constexpr (TRACE_INFORMATION)
             core.Trace("  -> sound %s", snd.FileName.c_str());
         _alias->SoundFiles.push_back(snd);
 
@@ -960,7 +1007,7 @@ void SoundService::AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in
 
     *(--col) = 0; // truncate at first ','
     snd.FileName = tempString2;
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("  -> sound %s, %f", snd.FileName.c_str(), snd.fProbability);
     _alias->SoundFiles.push_back(snd);
 }
@@ -971,7 +1018,7 @@ void SoundService::AddAlias(INIFILE &_iniFile, char *_sectionName)
     if (!_sectionName)
         return;
 
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("Add sound alias %s", _sectionName);
     Aliases.push_back(tAlias{});
     tAlias &alias = Aliases.back();
@@ -999,7 +1046,7 @@ void SoundService::LoadAliasFile(const char *_filename)
     std::string iniName = ALIAS_DIRECTORY;
     iniName += _filename;
 
-    if (TRACE_INFORMATION)
+    if constexpr (TRACE_INFORMATION)
         core.Trace("Find sound alias file %s", iniName.c_str());
     auto aliasIni = fio->OpenIniFile(iniName.c_str());
     if (!aliasIni)
@@ -1078,10 +1125,12 @@ void SoundService::DebugDraw()
     ind.SetIdentity();
     rs->SetWorld(ind);
 
-    for (int i = 0; i < MAX_SOUNDS_SLOTS; i++)
+    for (TSD_ID i = 0; i < SoundsActive; i++)
     {
-        if (PlayingSounds[i].bFree)
+        if (IsFree(i))
+        {
             continue;
+        }
 
         bool bVirtual;
         PlayingSounds[i].channel->isVirtual(&bVirtual);
@@ -1174,7 +1223,7 @@ void SoundService::DebugDraw()
     rs->Print(0, 32, "Real sounds %d, Total sounds %d", RealCount, Count);
     rs->Print(800, 0, "Sound schemes %d", SoundSchemeChannels.size());
     Ypos = 16;
-    for (uint32_t i = 0; i < SoundSchemeChannels.size(); i++)
+    for (size_t i = 0; i < SoundSchemeChannels.size(); i++)
     {
         rs->Print(810, Ypos, "[%d] %s", i, SoundSchemeChannels[i].soundName.c_str());
         Ypos += 16;
@@ -1185,7 +1234,7 @@ int SoundService::GetFromCache(const char *szName, eSoundType _type)
 {
     const uint32_t dwSearchHash = TOREMOVE::HashNoCase(szName);
 
-    for (uint32_t i = 0; i < SoundCache.size(); i++)
+    for (size_t i = 0; i < SoundCache.size(); i++)
     {
         if (SoundCache[i].type != _type)
             continue;
@@ -1481,7 +1530,7 @@ void SoundService::ProcessSoundSchemes()
     // handle schemes
     const uint32_t dTime = core.GetDeltaTime();
 
-    for (uint32_t i = 0; i < SoundSchemeChannels.size(); i++)
+    for (size_t i = 0; i < SoundSchemeChannels.size(); i++)
     {
         if (SoundSchemeChannels[i].looped)
         {
@@ -1514,7 +1563,7 @@ int SoundService::GetOGGPositionIndex(const char *szName)
 {
     const uint32_t dwHash = TOREMOVE::HashNoCase(szName);
 
-    for (uint32_t i = 0; i < OGGPosition.size(); i++)
+    for (size_t i = 0; i < OGGPosition.size(); i++)
     {
         if (OGGPosition[i].dwHash == dwHash)
         {
