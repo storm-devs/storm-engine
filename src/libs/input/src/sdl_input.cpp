@@ -288,10 +288,13 @@ inline unsigned int keyToSDL(KeyboardKey key)
 }
 } // namespace
 
-SDLInput::SDLInput() : keyStates_(nullptr)
+SDLInput::SDLInput()
 {
     keyStates_ = SDL_GetKeyboardState(nullptr);
+#ifndef _WIN32
+    // since SDL 2.0.18 breaks WINAPI mouse api
     SDL_SetRelativeMouseMode(SDL_TRUE);
+#endif
     SDL_AddEventWatch(&SDLEventHandler, this);
     OpenController();
 }

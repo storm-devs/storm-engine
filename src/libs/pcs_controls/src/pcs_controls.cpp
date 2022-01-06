@@ -424,6 +424,21 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
 
 void PCS_CONTROLS::Update(uint32_t DeltaTime)
 {
+#ifdef _WIN32
+    static int nMouseXPrev, nMouseYPrev;
+    POINT point;
+    GetCursorPos(&point);
+
+    nMouseDx = point.x - nMouseXPrev;
+    nMouseDy = point.y - nMouseYPrev;
+
+    RECT r;
+    GetWindowRect(core.GetAppHWND(), &r);
+    nMouseXPrev = r.left + (r.right - r.left) / 2;
+    nMouseYPrev = r.top + (r.bottom - r.top) / 2;
+    SetCursorPos(nMouseXPrev, nMouseYPrev);
+#endif
+
     m_ControlTree.Process();
     m_KeyBuffer.Reset();
 
