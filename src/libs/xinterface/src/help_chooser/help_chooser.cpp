@@ -36,7 +36,7 @@ HELPCHOOSER::~HELPCHOOSER()
 void HELPCHOOSER::SetDevice()
 {
     // get render service
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
 }

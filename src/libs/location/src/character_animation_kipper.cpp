@@ -54,10 +54,10 @@ bool CharacterAnimationKipper::Init()
         return false;
     }
 
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
-    auto *asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
+    auto *asr = static_cast<AnimationService *>(core.GetService("AnimationServiceImp"));
     if (!asr)
         throw std::runtime_error("Anumation service not created!");
     aniMan = asr->CreateAnimation("man");

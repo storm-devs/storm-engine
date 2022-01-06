@@ -27,6 +27,10 @@
 #include "defines.h"
 #include "entity.h"
 
+#ifdef GetObject
+#undef GetObject
+#endif
+
 CREATE_CLASS(WorldMap)
 
 //============================================================================================
@@ -136,13 +140,13 @@ bool WorldMap::Init()
     EntityManager::AddToLayer(REALIZE, GetId(), 10000);
 
     // DX9 render
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
     rs->SetPerspective((1.57f + 1.0f) / 2);
     wdmObjects->rs = rs;
     // GS
-    wdmObjects->gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    wdmObjects->gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     // Create map objects
     WdmRenderObject *ro;
     // Create islands

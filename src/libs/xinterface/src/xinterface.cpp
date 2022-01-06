@@ -182,13 +182,13 @@ void XINTERFACE::SetDevice()
     m_UtilContainer.Init();
 
     // get render service
-    pRenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    pRenderService = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!pRenderService)
     {
         throw std::runtime_error("No service: dx9render");
     }
 
-    pStringService = static_cast<VSTRSERVICE *>(core.CreateService("STRSERVICE"));
+    pStringService = static_cast<VSTRSERVICE *>(core.GetService("STRSERVICE"));
     if (!pStringService)
     {
         throw std::runtime_error("No service: strservice");
@@ -1069,7 +1069,7 @@ void XINTERFACE::LoadIni()
         throw std::runtime_error("ini file not found!");
 
     RECT Screen_Rect;
-    GetWindowRect(core.GetAppHWND(), &Screen_Rect);
+    GetWindowRect(static_cast<HWND>(core.GetAppHWND()), &Screen_Rect);
 
     fScale = 1.0f;
     const auto screenSize = core.GetScreenSize();

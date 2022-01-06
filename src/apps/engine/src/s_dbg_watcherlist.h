@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core.h"
+#include "core_impl.h"
 #include "tm_list.h"
 
 class WATCHER_LIST : public TM_LIST

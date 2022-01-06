@@ -35,7 +35,7 @@ bool AISeaGoods::Init()
 
 void AISeaGoods::SetDevice()
 {
-    pGeoService = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    pGeoService = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     Assert(pGeoService);
 }
 

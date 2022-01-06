@@ -50,7 +50,7 @@ CAviPlayer::~CAviPlayer()
 
 bool CAviPlayer::Init()
 {
-    if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
+    if ((rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"))) == nullptr)
     {
         throw std::runtime_error("Can`t create render service");
     }
@@ -233,7 +233,7 @@ bool CAviPlayer::PlayMedia(const char *fileName)
     }
 
     RECT dstRect;
-    GetWindowRect(core.GetAppHWND(), &dstRect);
+    GetWindowRect(static_cast<HWND>(core.GetAppHWND()), &dstRect);
     auto dstWidth = dstRect.right - dstRect.left;
     auto dstHeight = dstRect.bottom - dstRect.top;
 
@@ -314,7 +314,7 @@ bool CAviPlayer::GetInterfaces()
         core.Trace("Video Error!!! Can`t create DirectDraw interface");
         return false;
     }
-    hr = pDD->SetCooperativeLevel(core.GetAppHWND(), DDSCL_NORMAL);
+    hr = pDD->SetCooperativeLevel(static_cast<HWND>(core.GetAppHWND()), DDSCL_NORMAL);
     if (FAILED(hr))
     {
         core.Trace("Video Error!!! Can`t SetCooperativeLevel for DirectDraw");

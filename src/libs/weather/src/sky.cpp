@@ -84,7 +84,7 @@ bool SKY::Init()
 
 void SKY::SetDevice()
 {
-    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     Assert(pRS);
 }
 

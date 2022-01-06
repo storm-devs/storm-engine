@@ -42,11 +42,11 @@ MODELR::~MODELR()
 
 bool MODELR::Init()
 {
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
 
-    GeometyService = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    GeometyService = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (!GeometyService)
         throw std::runtime_error("No service: geometry");
 
@@ -344,7 +344,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
     case MSG_MODEL_LOAD_ANI: // set animation
     {
         str = message.String();
-        auto asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
+        auto asr = static_cast<AnimationService *>(core.GetService("AnimationServiceImp"));
         ani = asr->CreateAnimation(str.c_str());
         if (ani)
             return 1;

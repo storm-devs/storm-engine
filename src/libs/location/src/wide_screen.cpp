@@ -33,7 +33,7 @@ bool WideScreen::Init()
     // core.LayerCreate("realize", true, false);
     EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::AddToLayer(REALIZE, GetId(), -257);
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
     D3DVIEWPORT9 vp;

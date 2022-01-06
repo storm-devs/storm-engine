@@ -183,7 +183,7 @@ void SEA::CreateVertexDeclaration()
 
 bool SEA::Init()
 {
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     CreateVertexDeclaration();
     {
         auto pEngineIni = fio->OpenIniFile(core.EngineIniFileName());

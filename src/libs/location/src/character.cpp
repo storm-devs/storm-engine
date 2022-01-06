@@ -666,7 +666,7 @@ bool Character::Init()
     if (!location)
         return false;
     effects = EntityManager::GetEntityId("LocationEffects");
-    soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
+    soundService = static_cast<VSoundService *>(core.GetService("SoundService"));
     // register our appearance in the location
     location->supervisor.AddCharacter(this);
     // The sea
@@ -1017,7 +1017,7 @@ void Character::SetSignModel()
         return;
     }
     // Path to textures
-    VGEOMETRY *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    VGEOMETRY *gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (gs)
         gs->SetTexturePath("quest_signs\\");
     // Path to the model
@@ -3066,7 +3066,7 @@ bool Character::zLoadModel(MESSAGE &message)
     const std::string &name = message.String();
     const std::string &ani = message.String();
     // Path to textures
-    auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    auto *gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (gs)
         gs->SetTexturePath("characters\\");
     // Path to the model

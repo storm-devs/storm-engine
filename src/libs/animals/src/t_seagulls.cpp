@@ -57,8 +57,8 @@ void TSeagulls::Init()
     startY = 0.f;
     LoadSettings();
 
-    renderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
-    soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
+    renderService = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
+    soundService = static_cast<VSoundService *>(core.GetService("SoundService"));
 
     if (!renderService)
         throw std::runtime_error("!Seagulls: No service: dx9render");

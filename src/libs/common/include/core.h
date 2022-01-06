@@ -1,22 +1,14 @@
 #pragma once
-#include <windows.h>
 
 // common includes
+#include "message.h"
 #include "entity_manager.h"
 #include "controls.h"
 #include "engine_version.hpp"
-#include "message.h"
-#include "services_list.h"
-#include "timer.h"
 #include "v_data.h"
 #include "v_file_service.h"
 
-#define ENGINE_SCRIPT_VERSION 54128
-
-class COMPILER;
 struct IFUNCINFO;
-class CSteamStatsAchievements;
-class CSteamDLC;
 
 struct ScreenSize
 {
@@ -24,147 +16,66 @@ struct ScreenSize
     size_t height{};
 };
 
-class CORE
+class Core
 {
   public:
-    CONTROLS *Controls;
+    virtual ~Core() = default;
 
-    CORE() = default;
-    ~CORE() = default;
-
-    void Init();
-
-    void InitBase();
-    void ReleaseBase();
-
-    void CleanUp();
-
-    void Set_Hwnd(HWND _hwnd)
-    {
-        App_Hwnd = _hwnd;
-    };
-    bool Initialize();
-    void ResetCore();
-    bool Run();
-    bool LoadClassesTable();
-
-    void ProcessExecute();
-    void ProcessRealize();
-    void ProcessStateLoading();
-    void ProcessRunStart(uint32_t section_code);
-    void ProcessRunEnd(uint32_t section_code);
-
-    void CheckAutoExceptions(uint32_t xflag) const;
-    void ReleaseServices();
-    void ProcessEngineIniFile();
-
-    bool bAppActive{};
-    bool Memory_Leak_flag; // true if core detected memory leak
-    bool Root_flag;
-    bool Exit_flag;   // true if the program closing
-    bool Initialized; // initialized flag (false at startup or after Reset())
-    bool bEngineIniProcessed;
-    HWND App_Hwnd;             // application handle
-    char gstring[_MAX_PATH]{}; // general purpose string
-    bool State_loading;
-    bool bEnableTimeScale{};
-
-    SERVICES_LIST Services_List; // list for subsequent calls RunStart/RunEnd service functions
-
-    HINSTANCE hInstance{};
-
-    char *State_file_name;
-
-    TIMER Timer;
-
-    COMPILER *Compiler;
-
-    void ProcessControls();
-
-    float fTimeScale;
-
-    void DumpEntitiesInfo();
-    void EraseEntities();
-    void ClearEvents();
-    void *MakeClass(const char *class_name);
-    void AppState(bool state);
-    uint32_t MakeHashValue(const char *string);
-    VMA *FindVMA(const char *class_name);
-    VMA *FindVMA(long hash);
-    //------------------------------------------------------------------------------------------------
-    // API functions : (virtual API)
-
-    // common programm control
-
-    // shutdown core, delete all objects and close programm
-    void Exit();
     // return application handle
-    HWND GetAppHWND();
-    HINSTANCE GetAppInstance();
+    virtual void* GetAppHWND() = 0;
     // set time scale; affect on std entity functions DeltaTime parameter
-    void SetTimeScale(float _scale);
+    virtual void SetTimeScale(float _scale) = 0;
     // write message to system log file
-    void Trace(const char *Format, ...);
-
+    virtual void Trace(const char *Format, ...) = 0;
     // return service object pointer;
-    void *CreateService(const char *service_name);
+    virtual void *GetService(const char *service_name) = 0;
 
-    ATTRIBUTES *Entity_GetAttributeClass(entid_t id_PTR, const char *name);
-    char *Entity_GetAttribute(entid_t id_PTR, const char *name);
-    uint32_t Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, uint32_t def = 0);
-    FLOAT Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT def = 0);
-    bool Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute);
-    bool Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_t val);
-    bool Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val);
-    void Entity_SetAttributePointer(entid_t id_PTR, ATTRIBUTES *pA);
-    uint32_t Entity_AttributeChanged(entid_t id_PTR, ATTRIBUTES *);
-    ATTRIBUTES *Entity_GetAttributePointer(entid_t id_PTR);
-
-    // messeges system
+    virtual ATTRIBUTES *Entity_GetAttributeClass(entid_t id_PTR, const char *name) = 0;
+    virtual char *Entity_GetAttribute(entid_t id_PTR, const char *name) = 0;
+    virtual uint32_t Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, uint32_t def = 0) = 0;
+    virtual FLOAT Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT def = 0) = 0;
+    virtual bool Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute) = 0;
+    virtual bool Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_t val) = 0;
+    virtual bool Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val) = 0;
+    virtual void Entity_SetAttributePointer(entid_t id_PTR, ATTRIBUTES *pA) = 0;
+    virtual uint32_t Entity_AttributeChanged(entid_t id_PTR, ATTRIBUTES *) = 0;
+    virtual ATTRIBUTES *Entity_GetAttributePointer(entid_t id_PTR) = 0;
 
     // send message to an object
-    uint64_t Send_Message(entid_t Destination, const char *Format, ...);
+    virtual uint64_t Send_Message(entid_t Destination, const char *Format, ...) = 0;
 
     // save core state
-    bool SaveState(const char *file_name);
+    virtual bool SaveState(const char *file_name) = 0;
     // force core to load state file at the start of next game loop, return false if no state file
-    bool InitiateStateLoading(const char *file_name);
+    virtual bool InitiateStateLoading(const char *file_name) = 0;
 
     // return current fps
-    uint32_t EngineFps();
+    virtual uint32_t EngineFps() = 0;
     // set fixed delta time mode, (-1) - off
-    void SetDeltaTime(long delta_time);
-    uint32_t GetDeltaTime();
-    uint32_t GetRDeltaTime();
+    virtual void SetDeltaTime(long delta_time) = 0;
+    virtual uint32_t GetDeltaTime() = 0;
+    virtual uint32_t GetRDeltaTime() = 0;
     //
-    VDATA *Event(const char *Event_name, const char *Format = nullptr, ...);
-    uint32_t PostEvent(const char *Event_name, uint32_t post_time, const char *Format, ...);
+    virtual VDATA *Event(const char *Event_name, const char *Format = nullptr, ...) = 0;
+    virtual uint32_t PostEvent(const char *Event_name, uint32_t post_time, const char *Format, ...) = 0;
 
-    void *GetSaveData(const char *file_name, long &data_size);
+    virtual void *GetSaveData(const char *file_name, long &data_size) = 0;
 
-    bool SetSaveData(const char *file_name, void *data_ptr, long data_size);
+    virtual bool SetSaveData(const char *file_name, void *data_ptr, long data_size) = 0;
 
-    uint32_t SetScriptFunction(IFUNCINFO *pFuncInfo);
+    virtual uint32_t SetScriptFunction(IFUNCINFO *pFuncInfo) = 0;
 
-    const char *EngineIniFileName();
+    virtual const char *EngineIniFileName() = 0;
 
-    void *GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex = nullptr);
+    virtual void *GetScriptVariable(const char *pVariableName, uint32_t *pdwVarIndex = nullptr) = 0;
 
-    [[nodiscard]] storm::ENGINE_VERSION GetTargetEngineVersion() const noexcept;
+    [[nodiscard]] virtual storm::ENGINE_VERSION GetTargetEngineVersion() const noexcept = 0;
 
-    [[nodiscard]] ScreenSize GetScreenSize() const noexcept;
+    [[nodiscard]] virtual ScreenSize GetScreenSize() const noexcept = 0;
 
-    void stopFrameProcessing();
+    virtual void stopFrameProcessing() = 0;
 
-    void collectCrashInfo();
-
-  private:
-    void loadCompatibilitySettings(INIFILE &inifile);
-
-    storm::ENGINE_VERSION targetVersion_ = storm::ENGINE_VERSION::LATEST;
-
-    bool stopFrameProcessing_ = false;
+    CONTROLS* Controls{};
 };
 
-// core instance
-extern CORE core;
+extern Core &core;

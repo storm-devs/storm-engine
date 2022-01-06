@@ -54,7 +54,7 @@ static bool geoLog = false;
 
 bool GEOMETRY::Init()
 {
-    RenderService = static_cast<VDX9RENDER *>(core.CreateService(RenderServiceName));
+    RenderService = static_cast<VDX9RENDER *>(core.GetService(RenderServiceName));
     if (!RenderService)
     {
         core.Trace("No service: %s", RenderServiceName);

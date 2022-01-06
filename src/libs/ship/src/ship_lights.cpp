@@ -38,9 +38,9 @@ ShipLights::~ShipLights()
 
 bool ShipLights::Init()
 {
-    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     Assert(pRS);
-    pCollide = static_cast<COLLIDE *>(core.CreateService("coll"));
+    pCollide = static_cast<COLLIDE *>(core.GetService("coll"));
     Assert(pCollide);
     pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
     return true;

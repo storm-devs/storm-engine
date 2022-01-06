@@ -1,5 +1,5 @@
 #include "data.h"
-#include "core.h"
+#include "core_impl.h"
 
 #include "storm/string_compare.hpp"
 

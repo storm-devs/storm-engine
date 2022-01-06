@@ -26,7 +26,7 @@ bool SINKEFFECT::Init()
 
     sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
 
-    renderer = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    renderer = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
 
     InitializeSinks();
 

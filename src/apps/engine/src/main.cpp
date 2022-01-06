@@ -17,7 +17,7 @@
 
 VFILE_SERVICE *fio = nullptr;
 S_DEBUG *CDebug = nullptr;
-CORE core;
+Core &core = core_internal;
 
 namespace
 {
@@ -30,7 +30,7 @@ storm::diag::LifecycleDiagnosticsService lifecycleDiagnostics;
 
 void RunFrame()
 {
-    if (!core.Run())
+    if (!core_internal.Run())
     {
         isRunning = false;
     }
@@ -64,13 +64,13 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
     if (event == storm::OSWindow::Closed)
     {
         isRunning = false;
-        core.Event("DestroyWindow", nullptr);
+        core_internal.Event("DestroyWindow", nullptr);
     }
     else if (event == storm::OSWindow::FocusGained)
     {
         bActive = true;
-        core.AppState(bActive);
-        if (const auto soundService = static_cast<VSoundService *>(core.CreateService("SoundService")))
+        core_internal.AppState(bActive);
+        if (const auto soundService = static_cast<VSoundService*>(core.GetService("SoundService")))
         {
             soundService->SetActiveWithFade(true);
         }
@@ -78,8 +78,8 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
     else if (event == storm::OSWindow::FocusLost)
     {
         bActive = false;
-        core.AppState(bActive);
-        if (const auto soundService = static_cast<VSoundService *>(core.CreateService("SoundService")))
+        core_internal.AppState(bActive);
+        if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService")))
         {
             soundService->SetActiveWithFade(false);
         }
@@ -115,7 +115,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     }
     else
     {
-        lifecycleDiagnostics.setCrashInfoCollector([]() { core.collectCrashInfo(); });
+        lifecycleDiagnostics.setCrashInfoCollector([]() { core_internal.collectCrashInfo(); });
     }
 
     // Init stash
@@ -126,7 +126,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     spdlog::info("Logging system initialized. Running on {}", STORM_BUILD_WATERMARK_STRING);
 
     // Init core
-    core.Init();
+    core_internal.Init();
 
     // Init script debugger
     S_DEBUG debug;
@@ -169,12 +169,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     std::shared_ptr<storm::OSWindow> window = storm::OSWindow::Create(width, height, fullscreen);
     window->SetTitle("Sea Dogs");
-    core.Set_Hwnd(static_cast<HWND>(window->OSHandle()));
+    core_internal.Set_Hwnd(static_cast<HWND>(window->OSHandle()));
     window->Subscribe(HandleWindowEvent);
     window->Show();
 
     // Init core
-    core.InitBase();
+    core_internal.InitBase();
 
     // Message loop
     auto dwOldTime = GetTickCount();
@@ -205,9 +205,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     }
 
     // Release
-    core.Event("ExitApplication", nullptr);
-    core.CleanUp();
-    core.ReleaseBase();
+    core_internal.Event("ExitApplication", nullptr);
+    core_internal.CleanUp();
+    core_internal.ReleaseBase();
     ClipCursor(nullptr);
     SDL_Quit();
 

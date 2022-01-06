@@ -6,7 +6,7 @@
 
 void DX9RENDER::PrepareCapture()
 {
-    hDesktopDC = GetDC(core.GetAppHWND());
+    hDesktopDC = GetDC(static_cast<HWND>(core.GetAppHWND()));
     hCaptureDC = CreateCompatibleDC(hDesktopDC);
     hCaptureBitmap = CreateCompatibleBitmap(hDesktopDC, screen_size.x, screen_size.y);
 

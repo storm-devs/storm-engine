@@ -161,11 +161,11 @@ bool SEAFOAM_PS::Init(INIFILE *ini, const char *psname)
     bool bRes;
 
     // load render service -----------------------------------------------------
-    RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    RenderService = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!RenderService)
         throw std::runtime_error("No service: dx9render");
 
-    gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     // if(!gs) return false;
 
     // read textures ------------------------------------------------------------
