@@ -520,6 +520,8 @@ bool DX9RENDER::Init()
 
         nTextureDegradation = ini->GetLong(nullptr, "texture_degradation", 0);
 
+        FovMultiplier = ini->GetFloat(nullptr, "fov_multiplier", 1.0f);
+
         screen_size.x = ini->GetLong(nullptr, "screen_x", 1024);
         screen_size.y = ini->GetLong(nullptr, "screen_y", 768);
         fNearClipPlane = ini->GetFloat(nullptr, "NearClipPlane", 0.1f);
@@ -2129,6 +2131,8 @@ void DX9RENDER::SetNearFarPlane(float fNear, float fFar)
 
 bool DX9RENDER::SetPerspective(float perspective, float fAspectRatio)
 {
+    perspective *= FovMultiplier;
+
     const float near_plane = fNearClipPlane; // Distance to near clipping
     const float far_plane = fFarClipPlane;   // Distance to far clipping
     const float fov_horiz = perspective;     // Horizontal field of view  angle, in radians
