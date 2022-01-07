@@ -94,168 +94,6 @@ class DX9RENDER : public VDX9RENDER
 {
 #define RS_RECT_VERTEX_FORMAT (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 
-    struct RECT_VERTEX
-    {
-        CVECTOR pos;
-        uint32_t color;
-        float u, v;
-    };
-
-    struct RenderTarget
-    {
-        IDirect3DSurface9 *pRenderTarget;
-        IDirect3DSurface9 *pDepthSurface;
-        D3DVIEWPORT9 ViewPort;
-    };
-
-    IDirect3DDevice9 *d3d9;
-    IDirect3D9 *d3d;
-    HWND hwnd;
-
-    CVECTOR Pos, Ang;
-    float Fov;
-
-    Effects effects_;
-
-    char *fontIniFileName;
-    long nFontQuantity;
-    FONTEntity FontList[MAX_FONTS];
-    long idFontCurrent;
-
-    VideoTextureEntity *pVTL;
-
-    long nTextureDegradation;
-    float aspectRatio;
-    float m_fHeightDeformator;
-
-    bool bSafeRendering;
-    bool bShowFps, bShowExInfo;
-    bool bInsideScene;
-
-    PLANE viewplane[4];
-
-    STEXTURE Textures[MAX_STEXTURES];
-    INDEX_BUFFER IndexBuffers[MAX_BUFFERS];
-    VERTEX_BUFFER VertexBuffers[MAX_BUFFERS];
-
-    bool MakeAvi;
-    IDirect3DSurface9 *ImageBuffer;
-
-    // VideoCapture section
-    HDC hDesktopDC, hCaptureDC;
-    HBITMAP hCaptureBitmap;
-    LPBITMAPINFO lpbi;
-    long iCaptureFrameIndex;
-    bool bPreparedCapture;
-    bool bVideoCapture;
-    float fFixedFPS;
-    std::vector<char *> aCaptureBuffers;
-    uint32_t dwCaptureBuffersReady;
-
-    //-------- post process
-
-    struct QuadVertex
-    {
-        Vector4 vPos;
-
-        float u0;
-        float v0;
-
-        float u1;
-        float v1;
-
-        float u2;
-        float v2;
-
-        float u3;
-        float v3;
-    };
-
-    QuadVertex PostProcessQuad[4];
-    QuadVertex qv[32 * 32];
-    uint16_t qi[31 * 31 * 2 * 3];
-
-    float fSmallWidth;
-    float fSmallHeight;
-    IDirect3DTexture9 *pPostProcessTexture;
-    IDirect3DSurface9 *pPostProcessSurface;
-
-    IDirect3DTexture9 *pSmallPostProcessTexture;
-    IDirect3DSurface9 *pSmallPostProcessSurface;
-
-    IDirect3DTexture9 *pSmallPostProcessTexture2;
-    IDirect3DSurface9 *pSmallPostProcessSurface2;
-
-    IDirect3DSurface9 *pOriginalScreenSurface;
-    IDirect3DSurface9 *pOriginalDepthSurface;
-
-    D3DVIEWPORT9 OriginalViewPort;
-
-    void CreateRenderQuad(float fWidth, float fHeight, float fSrcWidth, float fSrcHeight, float fMulU = 1.0f,
-                          float fMulV = 1.0f);
-
-    void ClearPostProcessSurface(IDirect3DSurface9 *pSurf);
-    void BlurGlowTexture();
-    void CopyGlowToScreen();
-    void CopyPostProcessToScreen();
-
-    void SetPostProcessTextureAsRenderTarget();
-    void SetScreenAsRenderTarget();
-
-    float fBlurSize;
-    int GlowIntensity;
-    int iBlurPasses;
-
-    bool bNeedCopyToScreen;
-
-    bool bPostProcessEnabled;
-    bool bPostProcessError;
-
-    bool bSeaEffect;
-    float fSeaEffectSize;
-    float fSeaEffectSpeed;
-    uint32_t dwBackColor;
-
-    //-------- post process
-
-    // state save/load ex
-    POINT screen_size;
-    D3DFORMAT screen_bpp;
-    D3DFORMAT stencil_format;
-
-    bool bMakeShoot;
-    bool bWindow;
-    bool bBackBufferCanLock;
-
-    IDirect3DVertexBuffer9 *aniVBuffer;
-    long numAniVerteces;
-
-    IDirect3DVertexBuffer9 *pDropConveyorVBuffer;
-
-    uint32_t dwNumDrawPrimitive, dwNumLV, dwNumLI;
-    float fG, fB, fC;
-    D3DGAMMARAMP DefaultRamp;
-
-    float fNearClipPlane, fFarClipPlane;
-
-    bool bLoadTextureEnabled;
-
-    bool bTrace;
-    long iSetupPath;
-    uint64_t dwSetupNumber;
-    texpaths_t TexPaths[4];
-
-    bool bDropVideoConveyor;
-
-    std::stack<RenderTarget> stRenderTarget;
-
-    bool TextureLoad(long texid);
-    bool TextureLoadUsingD3DX(const char* path, long texid);
-
-    bool MakeCapture();
-    void SaveCaptureBuffers();
-    void PrepareCapture();
-
   public:
     static DX9RENDER *pRS;
 
@@ -501,164 +339,6 @@ class DX9RENDER : public VDX9RENDER
     void FindPlanes(IDirect3DDevice9 *d3dDevice);
 
     void SetCommonStates();
-
-    /*bool InitDevice(bool windowed, HWND hwnd, long width, long height);
-    bool ReleaseDevice();
-
-    bool DX9Clear(long type);    //D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-    bool DX9BeginScene();
-    bool DX9EndScene();
-
-    long TextureCreate(const char *fname);
-    bool TextureSet(long stage, long texid);
-    bool TextureRelease(long texid);
-    //-----------------------------
-    bool SetCamera(CVECTOR *pos, CVECTOR *ang, float perspective);
-    bool SetCamera(CVECTOR *pos, CVECTOR *ang);
-    bool SetCamera(CVECTOR lookFrom, CVECTOR lookTo, CVECTOR up);
-    bool SetPerspective(float perspective, float fAspectRatio = -1.0f);
-
-    void ProcessScriptPosAng(CVECTOR & vPos, CVECTOR & vAng);
-
-    bool SetCurrentMatrix(D3DMATRIX *mtx);
-    //-----------------------------
-    bool SetLight(long l, D3DLIGHT9 &lt);
-    bool LightEnable(long l, bool onf);
-    bool SetMaterial(D3DMATERIAL9 &m);
-
-    //-----------------------------
-    long CreateVertexBuffer(long type, long nverts,uint32_t usage);
-    long CreateIndexBuffer(long ntrgs, uint32_t dwUsage = D3DUSAGE_WRITEONLY);
-    void DrawBuffer(long vbuff, long stride, long ibuff, long minv, long numv, long startidx, long numtrg, char
-    *cBlockName = 0); void DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride,
-    long iIBuff, long iMinV, long iNumV, long iStartIdx, long iNumTrg, char *cBlockName = 0); void
-    DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iStartV, long iNumPT, char
-    *cBlockName = 0); void DrawPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwVertexBufferFormat, uint32_t
-    dwNumPT, void *pVerts, uint32_t dwStride, char *cBlockName = 0); void DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE
-    dwPrimitiveType, uint32_t dwMinIndex, uint32_t dwNumVertices, uint32_t dwPrimitiveCount, const void *pIndexData,
-    D3DFORMAT IndexDataFormat, const void *pVertexData, uint32_t dwVertexStride, char *cBlockName = 0);
-
-    void RenderAnimation(long ib, void * src, long numVrts, long minv, long numv,  long startidx, long numtrg, bool
-    isUpdateVB);
-
-    bool TechniqueSetParamsAndStart(char *cBlockName = 0, uint32_t dwNumParams = 0, void *pParams = 0);
-    bool TechniqueExecuteStart(char *cBlockName = 0, uint32_t dwNumParams = 0, ...);
-    bool TechniqueExecuteNext();
-
-    void* LockVertexBuffer(long id, uint32_t dwFlags = 0);
-    void UnLockVertexBuffer(long id);
-    long GetVertexBufferSize(long id);
-    void* LockIndexBuffer(long id, uint32_t dwFlags = 0);
-    void UnLockIndexBuffer(long id);
-    void ReleaseVertexBuffer(long id);
-    void ReleaseIndexBuffer(long id);
-    void SetTransform(long type, D3DMATRIX *mtx);
-    void GetTransform(long type, D3DMATRIX *mtx);
-
-    // fonts
-    //DX9FONTS Fonts;
-    long Print(long x, long y,char * format,...);
-    long Print(long nFontNum, DWORD color, long x, long y,char * format,...);
-    long ExtPrint(long nFontNum, DWORD foreColor, DWORD backColor, int wAlignment,
-                         bool bShadow, float fScale, long scrWidth, long scrHeight,
-                         long x, long y,char * format,...);
-    long StringWidth(char * string, long nFontNum=0, float fScale=1.f, long scrWidth=0);
-    long CharWidth(char ch, long nFontNum=0, float fScale=1.f, long scrWidth=0);
-long CharHeight (long fontID); // returns the font height
-long LoadFont (char * fontName); // returns number \ font identifier or -1 in case of error
-bool UnloadFont (char * fontName); // returns true if the font is still in use
-bool UnloadFont (long fontID); // returns true if the font is still in use
-bool SetCurFont (char * fontName); // returns true if the given font is installed
-bool SetCurFont (long fontID); // returns true if the given font is installed
-    long GetCurFont();
-    char *GetFontIniFileName();
-    bool SetFontIniFileName(char * iniName);
-
-    void * DX9RENDER::GetD3DDevice() { return d3d9; }
-
-    HRESULT GetViewport(D3DVIEWPORT9 * pViewport);
-    HRESULT SetViewport(const D3DVIEWPORT9 * pViewport);
-
-    //
-    uint32_t SetRenderState(uint32_t State, uint32_t Value);
-    uint32_t GetRenderState(uint32_t State, uint32_t* pValue);
-    uint32_t SetTextureStageState(uint32_t Stage,uint32_t Type,uint32_t Value);
-    uint32_t GetTextureStageState(uint32_t Stage,uint32_t Type,uint32_t* pValue);
-
-    void GetCamera(CVECTOR& pos, CVECTOR& ang, float& perspective);
-    void SaveShoot();
-
-
-
-
-    // core interface
-    bool  Init();
-    void  RunStart();
-    void  RunEnd();
-    uint32_t RunSection(){return SECTION_REALIZE;};
-    bool  LoadState(ENTITY_STATE * state);
-    bool  CreateState(ENTITY_STATE_GEN * state_gen);
-
-    //
-    void MakeScreenShot();
-
-    void FindPlanes(IDirect3DDevice9 * d3dDevice);
-    PLANE * GetPlanes();
-
-    void DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, char *cBlockName = 0, uint32_t dwSubTexturesX = 1, uint32_t
-    dwSubTexturesY = 1); void DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, char *cBlockName, uint32_t
-    dwNumParams, ...); void DrawLines(RS_LINE *pRSL, uint32_t dwLinesNum, char *cBlockName = 0); void
-    DrawLines2D(RS_LINE2D *pRSL2D, uint32_t dwLinesNum, char *cBlockName = 0);
-
-    //------------------
-    HRESULT CreateVertexBuffer(UINT Length, DWORD Usage, DWORD FVF, D3DPOOL Pool, IDirect3DVertexBuffer9**
-    ppVertexBuffer); void VertexBufferRelease(void * VB_pointer); HRESULT VertexBufferLock(void * VB_pointer, UINT
-    OffsetToLock,UINT SizeToLock,BYTE** ppbData, DWORD Flags); void VertexBufferUnlock(void * VB_pointer); HRESULT
-    SetFVF(DWORD handle); HRESULT SetStreamSource(UINT StreamNumber, void * pStreamData, UINT Stride); HRESULT
-    SetIndices(void * pIndexData, UINT BaseVertexIndex); HRESULT DrawPrimitive(D3DPRIMITIVETYPE PrimitiveType, UINT
-    StartVertex, UINT PrimitiveCount);
-
-    HRESULT Release(IUnknown *pSurface);
-    HRESULT GetRenderTarget(IDirect3DSurface9** ppRenderTarget);
-    HRESULT GetDepthStencilSurface( IDirect3DSurface9** ppZStencilSurface );
-    HRESULT GetCubeMapSurface( IDirect3DCubeTexture9* ppCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level,
-    IDirect3DSurface9** ppCubeMapSurface ); HRESULT SetRenderTarget( IDirect3DSurface9* pRenderTarget,
-    IDirect3DSurface9* pNewZStencil ); HRESULT Clear( DWORD Count, CONST D3DRECT* pRects, DWORD Flags, D3DCOLOR Color,
-    float Z, DWORD Stencil ); HRESULT BeginScene(); HRESULT EndScene(); HRESULT SetClipPlane( DWORD Index, CONST float*
-    pPlane ); HRESULT CreateTexture( UINT Width, UINT Height, UINT  Levels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool,
-    IDirect3DTexture9** ppTexture ); HRESULT CreateCubeTexture( UINT EdgeLength, UINT Levels, DWORD Usage, D3DFORMAT
-    Format, D3DPOOL Pool, IDirect3DCubeTexture9** ppCubeTexture ); HRESULT CreateDepthStencilSurface( UINT Width, UINT
-    Height, D3DFORMAT Format, D3DMULTISAMPLE_TYPE MultiSample, IDirect3DSurface9** ppSurface ); HRESULT
-    CreatePixelShader(CONST DWORD * pFunction, DWORD * pHandle); HRESULT CreateVertexShader(CONST DWORD * pDeclaration,
-    CONST DWORD * pFunction, DWORD * pHandle, DWORD Usage); HRESULT SetTexture(DWORD Stage, IDirect3DBaseTexture9*
-    pTexture ); HRESULT GetLevelDesc( IDirect3DTexture9* ppTexture, UINT Level, D3DSURFACE_DESC* pDesc ); HRESULT
-    GetLevelDesc( IDirect3DCubeTexture9* ppCubeTexture, UINT Level, D3DSURFACE_DESC* pDesc ); HRESULT LockRect(
-    IDirect3DCubeTexture9* ppCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level, D3DLOCKED_RECT* pLockedRect, CONST
-    RECT* pRect, DWORD Flags ); HRESULT LockRect( IDirect3DTexture9* ppTexture, UINT Level, D3DLOCKED_RECT* pLockedRect,
-    CONST RECT* pRect, DWORD Flags ); HRESULT UnlockRect( IDirect3DCubeTexture9 *pCubeTexture, D3DCUBEMAP_FACES
-    FaceType, UINT Level ); HRESULT UnlockRect( IDirect3DTexture9 *pTexture, UINT Level ); HRESULT GetSurfaceLevel(
-    IDirect3DTexture9* ppTexture, UINT Level, IDirect3DSurface9** ppSurfaceLevel ); HRESULT UpdateSurface(
-    IDirect3DSurface9* pSourceSurface, CONST RECT* pSourceRectsArray, UINT cRects, IDirect3DSurface9*
-    pDestinationSurface, CONST POINT* pDestPointsArray ); HRESULT DeletePixelShader( DWORD Handle ); HRESULT
-    DeleteVertexShader( DWORD Handle ); HRESULT SetPixelShader( DWORD Handle ); HRESULT SetFVFConstant(DWORD Register,
-    CONST void* pConstantData, DWORD  ConstantCount ); HRESULT SetPixelShaderConstant( DWORD Register, CONST void*
-    pConstantData, DWORD ConstantCount ); HRESULT GetVertexShader(DWORD * pHandle); HRESULT GetPixelShader(DWORD *
-    pHandle);
-
-    // PLAY VIDEO TO TEXTURE
-    void    PlayToTexture();
-    IDirect3DTexture9* GetVideoTexture(char* sVideoName);
-    void ReleaseVideoTexture(IDirect3DTexture9* pTexture);
-
-
-    virtual IDirect3DVertexBuffer9 * GetVertexBuffer(long id);
-    virtual long GetVertexBufferFVF(long id);
-
-    bool LoadTextureSurface(HANDLE file, IDirect3DSurface9 * suface, uint32_t mipSize, uint32_t width, uint32_t height,
-    bool isSwizzled);
-    uint32_t LoadCubmapSide(HANDLE file, IDirect3DCubeTexture9 * tex, D3DCUBEMAP_FACES face, uint32_t numMips, uint32_t
-    mipSize, uint32_t size, bool isSwizzled);*/
-
     void SetProgressImage(const char *image) override;
     void SetProgressBackImage(const char *image) override;
     void SetTipsImage(const char *image) override;
@@ -754,4 +434,170 @@ bool SetCurFont (long fontID); // returns true if the given font is installed
     void RestoreRender();
 
     void RecompileEffects();
+
+private:
+    struct RECT_VERTEX
+    {
+        CVECTOR pos;
+        uint32_t color;
+        float u, v;
+    };
+
+    struct RenderTarget
+    {
+        IDirect3DSurface9 *pRenderTarget;
+        IDirect3DSurface9 *pDepthSurface;
+        D3DVIEWPORT9 ViewPort;
+    };
+
+    IDirect3DDevice9 *d3d9;
+    IDirect3D9 *d3d;
+    HWND hwnd;
+
+    CVECTOR Pos, Ang;
+    float Fov;
+
+    Effects effects_;
+
+    char *fontIniFileName;
+    long nFontQuantity;
+    FONTEntity FontList[MAX_FONTS];
+    long idFontCurrent;
+
+    VideoTextureEntity *pVTL;
+
+    long nTextureDegradation;
+    float aspectRatio;
+    float m_fHeightDeformator;
+
+    bool bSafeRendering;
+    bool bShowFps, bShowExInfo;
+    bool bInsideScene;
+
+    PLANE viewplane[4];
+
+    STEXTURE Textures[MAX_STEXTURES];
+    INDEX_BUFFER IndexBuffers[MAX_BUFFERS];
+    VERTEX_BUFFER VertexBuffers[MAX_BUFFERS];
+
+    bool MakeAvi;
+    IDirect3DSurface9 *ImageBuffer;
+
+    // VideoCapture section
+    HDC hDesktopDC, hCaptureDC;
+    HBITMAP hCaptureBitmap;
+    LPBITMAPINFO lpbi;
+    long iCaptureFrameIndex;
+    bool bPreparedCapture;
+    bool bVideoCapture;
+    float fFixedFPS;
+    std::vector<char *> aCaptureBuffers;
+    uint32_t dwCaptureBuffersReady;
+
+    //-------- post process
+
+    struct QuadVertex
+    {
+        Vector4 vPos;
+
+        float u0;
+        float v0;
+
+        float u1;
+        float v1;
+
+        float u2;
+        float v2;
+
+        float u3;
+        float v3;
+    };
+
+    QuadVertex PostProcessQuad[4];
+    QuadVertex qv[32 * 32];
+    uint16_t qi[31 * 31 * 2 * 3];
+
+    float fSmallWidth;
+    float fSmallHeight;
+    IDirect3DTexture9 *pPostProcessTexture;
+    IDirect3DSurface9 *pPostProcessSurface;
+
+    IDirect3DTexture9 *pSmallPostProcessTexture;
+    IDirect3DSurface9 *pSmallPostProcessSurface;
+
+    IDirect3DTexture9 *pSmallPostProcessTexture2;
+    IDirect3DSurface9 *pSmallPostProcessSurface2;
+
+    IDirect3DSurface9 *pOriginalScreenSurface;
+    IDirect3DSurface9 *pOriginalDepthSurface;
+
+    D3DVIEWPORT9 OriginalViewPort;
+
+    void CreateRenderQuad(float fWidth, float fHeight, float fSrcWidth, float fSrcHeight, float fMulU = 1.0f,
+                          float fMulV = 1.0f);
+
+    void ClearPostProcessSurface(IDirect3DSurface9 *pSurf);
+    void BlurGlowTexture();
+    void CopyGlowToScreen();
+    void CopyPostProcessToScreen();
+
+    void SetPostProcessTextureAsRenderTarget();
+    void SetScreenAsRenderTarget();
+
+    float fBlurSize;
+    int GlowIntensity;
+    int iBlurPasses;
+
+    bool bNeedCopyToScreen;
+
+    bool bPostProcessEnabled;
+    bool bPostProcessError;
+
+    bool bSeaEffect;
+    float fSeaEffectSize;
+    float fSeaEffectSpeed;
+    uint32_t dwBackColor;
+
+    //-------- post process
+
+    // state save/load ex
+    POINT screen_size;
+    D3DFORMAT screen_bpp;
+    D3DFORMAT stencil_format;
+
+    bool bMakeShoot;
+    bool bWindow;
+    bool bBackBufferCanLock;
+
+    IDirect3DVertexBuffer9 *aniVBuffer;
+    long numAniVerteces;
+
+    IDirect3DVertexBuffer9 *pDropConveyorVBuffer;
+
+    uint32_t dwNumDrawPrimitive, dwNumLV, dwNumLI;
+    float fG, fB, fC;
+    D3DGAMMARAMP DefaultRamp;
+
+    float fNearClipPlane, fFarClipPlane;
+
+    bool bLoadTextureEnabled;
+
+    bool bTrace;
+    long iSetupPath;
+    uint64_t dwSetupNumber;
+    texpaths_t TexPaths[4];
+
+    bool bDropVideoConveyor;
+
+    std::stack<RenderTarget> stRenderTarget;
+
+    D3DXIMAGE_FILEFORMAT screenshotFormat;
+    std::string screenshotExt;
+
+    bool TextureLoad(long texid);
+    bool TextureLoadUsingD3DX(const char *path, long texid);
+
+    bool MakeCapture();
+    void SaveCaptureBuffers();
+    void PrepareCapture();
 };

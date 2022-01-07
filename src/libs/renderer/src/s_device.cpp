@@ -7,6 +7,9 @@
 #include "s_import_func.h"
 #include "texture.h"
 #include "v_s_stack.h"
+#include "storm/fs.h"
+
+#include <fmt/chrono.h>
 
 #include <DxErr.h>
 #include <corecrt_io.h>
@@ -26,6 +29,50 @@ CREATE_SCRIPTLIBRIARY(DX9RENDER_SCRIPT_LIBRIARY)
 
 namespace
 {
+    constexpr auto kKeyTakeScreenshot = "TakeScreenshot";
+
+    D3DXIMAGE_FILEFORMAT GetScreenshotFormat(const std::string &fmt)
+    {
+        if (fmt == "bmp")
+        {
+            return D3DXIFF_BMP;
+        }
+        if (fmt == "jpg")
+        {
+            return D3DXIFF_JPG;
+        }
+        if (fmt == "tga")
+        {
+            return D3DXIFF_TGA;
+        }
+        if (fmt == "png")
+        {
+            return D3DXIFF_PNG;
+        }
+        if (fmt == "dds")
+        {
+            return D3DXIFF_DDS;
+        }
+        if (fmt == "ppm")
+        {
+            return D3DXIFF_PPM;
+        }
+        if (fmt == "dib")
+        {
+            return D3DXIFF_DIB;
+        }
+        if (fmt == "hdr")
+        {
+            return D3DXIFF_HDR;
+        }
+        if (fmt == "pfm") 
+        {
+            return D3DXIFF_PFM;
+        }
+
+        return D3DXIFF_FORCE_DWORD;
+    }
+
     void InvokeEntitiesLostRender()
     {
         const auto its = EntityManager::GetEntityIdIterators();
@@ -442,11 +489,26 @@ bool DX9RENDER::Init()
     d3d = nullptr;
     d3d9 = nullptr;
 
+    create_directories(fs::GetScreenshotsPath());
+
     auto ini = fio->OpenIniFile(core.EngineIniFileName());
     if (ini)
     {
         // bPostProcessEnabled = ini->GetLong(0, "PostProcess", 0) == 1;
         bPostProcessEnabled = false; //~!~
+
+        // screenshot format and extension
+        ini->ReadString(nullptr, "screenshot_format", str, sizeof(str), "jpg");
+        screenshotExt = str;
+        std::ranges::transform(screenshotExt, screenshotExt.begin(),
+                               [](const unsigned char c) { return std::tolower(c); });
+        screenshotFormat = GetScreenshotFormat(str);
+        if (screenshotFormat == D3DXIFF_FORCE_DWORD)
+        {
+            screenshotExt = "jpg";
+            screenshotFormat = D3DXIFF_JPG;
+        }
+
         bShowFps = ini->GetLong(nullptr, "show_fps", 0) == 1;
         bShowExInfo = ini->GetLong(nullptr, "show_exinfo", 0) == 1;
         bSafeRendering = ini->GetLong(nullptr, "safe_render", 0) == 0;
@@ -591,6 +653,9 @@ bool DX9RENDER::Init()
             *pI++ = static_cast<uint16_t>((y + 1) * 32 + x);
         }
     }
+
+    const auto ctrl = core.Controls->CreateControl(kKeyTakeScreenshot);
+    core.Controls->MapControl(ctrl, VK_F8);
 
     // UNGUARD
     return true;
@@ -1223,8 +1288,7 @@ bool DX9RENDER::DX9EndScene()
     if (CHECKD3DERR(EndScene()))
         return false;
 
-    // boal if (bMakeShoot || core.Controls->GetDebugAsyncKeyState(VK_F8) < 0)  MakeScreenShot();
-    if (bMakeShoot || GetAsyncKeyState(VK_F8) < 0)
+    if (bMakeShoot)
         MakeScreenShot();
 
     if (bVideoCapture)
@@ -2724,6 +2788,13 @@ void DX9RENDER::RunStart()
     // SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID); eddy
 
     PlayToTexture();
+
+    // make screenshot
+    if (CONTROL_STATE cs; core.Controls->GetControlState(kKeyTakeScreenshot, cs) 
+                          && cs.state == CST_ACTIVATED)
+    {
+        SaveShoot();
+    }
 }
 
 void DX9RENDER::RunEnd()
@@ -3201,90 +3272,43 @@ void DX9RENDER::SaveShoot()
 
 void DX9RENDER::MakeScreenShot()
 {
-    // GUARD(DX9RENDER::MakeScreenShot)
-    static long file_number = 0;
-    static TGA_H Dhdr = {0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32};
-    char file_name[_MAX_PATH];
-    long i;
-    HANDLE fh;
-    uint32_t *Surface;
-    RECT r;
-    D3DLOCKED_RECT lr;
-    POINT p;
-    IDirect3DSurface9 *renderTarget, *surface;
-
     bMakeShoot = false;
 
-    if (!(screen_bpp == D3DFMT_X8R8G8B8 || screen_bpp == D3DFMT_A8R8G8B8))
-    {
-        core.Trace("Can't make screenshots in non 32bit video modes");
-        return;
-    }
-
-    r.left = 0;
-    r.right = screen_size.x;
-    r.top = 0;
-    r.bottom = screen_size.y;
-    p.x = p.y = 0;
-    renderTarget = nullptr;
-    surface = nullptr;
-
-    // get the picture
+    IDirect3DSurface9 *renderTarget;
     if (FAILED(GetRenderTarget(&renderTarget)))
     {
-        core.Trace("Falure get render target for make screenshot");
+        core.Trace("Failed to make screenshot");
         return;
     }
+
+    IDirect3DSurface9 *surface;
     if (FAILED(CreateOffscreenPlainSurface(screen_size.x, screen_size.y, D3DFMT_X8R8G8B8, &surface)))
     {
         renderTarget->Release();
-        core.Trace("Falure create buffer for make screenshot");
+        core.Trace("Failed to make screenshot");
         return;
     }
 
-    // if (FAILED(d3d9->UpdateSurface(renderTarget, null, surface, null)) ||
-    if (FAILED(D3DXLoadSurfaceFromSurface(surface, NULL, NULL, renderTarget, NULL, NULL, D3DX_DEFAULT, 0)) ||
-        FAILED(surface->LockRect(&lr, &r, 0)))
+    if (CHECKD3DERR(D3DXLoadSurfaceFromSurface(surface, NULL, NULL, renderTarget, NULL, NULL, D3DX_DEFAULT, 0)))
     {
         surface->Release();
         renderTarget->Release();
-        core.Trace("Falure make screenshot");
+        core.Trace("Failed to make screenshot");
         return;
     }
-    renderTarget->Release();
-    renderTarget = nullptr;
-    // Get the file name
-    for (i = 0; i < 10000; i++)
-    {
-        sprintf_s(file_name, "CCS_%04d.tga", i);
-        if (_access(file_name, 0) == -1)
-            break;
-    }
-    // Save the picture
-    Dhdr.width = static_cast<unsigned short>(screen_size.x);
-    Dhdr.height = static_cast<unsigned short>(screen_size.y);
-    auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::out);
-    if (!fileS.is_open())
-    {
-        surface->UnlockRect();
-        surface->Release();
-        core.Trace("Can't create screenshot file");
-        return;
-    }
-    fio->_WriteFile(fileS, &Dhdr, sizeof(TGA_H));
 
-    Surface = static_cast<uint32_t *>(lr.pBits);
-    Surface += lr.Pitch * screen_size.y >> 2;
-    for (i = 0; i < screen_size.y; i++)
+    const auto screenshot_base_filename = fmt::format("{:%Y-%m-%d_%H-%M-%S}", fmt::localtime(std::time(nullptr)));
+    auto screenshot_path = fs::GetScreenshotsPath() / screenshot_base_filename;
+    screenshot_path.replace_extension(screenshotExt);
+    for(size_t i = 0; exists(screenshot_path); ++i)
     {
-        Surface -= lr.Pitch >> 2;
-        fio->_WriteFile(fileS, Surface, screen_size.x * 4);
+        screenshot_path.replace_filename(screenshot_base_filename + "_" + std::to_string(i));
+        screenshot_path.replace_extension(screenshotExt);
     }
-    surface->UnlockRect();
+    D3DXSaveSurfaceToFile(screenshot_path.c_str(), screenshotFormat, surface, nullptr, nullptr);
+
     surface->Release();
-    fio->_CloseFile(fileS);
-
-    // UNGUARD
+    renderTarget->Release();
 }
 
 PLANE *DX9RENDER::GetPlanes()
