@@ -1521,20 +1521,28 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pVResult = pV;
         return pV;
 
-    case FUNC_RAND:
+    case FUNC_RAND: {
         pV = SStack.Pop();
         if (!pV)
         {
             SetError(INVALID_FA);
             break;
         }
+
         pV->Get(TempLong1);
+        bool neg = false;
+        if (TempLong1 < 0)
+        {
+            TempLong1 = -TempLong1;
+            neg = true;
+        }
+
         TempLong2 = rand() % (TempLong1 + 1);
         pV = SStack.Push();
-        pV->Set(TempLong2);
+        pV->Set(neg ? -TempLong2 : TempLong2);
         pVResult = pV;
         return pV;
-
+    }
         // create entity
     case FUNC_CREATE_ENTITY:
 
