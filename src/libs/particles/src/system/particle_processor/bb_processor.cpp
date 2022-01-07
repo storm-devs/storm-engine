@@ -40,7 +40,7 @@ BillBoardProcessor::BillBoardProcessor()
         pMemArray[n].Free = true;
     }
 
-    pRS = static_cast<VDX9RENDER *>(core.CreateService("DX9Render"));
+    pRS = static_cast<VDX9RENDER *>(core.GetService("DX9Render"));
     Assert(pRS);
 
     CreateVertexDeclaration();

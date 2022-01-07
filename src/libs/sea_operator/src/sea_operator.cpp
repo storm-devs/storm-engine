@@ -33,7 +33,7 @@ bool SEA_OPERATOR::Init()
     EntityManager::AddToLayer(REALIZE, GetId(), 1);
     EntityManager::AddToLayer(EXECUTE, GetId(), 0);
 
-    renderer = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    renderer = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
 
     return true;
 }

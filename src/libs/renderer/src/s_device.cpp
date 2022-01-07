@@ -135,7 +135,7 @@ uint32_t DX9SetTexturePath(VS_STACK *pS)
 
     if (!DX9RENDER::pRS)
     {
-        core.CreateService("dx9render");
+        core.GetService("dx9render");
         Assert(DX9RENDER::pRS);
     }
 
@@ -477,7 +477,7 @@ static float fSin = 0.0f;
 
 bool DX9RENDER::Init()
 {
-    if (auto *sentinelService = core.CreateService("LostDeviceSentinel"); !sentinelService)
+    if (auto *sentinelService = core.GetService("LostDeviceSentinel"); !sentinelService)
     {
         throw std::runtime_error("Cannot create LostDeviceSentinel! Abort");
     }
@@ -561,7 +561,7 @@ bool DX9RENDER::Init()
         videoAdapterIndex = ini->GetLong(nullptr, "adapter", std::numeric_limits<long>::max());
 
         // stencil_format = D3DFMT_D24S8;
-        if (!InitDevice(bWindow, core.GetAppHWND(), screen_size.x, screen_size.y))
+        if (!InitDevice(bWindow, static_cast<HWND>(core.GetAppHWND()), screen_size.x, screen_size.y))
             return false;
 
         RecompileEffects();
@@ -703,7 +703,7 @@ DX9RENDER::~DX9RENDER()
     if (bPreparedCapture)
     {
         STORM_DELETE(lpbi);
-        ReleaseDC(core.GetAppHWND(), hDesktopDC);
+        ReleaseDC(static_cast<HWND>(core.GetAppHWND()), hDesktopDC);
         DeleteDC(hCaptureDC);
         DeleteObject(hCaptureBitmap);
     }

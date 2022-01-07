@@ -349,7 +349,7 @@ void COMPILER::SetWarning(const char *data_PTR, ...)
 
 void COMPILER::LoadPreprocess()
 {
-    auto engine_ini = fio->OpenIniFile(core.EngineIniFileName());
+    auto engine_ini = fio->OpenIniFile(core_internal.EngineIniFileName());
     if (engine_ini)
     {
         if (engine_ini->GetLong("script", "debuginfo", 0) == 0)
@@ -393,7 +393,7 @@ bool COMPILER::CreateProgram(const char *file_name)
 {
     /*    INIFILE * engine_ini;
 
-    engine_ini = fio->OpenIniFile(core.EngineIniFileName());
+    engine_ini = fio->OpenIniFile(core_internal.EngineIniFileName());
     if(engine_ini != null)
     {
       if(engine_ini->GetLong("script","debuginfo",0) == 0)
@@ -652,7 +652,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
             {
                 if (!FuncTab.AddTime(ei.pFuncInfo[n].func_code, nTicks))
                 {
-                    core.Trace("Invalid func_code = %u for AddTime", ei.pFuncInfo[n].func_code);
+                    core_internal.Trace("Invalid func_code = %u for AddTime", ei.pFuncInfo[n].func_code);
                 }
             }
         }
@@ -682,14 +682,14 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
 
     if (current_debug_mode == TMODE_CONTINUE)
         CDebug->SetTraceMode(TMODE_CONTINUE);
-    // SetFocus(core.App_Hwnd);        // VANO CHANGES
+    // SetFocus(core_internal.App_Hwnd);        // VANO CHANGES
 
     RDTSC_E(dwRDTSC);
 
     // VANO CHANGES - remove in release
-    if (core.Controls->GetDebugAsyncKeyState('5') < 0 && core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+    if (core_internal.Controls->GetDebugAsyncKeyState('5') < 0 && core_internal.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
     {
-        core.Trace("evnt: %d, %s", dwRDTSC, event_name);
+        core_internal.Trace("evnt: %d, %s", dwRDTSC, event_name);
     }
 
     return pVD;
@@ -971,7 +971,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
 
 void COMPILER::ProcessFrame(uint32_t DeltaTime)
 {
-    if (core.Timer.Ring)
+    if (core_internal.Timer.Ring)
         AddRuntimeEvent();
 
     for (uint32_t n = 0; n < SegmentsNum; n++)
@@ -1301,7 +1301,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
             }
             //-----------------------------------------------------
 
-            pClass = core.FindVMA(Token.GetData());
+            pClass = core_internal.FindVMA(Token.GetData());
             if (!pClass)
             {
                 SetWarning("cant load libriary '%s'", Token.GetData());
@@ -3552,7 +3552,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
         {
             if (!FuncTab.AddCall(func_code))
             {
-                core.Trace("Invalid func_code = %u for AddCall", func_code);
+                core_internal.Trace("Invalid func_code = %u for AddCall", func_code);
             }
         }
 
@@ -3563,7 +3563,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
 
         if (!FuncTab.AddTime(func_code, nTicks))
         {
-            core.Trace("Invalid func_code = %u for AddTime", func_code);
+            core_internal.Trace("Invalid func_code = %u for AddTime", func_code);
         }
     }
     else if (call_fi.segment_id == IMPORTED_SEGMENT_ID)
@@ -3581,7 +3581,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
         RDTSC_E(nTicks);
         if (!FuncTab.AddTime(func_code, nTicks))
         {
-            core.Trace("Invalid func_code = %u for AddTime", func_code);
+            core_internal.Trace("Invalid func_code = %u for AddTime", func_code);
         }
     }
     else
@@ -3592,7 +3592,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
         RDTSC_E(nTicks);
         if (!FuncTab.AddTime(func_code, nTicks))
         {
-            core.Trace("Invalid func_code = %u for AddTime", func_code);
+            core_internal.Trace("Invalid func_code = %u for AddTime", func_code);
         }
     }
     if (nDebugEnterMode == TMODE_MAKESTEP)
@@ -3687,7 +3687,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     {
         if (!FuncTab.AddCall(function_code))
         {
-            core.Trace("Invalid function_code = %u for AddCall", function_code);
+            core_internal.Trace("Invalid function_code = %u for AddCall", function_code);
         }
     }
 
@@ -4149,7 +4149,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             break;
             break;
         case DEBUG_LINE_CODE:
-            if (core.Exit_flag)
+            if (core_internal.Exit_flag)
                 return false;
             if (pDbgExpSource)
                 break;
@@ -4164,7 +4164,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                         break;
 
                     if (!CDebug->IsDebug())
-                        CDebug->OpenDebugWindow(core.GetAppInstance());
+                        CDebug->OpenDebugWindow(core_internal.GetAppInstance());
                     // else
                     ShowWindow(CDebug->GetWindowHandle(), SW_NORMAL);
 
@@ -4186,10 +4186,10 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     if (CDebug->Breaks.Find(fi.decl_file_name.c_str(), nDebugTraceLineCode))
                     {
                         if (!CDebug->IsDebug())
-                            CDebug->OpenDebugWindow(core.GetAppInstance());
+                            CDebug->OpenDebugWindow(core_internal.GetAppInstance());
 
                         ShowWindow(CDebug->GetWindowHandle(), SW_NORMAL);
-                        // CDebug->OpenDebugWindow(core.hInstance);
+                        // CDebug->OpenDebugWindow(core_impl.hInstance);
                         CDebug->SetTraceMode(TMODE_WAIT);
                         CDebug->BreakOn(fi.decl_file_name.c_str(), nDebugTraceLineCode);
 
@@ -4574,7 +4574,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                   if(pV == 0) { SetError("bad array element"); return false; }
                   pV->Get(eid);
                   //api->Entity_AttributeChanged(&eid,pLeftOperandAClass->GetThisName());
-                  if(bEntityUpdate) core.Entity_AttributeChanged(&eid,pLeftOperandAClass);
+                  if(bEntityUpdate) core_internal.Entity_AttributeChanged(&eid,pLeftOperandAClass);
                   break;
                 }
                 // copy value to variable
@@ -5117,7 +5117,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 pVDst->Get(eid);
                 if (bEntityUpdate)
                 {
-                    core.Entity_AttributeChanged(eid, pLeftOperandAClass);
+                    core_internal.Entity_AttributeChanged(eid, pLeftOperandAClass);
                 }
                 break;
             }
@@ -5778,7 +5778,7 @@ void COMPILER::ExitProgram()
         DATA *pResult;
         BC_Execute(function_code, pResult);
     }
-    core.Exit();
+    core_internal.Exit();
 }
 
 void COMPILER::ClearEvents()
@@ -6121,7 +6121,7 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
                 real_var->value->SetElementsNum(nElementsNum);
                 if (!VarTab.SetElementsNum(var_code, nElementsNum))
                 {
-                    core.Trace("Unable to set elements num for %s", real_var->name.c_str());
+                    core_internal.Trace("Unable to set elements num for %s", real_var->name.c_str());
                 }
             }
     }
@@ -6424,7 +6424,7 @@ bool COMPILER::SaveState(std::fstream &fileS)
         BC_Execute(function_code, pResult);
 
     EXTDATA_HEADER edh;
-    auto *pVDat = static_cast<VDATA *>(core.GetScriptVariable("savefile_info"));
+    auto *pVDat = static_cast<VDATA *>(core_internal.GetScriptVariable("savefile_info"));
     if (pVDat && pVDat->GetString())
         sprintf_s(edh.sFileInfo, sizeof(edh.sFileInfo), "%s", pVDat->GetString());
     else
@@ -6677,7 +6677,7 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
     }
 
     const uint32_t dwFileSize = fio->_GetFileSize(file_name);
-    auto *pVDat = static_cast<VDATA *>(core.GetScriptVariable("savefile_info"));
+    auto *pVDat = static_cast<VDATA *>(core_internal.GetScriptVariable("savefile_info"));
     if (pVDat && pVDat->GetString())
         sprintf_s(exdh.sFileInfo, sizeof(exdh.sFileInfo), "%s", pVDat->GetString());
     else
@@ -6832,7 +6832,7 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
     fio->_CloseFile(fileS);
     delete[] pCBuffer;
     RDTSC_E(dw2);
-    // core.Trace("GetSaveData = %d", dw2);
+    // core_internal.Trace("GetSaveData = %d", dw2);
 
     data_size = dwDestLen;
     return pBuffer;

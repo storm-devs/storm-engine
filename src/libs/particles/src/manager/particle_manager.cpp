@@ -24,7 +24,7 @@ ParticleManager::ParticleManager(ParticleService *service) : IParticleManager(se
     BB_Processor = new BillBoardProcessor;
     GlobalDelete = false;
     TimeFromLastStatUpdate = 100.0f;
-    pRS = static_cast<VDX9RENDER *>(core.CreateService("DX9Render"));
+    pRS = static_cast<VDX9RENDER *>(core.GetService("DX9Render"));
     Assert(pRS != NULL);
 
     pDataCache = new DataCache(this);

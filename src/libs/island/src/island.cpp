@@ -77,11 +77,11 @@ void ISLAND::SetDevice()
 {
     // core.LayerCreate("island_trace", true, false);
 
-    pCollide = static_cast<COLLIDE *>(core.CreateService("COLL"));
+    pCollide = static_cast<COLLIDE *>(core.GetService("COLL"));
     Assert(pCollide);
-    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     Assert(pRS);
-    pGS = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    pGS = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     Assert(pGS);
 }
 

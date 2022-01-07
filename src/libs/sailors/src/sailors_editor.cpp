@@ -25,7 +25,7 @@ SailorsEditor::~SailorsEditor()
 
 bool SailorsEditor::Init()
 {
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
 
     sailors = EntityManager::CreateEntity("Sailors");
 

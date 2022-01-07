@@ -48,8 +48,8 @@ bool SEAFOAM::Init()
         sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(seaID));
     }
 
-    renderer = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
-    soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
+    renderer = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
+    soundService = static_cast<VSoundService *>(core.GetService("SoundService"));
 
     psIni = fio->OpenIniFile("resource\\ini\\particles.ini");
 

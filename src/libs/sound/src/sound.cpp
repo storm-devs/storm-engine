@@ -25,11 +25,11 @@ bool SOUND::Init()
 {
     // GUARD(SOUND::Init)
 
-    soundService = static_cast<VSoundService *>(core.CreateService("SoundService"));
+    soundService = static_cast<VSoundService *>(core.GetService("SoundService"));
     if (!soundService)
         core.Trace("!SOUND: Can`t create sound service");
 
-    renderer = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    renderer = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     EntityManager::AddToLayer(REALIZE, GetId(), -1);
 
     return true;

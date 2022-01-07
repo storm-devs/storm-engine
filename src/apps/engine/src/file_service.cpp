@@ -1,5 +1,5 @@
 #include "file_service.h"
-#include "core.h"
+#include "core_impl.h"
 #include "storm_assert.h"
 
 #include <SDL2/SDL.h>

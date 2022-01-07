@@ -27,7 +27,7 @@ bool PARTICLES::Init()
     EntityManager::AddToLayer(REALIZE, GetId(), 0xfffff);
     EntityManager::AddToLayer(EXECUTE, GetId(), 0);
 
-    pService = static_cast<IParticleService *>(core.CreateService("ParticleService"));
+    pService = static_cast<IParticleService *>(core.GetService("ParticleService"));
     Assert(pService);
     pManager = pService->DefManager();
     Assert(pManager);

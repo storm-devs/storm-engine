@@ -24,10 +24,10 @@ BLAST::~BLAST()
 
 bool BLAST::Init()
 {
-    gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (!gs)
         return false;
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         return false;
 

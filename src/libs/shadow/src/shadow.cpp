@@ -44,13 +44,13 @@ bool Shadow::Init()
 {
     // GUARD(Shadow::SHADOW())
 
-    col = static_cast<COLLIDE *>(core.CreateService("coll"));
+    col = static_cast<COLLIDE *>(core.GetService("coll"));
     if (col == nullptr)
         throw std::runtime_error("No service: COLLIDE");
 
     EntityManager::AddToLayer(REALIZE, GetId(), 900);
 
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
 

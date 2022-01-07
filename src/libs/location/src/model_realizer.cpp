@@ -25,8 +25,8 @@ LocModelRealizer::~LocModelRealizer()
 // Initialization
 bool LocModelRealizer::Init()
 {
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
-    gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
+    gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     return true;
 }
 

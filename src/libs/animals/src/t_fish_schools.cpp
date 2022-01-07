@@ -40,7 +40,7 @@ void TFishSchools::Init()
 {
     LoadSettings();
 
-    renderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    renderService = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!renderService)
         throw std::runtime_error("!FishSchools: No service 'dx9render'");
 

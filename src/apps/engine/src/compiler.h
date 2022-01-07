@@ -86,11 +86,11 @@ enum COMPILER_STAGE
     CS_RUNTIME
 };
 
-class CORE;
+class CoreImpl;
 
 class COMPILER : public VIRTUAL_COMPILER
 {
-    friend CORE;
+    friend CoreImpl;
     friend S_DEBUG;
 
   public:

@@ -1047,7 +1047,7 @@ bool Sailors::Init()
 {
     // GUARD_SAILORS(Sailors :: Init())
 
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
 
     EntityManager::SetLayerType(SEA_REALIZE, EntityManager::Layer::Type::realize);
     EntityManager::AddToLayer(SEA_REALIZE, GetId(), 65530);

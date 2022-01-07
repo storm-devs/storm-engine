@@ -53,9 +53,9 @@ void SUNGLOW::SetDevice()
 {
     entid_t ent;
 
-    pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    pRS = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     Assert(pRS);
-    pCollide = static_cast<COLLIDE *>(core.CreateService("COLL"));
+    pCollide = static_cast<COLLIDE *>(core.GetService("COLL"));
     Assert(pCollide);
 
     if (!(ent = EntityManager::GetEntityId("weather")))

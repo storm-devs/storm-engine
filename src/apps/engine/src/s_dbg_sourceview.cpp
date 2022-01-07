@@ -1,5 +1,5 @@
 #include "s_dbg_sourceview.h"
-#include "core.h"
+#include "core_impl.h"
 #include "data.h"
 #include "defines.h"
 #include "resource.h"
@@ -1119,7 +1119,7 @@ bool SOURCE_VIEW::SetVariableOnChange(const char *pString, bool bSet)
     pStr = GetToken(pStr, sVarName);
     if (!pStr)
     {
-        pObject = static_cast<VDATA *>(core.GetScriptVariable(sVarName.c_str(), nullptr));
+        pObject = static_cast<VDATA *>(core_internal.GetScriptVariable(sVarName.c_str(), nullptr));
         if (!pObject)
             return false;
         // set VOC to alone variable
@@ -1134,7 +1134,7 @@ bool SOURCE_VIEW::SetVariableOnChange(const char *pString, bool bSet)
         {
             return false;
         }
-        auto *pV = static_cast<VDATA *>(core.GetScriptVariable(sVarName.c_str(), nullptr));
+        auto *pV = static_cast<VDATA *>(core_internal.GetScriptVariable(sVarName.c_str(), nullptr));
         if (!pV)
             return false;
         sscanf(sDigit.c_str(), "%d", &iDigit);
@@ -1143,7 +1143,7 @@ bool SOURCE_VIEW::SetVariableOnChange(const char *pString, bool bSet)
     }
     else if (sToken == ".")
     {
-        pObject = static_cast<VDATA *>(core.GetScriptVariable(sVarName.c_str(), nullptr));
+        pObject = static_cast<VDATA *>(core_internal.GetScriptVariable(sVarName.c_str(), nullptr));
     }
     else
         return false;

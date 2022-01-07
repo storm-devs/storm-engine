@@ -68,7 +68,7 @@ DATA *S_STACK::Pop()
     {
       entid_t id;
       pStackData[Data_num]->Get(id);
-      core.Entity_SetAttributePointer(&id,0);
+      core_internal.Entity_SetAttributePointer(&id,0);
     }//*/
     return pStackData[Data_num];
 }

@@ -269,7 +269,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     //==========================================================================
     // reread fonts
     //==========================================================================
-    auto *RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    auto *RenderService = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (RenderService)
     {
         char fullIniPath[512];
@@ -1107,7 +1107,7 @@ uint32_t _SetColorCorrection(VS_STACK *pS)
     float fContrast = 1.f;
     pContrast->Get(fContrast);
 
-    auto pVR = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    auto pVR = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!pVR)
         return IFUNCRESULT_FAILED;
 
@@ -1130,7 +1130,7 @@ uint32_t _SetMouseSensitivity(VS_STACK *pS)
     float fXSens = 1.f;
     pXSens->Get(fXSens);
 
-    auto pCntrl = static_cast<CONTROLS *>(core.CreateService("PCS_CONTROLS"));
+    auto pCntrl = static_cast<CONTROLS *>(core.GetService("PCS_CONTROLS"));
     if (!pCntrl)
         return IFUNCRESULT_FAILED;
 
@@ -1157,7 +1157,7 @@ uint32_t _ControlMakeInvert(VS_STACK *pS)
     if (!sCntrlName)
         return IFUNCRESULT_FAILED;
 
-    auto pCntrl = static_cast<CONTROLS *>(core.CreateService("PCS_CONTROLS"));
+    auto pCntrl = static_cast<CONTROLS *>(core.GetService("PCS_CONTROLS"));
     if (!pCntrl)
         return IFUNCRESULT_FAILED;
 

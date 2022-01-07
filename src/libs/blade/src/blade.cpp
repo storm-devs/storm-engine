@@ -178,7 +178,7 @@ bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
         strcpy_s(path, "Ammo\\");
         strcat_s(path, mdlName.c_str());
         // path of the textures
-        auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+        auto *gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
         if (gs)
             gs->SetTexturePath("Ammo\\");
         // Create a model
@@ -220,13 +220,13 @@ bool BLADE::Init()
 {
     // GUARD(BLADE::BLADE())
 
-    col = static_cast<COLLIDE *>(core.CreateService("coll"));
+    col = static_cast<COLLIDE *>(core.GetService("coll"));
     if (col == nullptr)
         throw std::runtime_error("No service: COLLIDE");
 
     EntityManager::AddToLayer(REALIZE, GetId(), 65550);
 
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
 
@@ -348,7 +348,7 @@ bool BLADE::LoadGunModel(MESSAGE &message)
         strcpy_s(path, "Ammo\\");
         strcat_s(path, mdlName.c_str());
         // path of the textures
-        auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+        auto *gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
         if (gs)
             gs->SetTexturePath("Ammo\\");
         // Create a model
@@ -652,7 +652,7 @@ bool BLADE::TIEITEM_INFO::LoadItemModel(const char *mdlName, const char *locName
     strcpy_s(path, "Ammo\\");
     strcat_s(path, mdlName);
     // path of the textures
-    auto *gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    auto *gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (gs)
         gs->SetTexturePath("Ammo\\");
     // Create a model

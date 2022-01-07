@@ -1,6 +1,5 @@
 #pragma once
 
-#include <windows.h>
 #include <cstdint>
 #include <cstdio>
 #include <vector>
@@ -39,27 +38,6 @@ constexpr size_t TSE_MAX_EVENT_LENGTH = 64;
 
 class ATTRIBUTES
 {
-    void xtrace(const char *data_PTR, ...) const
-    {
-        char xBuffer_4k[4096];
-        if (data_PTR == nullptr)
-            return;
-
-        auto *const file_h = CreateFile(TEXT("attributes.log"), GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_ALWAYS,
-                                        FILE_ATTRIBUTE_NORMAL, nullptr);
-        SetFilePointer(file_h, 0, nullptr, FILE_END);
-        va_list args;
-
-        va_start(args, data_PTR);
-        _vsnprintf_s(xBuffer_4k, sizeof(xBuffer_4k) - 4, data_PTR, args);
-        strcat_s(xBuffer_4k, "\x0d\x0a");
-        uint32_t bytes;
-        WriteFile(file_h, xBuffer_4k, static_cast<DWORD>(strlen(xBuffer_4k)), (LPDWORD)&bytes, nullptr);
-        va_end(args);
-        CloseHandle(file_h);
-        _flushall();
-    }
-
     VSTRING_CODEC *pVStringCodec;
     uint32_t nNameCode;
     char *Attribute;
@@ -70,7 +48,7 @@ class ATTRIBUTES
     void SetParent(ATTRIBUTES *pP)
     {
         pParent = pP;
-    };
+    }
 
     ATTRIBUTES *CreateNewAttribute(uint32_t name_code)
     {
@@ -99,7 +77,7 @@ class ATTRIBUTES
     ~ATTRIBUTES()
     {
         Release();
-    };
+    }
 
     void SetBreak(bool bBreak)
     {
@@ -109,14 +87,14 @@ class ATTRIBUTES
     auto GetParent() const
     {
         return pParent;
-    };
+    }
 
     bool operator==(const char *str) const
     {
         if (!str || !str[0])
             return false;
         return _stricmp(pVStringCodec->Convert(nNameCode), str) == 0;
-    };
+    }
 
     auto GetThisName() const
     {
@@ -127,7 +105,7 @@ class ATTRIBUTES
     auto GetThisAttr() const
     {
         return Attribute;
-    };
+    }
 
     void SetName(const char *_name)
     {
@@ -156,29 +134,19 @@ class ATTRIBUTES
 
     void Release()
     {
-        /*DWORD n;
-        if(Attribute) delete Attribute;
-        Attribute = 0;
-        if(pAttributes)
-        {
-          for(n=0;n<Attributes_num;n++) delete pAttributes[n];
-          delete pAttributes;
-        }
-        pAttributes = 0;
-        Attributes_num = 0;*/
         if (bBreak)
             pVStringCodec->VariableChanged();
         ReleaseLeafs();
         delete Attribute;
         Attribute = nullptr;
-    };
+    }
 
     void ReleaseLeafs()
     {
         for (const auto &attribute : pAttributes)
             delete attribute;
         pAttributes.clear();
-    };
+    }
 
     auto GetAttributesNum() const
     {
@@ -191,28 +159,28 @@ class ATTRIBUTES
             if (_stricmp(name, attribute->GetThisName()) == 0)
                 return attribute;
         return nullptr;
-    };
+    }
 
     ATTRIBUTES *GetAttributeClass(uint32_t n)
     {
         return n >= pAttributes.size() ? nullptr : pAttributes[n];
-    };
+    }
 
     auto VerifyAttributeClass(const char *name)
     {
         auto *const pTemp = GetAttributeClass(name);
         return (pTemp) ? pTemp : CreateAttribute(name, "");
-    };
+    }
 
     char *GetAttribute(size_t n)
     {
         return n >= pAttributes.size() ? nullptr : pAttributes[n]->Attribute;
-    };
+    }
 
     const char *GetAttributeName(size_t n)
     {
         return n >= pAttributes.size() ? nullptr : pAttributes[n]->GetThisName();
-    };
+    }
 
     char *GetAttribute(const char *name)
     {
@@ -276,7 +244,7 @@ class ATTRIBUTES
             vFloat = static_cast<float>(atof(Attribute));
         }
         return vFloat;
-    };
+    }
 
     auto SetAttributeUseDword(const char *name, uint32_t val)
     {
@@ -286,9 +254,9 @@ class ATTRIBUTES
             return SetAttribute(name, buffer) != 0;
         SetValue(buffer);
         return true;
-    };
+    }
 
-    auto SetAttributeUseFloat(const char *name, FLOAT val)
+    auto SetAttributeUseFloat(const char *name, float val)
     {
         char buffer[128];
         sprintf_s(buffer, "%g", val);
@@ -297,7 +265,7 @@ class ATTRIBUTES
         SetValue(buffer);
 
         return true;
-    };
+    }
 
     ATTRIBUTES *CreateAttribute(const char *name, const char *attribute)
     {
@@ -316,12 +284,12 @@ class ATTRIBUTES
         }
 
         return attr;
-    };
+    }
 
     size_t SetAttribute(const char *name, const char *attribute)
     {
         return SetAttribute(pVStringCodec->Convert(name), attribute);
-    };
+    }
 
     void Copy(ATTRIBUTES *pASource)
     {
@@ -333,9 +301,9 @@ class ATTRIBUTES
             const auto i = SetAttribute(attribute->GetThisName(), attribute->Attribute);
             pAttributes[i]->Copy(attribute);
         }
-    };
+    }
 
-    BOOL DeleteAttributeClassX(ATTRIBUTES *pA)
+    bool DeleteAttributeClassX(ATTRIBUTES *pA)
     {
         if (pA == nullptr)
             return false;
@@ -363,7 +331,7 @@ class ATTRIBUTES
             }
         }
         return false;
-    };
+    }
 
     ATTRIBUTES *CreateSubAClass(ATTRIBUTES *pRoot, const char *access_string)
     {
@@ -396,7 +364,7 @@ class ATTRIBUTES
             n++;
         }
         return nullptr;
-    };
+    }
 
     ATTRIBUTES *FindAClass(ATTRIBUTES *pRoot, const char *access_string)
     {
@@ -426,7 +394,7 @@ class ATTRIBUTES
             n++;
         }
         return nullptr;
-    };
+    }
 
     ATTRIBUTES *GetAttributeClassByCode(uint32_t name_code)
     {
@@ -434,7 +402,7 @@ class ATTRIBUTES
             if (name_code == attribute->nNameCode)
                 return attribute;
         return nullptr;
-    };
+    }
 
     ATTRIBUTES *VerifyAttributeClassByCode(uint32_t name_code)
     {
@@ -443,7 +411,7 @@ class ATTRIBUTES
         if (pTemp)
             return pTemp;
         return CreateAttribute(name_code, "");
-    };
+    }
 
     ATTRIBUTES *CreateAttribute(uint32_t name_code, const char *attribute)
     {
@@ -459,7 +427,7 @@ class ATTRIBUTES
         }
 
         return attr;
-    };
+    }
 
     size_t GetALen(size_t dwLen)
     {
@@ -510,7 +478,7 @@ class ATTRIBUTES
         }
 
         return pAttributes.size() - 1;
-    };
+    }
 
     uint32_t GetThisNameCode()
     {
@@ -522,7 +490,7 @@ class ATTRIBUTES
         nNameCode = n;
     }
 
-    void Dump(ATTRIBUTES *pA, long level)
+    /*void Dump(ATTRIBUTES *pA, long level)
     {
         char buffer[128];
         if (pA == nullptr)
@@ -540,5 +508,5 @@ class ATTRIBUTES
             xtrace("%s%s = %s", buffer, pA->GetAttributeName(n), pA->GetAttribute(n));
             Dump(pA->GetAttributeClass(pA->GetAttributeName(n)), level + 2);
         }
-    }
+    }*/
 };

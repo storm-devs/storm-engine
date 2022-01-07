@@ -76,7 +76,7 @@ bool SoundService::Init()
 {
     initialized = false;
 
-    rs = static_cast<VDX9RENDER *>(core.CreateService("DX9RENDER"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("DX9RENDER"));
 
     CHECKFMODERR(FMOD::System_Create(&system));
     unsigned version;
