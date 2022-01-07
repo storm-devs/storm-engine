@@ -457,6 +457,8 @@ private:
     CVECTOR Pos, Ang;
     float Fov;
 
+    float FovMultiplier{ 1.0f };
+
     Effects effects_;
 
     char *fontIniFileName;
