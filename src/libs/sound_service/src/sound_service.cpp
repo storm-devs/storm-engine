@@ -1167,8 +1167,10 @@ void SoundService::DebugDraw()
 
     auto vListener = CVECTOR(lpos.x, lpos.y, lpos.z);
 
-    float fTotal;
-    system->getCPUUsage(nullptr, nullptr, nullptr, nullptr, &fTotal);
+    FMOD_CPU_USAGE usage;
+    system->getCPUUsage(&usage);
+    float fTotal = usage.dsp + usage.stream + usage.geometry + usage.update + usage.convolution1 + usage.convolution1;
+
     int CurrentAlloc, PeakAlloc;
     FMOD::Memory_GetStats(&CurrentAlloc, &PeakAlloc);
 
