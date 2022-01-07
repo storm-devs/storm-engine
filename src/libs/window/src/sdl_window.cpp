@@ -1,6 +1,6 @@
 #include "sdl_window.hpp"
 
-#include <SDL_syswm.h>
+#include <SDL2/SDL_syswm.h>
 #include <map>
 
 namespace storm

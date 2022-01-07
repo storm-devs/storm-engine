@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <SDL_scancode.h>
+#include <SDL2/SDL_scancode.h>
 #include <variant>
 
 namespace storm

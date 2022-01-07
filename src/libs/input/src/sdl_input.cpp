@@ -1,9 +1,9 @@
 #include "sdl_input.hpp"
 
-#include <SDL.h>
-#include <SDL_system.h>
-#include <SDL_video.h>
-#include <windows.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_system.h>
+#include <SDL2/SDL_video.h>
+#include <Windows.h>
 #include <map>
 
 namespace storm
@@ -288,10 +288,13 @@ inline unsigned int keyToSDL(KeyboardKey key)
 }
 } // namespace
 
-SDLInput::SDLInput() : keyStates_(nullptr)
+SDLInput::SDLInput()
 {
     keyStates_ = SDL_GetKeyboardState(nullptr);
+#ifndef _WIN32
+    // since SDL 2.0.18 breaks WINAPI mouse api
     SDL_SetRelativeMouseMode(SDL_TRUE);
+#endif
     SDL_AddEventWatch(&SDLEventHandler, this);
     OpenController();
 }

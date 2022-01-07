@@ -424,6 +424,21 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
 
 void PCS_CONTROLS::Update(uint32_t DeltaTime)
 {
+#ifdef _WIN32
+    static int nMouseXPrev, nMouseYPrev;
+    POINT point;
+    GetCursorPos(&point);
+
+    nMouseDx = point.x - nMouseXPrev;
+    nMouseDy = point.y - nMouseYPrev;
+
+    RECT r;
+    GetWindowRect(core.GetAppHWND(), &r);
+    nMouseXPrev = r.left + (r.right - r.left) / 2;
+    nMouseYPrev = r.top + (r.bottom - r.top) / 2;
+    SetCursorPos(nMouseXPrev, nMouseYPrev);
+#endif
+
     m_ControlTree.Process();
     m_KeyBuffer.Reset();
 
@@ -630,18 +645,18 @@ void PCS_CONTROLS::HandleEvent(const InputEvent &evt)
     }
     else if (evt.type == InputEvent::KeyboardText)
     {
-        auto text = std::get<std::string>(evt.data);
+        const auto &text = std::get<std::string>(evt.data);
         m_KeyBuffer.AddKey((char *)text.c_str(), text.length(), false);
     }
     else if (evt.type == InputEvent::MouseMove)
     {
-        auto dxdy = std::get<MousePos>(evt.data);
+        const auto &dxdy = std::get<MousePos>(evt.data);
         nMouseDx += dxdy.x;
         nMouseDy += dxdy.y;
     }
     else if (evt.type == InputEvent::MouseWheel)
     {
-        auto dxdy = std::get<MousePos>(evt.data);
+        const auto &dxdy = std::get<MousePos>(evt.data);
         nMouseWheel += dxdy.y * input_->GetWheelFactor();
         core.Event("evMouseWeel", "l", static_cast<short>(dxdy.y));
     }
