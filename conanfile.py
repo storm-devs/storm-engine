@@ -18,7 +18,7 @@ class StormEngine(ConanFile):
     # conan-center
     requires = ["zlib/1.2.11", "spdlog/1.9.2", "sentry-native/0.4.12@storm/patched", "7zip/19.00", "fast_float/3.4.0", "sdl/2.0.18",    
     # storm.jfrog.io
-    "directx/9.0@storm/prebuilt", "fmod/2.1.11@storm/prebuilt"]
+    "directx/9.0@storm/prebuilt", "fmod/2.02.05@storm/prebuilt"]
     # aux dependencies (e.g. for tests)
     build_requires = "catch2/2.13.7"
 
