@@ -167,6 +167,8 @@ class SoundService : public VSoundService
 
     float fPitch;
 
+    float fadeTimeInSeconds = 0.5f;
+
   public:
     SoundService();
     ~SoundService() override;
@@ -209,6 +211,8 @@ class SoundService : public VSoundService
     bool SetScheme(const char *_schemeName) override;
     bool AddScheme(const char *_schemeName) override;
     void SetEnabled(bool _enabled) override;
+
+    void SetActiveWithFade(bool active) override;
 
     void DebugDraw();
     void DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
