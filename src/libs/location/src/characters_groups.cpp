@@ -623,7 +623,7 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
     }
     else
     {
-        vd->Set(static_cast<int32_t>(-1));
+        vd->Set(-1);
     }
     return true;
 }

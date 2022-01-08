@@ -455,12 +455,12 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             if (FuncTab.FindFunc(pChar) == INVALID_FUNC_CODE)
             {
                 pV = SStack.Push();
-                pV->Set(static_cast<int32_t>(0));
+                pV->Set(0);
             }
             else
             {
                 pV = SStack.Push();
-                pV->Set(static_cast<int32_t>(1));
+                pV->Set(1);
             }
             pVResult = pV;
         }
@@ -636,15 +636,15 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         if (static_cast<uint32_t>(TempLong1) >= strlen(pChar))
         {
             pV = SStack.Push();
-            pV->Set(static_cast<int32_t>(0));
+            pV->Set(0);
             pVResult = pV;
             return pV;
         }
         pV = SStack.Push();
         if (pChar[TempLong1] >= 0x30 && pChar[TempLong1] <= 0x39)
-            pV->Set(static_cast<int32_t>(1));
+            pV->Set(1);
         else
-            pV->Set(static_cast<int32_t>(0));
+            pV->Set(0);
         pVResult = pV;
         return pV;
 
@@ -1150,7 +1150,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         if (slen < slen2)
         {
             pV = SStack.Push();
-            pV->Set(static_cast<int32_t>(-1));
+            pV->Set(-1);
             pVResult = pV;
             return pV;
         }
@@ -1168,7 +1168,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             n++;
         }
         pV = SStack.Push();
-        pV->Set(static_cast<int32_t>(-1));
+        pV->Set(-1);
         pVResult = pV;
         return pV;
 
@@ -1567,13 +1567,13 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV->Set(ent);
             SStack.Pop();
             pV = SStack.Push();
-            pV->Set(static_cast<int32_t>(1));
+            pV->Set(1);
             pVResult = pV;
             return pV;
         }
         SStack.Pop();
         pV = SStack.Push();
-        pV->Set(static_cast<int32_t>(0));
+        pV->Set(0);
         pVResult = pV;
         SetError("Cant create class: %s", pChar);
         return pV;
@@ -1730,9 +1730,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         Access.Get(pChar);
         pV = SStack.Push();
         if (BC_LoadSegment(pChar))
-            pV->Set(static_cast<int32_t>(1));
+            pV->Set(1);
         else
-            pV->Set(static_cast<int32_t>(0));
+            pV->Set(0);
         pVResult = pV;
         return pV;
         //
@@ -1756,9 +1756,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->Get(pChar);
         pV = SStack.Push();
         if (BC_SegmentIsLoaded(pChar))
-            pV->Set(static_cast<int32_t>(1));
+            pV->Set(1);
         else
-            pV->Set(static_cast<int32_t>(0));
+            pV->Set(0);
         pVResult = pV;
         break;
         //

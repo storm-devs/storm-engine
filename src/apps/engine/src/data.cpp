@@ -2427,7 +2427,7 @@ bool DATA::CompareAndSetResult(DATA *pV, S_TOKEN_TYPE op)
     pV = pV->GetVarPointer();
     if (pV == nullptr)
     {
-        Set(static_cast<int32_t>(0));
+        Set(0);
         return false;
     }
 
@@ -2435,7 +2435,7 @@ bool DATA::CompareAndSetResult(DATA *pV, S_TOKEN_TYPE op)
     {
         if (!Convert(VAR_INTEGER))
         {
-            Set(static_cast<int32_t>(0));
+            Set(0);
             return false;
         }
     }
@@ -2444,7 +2444,7 @@ bool DATA::CompareAndSetResult(DATA *pV, S_TOKEN_TYPE op)
     {
         if (!Convert(VAR_FLOAT))
         {
-            Set(static_cast<int32_t>(0));
+            Set(0);
             return false;
         }
     }
@@ -2463,51 +2463,51 @@ bool DATA::CompareAndSetResult(DATA *pV, S_TOKEN_TYPE op)
                 pV->Convert(VAR_INTEGER);
             case OP_BOOL_EQUAL:
                 if (lValue == pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_GREATER:
                 if (lValue > pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_GREATER_OR_EQUAL:
                 if (lValue >= pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_LESSER:
                 if (lValue < pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_LESSER_OR_EQUAL:
                 if (lValue <= pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_NOT_EQUAL:
                 if (lValue != pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_BOOL_AND:
                 if (lValue != 0 && pV->lValue != 0)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_BOOL_OR:
                 if (lValue != 0 || pV->lValue != 0)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             }
             break;
@@ -2517,56 +2517,56 @@ bool DATA::CompareAndSetResult(DATA *pV, S_TOKEN_TYPE op)
             {
             case OP_BOOL_EQUAL:
                 if (lValue == pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_GREATER:
                 if (lValue > pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_GREATER_OR_EQUAL:
                 if (lValue >= pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_LESSER:
                 if (lValue < pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_LESSER_OR_EQUAL:
                 if (lValue <= pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_NOT_EQUAL:
                 if (lValue != pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_BOOL_AND:
                 if (lValue != 0 && pV->fValue != 0)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_BOOL_OR:
                 if (lValue != 0 || pV->fValue != 0)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             }
             break;
         default:
-            Set(static_cast<int32_t>(0));
+            Set(0);
             return false;
         }
         break;
@@ -2578,51 +2578,51 @@ bool DATA::CompareAndSetResult(DATA *pV, S_TOKEN_TYPE op)
             {
             case OP_BOOL_EQUAL:
                 if (fValue == pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_GREATER:
                 if (fValue > pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_GREATER_OR_EQUAL:
                 if (fValue >= pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_LESSER:
                 if (fValue < pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_LESSER_OR_EQUAL:
                 if (fValue <= pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_NOT_EQUAL:
                 if (fValue != pV->lValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_BOOL_AND:
                 if (fValue != 0 && pV->lValue != 0)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_BOOL_OR:
                 if (fValue != 0 || pV->lValue != 0)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             }
             break;
@@ -2631,56 +2631,56 @@ bool DATA::CompareAndSetResult(DATA *pV, S_TOKEN_TYPE op)
             {
             case OP_BOOL_EQUAL:
                 if (fValue == pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_GREATER:
                 if (fValue > pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_GREATER_OR_EQUAL:
                 if (fValue >= pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_LESSER:
                 if (fValue < pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_LESSER_OR_EQUAL:
                 if (fValue <= pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_NOT_EQUAL:
                 if (fValue != pV->fValue)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_BOOL_AND:
                 if (fValue != 0 && pV->fValue != 0)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             case OP_BOOL_OR:
                 if (fValue != 0 || pV->fValue != 0)
-                    Set(static_cast<int32_t>(1));
+                    Set(1);
                 else
-                    Set(static_cast<int32_t>(0));
+                    Set(0);
                 break;
             }
             break;
         default:
-            Set(static_cast<int32_t>(0));
+            Set(0);
             return false;
         }
         break;
@@ -2716,7 +2716,7 @@ bool DATA::CompareAndSetResult(DATA *pV, S_TOKEN_TYPE op)
 
             break;
         default:
-            Set(static_cast<int32_t>(0));
+            Set(0);
             return false;
         }
         break;
@@ -2744,24 +2744,24 @@ bool DATA::BoolConvert()
     {
     case VAR_INTEGER:
         if (lValue != 0)
-            Set(static_cast<int32_t>(1));
+            Set(1);
         else
-            Set(static_cast<int32_t>(0));
+            Set(0);
         break;
     case VAR_FLOAT:
         if (fValue != 0)
-            Set(static_cast<int32_t>(1));
+            Set(1);
         else
-            Set(static_cast<int32_t>(0));
+            Set(0);
         break;
     case VAR_STRING:
         Set(static_cast<int32_t>(!sValue.empty()));
         break;
     case VAR_PTR:
         if (pValue != 0)
-            Set(static_cast<int32_t>(1));
+            Set(1);
         else
-            Set(static_cast<int32_t>(0));
+            Set(0);
         break;
     default:
 

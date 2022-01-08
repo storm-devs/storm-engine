@@ -26,7 +26,7 @@ uint32_t _ShipSailState(VS_STACK *pS)
         pVR->Set(n);
     }
     else
-        pVR->Set(static_cast<int32_t>(0));
+        pVR->Set(0);
 
     return IFUNCRESULT_OK;
 }

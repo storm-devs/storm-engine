@@ -1577,7 +1577,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             SetError("Invalid array '%s' initialization parameter", vi.name.c_str());
                                             return false;
                                         }
-                                        real_var->value->Set(static_cast<int32_t>(1));
+                                        real_var->value->Set(1);
                                         break;
                                     case FALSE_CONST:
                                         if (vi.type != VAR_INTEGER)
@@ -1585,7 +1585,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             SetError("Invalid array '%s' initialization parameter", vi.name.c_str());
                                             return false;
                                         }
-                                        real_var->value->Set(static_cast<int32_t>(0));
+                                        real_var->value->Set(0);
                                         break;
 
                                     case NUMBER:
@@ -1655,12 +1655,12 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 case TRUE_CONST:
                                     if (vi.type != VAR_INTEGER)
                                         break;
-                                    real_var->value->Set(static_cast<int32_t>(1));
+                                    real_var->value->Set(1);
                                     break;
                                 case FALSE_CONST:
                                     if (vi.type != VAR_INTEGER)
                                         break;
-                                    real_var->value->Set(static_cast<int32_t>(0));
+                                    real_var->value->Set(0);
                                     break;
                                 case NUMBER:
                                     if (vi.type != VAR_INTEGER)
@@ -4270,11 +4270,11 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 return false;
             if (pVResult)
             {
-                ExpressionResult.Set(static_cast<int32_t>(1));
+                ExpressionResult.Set(1);
                 // SStack.Pop();
             }
             else
-                ExpressionResult.Set(static_cast<int32_t>(0));
+                ExpressionResult.Set(0);
             break;
         case CALL_FUNCTION:
             memcpy(&func_code, &pCodeBase[ip], sizeof(uint32_t));
