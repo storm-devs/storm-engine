@@ -51,7 +51,7 @@ class QuestFileReader
     static void FillUserDataList(const std::string_view &strData, std::vector<UserData> &userData);
 
   private:
-    void ReadUserData(const std::string_view &questID, long recordIndex);
+    void ReadUserData(const std::string_view &questID, int32_t recordIndex);
 
     void AddQuestsFromBuffer(const std::string_view &srcBuffer);
     void AddQuestToList(const std::string_view &questID, const std::string_view &titleText);

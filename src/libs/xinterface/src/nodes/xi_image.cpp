@@ -191,7 +191,7 @@ void CXI_IMAGE::Draw()
     }
 }
 
-void CXI_IMAGE::Draw(long nX, long nY, ImagePointType alignment)
+void CXI_IMAGE::Draw(int32_t nX, int32_t nY, ImagePointType alignment)
 {
     auto nLeft = nX;
     auto nTop = nY;
@@ -211,7 +211,7 @@ void CXI_IMAGE::Draw(long nX, long nY, ImagePointType alignment)
     Draw();
 }
 
-void CXI_IMAGE::SetSize(long nWidth, long nHeight)
+void CXI_IMAGE::SetSize(int32_t nWidth, int32_t nHeight)
 {
     m_pntSize.x = nWidth;
     m_pntSize.y = nHeight;
@@ -221,7 +221,7 @@ void CXI_IMAGE::SetSize(long nWidth, long nHeight)
         UpdateTexture();
 }
 
-void CXI_IMAGE::SetPosition(long nX, long nY, ImagePointType ptype)
+void CXI_IMAGE::SetPosition(int32_t nX, int32_t nY, ImagePointType ptype)
 {
     switch (ptype)
     {
@@ -257,10 +257,10 @@ void CXI_IMAGE::SetPosition(XYRECT &pos)
     }
 }
 
-void CXI_IMAGE::SetDifferentPosition(long nLeft, long nTop, long nWidth, long nHeight, ImagePointType ptype)
+void CXI_IMAGE::SetDifferentPosition(int32_t nLeft, int32_t nTop, int32_t nWidth, int32_t nHeight, ImagePointType ptype)
 {
-    long nX = nLeft;
-    long nY = nTop;
+    int32_t nX = nLeft;
+    int32_t nY = nTop;
     switch (ptype)
     {
     case IPType_Center:
@@ -299,7 +299,7 @@ void CXI_IMAGE::SetUV(float fLeft, float fTop, float fRight, float fBottom)
 void CXI_IMAGE::SetColor(uint32_t dwColor)
 {
     m_dwImageColor = dwColor;
-    for (long n = 0; n < 4; n++)
+    for (int32_t n = 0; n < 4; n++)
         m_vrtx[n].color = m_dwImageColor;
 }
 
@@ -321,7 +321,7 @@ void CXI_IMAGE::Unload()
     STORM_DELETE(m_pcPictureListName);
 }
 
-bool CXI_IMAGE::IsPointInside(long nX, long nY) const
+bool CXI_IMAGE::IsPointInside(int32_t nX, int32_t nY) const
 {
     if (nX < m_pntLeftTop.x || nY < m_pntLeftTop.y || nX > m_pntLeftTop.x + m_pntSize.x ||
         nY > m_pntLeftTop.y + m_pntSize.y)

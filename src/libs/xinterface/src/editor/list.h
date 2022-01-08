@@ -23,23 +23,23 @@ class GIEditorList : public GIEditorObject
 
     void AddString(std::string &sNewStr);
     void RemoveString(const std::string &sStr);
-    void RemoveString(long nIndex);
+    void RemoveString(int32_t nIndex);
     void RemoveAllStrings();
-    long FindString(const std::string &sStr);
+    int32_t FindString(const std::string &sStr);
 
-    long GetStringQuantity() const
+    int32_t GetStringQuantity() const
     {
         return m_aStrings.size();
     }
 
-    std::string &GetString(long nIndex);
+    std::string &GetString(int32_t nIndex);
 
-    long GetSelectIndex() const
+    int32_t GetSelectIndex() const
     {
         return m_nSelectIndex;
     }
 
-    void SetSelectIndex(long nIndex);
+    void SetSelectIndex(int32_t nIndex);
 
     std::string &GetSelectString()
     {
@@ -70,9 +70,9 @@ class GIEditorList : public GIEditorObject
     FXYRECT m_frStrOffset;
     float m_fStrLineStep;
     std::vector<std::string> m_aStrings;
-    long m_nSelectIndex;
-    long m_nTopIndex;
-    long m_nLineQuantity;
+    int32_t m_nSelectIndex;
+    int32_t m_nTopIndex;
+    int32_t m_nLineQuantity;
 
     float m_fUpPressTime;
     float m_fDownPressTime;

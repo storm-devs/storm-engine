@@ -121,17 +121,17 @@ void WdmIcon::LRender(VDX9RENDER *rs)
     auto kDef = rs->GetHeightDeformator();
     FillRectCoord(vrt, 8.0f, 8.0f, 64.0f, 64.0f * kDef);
     FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
-    long alpha;
+    int32_t alpha;
     if (icon[1].u >= 0.0f)
     {
-        alpha = static_cast<long>(255.0f * icon[1].alpha);
+        alpha = static_cast<int32_t>(255.0f * icon[1].alpha);
         FillRectUV(vrt, icon[1].u, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectColor(vrt, (alpha << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
     if (icon[0].u >= 0.0f)
     {
-        alpha = static_cast<long>(255.0f * icon[0].alpha);
+        alpha = static_cast<int32_t>(255.0f * icon[0].alpha);
         FillRectUV(vrt, icon[0].u, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectColor(vrt, (alpha << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
@@ -142,7 +142,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
         FillRectCoord(vrt, 8.0f + 8.0f, h - 64.0f * kDef - 8.0f, 64.0f, 64.0f * kDef);
         FillRectUV(vrt, 0.0f, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
-        FillRectColor(vrt, (static_cast<long>(islandAlpha * 255.0f) << 24) | 0xffffff);
+        FillRectColor(vrt, (static_cast<int32_t>(islandAlpha * 255.0f) << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
     // Encounter skip icon
@@ -151,7 +151,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
         FillRectCoord(vrt, 8.0f + 64.0f + 8.0f, 8.0f, 64.0f, 64.0f * kDef);
         FillRectUV(vrt, 4.0f / 8.0f, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
-        FillRectColor(vrt, (static_cast<long>(skipAlpha * 255.0f) << 24) | 0xffffff);
+        FillRectColor(vrt, (static_cast<int32_t>(skipAlpha * 255.0f) << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
     // Storm icon
@@ -181,7 +181,7 @@ void WdmIcon::LRender(VDX9RENDER *rs)
         FillRectCoord(vrt, 8.0f + move, 8.0f, 64.0f, 64.0f * kDef);
         FillRectUV(vrt, 5.0f / 8.0f, 0.0f, 1.0f / 8.0f, 1.0f);
         FillRectUV1(vrt, 0.0f, 0.0f, 1.0f, 1.0f);
-        FillRectColor(vrt, (static_cast<long>(stormAlpha * 255.0f) << 24) | 0xffffff);
+        FillRectColor(vrt, (static_cast<int32_t>(stormAlpha * 255.0f) << 24) | 0xffffff);
         DrawRects(vrt, 1, "WdmDrawIcon");
     }
 }

@@ -215,7 +215,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
 
     case MSG_FLAG_INIT_TOWN: {
         entid_t eidModel = message.EntityID();
-        long nNation = message.Long();
+        int32_t nNation = message.Long();
 
         MODEL *host_mdl;
         host_mdl = (MODEL *)EntityManager::GetEntityPointer(eidModel);
@@ -296,7 +296,7 @@ void FLAG::SetTextureCoordinate() const
     if (bUse)
     {
         int i;
-        long sIdx;
+        int32_t sIdx;
         float stu, addtu, dtu;
         float stv, addtv, dtv;
 
@@ -369,7 +369,7 @@ void FLAG::DoMove(FLAGDATA *pr, float delta_time) const
     CVECTOR dhVect;
     dhVect = *pr->pMatWorld * pr->dhv - pr->pMatWorld->Pos();
 
-    long sIdx = pr->sv;
+    int32_t sIdx = pr->sv;
     CVECTOR dopVect;
     CVECTOR incrVect;
     incrVect.x = FLAGVECTORLEN * xMul;
@@ -834,8 +834,8 @@ void FLAG::SetAdd(int flagNum)
         }
         else
         {
-            long curTexNumC = 0;
-            long curTexNumR = 0;
+            int32_t curTexNumC = 0;
+            int32_t curTexNumR = 0;
 
             // set texture number
             if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
@@ -909,7 +909,7 @@ void FLAG::SetAdd(int flagNum)
     INDEX_BUFFER_RELEASE(RenderService, iBuf);
 }
 
-void FLAG::MoveOtherHost(entid_t newm_id, long flagNum, entid_t oldm_id)
+void FLAG::MoveOtherHost(entid_t newm_id, int32_t flagNum, entid_t oldm_id)
 {
     // find the old group
     int oldgn;

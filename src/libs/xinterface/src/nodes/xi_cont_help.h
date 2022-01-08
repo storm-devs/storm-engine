@@ -6,7 +6,7 @@ struct HELPEntity
 {
     char *nodeName;
     CINODE *pNode;
-    long idHelpString;
+    int32_t idHelpString;
 };
 
 class CXI_CONTEXTHELP : public CINODE
@@ -22,7 +22,7 @@ class CXI_CONTEXTHELP : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -30,11 +30,11 @@ class CXI_CONTEXTHELP : public CINODE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
     void ChangeNode(CINODE *pNode);
     void SetTempHelp(const char *string);
 
-    long m_helpQuantity;
+    int32_t m_helpQuantity;
     HELPEntity *m_pHelpList;
 
   protected:
@@ -46,18 +46,18 @@ class CXI_CONTEXTHELP : public CINODE
     uint32_t m_dwFontColor;
 
     bool m_bBorder;
-    long m_offset;
-    long m_nHelpWidth;
+    int32_t m_offset;
+    int32_t m_nHelpWidth;
 
     HELPEntity *m_curHelp;
-    long m_defaultString;
+    int32_t m_defaultString;
 
-    long m_nMaxDelayCounter;
-    long m_nCurDelayCounter;
-    long m_idTempString;
+    int32_t m_nMaxDelayCounter;
+    int32_t m_nCurDelayCounter;
+    int32_t m_idTempString;
     char *m_sTempString;
 
-    long m_idFont;
+    int32_t m_idFont;
     float m_fCurScale;
     float m_fMaxScale;
 

@@ -329,7 +329,7 @@ bool SHIP_CAMERA::IslandCollision(CVECTOR &pos)
     src = vCenter - up * camRadius;
     k[4] = mdl->Trace(src, src + dr);
     auto kRes = 2.0f;
-    for (long i = 0; i < 5; i++)
+    for (int32_t i = 0; i < 5; i++)
         if (kRes > k[i])
             kRes = k[i];
     if (kRes < 1.0f)

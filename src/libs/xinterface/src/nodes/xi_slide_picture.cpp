@@ -207,7 +207,7 @@ int CXI_SLIDEPICTURE::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_SLIDEPICTURE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_SLIDEPICTURE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }

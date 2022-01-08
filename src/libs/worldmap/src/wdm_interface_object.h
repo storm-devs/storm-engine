@@ -43,7 +43,7 @@ class WdmInterfaceObject : public WdmRenderObject
     // Fill 6 vertices with color
     static void FillRectColor(Vertex *vrt, uint32_t color = 0xffffffff);
     // Draw buffer of rectangles
-    static void DrawRects(Vertex *vrt, long numRects, const char *techName = nullptr);
+    static void DrawRects(Vertex *vrt, int32_t numRects, const char *techName = nullptr);
 
     // Fill 18 vertices of the scaling rectangle
     static void FillSRectCoord(Vertex *vrt, float x, float y, float w, float h, float ws);
@@ -53,7 +53,7 @@ class WdmInterfaceObject : public WdmRenderObject
     static void FillSRectColor(Vertex *vrt, uint32_t color = 0xffffffff);
 
     // Display text in a given strip horizontally and at a given height
-    static void Print(long font, long color, float xleft, float xright, float y, const char *format, ...);
+    static void Print(int32_t font, int32_t color, float xleft, float xright, float y, const char *format, ...);
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation

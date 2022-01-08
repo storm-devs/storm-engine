@@ -15,7 +15,7 @@ class CXI_QUESTTEXTS : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -23,7 +23,7 @@ class CXI_QUESTTEXTS : public CINODE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
     void StartQuestShow(ATTRIBUTES *pA, int qn);
 
@@ -37,7 +37,7 @@ class CXI_QUESTTEXTS : public CINODE
     void GetStringListForQuestRecord(std::vector<std::string> &asStringList, const char *pcRecText,
                                      const char *pcUserData) const;
 
-    long m_idFont;
+    int32_t m_idFont;
     uint32_t m_dwNonCompleteColor;
     uint32_t m_dwCompleteColor;
 

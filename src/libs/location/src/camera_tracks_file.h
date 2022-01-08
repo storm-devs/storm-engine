@@ -35,7 +35,7 @@ struct AntFileHeader
 // Bone description
 struct AntFileBone
 {
-    long parentIndex;        // Parent bone index, less than current
+    int32_t parentIndex;        // Parent bone index, less than current
     uint32_t nameIndex; // The index of the row in the string table
 };
 

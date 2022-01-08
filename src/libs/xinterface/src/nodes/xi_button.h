@@ -16,7 +16,7 @@ class CXI_BUTTON : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -31,14 +31,14 @@ class CXI_BUTTON : public CINODE
     }
 
     void SetUsing(bool bUsing) override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
   protected:
     char *m_sGroupName;
-    long m_idTex; // texture identity
+    int32_t m_idTex; // texture identity
     CVideoTexture *m_pTex;
 
     FXYRECT m_tRect;
@@ -65,6 +65,6 @@ class CXI_BUTTON : public CINODE
     int nMaxDelay;
 
     int m_nFontNum;
-    long m_idString;
+    int32_t m_idString;
     int m_dwStrOffset;
 };

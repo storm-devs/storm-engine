@@ -1,7 +1,7 @@
 #include "iv_buffer_manager.h"
 
 //--------------------------------------------------------------------
-IVBufferManager::IVBufferManager(VDX9RENDER *renderer_, long vertex_type, int vertex_size, size_t index_count,
+IVBufferManager::IVBufferManager(VDX9RENDER *renderer_, int32_t vertex_type, int vertex_size, size_t index_count,
                                  size_t vertex_count, size_t max_size)
     : renderer_(renderer_), max_size_(max_size),
       index_buffer_(renderer_->CreateIndexBuffer(max_size * index_count * sizeof(uint16_t))),
@@ -27,7 +27,7 @@ IVBufferManager::~IVBufferManager()
 }
 
 //--------------------------------------------------------------------
-long IVBufferManager::ReserveElement()
+int32_t IVBufferManager::ReserveElement()
 {
     for (size_t i = 0; i < max_size_; i++)
     {
@@ -74,7 +74,7 @@ void IVBufferManager::UnlockBuffers()
 }
 
 //--------------------------------------------------------------------
-void IVBufferManager::GetPointers(long _i, uint16_t **iPointer, void **vPointer, long *vOffset /* = 0*/) const
+void IVBufferManager::GetPointers(int32_t _i, uint16_t **iPointer, void **vPointer, int32_t *vOffset /* = 0*/) const
 {
     if ((_i < 0) || !locked_)
     {

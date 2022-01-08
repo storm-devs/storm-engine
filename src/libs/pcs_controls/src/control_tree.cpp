@@ -24,7 +24,7 @@ ControlTree::ControlChild::~ControlChild()
 
 void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlTree)
 {
-    long n;
+    int32_t n;
 
     // no basic control - always considered active
     // go directly to the child branches
@@ -100,7 +100,7 @@ void ControlTree::ControlChild::Process(float fDeltaTime, ControlTree *pControlT
     }
 }
 
-bool ControlTree::ControlChild::ControlInAction(ControlTree *pControlTree, const char *pcControlName, long _nLayer)
+bool ControlTree::ControlChild::ControlInAction(ControlTree *pControlTree, const char *pcControlName, int32_t _nLayer)
 {
     if (_nLayer <= nLayer)
         return false;
@@ -115,7 +115,7 @@ bool ControlTree::ControlChild::ControlInAction(ControlTree *pControlTree, const
 
     if (bActive)
     {
-        for (long n = 0; n < aChild.size(); n++)
+        for (int32_t n = 0; n < aChild.size(); n++)
         {
             if (aChild[n].ControlInAction(pControlTree, pcControlName, _nLayer))
                 bWaitReleaseControl = true;
@@ -137,7 +137,7 @@ ControlTree::~ControlTree()
 
 void ControlTree::Process()
 {
-    long n;
+    int32_t n;
 
     // all controls that have been deactivated become inactive
     // and all activated become active
@@ -163,7 +163,7 @@ void ControlTree::Process()
     }
 }
 
-long ControlTree::AddControlChild(long nParentIdx, const char *pcControlName, const char *pcOutControlName,
+int32_t ControlTree::AddControlChild(int32_t nParentIdx, const char *pcControlName, const char *pcOutControlName,
                                   float fTimeOut)
 {
     auto *pParent = FindControlChild(nParentIdx);
@@ -187,7 +187,7 @@ CONTROL_STATE_TYPE ControlTree::CheckControlActivated(const char *pcControlName)
 {
     if (!pcControlName)
         return CST_INACTIVE;
-    for (long n = 0; n < m_aOutControlList.size(); n++)
+    for (int32_t n = 0; n < m_aOutControlList.size(); n++)
         if (m_aOutControlList[n].sControlName == pcControlName)
             return m_aOutControlList[n].state;
     return CST_INACTIVE;
@@ -202,7 +202,7 @@ void ControlTree::Release()
 {
 }
 
-ControlTree::ControlChild *ControlTree::FindControlChild(long idx)
+ControlTree::ControlChild *ControlTree::FindControlChild(int32_t idx)
 {
     if (idx < 0 || idx >= m_nControlsNum)
         return &m_RootControl;
@@ -212,13 +212,13 @@ ControlTree::ControlChild *ControlTree::FindControlChild(long idx)
     return &m_RootControl;
 }
 
-ControlTree::ControlChild *ControlTree::FindControlChild(long idx, ControlChild *pParent)
+ControlTree::ControlChild *ControlTree::FindControlChild(int32_t idx, ControlChild *pParent)
 {
     if (!pParent)
         return nullptr;
     if (pParent->index == idx)
         return pParent;
-    for (long n = 0; n < pParent->aChild.size(); n++)
+    for (int32_t n = 0; n < pParent->aChild.size(); n++)
     {
         auto *const pCC = FindControlChild(idx, &pParent->aChild[n]);
         if (pCC)
@@ -233,7 +233,7 @@ bool ControlTree::AddOutControl(const char *pcOutControlName, bool isActive)
         return false;
 
     // looking for a control in the list
-    long n;
+    int32_t n;
     for (n = 0; n < m_aOutControlList.size(); n++)
         if (m_aOutControlList[n].sControlName == pcOutControlName)
             break;
@@ -276,14 +276,14 @@ bool ControlTree::AddOutControl(const char *pcOutControlName, bool isActive)
     return (m_aOutControlList[n].state == CST_ACTIVE || m_aOutControlList[n].state == CST_ACTIVATED);
 }
 
-void ControlTree::ControlInAction(const char *pcControlName, long nLayer)
+void ControlTree::ControlInAction(const char *pcControlName, int32_t nLayer)
 {
     m_RootControl.ControlInAction(this, pcControlName, nLayer);
 }
 
 bool ControlTree::ExcludeControlFromActive(const char *pcControlName)
 {
-    for (long n = 0; n < m_aOutControlList.size(); n++)
+    for (int32_t n = 0; n < m_aOutControlList.size(); n++)
     {
         if (m_aOutControlList[n].sControlName == pcControlName)
         {

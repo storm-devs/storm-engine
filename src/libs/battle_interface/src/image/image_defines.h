@@ -34,7 +34,7 @@ class IBIImage
     }
 
     virtual void SetColor(uint32_t color) = 0;
-    virtual void SetPosition(long nLeft, long nTop, long nRight, long nBottom) = 0;
+    virtual void SetPosition(int32_t nLeft, int32_t nTop, int32_t nRight, int32_t nBottom) = 0;
     virtual void Set3DPosition(const CVECTOR &vPos, float fWidth, float fHeight) = 0;
     virtual void SetUV(const FRECT &uv) = 0;
 
@@ -57,8 +57,8 @@ class IBIString
     virtual void SetColor(uint32_t color) = 0;
     virtual void SetScale(float fScale) = 0;
     virtual void SetFont(const char *pcFontName) = 0;
-    virtual void SetAlign(long nHorzAlign, long nVertAlign) = 0;
-    virtual void SetPosition(long nLeft, long nTop, long nRight, long nBottom) = 0;
+    virtual void SetAlign(int32_t nHorzAlign, int32_t nVertAlign) = 0;
+    virtual void SetPosition(int32_t nLeft, int32_t nTop, int32_t nRight, int32_t nBottom) = 0;
     virtual void SetString(const char *pcStr) = 0;
 };
 

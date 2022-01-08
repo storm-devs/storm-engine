@@ -13,7 +13,7 @@ class CXI_TABSECTION : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -21,32 +21,32 @@ class CXI_TABSECTION : public CINODE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateImage();
 
     std::string m_sIconGroupName;
-    long m_idIconTexture;
-    long m_idVBuf;
-    long m_idIBuf;
-    long m_nSubQ;
+    int32_t m_idIconTexture;
+    int32_t m_idVBuf;
+    int32_t m_idIBuf;
+    int32_t m_nSubQ;
 
-    long m_nIcon_TopBorder;
-    long m_nIcon_BottomBorder;
-    long m_nIcon_LeftArrow;
-    long m_nIcon_RightArrow;
-    long m_nIcon_LeftBookmarkPart;
-    long m_nIcon_RightBookmarkPart;
-    long m_nIcon_MiddleBookmarkPart;
+    int32_t m_nIcon_TopBorder;
+    int32_t m_nIcon_BottomBorder;
+    int32_t m_nIcon_LeftArrow;
+    int32_t m_nIcon_RightArrow;
+    int32_t m_nIcon_LeftBookmarkPart;
+    int32_t m_nIcon_RightBookmarkPart;
+    int32_t m_nIcon_MiddleBookmarkPart;
 
-    long m_nTopBorderHeight;
-    long m_nBottomBorderHeight;
-    long m_nTopBorderOffset;
-    long m_nBottomBorderOffset;
-    long m_nArrowOffset;
-    long m_nBookmarkSpace;
+    int32_t m_nTopBorderHeight;
+    int32_t m_nBottomBorderHeight;
+    int32_t m_nTopBorderOffset;
+    int32_t m_nBottomBorderOffset;
+    int32_t m_nArrowOffset;
+    int32_t m_nBookmarkSpace;
 
     XYPOINT m_pntArrowSize;
     XYPOINT m_pntLeftBookmarkSize;

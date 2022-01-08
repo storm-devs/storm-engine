@@ -45,19 +45,19 @@ class AnimationTimerImp : public AnimationTimer
     // Get the specified timer running time
     float GetTime() const override;
     // Assign ActionPlayer for blending (isInverse == false -> kBlend = [0..1])
-    void SetPlayer(long playerIndex, bool isInverse = false) override;
-    void ResetPlayer(long playerIndex) override;
+    void SetPlayer(int32_t playerIndex, bool isInverse = false) override;
+    void ResetPlayer(int32_t playerIndex) override;
     // Find out if ActionPlayer is being used
-    bool IsUsedPlayer(long playerIndex, bool *isInverse = nullptr) override;
+    bool IsUsedPlayer(int32_t playerIndex, bool *isInverse = nullptr) override;
     // Get the blending value for the player (if not used then 1.0f)
-    float GetPlayerValue(long playerIndex) override;
+    float GetPlayerValue(int32_t playerIndex) override;
 
     //--------------------------------------------------------------------------------------------
     // AnimationTimerImp
     //--------------------------------------------------------------------------------------------
   public:
     // Execute
-    void Execute(long dltTime);
+    void Execute(int32_t dltTime);
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation

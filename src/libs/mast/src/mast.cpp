@@ -222,7 +222,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
     float fMastDamage = 0.f;
     if (pAMasts != nullptr)
         fMastDamage = pAMasts->GetAttributeAsFloat((char *)mastNodePointer->GetName(), 0.f);
-    long chrIdx = -1;
+    int32_t chrIdx = -1;
     if (pA != nullptr)
         chrIdx = pA->GetAttributeAsDword("index", -1);
     core.Event("EventMastFall", "lsl", chrIdx, mastNodePointer->GetName(), fMastDamage < 1.f);

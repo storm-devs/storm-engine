@@ -206,7 +206,7 @@ void WdmInterfaceObject::FillRectColor(Vertex *vrt, uint32_t color)
 }
 
 // Draw buffer of rectangles
-void WdmInterfaceObject::DrawRects(Vertex *vrt, long numRects, const char *techName)
+void WdmInterfaceObject::DrawRects(Vertex *vrt, int32_t numRects, const char *techName)
 {
     wdmObjects->rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX2, numRects * 2, vrt,
                                     sizeof(Vertex), techName);
@@ -237,10 +237,10 @@ void WdmInterfaceObject::FillSRectColor(Vertex *vrt, uint32_t color)
 }
 
 // Display text in a given strip horizontally and at a given height
-void WdmInterfaceObject::Print(long font, long color, float xleft, float xright, float y, const char *format, ...)
+void WdmInterfaceObject::Print(int32_t font, int32_t color, float xleft, float xright, float y, const char *format, ...)
 {
     _vsnprintf_s(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));
     const auto strw = wdmObjects->rs->StringWidth(stringBuffer, font);
     const auto x = (xright + xleft - strw) * 0.5f;
-    wdmObjects->rs->Print(font, color, static_cast<long>(x), static_cast<long>(y), stringBuffer);
+    wdmObjects->rs->Print(font, color, static_cast<int32_t>(x), static_cast<int32_t>(y), stringBuffer);
 }

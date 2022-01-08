@@ -21,7 +21,7 @@ LocatorArray::LocatorArray(const char *groupName)
     bytesInLNArray = 0;
     if (groupName)
     {
-        const long l = strlen(groupName) + 1;
+        const int32_t l = strlen(groupName) + 1;
         group = new char[l];
         memcpy(group, groupName, l);
     }
@@ -52,7 +52,7 @@ void LocatorArray::AddLocator(CMatrix &mtx, const char *name)
     locator.resize(numLocators + 1);
     locator[numLocators].mtx = mtx;
     locator[numLocators].radius = -1.0f;
-    long slen = 0;
+    int32_t slen = 0;
     if (name && name[0])
     {
         slen = strlen(name) + 1;
@@ -68,7 +68,7 @@ void LocatorArray::AddLocator(CMatrix &mtx, const char *name)
 }
 
 // Change locator matrix
-void LocatorArray::SetNewMatrix(long locIndex, CMatrix &mtx)
+void LocatorArray::SetNewMatrix(int32_t locIndex, CMatrix &mtx)
 {
     if (locIndex < 0 || locIndex >= numLocators)
         return;
@@ -76,13 +76,13 @@ void LocatorArray::SetNewMatrix(long locIndex, CMatrix &mtx)
 }
 
 // Find nearest locator
-float LocatorArray::FindNearesLocator(float x, float y, float z, long *locIndex)
+float LocatorArray::FindNearesLocator(float x, float y, float z, int32_t *locIndex)
 {
     if (locIndex)
         *locIndex = -1;
     auto dist = 1000000000.0f;
     const CVECTOR v(x, y, z);
-    for (long i = 0; i < numLocators; i++)
+    for (int32_t i = 0; i < numLocators; i++)
     {
         const auto d = ~(locator[i].mtx.Pos() - v);
         if (dist > d)
@@ -96,10 +96,10 @@ float LocatorArray::FindNearesLocator(float x, float y, float z, long *locIndex)
 }
 
 // Find the nearest locator by cylinder
-long LocatorArray::FindNearesLocatorCl(float x, float y, float z, float height2, float &dist)
+int32_t LocatorArray::FindNearesLocatorCl(float x, float y, float z, float height2, float &dist)
 {
-    long locIndex = -1;
-    for (long i = 0; i < numLocators; i++)
+    int32_t locIndex = -1;
+    for (int32_t i = 0; i < numLocators; i++)
     {
         // if(fabsf(y - locator[i].mtx.Pos().y) > height2) continue;
         const auto r = GetLocatorRadius(i);
@@ -132,12 +132,12 @@ long LocatorArray::FindNearesLocatorCl(float x, float y, float z, float height2,
 }
 
 // Find locator by name
-long LocatorArray::FindByName(const char *locName)
+int32_t LocatorArray::FindByName(const char *locName)
 {
     if (!locName)
         return -1;
     const auto hash = CalcHashString(locName);
-    for (long i = 0; i < numLocators; i++)
+    for (int32_t i = 0; i < numLocators; i++)
     {
         if (locator[i].name >= 0)
         {
@@ -151,7 +151,7 @@ long LocatorArray::FindByName(const char *locName)
     return -1;
 }
 
-long LocatorArray::CalcHashString(const char *str)
+int32_t LocatorArray::CalcHashString(const char *str)
 {
     uint32_t hval = 0;
     while (*str != '\0')
@@ -167,11 +167,11 @@ long LocatorArray::CalcHashString(const char *str)
             hval ^= g;
         }
     }
-    return static_cast<long>(hval);
+    return static_cast<int32_t>(hval);
 }
 
 // Compare group names
-bool LocatorArray::CompareGroup(const char *groupName, long ghash) const
+bool LocatorArray::CompareGroup(const char *groupName, int32_t ghash) const
 {
     if (hash != ghash)
         return false;

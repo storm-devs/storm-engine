@@ -157,7 +157,7 @@ void PtcData::SFLB_PotectionLoad()
         materials = (PtcMaterials *)(table + lineSize * numTriangles);
     // Looking for the midpoint
     middle = 0.0f;
-    for (long i = 0; i < numVerteces; i++)
+    for (int32_t i = 0; i < numVerteces; i++)
     {
         middle.x += vertex[i].x;
         middle.y += vertex[i].y;
@@ -168,25 +168,25 @@ void PtcData::SFLB_PotectionLoad()
 }
 
 // Determine the current position
-long PtcData::FindNode(const CVECTOR &pos, float &y)
+int32_t PtcData::FindNode(const CVECTOR &pos, float &y)
 {
     // Position on the map
-    const auto mapX = static_cast<long>((pos.x - min.x) / ws);
-    const auto mapZ = static_cast<long>((pos.z - min.z) / ls);
+    const auto mapX = static_cast<int32_t>((pos.x - min.x) / ws);
+    const auto mapZ = static_cast<int32_t>((pos.z - min.z) / ls);
     if (mapX < 0 || mapX >= w)
         return -1;
     if (mapZ < 0 || mapZ >= l)
         return -1;
     // Looping through triangles
     PtcMap &m = map[mapZ * w + mapX];
-    long node = -1;
+    int32_t node = -1;
     float h = 0.0f;
     float dist = -1.0f;
-    for (long i = 0; i < m.size; i++)
+    for (int32_t i = 0; i < m.size; i++)
     {
         PtcTriangle &trg = triangle[indeces[m.start + i]];
         // Checking hitting the triangle
-        long j;
+        int32_t j;
         for (j = 0; j < 3; j++)
         {
             // Edge vertices
@@ -225,7 +225,7 @@ long PtcData::FindNode(const CVECTOR &pos, float &y)
 }
 
 // Move pos to to, returns a new node
-long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
+int32_t PtcData::Move(int32_t curNode, const CVECTOR &to, CVECTOR &pos, int32_t depth)
 {
     isSlide = false;
     isBearing = false;
@@ -235,7 +235,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
     // Direction of movement in 2D
     CVECTOR dir(to.x - pos.x, 0.0f, to.z - pos.z);
     CVECTOR ps = pos;
-    long firstNode = curNode;
+    int32_t firstNode = curNode;
     // path length in 2D
     float dst = ~dir;
     if (dst == 0.0f || depth > 32)
@@ -255,13 +255,13 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
     CVECTOR nd(dir.z, 0.0f, -dir.x);
     float d = (nd | pos);
     // Trace the way
-    long fromNode = -2; // Where we came from
-    long loopCounter;
+    int32_t fromNode = -2; // Where we came from
+    int32_t loopCounter;
     for (loopCounter = 0; loopCounter < 256; loopCounter++)
     {
         // Check the location of the arrival point on the current triangle
         uint16_t *trg = triangle[curNode].i;
-        long j;
+        int32_t j;
         for (j = 0; j < 3; j++)
         {
             // Edge vertices
@@ -296,7 +296,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
         }
         // Find the edge through which to go further
         short *nb = triangle[curNode].nb;
-        long curEdge = -1;
+        int32_t curEdge = -1;
         CVECTOR pnt;
         for (j = 0; j < 3; j++)
         {
@@ -479,7 +479,7 @@ long PtcData::Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth)
 }
 
 // Get normal to a node
-void PtcData::GetNodeNormal(long curNode, CVECTOR &n) const
+void PtcData::GetNodeNormal(int32_t curNode, CVECTOR &n) const
 {
     if (curNode >= 0)
     {
@@ -496,7 +496,7 @@ void PtcData::GetNodeNormal(long curNode, CVECTOR &n) const
 }
 
 // Find the direction of the path
-bool PtcData::FindPathDir(long curNode, const CVECTOR &cur, long toNode, const CVECTOR &to, long &node, CVECTOR &toPos)
+bool PtcData::FindPathDir(int32_t curNode, const CVECTOR &cur, int32_t toNode, const CVECTOR &to, int32_t &node, CVECTOR &toPos)
 {
     numSteps = 0;
     if (curNode < 0 || toNode < 0)
@@ -508,7 +508,7 @@ bool PtcData::FindPathDir(long curNode, const CVECTOR &cur, long toNode, const C
 }
 
 // Find the direction of the path
-bool PtcData::FindPathDir(long step, long curNode, const CVECTOR &cur, long toNode, const CVECTOR &to, long &node,
+bool PtcData::FindPathDir(int32_t step, int32_t curNode, const CVECTOR &cur, int32_t toNode, const CVECTOR &to, int32_t &node,
                           CVECTOR &pos)
 {
     if (step > numSteps)
@@ -535,7 +535,7 @@ bool PtcData::FindPathDir(long step, long curNode, const CVECTOR &cur, long toNo
     // Point on the edge
     const CVECTOR p = FindEdgePoint(vs, ve, cur, to);
     // analyze the further path
-    const long nb = triangle[curNode].nb[v];
+    const int32_t nb = triangle[curNode].nb[v];
     if (nb < 0)
         return false;
     if (!FindPathDir(step + 1, nb, p, toNode, to, node, pos))
@@ -623,22 +623,22 @@ float PtcData::Trace(const CVECTOR &s, const CVECTOR &d) const
     if (pmax.z < d.z)
         pmax.z = d.z;
     // Coordinates on the map
-    const long mnX = static_cast<long>((pmin.x - min.x) / ws);
-    const long mnZ = static_cast<long>((pmin.z - min.z) / ls);
-    const long mxX = static_cast<long>((pmax.x - min.x) / ws);
-    const long mxZ = static_cast<long>((pmax.z - min.z) / ls);
+    const int32_t mnX = static_cast<int32_t>((pmin.x - min.x) / ws);
+    const int32_t mnZ = static_cast<int32_t>((pmin.z - min.z) / ls);
+    const int32_t mxX = static_cast<int32_t>((pmax.x - min.x) / ws);
+    const int32_t mxZ = static_cast<int32_t>((pmax.z - min.z) / ls);
     // go through all the triangles in the zone
-    for (long zi = mnZ; zi <= mxZ; zi++)
+    for (int32_t zi = mnZ; zi <= mxZ; zi++)
     {
         if (zi < 0 || zi >= l)
             continue;
-        for (long xi = mnX; xi <= mxX; xi++)
+        for (int32_t xi = mnX; xi <= mxX; xi++)
         {
             if (xi < 0 || xi >= w)
                 continue;
             PtcMap &m = map[zi * w + xi];
             uint16_t *ids = indeces + m.start;
-            for (long i = 0; i < m.size; i++)
+            for (int32_t i = 0; i < m.size; i++)
             {
                 const float kn = Trace(triangle[ids[i]], s, d);
                 if (kn < k)
@@ -693,19 +693,19 @@ float PtcData::Trace(PtcTriangle &trg, const CVECTOR &s, const CVECTOR &d) const
 }
 
 // Find the force pushing away from the edges
-void PtcData::FindForce(long curNode, CVECTOR &force) const
+void PtcData::FindForce(int32_t curNode, CVECTOR &force) const
 {
     force = 0.0f;
     if (curNode < 0 || curNode >= numTriangles)
         return;
     short *nb = triangle[curNode].nb;
-    for (long i = 0; i < 3; i++)
+    for (int32_t i = 0; i < 3; i++)
     {
         if (nb[i] >= 0)
             continue;
         // Normal to the edge
-        const long s = triangle[curNode].i[i];
-        const long e = triangle[curNode].i[i < 2 ? i + 1 : 0];
+        const int32_t s = triangle[curNode].i[i];
+        const int32_t e = triangle[curNode].i[i < 2 ? i + 1 : 0];
         // Edge vertices
         CVECTOR &vs = *(CVECTOR *)&vertex[s];
         CVECTOR &ve = *(CVECTOR *)&vertex[e];
@@ -724,19 +724,19 @@ void PtcData::FindForce(long curNode, CVECTOR &force) const
 }
 
 // Find the force pushing away from the edges
-void PtcData::FindForce(long curNode, const CVECTOR &pos, float dist, CVECTOR &force) const
+void PtcData::FindForce(int32_t curNode, const CVECTOR &pos, float dist, CVECTOR &force) const
 {
     force = 0.0f;
     if (curNode < 0 || curNode >= numTriangles)
         return;
     short *nb = triangle[curNode].nb;
-    for (long i = 0; i < 3; i++)
+    for (int32_t i = 0; i < 3; i++)
     {
         if (nb[i] >= 0)
             continue;
         // Normal to the edge
-        const long s = triangle[curNode].i[i];
-        const long e = triangle[curNode].i[i < 2 ? i + 1 : 0];
+        const int32_t s = triangle[curNode].i[i];
+        const int32_t e = triangle[curNode].i[i < 2 ? i + 1 : 0];
         // Edge vertices
         CVECTOR &vs = *(CVECTOR *)&vertex[s];
         CVECTOR &ve = *(CVECTOR *)&vertex[e];
@@ -762,13 +762,13 @@ void PtcData::FindForce(long curNode, const CVECTOR &pos, float dist, CVECTOR &f
 }
 
 // Get node material
-const char *PtcData::GetMaterial(long curNode)
+const char *PtcData::GetMaterial(int32_t curNode)
 {
     if (!materials)
         return nullptr;
     if (curNode < 0 || curNode >= numTriangles)
         return nullptr;
-    const long mtl = triangle[curNode].mtl;
+    const int32_t mtl = triangle[curNode].mtl;
     if (mtl >= 15 || mtl < 0 || mtl >= materials->numMaterials)
         return nullptr;
     return materials->material[mtl];
@@ -776,7 +776,7 @@ const char *PtcData::GetMaterial(long curNode)
 
 /*
 // Get the triangles intersecting the given square
-PtcData::Triangle * PtcData::GetTriangles(float x, float z, float sx, float sz, long & num)
+PtcData::Triangle * PtcData::GetTriangles(float x, float z, float sx, float sz, int32_t & num)
 {
     num = 0;
     numClTriangles = 0;
@@ -784,19 +784,19 @@ PtcData::Triangle * PtcData::GetTriangles(float x, float z, float sx, float sz, 
     float minZ = z - sz*0.5f;
     float maxX = x + sx*0.5f;
     float maxZ = z + sz*0.5f;
-    long mnX = long((minX - min.x)/ws);
-    long mnZ = long((minZ - min.z)/ls);
-    long mxX = long((maxX - min.x)/ws);
-    long mxZ = long((maxZ - min.z)/ls);
-    for(long zi = mnZ; zi <= mxZ; zi++)
+    int32_t mnX = int32_t((minX - min.x)/ws);
+    int32_t mnZ = int32_t((minZ - min.z)/ls);
+    int32_t mxX = int32_t((maxX - min.x)/ws);
+    int32_t mxZ = int32_t((maxZ - min.z)/ls);
+    for(int32_t zi = mnZ; zi <= mxZ; zi++)
     {
         if(zi < 0 || zi >= l) continue;
-        for(long xi = mnX; xi <= mxX; xi++)
+        for(int32_t xi = mnX; xi <= mxX; xi++)
         {
             if(xi < 0 || xi >= w) continue;
             PtcMap & m = map[zi*w + xi];
             uint16_t * ids = indeces + m.start;
-            for(long i = 0; i < m.size; i++) AddClTriangle(ids[i]);
+            for(int32_t i = 0; i < m.size; i++) AddClTriangle(ids[i]);
         }
     }
     num = numClTriangles;
@@ -804,9 +804,9 @@ PtcData::Triangle * PtcData::GetTriangles(float x, float z, float sx, float sz, 
 }
 
 // Add triangle to buffer
-inline void PtcData::AddClTriangle(long i)
+inline void PtcData::AddClTriangle(int32_t i)
 {
-    for(long j = 0; j < numClTriangles; j++)
+    for(int32_t j = 0; j < numClTriangles; j++)
         if(ctriangle[j].index == i) return;
     if(numClTriangles >= maxClTriangles)
     {
@@ -831,7 +831,7 @@ inline void PtcData::AddClTriangle(long i)
 }*/
 
 // Calculate the height of a point on the plane of a triangle
-inline float PtcData::FindHeight(long trgID, float x, float z)
+inline float PtcData::FindHeight(int32_t trgID, float x, float z)
 {
     Assert(trgID >= 0 && trgID < numTriangles);
     CVECTOR &n = *(CVECTOR *)&normal[triangle[trgID].n];
@@ -848,7 +848,7 @@ void PtcData::DebugDraw(VDX9RENDER *rs, float dltTime)
     if (!dbgTriangles)
     {
         dbgTriangles = new DbgVertex[numTriangles * 3];
-        for (long i = 0; i < numTriangles; i++)
+        for (int32_t i = 0; i < numTriangles; i++)
         {
             dbgTriangles[i * 3 + 0].x = vertex[triangle[i].i[0]].x;
             dbgTriangles[i * 3 + 0].y = vertex[triangle[i].i[0]].y;
@@ -867,9 +867,9 @@ void PtcData::DebugDraw(VDX9RENDER *rs, float dltTime)
     if (!dbgEdges)
     {
         dbgEdges = new DbgVertex[numTriangles * 3 * 2];
-        for (long i = 0; i < numTriangles; i++)
+        for (int32_t i = 0; i < numTriangles; i++)
         {
-            for (long j = 0; j < 3; j++)
+            for (int32_t j = 0; j < 3; j++)
             {
                 float y = 0.05f;
                 if (triangle[i].nb[j] >= 0 && triangle[i].nb[j] < i)

@@ -7,7 +7,7 @@ class SDBG_STATICLIST
 {
     std::vector<HWND> hOwn;
     HWND hMain;
-    long nLines;
+    int32_t nLines;
 
   public:
     SDBG_STATICLIST()
@@ -18,7 +18,7 @@ class SDBG_STATICLIST
 
     ~SDBG_STATICLIST(){};
 
-    bool Init(long lines, RECT rParent, RECT rChild, HINSTANCE hInstance, HWND _hmain)
+    bool Init(int32_t lines, RECT rParent, RECT rChild, HINSTANCE hInstance, HWND _hmain)
     {
         if (lines == 0)
             return false;
@@ -26,10 +26,10 @@ class SDBG_STATICLIST
         hMain = _hmain;
 
         hOwn.resize(lines);
-        long height = (rChild.bottom - rChild.top) / lines;
-        long line_y = rChild.top;
+        int32_t height = (rChild.bottom - rChild.top) / lines;
+        int32_t line_y = rChild.top;
 
-        for (long n = 0; n < lines; n++)
+        for (int32_t n = 0; n < lines; n++)
         {
             hOwn[n] = CreateWindow("STATIC", "", WS_CHILD | WS_VISIBLE | WS_BORDER, rChild.left, line_y,
                                    rChild.right - rChild.left, height, hMain, NULL, hInstance, NULL);
@@ -44,7 +44,7 @@ class SDBG_STATICLIST
         return true;
     };
 
-    void SetText(long n, const char *pText)
+    void SetText(int32_t n, const char *pText)
     {
         if (n >= nLines)
             return;

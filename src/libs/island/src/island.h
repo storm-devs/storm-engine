@@ -85,7 +85,7 @@ class ISLAND : public ISLAND_BASE
 
     // shadow map section
     bool CreateShadowMap(char *pDir, char *pName);
-    float GetShadowTemp(long iX, long iZ);
+    float GetShadowTemp(int32_t iX, int32_t iZ);
 
     // depth map section
     bool CreateHeightMap(const std::string_view &pDir, const std::string_view &pName);
@@ -145,7 +145,7 @@ class ISLAND : public ISLAND_BASE
     // inherit functions COLLISION_OBJECT
     float Trace(const CVECTOR &src, const CVECTOR &dst);
 
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
     {
         return false;
     };
@@ -161,7 +161,7 @@ class ISLAND : public ISLAND_BASE
     };
 
     // inherit functions CANNON_TRACE_BASE
-    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst);
+    float Cannon_Trace(int32_t iBallOwner, const CVECTOR &src, const CVECTOR &dst);
 
     // inherit functions ISLAND_BASE
     bool GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes);

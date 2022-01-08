@@ -146,7 +146,7 @@ void MESSAGE_ICONS::Draw() const
 }
 
 void MESSAGE_ICONS::StartData(ATTRIBUTES *pAData[MESSAGE_ICONS_COLUMN_QUANTITY],
-                              long pLeft[MESSAGE_ICONS_COLUMN_QUANTITY])
+                              int32_t pLeft[MESSAGE_ICONS_COLUMN_QUANTITY])
 {
     int i, j;
     if (pAData == nullptr)

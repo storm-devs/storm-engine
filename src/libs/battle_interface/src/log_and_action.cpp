@@ -202,10 +202,10 @@ void ILogAndActions::Realize(uint32_t delta_time)
         {
             m_nTimeCounter = 0;
         }
-        long nA = 0;
+        int32_t nA = 0;
         if (m_nTimeCounter < 500)
         {
-            nA = (long)(255.f * m_nTimeCounter / 500.f);
+            nA = (int32_t)(255.f * m_nTimeCounter / 500.f);
         }
         else if (m_nTimeCounter < 2000)
         {
@@ -213,7 +213,7 @@ void ILogAndActions::Realize(uint32_t delta_time)
         }
         else if (m_nTimeCounter < 2500)
         {
-            nA = (long)(255.f * (2500 - m_nTimeCounter) / 500.f);
+            nA = (int32_t)(255.f * (2500 - m_nTimeCounter) / 500.f);
         }
         rs->ExtPrint(m_fontID, ARGB(nA, 255, 255, 255), 0, PR_ALIGN_CENTER, false, 3.9f, 800, 600, 400, 300,
                      "¬≈–—»я ƒЋя ѕ–≈——џ");
@@ -252,7 +252,7 @@ void ILogAndActions::Realize(uint32_t delta_time)
         if (m_sRoot == nullptr)
             return;
         auto *ptr = m_sRoot;
-        long nAlign = PR_ALIGN_LEFT;
+        int32_t nAlign = PR_ALIGN_LEFT;
         auto strX = m_nWindowLeft;
         if (m_nWindowRight >= 0)
         {
@@ -264,13 +264,13 @@ void ILogAndActions::Realize(uint32_t delta_time)
         {
             // rs->Print(m_fontID,m_dwColor,strX,strY,"%s",ptr->str);
             if (ptr->alpha <= 255.f)
-                // rs->Print(m_fontID,m_dwColor+(long(ptr->alpha)<<24),strX,m_nWindowUp+(long)ptr->offset,"%s",ptr->str);
-                rs->ExtPrint(m_fontID, m_dwColor + (static_cast<long>(ptr->alpha) << 24), 0, nAlign, true, m_fFontScale,
-                             0, 0, strX, m_nWindowUp + static_cast<long>(ptr->offset), "%s", ptr->str);
+                // rs->Print(m_fontID,m_dwColor+(int32_t(ptr->alpha)<<24),strX,m_nWindowUp+(int32_t)ptr->offset,"%s",ptr->str);
+                rs->ExtPrint(m_fontID, m_dwColor + (static_cast<int32_t>(ptr->alpha) << 24), 0, nAlign, true, m_fFontScale,
+                             0, 0, strX, m_nWindowUp + static_cast<int32_t>(ptr->offset), "%s", ptr->str);
             else
-                // rs->Print(m_fontID,m_dwColor+0xFF000000,strX,m_nWindowUp+(long)ptr->offset,"%s",ptr->str);
+                // rs->Print(m_fontID,m_dwColor+0xFF000000,strX,m_nWindowUp+(int32_t)ptr->offset,"%s",ptr->str);
                 rs->ExtPrint(m_fontID, m_dwColor + 0xFF000000, 0, nAlign, true, m_fFontScale, 0, 0, strX,
-                             m_nWindowUp + static_cast<long>(ptr->offset), "%s", ptr->str);
+                             m_nWindowUp + static_cast<int32_t>(ptr->offset), "%s", ptr->str);
             strY += m_nStringOffset;
             ptr = ptr->next;
         }
@@ -465,7 +465,7 @@ void ILogAndActions::SetString(const char *str, bool immortal)
         last->next = newDescr;
         if (newDescr->offset + m_nStringOffset > m_nWindowHeight)
         {
-            const long offsetDelta = static_cast<long>(newDescr->offset) + m_nStringOffset - m_nWindowHeight;
+            const int32_t offsetDelta = static_cast<int32_t>(newDescr->offset) + m_nStringOffset - m_nWindowHeight;
             for (STRING_DESCR *tmpDescr = m_sRoot; tmpDescr != nullptr;)
             {
                 if ((tmpDescr->offset -= offsetDelta) < 0)
@@ -501,7 +501,7 @@ void ILogAndActions::SetAction(const char *actionName)
     strcpy_s(m_sActionName, actionName);
     // set texture coordinates for this action icon
     FRECT texRect;
-    const long curIconNum = pA->GetAttributeAsDword("IconNum", 0);
+    const int32_t curIconNum = pA->GetAttributeAsDword("IconNum", 0);
     if (curIconNum == -1)
     {
         m_bThatRealAction = false;

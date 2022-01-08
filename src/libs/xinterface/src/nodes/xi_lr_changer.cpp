@@ -222,7 +222,7 @@ int CXI_LRCHANGER::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_LRCHANGER::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_LRCHANGER::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos >= m_rect.left && xPos <= m_rect.right && yPos >= m_rect.top && yPos <= m_rect.bottom && m_bClickable &&
         m_bUse)
@@ -244,7 +244,7 @@ bool CXI_LRCHANGER::IsClick(int buttonID, long xPos, long yPos)
 
 void CXI_LRCHANGER::ChangePosition(XYRECT &rNewPos)
 {
-    const auto nSpaceWidth = static_cast<long>((m_rect.right - m_rect.left) - (m_posLRect.right - m_posLRect.left) -
+    const auto nSpaceWidth = static_cast<int32_t>((m_rect.right - m_rect.left) - (m_posLRect.right - m_posLRect.left) -
                                                (m_posRRect.right - m_posRRect.left));
 
     m_rect = rNewPos;
@@ -276,7 +276,7 @@ void CXI_LRCHANGER::SaveParametersToIni()
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 }
 
-long CXI_LRCHANGER::GetClickState()
+int32_t CXI_LRCHANGER::GetClickState()
 {
     if (m_bLeftPress)
         return 1;

@@ -9,7 +9,7 @@
 #include "defines.h"
 #include "sail.h"
 
-extern long g_iBallOwnerIdx;
+extern int32_t g_iBallOwnerIdx;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

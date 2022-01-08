@@ -4,7 +4,7 @@
 #define MAST_IDENTIFY "mast"
 #define MAST_FIRST 1
 
-BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
+BOOL SHIP::BuildContour(CVECTOR *vContour, int32_t &iNumVContour)
 {
     iNumVContour = 0;
 
@@ -68,11 +68,11 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
         fZMax = vP1.z;
         fZMin = vP2.z;
         fZMinStep = 2.0f;
-        fZStep = (fZMax - fZMin) / static_cast<float>(static_cast<long>((fZMax - fZMin) / fZMinStep));
-        auto iNumSteps = static_cast<long>((fZMax - fZMin) / fZStep);
+        fZStep = (fZMax - fZMin) / static_cast<float>(static_cast<int32_t>((fZMax - fZMin) / fZMinStep));
+        auto iNumSteps = static_cast<int32_t>((fZMax - fZMin) / fZStep);
 
         // trace left and right sides of ship
-        for (long i = 1; i < iNumSteps - 1; i++)
+        for (int32_t i = 1; i < iNumSteps - 1; i++)
         {
             // left trace
             auto fZ = fZMax - static_cast<float>(i) * fZStep;
@@ -108,7 +108,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     }
 
     // mirror copy
-    for (long i = 0; i < iNumVContour; i++)
+    for (int32_t i = 0; i < iNumVContour; i++)
     {
         vContour[1 + i + iNumVContour] = vContour[1 + (iNumVContour - 1) - i];
         vContour[1 + i + iNumVContour].x = -vContour[1 + i + iNumVContour].x;
@@ -118,9 +118,9 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     if (!bDefaultContour)
     {
         // build keel contour
-        long iDZ = MAX_KEEL_POINTS / 2;
+        int32_t iDZ = MAX_KEEL_POINTS / 2;
         auto fDZ = iDZ + 1.0f;
-        for (long i = 0; i < MAX_KEEL_POINTS; i++)
+        for (int32_t i = 0; i < MAX_KEEL_POINTS; i++)
         {
             float fZ;
             if (i == iDZ)
@@ -151,7 +151,7 @@ bool SHIP::BuildMasts()
     Assert(pEnt);
 
     // build mast list
-    long iNum, iIdx = 0;
+    int32_t iNum, iIdx = 0;
     while (true)
     {
         auto *pNode = static_cast<NODE *>(pEnt->GetNode(iIdx));
@@ -238,7 +238,7 @@ bool SHIP::BuildHulls()
     Assert(pEnt);
 
     // build hull list
-    long iNum, iIdx = 0;
+    int32_t iNum, iIdx = 0;
     while (true)
     {
         auto *pNode = (NODE *)pEnt->GetNode(iIdx);

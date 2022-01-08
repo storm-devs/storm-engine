@@ -51,11 +51,11 @@ class SHIP_BASE : public VAI_OBJBASE
         return pAShip;
     }
 
-    virtual BOOL BuildContour(CVECTOR *vContour, long &iNumVContour) = 0;
+    virtual BOOL BuildContour(CVECTOR *vContour, int32_t &iNumVContour) = 0;
 
     virtual BOOL TouchMove(uint32_t DeltaTime, TOUCH_PARAMS *pTPOld, TOUCH_PARAMS *pTPNew) = 0;
-    virtual long AddStrength(STRENGTH *strength) = 0;
-    virtual bool DelStrength(long iIdx) = 0;
+    virtual int32_t AddStrength(STRENGTH *strength) = 0;
+    virtual bool DelStrength(int32_t iIdx) = 0;
 
     virtual float GetMaxSpeedZ() = 0;
     virtual float GetMaxSpeedY() = 0;

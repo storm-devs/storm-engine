@@ -43,7 +43,7 @@ bool GetNextIdFromList(char *&sptr, char *bufQuestID, size_t nSizeBufQuestID, ch
     if (sptr == nullptr)
         return false;
     auto *sstart = sptr;
-    long idSize = 0;
+    int32_t idSize = 0;
     while (*sptr != 0)
     {
         if (*sptr == ',')
@@ -67,7 +67,7 @@ bool GetNextIdFromList(char *&sptr, char *bufQuestID, size_t nSizeBufQuestID, ch
             n = 0;
             while (sstart[0] && sstart[0] != '@')
             {
-                if (n < static_cast<long>(nSizeBufQuestID))
+                if (n < static_cast<int32_t>(nSizeBufQuestID))
                     bufQuestID[n++] = sstart[0];
                 sstart++;
                 idSize--;
@@ -112,7 +112,7 @@ static void SubRightWord(char *buf, int fontNum, int width, VDX9RENDER *rs)
 {
     if (buf == nullptr)
         return;
-    const long bufSize = strlen(buf);
+    const int32_t bufSize = strlen(buf);
     for (auto *pEnd = buf + bufSize; pEnd > buf; pEnd--)
     {
         if (*pEnd == ' ')
@@ -270,7 +270,7 @@ int CXI_QUESTTEXTS::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_QUESTTEXTS::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_QUESTTEXTS::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -322,7 +322,7 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES *pA, int qn)
 {
     if (pA == nullptr)
         return;
-    const long aq = pA->GetAttributesNum();
+    const int32_t aq = pA->GetAttributesNum();
     if (qn < 0)
         qn = 0;
     if (qn >= aq)
@@ -350,7 +350,7 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES *pA, int qn)
     std::vector<std::string> asStringList;
     if (ptrOwner->QuestFileReader() && pATextList)
     {
-        const long q = pATextList->GetAttributesNum();
+        const int32_t q = pATextList->GetAttributesNum();
         for (auto n = q - 1; n >= 0; n--)
         {
             ATTRIBUTES *pAttr = pATextList->GetAttributeClass(n);
@@ -364,7 +364,7 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES *pA, int qn)
             // whole string list for one record
             asStringList.clear();
             GetStringListForQuestRecord(asStringList, pAttr->GetThisAttr(), pAttr->GetAttribute("UserData"));
-            for (long i = 0; i < asStringList.size(); i++)
+            for (int32_t i = 0; i < asStringList.size(); i++)
             {
                 // decompose the resulting string into lines that fit into the output area
                 auto pcStrPtr = (char *)asStringList[i].c_str();
@@ -401,7 +401,7 @@ void CXI_QUESTTEXTS::ScrollerChanged(float fPos)
 {
     if (m_listRoot == nullptr || m_nAllTextStrings <= 0)
         return;
-    long topStrNum = static_cast<long>(fPos * m_nAllTextStrings);
+    int32_t topStrNum = static_cast<int32_t>(fPos * m_nAllTextStrings);
     if (topStrNum > m_nAllTextStrings)
         topStrNum = m_nAllTextStrings;
     if (topStrNum < 0)
@@ -412,13 +412,13 @@ void CXI_QUESTTEXTS::ScrollerChanged(float fPos)
             m_listCur = m_listCur->next;
 }
 
-uint32_t CXI_QUESTTEXTS::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_QUESTTEXTS::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
     case 0: // set the top display line to a specific number
     {
-        long topStrNum = message.Long();
+        int32_t topStrNum = message.Long();
         if (m_listRoot == nullptr || m_nAllTextStrings <= 0)
             return 0;
         if (topStrNum >= m_nAllTextStrings)

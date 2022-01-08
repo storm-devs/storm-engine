@@ -61,9 +61,9 @@ bool PathTracks::Load(const char *fileName)
         delete data;
         return false;
     }
-    const long nPoints = ((AntFileHeader *)data)->framesCount;
-    const long nStringSize = ((AntFileHeader *)data)->stringsTableSize;
-    const long nBoneCount = ((AntFileHeader *)data)->bonesCount;
+    const int32_t nPoints = ((AntFileHeader *)data)->framesCount;
+    const int32_t nStringSize = ((AntFileHeader *)data)->stringsTableSize;
+    const int32_t nBoneCount = ((AntFileHeader *)data)->bonesCount;
     // Checking file sizes
     if (size < sizeof(AntFileHeader) + sizeof(char) * nStringSize + sizeof(AntFileBone) * nBoneCount +
                    sizeof(AntFileTrackElement) * nPoints)
@@ -86,7 +86,7 @@ bool PathTracks::Load(const char *fileName)
 void PathTracks::Draw(VDX9RENDER *render)
 {
     /*render.FlushBufferedLines();
-    for(long i = 0; i < numPoints - 1; i++)
+    for(int32_t i = 0; i < numPoints - 1; i++)
     {
       render.DrawBufferedLine(point[i].p1, 0xff00ff00, point[i + 1].p1, 0xff00ffff, false);
       render.DrawBufferedLine(point[i].p2, 0xff00ff00, point[i + 1].p2, 0xff00ffff, false);
@@ -103,7 +103,7 @@ bool PathTracks::GetPoint(float index, Vector &cp, Quaternion &cq) const
     if (index < 0.0 || index >= 1.f)
         return false;
     index *= numPoints;
-    auto i1 = static_cast<long>(index);
+    auto i1 = static_cast<int32_t>(index);
     auto i2 = i1 + 1;
     if (i1 >= numPoints)
         i1 = numPoints - 1;

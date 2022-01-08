@@ -22,7 +22,7 @@ XSERVICE::~XSERVICE()
 {
 }
 
-void XSERVICE::Init(VDX9RENDER *pRS, long lWidth, long lHeight)
+void XSERVICE::Init(VDX9RENDER *pRS, int32_t lWidth, int32_t lHeight)
 {
     m_pRS = pRS;
 
@@ -49,7 +49,7 @@ void XSERVICE::Init(VDX9RENDER *pRS, long lWidth, long lHeight)
     LoadAllPicturesInfo();
 }
 
-long XSERVICE::GetTextureID(const char *sImageListName)
+int32_t XSERVICE::GetTextureID(const char *sImageListName)
 {
     if (sImageListName != nullptr)
     {
@@ -72,7 +72,7 @@ long XSERVICE::GetTextureID(const char *sImageListName)
     return -1;
 }
 
-long XSERVICE::FindGroup(const char *sImageListName) const
+int32_t XSERVICE::FindGroup(const char *sImageListName) const
 {
     if (!sImageListName)
         return -1;
@@ -98,7 +98,7 @@ bool XSERVICE::ReleaseTextureID(const char *sImageListName)
     return false;
 }
 
-bool XSERVICE::GetTexturePos(long pictureNum, FXYRECT &texRect)
+bool XSERVICE::GetTexturePos(int32_t pictureNum, FXYRECT &texRect)
 {
     if (pictureNum >= 0 && pictureNum < m_dwImageQuantity)
     {
@@ -126,7 +126,7 @@ bool XSERVICE::GetTexturePos(long pictureNum, FXYRECT &texRect)
     return false;
 }
 
-bool XSERVICE::GetTexturePos(long pictureNum, XYRECT &texRect)
+bool XSERVICE::GetTexturePos(int32_t pictureNum, XYRECT &texRect)
 {
     if (pictureNum >= 0 && pictureNum < m_dwImageQuantity)
     {
@@ -148,7 +148,7 @@ bool XSERVICE::GetTexturePos(const char *sImageListName, const char *sImageName,
     return GetTexturePos(GetImageNum(sImageListName, sImageName), texRect);
 }
 
-bool XSERVICE::GetTexturePos(int nTextureModify, long pictureNum, FXYRECT &texRect)
+bool XSERVICE::GetTexturePos(int nTextureModify, int32_t pictureNum, FXYRECT &texRect)
 {
     FXYRECT rectTmp;
 
@@ -196,7 +196,7 @@ bool XSERVICE::GetTexturePos(int nTextureModify, const char *sImageListName, con
 }
 
 void XSERVICE::GetTextureCutForSize(const char *pcImageListName, const FXYPOINT &pntLeftTopUV, const XYPOINT &pntSize,
-                                    long nSrcWidth, long nSrcHeight, FXYRECT &outUV)
+                                    int32_t nSrcWidth, int32_t nSrcHeight, FXYRECT &outUV)
 {
     const auto n = FindGroup(pcImageListName);
     if (n >= 0)
@@ -354,9 +354,9 @@ void XSERVICE::ReleaseAll()
     m_dwImageQuantity = 0;
 }
 
-long XSERVICE::GetImageNum(const char *sImageListName, const char *sImageName)
+int32_t XSERVICE::GetImageNum(const char *sImageListName, const char *sImageName)
 {
-    long retVal = -1;
+    int32_t retVal = -1;
 
     if (sImageName != nullptr)
         if (sImageListName != nullptr)

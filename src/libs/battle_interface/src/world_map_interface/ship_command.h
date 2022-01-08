@@ -14,5 +14,5 @@ class WMShipCommandList : public BICommandList
   protected:
     void Release();
 
-    long CommandAdding();
+    int32_t CommandAdding();
 };

@@ -22,11 +22,11 @@ uint32_t _ShipSailState(VS_STACK *pS)
     // find sail class
     if (const auto eid = EntityManager::GetEntityId("SAIL"))
     {
-        const long n = static_cast<SAIL *>(EntityManager::GetEntityPointer(eid))->GetSailStateForCharacter(nChrIdx);
+        const int32_t n = static_cast<SAIL *>(EntityManager::GetEntityPointer(eid))->GetSailStateForCharacter(nChrIdx);
         pVR->Set(n);
     }
     else
-        pVR->Set(static_cast<long>(0));
+        pVR->Set(static_cast<int32_t>(0));
 
     return IFUNCRESULT_OK;
 }
@@ -132,10 +132,10 @@ uint32_t _funcGetSailSpeed(VS_STACK *pS)
     const float fSailPow = pSailPow->GetFloat();
 
     auto *pHoleMax = (VDATA *)pS->Pop();
-    const long nHoleMax = pHoleMax->GetLong();
+    const int32_t nHoleMax = pHoleMax->GetLong();
 
     auto *pHoleQ = (VDATA *)pS->Pop();
-    const long nHoleQ = pHoleQ->GetLong();
+    const int32_t nHoleQ = pHoleQ->GetLong();
 
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
@@ -202,7 +202,7 @@ uint32_t _RandomHole2Sail(VS_STACK *pS)
         pSail->CalculateMirrorSailIndex();
     }
 
-    pVR->Set(static_cast<long>(holeMask));
+    pVR->Set(static_cast<int32_t>(holeMask));
 
     return IFUNCRESULT_OK;
 }
@@ -264,7 +264,7 @@ uint32_t _DeleteOneSailHole(VS_STACK *pS)
         pSail->CalculateMirrorSailIndex();
     }
 
-    pVR->Set(static_cast<long>(holeMask));
+    pVR->Set(static_cast<int32_t>(holeMask));
 
     return IFUNCRESULT_OK;
 }

@@ -28,15 +28,15 @@ inline void RotateAroundY(float &x, float &z, float cos, float sin)
 
 inline float NormalizeAngle(float fAngle)
 {
-    long times;
+    int32_t times;
     if (fAngle >= 2 * PI)
     {
-        times = static_cast<long>(fAngle / PIm2);
+        times = static_cast<int32_t>(fAngle / PIm2);
         return fAngle - times * PIm2;
     }
     if (fAngle < 0)
     {
-        times = static_cast<long>(-fAngle / PIm2);
+        times = static_cast<int32_t>(-fAngle / PIm2);
         return fAngle + PIm2 * (times + 1);
     }
     return fAngle;

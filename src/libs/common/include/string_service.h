@@ -16,11 +16,11 @@ class VSTRSERVICE : public SERVICE
     virtual char *GetLanguage() = 0;
 
     virtual char *GetString(const char *stringName, char *sBuffer = nullptr, size_t bufferSize = 0) = 0;
-    virtual long GetStringNum(const char *stringName) = 0;
-    virtual char *GetString(long strNum) = 0;
-    virtual char *GetStringName(long strNum) = 0;
+    virtual int32_t GetStringNum(const char *stringName) = 0;
+    virtual char *GetString(int32_t strNum) = 0;
+    virtual char *GetStringName(int32_t strNum) = 0;
 
-    virtual long OpenUsersStringFile(const char *fileName) = 0;
-    virtual void CloseUsersStringFile(long id) = 0;
-    virtual char *TranslateFromUsers(long id, const char *inStr) = 0;
+    virtual int32_t OpenUsersStringFile(const char *fileName) = 0;
+    virtual void CloseUsersStringFile(int32_t id) = 0;
+    virtual char *TranslateFromUsers(int32_t id, const char *inStr) = 0;
 };

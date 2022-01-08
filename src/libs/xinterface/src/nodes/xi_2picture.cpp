@@ -154,7 +154,7 @@ int CXI_TWOPICTURE::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_TWOPICTURE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_TWOPICTURE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos >= m_vOne[0].pos.x && xPos <= m_vOne[3].pos.x && yPos >= m_vOne[0].pos.y && yPos <= m_vOne[3].pos.y)
     {

@@ -63,7 +63,7 @@ bool S_EVENTTAB::GetEvent(EVENTINFO &ei, uint32_t event_code)
     return true;
 }
 
-uint32_t S_EVENTTAB::AddEventHandler(const char *event_name, uint32_t func_code, uint32_t func_segment_id, long flag,
+uint32_t S_EVENTTAB::AddEventHandler(const char *event_name, uint32_t func_code, uint32_t func_segment_id, int32_t flag,
                                      bool bStatic)
 {
     uint32_t i;

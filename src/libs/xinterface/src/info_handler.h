@@ -39,7 +39,7 @@ class InfoHandler : public Entity
     IDirect3DSurface9 *m_pSurface;
     IDirect3DSurface9 *m_pRenderTarget;
 
-    /*long    m_idVBuf;
+    /*int32_t    m_idVBuf;
 
     int        m_dwOutputWidth;
     int        m_nOutCenterX, m_nOutCenterY;
@@ -47,7 +47,7 @@ class InfoHandler : public Entity
     DWORD    m_dwBackFillColor;
     DWORD    m_dwFrontFillColor;
 
-    long    m_idFont;
+    int32_t    m_idFont;
 
     struct    STRING_LIST
     {

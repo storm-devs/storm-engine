@@ -15,7 +15,7 @@ class CXI_FOURIMAGE : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -41,18 +41,18 @@ class CXI_FOURIMAGE : public CINODE
     bool m_bUsed[4]; // selected picture
     // images parametes
     char **m_sGroupName;
-    long *m_nTextureId;
-    long m_nTexturesQuantity;
+    int32_t *m_nTextureId;
+    int32_t m_nTexturesQuantity;
     char *m_sBorderGroupName; // picture list name for border image
-    long m_texBorder;         // border texture identify
+    int32_t m_texBorder;         // border texture identify
     XYRECT m_imgRect[4];      // images position
-    long m_nBorderPicture;    // image id for border picture
-    long m_oneImgID[4];       // image id for one image
-    long m_twoImgID[4];       // image id for two image
-    long m_oneTexID[4];       // texture id for one image
-    long m_twoTexID[4];       // texture id for two image
-    long m_oneBadTexture;     // texture for the picture replacing the first "bad" one
-    long m_twoBadTexture;     // texture for the picture replacing the second "bad" one
+    int32_t m_nBorderPicture;    // image id for border picture
+    int32_t m_oneImgID[4];       // image id for one image
+    int32_t m_twoImgID[4];       // image id for two image
+    int32_t m_oneTexID[4];       // texture id for one image
+    int32_t m_twoTexID[4];       // texture id for two image
+    int32_t m_oneBadTexture;     // texture for the picture replacing the first "bad" one
+    int32_t m_twoBadTexture;     // texture for the picture replacing the second "bad" one
 
     // select parameters
     bool m_bShowBorder;            // do show border
@@ -63,26 +63,26 @@ class CXI_FOURIMAGE : public CINODE
 
     // one string parameters
     bool bUseOneString;       // use one string
-    long m_xOneOffset;        // hirizontal offset from center position for one string
-    long m_nOneStrOffset;     // string offset from top image position
-    long m_oneStr[4];         // one strings identificators
+    int32_t m_xOneOffset;        // hirizontal offset from center position for one string
+    int32_t m_nOneStrOffset;     // string offset from top image position
+    int32_t m_oneStr[4];         // one strings identificators
     char *m_pOneStr[4];       // one strings
-    long m_oneStrFont;        // one string font number
+    int32_t m_oneStrFont;        // one string font number
     uint32_t m_foreColOneStr; // one string foreground color
     uint32_t m_backColOneStr; // one string background color
 
     // two string parameters
     bool bUseTwoString;       // use two string
-    long m_xTwoOffset;        // hirizontal offset from center position for two string
-    long m_nTwoStrOffset;     // string offset from top image position
-    long m_twoStr[4];         // two strings identificators
+    int32_t m_xTwoOffset;        // hirizontal offset from center position for two string
+    int32_t m_nTwoStrOffset;     // string offset from top image position
+    int32_t m_twoStr[4];         // two strings identificators
     char *m_pTwoStr[4];       // two strings
-    long m_twoStrFont;        // two string font number
+    int32_t m_twoStrFont;        // two string font number
     uint32_t m_foreColTwoStr; // one string foreground color
     uint32_t m_backColTwoStr; // one string background color
 
     // picture index & vertex buffers
-    long vBuf; // identificator of the vertex buffer
+    int32_t vBuf; // identificator of the vertex buffer
 
     // blind parameters
     bool m_bDoBlind;             // blind flag

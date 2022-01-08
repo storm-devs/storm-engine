@@ -18,7 +18,7 @@
 AnimationTimerImp::AnimationTimerImp()
 {
     ani = nullptr;
-    for (long i = 0; i < ANITM_PLAYERSMAX; i++)
+    for (int32_t i = 0; i < ANITM_PLAYERSMAX; i++)
     {
         playersMask[i] = 0;
         inverseMask[i] = 0;
@@ -68,7 +68,7 @@ void AnimationTimerImp::Stop()
     kTime = 0.0f;
     value = 1.0f;
     // Set end values and stop animation where asked
-    long i;
+    int32_t i;
     for (i = 0; i < ANI_MAX_ACTIONS; i++)
     {
         if (playersMask[i >> 5] & (1 << (i & 31)))
@@ -101,7 +101,7 @@ void AnimationTimerImp::ResetTimer()
     curTime = 0.0f;
     kTime = 0.0f;
     value = 0.0f;
-    for (long i = 0; i < ANITM_PLAYERSMAX; i++)
+    for (int32_t i = 0; i < ANITM_PLAYERSMAX; i++)
     {
         playersMask[i] = 0;
         inverseMask[i] = 0;
@@ -127,7 +127,7 @@ float AnimationTimerImp::GetTime() const
 }
 
 // Assign ActionPlayer for blending (isInverse == false -> kBlend = [0..1])
-void AnimationTimerImp::SetPlayer(long playerIndex, bool isInverse)
+void AnimationTimerImp::SetPlayer(int32_t playerIndex, bool isInverse)
 {
     Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
     // set ourselves
@@ -144,7 +144,7 @@ void AnimationTimerImp::SetPlayer(long playerIndex, bool isInverse)
     static_cast<ActionPlayerImp *>(&ani->Player(playerIndex))->TimerBlend() = 1.0f;
 }
 
-void AnimationTimerImp::ResetPlayer(long playerIndex)
+void AnimationTimerImp::ResetPlayer(int32_t playerIndex)
 {
     Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
     // Uncheck the use box
@@ -153,7 +153,7 @@ void AnimationTimerImp::ResetPlayer(long playerIndex)
 }
 
 // Find out if ActionPlayer is being used
-bool AnimationTimerImp::IsUsedPlayer(long playerIndex, bool *isInverse)
+bool AnimationTimerImp::IsUsedPlayer(int32_t playerIndex, bool *isInverse)
 {
     Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
     if (playersMask[playerIndex >> 5] & (1 << (playerIndex & 31)))
@@ -166,7 +166,7 @@ bool AnimationTimerImp::IsUsedPlayer(long playerIndex, bool *isInverse)
 }
 
 // Get the blending value for the player (if not used then 1.0f)
-float AnimationTimerImp::GetPlayerValue(long playerIndex)
+float AnimationTimerImp::GetPlayerValue(int32_t playerIndex)
 {
     Assert(playerIndex >= 0 && playerIndex < ANI_MAX_ACTIONS);
     if (playersMask[playerIndex >> 5] & (1 << (playerIndex & 31)))
@@ -185,7 +185,7 @@ float AnimationTimerImp::GetPlayerValue(long playerIndex)
 //--------------------------------------------------------------------------------------------
 
 // Execute
-void AnimationTimerImp::Execute(long dltTime)
+void AnimationTimerImp::Execute(int32_t dltTime)
 {
     if (kTime != 0.0f)
     {
@@ -195,7 +195,7 @@ void AnimationTimerImp::Execute(long dltTime)
         if (value > 1.0f)
             value = 1.0f;
         // Arranging blending coefficients
-        for (long i = 0; i < ANI_MAX_ACTIONS; i++)
+        for (int32_t i = 0; i < ANI_MAX_ACTIONS; i++)
         {
             if (playersMask[i >> 5] & (1 << (i & 31)))
             {

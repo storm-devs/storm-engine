@@ -142,7 +142,7 @@ uint32_t DX9SetTexturePath(VS_STACK *pS)
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR || iNumber < 0 || iNumber >= 4)
     {
-        pVR->Set(static_cast<long>(0));
+        pVR->Set(static_cast<int32_t>(0));
         return IFUNCRESULT_OK;
     }
 
@@ -150,7 +150,7 @@ uint32_t DX9SetTexturePath(VS_STACK *pS)
     DX9RENDER::pRS->TextureCreate((const char *)iNumber);
     DX9RENDER::pRS->TextureCreate(static_cast<const char *>(pStr));
 
-    pVR->Set(static_cast<long>(1));
+    pVR->Set(static_cast<int32_t>(1));
 
     return IFUNCRESULT_OK;
 }
@@ -158,33 +158,33 @@ uint32_t DX9SetTexturePath(VS_STACK *pS)
 uint32_t RPrint(VS_STACK *pS)
 {
     auto *pString = (VDATA *)pS->Pop();
-    const long y = ((VDATA *)pS->Pop())->GetLong();
-    const long x = ((VDATA *)pS->Pop())->GetLong();
+    const int32_t y = ((VDATA *)pS->Pop())->GetLong();
+    const int32_t x = ((VDATA *)pS->Pop())->GetLong();
 
     if (pString->GetString())
         DX9RENDER::pRS->Print(x, y, pString->GetString());
     auto *pVR = (VDATA *)pS->Push();
-    pVR->Set(static_cast<long>(0));
+    pVR->Set(static_cast<int32_t>(0));
     return IFUNCRESULT_OK;
 }
 
 uint32_t SetGlowParams(VS_STACK *pS)
 {
     const float fBlurBrushSize = ((VDATA *)pS->Pop())->GetFloat();
-    const long Intensivity = ((VDATA *)pS->Pop())->GetLong();
-    const long BlurPasses = ((VDATA *)pS->Pop())->GetLong();
+    const int32_t Intensivity = ((VDATA *)pS->Pop())->GetLong();
+    const int32_t BlurPasses = ((VDATA *)pS->Pop())->GetLong();
 
     DX9RENDER::pRS->SetGLOWParams(fBlurBrushSize, Intensivity, BlurPasses);
 
     auto *pVR = (VDATA *)pS->Push();
-    pVR->Set(static_cast<long>(0));
+    pVR->Set(static_cast<int32_t>(0));
     return IFUNCRESULT_OK;
 }
 
 uint32_t slGetTexture(VS_STACK *pS)
 {
     auto filename = ((VDATA *)pS->Pop())->GetString();
-    long texNum = DX9RENDER::pRS->TextureCreate(filename);
+    int32_t texNum = DX9RENDER::pRS->TextureCreate(filename);
 
     auto *pVR = (VDATA *)pS->Push();
     pVR->Set(texNum);
@@ -193,7 +193,7 @@ uint32_t slGetTexture(VS_STACK *pS)
 
 uint32_t slReleaseTexture(VS_STACK *pS)
 {
-    long texNum = ((VDATA *)pS->Pop())->GetLong();
+    int32_t texNum = ((VDATA *)pS->Pop())->GetLong();
 
     DX9RENDER::pRS->TextureRelease(texNum);
     return IFUNCRESULT_OK;
@@ -278,8 +278,8 @@ void CreateSphere()
         return;
 
     const float myPI = 3.1415926535897932f;
-    const long a1 = 32;
-    const long a2 = (a1 / 2);
+    const int32_t a1 = 32;
+    const int32_t a2 = (a1 / 2);
 
     DX9sphereNumTrgs = a1 * a2 * 2;
     DX9sphereVertex = new DX9SphVertex[DX9sphereNumTrgs * 6];
@@ -287,13 +287,13 @@ void CreateSphere()
     const CVECTOR light = !CVECTOR(0.0f, 0.0f, 1.0f);
     float kColor;
     // fill in the vertices
-    for (long i = 0, t = 0; i < a2; i++)
+    for (int32_t i = 0, t = 0; i < a2; i++)
     {
         const float r1 = sinf(myPI * i / static_cast<float>(a2));
         const float y1 = cosf(myPI * i / static_cast<float>(a2));
         const float r2 = sinf(myPI * (i + 1) / static_cast<float>(a2));
         const float y2 = cosf(myPI * (i + 1) / static_cast<float>(a2));
-        for (long j = 0; j < a1; j++)
+        for (int32_t j = 0; j < a1; j++)
         {
             const float x1 = sinf(2.0f * myPI * j / static_cast<float>(a1));
             const float z1 = cosf(2.0f * myPI * j / static_cast<float>(a1));
@@ -483,7 +483,7 @@ bool DX9RENDER::Init()
     }
 
     char str[256];
-    for (long i = 0; i < MAX_STEXTURES; i++)
+    for (int32_t i = 0; i < MAX_STEXTURES; i++)
         Textures[i].ref = NULL;
 
     d3d = nullptr;
@@ -558,7 +558,7 @@ bool DX9RENDER::Init()
             }
         }
 
-        videoAdapterIndex = ini->GetLong(nullptr, "adapter", std::numeric_limits<long>::max());
+        videoAdapterIndex = ini->GetLong(nullptr, "adapter", std::numeric_limits<int32_t>::max());
 
         // stencil_format = D3DFMT_D24S8;
         if (!InitDevice(bWindow, static_cast<HWND>(core.GetAppHWND()), screen_size.x, screen_size.y))
@@ -599,12 +599,12 @@ bool DX9RENDER::Init()
             progressFramesHeight = 0.0f;
         if (progressFramesHeight > 10.0f)
             progressFramesHeight = 10.0f;
-        progressFramesCountX = static_cast<long>(ini->GetFloat("ProgressImage", "HorisontalFramesCount", 8));
+        progressFramesCountX = static_cast<int32_t>(ini->GetFloat("ProgressImage", "HorisontalFramesCount", 8));
         if (progressFramesCountX < 1)
             progressFramesCountX = 1;
         if (progressFramesCountX > 64)
             progressFramesCountX = 64;
-        progressFramesCountY = static_cast<long>(ini->GetFloat("ProgressImage", "VerticalFramesCount", 8));
+        progressFramesCountY = static_cast<int32_t>(ini->GetFloat("ProgressImage", "VerticalFramesCount", 8));
         if (progressFramesCountY < 1)
             progressFramesCountY = 1;
         if (progressFramesCountY > 64)
@@ -614,8 +614,8 @@ bool DX9RENDER::Init()
         fFixedFPS = ini->GetFloat("VideoCapture", "FPS", 25);
         if (fFixedFPS == 0.0f)
             fFixedFPS = 25.0f;
-        const long iCapBuffers = ini->GetLong("VideoCapture", "Buffers", 0);
-        for (long i = 0; i < iCapBuffers; i++)
+        const int32_t iCapBuffers = ini->GetLong("VideoCapture", "Buffers", 0);
+        for (int32_t i = 0; i < iCapBuffers; i++)
             aCaptureBuffers.push_back(new char[sizeof(uint32_t) * screen_size.x * screen_size.y]);
 
         CreateSphere();
@@ -642,9 +642,9 @@ bool DX9RENDER::Init()
 
     uint16_t *pI = &qi[0];
     // setup ibuffer
-    for (long y = 0; y < 31; y++)
+    for (int32_t y = 0; y < 31; y++)
     {
-        for (long x = 0; x < 31; x++)
+        for (int32_t x = 0; x < 31; x++)
         {
             *pI++ = static_cast<uint16_t>((y + 0) * 32 + x + 1);
             *pI++ = static_cast<uint16_t>((y + 1) * 32 + x);
@@ -713,7 +713,7 @@ DX9RENDER::~DX9RENDER()
     // aCaptureBuffers.DelAllWithPointers();
 }
 
-bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
+bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, int32_t width, int32_t height)
 {
     // GUARD(DX9RENDER::InitDevice)
 
@@ -891,16 +891,16 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
     // SetPostProcessTextureAsRenderTarget();
     // set it as a render target
 
-    for (long b = 0; b < MAX_BUFFERS; b++)
+    for (int32_t b = 0; b < MAX_BUFFERS; b++)
     {
         VertexBuffers[b].buff = nullptr;
         IndexBuffers[b].buff = nullptr;
     }
 
-    long num_stages;
+    int32_t num_stages;
     num_stages = 8;
 
-    for (long s = 0; s < num_stages; s++)
+    for (int32_t s = 0; s < num_stages; s++)
     {
         // texture operation
         SetTextureStageState(s, D3DTSS_COLORARG1, D3DTA_CURRENT);
@@ -957,7 +957,7 @@ bool DX9RENDER::ReleaseDevice()
         aniVBuffer->Release();
     aniVBuffer = nullptr;
     numAniVerteces = 0;
-    for (long b = 0; b < MAX_BUFFERS; b++)
+    for (int32_t b = 0; b < MAX_BUFFERS; b++)
     {
         if (VertexBuffers[b].buff)
             VertexBuffers[b].buff->Release();
@@ -968,7 +968,7 @@ bool DX9RENDER::ReleaseDevice()
     }
 
     bool res = true;
-    for (long t = 0; t < MAX_STEXTURES; t++)
+    for (int32_t t = 0; t < MAX_STEXTURES; t++)
         if (Textures[t].ref && Textures[t].loaded && Textures[t].d3dtex)
         {
             if (CHECKD3DERR(Textures[t].d3dtex->Release()) == false)
@@ -990,7 +990,7 @@ bool DX9RENDER::ReleaseDevice()
 }
 
 //################################################################################
-bool DX9RENDER::DX9Clear(long type)
+bool DX9RENDER::DX9Clear(int32_t type)
 {
     if (CHECKD3DERR(d3d9->Clear(0L, NULL, type, dwBackColor, 1.0f, 0L)) == true)
         return false;
@@ -1241,7 +1241,7 @@ bool DX9RENDER::DX9EndScene()
         uint32_t dwTotalTexSize = 0;
         uint32_t dwTotalTexNum = 0, dwTotalVB = 0, dwTotalIB = 0, dwTotalVBSize = 0, dwTotalIBSize = 0;
 
-        long t;
+        int32_t t;
         for (t = 0; t < MAX_STEXTURES; t++)
             if (Textures[t].ref > 0)
             {
@@ -1279,7 +1279,7 @@ bool DX9RENDER::DX9EndScene()
     {
         CVECTOR *pV;
         pDropConveyorVBuffer->Lock(0, 0, (VOID **)&pV, 0);
-        for (long i = 0; i < 2; i++)
+        for (int32_t i = 0; i < 2; i++)
             pV[i] = CVECTOR(1e6f, 1e6f, 1e6f);
         pDropConveyorVBuffer->Unlock();
         d3d9->SetStreamSource(0, pDropConveyorVBuffer, 0, sizeof(CVECTOR));
@@ -1316,7 +1316,7 @@ bool DX9RENDER::DX9EndScene()
 //################################################################################
 static int totSize = 0;
 
-long DX9RENDER::TextureCreate(const char *fname)
+int32_t DX9RENDER::TextureCreate(const char *fname)
 {
     // start add texture path
     if ((uintptr_t)fname == -1)
@@ -1368,7 +1368,7 @@ long DX9RENDER::TextureCreate(const char *fname)
 
     size_t fname_len = strlen(fname);
 
-    for (long i = 3; i >= -1; i--)
+    for (int32_t i = 3; i >= -1; i--)
     {
         char _fname[256];
 
@@ -1378,7 +1378,7 @@ long DX9RENDER::TextureCreate(const char *fname)
         {
             const uint32_t dwLen = strlen(fname);
 
-            long j;
+            int32_t j;
             for (j = dwLen - 1; j >= 0; j--)
                 if (fname[j] == '\\')
                     break;
@@ -1406,7 +1406,7 @@ long DX9RENDER::TextureCreate(const char *fname)
 
         const uint32_t hf = hash_string(_fname);
 
-        long t;
+        int32_t t;
         for (t = 0; t < MAX_STEXTURES; t++)
             if (Textures[t].ref != 0)
                 if (Textures[t].name)
@@ -1437,7 +1437,7 @@ long DX9RENDER::TextureCreate(const char *fname)
     return -1;
 }
 
-long DX9RENDER::TextureCreate(UINT width, UINT height, UINT levels, uint32_t usage, D3DFORMAT format, D3DPOOL pool)
+int32_t DX9RENDER::TextureCreate(UINT width, UINT height, UINT levels, uint32_t usage, D3DFORMAT format, D3DPOOL pool)
 {
     IDirect3DTexture9 *texture = nullptr;
 
@@ -1447,7 +1447,7 @@ long DX9RENDER::TextureCreate(UINT width, UINT height, UINT levels, uint32_t usa
         return -1;
     }
 
-    long t;
+    int32_t t;
     for (t = 0; t < MAX_STEXTURES; t++)
     {
         if (Textures[t].ref == 0)
@@ -1467,13 +1467,13 @@ long DX9RENDER::TextureCreate(UINT width, UINT height, UINT levels, uint32_t usa
     return t;
 }
 
-bool DX9RENDER::TextureIncReference(long texid)
+bool DX9RENDER::TextureIncReference(int32_t texid)
 {
     ++Textures[texid].ref;
     return true;
 }
 
-bool DX9RENDER::TextureLoad(long t)
+bool DX9RENDER::TextureLoad(int32_t t)
 {
     ProgressView();
     // Form the path to the texture
@@ -1485,7 +1485,7 @@ bool DX9RENDER::TextureLoad(long t)
         return false;
     }
     sprintf_s(fn, TEXTURESDIR, Textures[t].name);
-    for (long s = 0, d = 0; fn[d]; s++)
+    for (int32_t s = 0, d = 0; fn[d]; s++)
     {
         if (d > 0 && fn[d - 1] == '\\' && fn[s] == '\\')
         {
@@ -1527,7 +1527,7 @@ bool DX9RENDER::TextureLoad(long t)
     }
     // Analyzing the format
     D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;
-    long textureFI;
+    int32_t textureFI;
     for (textureFI = 0; textureFI < sizeof(textureFormats) / sizeof(SD_TEXTURE_FORMAT); textureFI++)
     {
         if (textureFormats[textureFI].txFormat == head.format)
@@ -1551,7 +1551,7 @@ bool DX9RENDER::TextureLoad(long t)
     const char *formatTxt = textureFormats[textureFI].format;
     // Skipping mips
     uint32_t seekposition = 0;
-    for (long nTD = nTextureDegradation; nTD > 0; nTD--)
+    for (int32_t nTD = nTextureDegradation; nTD > 0; nTD--)
     {
         if (head.nmips <= 1 || head.width <= 32 || head.height <= 32)
         {
@@ -1590,7 +1590,7 @@ bool DX9RENDER::TextureLoad(long t)
             return false;
         }
         // Filling the levels
-        for (long m = 0; m < head.nmips; m++)
+        for (int32_t m = 0; m < head.nmips; m++)
         {
             // take into account the size of the mip
             Textures[t].dwSize += head.mip_size;
@@ -1809,7 +1809,7 @@ bool DX9RENDER::TextureLoad(long t)
     return true;
 }
 
-bool DX9RENDER::TextureLoadUsingD3DX(const char* path, long t)
+bool DX9RENDER::TextureLoadUsingD3DX(const char* path, int32_t t)
 {
     // TODO: reimplement the whole thing in a tidy way
     IDirect3DTexture9 *pTex;
@@ -1833,7 +1833,7 @@ bool DX9RENDER::TextureLoadUsingD3DX(const char* path, long t)
     return true;
 }
 
-IDirect3DBaseTexture9 *DX9RENDER::GetBaseTexture(long iTexture)
+IDirect3DBaseTexture9 *DX9RENDER::GetBaseTexture(int32_t iTexture)
 {
     return (iTexture >= 0) ? Textures[iTexture].d3dtex : nullptr;
 }
@@ -1911,7 +1911,7 @@ bool DX9RENDER::LoadTextureSurface(std::fstream &fileS, IDirect3DSurface9 *sufac
 }
 
 //################################################################################
-bool DX9RENDER::TextureSet(long stage, long texid)
+bool DX9RENDER::TextureSet(int32_t stage, int32_t texid)
 {
     if (texid == -1)
     {
@@ -1927,12 +1927,12 @@ bool DX9RENDER::TextureSet(long stage, long texid)
     {
     int tex2load[MAX_STEXTURES];
     int t2l=0;
-    for(long t=0; t<MAX_STEXTURES; t++)
+    for(int32_t t=0; t<MAX_STEXTURES; t++)
     if(Textures[t].ref>0 && Textures[t].loaded==false)    tex2load[t2l++] = t;
     */
     /*/sort textures
     for(t=0; t<t2l; t++)
-    for(long tt=t; tt<t2l; tt++)
+    for(int32_t tt=t; tt<t2l; tt++)
     if(_strcmpi(Textures[tex2load[tt]].name, Textures[tex2load[t]].name)<0)
     {
     int ttemp = tex2load[t];
@@ -1957,7 +1957,7 @@ bool DX9RENDER::TextureSet(long stage, long texid)
 }
 
 //################################################################################
-bool DX9RENDER::TextureRelease(long texid)
+bool DX9RENDER::TextureRelease(int32_t texid)
 {
     if (texid == -1)
     {
@@ -2217,12 +2217,12 @@ bool DX9RENDER::GetLight(uint32_t dwIndex, D3DLIGHT9 *pLight)
 
 //################################################################################
 
-long DX9RENDER::CreateVertexBuffer(long type, size_t size, uint32_t dwUsage)
+int32_t DX9RENDER::CreateVertexBuffer(int32_t type, size_t size, uint32_t dwUsage)
 {
     if (size <= 0)
         return -1; // fix
 
-    long b;
+    int32_t b;
     for (b = 0; b < MAX_BUFFERS; b++)
         if (VertexBuffers[b].buff == nullptr)
             break;
@@ -2240,14 +2240,14 @@ long DX9RENDER::CreateVertexBuffer(long type, size_t size, uint32_t dwUsage)
     return b;
 }
 
-IDirect3DVertexBuffer9 *DX9RENDER::GetVertexBuffer(long id)
+IDirect3DVertexBuffer9 *DX9RENDER::GetVertexBuffer(int32_t id)
 {
     if (id < 0 || id >= MAX_BUFFERS)
         return nullptr;
     return VertexBuffers[id].buff;
 }
 
-long DX9RENDER::GetVertexBufferFVF(long id)
+int32_t DX9RENDER::GetVertexBufferFVF(int32_t id)
 {
     if (id < 0 || id >= MAX_BUFFERS)
         return 0;
@@ -2255,9 +2255,9 @@ long DX9RENDER::GetVertexBufferFVF(long id)
 }
 
 //################################################################################
-long DX9RENDER::CreateIndexBuffer(size_t size, uint32_t dwUsage)
+int32_t DX9RENDER::CreateIndexBuffer(size_t size, uint32_t dwUsage)
 {
-    long b;
+    int32_t b;
     for (b = 0; b < MAX_BUFFERS; b++)
         if (IndexBuffers[b].buff == nullptr)
             break;
@@ -2277,7 +2277,7 @@ long DX9RENDER::CreateIndexBuffer(size_t size, uint32_t dwUsage)
 }
 
 //################################################################################
-void DX9RENDER::DrawBuffer(long vbuff, long stride, long ibuff, long minv, size_t numv, size_t startidx, size_t numtrg,
+void DX9RENDER::DrawBuffer(int32_t vbuff, int32_t stride, int32_t ibuff, int32_t minv, size_t numv, size_t startidx, size_t numtrg,
                            const char *cBlockName)
 {
     bool bDraw = true;
@@ -2306,8 +2306,8 @@ void DX9RENDER::DrawBuffer(long vbuff, long stride, long ibuff, long minv, size_
         } while (cBlockName && cBlockName[0] && TechniqueExecuteNext());
 }
 
-void DX9RENDER::DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iIBuff,
-                                              long iMinV, long iNumV, long iStartIdx, long iNumTrg,
+void DX9RENDER::DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, int32_t iVBuff, int32_t iStride, int32_t iIBuff,
+                                              int32_t iMinV, int32_t iNumV, int32_t iStartIdx, int32_t iNumTrg,
                                               const char *cBlockName)
 {
     bool bDraw = true;
@@ -2365,7 +2365,7 @@ void DX9RENDER::DrawPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwVer
         } while (cBlockName && TechniqueExecuteNext());
 }
 
-void DX9RENDER::DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iStartV, long iNumPT,
+void DX9RENDER::DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, int32_t iVBuff, int32_t iStride, int32_t iStartV, int32_t iNumPT,
                               const char *cBlockName)
 {
     bool bDraw = true;
@@ -2387,13 +2387,13 @@ void DX9RENDER::DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, lon
 }
 
 //################################################################################
-void DX9RENDER::RenderAnimation(long ib, void *src, long numVrts, long minv, long numv, long startidx, long numtrg,
+void DX9RENDER::RenderAnimation(int32_t ib, void *src, int32_t numVrts, int32_t minv, int32_t numv, int32_t startidx, int32_t numtrg,
                                 bool isUpdateVB)
 {
     if (numVrts <= 0 || !src || ib < 0)
         return;
     const uint32_t type = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1;
-    const long size = numVrts * sizeof(FVF_VERTEX);
+    const int32_t size = numVrts * sizeof(FVF_VERTEX);
     if (isUpdateVB || numVrts > numAniVerteces || !aniVBuffer)
     {
         // Create vertex buffer
@@ -2434,7 +2434,7 @@ void DX9RENDER::RenderAnimation(long ib, void *src, long numVrts, long minv, lon
 }
 
 //################################################################################
-void *DX9RENDER::LockVertexBuffer(long id, uint32_t dwFlags)
+void *DX9RENDER::LockVertexBuffer(int32_t id, uint32_t dwFlags)
 {
     uint8_t *ptr;
     VertexBuffers[id].dwNumLocks++;
@@ -2446,18 +2446,18 @@ void *DX9RENDER::LockVertexBuffer(long id, uint32_t dwFlags)
 }
 
 //################################################################################
-void DX9RENDER::UnLockVertexBuffer(long id)
+void DX9RENDER::UnLockVertexBuffer(int32_t id)
 {
         VertexBuffers[id].dwNumLocks--;
         CHECKD3DERR(VertexBuffers[id].buff->Unlock());
 }
 
-long DX9RENDER::GetVertexBufferSize(long id)
+int32_t DX9RENDER::GetVertexBufferSize(int32_t id)
 {
     return VertexBuffers[id].size;
 }
 
-void *DX9RENDER::LockIndexBuffer(long id, uint32_t dwFlags)
+void *DX9RENDER::LockIndexBuffer(int32_t id, uint32_t dwFlags)
 {
     uint8_t *ptr = nullptr;
     IndexBuffers[id].dwNumLocks++;
@@ -2468,14 +2468,14 @@ void *DX9RENDER::LockIndexBuffer(long id, uint32_t dwFlags)
     return ptr;
 }
 
-void DX9RENDER::UnLockIndexBuffer(long id)
+void DX9RENDER::UnLockIndexBuffer(int32_t id)
 {
         IndexBuffers[id].dwNumLocks--;
         CHECKD3DERR(IndexBuffers[id].buff->Unlock());
 }
 
 //################################################################################
-void DX9RENDER::ReleaseVertexBuffer(long id)
+void DX9RENDER::ReleaseVertexBuffer(int32_t id)
 {
     if (VertexBuffers[id].buff == nullptr)
         return;
@@ -2485,7 +2485,7 @@ void DX9RENDER::ReleaseVertexBuffer(long id)
 }
 
 //################################################################################
-void DX9RENDER::ReleaseIndexBuffer(long id)
+void DX9RENDER::ReleaseIndexBuffer(int32_t id)
 {
     if (IndexBuffers[id].buff == nullptr)
         return;
@@ -2494,7 +2494,7 @@ void DX9RENDER::ReleaseIndexBuffer(long id)
     IndexBuffers[id].dwNumLocks = 0;
 }
 
-void DX9RENDER::SetTransform(long type, D3DMATRIX *mtx)
+void DX9RENDER::SetTransform(int32_t type, D3DMATRIX *mtx)
 {
     CMatrix m = *(CMatrix *)mtx;
     if (type == D3DTS_VIEW)
@@ -2521,7 +2521,7 @@ void DX9RENDER::SetTransform(long type, D3DMATRIX *mtx)
     CHECKD3DERR(d3d9->SetTransform(static_cast<D3DTRANSFORMSTATETYPE>(type), (D3DMATRIX *)&m));
 }
 
-void DX9RENDER::GetTransform(long type, D3DMATRIX *mtx)
+void DX9RENDER::GetTransform(int32_t type, D3DMATRIX *mtx)
 {
     CHECKD3DERR(d3d9->GetTransform(static_cast<D3DTRANSFORMSTATETYPE>(type), mtx));
 
@@ -2548,7 +2548,7 @@ bool DX9RENDER::CreateState(ENTITY_STATE_GEN *state_gen)
 bool DX9RENDER::LoadState(ENTITY_STATE *state)
 {
     // GUARD(DX9RENDER::Init)
-    // for(long t=0; t<MAX_STEXTURES; t++)    Textures[t].d3dtex = NULL;
+    // for(int32_t t=0; t<MAX_STEXTURES; t++)    Textures[t].d3dtex = NULL;
     // d3d = NULL;
     // d3d9 = NULL;
     // state->Struct(sizeof(screen_size),(char *)&screen_size);
@@ -2570,7 +2570,7 @@ void DX9RENDER::LostRender()
     Release(pOriginalScreenSurface);
     Release(pOriginalDepthSurface);
     Release(rectsVBuffer);
-    for (long b = 0; b < MAX_BUFFERS; b++)
+    for (int32_t b = 0; b < MAX_BUFFERS; b++)
     {
         if (VertexBuffers[b].buff)
         {
@@ -2629,7 +2629,7 @@ void DX9RENDER::RestoreRender()
     ClearPostProcessSurface(pOriginalScreenSurface);
     d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(RECT_VERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
                              RS_RECT_VERTEX_FORMAT, D3DPOOL_DEFAULT, &rectsVBuffer, nullptr);
-    for (long b = 0; b < MAX_BUFFERS; b++)
+    for (int32_t b = 0; b < MAX_BUFFERS; b++)
     {
         if (VertexBuffers[b].buff)
         {
@@ -2642,9 +2642,9 @@ void DX9RENDER::RestoreRender()
                                                 D3DPOOL_DEFAULT, &IndexBuffers[b].buff, NULL));
         }
     }
-    long num_stages;
+    int32_t num_stages;
     num_stages = 8;
-    for (long s = 0; s < num_stages; s++)
+    for (int32_t s = 0; s < num_stages; s++)
     {
         // texture operation
         SetTextureStageState(s, D3DTSS_COLORARG1, D3DTA_CURRENT);
@@ -2709,7 +2709,7 @@ bool DX9RENDER::ResetDevice()
     return true;
 }
 
-void DX9RENDER::SetGLOWParams(float _fBlurBrushSize, long _GlowIntensity, long _GlowPasses)
+void DX9RENDER::SetGLOWParams(float _fBlurBrushSize, int32_t _GlowIntensity, int32_t _GlowPasses)
 {
     fBlurSize = _fBlurBrushSize;
     GlowIntensity = _GlowIntensity;
@@ -2733,15 +2733,15 @@ void DX9RENDER::RunStart()
         const auto sx = static_cast<float>(screen_size.x);
         const auto sy = static_cast<float>(screen_size.y);
 
-        const auto fDX = static_cast<float>(static_cast<long>(sx * fSeaEffectSize));
-        const float fDY = static_cast<float>(static_cast<long>(sy * fSeaEffectSize));
+        const auto fDX = static_cast<float>(static_cast<int32_t>(sx * fSeaEffectSize));
+        const float fDY = static_cast<float>(static_cast<int32_t>(sy * fSeaEffectSize));
 
         const float sx2 = sx + fDX * 2.0f;
         const float sy2 = sy + fDY * 2.0f;
 
-        for (long y = 0; y < 32; y++)
+        for (int32_t y = 0; y < 32; y++)
         {
-            for (long x = 0; x < 32; x++)
+            for (int32_t x = 0; x < 32; x++)
             {
                 qv[x + y * 32].vPos =
                     Vector4(sx * static_cast<float>(x) / 31.0f, sy * static_cast<float>(y) / 31.0f, 0.0f, 1.0f);
@@ -2809,7 +2809,7 @@ void DX9RENDER::RunEnd()
     DX9EndScene();
     if (progressTexture >= 0)
     {
-        const long oldCnt = progressSafeCounter;
+        const int32_t oldCnt = progressSafeCounter;
         ProgressView();
         progressSafeCounter = oldCnt;
         if (progressSafeCounter >= 50)
@@ -2823,7 +2823,7 @@ void DX9RENDER::RunEnd()
 
 char Buff_4k[4096];
 
-long DX9RENDER::Print(long x, long y, const char *format, ...)
+int32_t DX9RENDER::Print(int32_t x, int32_t y, const char *format, ...)
 {
     // GUARD(DX9RENDER::Print)
     if (idFontCurrent < 0 || idFontCurrent >= nFontQuantity)
@@ -2840,7 +2840,7 @@ long DX9RENDER::Print(long x, long y, const char *format, ...)
     // UNGUARD
 }
 
-long DX9RENDER::Print(long nFontNum, uint32_t color, long x, long y, const char *format, ...)
+int32_t DX9RENDER::Print(int32_t nFontNum, uint32_t color, int32_t x, int32_t y, const char *format, ...)
 {
     // GUARD(DX9RENDER::Print)
     if (nFontNum < 0 || nFontNum >= nFontQuantity)
@@ -2855,13 +2855,13 @@ long DX9RENDER::Print(long nFontNum, uint32_t color, long x, long y, const char 
 
     FontList[nFontNum].font->StoreFontParameters();
     FontList[nFontNum].font->SetColor(color);
-    const long retVal = FontList[nFontNum].font->Print(x, y, Buff_4k);
+    const int32_t retVal = FontList[nFontNum].font->Print(x, y, Buff_4k);
     FontList[nFontNum].font->RestoreFontParameters();
     return retVal;
     // UNGUARD
 }
 
-long DX9RENDER::StringWidth(const char *string, long nFontNum, float fScale, long scrWidth)
+int32_t DX9RENDER::StringWidth(const char *string, int32_t nFontNum, float fScale, int32_t scrWidth)
 {
     if (nFontNum < 0 || nFontNum >= nFontQuantity)
         return 0;
@@ -2871,25 +2871,25 @@ long DX9RENDER::StringWidth(const char *string, long nFontNum, float fScale, lon
 
     pFont->StoreFontParameters();
 
-    const long xs = screen_size.x;
+    const int32_t xs = screen_size.x;
     if (scrWidth == 0)
         scrWidth = xs;
     if (xs != scrWidth)
         fScale *= static_cast<float>(xs) / scrWidth;
     pFont->SetScale(fScale);
 
-    const long retVal = pFont->GetStringWidth(string);
+    const int32_t retVal = pFont->GetStringWidth(string);
     pFont->RestoreFontParameters();
     return retVal;
 }
 
-long DX9RENDER::CharWidth(utf8::u8_char ch, long nFontNum, float fScale, long scrWidth)
+int32_t DX9RENDER::CharWidth(utf8::u8_char ch, int32_t nFontNum, float fScale, int32_t scrWidth)
 {
     std::string str(ch.b, ch.l);
     return StringWidth(str.c_str(), nFontNum, fScale, scrWidth);
 }
 
-long DX9RENDER::CharHeight(long fontID)
+int32_t DX9RENDER::CharHeight(int32_t fontID)
 {
     if (fontID < 0 || fontID >= nFontQuantity)
         return 0;
@@ -2899,8 +2899,8 @@ long DX9RENDER::CharHeight(long fontID)
     return FontList[fontID].font->GetHeight();
 }
 
-long DX9RENDER::ExtPrint(long nFontNum, uint32_t foreColor, uint32_t backColor, int wAlign, bool bShadow, float fScale,
-                         long scrWidth, long scrHeight, long x, long y, const char *format, ...)
+int32_t DX9RENDER::ExtPrint(int32_t nFontNum, uint32_t foreColor, uint32_t backColor, int wAlign, bool bShadow, float fScale,
+                         int32_t scrWidth, int32_t scrHeight, int32_t x, int32_t y, const char *format, ...)
 {
     // GUARD(DX9RENDER::ExtPrint)
 
@@ -2921,8 +2921,8 @@ long DX9RENDER::ExtPrint(long nFontNum, uint32_t foreColor, uint32_t backColor, 
     GetRenderTarget(&pRenderTarget);
     D3DSURFACE_DESC dscrSurface;
     pRenderTarget->GetDesc(&dscrSurface);
-    const long xs = dscrSurface.Width;
-    const long ys = dscrSurface.Height;
+    const int32_t xs = dscrSurface.Width;
+    const int32_t ys = dscrSurface.Height;
     pRenderTarget->Release();
     if (scrWidth == 0)
         scrWidth = xs;
@@ -2931,33 +2931,33 @@ long DX9RENDER::ExtPrint(long nFontNum, uint32_t foreColor, uint32_t backColor, 
     if (xs != scrWidth)
     {
         const float fHorzScale = static_cast<float>(xs) / scrWidth;
-        x = static_cast<long>(x * fHorzScale);
+        x = static_cast<int32_t>(x * fHorzScale);
         fScale *= fHorzScale;
     }
     if (ys != scrHeight)
-        y = static_cast<long>(y * (static_cast<float>(ys) / scrHeight));
+        y = static_cast<int32_t>(y * (static_cast<float>(ys) / scrHeight));
 
     switch (wAlign)
     {
     case PR_ALIGN_CENTER:
-        x -= static_cast<long>((pFont->GetStringWidth(Buff_4k) + 1L) / 2L * fScale);
+        x -= static_cast<int32_t>((pFont->GetStringWidth(Buff_4k) + 1L) / 2L * fScale);
         break;
     case PR_ALIGN_RIGHT:
-        x -= static_cast<long>(pFont->GetStringWidth(Buff_4k) * fScale);
+        x -= static_cast<int32_t>(pFont->GetStringWidth(Buff_4k) * fScale);
         break;
     }
 
     pFont->SetColor(foreColor);
     pFont->SetShadow(bShadow);
     pFont->SetScale(fScale);
-    const long retVal = pFont->Print(x, y, Buff_4k);
+    const int32_t retVal = pFont->Print(x, y, Buff_4k);
 
     pFont->RestoreFontParameters();
     return retVal;
     // UNGUARD
 }
 
-long DX9RENDER::LoadFont(const char *fontName)
+int32_t DX9RENDER::LoadFont(const char *fontName)
 {
     if (fontName == nullptr)
         return -1L;
@@ -2972,7 +2972,7 @@ long DX9RENDER::LoadFont(const char *fontName)
     fontName = _strupr(sDup);
     const uint32_t hashVal = hash_string(fontName);
 
-    long i;
+    int32_t i;
     for (i = 0; i < nFontQuantity; i++)
         if (FontList[i].hash == hashVal && _stricmp(FontList[i].name, fontName) == 0)
         {
@@ -3030,7 +3030,7 @@ bool DX9RENDER::UnloadFont(const char *fontName)
     return false;
 }
 
-bool DX9RENDER::UnloadFont(long fontID)
+bool DX9RENDER::UnloadFont(int32_t fontID)
 {
     if (fontID < 0 || fontID >= nFontQuantity)
         return false;
@@ -3051,7 +3051,7 @@ bool DX9RENDER::UnloadFont(long fontID)
     return true;
 }
 
-bool DX9RENDER::IncRefCounter(long fontID)
+bool DX9RENDER::IncRefCounter(int32_t fontID)
 {
     if (fontID < 0 || fontID >= nFontQuantity)
         return false;
@@ -3086,7 +3086,7 @@ bool DX9RENDER::SetCurFont(const char *fontName)
     return false;
 }
 
-bool DX9RENDER::SetCurFont(long fontID)
+bool DX9RENDER::SetCurFont(int32_t fontID)
 {
     if (fontID < 0 || fontID >= nFontQuantity)
         return false;
@@ -3094,7 +3094,7 @@ bool DX9RENDER::SetCurFont(long fontID)
     return true;
 }
 
-long DX9RENDER::GetCurFont()
+int32_t DX9RENDER::GetCurFont()
 {
     if (idFontCurrent >= 0 && idFontCurrent < nFontQuantity)
         return idFontCurrent;
@@ -3450,7 +3450,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
             const float sizey = rect.fSize * fScaleY;
             const float sn = sinf(rect.fAngle);
             const float cs = cosf(rect.fAngle);
-            const long color = rect.dwColor;
+            const int32_t color = rect.dwColor;
             float u1, v1, u2, v2;
             if (!bUseSubTextures)
             {
@@ -3972,7 +3972,7 @@ void DX9RENDER::PlayToTexture()
     }
 }
 
-HRESULT DX9RENDER::ImageBlt(long TextureID, RECT *pDstRect, RECT *pSrcRect)
+HRESULT DX9RENDER::ImageBlt(int32_t TextureID, RECT *pDstRect, RECT *pSrcRect)
 {
     struct F3DVERTEX
     {
@@ -4047,7 +4047,7 @@ HRESULT DX9RENDER::ImageBlt(long TextureID, RECT *pDstRect, RECT *pSrcRect)
 
 HRESULT DX9RENDER::ImageBlt(const char *pName, RECT *pDstRect, RECT *pSrcRect)
 {
-    long TextureID;
+    int32_t TextureID;
     TextureID = TextureCreate(pName);
     const HRESULT hRes = ImageBlt(TextureID, pDstRect, pSrcRect);
     TextureRelease(TextureID);
@@ -4063,7 +4063,7 @@ void DX9RENDER::SetProgressImage(const char *image)
             progressImage[0] = 0;
         return;
     }
-    const long s = strlen(image) + 1;
+    const int32_t s = strlen(image) + 1;
     if (s > progressImageSize)
     {
         progressImageSize = s;
@@ -4081,7 +4081,7 @@ void DX9RENDER::SetProgressBackImage(const char *image)
             progressBackImage[0] = 0;
         return;
     }
-    const long s = strlen(image) + 1;
+    const int32_t s = strlen(image) + 1;
     if (s > progressBackImageSize)
     {
         progressBackImageSize = s;
@@ -4099,7 +4099,7 @@ void DX9RENDER::SetTipsImage(const char *image)
             progressTipsImage[0] = 0;
         return;
     }
-    const long s = strlen(image) + 1;
+    const int32_t s = strlen(image) + 1;
     if (s > progressTipsImageSize)
     {
         progressTipsImageSize = s;
@@ -4122,7 +4122,7 @@ void DX9RENDER::StartProgressView()
         // Loading the texture
         loadFrame = 0;
         isInPViewProcess = true;
-        const long t = TextureCreate("Loading\\progress.tga");
+        const int32_t t = TextureCreate("Loading\\progress.tga");
         isInPViewProcess = false;
         if (t < 0)
         {
@@ -4183,7 +4183,7 @@ void DX9RENDER::ProgressView()
         return;
     // Analyzing time
     const uint32_t time = GetTickCount();
-    if (abs(static_cast<long>(progressUpdateTime - time)) < 50)
+    if (abs(static_cast<int32_t>(progressUpdateTime - time)) < 50)
         return;
     progressUpdateTime = time;
     isInPViewProcess = true;
@@ -4301,11 +4301,11 @@ void DX9RENDER::ProgressView()
     v[3].y = pos.y + size.y + 0.5f;
     v[3].y = pos.y + size.y + 0.5f;
     // Frame grid size
-    long sizeX = progressFramesCountX;
-    long sizeY = progressFramesCountY;
+    int32_t sizeX = progressFramesCountX;
+    int32_t sizeY = progressFramesCountY;
     // Position of the current frame
-    long fx = loadFrame % sizeX;
-    long fy = loadFrame / sizeY;
+    int32_t fx = loadFrame % sizeX;
+    int32_t fy = loadFrame / sizeY;
     v[0].u = fx / float(sizeX);
     v[0].v = fy / float(sizeY);
     v[1].u = (fx + 1.0f) / float(sizeX);
@@ -4542,7 +4542,7 @@ const CMatrix &DX9RENDER::GetProjection()
     return mProjection;
 }
 
-IDirect3DBaseTexture9 *DX9RENDER::GetTextureFromID(long nTextureID)
+IDirect3DBaseTexture9 *DX9RENDER::GetTextureFromID(int32_t nTextureID)
 {
     if (nTextureID < 0)
         return nullptr;

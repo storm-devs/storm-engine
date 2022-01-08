@@ -405,7 +405,7 @@ inline void Quaternion::Set(const Matrix &mtx)
     }
     else
     {
-        long i, j, k;
+        int32_t i, j, k;
         if (mtx.m[1][1] > mtx.m[0][0])
         {
             if (mtx.m[2][2] > mtx.m[1][1])

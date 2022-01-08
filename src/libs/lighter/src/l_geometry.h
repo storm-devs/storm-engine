@@ -30,7 +30,7 @@ class LGeometry
         char *nameReal; // Model name
         MODEL *m;       // Pointer to the model
         entid_t model;  // Model
-        long lBufSize;  // Color buffer size for this model
+        int32_t lBufSize;  // Color buffer size for this model
     };
 
     // --------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ class LGeometry
     // Add object
     void AddObject(const char *name, entid_t model);
     // Process data
-    bool Process(VDX9RENDER *rs, long numLights);
+    bool Process(VDX9RENDER *rs, int32_t numLights);
     // Draw normals
     void DrawNormals(VDX9RENDER *rs);
     // Update colors in buffers
@@ -58,20 +58,20 @@ class LGeometry
     bool Save();
 
     std::vector<Object> object;
-    long numObjects;
-    long maxObjects;
+    int32_t numObjects;
+    int32_t maxObjects;
 
     std::vector<Vertex> vrt;
-    long numVrt;
-    long maxVrt;
+    int32_t numVrt;
+    int32_t maxVrt;
 
     std::vector<Triangle> trg;
-    long numTrg;
-    long maxTrg;
+    int32_t numTrg;
+    int32_t maxTrg;
 
     std::vector<VertexBuffer> vbuffer;
-    long numVBuffers;
-    long maxVBuffers;
+    int32_t numVBuffers;
+    int32_t maxVBuffers;
 
     lighter::Shadow *shadows;
 

@@ -134,7 +134,7 @@ void WM_INTERFACE::MakeControl()
         ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
 }
 
-void WM_INTERFACE::ExecuteCommand(long command)
+void WM_INTERFACE::ExecuteCommand(int32_t command)
 {
     switch (command)
     {
@@ -193,17 +193,17 @@ void WM_INTERFACE::UpdateCommandList() const
         m_pCommandList->Update(GetCurrentCommandTopLine(), GetCurrentCommandCharacterIndex(), GetCurrentCommandMode());
 }
 
-long WM_INTERFACE::GetCurrentCommandTopLine() const
+int32_t WM_INTERFACE::GetCurrentCommandTopLine() const
 {
     return m_pShipIcon->GetLineY(0) + m_nCommandListVerticalOffset;
 }
 
-long WM_INTERFACE::GetCurrentCommandCharacterIndex() const
+int32_t WM_INTERFACE::GetCurrentCommandCharacterIndex() const
 {
     return m_nMainCharIndex;
 }
 
-long WM_INTERFACE::GetCurrentCommandMode() const
+int32_t WM_INTERFACE::GetCurrentCommandMode() const
 {
     return m_nCommandMode;
 }

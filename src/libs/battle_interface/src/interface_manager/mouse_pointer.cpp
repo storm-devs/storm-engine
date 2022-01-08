@@ -56,12 +56,12 @@ void MousePointer::InitMouseCursors()
         return;
 
     const size_t q = pACursors->GetAttributesNum();
-    for (long n = 0; n < q; n++)
+    for (int32_t n = 0; n < q; n++)
     {
         auto *pA = pACursors->GetAttributeClass(n);
         if (pA)
         {
-            const long i = pA->GetAttributeAsDword("index", -1);
+            const int32_t i = pA->GetAttributeAsDword("index", -1);
             if (i >= 0 && i < BI_CURSORS_QUANTITY)
             {
                 m_aCursors[i].offset.x = pA->GetAttributeAsDword("xoffset", 0);
@@ -102,7 +102,7 @@ void MousePointer::MoveCursor()
 
 void MousePointer::SetCurrentCursor()
 {
-    const long nNewCursor = BI_CURSOR_COMMON;
+    const int32_t nNewCursor = BI_CURSOR_COMMON;
 
     if (nNewCursor != m_nCurrentCursor)
     {
@@ -126,8 +126,8 @@ void MousePointer::SetCurrentCursor()
 RECT MousePointer::GetCurrentCursorIconPos() const
 {
     RECT pos;
-    pos.left = static_cast<long>(m_mousepos.x) + m_aCursors[m_nCurrentCursor].offset.x;
-    pos.top = static_cast<long>(m_mousepos.y) + m_aCursors[m_nCurrentCursor].offset.y;
+    pos.left = static_cast<int32_t>(m_mousepos.x) + m_aCursors[m_nCurrentCursor].offset.x;
+    pos.top = static_cast<int32_t>(m_mousepos.y) + m_aCursors[m_nCurrentCursor].offset.y;
     pos.right = pos.left + m_cursorsize.x;
     pos.bottom = pos.top + m_cursorsize.y;
     return pos;

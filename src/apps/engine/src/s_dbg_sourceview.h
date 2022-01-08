@@ -41,7 +41,7 @@ class SOURCE_VIEW
     uint32_t nStartSelection, nEndSelection;
     CURSOR_POS Cursor;
 
-    void DoStep(long iCount);
+    void DoStep(int32_t iCount);
 
   public:
     std::vector<std::string> aStrings;

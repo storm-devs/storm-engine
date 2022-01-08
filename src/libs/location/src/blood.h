@@ -25,8 +25,8 @@ class Blood : public Entity
 
     struct BloodInfo
     {
-        long nStartIdx;
-        long nIdxQ;
+        int32_t nStartIdx;
+        int32_t nIdxQ;
         float fLiveTime;
         CVECTOR cpos;
     };
@@ -68,27 +68,27 @@ class Blood : public Entity
         }
     }
 
-    static bool AddClipPoligon(const CVECTOR *v, long nv);
+    static bool AddClipPoligon(const CVECTOR *v, int32_t nv);
 
   protected:
     VDX9RENDER *pRS;
     COLLIDE *pCol;
-    long texID;
+    int32_t texID;
 
     BloodTriangle pvBloodT[MAX_BLOOD_TRIANGLES];
-    long nStartT;
-    long nUsedTQ;
+    int32_t nStartT;
+    int32_t nUsedTQ;
 
     std::vector<BloodInfo> aBlood;
 
     std::vector<entid_t> aModels;
 
     static ClipTriangle clipT[MAX_CLIPPING_TRIANGLES];
-    static long nClipTQ;
+    static int32_t nClipTQ;
     static CVECTOR normal;
 
     void AddBlood(const CVECTOR &pos);
     void BuildBloodDataByCollision(const CVECTOR &cpos);
     void SetVertexByPos(BloodVertex &v, const CVECTOR &pos, const CVECTOR &vc, float fU0, float fV0);
-    long CheckBloodQuantityInRadius(const CVECTOR &cpos, float fDist, long nLimitQ);
+    int32_t CheckBloodQuantityInRadius(const CVECTOR &cpos, float fDist, int32_t nLimitQ);
 };

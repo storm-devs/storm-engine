@@ -19,7 +19,7 @@ void InterfaceBackScene::LightParam::UpdateParams(float fTime)
 {
     auto fK = 0.f;
     fColorTimer += fTime;
-    long jjj = 0;
+    int32_t jjj = 0;
     while (fColorTimer > fColorPeriod + fAddPeriod)
     {
         if (fColorTimer > fAddPeriodMax * 10.0f)
@@ -255,7 +255,7 @@ void InterfaceBackScene::Execute(uint32_t Delta_Time)
     if (nOldMenuIndex != m_nSelectMenuIndex)
         core.Event(ISOUND_EVENT, "l", 2); // choosing a new node
 
-    /*    for( long n=0; n<m_apAniModel; n++ )
+    /*    for( int32_t n=0; n<m_apAniModel; n++ )
       {
         if( m_apAniModel[n]->pModel )
           m_apAniModel[n]->pModel->Execute( Delta_Time );
@@ -264,7 +264,7 @@ void InterfaceBackScene::Execute(uint32_t Delta_Time)
 
 void InterfaceBackScene::Realize(uint32_t Delta_Time)
 {
-    long n;
+    int32_t n;
 
     ProcessedFlys(Delta_Time * .001f);
 
@@ -473,7 +473,7 @@ bool InterfaceBackScene::FindLocator(const char *pcLocName, CMatrix *pMtx, CVECT
 {
     if (!pcLocName || !m_pLocators)
         return false;
-    for (long n = 0; n < 100; n++)
+    for (int32_t n = 0; n < 100; n++)
     {
         auto *pNod = m_pLocators->GetNode(n);
         if (!pNod)
@@ -481,7 +481,7 @@ bool InterfaceBackScene::FindLocator(const char *pcLocName, CMatrix *pMtx, CVECT
         GEOS::INFO ginf;
         pNod->geo->GetInfo(ginf);
         GEOS::LABEL lbl;
-        for (long l = 0; l < ginf.nlabels; l++)
+        for (int32_t l = 0; l < ginf.nlabels; l++)
         {
             pNod->geo->GetLabel(l, lbl);
             if (lbl.name && _stricmp(pcLocName, lbl.name) == 0)
@@ -512,7 +512,7 @@ void InterfaceBackScene::SetLocatorPosition(MODEL *pModel, const char *pcLocName
     pos = 0.f;
     if (pModel && pcLocName)
     {
-        for (long n = 0; n < 100; n++)
+        for (int32_t n = 0; n < 100; n++)
         {
             auto *const pNod = pModel->GetNode(n);
             if (!pNod)
@@ -520,7 +520,7 @@ void InterfaceBackScene::SetLocatorPosition(MODEL *pModel, const char *pcLocName
             GEOS::INFO ginf;
             pNod->geo->GetInfo(ginf);
             GEOS::LABEL lbl;
-            for (long l = 0; l < ginf.nlabels; l++)
+            for (int32_t l = 0; l < ginf.nlabels; l++)
             {
                 pNod->geo->GetLabel(l, lbl);
                 if (lbl.name && _stricmp(pcLocName, lbl.name) == 0)
@@ -544,7 +544,7 @@ void InterfaceBackScene::ReleaseMenuList()
     m_aMenuDescr.clear();
 }
 
-void InterfaceBackScene::CreateMenuList(long nStartIndex, ATTRIBUTES *pAMenu)
+void InterfaceBackScene::CreateMenuList(int32_t nStartIndex, ATTRIBUTES *pAMenu)
 {
     ReleaseMenuList();
     if (!pAMenu)
@@ -552,8 +552,8 @@ void InterfaceBackScene::CreateMenuList(long nStartIndex, ATTRIBUTES *pAMenu)
 
     ATTRIBUTES *pA;
     CMatrix mtx;
-    const long q = pAMenu->GetAttributesNum();
-    for (long n = 0; n < q; n++)
+    const int32_t q = pAMenu->GetAttributesNum();
+    for (int32_t n = 0; n < q; n++)
     {
         pA = pAMenu->GetAttributeClass(n);
         if (!pA)
@@ -576,7 +576,7 @@ void InterfaceBackScene::CreateMenuList(long nStartIndex, ATTRIBUTES *pAMenu)
 
 void InterfaceBackScene::ChooseNextMenu()
 {
-    long n;
+    int32_t n;
     for (n = m_nSelectMenuIndex + 1; n < m_aMenuDescr.size(); n++)
         if (m_aMenuDescr[n]->bSelectable)
             break;
@@ -586,7 +586,7 @@ void InterfaceBackScene::ChooseNextMenu()
 
 void InterfaceBackScene::ChoosePrevMenu()
 {
-    long n;
+    int32_t n;
     for (n = m_nSelectMenuIndex - 1; n >= 0; n--)
         if (m_aMenuDescr[n]->bSelectable)
             break;
@@ -594,14 +594,14 @@ void InterfaceBackScene::ChoosePrevMenu()
         m_nSelectMenuIndex = n;
 }
 
-void InterfaceBackScene::SetNewMenu(long nNewSelectIndex)
+void InterfaceBackScene::SetNewMenu(int32_t nNewSelectIndex)
 {
     if (nNewSelectIndex < 0 || nNewSelectIndex >= m_aMenuDescr.size() || !m_aMenuDescr[nNewSelectIndex]->bSelectable)
         return;
     m_nSelectMenuIndex = nNewSelectIndex;
 }
 
-void InterfaceBackScene::SetMenuSelectableState(long nMenuIndex, bool bSelectable)
+void InterfaceBackScene::SetMenuSelectableState(int32_t nMenuIndex, bool bSelectable)
 {
     if (nMenuIndex < 0 || nMenuIndex >= m_aMenuDescr.size())
         return;
@@ -613,14 +613,14 @@ void InterfaceBackScene::SetMenuSelectableState(long nMenuIndex, bool bSelectabl
         m_aMenuDescr[nMenuIndex]->bSelectable = false;
 }
 
-void InterfaceBackScene::ExecuteMenu(long nMenuIndex)
+void InterfaceBackScene::ExecuteMenu(int32_t nMenuIndex)
 {
     if (nMenuIndex < 0 || nMenuIndex >= m_aMenuDescr.size())
         return;
     core.PostEvent("backgroundcommand", 1, "s", m_aMenuDescr[nMenuIndex]->sEventName.c_str());
 }
 
-long InterfaceBackScene::CheckMousePos(float fX, float fY)
+int32_t InterfaceBackScene::CheckMousePos(float fX, float fY)
 {
     float fW = static_cast<float>(XINTERFACE::pThis->GetScreenWidth());
     auto fH = static_cast<float>(XINTERFACE::pThis->GetScreenHeight());
@@ -642,7 +642,7 @@ long InterfaceBackScene::CheckMousePos(float fX, float fY)
     CVECTOR vStart = mtxView.Pos();
     CVECTOR vEnd = vStart + vDir * 300.f;
 
-    for (long n = 0; n < m_aMenuDescr.size(); n++)
+    for (int32_t n = 0; n < m_aMenuDescr.size(); n++)
         if (m_aMenuDescr[n]->bSelectable && m_aMenuDescr[n]->pActive &&
             m_aMenuDescr[n]->pActive->Trace(vStart, vEnd) <= 1.f)
             return n;
@@ -746,19 +746,19 @@ void InterfaceBackScene::InitLight(ATTRIBUTES *pAParam)
 
 void InterfaceBackScene::SetLight()
 {
-    long nFreeLightIndex = 0;
+    int32_t nFreeLightIndex = 0;
     D3DCAPS9 d3dcaps;
     m_pRS->GetDeviceCaps(&d3dcaps);
 
-    for (long n = 0; n < m_aLights.size(); n++)
+    for (int32_t n = 0; n < m_aLights.size(); n++)
     {
         if (m_aLights[n]->bUse)
         {
             BOOL bTmp;
-            for (; nFreeLightIndex < static_cast<long>(d3dcaps.MaxActiveLights); nFreeLightIndex++)
+            for (; nFreeLightIndex < static_cast<int32_t>(d3dcaps.MaxActiveLights); nFreeLightIndex++)
                 if (m_pRS->GetLightEnable(nFreeLightIndex, &bTmp) && bTmp == false)
                     break;
-            if (nFreeLightIndex < static_cast<long>(d3dcaps.MaxActiveLights))
+            if (nFreeLightIndex < static_cast<int32_t>(d3dcaps.MaxActiveLights))
             {
                 // found a free source
                 m_aLights[n]->indexLight = nFreeLightIndex;
@@ -775,7 +775,7 @@ void InterfaceBackScene::SetLight()
 
 void InterfaceBackScene::RestoreLight()
 {
-    for (long n = 0; n < m_aLights.size(); n++)
+    for (int32_t n = 0; n < m_aLights.size(); n++)
     {
         if (m_aLights[n]->bUse)
         {
@@ -789,7 +789,7 @@ void InterfaceBackScene::RestoreLight()
     }
 }
 
-void InterfaceBackScene::FlareShow(long idx)
+void InterfaceBackScene::FlareShow(int32_t idx)
 {
     CVECTOR pos, ang;
     m_pRS->GetCamera(pos, ang, ang.x);
@@ -1005,7 +1005,7 @@ void InterfaceBackScene::AddLampFlys(CVECTOR &pos)
     numFly += flys[numFlys].num;
     fly.resize(numFly);
     // of each fly
-    for (long i = 0; i < flys[numFlys].num; i++)
+    for (int32_t i = 0; i < flys[numFlys].num; i++)
     {
         ParticleFly &f = fly[flys[numFlys].start + i];
         f.ax = rand() * PIm2 / RAND_MAX;
@@ -1038,7 +1038,7 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
     const float day = dltTime * 1.4f;
     const float da = dltTime * 5.6f;
     // calculate
-    for (long i = 0; i < numFlys; i++)
+    for (int32_t i = 0; i < numFlys; i++)
     {
         // Coefficient of visibility
         CVECTOR dir = cam - flys[i].pos;
@@ -1054,7 +1054,7 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
             k = 1.0f;
         // Updating flies
         ParticleFly *fl = &fly[flys[i].start];
-        for (long j = 0; j < flys[i].num; j++)
+        for (int32_t j = 0; j < flys[i].num; j++)
         {
             ParticleFly &f = fl[j];
             // Angles
@@ -1087,7 +1087,7 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
                 cs = 0.0f;
             if (cs > 1.0f)
                 cs = 1.0f;
-            f.color = static_cast<long>(cs * 255.0f);
+            f.color = static_cast<int32_t>(cs * 255.0f);
             f.color |= (f.color << 16) | (f.color << 8);
             // Frame
             f.frame += dltTime * f.k * 25.0f;
@@ -1101,16 +1101,16 @@ void InterfaceBackScene::ProcessedFlys(float dltTime)
     DrawParticles(fly.data(), numFly, sizeof(ParticleFly), flyTex, "LocFly", true, 4);
 }
 
-void InterfaceBackScene::DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx,
-                                       long numU)
+void InterfaceBackScene::DrawParticles(void *prts, int32_t num, int32_t size, int32_t texture, const char *tech, bool isEx,
+                                       int32_t numU)
 {
     CMatrix camMtx;
     m_pRS->GetTransform(D3DTS_VIEW, camMtx);
     m_pRS->SetTransform(D3DTS_VIEW, CMatrix());
     m_pRS->SetTransform(D3DTS_WORLD, CMatrix());
     m_pRS->TextureSet(0, texture);
-    long n = 0;
-    for (long i = 0; i < num; i++)
+    int32_t n = 0;
+    for (int32_t i = 0; i < num; i++)
     {
         auto *parts = static_cast<Particle *>(prts);
         prts = static_cast<char *>(prts) + size;
@@ -1118,7 +1118,7 @@ void InterfaceBackScene::DrawParticles(void *prts, long num, long size, long tex
         const float size = parts->size * 0.5f;
         const float sn = sinf(parts->angle);
         const float cs = cosf(parts->angle);
-        long color = (static_cast<long>(parts->alpha) << 24);
+        int32_t color = (static_cast<int32_t>(parts->alpha) << 24);
         if (!isEx)
             color |= 0x00ffffff;
         else
@@ -1128,7 +1128,7 @@ void InterfaceBackScene::DrawParticles(void *prts, long num, long size, long tex
         if (isEx && numU)
         {
             u2 = 1.0f / static_cast<float>(numU);
-            u1 = static_cast<long>(static_cast<ParticleEx *>(parts)->frame) * u2;
+            u1 = static_cast<int32_t>(static_cast<ParticleEx *>(parts)->frame) * u2;
             u2 += u1;
         }
         buffer[n * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), size * (sn + cs), 0.0f);

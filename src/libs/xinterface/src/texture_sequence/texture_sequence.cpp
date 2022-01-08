@@ -135,8 +135,8 @@ bool TextureSequence::FrameUpdate()
 
 void TextureSequence::ToTextureRender(float blendValue) const
 {
-    const auto newTFactor = ARGB(static_cast<long>(255.f * blendValue), static_cast<long>(255.f * blendValue),
-                                 static_cast<long>(255.f * blendValue), static_cast<long>(255.f * blendValue));
+    const auto newTFactor = ARGB(static_cast<int32_t>(255.f * blendValue), static_cast<int32_t>(255.f * blendValue),
+                                 static_cast<int32_t>(255.f * blendValue), static_cast<int32_t>(255.f * blendValue));
 
     // set texture as render target
     IDirect3DSurface9 *pRenderTarg = nullptr, *pOldRenderTarg = nullptr;

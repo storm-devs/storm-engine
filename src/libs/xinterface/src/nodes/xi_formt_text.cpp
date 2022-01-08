@@ -9,7 +9,7 @@ static void SubRightWord(char *buf, int fontNum, int width, VDX9RENDER *rs)
 {
     if (buf == nullptr)
         return;
-    const long bufSize = strlen(buf);
+    const int32_t bufSize = strlen(buf);
     for (auto *pEnd = buf + bufSize; pEnd > buf; pEnd--)
     {
         if (*pEnd == ' ')
@@ -158,9 +158,9 @@ void CXI_FORMATEDTEXT::Draw(bool bSelected, uint32_t Delta_Time)
             else
             {
                 auto nX = m_nPrintLeftOffset;
-                std::vector<long> anWidth;
-                long nAllWidth = 0;
-                for (long n = 0; n < sd->m_tags.size(); n++)
+                std::vector<int32_t> anWidth;
+                int32_t nAllWidth = 0;
+                for (int32_t n = 0; n < sd->m_tags.size(); n++)
                 {
                     auto nCurWidth = m_rs->StringWidth((char *)sd->m_tags[n].str.c_str(), m_idFont, m_fFontScale);
                     anWidth.push_back(nCurWidth);
@@ -170,7 +170,7 @@ void CXI_FORMATEDTEXT::Draw(bool bSelected, uint32_t Delta_Time)
                     nX -= nAllWidth / 2;
                 if (m_nAlignment == PR_ALIGN_RIGHT)
                     nX -= nAllWidth;
-                for (long n = 0; n < sd->m_tags.size(); n++)
+                for (int32_t n = 0; n < sd->m_tags.size(); n++)
                 {
                     m_rs->ExtPrint(m_idFont, sd->m_tags[n].dwColor, 0, PR_ALIGN_LEFT, true, m_fFontScale,
                                    m_screenSize.x, m_screenSize.y, nX, curY, "%s", sd->m_tags[n].str.c_str());
@@ -313,7 +313,7 @@ int CXI_FORMATEDTEXT::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_FORMATEDTEXT::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_FORMATEDTEXT::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (m_bFrized)
     {
@@ -342,7 +342,7 @@ bool CXI_FORMATEDTEXT::IsClick(int buttonID, long xPos, long yPos)
 
     if (!m_bSelectableCursor)
         return true;
-    const long nNum = static_cast<long>((yPos - m_rect.top) / m_vertOffset + .1f);
+    const int32_t nNum = static_cast<int32_t>((yPos - m_rect.top) / m_vertOffset + .1f);
     if (nNum < 0 || nNum >= m_allStrings)
         return true;
 
@@ -368,7 +368,7 @@ void CXI_FORMATEDTEXT::ChangePosition(XYRECT &rNewPos)
 
     m_nCompareWidth = m_rect.right - m_rect.left - m_leftOffset;
     if (m_nAlignment == PR_ALIGN_CENTER)
-        m_nPrintLeftOffset = m_leftOffset + static_cast<long>((m_rect.left + m_rect.right - m_leftOffset) * .5f);
+        m_nPrintLeftOffset = m_leftOffset + static_cast<int32_t>((m_rect.left + m_rect.right - m_leftOffset) * .5f);
     else if (m_nAlignment == PR_ALIGN_RIGHT)
         m_nPrintLeftOffset = m_rect.right - m_leftOffset;
     else
@@ -435,7 +435,7 @@ void CXI_FORMATEDTEXT::ChangePosition(XYRECT &rNewPos)
         m_rs->UnLockVertexBuffer(m_idVBuf);
     }
 
-    m_allStrings = static_cast<long>(static_cast<float>(m_rect.bottom - m_rect.top) / m_vertOffset);
+    m_allStrings = static_cast<int32_t>(static_cast<float>(m_rect.bottom - m_rect.top) / m_vertOffset);
 }
 
 void CXI_FORMATEDTEXT::SaveParametersToIni()
@@ -487,7 +487,7 @@ void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     m_leftOffset = GetIniLong(ini1, name1, ini2, name2, "leftoffset");
     m_nCompareWidth = m_rect.right - m_rect.left - m_leftOffset;
     if (m_nAlignment == PR_ALIGN_CENTER)
-        m_nPrintLeftOffset = m_leftOffset + static_cast<long>((m_rect.left + m_rect.right - m_leftOffset) * .5f);
+        m_nPrintLeftOffset = m_leftOffset + static_cast<int32_t>((m_rect.left + m_rect.right - m_leftOffset) * .5f);
     else if (m_nAlignment == PR_ALIGN_RIGHT)
         m_nPrintLeftOffset = m_rect.right - m_leftOffset;
     else
@@ -598,7 +598,7 @@ void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         m_vertOffset = 10;
 
     // counting the number of lines displayed on the screen
-    m_allStrings = static_cast<long>(static_cast<float>(m_rect.bottom - m_rect.top) / m_vertOffset);
+    m_allStrings = static_cast<int32_t>(static_cast<float>(m_rect.bottom - m_rect.top) / m_vertOffset);
 
     // get golors
     m_dwColor = GetIniARGB(ini1, name1, ini2, name2, "color", ARGB(255, 128, 128, 128));
@@ -674,7 +674,7 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, const char *&pInStr, char *buf, 
     if (lineSize > 0)
     {
         // fill the buffer without tags
-        long i, j;
+        int32_t i, j;
         for (i = 0, j = 0; i < lineSize && i < bufSize - 1; i++)
         {
             if (pStart[i] == '<')
@@ -699,13 +699,13 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, const char *&pInStr, char *buf, 
         buf[j] = 0; // zero denotes the end of the line
 
         // if the string is large, then cut it
-        const long strWidth = m_rs->StringWidth(buf, fontNum);
+        const int32_t strWidth = m_rs->StringWidth(buf, fontNum);
         if (strWidth > m_nCompareWidth)
         {
             SubRightWord(buf, fontNum, m_nCompareWidth, m_rs);
         }
 
-        const long q = strlen(buf); // this is the length of the line without tags
+        const int32_t q = strlen(buf); // this is the length of the line without tags
         for (i = 0, j = 0; j < q; i++)
         {
             if (pStart[i] == '<')
@@ -777,7 +777,7 @@ void CXI_FORMATEDTEXT::GetOneLine(int fontNum, const char *pStr, char *buf, int 
 
     strncpy_s(buf, bufSize, pStart, lineSize);
     buf[lineSize] = 0;
-    long strWidth = m_rs->StringWidth(buf, fontNum);
+    int32_t strWidth = m_rs->StringWidth(buf, fontNum);
 
     while (lineSize > 0 && strWidth > m_nCompareWidth)
     {
@@ -809,8 +809,8 @@ void CXI_FORMATEDTEXT::SetFormatedText(const char *str)
 void CXI_FORMATEDTEXT::SetPointer(float fPos)
 {
     if (m_bSelectableCursor)
-        SetVertexToNewGroup(true, FindUpGroup(static_cast<long>(m_nStringGroupQuantity * fPos)),
-                            FindDownGroup(static_cast<long>(m_nStringGroupQuantity * fPos)));
+        SetVertexToNewGroup(true, FindUpGroup(static_cast<int32_t>(m_nStringGroupQuantity * fPos)),
+                            FindDownGroup(static_cast<int32_t>(m_nStringGroupQuantity * fPos)));
     else
     {
         m_listCur = m_listRoot;
@@ -860,15 +860,15 @@ void CXI_FORMATEDTEXT::SetColor(uint32_t dwCol) const
     }
 }
 
-long CXI_FORMATEDTEXT::GetAllHeight()
+int32_t CXI_FORMATEDTEXT::GetAllHeight()
 {
-    long n = 0;
+    int32_t n = 0;
     for (STRING_DESCRIBER *sd = m_listRoot; sd; sd = sd->next, n++)
         ;
     return m_vertOffset * n;
 }
 
-long CXI_FORMATEDTEXT::AddFormatedText(const char *str)
+int32_t CXI_FORMATEDTEXT::AddFormatedText(const char *str)
 {
     if (str == nullptr)
         return 0;
@@ -883,7 +883,7 @@ long CXI_FORMATEDTEXT::AddFormatedText(const char *str)
 
     char newStr[512];
     auto pstr = str;
-    long textQ = 0;
+    int32_t textQ = 0;
     bool tagState = false;
     uint32_t tagColor = m_dwColor;
     // decompose the resulting string into lines that fit into the output area
@@ -974,7 +974,7 @@ void CXI_FORMATEDTEXT::MakeTagChecking(bool &tagState, uint32_t &tagColor, uint3
                 if (_strnicmp(str, "<color=", 7) == 0)
                 {
                     tagState = true;
-                    long a = 255, r = 255, g = 255, b = 255;
+                    int32_t a = 255, r = 255, g = 255, b = 255;
                     sscanf(&str[7], "%d,%d,%d,%d", &a, &r, &g, &b);
                     tagColor = ARGB(a, r, g, b);
                     q = str - tagBegin;
@@ -991,7 +991,7 @@ void CXI_FORMATEDTEXT::MakeTagChecking(bool &tagState, uint32_t &tagColor, uint3
             char tmp[512];
             if (q > sizeof(tmp) - 1)
                 q = sizeof(tmp) - 1;
-            long n;
+            int32_t n;
             for (n = 0; n < q; n++)
             {
                 tmp[n] = tagBegin[n];
@@ -1011,7 +1011,7 @@ void CXI_FORMATEDTEXT::MakeTagChecking(bool &tagState, uint32_t &tagColor, uint3
         char tmp[512];
         if (q > sizeof(tmp) - 1)
             q = sizeof(tmp) - 1;
-        long n;
+        int32_t n;
         for (n = 0; n < q; n++)
         {
             tmp[n] = tagBegin[n];
@@ -1025,7 +1025,7 @@ void CXI_FORMATEDTEXT::MakeTagChecking(bool &tagState, uint32_t &tagColor, uint3
     }
 }
 
-uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_FORMATEDTEXT::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -1043,7 +1043,7 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
 
     case 1: // set the pointer to the specified text in the list (by its number)
     {
-        const long nGrNum = message.Long();
+        const int32_t nGrNum = message.Long();
         if (m_bSelectableCursor)
             SetVertexToNewGroup(true, FindUpGroup(nGrNum), FindDownGroup(nGrNum));
         CheckScrollButtons();
@@ -1178,8 +1178,8 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
 
     case 12: // find out the vertical coordinate of the required line
     {
-        const long n = message.Long();
-        long curY = m_rect.top + m_nVAlignmentOffset;
+        const int32_t n = message.Long();
+        int32_t curY = m_rect.top + m_nVAlignmentOffset;
         int i = 0;
         for (STRING_DESCRIBER *sd = m_listCur; sd != nullptr && i < m_allStrings; sd = sd->next, i++)
         {
@@ -1199,12 +1199,12 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(long msgcode, MESSAGE &message)
     return 0;
 }
 
-long CXI_FORMATEDTEXT::FindUpGroup(long grNum)
+int32_t CXI_FORMATEDTEXT::FindUpGroup(int32_t grNum)
 {
     STRING_DESCRIBER *dscrTmp = m_listCur;
     if (dscrTmp == nullptr)
         return 0;
-    long upPos = 0;
+    int32_t upPos = 0;
     if (grNum < 0)
         grNum = 0;
     if (grNum >= m_nStringGroupQuantity)
@@ -1225,12 +1225,12 @@ long CXI_FORMATEDTEXT::FindUpGroup(long grNum)
     return upPos;
 }
 
-long CXI_FORMATEDTEXT::FindDownGroup(long grNum)
+int32_t CXI_FORMATEDTEXT::FindDownGroup(int32_t grNum)
 {
     STRING_DESCRIBER *dscrTmp = m_listCur;
     if (dscrTmp == nullptr)
         return 0;
-    long upPos = 0;
+    int32_t upPos = 0;
     if (grNum < 0)
         grNum = 0;
     if (grNum >= m_nStringGroupQuantity)
@@ -1250,7 +1250,7 @@ long CXI_FORMATEDTEXT::FindDownGroup(long grNum)
     return upPos - 1;
 }
 
-void CXI_FORMATEDTEXT::SetVertexToNewGroup(bool bUpDirect, long upIdx, long downIdx)
+void CXI_FORMATEDTEXT::SetVertexToNewGroup(bool bUpDirect, int32_t upIdx, int32_t downIdx)
 {
     int i;
 
@@ -1325,7 +1325,7 @@ void CXI_FORMATEDTEXT::MouseThis(float fX, float fY)
     return;
     if (!m_bSelectableCursor)
         return;
-    long nNum = static_cast<long>((fY - m_rect.top) / m_vertOffset + .1f);
+    int32_t nNum = static_cast<int32_t>((fY - m_rect.top) / m_vertOffset + .1f);
     if (nNum < 0 || nNum >= m_allStrings)
         return;
 
@@ -1455,7 +1455,7 @@ void CXI_FORMATEDTEXT::SetSpecialStrings(ATTRIBUTES *pARoot)
 
 void CXI_FORMATEDTEXT::ControlSyncronouseNodes()
 {
-    for (long n = 0; n < static_cast<long>(m_asSyncNodes.size()); n++)
+    for (int32_t n = 0; n < static_cast<int32_t>(m_asSyncNodes.size()); n++)
     {
         CINODE *pNode = static_cast<XINTERFACE *>(EntityManager::GetEntityPointer(g_idInterface))
                             ->FindNode(m_asSyncNodes[n].c_str(), nullptr);
@@ -1473,14 +1473,14 @@ void CXI_FORMATEDTEXT::ControlSyncronouseNodes()
     }
 }
 
-long CXI_FORMATEDTEXT::GetFirstGroupNum()
+int32_t CXI_FORMATEDTEXT::GetFirstGroupNum()
 {
     if (!m_listCur)
         return 0;
     return m_listCur->strGroup;
 }
 
-void CXI_FORMATEDTEXT::SetCurrentGroupNum(long nFirstNum, long nSelectNum)
+void CXI_FORMATEDTEXT::SetCurrentGroupNum(int32_t nFirstNum, int32_t nSelectNum)
 {
     STRING_DESCRIBER *pSD;
     for (pSD = m_listRoot; pSD; pSD = pSD->next)
@@ -1493,7 +1493,7 @@ void CXI_FORMATEDTEXT::SetCurrentGroupNum(long nFirstNum, long nSelectNum)
     // m_nCurGroupNum
 }
 
-void CXI_FORMATEDTEXT::ReplaceString(long nGrpNum, const char *pSrcStr)
+void CXI_FORMATEDTEXT::ReplaceString(int32_t nGrpNum, const char *pSrcStr)
 {
     if (nGrpNum < 0)
         return;
@@ -1542,7 +1542,7 @@ void CXI_FORMATEDTEXT::ReplaceString(long nGrpNum, const char *pSrcStr)
     }
 }
 
-void CXI_FORMATEDTEXT::InsertStringBefore(STRING_DESCRIBER *pNextDescr, const char *pSrcStr, long nGrpNum,
+void CXI_FORMATEDTEXT::InsertStringBefore(STRING_DESCRIBER *pNextDescr, const char *pSrcStr, int32_t nGrpNum,
                                           uint32_t dwColor)
 {
     if (!pNextDescr)
@@ -1550,7 +1550,7 @@ void CXI_FORMATEDTEXT::InsertStringBefore(STRING_DESCRIBER *pNextDescr, const ch
 
     char newStr[512];
     auto pstr = pSrcStr;
-    long textQ = 0;
+    int32_t textQ = 0;
 
     // decompose the resulting string into lines that fit into the output area
     while (GetLineNext(m_idFont, pstr, newStr, sizeof(newStr)))
@@ -1629,7 +1629,7 @@ void CXI_FORMATEDTEXT::ScrollerUpdate()
     static_cast<CXI_SCROLLER *>(pNode)->LinkNodeChanged(GetCurPos());
 }
 
-void CXI_FORMATEDTEXT::VAlignment(long nAlign)
+void CXI_FORMATEDTEXT::VAlignment(int32_t nAlign)
 {
     if (nAlign == 1)
     {

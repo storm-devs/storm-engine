@@ -39,7 +39,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
     const auto code = message.Long();
 
     CVECTOR pos, angles;
-    long lifetime;
+    int32_t lifetime;
 
     switch (code)
     {

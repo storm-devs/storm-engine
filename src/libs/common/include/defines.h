@@ -33,6 +33,11 @@ inline uint32_t HashNoCase(const char *str)
 #define _FL __FILE__, __LINE__
 #define _FILELINE_ _FL_
 
+struct IPOINT
+{
+    int32_t x, y;
+};
+
 struct FPOINT
 {
     float x, y;

@@ -15,7 +15,7 @@ void CXI_SCROLLEDPICTURE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     CXI_PICTURE::Draw(bSelected, Delta_Time);
 
-    for (long n = 0; n < m_aImg.size(); n++)
+    for (int32_t n = 0; n < m_aImg.size(); n++)
     {
         if (m_aImg[n].bShow)
         {
@@ -42,7 +42,7 @@ void CXI_SCROLLEDPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini
     if (m_fpBaseSize.y <= 0.f)
         m_fpBaseSize.y = 1.f;
 
-    long n;
+    int32_t n;
     char keyName[128];
     m_aScale.clear();
     for (n = 1; n < 20; n++)
@@ -64,15 +64,15 @@ void CXI_SCROLLEDPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini
         auto *pAttr = pAttribute->GetAttributeClass("imagelist");
         if (pAttr)
         {
-            const long q = pAttr->GetAttributesNum();
+            const int32_t q = pAttr->GetAttributesNum();
             for (n = 0; n < q; n++)
             {
                 auto *pA = pAttr->GetAttributeClass(n);
                 if (pA)
                 {
-                    // long i = m_aImg.Add();
+                    // int32_t i = m_aImg.Add();
                     m_aImg.push_back(BuildinImage{});
-                    const long i = m_aImg.size() - 1;
+                    const int32_t i = m_aImg.size() - 1;
                     m_aImg[i].bShow = false;
                     m_aImg[i].fpPos.x = pA->GetAttributeAsFloat("x", 0.f);
                     m_aImg[i].fpPos.y = pA->GetAttributeAsFloat("y", 0.f);
@@ -86,8 +86,8 @@ void CXI_SCROLLEDPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini
                     {
                         m_aImg[i].pImg->LoadFromBase(pcGroupName, pA->GetAttribute("pic"), true);
                         if (m_aImg[i].fpSize.x > 0.f && m_aImg[i].fpSize.y > 0.f)
-                            m_aImg[i].pImg->SetSize(static_cast<long>(m_aImg[i].fpSize.x),
-                                                    static_cast<long>(m_aImg[i].fpSize.y));
+                            m_aImg[i].pImg->SetSize(static_cast<int32_t>(m_aImg[i].fpSize.x),
+                                                    static_cast<int32_t>(m_aImg[i].fpSize.y));
                     }
                     else
                     {
@@ -119,7 +119,7 @@ int CXI_SCROLLEDPICTURE::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_SCROLLEDPICTURE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_SCROLLEDPICTURE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (buttonID == MOUSE_RBUTTON)
     {
@@ -156,7 +156,7 @@ void CXI_SCROLLEDPICTURE::SetNewPictureFromDir(char *dirName)
     CXI_PICTURE::SetNewPictureFromDir(dirName);
 }
 
-uint32_t CXI_SCROLLEDPICTURE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_SCROLLEDPICTURE::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -250,7 +250,7 @@ void CXI_SCROLLEDPICTURE::RecalculateTexPerPixel()
 
 void CXI_SCROLLEDPICTURE::UpdateBuildenImages()
 {
-    for (long n = 0; n < m_aImg.size(); n++)
+    for (int32_t n = 0; n < m_aImg.size(); n++)
     {
         m_aImg[n].bShow = false;
 
@@ -261,7 +261,7 @@ void CXI_SCROLLEDPICTURE::UpdateBuildenImages()
             continue;
         fx = m_v[0].pos.x + (fx - m_v[0].tu) / m_fUTexPerPixel;
         fy = m_v[0].pos.y + (fy - m_v[0].tv) / m_fVTexPerPixel;
-        m_aImg[n].pImg->SetPosition(static_cast<long>(fx), static_cast<long>(fy), IPType_Center);
+        m_aImg[n].pImg->SetPosition(static_cast<int32_t>(fx), static_cast<int32_t>(fy), IPType_Center);
         m_aImg[n].bShow = true;
     }
 }
@@ -298,7 +298,7 @@ void CXI_SCROLLEDPICTURE::SetPosToCenter(float fX, float fY)
     ChangeUV(frNewUV);
 }
 
-void CXI_SCROLLEDPICTURE::SetScale(long nScaleIdx)
+void CXI_SCROLLEDPICTURE::SetScale(int32_t nScaleIdx)
 {
     if (nScaleIdx < 0 || nScaleIdx >= m_aScale.size())
         return;

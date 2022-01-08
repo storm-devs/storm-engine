@@ -61,7 +61,7 @@ class Triangle
     // Get triangle
     Plane GetPlane() const;
     // The plane passing through the face (p [start], p [NextIndex (start)])
-    Plane OrtoPlane(long start) const;
+    Plane OrtoPlane(int32_t start) const;
     // The plane passing through the face (p [0], p [1])
     Plane OrtoPlane01() const;
     // The plane passing through the face (p [1], p [2])
@@ -69,9 +69,9 @@ class Triangle
     // The plane passing through the face (p [2], p [0])
     Plane OrtoPlane20() const;
     // Get previous index of triangle vertex
-    static long PrevIndex(long index);
+    static int32_t PrevIndex(int32_t index);
     // Get the next vertex index of a triangle
-    static long NextIndex(long index);
+    static int32_t NextIndex(int32_t index);
 
     // Find the nearest point in a triangle to a given one, lying in the plane of the triangle, true - inside the
     // triangle
@@ -100,7 +100,7 @@ class Triangle
     CoIntersectionResult IsCoplanarIntersection(const Triangle &t, float intsEps = 0.0000001f) const;
 
   private:
-    static long z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], long count);
+    static int32_t z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], int32_t count);
 };
 
 // ===========================================================
@@ -183,7 +183,7 @@ inline Plane Triangle::GetPlane() const
 }
 
 // Plane passing through the face (p [start% 2], p [(start + 1)% 2])
-inline Plane Triangle::OrtoPlane(long start) const
+inline Plane Triangle::OrtoPlane(int32_t start) const
 {
     Plane plane;
     // Vertices
@@ -215,7 +215,7 @@ inline Plane Triangle::OrtoPlane20() const
 }
 
 // Get previous index of triangle vertex
-inline long Triangle::PrevIndex(long index)
+inline int32_t Triangle::PrevIndex(int32_t index)
 {
     index--;
     if (index < 0)
@@ -226,7 +226,7 @@ inline long Triangle::PrevIndex(long index)
 }
 
 // Get the next vertex index of a triangle
-inline long Triangle::NextIndex(long index)
+inline int32_t Triangle::NextIndex(int32_t index)
 {
     index++;
     if (index < 0)
@@ -240,7 +240,7 @@ inline long Triangle::NextIndex(long index)
 inline bool Triangle::FindClosestPoint(const Vector &trgNormal, Vector &pointOnPlane) const
 {
     const Vector *cPoint = nullptr;
-    for (long i = 0; i < 3; i++)
+    for (int32_t i = 0; i < 3; i++)
     {
         // Edge
         const auto &ps = p[i];
@@ -327,7 +327,7 @@ inline Triangle::CoIntersectionResult Triangle::IsCoplanarIntersection(const Tri
     poly1[0] = t.p1;
     poly1[1] = t.p2;
     poly1[2] = t.p3;
-    long count = 3;
+    int32_t count = 3;
     count = z_sysClipTriangleEdgePlane(Plane(!(n ^ (p1 - p2)), p1), poly1, poly2, count);
     if (!count)
         return cir_coplanar;
@@ -337,7 +337,7 @@ inline Triangle::CoIntersectionResult Triangle::IsCoplanarIntersection(const Tri
     count = z_sysClipTriangleEdgePlane(Plane(!(n ^ (p3 - p1)), p3), poly1, poly2, count);
     if (!count)
         return cir_coplanar;
-    for (long s = 0; s < count; s++)
+    for (int32_t s = 0; s < count; s++)
     {
         const auto e = s + 1 < count ? s + 1 : 0;
         const auto dist = ~(poly2[e] - poly2[s]);
@@ -347,11 +347,11 @@ inline Triangle::CoIntersectionResult Triangle::IsCoplanarIntersection(const Tri
     return cir_intersection;
 }
 
-inline long Triangle::z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], long count)
+inline int32_t Triangle::z_sysClipTriangleEdgePlane(Plane plane, Vector src[8], Vector dst[8], int32_t count)
 {
     float ds = plane * src[0], de;
-    long c = 0;
-    for (long s = 0; s < count; s++, ds = de)
+    int32_t c = 0;
+    for (int32_t s = 0; s < count; s++, ds = de)
     {
         // If in the area, add a vertex
         if (ds <= 0.0f)

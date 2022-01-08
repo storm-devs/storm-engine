@@ -47,8 +47,8 @@ class CameraFollow
     // Estimate the radius in the desired direction for 1 sec
     float FindRadius(float curAng) const;
     // Consider polygon in radius search
-    static bool ApplyPoly(const CVECTOR *v, long n);
-    static void ApplyPolyFindNearest(EdgeInfo *e, long ne, const CVECTOR &pos);
+    static bool ApplyPoly(const CVECTOR *v, int32_t n);
+    static void ApplyPolyFindNearest(EdgeInfo *e, int32_t ne, const CVECTOR &pos);
     // Change radius
     void ChangeRadius(float dltTime, float radius);
     // Find the acceleration of camera stop when corner collision with patch

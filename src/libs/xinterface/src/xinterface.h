@@ -29,9 +29,9 @@ class XINTERFACE : public XINTERFACE_BASE
     bool bDisableControl;
 
     // context help
-    long m_nInterfaceMode;
+    int32_t m_nInterfaceMode;
     uint32_t m_dwContHelpColor;
-    long m_idHelpTexture;
+    int32_t m_idHelpTexture;
     FXYRECT m_frectHelpTextureUV;
     char *m_strDefHelpTextureFile;
     FXYRECT m_frectDefHelpTextureUV;
@@ -46,21 +46,21 @@ class XINTERFACE : public XINTERFACE_BASE
     float m_fWaveAmplitude;
     float m_fWavePhase;
     float m_fWaveSpeed;
-    long m_nBlendStepMax;
-    long m_nBlendSpeed;
+    int32_t m_nBlendStepMax;
+    int32_t m_nBlendSpeed;
     XYRECT GlobalRect;
     FXYPOINT m_fpMouseOutZoneOffset;
     //-------------------------------------
 
     // mouse data
     bool m_bShowMouse;
-    long lock_x, lock_y; // center position for mouse pointer
+    int32_t lock_x, lock_y; // center position for mouse pointer
     float fXMousePos, fYMousePos;
-    long m_lXMouse, m_lYMouse; // mouse pointer corrector for calculate active point
+    int32_t m_lXMouse, m_lYMouse; // mouse pointer corrector for calculate active point
     POINT MouseSize;
-    long m_idTex;
+    int32_t m_idTex;
     XI_ONLYONETEX_VERTEX vMouse[4];
-    long m_lMouseSensitive;
+    int32_t m_lMouseSensitive;
     bool m_bMouseClick;
     bool m_bDblMouseClick;
     int m_idButton;
@@ -102,16 +102,16 @@ class XINTERFACE : public XINTERFACE_BASE
         }
     }
 
-    void CreateNode(const char *sFileName, const char *sNodeType, const char *sNodeName, long priority = 80);
+    void CreateNode(const char *sFileName, const char *sNodeType, const char *sNodeName, int32_t priority = 80);
     void SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const char *sNodeType, const char *sNodeName,
-                         long priority);
+                         int32_t priority);
     void DeleteNode(const char *pcNodeName);
     CINODE *NewNode(const char *pcNodType);
 
     void SetTooltip(const char *pcHeader, const char *pcText1, uint32_t dwTextColor1, const char *pcText2,
                     uint32_t dwTextColor2, const char *pcText3, uint32_t dwTextColor3, const char *pcText4,
                     uint32_t dwTextColor4, const char *pcPicTextureName, const char *pcPicGroupName,
-                    const char *pcPicImageName, long nPicWidth, long nPicHeight);
+                    const char *pcPicImageName, int32_t nPicWidth, int32_t nPicHeight);
 
     static storm::QuestFileReader *GetQuestFileReader()
     {
@@ -163,8 +163,8 @@ class XINTERFACE : public XINTERFACE_BASE
         return FXYPOINT(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse);
     }
 
-    long PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol, uint32_t dwBCol, long align, bool shadow,
-                         float scale, long sxs, long sys, long left, long top, const char *str,
+    int32_t PrintIntoWindow(int32_t wl, int32_t wr, int32_t idFont, uint32_t dwFCol, uint32_t dwBCol, int32_t align, bool shadow,
+                         float scale, int32_t sxs, int32_t sys, int32_t left, int32_t top, const char *str,
                          int nWidthForScaleCorrecting = -1, int nSplit = 0) override;
 
     CINODE *FindNode(const char *sNodeName, CINODE *findRoot) override
@@ -188,7 +188,7 @@ class XINTERFACE : public XINTERFACE_BASE
 
     struct LocksInfo
     {
-        long nSaveCode;
+        int32_t nSaveCode;
         std::vector<CINODE *> aNode;
 
         LocksInfo()
@@ -199,15 +199,15 @@ class XINTERFACE : public XINTERFACE_BASE
 
     std::vector<LocksInfo> m_aLocksArray;
 
-    long StoreNodeLocksWithOff();
-    void RestoreNodeLocks(long nStoreIdx);
+    int32_t StoreNodeLocksWithOff();
+    void RestoreNodeLocks(int32_t nStoreIdx);
 
-    long GetScreenWidth() const
+    int32_t GetScreenWidth() const
     {
         return dwScreenWidth;
     }
 
-    long GetScreenHeight() const
+    int32_t GetScreenHeight() const
     {
         return dwScreenHeight;
     }
@@ -222,11 +222,11 @@ class XINTERFACE : public XINTERFACE_BASE
     CINODE *m_pMonocracyNode;
     GIEditor *m_pEditor;
     bool m_bNotFirstPress;
-    long m_nPressDelay;
-    long m_nMaxPressDelay;
+    int32_t m_nPressDelay;
+    int32_t m_nMaxPressDelay;
 
-    long m_nMouseLastClickTimeCur;
-    long m_nMouseLastClickTimeMax;
+    int32_t m_nMouseLastClickTimeCur;
+    int32_t m_nMouseLastClickTimeMax;
 
     bool m_bUse;
 
@@ -236,7 +236,7 @@ class XINTERFACE : public XINTERFACE_BASE
     void ShowContextHelp();
 
     // draw function
-    void DrawNode(CINODE *nod, uint32_t Delta_Time, long startPrior = 0, long endPrior = 32000) const;
+    void DrawNode(CINODE *nod, uint32_t Delta_Time, int32_t startPrior = 0, int32_t endPrior = 32000) const;
     void ShowPrevTexture();
     // initialisation function
     void LoadIni();
@@ -249,18 +249,18 @@ class XINTERFACE : public XINTERFACE_BASE
     void MouseMove();
     void MouseClick(bool bFirstClick);
     void MouseDeClick();
-    CINODE *GetClickNode(CINODE *searchNod, long xPos, long yPos) const;
+    CINODE *GetClickNode(CINODE *searchNod, int32_t xPos, int32_t yPos) const;
     // release function
     void ReleaseOld();
     void ReleaseDinamicPic(const char *sPicName);
     // save load functions
     bool SFLB_DoSaveFileData(const char *saveName, const char *saveData) const;
-    bool SFLB_GetSaveFileData(const char *saveName, long bufSize, char *buf);
-    char *SaveFileFind(long saveNum, char *buffer, size_t bufSize, long &fileSize);
+    bool SFLB_GetSaveFileData(const char *saveName, int32_t bufSize, char *buf);
+    char *SaveFileFind(int32_t saveNum, char *buffer, size_t bufSize, int32_t &fileSize);
     bool NewSaveFileName(const char *fileName) const;
     void DeleteSaveFile(const char *fileName);
     // node control
-    void AddNodeToList(CINODE *nod, long priority = 80);
+    void AddNodeToList(CINODE *nod, int32_t priority = 80);
     // locked function
     void SetExclusiveNode(CINODE *nod);
     void AddExclusiveNode(CINODE *nod);
@@ -301,7 +301,7 @@ class XINTERFACE : public XINTERFACE_BASE
     struct SAVE_FIND_DATA
     {
         char *save_file_name;
-        long file_size;
+        int32_t file_size;
         std::filesystem::file_time_type time;
 
         SAVE_FIND_DATA *next;
@@ -336,8 +336,8 @@ class XINTERFACE : public XINTERFACE_BASE
         char *sImageName;
         char *sPicture;
         char *sTechniqueName;
-        long idTexture;
-        long imageID;
+        int32_t idTexture;
+        int32_t imageID;
         bool doBlind;
         uint32_t argbBlindMin;
         uint32_t argbBlindMax;
@@ -351,7 +351,7 @@ class XINTERFACE : public XINTERFACE_BASE
     {
         char *sEventName;
         char *sNodeName;
-        long nCommandIndex;
+        int32_t nCommandIndex;
         EVENT_Entity *next;
 
         EVENT_Entity()
@@ -374,14 +374,14 @@ class XINTERFACE : public XINTERFACE_BASE
 
     // previouse texture & draw to texturer data
     bool m_bShowPrevTexture; // exchange one interface to other
-    long m_ChangeType;       // exchange type
+    int32_t m_ChangeType;       // exchange type
     float m_fAngle;
-    long m_nBlendColor;
+    int32_t m_nBlendColor;
     IDirect3DTexture9 *m_pTexture;
     IDirect3DTexture9 *m_pPrevTexture;
 
     // vertex & index data
-    long vBuf, iBuf;
+    int32_t vBuf, iBuf;
     uint32_t nVert, nIndx;
 
     // blind parameters

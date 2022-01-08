@@ -41,7 +41,7 @@ void PARTICLE_SYSTEM::LinkToObject(entid_t id, CVECTOR _LinkPos)
 {
 }
 
-void PARTICLE_SYSTEM::SetDelay(long _delay)
+void PARTICLE_SYSTEM::SetDelay(int32_t _delay)
 {
 }
 

@@ -43,6 +43,6 @@ class CharacterAnimationKipper : public Entity
     Animation *aniMan;
     Animation *aniWoman;
 
-    long lockTextures[16];
-    long numLTextures;
+    int32_t lockTextures[16];
+    int32_t numLTextures;
 };

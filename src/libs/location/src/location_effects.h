@@ -71,8 +71,8 @@ class LocationEffects : public Entity
     {
         CVECTOR pos;
         float radius;
-        long start;
-        long num;
+        int32_t start;
+        int32_t num;
     };
 
     struct ParticleSG : public Particle
@@ -119,8 +119,8 @@ class LocationEffects : public Entity
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    void DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx = false,
-                       long numU = 0);
+    void DrawParticles(void *prts, int32_t num, int32_t size, int32_t texture, const char *tech, bool isEx = false,
+                       int32_t numU = 0);
 
   private:
     VDX9RENDER *rs;
@@ -132,8 +132,8 @@ class LocationEffects : public Entity
     void ProcessedChrSplash(float dltTime);
 
     ChrSplash chrSplash[4];
-    long chrSplashRefCounter;
-    long splashesTxt;
+    int32_t chrSplashRefCounter;
+    int32_t splashesTxt;
 
     // ---------------------------------------------------
     // Flies near laterns
@@ -143,11 +143,11 @@ class LocationEffects : public Entity
     void ProcessedFlys(float dltTime);
 
     std::vector<LampFlys> flys;
-    long numFlys;
-    long maxFlys;
+    int32_t numFlys;
+    int32_t maxFlys;
     std::vector<ParticleFly> fly;
-    long numFly;
-    long flyTex;
+    int32_t numFly;
+    int32_t flyTex;
 
     // ---------------------------------------------------
     // Shotgun particles
@@ -161,15 +161,15 @@ class LocationEffects : public Entity
 
     ParticleSG smoke[64];
     bool isShgInited;
-    long numSmoke;
-    long texSmoke;
+    int32_t numSmoke;
+    int32_t texSmoke;
     ParticleSG flinders[256];
-    long numFlinders;
-    long texFlinders;
+    int32_t numFlinders;
+    int32_t texFlinders;
     ParticleSG blood[256];
-    long numBlood;
-    long texBlood;
-    long texHor;
+    int32_t numBlood;
+    int32_t texBlood;
+    int32_t texHor;
 
     Vertex buffer[256 * 6];
 };

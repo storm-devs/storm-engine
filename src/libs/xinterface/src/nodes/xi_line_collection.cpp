@@ -60,7 +60,7 @@ void CXI_LINECOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2
             if (bRelativeRect)
                 GetRelativeRect(scrRect);
 
-            // long n = m_aLines.Add();
+            // int32_t n = m_aLines.Add();
             // m_aLines.Add();
             // m_aLines[n].dwColor = m_aLines[n+1].dwColor = dwCol;
             // m_aLines[n].vPos.z = m_aLines[n+1].vPos.z = 1.f;
@@ -80,7 +80,7 @@ void CXI_LINECOLLECTION::ReleaseAll()
     m_aLines.clear();
 }
 
-bool CXI_LINECOLLECTION::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_LINECOLLECTION::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -106,7 +106,7 @@ void CXI_LINECOLLECTION::SaveParametersToIni()
     // m_rect.bottom );     pIni->WriteString( m_nodeName, "position", pcWriteParam );
 }
 
-uint32_t CXI_LINECOLLECTION::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_LINECOLLECTION::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -114,9 +114,9 @@ uint32_t CXI_LINECOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     {
         const uint32_t dwColor = message.Long();
         const auto nLineNum = message.Long();
-        if (nLineNum < 0 || nLineNum >= static_cast<long>(m_aLines.size()) / 2)
+        if (nLineNum < 0 || nLineNum >= static_cast<int32_t>(m_aLines.size()) / 2)
         {
-            for (long n = 0; n < m_aLines.size(); n++)
+            for (int32_t n = 0; n < m_aLines.size(); n++)
                 m_aLines[n].dwColor = dwColor;
         }
         else
@@ -131,10 +131,10 @@ uint32_t CXI_LINECOLLECTION::MessageProc(long msgcode, MESSAGE &message)
         const auto nLeft = message.Long();
         const auto nTop = message.Long();
         const auto nRight = message.Long();
-        const long nBottom = message.Long();
-        // long nLineNum = m_aLines.Add() / 2;
+        const int32_t nBottom = message.Long();
+        // int32_t nLineNum = m_aLines.Add() / 2;
         // m_aLines.Add();
-        const long nLineNum = m_aLines.size() / 2;
+        const int32_t nLineNum = m_aLines.size() / 2;
         m_aLines.resize(m_aLines.size() + 2);
         m_aLines[nLineNum * 2].dwColor = m_aLines[nLineNum * 2 + 1].dwColor = dwColor;
         m_aLines[nLineNum * 2].vPos.z = m_aLines[nLineNum * 2 + 1].vPos.z = 1.f;

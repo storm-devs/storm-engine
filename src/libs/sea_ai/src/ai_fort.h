@@ -51,7 +51,7 @@ class AIFort : public VAI_OBJBASE
 
             void Fire(const CVECTOR &vPos) override{};
 
-            float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override
+            float Cannon_Trace(int32_t iBallOwner, const CVECTOR &src, const CVECTOR &dst) override
             {
                 return 2.0f;
             };
@@ -61,7 +61,7 @@ class AIFort : public VAI_OBJBASE
                 return 2.0f;
             };
 
-            bool Clip(const PLANE *planes, long nplanes, const CVECTOR &vCenter, float radius,
+            bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &vCenter, float radius,
                       ADD_POLYGON_FUNC addpoly) override
             {
                 return false;
@@ -276,7 +276,7 @@ class AIFort : public VAI_OBJBASE
     // Ships lights
     IShipLights *pShipsLights;
 
-    void AddFortHit(long iCharacterIndex, CVECTOR &vHitPos);
+    void AddFortHit(int32_t iCharacterIndex, CVECTOR &vHitPos);
     float GetSpeedV0(uint32_t dwFortIndex);
     bool ScanFortForCannons(AI_FORT *pFort, char *pModelsDir, char *pLocatorsName) const;
     bool AddFort(ATTRIBUTES *pIslandAP, ATTRIBUTES *pFortAP, ATTRIBUTES *pFortCharacter, entid_t eidModel,
@@ -328,7 +328,7 @@ class AIFort : public VAI_OBJBASE
     // inherit functions COLLISION_OBJECT
     float Trace(const CVECTOR &vSrc, const CVECTOR &vDst) override;
 
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &vCenter, float radius,
+    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &vCenter, float radius,
               ADD_POLYGON_FUNC addpoly) override
     {
         return false;
@@ -345,7 +345,7 @@ class AIFort : public VAI_OBJBASE
     };
 
     // inherit functions CANNON_TRACE_BASE
-    float Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst) override;
+    float Cannon_Trace(int32_t iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst) override;
 
     // inherit functions VAI_OBJBASE
     ATTRIBUTES *GetACharacter() override;

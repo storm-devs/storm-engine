@@ -46,7 +46,7 @@ void WdmCamera::Init(float defAy, float defHeight)
 {
     const auto pi2 = 2.0f * 3.14159265f;
     const auto k = defAy / pi2;
-    ang.y = (k - static_cast<long>(k)) * pi2;
+    ang.y = (k - static_cast<int32_t>(k)) * pi2;
     if (defHeight < WDM_CAMERA_HEIGHT_MIN)
         defHeight = WDM_CAMERA_HEIGHT_MIN;
     if (defHeight > WDM_CAMERA_HEIGHT_MAX)

@@ -39,7 +39,7 @@ WdmCloud::WdmCloud()
     lightningWaitTime = 0.0f;
     curLightning = -1;
     // Rain
-    for (long i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
+    for (int32_t i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
     {
         rain[i].isLive = false;
     }
@@ -72,7 +72,7 @@ void WdmCloud::Update(float dltTime)
     Move(dltTime);
     // Time to move particles inside the cloud
     const auto dlt = dltTime * 0.1f;
-    for (long i = 0; i < numRects; i++)
+    for (int32_t i = 0; i < numRects; i++)
     {
         rect[i].vPos = pos + move[i].pos;
         rect[i].vPos.y = WdmStormCloudHeight;
@@ -89,7 +89,7 @@ void WdmCloud::Update(float dltTime)
         if (c < 40.0f)
             c = 40.0f;
         c *= constAlpha * globalAlpha;
-        rect[i].dwColor = (static_cast<long>(c) << 24) | (rect[i].dwColor & 0xffffff);
+        rect[i].dwColor = (static_cast<int32_t>(c) << 24) | (rect[i].dwColor & 0xffffff);
         // Moving the Particle
         move[i].dTime += dlt;
         move[i].pos += move[i].v * dlt;
@@ -169,7 +169,7 @@ void WdmCloud::Update(float dltTime)
         }
     }
     // Rain
-    for (long i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
+    for (int32_t i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
     {
         auto &r = rain[i];
         if (!r.isLive)
@@ -201,7 +201,7 @@ void WdmCloud::Update(float dltTime)
     rainBurnTime -= dltTime;
     if (rainBurnTime <= 0.0f)
     {
-        for (long i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
+        for (int32_t i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
         {
             auto &r = rain[i];
             if (!r.isLive)
@@ -237,10 +237,10 @@ void WdmCloud::Move(float dltTime)
     pos += dir * dltTime;
 }
 
-long WdmCloud::FillRain(RS_RECT *rainRect, long rcnt)
+int32_t WdmCloud::FillRain(RS_RECT *rainRect, int32_t rcnt)
 {
     // Draw rain
-    for (long i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
+    for (int32_t i = 0; i < sizeof(rain) / sizeof(rain[0]); i++)
     {
         auto &r = rain[i];
         if (!r.isLive)
@@ -266,7 +266,7 @@ void WdmCloud::Render(VDX9RENDER *rs)
     Vertex lght[4];
     rs->TextureSet(0, lightning);
     const uint32_t lightningColor = (static_cast<uint8_t>(globalAlpha * 255.0f) << 24) | 0x00ffffff;
-    for (long i = 0; i < numRects; i++)
+    for (int32_t i = 0; i < numRects; i++)
     {
         auto &r = rect[i];
         if (r.dwColor & 0x0000ff00)
@@ -329,11 +329,11 @@ void WdmCloud::Render(VDX9RENDER *rs)
     rs->DrawRects(rect, numRects, "WdmClouds", 2, 2);
 }
 
-void WdmCloud::BuildCloud(long n)
+void WdmCloud::BuildCloud(int32_t n)
 {
     curMove = 0;
     numRects = 0;
-    for (long i = 0; i < n; i++, numRects++)
+    for (int32_t i = 0; i < n; i++, numRects++)
     {
         FindPartPos(move[i].pos);
         const uint32_t sz = rand() & 0xff;

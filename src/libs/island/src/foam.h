@@ -84,10 +84,10 @@ class CoastFoam : public Entity
         float fMove[2];
         float fSX[2];
         float fSpeed[2], fBraking[2];
-        long iMode[2];
-        long iTexture;
+        int32_t iMode[2];
+        int32_t iTexture;
         std::string sTexture;
-        long iNumFoams;
+        int32_t iNumFoams;
 
         FOAMTYPE Type;
 
@@ -98,17 +98,17 @@ class CoastFoam : public Entity
         float fTexScaleX;
     };
 
-    long iEditFoam, iEditFoamPart, iEditFoamVertex;
+    int32_t iEditFoam, iEditFoamPart, iEditFoamVertex;
     bool bEditMode, bMoved, bCanEdit;
     float fCursorPosX, fCursorPosY;
-    long iFoamTexture, iCursorTex;
+    int32_t iFoamTexture, iCursorTex;
     SEA_BASE *pSea;
     std::vector<Foam *> aFoams;
-    long iVBuffer, iIBuffer;
+    int32_t iVBuffer, iIBuffer;
     PLANE *pFrustumPlanes;
 
     float fMaxFoamDistance, fFoamDeltaY;
-    long iFoamDivides;
+    int32_t iFoamDivides;
 
     uint32_t dwNumPenasExecuted;
 
@@ -123,7 +123,7 @@ class CoastFoam : public Entity
     void clear();
 
     void InitNewFoam(Foam *pF);
-    void RecalculateFoam(long iFoam);
+    void RecalculateFoam(int32_t iFoam);
     void ExecuteFoamType2(Foam *pF, float fDeltaTime);
     void ExecuteFoamType1(Foam *pF, float fDeltaTime);
 };

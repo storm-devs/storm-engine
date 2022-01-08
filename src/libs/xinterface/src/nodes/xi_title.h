@@ -14,7 +14,7 @@ class CXI_TITLE : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -29,21 +29,21 @@ class CXI_TITLE : public CINODE
 
   protected:
     char *m_sGroupName;
-    long m_idTex; // texture identity
+    int32_t m_idTex; // texture identity
 
-    long m_idString;
+    int32_t m_idString;
     XYPOINT m_StringCenter;
     uint32_t m_fontColor;
     uint32_t m_backColor;
     float m_fontScale;
-    long m_fontID;
+    int32_t m_fontID;
 
-    long m_idVBuf; // vertex buffer identificator
-    long m_idIBuf; // index buffer identificator
-    long m_nVert;  // vertex quantity
-    long m_nIndx;  // index quantity
+    int32_t m_idVBuf; // vertex buffer identificator
+    int32_t m_idIBuf; // index buffer identificator
+    int32_t m_nVert;  // vertex quantity
+    int32_t m_nIndx;  // index quantity
 
-    long m_nStringWidth;
+    int32_t m_nStringWidth;
     XYRECT m_mRect, m_tRect;
-    long m_nTiledQuantity;
+    int32_t m_nTiledQuantity;
 };

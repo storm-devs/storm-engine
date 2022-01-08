@@ -14,20 +14,20 @@ class BIShipCommandList : public BICommandList
   protected:
     void Release();
 
-    long ShipAdding(bool allLabel, bool bMyShip, bool bEnemy, bool bNeutral, bool bFriend);
-    long FortAdding(bool allLabel, bool bFriend, bool bNeutral, bool bEnemy);
-    long LandAdding(bool allLabel);
-    long CommandAdding();
-    long ChargeAdding();
-    long UserIconsAdding();
-    long AbilityAdding();
-    long AddCancelIcon();
-    long TownAdding(bool allLabel, bool bDiseased, bool bNotDiseased, bool bEnemy, bool bNeutral, bool bFriend);
+    int32_t ShipAdding(bool allLabel, bool bMyShip, bool bEnemy, bool bNeutral, bool bFriend);
+    int32_t FortAdding(bool allLabel, bool bFriend, bool bNeutral, bool bEnemy);
+    int32_t LandAdding(bool allLabel);
+    int32_t CommandAdding();
+    int32_t ChargeAdding();
+    int32_t UserIconsAdding();
+    int32_t AbilityAdding();
+    int32_t AddCancelIcon();
+    int32_t TownAdding(bool allLabel, bool bDiseased, bool bNotDiseased, bool bEnemy, bool bNeutral, bool bFriend);
 
-    void AddFlagPictureToIcon(long nCharIdx);
+    void AddFlagPictureToIcon(int32_t nCharIdx);
 
-    long m_nChargeTextureNum;
-    long m_nCommandTextureNum;
+    int32_t m_nChargeTextureNum;
+    int32_t m_nCommandTextureNum;
 
-    std::vector<long> m_aChargeQuantity;
+    std::vector<int32_t> m_aChargeQuantity;
 };

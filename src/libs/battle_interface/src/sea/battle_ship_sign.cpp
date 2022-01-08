@@ -62,8 +62,8 @@ void BIShipIcon::Draw()
 
     if (m_nVBufID != -1 && m_nIBufID != -1)
     {
-        long nStartV = 0;
-        const long nStartI = 0;
+        int32_t nStartV = 0;
+        const int32_t nStartI = 0;
 
         // ship
         if (m_nShipSquareQ > 0)
@@ -102,22 +102,22 @@ void BIShipIcon::Draw()
         nStartV += m_nShipClassSquareQ * 4;
     }
 
-    for (long n = 0; n < m_nShipQuantity; n++)
+    for (int32_t n = 0; n < m_nShipQuantity; n++)
     {
         if (m_Ship[n].pASailorQuantity)
         {
             m_pRS->ExtPrint(m_idSailorFont, m_dwSailorFontColor, 0, PR_ALIGN_CENTER, true, m_fSailorFontScale, 0, 0,
                             // shadow
-                            static_cast<long>(m_Ship[n].pntPos.x) + m_SailorFontOffset.x,
-                            static_cast<long>(m_Ship[n].pntPos.y) + m_SailorFontOffset.y, "%d",
-                            static_cast<long>(atof(m_Ship[n].pASailorQuantity->GetThisAttr())));
+                            static_cast<int32_t>(m_Ship[n].pntPos.x) + m_SailorFontOffset.x,
+                            static_cast<int32_t>(m_Ship[n].pntPos.y) + m_SailorFontOffset.y, "%d",
+                            static_cast<int32_t>(atof(m_Ship[n].pASailorQuantity->GetThisAttr())));
         }
         if (!m_Ship[n].sShipName.empty())
         {
             m_pRS->ExtPrint(m_idShipNameFont, m_dwShipNameFontColor, 0, PR_ALIGN_CENTER, true, m_fShipNameFontScale, 0,
                             0, // font shadow
-                            static_cast<long>(m_Ship[n].pntPos.x) + m_ShipNameFontOffset.x,
-                            static_cast<long>(m_Ship[n].pntPos.y) + m_ShipNameFontOffset.y, "%s",
+                            static_cast<int32_t>(m_Ship[n].pntPos.x) + m_ShipNameFontOffset.x,
+                            static_cast<int32_t>(m_Ship[n].pntPos.y) + m_ShipNameFontOffset.y, "%s",
                             m_Ship[n].sShipName.c_str());
         }
     }
@@ -128,7 +128,7 @@ void BIShipIcon::Draw()
 
 void BIShipIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
 {
-    long n;
+    int32_t n;
     char *pcTmp;
     char param[256];
 
@@ -298,7 +298,7 @@ void BIShipIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
     m_bMakeUpdate = true;
 }
 
-size_t BIShipIcon::AddTexture(const char *pcTextureName, long nCols, long nRows) const
+size_t BIShipIcon::AddTexture(const char *pcTextureName, int32_t nCols, int32_t nRows) const
 {
     if (m_pCommandList)
         return m_pCommandList->AddTexture(pcTextureName, nCols, nRows);
@@ -438,9 +438,9 @@ void BIShipIcon::Release()
     m_nShipClassSquareQ = 0;
 }
 
-long BIShipIcon::CalculateShipQuantity()
+int32_t BIShipIcon::CalculateShipQuantity()
 {
-    long n;
+    int32_t n;
     SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD;
 
     // resetting all ships
@@ -492,14 +492,14 @@ long BIShipIcon::CalculateShipQuantity()
     return m_nShipQuantity;
 }
 
-void BIShipIcon::UpdateBuffers(long nShipQ)
+void BIShipIcon::UpdateBuffers(int32_t nShipQ)
 {
     const auto nBackSquareQ = nShipQ;
     const auto nShipStateSquareQ = nShipQ * 2;
-    const long nShipClassSquareQ = nShipQ;
-    const long nShipSquareQ = nShipQ;
+    const int32_t nShipClassSquareQ = nShipQ;
+    const int32_t nShipSquareQ = nShipQ;
 
-    const long nMaxSquareQ =
+    const int32_t nMaxSquareQ =
         BIUtils::GetMaxFromFourLong(nBackSquareQ, nShipStateSquareQ, nShipClassSquareQ, nShipSquareQ);
     if (m_nMaxSquareQ != nMaxSquareQ)
     {
@@ -532,7 +532,7 @@ void BIShipIcon::FillIndexBuffer() const
     auto *pI = static_cast<uint16_t *>(m_pRS->LockIndexBuffer(m_nIBufID));
     if (pI)
     {
-        for (long n = 0; n < m_nMaxSquareQ; n++)
+        for (int32_t n = 0; n < m_nMaxSquareQ; n++)
         {
             pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
             pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
@@ -548,13 +548,13 @@ void BIShipIcon::FillIndexBuffer() const
 
 void BIShipIcon::FillVertexBuffer()
 {
-    long n;
+    int32_t n;
     if (m_nVBufID < 0)
         return;
     auto *pV = static_cast<BI_COLOR_VERTEX *>(m_pRS->LockVertexBuffer(m_nVBufID));
     if (pV)
     {
-        long vn = 0;
+        int32_t vn = 0;
 
         // m_nShipQuantity = 0;
         for (n = 0; n < m_nShipQuantity; n++)
@@ -588,7 +588,7 @@ void BIShipIcon::FillVertexBuffer()
     }
 }
 
-long BIShipIcon::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+int32_t BIShipIcon::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
                                     const FPOINT &size)
 {
     if (!pv)
@@ -634,7 +634,7 @@ long BIShipIcon::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32
     return 4;
 }
 
-long BIShipIcon::WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color,
+int32_t BIShipIcon::WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color,
                                                 const BIFPOINT &center, const FPOINT &size, float fClampUp,
                                                 float fClampDown, float fClampLeft, float fClampRight)
 {
@@ -699,25 +699,25 @@ void BIShipIcon::UpdateCommandList()
         core.Event("evntBISelectShip", "ll", -1, true);
 }
 
-long BIShipIcon::GetCurrentCommandTopLine()
+int32_t BIShipIcon::GetCurrentCommandTopLine()
 {
-    long n = m_nCurrentShipIndex;
+    int32_t n = m_nCurrentShipIndex;
     if (n < 0 || n >= m_nShipQuantity)
         n = 0;
     m_nCurrentShipIndex = n;
-    return static_cast<long>(m_Ship[n].pntPos.y) + m_nCommandListVerticalOffset;
+    return static_cast<int32_t>(m_Ship[n].pntPos.y) + m_nCommandListVerticalOffset;
 }
 
-long BIShipIcon::GetCurrentCommandCharacterIndex()
+int32_t BIShipIcon::GetCurrentCommandCharacterIndex()
 {
-    long n = m_nCurrentShipIndex;
+    int32_t n = m_nCurrentShipIndex;
     if (n < 0 || n >= m_nShipQuantity)
         n = 0;
     m_nCurrentShipIndex = n;
-    return static_cast<long>(m_Ship[n].nCharacterIndex);
+    return static_cast<int32_t>(m_Ship[n].nCharacterIndex);
 }
 
-long BIShipIcon::GetCurrentCommandMode() const
+int32_t BIShipIcon::GetCurrentCommandMode() const
 {
     return m_nCommandMode;
 }
@@ -732,7 +732,7 @@ ATTRIBUTES *BIShipIcon::GetSailorQuantityAttribute(SHIP_DESCRIBE_LIST::SHIP_DESC
     return pA;
 }
 
-float BIShipIcon::GetProgressShipHP(long nShipNum) const
+float BIShipIcon::GetProgressShipHP(int32_t nShipNum) const
 {
     if (m_Ship[nShipNum].nMaxHP <= 0.f && !m_Ship[nShipNum].pAShip)
         return 0.f;
@@ -744,7 +744,7 @@ float BIShipIcon::GetProgressShipHP(long nShipNum) const
     return 1.f - f;
 }
 
-float BIShipIcon::GetProgressShipSP(long nShipNum)
+float BIShipIcon::GetProgressShipSP(int32_t nShipNum)
 {
     if (m_Ship[nShipNum].nMaxSP <= 0.f && !m_Ship[nShipNum].pAShip)
         return 0.f;
@@ -756,7 +756,7 @@ float BIShipIcon::GetProgressShipSP(long nShipNum)
     return 1.f - f;
 }
 
-float BIShipIcon::GetProgressShipClass(long nShipNum)
+float BIShipIcon::GetProgressShipClass(int32_t nShipNum)
 {
     if (m_Ship[nShipNum].nShipClass < 0 || m_Ship[nShipNum].nShipClass >= m_aClassProgress.size())
         return 0.f;
@@ -764,7 +764,7 @@ float BIShipIcon::GetProgressShipClass(long nShipNum)
     return f;
 }
 
-void BIShipIcon::GetShipUVFromPictureIndex(long nPicIndex, FRECT &rUV)
+void BIShipIcon::GetShipUVFromPictureIndex(int32_t nPicIndex, FRECT &rUV)
 {
     // TODO: Make picture count configurable
     const float pictureCount = core.GetTargetEngineVersion() >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN ? 16.f : 8.f;
@@ -779,7 +779,7 @@ void BIShipIcon::GetShipUVFromPictureIndex(long nPicIndex, FRECT &rUV)
     rUV.bottom = rUV.top + pictureHeight; // boal
 }
 
-long BIShipIcon::GetShipClass(long nCharIdx)
+int32_t BIShipIcon::GetShipClass(int32_t nCharIdx)
 {
     VDATA *pVDat = core.Event("evntGetCharacterShipClass", "l", nCharIdx);
     if (!pVDat)

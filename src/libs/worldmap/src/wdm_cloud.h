@@ -61,7 +61,7 @@ class WdmCloud : public WdmRenderObject
 
     virtual void Move(float dltTime);
 
-    long FillRain(RS_RECT *rainRect, long rcnt);
+    int32_t FillRain(RS_RECT *rainRect, int32_t rcnt);
 
     CVECTOR pos;       // Cloud position
     CVECTOR dir;       // Direction of cloud movement
@@ -72,22 +72,22 @@ class WdmCloud : public WdmRenderObject
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   protected:
-    virtual void BuildCloud(long n);
+    virtual void BuildCloud(int32_t n);
     RS_RECT rect[8];
-    long texture;
-    long light;
-    long lightning;
-    long curMove;
-    long numRects;
+    int32_t texture;
+    int32_t light;
+    int32_t lightning;
+    int32_t curMove;
+    int32_t numRects;
     MoveInfo move[8];
 
     // Lightning parameters
-    long curLightning;
+    int32_t curLightning;
     float lightningWaitTime;
     float lightningTime;
     float flashTime;
-    long lastColor;
-    long lightningColor;
+    int32_t lastColor;
+    int32_t lightningColor;
 
     // Rain
     Rain rain[48];

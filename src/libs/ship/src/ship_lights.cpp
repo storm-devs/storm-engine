@@ -452,8 +452,8 @@ void ShipLights::SetLights(VAI_OBJBASE *pObject)
         pRS->SetLight(i + 1, &pL->Light);
         pRS->LightEnable(i + 1, true);
 
-        iMinLight = Min(iMinLight, static_cast<long>(i + 1));
-        iMaxLight = Max(iMaxLight, static_cast<long>(i + 1));
+        iMinLight = Min(iMinLight, static_cast<int32_t>(i + 1));
+        iMaxLight = Max(iMaxLight, static_cast<int32_t>(i + 1));
     }
 }
 
@@ -655,7 +655,7 @@ void ShipLights::Realize(uint32_t dwDeltaTime)
 
 void ShipLights::UnSetLights(VAI_OBJBASE *pObject)
 {
-    for (long i = iMinLight; i <= iMaxLight; i++)
+    for (int32_t i = iMinLight; i <= iMaxLight; i++)
         pRS->LightEnable(i, false);
 
     iMinLight = 1000;

@@ -172,8 +172,8 @@ void AIHelper::Print(float x, float y, float fScale, const char *pFormat, ...)
     _vsnprintf_s(cBuffer, sizeof(cBuffer), pFormat, args);
     va_end(args);
 
-    pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_CENTER, false, fScale, 0, 0, static_cast<long>(x),
-                  static_cast<long>(y), cBuffer);
+    pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_CENTER, false, fScale, 0, 0, static_cast<int32_t>(x),
+                  static_cast<int32_t>(y), cBuffer);
 }
 
 void AIHelper::Print3D(CVECTOR vPos, float dy, float fScale, const char *pFormat, ...)
@@ -200,8 +200,8 @@ void AIHelper::Print3D(CVECTOR vPos, float dy, float fScale, const char *pFormat
     _vsnprintf_s(Buff_4k, sizeof(Buff_4k), pFormat, args);
     va_end(args);
 
-    pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_CENTER, false, fScale, 0, 0, static_cast<long>(vPos.x),
-                  static_cast<long>(vPos.y + dy), Buff_4k);
+    pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_CENTER, false, fScale, 0, 0, static_cast<int32_t>(vPos.x),
+                  static_cast<int32_t>(vPos.y + dy), Buff_4k);
 }
 
 void AIHelper::Save(CSaveLoad *pSL)

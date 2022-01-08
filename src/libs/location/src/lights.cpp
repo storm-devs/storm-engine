@@ -23,7 +23,7 @@ Lights::Lights()
     maxTypes = 0;
     numLights = 0;
     maxLights = 0;
-    for (long i = 0; i < 8; i++)
+    for (int32_t i = 0; i < 8; i++)
     {
         lt[i].light = -1;
         lt[i].set = false;
@@ -33,14 +33,14 @@ Lights::Lights()
 
 Lights::~Lights()
 {
-    for (long i = 0; i < numTypes; i++)
+    for (int32_t i = 0; i < numTypes; i++)
     {
         if (types[i].corona >= 0 && rs)
             rs->TextureRelease(types[i].corona);
         delete types[i].name;
     }
     if (rs)
-        for (long i = 1; i < 8; i++)
+        for (int32_t i = 1; i < 8; i++)
             rs->LightEnable(i, false);
 }
 
@@ -64,7 +64,7 @@ bool Lights::Init()
     while (res)
     {
         lName[sizeof(lName) - 1] = 0;
-        long i;
+        int32_t i;
         for (i = 0; i < numTypes; i++)
         {
             if (_stricmp(lName, types[i].name) == 0)
@@ -149,10 +149,10 @@ void Lights::Execute(uint32_t delta_time)
 {
     if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && core.Controls->GetDebugAsyncKeyState(VK_F11) < 0)
     {
-        for (long i = 0; i < numTypes; i++)
+        for (int32_t i = 0; i < numTypes; i++)
             UpdateLightTypes(i);
     }
-    for (long i = 0; i < numLights; i++)
+    for (int32_t i = 0; i < numLights; i++)
     {
         // See what is there
         auto &l = types[lights[i].type];
@@ -234,7 +234,7 @@ void Lights::Realize(uint32_t delta_time)
     rs->SetTransform(D3DTS_VIEW, CMatrix());
     rs->SetTransform(D3DTS_WORLD, CMatrix());
     const auto camPDist = -(pos.x * camMtx.Vx().z + pos.y * camMtx.Vy().z + pos.z * camMtx.Vz().z);
-    for (long i = 0, n = 0; i < numLights; i++)
+    for (int32_t i = 0, n = 0; i < numLights; i++)
     {
         // Source
         auto &ls = lights[i];
@@ -370,18 +370,18 @@ void Lights::Realize(uint32_t delta_time)
 }
 
 // Find source index
-long Lights::FindLight(const char *name)
+int32_t Lights::FindLight(const char *name)
 {
     if (!name || !name[0])
         return -1;
-    for (long i = 0; i < numTypes; i++)
+    for (int32_t i = 0; i < numTypes; i++)
         if (_stricmp(name, types[i].name) == 0)
             return i;
     return -1;
 }
 
 // Add source to location
-void Lights::AddLight(long index, const CVECTOR &pos)
+void Lights::AddLight(int32_t index, const CVECTOR &pos)
 {
     if (index == -1)
         return;
@@ -431,12 +431,12 @@ void Lights::DelAllLights()
 }
 
 // Add portable source
-long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
+int32_t Lights::AddMovingLight(const char *type, const CVECTOR &pos)
 {
-    long idx;
+    int32_t idx;
     for (idx = 0; idx < 1000; idx++)
     {
-        long n;
+        int32_t n;
         for (n = 0; n < aMovingLight.size(); n++)
             if (aMovingLight[n].id == idx)
                 break;
@@ -456,9 +456,9 @@ long Lights::AddMovingLight(const char *type, const CVECTOR &pos)
 }
 
 // Put portable source in new position
-void Lights::UpdateMovingLight(long id, const CVECTOR &pos)
+void Lights::UpdateMovingLight(int32_t id, const CVECTOR &pos)
 {
-    for (long n = 0; n < aMovingLight.size(); n++)
+    for (int32_t n = 0; n < aMovingLight.size(); n++)
     {
         if (aMovingLight[n].id == id)
         {
@@ -471,9 +471,9 @@ void Lights::UpdateMovingLight(long id, const CVECTOR &pos)
 }
 
 // Remove portable source
-void Lights::DelMovingLight(long id)
+void Lights::DelMovingLight(int32_t id)
 {
-    for (long n = 0; n < aMovingLight.size(); n++)
+    for (int32_t n = 0; n < aMovingLight.size(); n++)
         if (aMovingLight[n].id == id)
         {
             numLights--;
@@ -526,7 +526,7 @@ void Lights::UnsetLights()
 }
 
 // Update source types
-void Lights::UpdateLightTypes(long i)
+void Lights::UpdateLightTypes(int32_t i)
 {
     auto ini = fio->OpenIniFile("RESOURCE\\Ini\\lights.ini");
     if (!ini)
@@ -580,7 +580,7 @@ void Lights::UpdateLightTypes(long i)
         types[i].flickerSlow = 0.0f;
     if (types[i].freqSlow > 0.0f)
         types[i].pSlow = 1.0f / types[i].freqSlow;
-    for (long c = 0; c < numLights; c++)
+    for (int32_t c = 0; c < numLights; c++)
     {
         if (lights[c].type != i)
             continue;
@@ -634,7 +634,7 @@ void Lights::PrintDebugInfo()
 
         rs->ExtPrint(FONT_DEFAULT, D3DCOLOR_ARGB(255, 255, 255, 255), 0x00000000, PR_ALIGN_CENTER, 
             false, scale, 0, 0,
-                     static_cast<long>(vrt.x), static_cast<long>(vrt.y), fmt::format("{}", d).c_str());
+                     static_cast<int32_t>(vrt.x), static_cast<int32_t>(vrt.y), fmt::format("{}", d).c_str());
 
         // print idx
         auto color = D3DCOLOR_ARGB(255, 233, 30, 30);
@@ -646,8 +646,8 @@ void Lights::PrintDebugInfo()
                 color = D3DCOLOR_ARGB(255, 30, 233, 30);
             }
         }
-        rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<long>(vrt.x),
-                     static_cast<long>(vrt.y),
+        rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<int32_t>(vrt.x),
+                     static_cast<int32_t>(vrt.y),
                      fmt::format("{}", i).c_str());
 
         

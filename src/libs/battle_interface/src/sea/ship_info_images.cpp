@@ -125,7 +125,7 @@ void ShipInfoImages::Init(ATTRIBUTES *pAttr)
     BIUtils::ReadPosFromAttr(pAttr, "ProgressSize", m_fpProgressSize.x, m_fpProgressSize.y, 2.f, 0.5f);
 }
 
-void ShipInfoImages::CheckAndRecreateBuffers(long nShipQ)
+void ShipInfoImages::CheckAndRecreateBuffers(int32_t nShipQ)
 {
     if (nShipQ > m_nCurMaxQuantity)
     {
@@ -149,7 +149,7 @@ void ShipInfoImages::CheckAndRecreateBuffers(long nShipQ)
         m_ibBackProgress = pRS->CreateIndexBuffer(nShipQ * 6 * sizeof(uint16_t));
 
         // fill there index buffers
-        long n;
+        int32_t n;
         auto *pIB = static_cast<uint16_t *>(pRS->LockIndexBuffer(m_ibRelation));
         if (pIB)
         {
@@ -197,7 +197,7 @@ void ShipInfoImages::CheckAndRecreateBuffers(long nShipQ)
 
 void ShipInfoImages::UpdateShipList()
 {
-    long n;
+    int32_t n;
     SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD;
 
     // calculate ship quantity
@@ -250,7 +250,7 @@ void ShipInfoImages::UpdateShipList()
     pRS->UnLockVertexBuffer(m_vbBackProgress);
 }
 
-void ShipInfoImages::UpdateShipData(long nShipNum, SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD)
+void ShipInfoImages::UpdateShipData(int32_t nShipNum, SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD)
 {
     if (!pSD || nShipNum >= m_nCurMaxQuantity)
         return;
@@ -296,7 +296,7 @@ bool ShipInfoImages::IsEnableShowShipInfo(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD) c
     return true;
 }
 
-const FRECT &ShipInfoImages::GetUVForRelation(long nRelation) const
+const FRECT &ShipInfoImages::GetUVForRelation(int32_t nRelation) const
 {
     switch (nRelation)
     {

@@ -23,12 +23,12 @@ class NODE
         TRACE_ENABLE_TREE = (1 << 5)
     };
 
-    long flags;
+    int32_t flags;
 
     GEOS *geo;
     GEOS::MATERIAL_FUNC geoMaterialFunc;
     // children
-    long nnext;
+    int32_t nnext;
     NODE **next;
     // 0 for root
     NODE *parent;
@@ -100,13 +100,13 @@ class MODEL : public COLLISION_OBJECT
         renderTuner = nullptr;
     };
 
-    virtual NODE *GetNode(long n) = 0;
+    virtual NODE *GetNode(int32_t n) = 0;
     virtual NODE *FindNode(const char *cNodeName) = 0;
     virtual void Update() = 0;
     virtual Animation *GetAnimation() = 0;
 
     float Trace(const CVECTOR &src, const CVECTOR &dst) override = 0;
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
+    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius,
               ADD_POLYGON_FUNC addpoly) override = 0;
 
     const char *GetCollideMaterialName() override = 0;

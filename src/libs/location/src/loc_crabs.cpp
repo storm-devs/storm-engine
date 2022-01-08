@@ -37,7 +37,7 @@ bool LocCrabs::Init()
 // Messages
 uint64_t LocCrabs::ProcessMessage(MESSAGE &message)
 {
-    long num = message.Long();
+    int32_t num = message.Long();
     if (num < 1)
         num = 1;
     if (num > sizeof(crab) / sizeof(LocCrab))
@@ -48,7 +48,7 @@ uint64_t LocCrabs::ProcessMessage(MESSAGE &message)
     if (!location)
         return 0;
     // start crabs
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         crab[i].Init(location);
     return 1;
 }
@@ -62,6 +62,6 @@ void LocCrabs::Execute(uint32_t delta_time)
 void LocCrabs::Realize(uint32_t delta_time)
 {
     float dltTime = delta_time * 0.001f;
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         crab[i].Update(dltTime);
 }

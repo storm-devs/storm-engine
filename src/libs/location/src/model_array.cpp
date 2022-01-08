@@ -36,7 +36,7 @@ ModelArray::~ModelArray()
 }
 
 // Create model
-long ModelArray::CreateModel(const char *modelName, const char *technique, long level, bool isVisible, void *pLights)
+int32_t ModelArray::CreateModel(const char *modelName, const char *technique, int32_t level, bool isVisible, void *pLights)
 {
     if (!modelName || !modelName[0])
         return -1;
@@ -99,7 +99,7 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     }
     else
     {
-        core.Trace("Model name %s is very long", maxModels);
+        core.Trace("Model name %s is very int32_t", maxModels);
         memcpy(model[numModels].name, modelName, MA_MAX_NAME_LENGTH);
         model[numModels].name[MA_MAX_NAME_LENGTH - 1] = 0;
     }
@@ -116,7 +116,7 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
     }*/
     if (technique && technique[0])
     {
-        for (long i = 0; i < 1024; i++)
+        for (int32_t i = 0; i < 1024; i++)
         {
             auto *nd = m->GetNode(i);
             if (!nd)
@@ -129,7 +129,7 @@ long ModelArray::CreateModel(const char *modelName, const char *technique, long 
 }
 
 // Delete model
-void ModelArray::DeleteModel(long modelIndex)
+void ModelArray::DeleteModel(int32_t modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     // Removing effects
@@ -148,14 +148,14 @@ void ModelArray::DeleteModel(long modelIndex)
 }
 
 // Set animation to the model
-bool ModelArray::SetAnimation(long modelIndex, const char *modelAni)
+bool ModelArray::SetAnimation(int32_t modelIndex, const char *modelAni)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     return core.Send_Message(model[modelIndex].id, "ls", MSG_MODEL_LOAD_ANI, modelAni) != 0;
 }
 
 // Find model index by name
-long ModelArray::FindModel(const char *modelName)
+int32_t ModelArray::FindModel(const char *modelName)
 {
     if (!modelName)
         return -1;
@@ -173,7 +173,7 @@ long ModelArray::FindModel(const char *modelName)
     // Looking for hash value
     const auto hash = CalcHashString(buf);
     // looking for a model
-    for (long i = 0; i < numModels; i++)
+    for (int32_t i = 0; i < numModels; i++)
     {
         if (model[i].hash == hash)
         {
@@ -187,33 +187,33 @@ long ModelArray::FindModel(const char *modelName)
 }
 
 // Number of models
-long ModelArray::Models() const
+int32_t ModelArray::Models() const
 {
     return numModels;
 }
 
 // Getting model ID by index
-entid_t ModelArray::ID(long modelIndex)
+entid_t ModelArray::ID(int32_t modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     return model[modelIndex].id;
 }
 
-entid_t ModelArray::RealizerID(long modelIndex)
+entid_t ModelArray::RealizerID(int32_t modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     return model[modelIndex].modelrealizer;
 }
 
 // Getting a model by index
-MODEL *ModelArray::operator[](long modelIndex)
+MODEL *ModelArray::operator[](int32_t modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     return static_cast<MODEL *>(EntityManager::GetEntityPointer(model[modelIndex].id));
 }
 
 // Getting animation by index
-Animation *ModelArray::GetAnimation(long modelIndex)
+Animation *ModelArray::GetAnimation(int32_t modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[modelIndex].id));
@@ -223,7 +223,7 @@ Animation *ModelArray::GetAnimation(long modelIndex)
 }
 
 // Set slide uv animation to the model
-void ModelArray::SetUVSlide(long modelIndex, float u0, float v0, float u1, float v1)
+void ModelArray::SetUVSlide(int32_t modelIndex, float u0, float v0, float u1, float v1)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     if (!model[modelIndex].slider)
@@ -243,7 +243,7 @@ void ModelArray::SetUVSlide(long modelIndex, float u0, float v0, float u1, float
 }
 
 // Set a rotation animation to the model
-void ModelArray::SetRotation(long modelIndex, float rx, float ry, float rz)
+void ModelArray::SetRotation(int32_t modelIndex, float rx, float ry, float rz)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     if (!model[modelIndex].rotator)
@@ -254,7 +254,7 @@ void ModelArray::SetRotation(long modelIndex, float rx, float ry, float rz)
 }
 
 // Set the reflection matrix generation mode to the model
-void ModelArray::SetReflection(long modelIndex, float scale)
+void ModelArray::SetReflection(int32_t modelIndex, float scale)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
     if (!model[modelIndex].reflection)
@@ -275,7 +275,7 @@ void ModelArray::SetReflection(long modelIndex, float scale)
 // Animate texture coordinates
 void ModelArray::Update(float dltTime)
 {
-    for (long i = 0; i < numModels; i++)
+    for (int32_t i = 0; i < numModels; i++)
     {
         if (model[i].slider)
         {
@@ -392,8 +392,8 @@ void ModelArray::Relection::Restore(MODEL *model, VDX9RENDER *rs)
 
 void ModelArray::UpdatePath(std::string &path)
 {
-    long j = 0;
-    for (long i = 0; path[i]; i++)
+    int32_t j = 0;
+    for (int32_t i = 0; path[i]; i++)
     {
         if (path[i] == '\\')
         {
@@ -413,7 +413,7 @@ void ModelArray::UpdatePath(std::string &path)
 // Check the visibility of two points
 bool ModelArray::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
 {
-    for (long i = 0; i < numModels; i++)
+    for (int32_t i = 0; i < numModels; i++)
     {
         if (model[i].isVisible)
         {
@@ -430,7 +430,7 @@ float ModelArray::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
     isHavecTrg = false;
     auto k = 2.0f;
-    for (long i = 0; i < numModels; i++)
+    for (int32_t i = 0; i < numModels; i++)
     {
         if (model[i].isVisible)
         {
@@ -452,9 +452,9 @@ bool ModelArray::GetCollideTriangle(TRIANGLE &trg) const
     return isHavecTrg;
 }
 
-void ModelArray::Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num))
+void ModelArray::Clip(PLANE *p, int32_t numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, int32_t num))
 {
-    for (long i = 0; i < numModels; i++)
+    for (int32_t i = 0; i < numModels; i++)
     {
         if (model[i].isVisible)
         {

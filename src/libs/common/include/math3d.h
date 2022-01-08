@@ -15,11 +15,11 @@
 #include "math3d/vector.h"
 
 // Fast conversion of a floating point number to an integer with discarding of the fractional part
-inline long fftol(float f)
+inline int32_t fftol(float f)
 {
     return _mm_cvttss_si32(_mm_load_ss(&f));
 
-    /*long l;
+    /*int32_t l;
     static const float cnt[2] = {-0.4999999f, 0.4999999f};
     _asm
     {
@@ -33,11 +33,11 @@ inline long fftol(float f)
 }
 
 // Fast conversion of a floating point number to an integer with rounding to the nearest
-inline long fftoi(float f)
+inline int32_t fftoi(float f)
 {
     return _mm_cvtss_si32(_mm_load_ss(&f));
 
-    /*long l;
+    /*int32_t l;
     _asm
     {
       fld        f
@@ -47,11 +47,11 @@ inline long fftoi(float f)
 }
 
 // Fast floor
-inline long ffloor(float f)
+inline int32_t ffloor(float f)
 {
     return _mm_cvtss_si32(_mm_add_ss(_mm_load_ss(&f), _mm_set_ss(-0.5f)));
 
-    /*long l;
+    /*int32_t l;
     static const float c = -0.5f;
     _asm
     {
@@ -63,11 +63,11 @@ inline long ffloor(float f)
 }
 
 // Fast ceil
-inline long fceil(float f)
+inline int32_t fceil(float f)
 {
     return _mm_cvtss_si32(_mm_add_ss(_mm_load_ss(&f), _mm_set_ss(0.5f)));
 
-    /*long l;
+    /*int32_t l;
     static const float c = 0.5f;
     _asm
     {
@@ -129,7 +129,7 @@ inline float NormAngle2PI(float angle)
     static const auto pi = 3.14159265358979323846f;
     if (angle >= 0.0f && angle <= 2 * pi)
         return angle;
-    return (angle / (2.0f * pi) - static_cast<long>(angle / (2.0f * pi))) * 2.0f * pi;
+    return (angle / (2.0f * pi) - static_cast<int32_t>(angle / (2.0f * pi))) * 2.0f * pi;
 }
 
 // Bring the angle to the range -PI..PI
@@ -138,7 +138,7 @@ inline float NormAnglePI(float angle)
     static const auto pi = 3.14159265358979323846f;
     if (angle >= -pi && angle <= pi)
         return angle;
-    return (angle / (2.0f * pi) - static_cast<long>(angle / (2.0f * pi))) * 2.0f * pi - pi;
+    return (angle / (2.0f * pi) - static_cast<int32_t>(angle / (2.0f * pi))) * 2.0f * pi - pi;
 }
 
 // Calculate acos with limited range

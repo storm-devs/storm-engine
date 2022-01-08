@@ -44,7 +44,7 @@ class WdmClouds : public WdmRenderObject
         // Update cloud state
         void Update(float dltTime);
         // Fill an array of rectangles
-        long FillRects(RS_RECT *rects, long cnt, float galpha);
+        int32_t FillRects(RS_RECT *rects, int32_t cnt, float galpha);
         // Get sphere center and radius
         float GetBound(CVECTOR &_center) const;
         // Run the cloud removal mechanism if there is an intersection
@@ -52,7 +52,7 @@ class WdmClouds : public WdmRenderObject
 
       private:
         Cld cloud[WDMCLOUDSMAX]; // Positions
-        long count;              // amount
+        int32_t count;              // amount
         float alpha;             // Overall transparency
         float lifeTime;          // Lifetime
         CVECTOR center;          // Cloud center
@@ -71,7 +71,7 @@ class WdmClouds : public WdmRenderObject
     // Drawing
     void LRender(VDX9RENDER *rs) override;
 
-    long texture, light;
+    int32_t texture, light;
     Cloud clouds[16];
     RS_RECT rects[WDMCLOUDSMAX * 16];
 };

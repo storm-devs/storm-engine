@@ -177,7 +177,7 @@ void DECK_CAMERA::Move(uint32_t DeltaTime)
         float len;
         auto prev_res = vRes;
         CVECTOR p1, p2;
-        long trgNum = -1;
+        int32_t trgNum = -1;
         while (true)
         {
             // define the triangle we are on

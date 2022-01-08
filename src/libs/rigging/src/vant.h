@@ -84,7 +84,7 @@ class VANT_BASE : public Entity
     bool bYesDeleted;
     int wVantLast;
     char *TextureName;
-    long texl;
+    int32_t texl;
     int VantId;
 
     struct VANTDATA
@@ -109,8 +109,8 @@ class VANT_BASE : public Entity
         bool bDeleted;
         int vantQuantity;
         int *vantIdx;
-        long sVert, nVert;
-        long sIndx, nIndx;
+        int32_t sVert, nVert;
+        int32_t sIndx, nIndx;
 
         CMatrix *pMatWorld;
         entid_t model_id;
@@ -132,7 +132,7 @@ class VANT_BASE : public Entity
 
     VANTVERTEX *vertBuf;
 
-    long vBuf, iBuf;
+    int32_t vBuf, iBuf;
     uint32_t nVert, nIndx;
 };
 

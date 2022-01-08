@@ -162,7 +162,7 @@ void SHIPPOINTER::UpdateShipPointer() const
     }
 }
 
-VAI_OBJBASE *SHIPPOINTER::FindShipByChrIndex(long chrIdx) const
+VAI_OBJBASE *SHIPPOINTER::FindShipByChrIndex(int32_t chrIdx) const
 {
     if (chrIdx == -1)
         return nullptr;
@@ -173,7 +173,7 @@ VAI_OBJBASE *SHIPPOINTER::FindShipByChrIndex(long chrIdx) const
         auto ps = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ship));
         if (ps != nullptr && ps->GetACharacter() != nullptr)
         {
-            if (static_cast<long>(ps->GetACharacter()->GetAttributeAsDword("index", -2)) == chrIdx)
+            if (static_cast<int32_t>(ps->GetACharacter()->GetAttributeAsDword("index", -2)) == chrIdx)
                 return ps;
         }
     }
@@ -183,7 +183,7 @@ VAI_OBJBASE *SHIPPOINTER::FindShipByChrIndex(long chrIdx) const
       VAI_OBJBASE * ps = (VAI_OBJBASE*)EntityManager::GetEntityPointer(ei);
       if(ps!= nullptr && ps->GetACharacter()!= nullptr)
       {
-        if( (long)ps->GetACharacter()->GetAttributeAsDword("id",-2) == chrIdx )
+        if( (int32_t)ps->GetACharacter()->GetAttributeAsDword("id",-2) == chrIdx )
           return ps;
       }
     } while( NetFindClassNext(false,&ei) );*/

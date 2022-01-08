@@ -66,7 +66,7 @@ class Player : public NPCharacter
     // --------------------------------------------------------------------------------------------
   private:
     void FireFromShootgun();
-    void ShootParticles(const CVECTOR &pos, const CVECTOR &ndir, float size, uint32_t color, long num);
+    void ShootParticles(const CVECTOR &pos, const CVECTOR &ndir, float size, uint32_t color, int32_t num);
 
     float GetRotateH();
 

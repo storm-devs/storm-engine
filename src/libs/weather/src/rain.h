@@ -51,12 +51,12 @@ class RAIN : public Entity
     {
         CVECTOR vPos;
         float fLifeTime;
-        long iShip;
+        int32_t iShip;
         // SHIP_BASE * pShip;
     };
 
   private:
-    long iRainDropsTexture;
+    int32_t iRainDropsTexture;
     float fDropsDeltaTime;
     std::vector<RS_RECT> aRects;
     std::vector<drop_t> aDrops;
@@ -71,7 +71,7 @@ class RAIN : public Entity
     float fDropLength, fRainWindSpeed, fRainSpeed, fWindPower, fWindAngle, fRainJitter, fRainWindSpeedJitter;
 
     bool bRainbowEnable;
-    long iRainbowTex;
+    int32_t iRainbowTex;
     std::string sRainbowTexture;
 
     uint32_t dwRainTimeBlend;
@@ -83,7 +83,7 @@ class RAIN : public Entity
     float fRainHeight, fRainRadius;
     uint32_t dwNumDrops;
 
-    long iVertexBuffer;
+    int32_t iVertexBuffer;
 
     uint32_t dwDropsColor;
     uint32_t dwDropsNearNum, dwDropsFarNum;
@@ -92,16 +92,16 @@ class RAIN : public Entity
     float fDropsSize;
     std::string sDropsTexture, sSeaDropsTexture;
 
-    long iSeaDropTex;
-    long iIBSeaDrops;
-    long iVBSeaDrops;
+    int32_t iSeaDropTex;
+    int32_t iIBSeaDrops;
+    int32_t iVBSeaDrops;
 
     VDX9RENDER *rs;
     COLLIDE *cs;
 
     void GenerateRandomDrop(CVECTOR *vPos) const;
     void GenerateRain();
-    void InitialSomeBlockParameters(long iIdx) const;
+    void InitialSomeBlockParameters(int32_t iIdx) const;
     void Release();
     void RealizeDrops(uint32_t Delta_Time);
 

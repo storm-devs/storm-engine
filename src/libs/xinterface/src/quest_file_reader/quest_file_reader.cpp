@@ -209,7 +209,7 @@ std::string QuestFileReader::GetInsertStringByID(const std::string_view &id, con
     return {};
 }
 
-void QuestFileReader::ReadUserData(const std::string_view &questID, long recordIndex)
+void QuestFileReader::ReadUserData(const std::string_view &questID, int32_t recordIndex)
 {
     if (curQuestID_ == questID)
         return; // already set for this quest

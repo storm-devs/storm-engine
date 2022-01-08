@@ -15,7 +15,7 @@ class CXI_QUESTTITLE : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
     void MouseThis(float fX, float fY) override;
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
@@ -35,9 +35,9 @@ class CXI_QUESTTITLE : public CINODE
     char *m_iconGroupName;
     FXYRECT m_texComplete;
     FXYRECT m_texNonComplete;
-    long m_texId;
+    int32_t m_texId;
 
-    long m_idFont;
+    int32_t m_idFont;
     uint32_t m_dwNonCompleteColor;
     uint32_t m_dwCompleteColor;
     uint32_t m_dwSelectRectangleColor;
@@ -54,7 +54,7 @@ class CXI_QUESTTITLE : public CINODE
 
     struct STRING_DESCRIBER
     {
-        long lineQuantity;
+        int32_t lineQuantity;
         char *name[10];
         bool complete;
         uint32_t dwSpecColor;

@@ -6,10 +6,10 @@
 
 VDX9RENDER *ShipTracks::ShipTrack::pRS = nullptr;
 SEA_BASE *ShipTracks::ShipTrack::pSea = nullptr;
-long ShipTracks::ShipTrack::iRefCount = 0;
+int32_t ShipTracks::ShipTrack::iRefCount = 0;
 uint32_t ShipTracks::ShipTrack::dwMaxBufferSize1 = 0, ShipTracks::ShipTrack::dwMaxBufferSize2 = 0;
-long ShipTracks::ShipTrack::iVTmpBuffer1 = -1, ShipTracks::ShipTrack::iVTmpBuffer2 = -1;
-long ShipTracks::ShipTrack::iITmpBuffer1 = -1, ShipTracks::ShipTrack::iITmpBuffer2 = -1;
+int32_t ShipTracks::ShipTrack::iVTmpBuffer1 = -1, ShipTracks::ShipTrack::iVTmpBuffer2 = -1;
+int32_t ShipTracks::ShipTrack::iITmpBuffer1 = -1, ShipTracks::ShipTrack::iITmpBuffer2 = -1;
 
 ShipTracks::~ShipTracks()
 {
@@ -31,7 +31,7 @@ bool ShipTracks::Init()
 
 void ShipTracks::ResetTrack(SHIP_BASE *pShip)
 {
-    for (long i = 0; i < aShips.size(); i++)
+    for (int32_t i = 0; i < aShips.size(); i++)
         if (aShips[i]->pShip == pShip)
         {
             aShips[i]->Reset();
@@ -51,7 +51,7 @@ void ShipTracks::AddShip(SHIP_BASE *pShip)
 
 void ShipTracks::DelShip(SHIP_BASE *pShip)
 {
-    for (long i = 0; i < aShips.size(); i++)
+    for (int32_t i = 0; i < aShips.size(); i++)
         if (aShips[i]->pShip == pShip)
         {
             STORM_DELETE(aShips[i]);
@@ -66,7 +66,7 @@ void ShipTracks::Execute(uint32_t dwDeltaTime)
 
 void ShipTracks::Realize(uint32_t dwDeltaTime)
 {
-    for (long i = 0; i < aShips.size(); i++)
+    for (int32_t i = 0; i < aShips.size(); i++)
     {
         aShips[i]->Execute(static_cast<float>(dwDeltaTime) * 0.001f);
         aShips[i]->Realize(static_cast<float>(dwDeltaTime) * 0.001f);
@@ -139,8 +139,8 @@ bool ShipTracks::ShipTrack::Update(SHIP_BASE *pShip)
     sscanf(pATrack2->GetAttribute("Speed"), "%f, %f", &fSpeed21, &fSpeed22);
     fTrackStep2 = pATrack2->GetAttributeAsFloat("TrackWidthSteps");
 
-    dwTrackStep1 = static_cast<long>(fTrackStep1);
-    dwTrackStep2 = static_cast<long>(fTrackStep2);
+    dwTrackStep1 = static_cast<int32_t>(fTrackStep1);
+    dwTrackStep2 = static_cast<int32_t>(fTrackStep2);
 
     pRS->TextureRelease(iTrackTexture1);
     iTrackTexture1 = -1;
@@ -298,7 +298,7 @@ void ShipTracks::ShipTrack::Execute(float fDeltaTime)
     if (fCurrentDistance > fTrackDistance)
     {
         const auto fSpeed = Min(1.0f, pShip->GetCurrentSpeed() / 20.0f);
-        for (long i = 0; i < static_cast<long>(fCurrentDistance / fTrackDistance); i++)
+        for (int32_t i = 0; i < static_cast<int32_t>(fCurrentDistance / fTrackDistance); i++)
         {
             const auto fDistance = (i + 1) * fTrackDistance;
 
@@ -332,7 +332,7 @@ void ShipTracks::ShipTrack::Execute(float fDeltaTime)
         vLastAng = vCurAng;
     }
 
-    for (long i = 0; i < aTrack1.size(); i++)
+    for (int32_t i = 0; i < aTrack1.size(); i++)
     {
         auto &T = aTrack1[i];
 
@@ -351,10 +351,10 @@ void ShipTracks::ShipTrack::Execute(float fDeltaTime)
         if (aTrack1.size() > 1)
         {
             auto *pV = static_cast<TrackVertex *>(pRS->LockVertexBuffer(iVTmpBuffer1, D3DLOCK_DISCARD));
-            for (long i = 0; i < aTrack1.size(); i++)
+            for (int32_t i = 0; i < aTrack1.size(); i++)
             {
                 auto &T = aTrack1[i];
-                long xxx = 0;
+                int32_t xxx = 0;
                 for (float xx = 0; xx < fTrackStep1; xx++)
                 {
                     const auto k = xx / (fTrackStep1 - 1.0f);
@@ -374,7 +374,7 @@ void ShipTracks::ShipTrack::Execute(float fDeltaTime)
             pRS->UnLockVertexBuffer(iVTmpBuffer1);
         }
 
-    for (long i = 0; i < aTrack2.size(); i++)
+    for (int32_t i = 0; i < aTrack2.size(); i++)
     {
         auto &T = aTrack2[i];
 
@@ -393,10 +393,10 @@ void ShipTracks::ShipTrack::Execute(float fDeltaTime)
         if (aTrack2.size() > 1)
         {
             auto *pV = static_cast<TrackVertex *>(pRS->LockVertexBuffer(iVTmpBuffer2, D3DLOCK_DISCARD));
-            for (long i = 0; i < aTrack2.size(); i++)
+            for (int32_t i = 0; i < aTrack2.size(); i++)
             {
                 auto &T = aTrack2[i];
-                long xxx = 0;
+                int32_t xxx = 0;
                 for (float xx = 0; xx < fTrackStep2; xx++)
                 {
                     const auto k = xx / (fTrackStep2 - 1.0f);
@@ -429,7 +429,7 @@ uint32_t ShipTracks::AttributeChanged(ATTRIBUTES *pA)
 {
     if (*pA == "ResetTracks")
     {
-        for (long i = 0; i < aShips.size(); i++)
+        for (int32_t i = 0; i < aShips.size(); i++)
         {
             aShips[i]->Reset();
         }

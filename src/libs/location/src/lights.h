@@ -34,7 +34,7 @@ class Lights : public Entity
         float coronaRange2;
         float invCoronaRange;
         float coronaSize;
-        long corona;
+        int32_t corona;
     };
 
     // Source
@@ -50,15 +50,15 @@ class Lights : public Entity
         float i;             // Resulting intensity
         float corona;        // Crown transparency
 
-        long type; // Source type index
+        int32_t type; // Source type index
         uint8_t intensity;
     };
 
     // Controllable (moving) source
     struct MovingLight
     {
-        long id;
-        long light;
+        int32_t id;
+        int32_t light;
     };
 
     struct Vertex
@@ -71,7 +71,7 @@ class Lights : public Entity
     // To sort by distance
     struct lt_elem
     {
-        long idx;
+        int32_t idx;
         float dst;
     };
 
@@ -107,27 +107,27 @@ class Lights : public Entity
     }
 
     // Find source index
-    long FindLight(const char *name);
+    int32_t FindLight(const char *name);
     // Add source to location
-    void AddLight(long index, const CVECTOR &pos);
+    void AddLight(int32_t index, const CVECTOR &pos);
     // Add lantern model
     bool AddLampModel(entid_t lampModel);
     //
     void DelAllLights();
 
     // Add portable source
-    long AddMovingLight(const char *type, const CVECTOR &pos);
+    int32_t AddMovingLight(const char *type, const CVECTOR &pos);
     // Put portable source in new position
-    void UpdateMovingLight(long id, const CVECTOR &pos);
+    void UpdateMovingLight(int32_t id, const CVECTOR &pos);
     // Remove portable source
-    void DelMovingLight(long id);
+    void DelMovingLight(int32_t id);
 
     // Set lights at pos
     void SetLightsAt(const CVECTOR &pos);
     void UnsetLights();
 
     // Update source types
-    void UpdateLightTypes(long i);
+    void UpdateLightTypes(int32_t i);
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
@@ -165,25 +165,25 @@ class Lights : public Entity
     struct
     {
         bool set;
-        long light;
+        int32_t light;
     } lt[8];
 
     // Types of light sources
     std::vector<LightType> types;
-    long numTypes;
-    long maxTypes;
+    int32_t numTypes;
+    int32_t maxTypes;
     // Existing lighting sources
     std::vector<Light> lights;
     uint32_t numLights;
-    long maxLights;
-    long lighter_code;
+    int32_t maxLights;
+    int32_t lighter_code;
 
     // portable light sources
     std::vector<MovingLight> aMovingLight;
 
     // Lantern models
     entid_t lampModels[16];
-    long numLampModels;
+    int32_t numLampModels;
 
     Vertex buf[6 * 1];
 };

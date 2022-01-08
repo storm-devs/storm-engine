@@ -125,7 +125,7 @@ void AIShipCameraController::Execute(float fDeltaTime)
                 fDelta += fRealDeltaTime * 5.0f;
                 while (fDelta > 2.0f)
                 {
-                    fDelta -= static_cast<float>(static_cast<long>(fDelta / 2.0f) * 2);
+                    fDelta -= static_cast<float>(static_cast<int32_t>(fDelta / 2.0f) * 2);
                 }
             }
         }

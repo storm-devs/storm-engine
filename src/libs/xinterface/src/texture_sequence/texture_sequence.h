@@ -9,20 +9,20 @@
 class TextureSequence : public CVideoTexture
 {
     VDX9RENDER *m_pRS;
-    long m_xQuantity;
-    long m_yQuantity;
-    long m_texWidth;
-    long m_texHeight;
+    int32_t m_xQuantity;
+    int32_t m_yQuantity;
+    int32_t m_texWidth;
+    int32_t m_texHeight;
     bool m_bCicled;
     uint32_t m_dwDeltaTime;
-    long m_maxCurNum;
+    int32_t m_maxCurNum;
     bool m_bHorzFlip;
     bool m_bVertFlip;
 
-    long m_curNum;
+    int32_t m_curNum;
     uint32_t m_dwCurDeltaTime;
 
-    long m_AllTex;
+    int32_t m_AllTex;
 
     void ToTextureRender(float blendValue) const;
 

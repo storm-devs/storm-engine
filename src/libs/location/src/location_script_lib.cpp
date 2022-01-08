@@ -24,7 +24,7 @@ struct LocationFindCacheElement
         delete name;
     };
 
-    long Cmp(const LocationFindCacheElement &v) const
+    int32_t Cmp(const LocationFindCacheElement &v) const
     {
         if (v.size != size)
             return false;
@@ -46,10 +46,10 @@ struct LocationFindCacheElement
     };
 
     char *name;
-    long size;
-    long max;
-    long index;
-    long use;
+    int32_t size;
+    int32_t max;
+    int32_t index;
+    int32_t use;
 };
 
 LocationFindCacheElement charactersFindCache[16];
@@ -74,13 +74,13 @@ inline bool CheckID(VDATA *vd, const char *id, bool &res)
     return true;
 }
 
-void slAddToCache(LocationFindCacheElement *element, long size, const char *name, long index)
+void slAddToCache(LocationFindCacheElement *element, int32_t size, const char *name, int32_t index)
 {
     Assert(name);
     Assert(name[0]);
     // looking for a cell for recording
-    long j = 0;
-    for (long i = 0, min = element[i].use; i < size; i++)
+    int32_t j = 0;
+    for (int32_t i = 0, min = element[i].use; i < size; i++)
     {
         if (element[i].index < 0)
         {
@@ -98,7 +98,7 @@ void slAddToCache(LocationFindCacheElement *element, long size, const char *name
     element[j].Set(name);
 }
 
-uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long cacheSize)
+uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, int32_t cacheSize)
 {
     // Get strings
     auto *pStr = (VDATA *)pS->Pop();
@@ -122,11 +122,11 @@ uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long ca
         return IFUNCRESULT_FAILED;
     if (!charactersFindBuf.name[0])
     {
-        pReturn->Set(-1L);
+        pReturn->Set(-1);
         return IFUNCRESULT_OK;
     }
     // Lowering the cache usage values
-    for (long i = 0; i < cacheSize; i++)
+    for (int32_t i = 0; i < cacheSize; i++)
     {
         cache[i].use--;
         if (cache[i].use < 0)
@@ -134,7 +134,7 @@ uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long ca
     }
     // look in the cache
     bool res;
-    for (long i = 0; i < cacheSize; i++)
+    for (int32_t i = 0; i < cacheSize; i++)
     {
         if (cache[i].index < 0)
             continue;
@@ -161,8 +161,8 @@ uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long ca
         }
     }
     // Have to search through the array
-    const long num = pArray->GetElementsNum();
-    for (long i = 0; i < num; i++)
+    const int32_t num = pArray->GetElementsNum();
+    for (int32_t i = 0; i < num; i++)
     {
         auto *const vd = (VDATA *)pArray->GetArrayElement(i);
         if (CheckID(vd, charactersFindBuf.name, res))
@@ -176,7 +176,7 @@ uint32_t slNativeFastFind(VS_STACK *pS, LocationFindCacheElement *cache, long ca
         }
     }
     //
-    pReturn->Set(-1L);
+    pReturn->Set(-1);
     return IFUNCRESULT_OK;
 }
 
@@ -200,16 +200,16 @@ uint32_t slNativeFindLaodLocation(VS_STACK *pS)
     const auto loc = EntityManager::GetEntityId("location");
     if (!loc)
     {
-        pReturn->Set(-1L);
+        pReturn->Set(-1);
         return IFUNCRESULT_OK;
     }
     Entity *l = EntityManager::GetEntityPointer(loc);
     if (!l || !l->AttributesPointer)
     {
-        pReturn->Set(-1L);
+        pReturn->Set(-1);
         return IFUNCRESULT_OK;
     }
-    const long index = l->AttributesPointer->GetAttributeAsDword("index", -1L);
+    const int32_t index = l->AttributesPointer->GetAttributeAsDword("index", -1L);
     pReturn->Set(index);
     return IFUNCRESULT_OK;
 }
@@ -258,7 +258,7 @@ uint32_t slNativeSleep(VS_STACK *pS)
 {
     // Get strings
     auto *pInt = (VDATA *)pS->Pop();
-    long delay = 1;
+    int32_t delay = 1;
     if (!pInt || !pInt->Get(delay))
         return IFUNCRESULT_FAILED;
     if (delay < 1)

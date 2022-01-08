@@ -23,7 +23,7 @@
 #define GRASS_MIN_DIST 10.0f // Minimum Lod Switching Distance
 #define GRASS_MAX_W 1.0f     // Greatest width
 #define GRASS_MAX_H 0.2f     // Highest height
-#define GRASS_VEIW ((long)(m_fMaxVisibleDist / GRASS_BLK_DST / GRASS_BLK_DST + 0.5f) + 1) // Visibility range in blocks
+#define GRASS_VEIW ((int32_t)(m_fMaxVisibleDist / GRASS_BLK_DST / GRASS_BLK_DST + 0.5f) + 1) // Visibility range in blocks
 #define GRASS_FRM_W 4 // Number of frames in width M = 2^N
 #define GRASS_FRM_H 4 // Number of frames in height M = 2^N
 #define GRASS_TEX_W (1.0f / GRASS_FRM_W)
@@ -128,7 +128,7 @@ bool Grass::Init()
     auto *index = static_cast<uint16_t *>(rs->LockIndexBuffer(ib));
     if (!index)
         return false;
-    for (long i = 0, point = 0; i < GRASS_MAX_POINTS; i++, index += 6, point += 4)
+    for (int32_t i = 0, point = 0; i < GRASS_MAX_POINTS; i++, index += 6, point += 4)
     {
         index[0] = static_cast<uint16_t>(point + 0);
         index[1] = static_cast<uint16_t>(point + 1);
@@ -190,7 +190,7 @@ bool Grass::LoadData(const char *patchName)
         miniX = hdr.miniX;
         miniZ = hdr.miniZ;
         // Last check
-        for (long i = 0, pnt = 0; i < minisize; i++)
+        for (int32_t i = 0, pnt = 0; i < minisize; i++)
         {
             if (pnt != miniMap[i].start)
                 throw std::runtime_error("incorrect file data -> minimap");
@@ -198,13 +198,13 @@ bool Grass::LoadData(const char *patchName)
         }
         // Create blocks
         uint8_t translate[16];
-        for (long i = 0; i < 16; i++)
+        for (int32_t i = 0; i < 16; i++)
         {
             translate[i] = static_cast<uint8_t>((i * 255) / 15);
         }
         block = new GRSMapElementEx[elements];
         auto *const src = (GRSMapElement *)(load + sizeof(GRSHeader) + minisize * sizeof(GRSMiniMapElement));
-        for (long i = 0; i < elements; i++)
+        for (int32_t i = 0; i < elements; i++)
         {
             auto &sb = src[i];
             GRSMapElementEx &b = block[i];
@@ -224,16 +224,16 @@ bool Grass::LoadData(const char *patchName)
         cachedMiniMap.reserve(miniX * miniZ);
 
         // Correcting the position of the blades of grass from local to world
-        for (long z = 0; z < miniZ; z++)
+        for (int32_t z = 0; z < miniZ; z++)
         {
             GRSMiniMapElement *line = &miniMap[z * miniX];
             const float cz = startZ + z * GRASS_BLK_DST;
-            for (long x = 0; x < miniX; x++)
+            for (int32_t x = 0; x < miniX; x++)
             {
                 const float cx = startX + x * GRASS_BLK_DST;
                 GRSMapElementEx *el = block + line[x].start;
-                const long count = line[x].num[0];
-                for (long i = 0; i < count; i++)
+                const int32_t count = line[x].num[0];
+                for (int32_t i = 0; i < count; i++)
                 {
                     el[i].x += cx;
                     el[i].z += cz;
@@ -241,7 +241,7 @@ bool Grass::LoadData(const char *patchName)
             }
 
             // cache non-empty blocks
-            for (long x = 0; x < miniX; x++)
+            for (int32_t x = 0; x < miniX; x++)
             {
                 if (miniMap[z * miniX + x].num[0] != 0)
                 {
@@ -284,7 +284,7 @@ void Grass::Execute(uint32_t delta_time)
     }
 
     VDATA *param = core.Event("GOpt_GetGrassQuality", nullptr);
-    long res = rq_full;
+    int32_t res = rq_full;
     if (param && param->Get(res))
     {
         if (res < rq_full)
@@ -360,7 +360,7 @@ void Grass::Execute(uint32_t delta_time)
     phase[5] += dltTime * 0.019f;
     phase[6] += dltTime * 0.057f;
     const float pi2 = 2.0f * 3.141592653f;
-    for (long i = 0; i < sizeof(phase) / sizeof(phase[0]); i++)
+    for (int32_t i = 0; i < sizeof(phase) / sizeof(phase[0]); i++)
         if (phase[i] > pi2 * 256.0f)
             phase[i] -= pi2 * 256.0f;
     // Coefficients for calculating deviations
@@ -517,7 +517,7 @@ void Grass::Realize(uint32_t delta_time)
     }
 
     // recalculate the parameters of the angles
-    for (long i = 0; i < 16; i++)
+    for (int32_t i = 0; i < 16; i++)
     {
         aAngles[i].z = fabsf(-aAngles[i].y * lDir.x + aAngles[i].x * lDir.z);
         if (aAngles[i].z < 0.0f)
@@ -541,7 +541,7 @@ void Grass::Realize(uint32_t delta_time)
     PLANE *pln = rs->GetPlanes();
     PLANE plane[5];
     plane[0].Nx = plane[0].Ny = plane[0].Nz = 0.0f;
-    for (long i = 0; i < 4; i++)
+    for (int32_t i = 0; i < 4; i++)
     {
         plane[i + 1] = pln[i];
         plane[0].Nx += pln[i].Nx;
@@ -552,7 +552,7 @@ void Grass::Realize(uint32_t delta_time)
     plane[0].Ny *= 0.25f;
     plane[0].Nz *= 0.25f;
     plane[0].D = pos.x * plane[0].Nx + pos.y * plane[0].Ny + pos.z * plane[0].Nz;
-    long numPlanes = 5;
+    int32_t numPlanes = 5;
     // set texture
     rs->TextureSet(0, texture);
     rs->TextureSet(1, texture);
@@ -568,11 +568,11 @@ void Grass::Realize(uint32_t delta_time)
     fx_->SetValue(haSize_, D3DXVECTOR2(m_fMaxWidth, m_fMaxHeight), sizeof(D3DXVECTOR2));
 
     // Camera position on the map
-    long camx = static_cast<long>((pos.x / m_fDataScale - startX) / GRASS_BLK_DST);
-    long camz = static_cast<long>((pos.z / m_fDataScale - startZ) / GRASS_BLK_DST);
+    int32_t camx = static_cast<int32_t>((pos.x / m_fDataScale - startX) / GRASS_BLK_DST);
+    int32_t camz = static_cast<int32_t>((pos.z / m_fDataScale - startZ) / GRASS_BLK_DST);
     // The square that covers the area of view on the map
-    long left = camx - GRASS_VEIW, right = camx + GRASS_VEIW;
-    long top = camz - GRASS_VEIW, bottom = camz + GRASS_VEIW;
+    int32_t left = camx - GRASS_VEIW, right = camx + GRASS_VEIW;
+    int32_t top = camz - GRASS_VEIW, bottom = camz + GRASS_VEIW;
     // Clip by the size of the map
     if (right < 0 || left >= miniX)
         return;
@@ -672,7 +672,7 @@ void Grass::RestoreRender()
 }
 
 // Draw a block with coordinates on the minimap
-void Grass::RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlanes, long mx, long mz)
+void Grass::RenderBlock(const CVECTOR &camPos, const PLANE *plane, int32_t numPlanes, int32_t mx, int32_t mz)
 {
     // Draw a buffer if overflowed
     if (numPoints >= GRASS_MAX_POINTS - (GRASS_CNT_MIN + GRASS_CNT_DLT) * 3)
@@ -728,9 +728,9 @@ void Grass::RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlane
 }
 
 // Box visibility check
-inline bool Grass::VisibleTest(const PLANE *plane, long numPlanes, const CVECTOR &min, const CVECTOR &max)
+inline bool Grass::VisibleTest(const PLANE *plane, int32_t numPlanes, const CVECTOR &min, const CVECTOR &max)
 {
-    for (long i = 0; i < numPlanes; i++)
+    for (int32_t i = 0; i < numPlanes; i++)
     {
         const float d = plane[i].D;
         const float minX = min.x * plane[i].Nx;
@@ -776,7 +776,7 @@ inline void Grass::RenderBlock(GRSMiniMapElement &mme, float kLod)
     GRSMapElementEx *b = block + mme.start;
     // Determine the parameters of the lod
     kLod = kLod * 3.9999f;
-    long lod = static_cast<long>(kLod);
+    int32_t lod = static_cast<int32_t>(kLod);
     if (lod < quality)
         lod = quality;
     Assert(lod >= 0 && lod < 4);
@@ -786,10 +786,10 @@ inline void Grass::RenderBlock(GRSMiniMapElement &mme, float kLod)
     if (kBlend < 0.0f)
         kBlend = 0.0f;
     // The number of blades of grass in total
-    const long num = mme.num[lod];
+    const int32_t num = mme.num[lod];
     Assert(num <= GRASS_CNT_MIN + GRASS_CNT_DLT);
     // Quantity drawn without LODs
-    const long lodNum = lod < 3 ? mme.num[lod + 1] : 0;
+    const int32_t lodNum = lod < 3 ? mme.num[lod + 1] : 0;
     // Wind addition
     float wAddX, wAddZ, kwDirX, kwDirZ;
     if (quality <= rq_middle)
@@ -807,7 +807,7 @@ inline void Grass::RenderBlock(GRSMiniMapElement &mme, float kLod)
     }
     // Cycle through Blades
     float alpha;
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
     {
         // Alpha
         if (i < lodNum)
@@ -952,7 +952,7 @@ void Grass::DrawBuffer()
     }
 }
 
-long Grass::GetColor(CVECTOR color)
+int32_t Grass::GetColor(CVECTOR color)
 {
     if (color.x > 1.0f)
         color.x = 1.0f;
@@ -966,9 +966,9 @@ long Grass::GetColor(CVECTOR color)
         color.z = 1.0f;
     if (color.z < 0.0f)
         color.z = 0.0f;
-    const long r = static_cast<long>(color.z * 255.0f);
-    const long g = static_cast<long>(color.y * 255.0f);
-    const long b = static_cast<long>(color.x * 255.0f);
+    const int32_t r = static_cast<int32_t>(color.z * 255.0f);
+    const int32_t g = static_cast<int32_t>(color.y * 255.0f);
+    const int32_t b = static_cast<int32_t>(color.x * 255.0f);
     return (r << 16) | (g << 8) | b;
 }
 

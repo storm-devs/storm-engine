@@ -64,8 +64,8 @@ class Debris
     Pillar &pillar;
     float galpha;
     Model mdl[16];  // Uploaded models
-    long numModels; // Number of models
+    int32_t numModels; // Number of models
 
     ModelInfo fly[64]; // Flying models
-    long flyCounter;   // Number of flying models
+    int32_t flyCounter;   // Number of flying models
 };

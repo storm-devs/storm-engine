@@ -73,24 +73,24 @@ struct Vertex
     CVECTOR mc;              // Color mask
     uint32_t alpha;          // vertex Alpha
     lighter::Shadow *shadow; // Shading values from each source
-    long flags;              // Flags
-    long vbid;               // Vertex buffer
-    long addr;               // The relative address of the color in the buffer
-    long obj;                // The object it belongs to
-    long cindex;             // Index in final buffer of object colors
+    int32_t flags;              // Flags
+    int32_t vbid;               // Vertex buffer
+    int32_t addr;               // The relative address of the color in the buffer
+    int32_t obj;                // The object it belongs to
+    int32_t cindex;             // Index in final buffer of object colors
 };
 
 struct Triangle
 {
     CVECTOR n; // Normal
     float sq;  // Area
-    long i[3]; // Vertex indices
+    int32_t i[3]; // Vertex indices
 };
 
 struct VertexBuffer
 {
-    long vbID;  // vertex Buffer identifier
-    long start; // Buffer index in the global array
+    int32_t vbID;  // vertex Buffer identifier
+    int32_t start; // Buffer index in the global array
 };
 
 struct OctFndVerts

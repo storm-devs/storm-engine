@@ -59,8 +59,8 @@ class TornadoParticles
     void Update(float dltTime);
     void Draw(VDX9RENDER *rs);
 
-    long txtPillarPrts;
-    long txtGroundPrts;
+    int32_t txtPillarPrts;
+    int32_t txtGroundPrts;
 
     void SetGlobalAlpha(float a);
 
@@ -68,7 +68,7 @@ class TornadoParticles
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    void DrawParticles(VDX9RENDER *rs, void *prts, long num, long size, long texture, const char *tech);
+    void DrawParticles(VDX9RENDER *rs, void *prts, int32_t num, int32_t size, int32_t texture, const char *tech);
     static float GetRand(float r, float dev = 0.5f); // dev = 0..1, return 0..r
 
   private:

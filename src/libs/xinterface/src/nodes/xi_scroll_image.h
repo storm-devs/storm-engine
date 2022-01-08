@@ -14,14 +14,14 @@ class CXI_SCROLLIMAGE : public CINODE
         SCROLLEntity *next;
     };
 
-    long m_nSlotsQnt;
+    int32_t m_nSlotsQnt;
 
     struct ImageSlot
     {
         bool useSpecTechnique = false;
-        long tex = -1;
-        long ptex = -1;
-        long img = -1;
+        int32_t tex = -1;
+        int32_t ptex = -1;
+        int32_t img = -1;
         std::string saveName;
     };
 
@@ -29,7 +29,7 @@ class CXI_SCROLLIMAGE : public CINODE
     {
         std::vector<ImageSlot> slots;
 
-        long str1, str2; // string identificators into string service
+        int32_t str1, str2; // string identificators into string service
         std::string string1;
         std::string string2;
 
@@ -46,7 +46,7 @@ class CXI_SCROLLIMAGE : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -55,7 +55,7 @@ class CXI_SCROLLIMAGE : public CINODE
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
     XYRECT GetCursorRect() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
     void ChangeScroll(int nScrollItemNum);
     void DeleteImage(int imgNum);
@@ -70,7 +70,7 @@ class CXI_SCROLLIMAGE : public CINODE
     float GetShiftDistance(int shiftIdx) const;
     void UpdateTexturesGroup();
     int FindTexGroupFromOld(char **pGroupList, char *groupName, int listSize);
-    long GetMousePointedPictureNum() const;
+    int32_t GetMousePointedPictureNum() const;
 
   protected:
     // parameters for moving to scrolling
@@ -82,7 +82,7 @@ class CXI_SCROLLIMAGE : public CINODE
     int m_nSpeedMul;
     int m_nNotUsedQuantity;
 
-    long *m_pPicOffset;
+    int32_t *m_pPicOffset;
 
     bool m_bShowBorder;
     int m_nShowOrder;
@@ -93,7 +93,7 @@ class CXI_SCROLLIMAGE : public CINODE
     XYPOINT m_pntCenterOffset;
     XYRECT m_rAbsolutePosition;
     float m_fScale;
-    long m_lDelta;
+    int32_t m_lDelta;
     uint32_t *m_dwNormalColor;
     uint32_t *m_dwSelectColor;
     uint32_t m_dwBlendColor;
@@ -107,13 +107,13 @@ class CXI_SCROLLIMAGE : public CINODE
 
     // textures parameters
     char **m_sGroupName;
-    long *m_nGroupTex;
+    int32_t *m_nGroupTex;
     int m_nGroupQuantity;
     char *m_sBorderGroupName; //
-    long m_texBorder;         // select border texture identificator
-    long m_nBorderPicture;    // select border picture identificator
-    long *m_idBadTexture;     // image texture to replace nonexistent
-    long *m_idBadPic;         // picture to replace nonexistent
+    int32_t m_texBorder;         // select border texture identificator
+    int32_t m_nBorderPicture;    // select border picture identificator
+    int32_t *m_idBadTexture;     // image texture to replace nonexistent
+    int32_t *m_idBadPic;         // picture to replace nonexistent
 
     char *m_sSpecTechniqueName;
     uint32_t m_dwSpecTechniqueARGB;
@@ -122,18 +122,18 @@ class CXI_SCROLLIMAGE : public CINODE
     float m_nOneStrScale;
     int m_nOneStrFont;
     int m_nOneStrAlign;           // alignment string
-    long m_lOneStrX;              // Offset from rectangle center for X coordinate
+    int32_t m_lOneStrX;              // Offset from rectangle center for X coordinate
     bool m_bUseOneString;         // out to screen the one text string
-    long m_lOneStrOffset;         // Offset from top rectangle of list for Y coordinate of string1
+    int32_t m_lOneStrOffset;         // Offset from top rectangle of list for Y coordinate of string1
     uint32_t m_dwOneStrForeColor; // Font foreground color for first string
     uint32_t m_dwOneStrBackColor; // Font background color for first string
     // two string parameters
     float m_nTwoStrScale;
     int m_nTwoStrFont;
     int m_nTwoStrAlign;           // alignment string
-    long m_lTwoStrX;              // Offset from rectangle center for X coordinate
+    int32_t m_lTwoStrX;              // Offset from rectangle center for X coordinate
     bool m_bUseTwoString;         // out to screen the two text string
-    long m_lTwoStrOffset;         // Offset from top rectangle of list for Y coordinate of string2
+    int32_t m_lTwoStrOffset;         // Offset from top rectangle of list for Y coordinate of string2
     uint32_t m_dwTwoStrForeColor; // Font foreground color for second string
     uint32_t m_dwTwoStrBackColor; // Font background color for second string
 

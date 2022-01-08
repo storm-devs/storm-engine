@@ -10,7 +10,7 @@ extern float fCausticScale, fCausticDelta, fFogDensity, fCausticDistance;
 extern CVECTOR4 v4CausticColor;
 extern bool bCausticEnable;
 extern float fCausticFrame;
-extern long iCausticTex[32];
+extern int32_t iCausticTex[32];
 
 LocModelRealizer::LocModelRealizer()
 {
@@ -75,7 +75,7 @@ void LocModelRealizer::Realize(uint32_t delta_time) const
             // 12 - (fog density, fog_start, 0, 0)
             // 13 - (0, 0, 0, 0)
 
-            fCausticDelta = fCausticFrame - static_cast<long>(fCausticFrame);
+            fCausticDelta = fCausticFrame - static_cast<int32_t>(fCausticFrame);
             const auto vec1 = CVECTOR4(fCausticScale, fCausticDelta, 0.0f, 0.0f);
             const auto vec2 = CVECTOR4(fFogDensity, 0.0f, 0.0f, 0.0f);
             const auto vec3 = CVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -88,8 +88,8 @@ void LocModelRealizer::Realize(uint32_t delta_time) const
             rs->SetVertexShaderConstantF(14, reinterpret_cast<const float *>(&vec4), 1);
             rs->SetVertexShaderConstantF(15, reinterpret_cast<const float *>(&vec5), 1);
 
-            rs->TextureSet(1, iCausticTex[static_cast<long>(fCausticFrame) % 32]);
-            rs->TextureSet(2, iCausticTex[(static_cast<long>(fCausticFrame) + 1) % 32]);
+            rs->TextureSet(1, iCausticTex[static_cast<int32_t>(fCausticFrame) % 32]);
+            rs->TextureSet(2, iCausticTex[(static_cast<int32_t>(fCausticFrame) + 1) % 32]);
 
             // draw caustics
             gs->SetCausticMode(true);

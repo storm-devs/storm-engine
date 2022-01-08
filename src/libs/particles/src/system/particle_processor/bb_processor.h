@@ -35,8 +35,8 @@ class BillBoardProcessor
 
     VDX9RENDER *pRS;
     // Buffers for rendering billboards
-    long pVBuffer;
-    long pIBuffer;
+    int32_t pVBuffer;
+    int32_t pIBuffer;
 
     struct MemArrayItem
     {

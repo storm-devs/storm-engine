@@ -32,7 +32,7 @@ class BIShipIcon
     void Draw();
     void Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA);
 
-    size_t AddTexture(const char *pcTextureName, long nCols, long nRows) const;
+    size_t AddTexture(const char *pcTextureName, int32_t nCols, int32_t nRows) const;
 
     void Recollect();
 
@@ -48,45 +48,45 @@ class BIShipIcon
 
   protected:
     void Release();
-    long CalculateShipQuantity();
-    void UpdateBuffers(long nShipQ);
+    int32_t CalculateShipQuantity();
+    void UpdateBuffers(int32_t nShipQ);
     void FillIndexBuffer() const;
     void FillVertexBuffer();
-    long WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+    int32_t WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
                             const FPOINT &size);
-    long WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+    int32_t WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
                                         const FPOINT &size, float fClampUp, float fClampDown, float fClampLeft,
                                         float fClampRight);
     void UpdateCommandList();
 
-    long GetCurrentCommandTopLine();
-    long GetCurrentCommandCharacterIndex();
-    long GetCurrentCommandMode() const;
+    int32_t GetCurrentCommandTopLine();
+    int32_t GetCurrentCommandCharacterIndex();
+    int32_t GetCurrentCommandMode() const;
 
     ATTRIBUTES *GetSailorQuantityAttribute(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
-    float GetProgressShipHP(long nShipNum) const;
-    float GetProgressShipSP(long nShipNum);
-    float GetProgressShipClass(long nShipNum);
-    void GetShipUVFromPictureIndex(long nPicIndex, FRECT &rUV);
+    float GetProgressShipHP(int32_t nShipNum) const;
+    float GetProgressShipSP(int32_t nShipNum);
+    float GetProgressShipClass(int32_t nShipNum);
+    void GetShipUVFromPictureIndex(int32_t nPicIndex, FRECT &rUV);
 
-    long GetShipClass(long nCharIdx);
+    int32_t GetShipClass(int32_t nCharIdx);
 
     VDX9RENDER *m_pRS;
 
-    long m_nVBufID;
-    long m_nIBufID;
+    int32_t m_nVBufID;
+    int32_t m_nIBufID;
 
-    long m_nMaxSquareQ;
+    int32_t m_nMaxSquareQ;
 
-    long m_nBackTextureID;
-    long m_nBackSquareQ;
+    int32_t m_nBackTextureID;
+    int32_t m_nBackSquareQ;
     uint32_t m_dwBackColor;
     FRECT m_rBackUV;
     BIFPOINT m_pntBackOffset;
     FPOINT m_pntBackIconSize;
 
-    long m_nShipStateTextureID;
-    long m_nShipStateSquareQ;
+    int32_t m_nShipStateTextureID;
+    int32_t m_nShipStateSquareQ;
     uint32_t m_dwShipStateColor;
     FRECT m_rShipHPUV;
     BIFPOINT m_pntShipHPOffset;
@@ -95,16 +95,16 @@ class BIShipIcon
     BIFPOINT m_pntShipSPOffset;
     FPOINT m_pntShipSPIconSize;
 
-    long m_nShipClassTextureID;
-    long m_nShipClassSquareQ;
+    int32_t m_nShipClassTextureID;
+    int32_t m_nShipClassSquareQ;
     uint32_t m_dwShipClassColor;
     FRECT m_rShipClassUV;
     BIFPOINT m_pntShipClassOffset;
     FPOINT m_pntShipClassIconSize;
     std::vector<float> m_aClassProgress;
 
-    long m_nShipTextureID;
-    long m_nShipSquareQ;
+    int32_t m_nShipTextureID;
+    int32_t m_nShipSquareQ;
     uint32_t m_dwShipColor;
     // FRECT m_rShipUV;
     BIFPOINT m_pntShipOffset;
@@ -114,27 +114,27 @@ class BIShipIcon
 
     struct ShipDescr
     {
-        long nCharacterIndex;
+        int32_t nCharacterIndex;
         FPOINT pntPos; // center
         ATTRIBUTES *pASailorQuantity;
         ATTRIBUTES *pAShip;
-        long nMaxHP;
-        long nMaxSP;
+        int32_t nMaxHP;
+        int32_t nMaxSP;
         FRECT rUV;
         std::string sShipName;
-        long nShipClass;
+        int32_t nShipClass;
     } m_Ship[MAX_SHIP_QUANTITY];
 
-    long m_nShipQuantity;
-    long m_nCurrentShipIndex;
-    long m_nCommandListVerticalOffset;
+    int32_t m_nShipQuantity;
+    int32_t m_nCurrentShipIndex;
+    int32_t m_nCommandListVerticalOffset;
 
-    long m_idSailorFont;
+    int32_t m_idSailorFont;
     uint32_t m_dwSailorFontColor;
     float m_fSailorFontScale;
     POINT m_SailorFontOffset;
 
-    long m_idShipNameFont;
+    int32_t m_idShipNameFont;
     uint32_t m_dwShipNameFontColor;
     float m_fShipNameFontScale;
     POINT m_ShipNameFontOffset;
@@ -145,5 +145,5 @@ class BIShipIcon
 
     BIShipCommandList *m_pCommandList;
     entid_t m_idHostEntity;
-    long m_nCommandMode;
+    int32_t m_nCommandMode;
 };

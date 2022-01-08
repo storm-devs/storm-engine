@@ -76,25 +76,25 @@ void CXI_EDITBOX::Draw(bool bSelected, uint32_t Delta_Time)
             {
             case '*':
                 m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale * .7f, m_screenSize.x,
-                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top) + 3, "Del");
+                               m_screenSize.y, static_cast<int32_t>(left), static_cast<int32_t>(top) + 3, "Del");
                 break;
             case '^':
                 break;
             case '~':
                 m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale * .7f, m_screenSize.x,
-                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top) + 3, "Ok");
+                               m_screenSize.y, static_cast<int32_t>(left), static_cast<int32_t>(top) + 3, "Ok");
                 break;
             case '`':
                 m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale * .7f, m_screenSize.x,
-                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top) + 3, "Esc");
+                               m_screenSize.y, static_cast<int32_t>(left), static_cast<int32_t>(top) + 3, "Esc");
                 break;
             case '|':
                 m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale * .6f, m_screenSize.x,
-                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top) + 4, "Caps");
+                               m_screenSize.y, static_cast<int32_t>(left), static_cast<int32_t>(top) + 4, "Caps");
                 break;
             default:
                 m_rs->ExtPrint(m_nChrFontNum, 0xFFFFFFFF, 0, PR_ALIGN_CENTER, true, m_fChrScale, m_screenSize.x,
-                               m_screenSize.y, static_cast<long>(left), static_cast<long>(top), "%c",
+                               m_screenSize.y, static_cast<int32_t>(left), static_cast<int32_t>(top), "%c",
                                m_alpha[m_bUpChrRegistrOffset + idx]);
             }
             left += m_fHAdd;
@@ -250,7 +250,7 @@ int CXI_EDITBOX::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_EDITBOX::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_EDITBOX::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos < m_rect.left + m_nLeftOffset)
         return false;
@@ -290,7 +290,7 @@ void CXI_EDITBOX::MouseThis(float fX, float fY)
 
 void CXI_EDITBOX::ChangePosition(XYRECT &rNewPos)
 {
-    long i, j, idx;
+    int32_t i, j, idx;
     m_rect = rNewPos;
 
     // fills this buffers
@@ -307,7 +307,7 @@ void CXI_EDITBOX::ChangePosition(XYRECT &rNewPos)
     pv[4].pos.x = pv[5].pos.x = static_cast<float>(m_rect.left) + m_nLeftOffset;
     pv[6].pos.x = pv[7].pos.x = static_cast<float>(m_rect.right) - m_nLeftOffset;
     pv[4].pos.y = pv[6].pos.y = static_cast<float>(m_nTopStringPos);
-    m_nTopOffset = static_cast<long>(pv[5].pos.y = pv[7].pos.y = static_cast<float>(m_rect.top) + m_nTopOffset +
+    m_nTopOffset = static_cast<int32_t>(pv[5].pos.y = pv[7].pos.y = static_cast<float>(m_rect.top) + m_nTopOffset +
                                                                  m_rs->CharHeight(m_nStrFontNum) * 1.06f) +
                    4;
     m_rs->UnLockVertexBuffer(m_idVBRect);
@@ -457,7 +457,7 @@ void CXI_EDITBOX::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const
     pv[4].pos.x = pv[5].pos.x = static_cast<float>(m_rect.left) + m_nLeftOffset;
     pv[6].pos.x = pv[7].pos.x = static_cast<float>(m_rect.right) - m_nLeftOffset;
     pv[4].pos.y = pv[6].pos.y = static_cast<float>(m_nTopStringPos);
-    m_nTopOffset = static_cast<long>(pv[5].pos.y = pv[7].pos.y = static_cast<float>(m_rect.top) + m_nTopOffset +
+    m_nTopOffset = static_cast<int32_t>(pv[5].pos.y = pv[7].pos.y = static_cast<float>(m_rect.top) + m_nTopOffset +
                                                                  m_rs->CharHeight(m_nStrFontNum) * 1.06f) +
                    4;
     m_rs->UnLockVertexBuffer(m_idVBRect);

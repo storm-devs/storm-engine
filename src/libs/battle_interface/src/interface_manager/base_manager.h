@@ -28,7 +28,7 @@ class BI_ManagerNodeBase
 
     virtual void Update() = 0;
 
-    virtual long Event(const char *pcEventName) = 0;
+    virtual int32_t Event(const char *pcEventName) = 0;
 
     virtual bool IsPointInside(float fX, float fY) = 0;
     virtual bool IsMouseClickReaction() = 0;
@@ -62,9 +62,9 @@ class BI_ManagerBase : public Entity
     }
 
     virtual BI_ManagerNodeBase *CreateImageNode(const char *texture, const FRECT &uv, const RECT &pos, uint32_t color,
-                                                long nPrioritet) = 0;
+                                                int32_t nPrioritet) = 0;
     virtual BI_ManagerNodeBase *CreateStringNode(const char *text, const char *font, uint32_t color, float scale,
-                                                 const RECT &pos, long nHAlign, long nVAlign, long prioritet) = 0;
+                                                 const RECT &pos, int32_t nHAlign, int32_t nVAlign, int32_t prioritet) = 0;
     virtual void DeleteNode(BI_ManagerNodeBase *pNod) = 0;
 
   protected:

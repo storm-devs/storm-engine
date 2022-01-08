@@ -15,7 +15,7 @@ CXI_UTILS::~CXI_UTILS()
 
 void CXI_UTILS::Init()
 {
-    for (long n = 0; n < UTILS_KEYS_QUANTITY; n++)
+    for (int32_t n = 0; n < UTILS_KEYS_QUANTITY; n++)
     {
         // keys[n].nAsyncKeyCode = -1; // not used
         keys[n].nPressedState = -1;
@@ -37,7 +37,7 @@ void CXI_UTILS::FrameUpdate()
     if (m_bIsKeyPressed && m_bFrameKeyPressedFlag)
     {
         // there was no polling on this frame, which means all the keys can be reset (we left the polling cycle)
-        for (long n = 0; n < UTILS_KEYS_QUANTITY; n++)
+        for (int32_t n = 0; n < UTILS_KEYS_QUANTITY; n++)
         {
             if (keys[n].nAsyncKeyCode < 0)
                 continue;
@@ -54,7 +54,7 @@ char CXI_UTILS::GetKeyInput()
     char cRetVal = 0;
 
     pThis->m_bIsKeyPressed = false;
-    for (long n = 0; n < UTILS_KEYS_QUANTITY; n++)
+    for (int32_t n = 0; n < UTILS_KEYS_QUANTITY; n++)
     {
         if (pThis->keys[n].nAsyncKeyCode < 0)
             continue;
@@ -139,7 +139,7 @@ void CXI_UTILS::StringLeftClamp(char *&pcString)
     }
 }
 
-const char *CXI_UTILS::StringGetTokenID(char *&pcString, char *pcBuffer, long nBufferSize)
+const char *CXI_UTILS::StringGetTokenID(char *&pcString, char *pcBuffer, int32_t nBufferSize)
 {
     if (!pcString || !pcBuffer || nBufferSize <= 0)
         return nullptr;
@@ -147,7 +147,7 @@ const char *CXI_UTILS::StringGetTokenID(char *&pcString, char *pcBuffer, long nB
 
     StringLeftClamp(pcString);
 
-    long n = 0;
+    int32_t n = 0;
     const auto q = nBufferSize - 1;
     for (auto cCur = pcString[0]; cCur && n < q; pcString++, cCur = pcString[0])
     {
@@ -179,7 +179,7 @@ const char *CXI_UTILS::StringGetTokenID(char *&pcString, char *pcBuffer, long nB
     return nullptr;
 }
 
-const char *CXI_UTILS::StringGetTokenString(char *&pcString, char *pcBuffer, long nBufferSize)
+const char *CXI_UTILS::StringGetTokenString(char *&pcString, char *pcBuffer, int32_t nBufferSize)
 {
     if (!pcString || !pcBuffer || nBufferSize <= 0)
         return nullptr;
@@ -187,9 +187,9 @@ const char *CXI_UTILS::StringGetTokenString(char *&pcString, char *pcBuffer, lon
 
     StringLeftClamp(pcString);
 
-    long n = 0;
+    int32_t n = 0;
     const auto q = nBufferSize - 1;
-    long nQuote = 0;
+    int32_t nQuote = 0;
     for (auto cCur = pcString[0]; cCur && n < q; pcString++, cCur = pcString[0])
     {
         if (cCur == ',' && nQuote == 0)
@@ -216,7 +216,7 @@ const char *CXI_UTILS::StringGetTokenString(char *&pcString, char *pcBuffer, lon
     return nullptr;
 }
 
-long CXI_UTILS::StringGetTokenCode(const char *pcTokenID)
+int32_t CXI_UTILS::StringGetTokenCode(const char *pcTokenID)
 {
     if (_stricmp(pcTokenID, "color") == 0)
         return InterfaceToken_color;
@@ -268,17 +268,17 @@ void CXI_UTILS::StringDoublicate(const char *pcSrc, char *&pcDst)
     }
 }
 
-void CXI_UTILS::StringTwoLong(const char *pcString, long &nLong1, long &nLong2)
+void CXI_UTILS::StringTwoLong(const char *pcString, int32_t &nLong1, int32_t &nLong2)
 {
     nLong1 = StringGetLong(pcString);
     nLong2 = StringGetLong(pcString);
 }
 
-long CXI_UTILS::StringGetLong(const char *&pcString)
+int32_t CXI_UTILS::StringGetLong(const char *&pcString)
 {
     if (!pcString)
         return 0;
-    long nRetVal = 0;
+    int32_t nRetVal = 0;
     for (; pcString[0]; pcString++)
     {
         if (pcString[0] <= 0x20)
@@ -301,7 +301,7 @@ float CXI_UTILS::StringGetFloat(const char *&pcString)
     if (!pcString)
         return 0.f;
     char sTmp[128];
-    long n = 0;
+    int32_t n = 0;
     for (; pcString[0] && n < sizeof(sTmp) - 1; pcString++)
     {
         if (pcString[0] <= 0x20)
@@ -346,24 +346,24 @@ void CXI_UTILS::StringFillStringArray(const char *pcString, std::vector<std::str
     }
 }
 
-long CXI_UTILS::SplitStringByWidth(const char *pcText, long nFontID, float fFontScale, long nWidth,
+int32_t CXI_UTILS::SplitStringByWidth(const char *pcText, int32_t nFontID, float fFontScale, int32_t nWidth,
                                    std::vector<std::string> &asOutStr)
 {
-    long nMaxUsingWidth = 0;
+    int32_t nMaxUsingWidth = 0;
     const auto *const pcSrcStr = pcText;
     if (pcSrcStr == nullptr)
         return nMaxUsingWidth;
     auto *rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     asOutStr.clear();
 
-    long nSrc = 0;
-    long nDst = 0;
-    long nDstPrev = 0;
-    long nSrcPrev = 0;
+    int32_t nSrc = 0;
+    int32_t nDst = 0;
+    int32_t nDstPrev = 0;
+    int32_t nSrcPrev = 0;
     char param[1024];
     while (true)
     {
-        const long nToken = GetCurrentTokenIntoString(&pcSrcStr[nSrc]);
+        const int32_t nToken = GetCurrentTokenIntoString(&pcSrcStr[nSrc]);
         if (nToken == StrTokenType_common)
         {
             param[nDst++] = pcSrcStr[nSrc++];
@@ -412,7 +412,7 @@ long CXI_UTILS::SplitStringByWidth(const char *pcText, long nFontID, float fFont
     return nMaxUsingWidth;
 }
 
-float CXI_UTILS::GetByStrNumFromAttribute_Float(ATTRIBUTES *pA, const char *pStr, long num, float fDefValue)
+float CXI_UTILS::GetByStrNumFromAttribute_Float(ATTRIBUTES *pA, const char *pStr, int32_t num, float fDefValue)
 {
     if (!pA)
         return fDefValue;
@@ -452,8 +452,8 @@ void CXI_UTILS::WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, uint32_t color, 
     pv[3].tv = uv.bottom;
 }
 
-void CXI_UTILS::WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, uint32_t color, FXYRECT &uv, long left, long top,
-                                          long right, long bottom)
+void CXI_UTILS::WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, uint32_t color, FXYRECT &uv, int32_t left, int32_t top,
+                                          int32_t right, int32_t bottom)
 {
     pv[0].color = color;
     pv[0].pos.x = static_cast<float>(left);
@@ -484,16 +484,16 @@ void CXI_UTILS::WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, uint32_t color, 
     pv[3].tv = uv.bottom;
 }
 
-void CXI_UTILS::PrintTextIntoWindow(VDX9RENDER *pRender, long nFont, uint32_t dwColor, long wAlignment, bool bShadow,
-                                    float fScale, long scrWidth, long scrHeight, long x, long y, const char *pcString,
-                                    long left, long top, long width, long height)
+void CXI_UTILS::PrintTextIntoWindow(VDX9RENDER *pRender, int32_t nFont, uint32_t dwColor, int32_t wAlignment, bool bShadow,
+                                    float fScale, int32_t scrWidth, int32_t scrHeight, int32_t x, int32_t y, const char *pcString,
+                                    int32_t left, int32_t top, int32_t width, int32_t height)
 {
     const auto nStrWidth = pRender->StringWidth((char *)pcString, nFont, fScale, 0);
     if (nStrWidth == 0)
         return;
     const auto right = left + width;
 
-    long nL, nR;
+    int32_t nL, nR;
     if (wAlignment == PR_ALIGN_RIGHT)
         nL = x - nStrWidth;
     else if (wAlignment == PR_ALIGN_CENTER)
@@ -523,7 +523,7 @@ void CXI_UTILS::PrintTextIntoWindow(VDX9RENDER *pRender, long nFont, uint32_t dw
     // cut the right edge
     if (nR > right)
     {
-        long n = strlen(pc);
+        int32_t n = strlen(pc);
         while (n > 0 && nR > right)
         {
             n -= utf8::u8_dec(pc + n);

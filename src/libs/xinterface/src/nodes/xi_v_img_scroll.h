@@ -15,19 +15,19 @@ class CXI_VIMAGESCROLL : public CINODE
         SCROLLEntity *next;
     };
 
-    long m_nSlotsQnt;
+    int32_t m_nSlotsQnt;
 
     struct IMAGEDESCRIBE
     {
         bool *bUseSpecTechnique;
-        long *tex;
-        long *ptex;
+        int32_t *tex;
+        int32_t *ptex;
         char **saveName;
-        long *img;
+        int32_t *img;
 
-        // long    str1,str2;        // string identificators into string service
+        // int32_t    str1,str2;        // string identificators into string service
         // char    *string1,*string2;
-        long *strNum;
+        int32_t *strNum;
         char **strSelf;
 
         void SetStringData(int nStr);
@@ -47,7 +47,7 @@ class CXI_VIMAGESCROLL : public CINODE
     void ReleaseAll() override;
 
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -56,7 +56,7 @@ class CXI_VIMAGESCROLL : public CINODE
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
     XYRECT GetCursorRect() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
     void ChangeScroll(int nScrollItemNum);
     void DeleteImage(int imgNum);
@@ -71,7 +71,7 @@ class CXI_VIMAGESCROLL : public CINODE
     float GetShiftDistance(int shiftIdx) const;
     void UpdateTexturesGroup();
     int FindTexGroupFromOld(char **pGroupList, char *groupName, int listSize);
-    long GetMousePointedPictureNum();
+    int32_t GetMousePointedPictureNum();
 
   protected:
     // parameters for moving to scrolling
@@ -83,7 +83,7 @@ class CXI_VIMAGESCROLL : public CINODE
     int m_nSpeedMul;
     int m_nNotUsedQuantity;
 
-    long *m_pPicOffset;
+    int32_t *m_pPicOffset;
 
     bool m_bShowBorder;
     int m_nShowOrder;
@@ -92,7 +92,7 @@ class CXI_VIMAGESCROLL : public CINODE
     XYPOINT m_pCenter;
     XYPOINT m_ImageSize;
     float m_fScale;
-    long m_nVDelta;
+    int32_t m_nVDelta;
     uint32_t *m_dwNormalColor;
     uint32_t *m_dwSelectColor;
     uint32_t m_dwBlendColor;
@@ -106,13 +106,13 @@ class CXI_VIMAGESCROLL : public CINODE
 
     // textures parameters
     char **m_sGroupName;
-    long *m_nGroupTex;
+    int32_t *m_nGroupTex;
     int m_nGroupQuantity;
     char *m_sBorderGroupName; //
-    long m_texBorder;         // select border texture identificator
-    long m_nBorderPicture;    // select border picture identificator
-    long *m_idBadTexture;     // image texture to replace nonexistent
-    long *m_idBadPic;         // picture to replace nonexistent
+    int32_t m_texBorder;         // select border texture identificator
+    int32_t m_nBorderPicture;    // select border picture identificator
+    int32_t *m_idBadTexture;     // image texture to replace nonexistent
+    int32_t *m_idBadPic;         // picture to replace nonexistent
 
     char *m_sSpecTechniqueName;
     uint32_t m_dwSpecTechniqueARGB;
@@ -122,31 +122,31 @@ class CXI_VIMAGESCROLL : public CINODE
         float m_fScale;
         int m_nFont;
         int m_nAlign;           // alignment string
-        long m_nStrX;           // Offset from rectangle center for X coordinate
-        long m_nStrY;           // Offset from top rectangle of list for Y coordinate of string1
+        int32_t m_nStrX;           // Offset from rectangle center for X coordinate
+        int32_t m_nStrY;           // Offset from top rectangle of list for Y coordinate of string1
         uint32_t m_dwForeColor; // Font foreground color for first string
         uint32_t m_dwBackColor; // Font background color for first string
     };
 
-    long m_nStringQuantity;
+    int32_t m_nStringQuantity;
     StringParams *m_pStrParam;
 
     // one string parameters
     /*float     m_nOneStrScale;
     int         m_nOneStrFont;
     int         m_nOneStrAlign;      // alignment string
-    long     m_lOneStrX;          // Offset from rectangle center for X coordinate
+    int32_t     m_lOneStrX;          // Offset from rectangle center for X coordinate
     bool     m_bUseOneString;     // out to screen the one text string
-    long     m_lOneStrOffset;     // Offset from top rectangle of list for Y coordinate of string1
+    int32_t     m_lOneStrOffset;     // Offset from top rectangle of list for Y coordinate of string1
     DWORD    m_dwOneStrForeColor; // Font foreground color for first string
     DWORD    m_dwOneStrBackColor; // Font background color for first string
     // two string parameters
     float     m_nTwoStrScale;
     int         m_nTwoStrFont;
     int         m_nTwoStrAlign;      // alignment string
-    long     m_lTwoStrX;          // Offset from rectangle center for X coordinate
+    int32_t     m_lTwoStrX;          // Offset from rectangle center for X coordinate
     bool     m_bUseTwoString;     // out to screen the two text string
-    long     m_lTwoStrOffset;     // Offset from top rectangle of list for Y coordinate of string2
+    int32_t     m_lTwoStrOffset;     // Offset from top rectangle of list for Y coordinate of string2
     DWORD    m_dwTwoStrForeColor; // Font foreground color for second string
     DWORD    m_dwTwoStrBackColor; // Font background color for second string*/
 
@@ -158,6 +158,6 @@ class CXI_VIMAGESCROLL : public CINODE
     XYRECT m_rAbsolutePosition;
     XYPOINT m_pntCenterOffset;
 
-    long m_leftTextLimit;
-    long m_rightTextLimit;
+    int32_t m_leftTextLimit;
+    int32_t m_rightTextLimit;
 };

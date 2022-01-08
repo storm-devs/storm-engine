@@ -29,14 +29,14 @@ float COLL::Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst)
 // with enclusion list
 //----------------------------------------------------------------------------------
 float COLL::Trace(EntityManager::LayerIterators its, const CVECTOR &src, const CVECTOR &dst,
-                  const entid_t *exclude_list, long entities)
+                  const entid_t *exclude_list, int32_t entities)
 {
     auto best_res = 2.0f;
     for (auto it = its.first; it != its.second; ++it)
     {
         const auto eid = it->second;
 
-        long e;
+        int32_t e;
         for (e = 0; e < entities; e++)
             if (eid == exclude_list[e])
                 break;
@@ -62,8 +62,8 @@ float COLL::Trace(EntityManager::LayerIterators its, const CVECTOR &src, const C
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-bool COLL::Clip(EntityManager::LayerIterators its, const PLANE *planes, long nplanes, const CVECTOR &center,
-                float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, long entities)
+bool COLL::Clip(EntityManager::LayerIterators its, const PLANE *planes, int32_t nplanes, const CVECTOR &center,
+                float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, int32_t entities)
 {
     auto retval = false;
 
@@ -71,7 +71,7 @@ bool COLL::Clip(EntityManager::LayerIterators its, const PLANE *planes, long npl
     {
         const auto eid = it->second;
 
-        long e;
+        int32_t e;
         for (e = 0; e < entities; e++)
             if (eid == exclude_list[e])
                 break;

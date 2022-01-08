@@ -16,7 +16,7 @@
 class SHIP_CAMERA : public COMMON_CAMERA
 {
   private:
-    long iLockX, iLockY;
+    int32_t iLockX, iLockY;
 
     float fMinHeightOnSea, fMaxHeightOnShip;
     float fDistance, fMaxDistance, fMinDistance;
@@ -30,12 +30,12 @@ class SHIP_CAMERA : public COMMON_CAMERA
     CVECTOR vCenter, vAng;
     float fModelAy;
 
-    // long minHeightOnSea,maxHeightOnSea;
+    // int32_t minHeightOnSea,maxHeightOnSea;
 
   private:
     SEA_BASE *pSea;
     ISLAND_BASE *pIsland;
-    long lIlsInitCnt;
+    int32_t lIlsInitCnt;
     VDX9RENDER *pRS;
 
     void Move(float fDeltaTime);

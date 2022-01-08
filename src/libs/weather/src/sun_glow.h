@@ -109,14 +109,14 @@ class SUNGLOW : public Entity
     WEATHER_BASE *pWeather;
     SKY *pSky;
     VDX9RENDER *pRS;
-    long idRectBuf;
+    int32_t idRectBuf;
 
     std::vector<RS_RECT> aRSR;
 
     bool bSimpleSea;
-    long iNumFlares;
+    int32_t iNumFlares;
     float fFadeout, fAlpha, fAlphaFlare, fAlphaOverflow, fMaxOverflowAlphaValue;
-    long iSunTex, iMoonTex, iSunGlowTex, iFlareTex, iOverflowTex, iReflTexture;
+    int32_t iSunTex, iMoonTex, iSunGlowTex, iFlareTex, iOverflowTex, iReflTexture;
     bool bVisible, bVisibleFlare;
     bool bHaveGlow, bHaveFlare, bHaveOverflow, bHaveReflection;
     bool bMoon;

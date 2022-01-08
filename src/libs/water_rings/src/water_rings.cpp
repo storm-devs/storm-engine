@@ -63,7 +63,7 @@ void WaterRings::Realize(uint32_t _dTime)
     ivManager->LockBuffers();
     uint16_t *iPointer;
     RING_VERTEX *vPointer;
-    long vOffset;
+    int32_t vOffset;
     for (auto i = 0; i < waterrings::MAX_RINGS; i++)
     {
         // check if ring needs to be removed
@@ -132,7 +132,7 @@ uint64_t WaterRings::ProcessMessage(MESSAGE &message)
 }
 
 //------------------------------------------------------------------------------------
-void WaterRings::UpdateGrid(int _ringI, uint16_t *_iPointer, RING_VERTEX *_vPointer, long _vOffset)
+void WaterRings::UpdateGrid(int _ringI, uint16_t *_iPointer, RING_VERTEX *_vPointer, int32_t _vOffset)
 {
     Assert(_iPointer);
     Assert(_vPointer);

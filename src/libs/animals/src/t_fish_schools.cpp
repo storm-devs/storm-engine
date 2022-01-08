@@ -69,7 +69,7 @@ void TFishSchools::Init()
 }
 
 //--------------------------------------------------------------------
-uint64_t TFishSchools::ProcessMessage(long _code, MESSAGE &message)
+uint64_t TFishSchools::ProcessMessage(int32_t _code, MESSAGE &message)
 {
     const uint32_t outValue = 0;
 

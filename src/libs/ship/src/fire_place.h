@@ -41,10 +41,10 @@ class FirePlace
     }
 
     void Execute(float fDeltaTime);
-    void Run(const char *pParticleSmokeName, const char *pParticleFireName, long _iBallCharacterIndex,
+    void Run(const char *pParticleSmokeName, const char *pParticleFireName, int32_t _iBallCharacterIndex,
              const char *pSoundName, float _fRunTime);
     void Stop();
-    void StopSound(long _iSoundID);
+    void StopSound(int32_t _iSoundID);
 
     bool isActive()
     {
@@ -56,7 +56,7 @@ class FirePlace
         return fRunTime;
     }
 
-    long GetBallCharacterIndex()
+    int32_t GetBallCharacterIndex()
     {
         return iBallCharacterIndex;
     }
@@ -80,8 +80,8 @@ class FirePlace
     VPARTICLE_SYSTEM *pParticleSmoke, *pParticleFire;
     SHIP_BASE *pShip;
     SEA_BASE *pSea;
-    long iSoundID;
-    long iBallCharacterIndex;
+    int32_t iSoundID;
+    int32_t iBallCharacterIndex;
     CVECTOR vOrigPos;
     bool bActive;
     float fRunTime;

@@ -318,7 +318,7 @@ void XINTERFACE::Execute(uint32_t)
     }
 
     if (m_pMouseWeel)
-        m_pMouseWeel->Set(0L);
+        m_pMouseWeel->Set(0);
 }
 
 void XINTERFACE::Realize(uint32_t)
@@ -449,7 +449,7 @@ void XINTERFACE::Realize(uint32_t)
     pRenderService->SetTransform(D3DTS_PROJECTION, moldp);
 }
 
-long oldCurNum = -1L;
+int32_t oldCurNum = -1L;
 
 uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
 {
@@ -572,7 +572,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     case MSG_INTERFACE_SET_EVENT: {
         const std::string &param = message.String();
         const std::string &nodeName = message.String();
-        long nCommand = message.Long();
+        int32_t nCommand = message.Long();
         //
         auto *pEvent = new EVENT_Entity;
         if (pEvent == nullptr)
@@ -726,7 +726,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
     case MSG_INTERFACE_DEL_SCROLLIMAGE: {
         const std::string &param = message.String();
-        long imgNum = message.Long();
+        int32_t imgNum = message.Long();
         if (m_pNodes == nullptr)
             break;
         CINODE *pNod = m_pNodes->FindNode(param.c_str());
@@ -848,8 +848,8 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     break;
     case MSG_INTERFACE_SAVE_FILE_FIND: {
         char param[256];
-        long saveNum = message.Long();
-        long nSaveFileSize;
+        int32_t saveNum = message.Long();
+        int32_t nSaveFileSize;
         char *sSaveName = SaveFileFind(saveNum, param, sizeof(param), nSaveFileSize);
         if (sSaveName != nullptr)
         {
@@ -924,7 +924,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     case MSG_INTERFACE_LOCK_NODE: {
         if (!m_bUse)
             break;
-        long lockNode = message.Long();
+        int32_t lockNode = message.Long();
         CINODE *pnod = nullptr;
         if (lockNode > 0)
         {
@@ -953,7 +953,7 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     }
     break;
     case MSG_INTERFACE_GET_FREE_SPACE: {
-        long retVal = 0;
+        int32_t retVal = 0;
     }
     break;
 
@@ -1035,18 +1035,18 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
     case MSG_INTERFACE_SET_TOOLTIP: {
         const char *pcHeader = message.StringPointer();
         const char *pcText1 = message.StringPointer();
-        long dwTextColor1 = message.Long();
+        int32_t dwTextColor1 = message.Long();
         const char *pcText2 = message.StringPointer();
-        long dwTextColor2 = message.Long();
+        int32_t dwTextColor2 = message.Long();
         const char *pcText3 = message.StringPointer();
-        long dwTextColor3 = message.Long();
+        int32_t dwTextColor3 = message.Long();
         const char *pcText4 = message.StringPointer();
-        long dwTextColor4 = message.Long();
+        int32_t dwTextColor4 = message.Long();
         const char *pcPicTextureName = message.StringPointer();
         const char *pcPicGroupName = message.StringPointer();
         const char *pcPicImageName = message.StringPointer();
-        long nPicWidth = message.Long();
-        long nPicHeight = message.Long();
+        int32_t nPicWidth = message.Long();
+        int32_t nPicHeight = message.Long();
         SetTooltip(pcHeader, pcText1, dwTextColor1, pcText2, dwTextColor2, pcText3, dwTextColor3, pcText4, dwTextColor4,
                    pcPicTextureName, pcPicGroupName, pcPicImageName, nPicWidth, nPicHeight);
     }
@@ -1269,7 +1269,7 @@ void XINTERFACE::LoadDialog(const char *sFileName)
     if (m_pContHelp != nullptr)
     {
         HELPEntity *pHlist = static_cast<CXI_CONTEXTHELP *>(m_pContHelp)->m_pHelpList;
-        const long nListSize = static_cast<CXI_CONTEXTHELP *>(m_pContHelp)->m_helpQuantity;
+        const int32_t nListSize = static_cast<CXI_CONTEXTHELP *>(m_pContHelp)->m_helpQuantity;
         for (int n = 0; n < nListSize; n++)
             pHlist[n].pNode = m_pNodes->FindNode(pHlist[n].nodeName);
     }
@@ -1306,7 +1306,7 @@ void XINTERFACE::LoadDialog(const char *sFileName)
     }
 }
 
-void XINTERFACE::CreateNode(const char *sFileName, const char *sNodeType, const char *sNodeName, long priority)
+void XINTERFACE::CreateNode(const char *sFileName, const char *sNodeType, const char *sNodeName, int32_t priority)
 {
     // there is already such a node
     if (m_pNodes && m_pNodes->FindNode(sNodeName))
@@ -1328,7 +1328,7 @@ void XINTERFACE::CreateNode(const char *sFileName, const char *sNodeType, const 
 }
 
 void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const char *sNodeType, const char *sNodeName,
-                                 long priority)
+                                 int32_t priority)
 {
     if (!sNodeType || !sNodeType[0])
     {
@@ -1577,7 +1577,7 @@ void XINTERFACE::DeleteNode(const char *pcNodeName)
 void XINTERFACE::SetTooltip(const char *pcHeader, const char *pcText1, uint32_t dwTextColor1, const char *pcText2,
                             uint32_t dwTextColor2, const char *pcText3, uint32_t dwTextColor3, const char *pcText4,
                             uint32_t dwTextColor4, const char *pcPicTextureName, const char *pcPicGroupName,
-                            const char *pcPicImageName, long nPicWidth, long nPicHeight)
+                            const char *pcPicImageName, int32_t nPicWidth, int32_t nPicHeight)
 {
     CINODE *pTmpNod;
     pTmpNod = FindNode("tooltip_frame", nullptr);
@@ -1659,7 +1659,7 @@ void XINTERFACE::SetTooltip(const char *pcHeader, const char *pcText1, uint32_t 
     rTex2Rect = pNodTextFrame2->m_rect;
     rTex4Rect = pNodTextFrame4->m_rect;
 
-    long nAllHeight = TT_TITLE_OFFSET + TT_TITLE_HEIGHT;
+    int32_t nAllHeight = TT_TITLE_OFFSET + TT_TITLE_HEIGHT;
     rTitle.top = TT_TITLE_OFFSET;
     rTitle.bottom = TT_TITLE_HEIGHT;
 
@@ -1674,7 +1674,7 @@ void XINTERFACE::SetTooltip(const char *pcHeader, const char *pcText1, uint32_t 
         pNodPic->m_bUse = false;
     }
 
-    long nTmpH = pNodText1->GetAllHeight();
+    int32_t nTmpH = pNodText1->GetAllHeight();
     if (nTmpH > 0)
     {
         rTex1.top = nAllHeight + TT_TEX1_UP_OFFSET;
@@ -1838,14 +1838,14 @@ void XINTERFACE::RegistryExitKey(const char *pcKeyName)
     m_asExitKey.push_back(pcKeyName);
 }
 
-long XINTERFACE::StoreNodeLocksWithOff()
+int32_t XINTERFACE::StoreNodeLocksWithOff()
 {
     m_aLocksArray.push_back(LocksInfo{});
-    // long nStoreSlot = m_aLocksArray.Add();
-    long nStoreCode;
+    // int32_t nStoreSlot = m_aLocksArray.Add();
+    int32_t nStoreCode;
     for (nStoreCode = 0; nStoreCode < 1000; nStoreCode++)
     {
-        long n;
+        int32_t n;
         for (n = 0; n < m_aLocksArray.size(); n++)
             if (m_aLocksArray[n].nSaveCode == nStoreCode)
                 break;
@@ -1864,15 +1864,15 @@ long XINTERFACE::StoreNodeLocksWithOff()
     return nStoreCode;
 }
 
-void XINTERFACE::RestoreNodeLocks(long nStoreCode)
+void XINTERFACE::RestoreNodeLocks(int32_t nStoreCode)
 {
-    long n;
+    int32_t n;
     for (n = 0; n < m_aLocksArray.size(); n++)
         if (m_aLocksArray[n].nSaveCode == nStoreCode)
             break;
     if (n == m_aLocksArray.size())
         return;
-    for (long i = 0; i < m_aLocksArray[n].aNode.size(); i++)
+    for (int32_t i = 0; i < m_aLocksArray[n].aNode.size(); i++)
     {
         // m_aLocksArray[n].aNode[i]->m_bLockStatus = false;
         m_aLocksArray[n].aNode[i]->m_bLockedNode = false;
@@ -1880,7 +1880,7 @@ void XINTERFACE::RestoreNodeLocks(long nStoreCode)
     m_aLocksArray.erase(m_aLocksArray.begin() + n);
 }
 
-void XINTERFACE::DrawNode(CINODE *nod, uint32_t Delta_Time, long startPrior, long endPrior) const
+void XINTERFACE::DrawNode(CINODE *nod, uint32_t Delta_Time, int32_t startPrior, int32_t endPrior) const
 {
     for (; nod != nullptr; nod = nod->m_next)
     {
@@ -1910,7 +1910,7 @@ void XINTERFACE::DrawNode(CINODE *nod, uint32_t Delta_Time, long startPrior, lon
 
 void XINTERFACE::DoControl()
 {
-    long nExitKey;
+    int32_t nExitKey;
     CONTROL_STATE cs;
     if (!m_bUse)
         return;
@@ -2142,7 +2142,7 @@ void XINTERFACE::DoControl()
         if (cs.state == CST_ACTIVATED)
             bFirstPress = true;
 
-        long nWeel = 0;
+        int32_t nWeel = 0;
         if (m_pMouseWeel)
             m_pMouseWeel->Get(nWeel);
         if (nWeel != 0 && m_pCurNode && m_pCurNode->IsWeelActive())
@@ -2372,7 +2372,7 @@ void XINTERFACE::MouseClick(bool bFirstClick)
     if (!bFirstClick && m_nPressDelay > 0)
         return;
     CINODE *clickNod =
-        GetClickNode(m_pNodes, static_cast<long>(fXMousePos) + m_lXMouse, static_cast<long>(fYMousePos) + m_lYMouse);
+        GetClickNode(m_pNodes, static_cast<int32_t>(fXMousePos) + m_lXMouse, static_cast<int32_t>(fYMousePos) + m_lYMouse);
     if (!clickNod)
     {
         if (bFirstClick)
@@ -2455,7 +2455,7 @@ void XINTERFACE::MouseDeClick()
     }
 }
 
-CINODE *XINTERFACE::GetClickNode(CINODE *searchNod, long xPos, long yPos) const
+CINODE *XINTERFACE::GetClickNode(CINODE *searchNod, int32_t xPos, int32_t yPos) const
 {
     CINODE *findNod = nullptr;
 
@@ -2510,9 +2510,9 @@ void XINTERFACE::ShowPrevTexture()
 
     m_fAngle += m_fWaveSpeed;
     m_nBlendColor -= m_nBlendSpeed;
-    if (m_nBlendColor <= 0L)
+    if (m_nBlendColor <= 0)
     {
-        m_nBlendColor = 0L;
+        m_nBlendColor = 0;
         m_fAngle = 0.f;
         m_bShowPrevTexture = false;
         if (m_pPrevTexture != nullptr)
@@ -2675,14 +2675,14 @@ bool XINTERFACE::SFLB_DoSaveFileData(const char *saveName, const char *saveData)
 {
     if (saveName == nullptr || saveData == nullptr)
         return false;
-    const long slen = strlen(saveData) + 1;
+    const int32_t slen = strlen(saveData) + 1;
     if (slen <= 1)
         return false;
 
     entid_t ei;
     if (!(ei = EntityManager::GetEntityId("SCRSHOTER")))
         return false;
-    long textureId = core.Send_Message(ei, "l", MSG_SCRSHOT_MAKE);
+    int32_t textureId = core.Send_Message(ei, "l", MSG_SCRSHOT_MAKE);
     if (textureId == -1)
         return false;
 
@@ -2701,7 +2701,7 @@ bool XINTERFACE::SFLB_DoSaveFileData(const char *saveName, const char *saveData)
     // if(slen>0)
     memcpy(&pdat[sizeof(SAVE_DATA_HANDLE)], saveData, slen);
 
-    long ssize = 0;
+    int32_t ssize = 0;
     if (dscr.Height > 0)
     {
         D3DLOCKED_RECT lockRect;
@@ -2722,11 +2722,11 @@ bool XINTERFACE::SFLB_DoSaveFileData(const char *saveName, const char *saveData)
     return true;
 }
 
-bool XINTERFACE::SFLB_GetSaveFileData(const char *saveName, long bufSize, char *buf)
+bool XINTERFACE::SFLB_GetSaveFileData(const char *saveName, int32_t bufSize, char *buf)
 {
     if (buf == nullptr || bufSize <= 0)
         return false;
-    long allDatSize = 0;
+    int32_t allDatSize = 0;
     auto pdat = static_cast<char *>(core.GetSaveData(saveName, allDatSize));
     if (pdat == nullptr)
         return false;
@@ -2737,7 +2737,7 @@ bool XINTERFACE::SFLB_GetSaveFileData(const char *saveName, long bufSize, char *
         utf8::FixInvalidUtf8(stringData);
     }
 
-    long strSize = ((SAVE_DATA_HANDLE *)pdat)->StringDataSize;
+    int32_t strSize = ((SAVE_DATA_HANDLE *)pdat)->StringDataSize;
     if (strSize >= bufSize)
     {
         buf[bufSize - 1] = 0;
@@ -2820,7 +2820,7 @@ XINTERFACE::SAVE_FIND_DATA *XINTERFACE::GetSaveDataByIndex(int n) const
     return p;
 }
 
-char *XINTERFACE::SaveFileFind(long saveNum, char *buffer, size_t bufSize, long &fileSize)
+char *XINTERFACE::SaveFileFind(int32_t saveNum, char *buffer, size_t bufSize, int32_t &fileSize)
 {
     if (!m_pSaveFindRoot) // create save file list
     {
@@ -2909,18 +2909,18 @@ void XINTERFACE::DeleteSaveFile(const char *fileName)
 
 uint32_t XINTERFACE_BASE::GetBlendColor(uint32_t minCol, uint32_t maxCol, float fBlendFactor)
 {
-    long ad = static_cast<long>(ALPHA(maxCol)) - static_cast<long>(ALPHA(minCol));
-    long rd = static_cast<long>(RED(maxCol)) - static_cast<long>(RED(minCol));
-    long gd = static_cast<long>(GREEN(maxCol)) - static_cast<long>(GREEN(minCol));
-    long bd = static_cast<long>(BLUE(maxCol)) - static_cast<long>(BLUE(minCol));
-    ad = ALPHA(minCol) + static_cast<long>(ad * fBlendFactor);
-    rd = RED(minCol) + static_cast<long>(rd * fBlendFactor);
-    gd = GREEN(minCol) + static_cast<long>(gd * fBlendFactor);
-    bd = BLUE(minCol) + static_cast<long>(bd * fBlendFactor);
+    int32_t ad = static_cast<int32_t>(ALPHA(maxCol)) - static_cast<int32_t>(ALPHA(minCol));
+    int32_t rd = static_cast<int32_t>(RED(maxCol)) - static_cast<int32_t>(RED(minCol));
+    int32_t gd = static_cast<int32_t>(GREEN(maxCol)) - static_cast<int32_t>(GREEN(minCol));
+    int32_t bd = static_cast<int32_t>(BLUE(maxCol)) - static_cast<int32_t>(BLUE(minCol));
+    ad = ALPHA(minCol) + static_cast<int32_t>(ad * fBlendFactor);
+    rd = RED(minCol) + static_cast<int32_t>(rd * fBlendFactor);
+    gd = GREEN(minCol) + static_cast<int32_t>(gd * fBlendFactor);
+    bd = BLUE(minCol) + static_cast<int32_t>(bd * fBlendFactor);
     return ARGB(ad, rd, gd, bd);
 }
 
-void XINTERFACE::AddNodeToList(CINODE *nod, long priority)
+void XINTERFACE::AddNodeToList(CINODE *nod, int32_t priority)
 {
     if (nod == nullptr)
         return;
@@ -2986,7 +2986,7 @@ void XINTERFACE::ReleaseDinamicPic(const char *sPicName)
         prevImg->next = findImg->next;
 }
 
-long FindMaxStrForWidth(VDX9RENDER *pVR, int nW, char *str, int nFontID, float fScale)
+int32_t FindMaxStrForWidth(VDX9RENDER *pVR, int nW, char *str, int nFontID, float fScale)
 {
     if (!pVR || !str || str[0] == '\0')
         return 0;
@@ -3015,13 +3015,13 @@ long FindMaxStrForWidth(VDX9RENDER *pVR, int nW, char *str, int nFontID, float f
     return nPrev;
 }
 
-long XINTERFACE::PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol, uint32_t dwBCol, long align,
-                                 bool shadow, float scale, long sxs, long sys, long left, long top, const char *str,
+int32_t XINTERFACE::PrintIntoWindow(int32_t wl, int32_t wr, int32_t idFont, uint32_t dwFCol, uint32_t dwBCol, int32_t align,
+                                 bool shadow, float scale, int32_t sxs, int32_t sys, int32_t left, int32_t top, const char *str,
                                  int nWidthForScaleCorrecting, int nSplit)
 {
     if (!str)
         return 0;
-    long strWidth = pRenderService->StringWidth(str, idFont, scale);
+    int32_t strWidth = pRenderService->StringWidth(str, idFont, scale);
 
     // check fontScale
     if (nWidthForScaleCorrecting > 0 && strWidth > nWidthForScaleCorrecting)
@@ -3057,12 +3057,12 @@ long XINTERFACE::PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol,
         }
     }
 
-    long strLeft = left;
+    int32_t strLeft = left;
     if (align == PR_ALIGN_RIGHT)
         strLeft = left - strWidth;
     if (align == PR_ALIGN_CENTER)
         strLeft = left - strWidth / 2;
-    long strRight = strLeft + strWidth;
+    int32_t strRight = strLeft + strWidth;
 
     if (strLeft >= wl && strRight <= wr)
     {
@@ -3081,7 +3081,7 @@ long XINTERFACE::PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol,
     if (newStr != nullptr)
     {
         strRight = strLeft + strWidth;
-        long nEnd = strlen(newStr);
+        int32_t nEnd = strlen(newStr);
         while (nEnd > 0 && strRight > wr)
         {
             nEnd -= utf8::u8_dec(newStr + nEnd);
@@ -3386,7 +3386,7 @@ void XINTERFACE::PrecreateDirForFile(const char *pcFullFileName)
         return;
     char path[MAX_PATH];
     sprintf_s(path, sizeof(path), "%s", pcFullFileName);
-    long n;
+    int32_t n;
     for (n = strlen(pcFullFileName) - 1; n > 0; n--)
         if (path[n] == '\\')
         {
@@ -3481,7 +3481,7 @@ void CONTROLS_CONTAINER::Execute(uint32_t delta_time)
                 if (cs.fValue < fVal)
                     cs.fValue = fVal;
 
-                const long lVal = insideCS.lValue;
+                const int32_t lVal = insideCS.lValue;
                 if (cs.lValue < lVal)
                     cs.lValue = lVal;
             }

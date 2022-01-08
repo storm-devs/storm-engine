@@ -83,7 +83,7 @@ void CXI_KEYCHANGER::SaveParametersToIni()
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 }
 
-uint32_t CXI_KEYCHANGER::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_KEYCHANGER::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -108,7 +108,7 @@ void CXI_KEYCHANGER::SetChoosingControls(ATTRIBUTES *pA)
     if (m_keysQuantity <= 0)
         return;
 
-    m_pControlsID = new long[m_keysQuantity];
+    m_pControlsID = new int32_t[m_keysQuantity];
     m_pbControlsStick = new bool[m_keysQuantity];
     if (m_pControlsID == nullptr || m_pbControlsStick == nullptr)
     {

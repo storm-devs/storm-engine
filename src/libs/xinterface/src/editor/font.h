@@ -29,7 +29,7 @@ class GIFont
 
   protected:
     GIEditor *m_pEditor;
-    long m_nFontID;
+    int32_t m_nFontID;
 
     uint32_t m_dwColor;
     uint32_t m_dwBackColor;

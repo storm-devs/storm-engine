@@ -49,7 +49,7 @@ class AnimationServiceImp final : public AnimationService
     // --------------------------------------------------------------------------------------------
   private:
     // load animation
-    long LoadAnimation(const char *animationName);
+    int32_t LoadAnimation(const char *animationName);
     // Load user data from the current section
     void LoadUserData(INIFILE *ani, const char *sectionName, std::unordered_map<std::string, std::string> &data,
                       const char *animationName);

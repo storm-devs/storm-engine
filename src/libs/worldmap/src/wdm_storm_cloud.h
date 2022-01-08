@@ -38,19 +38,19 @@ class WdmStormCloud : public WdmCloud
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    void BuildCloud(long n) override;
+    void BuildCloud(int32_t n) override;
     void FillRects();
 
     // Lightning parameters
-    long curLightning;
+    int32_t curLightning;
     float lightningWaitTime;
     float lightningTime;
     float flashTime;
-    long lastColor;
-    long lightningColor;
+    int32_t lastColor;
+    int32_t lightningColor;
 
     // Rain
-    long rainTexture;
+    int32_t rainTexture;
     float curU, curV;
     CVECTOR rainpos[2048];        // Particle position
     static RainVertex rain[4096]; // The current array to draw

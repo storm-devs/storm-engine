@@ -98,7 +98,7 @@ class LocationCamera : public Entity
     // Trace the ray through the location
     float Trace(const CVECTOR &src, const CVECTOR &dst) const;
     bool GetCollideTriangle(TRIANGLE &trg) const;
-    void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num)) const;
+    void Clip(PLANE *p, int32_t numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, int32_t num)) const;
 
   private:
     VDX9RENDER *rs;
@@ -195,7 +195,7 @@ class LocationCamera : public Entity
     };
 
     std::vector<CameraTrackPause> m_aTrackPauses;
-    long m_nCurPauseIndex;
+    int32_t m_nCurPauseIndex;
 
     bool LoadCameraTrack(const char *pcTrackFile, float fTrackTime);
     void TurnOffTrackCamera();

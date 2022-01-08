@@ -113,7 +113,7 @@ class CSaveLoad
         Write(&fValue, sizeof(fValue));
     }
 
-    void SaveLong(long iValue)
+    void SaveLong(int32_t iValue)
     {
         Write(&iValue, sizeof(iValue));
     }
@@ -146,10 +146,10 @@ class CSaveLoad
 
     void SaveAPointer(const char *pStr, ATTRIBUTES *pAttribute)
     {
-        long iIndex = -1;
+        int32_t iIndex = -1;
         if (pAttribute)
         {
-            iIndex = static_cast<long>(pAttribute->GetAttributeAsDword("index", -1));
+            iIndex = static_cast<int32_t>(pAttribute->GetAttributeAsDword("index", -1));
         }
         SaveLong(iIndex);
         SaveString(pStr);
@@ -180,9 +180,9 @@ class CSaveLoad
         return fValue;
     }
 
-    long LoadLong()
+    int32_t LoadLong()
     {
-        long iValue;
+        int32_t iValue;
         Read(&iValue, sizeof(iValue));
         return iValue;
     }

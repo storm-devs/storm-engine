@@ -36,7 +36,7 @@ BLADE::BLADE_INFO::BLADE_INFO()
     color[0] = 0x80162EBE;
     color[1] = 0x00FF0000;
     time = 0.0f;
-    for (long v = 0; v < WAY_LENGTH; v++)
+    for (int32_t v = 0; v < WAY_LENGTH; v++)
         vrtTime[v] = -1e20f;
 }
 
@@ -61,7 +61,7 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
         {
             bladeNode->SetTechnique("AnimationBlend");
         }
-        long sti = -1;
+        int32_t sti = -1;
         auto idBlade = manNode->geo->FindName(locatorName);
 
         if ((sti = manNode->geo->FindLabelN(sti + 1, idBlade)) > -1)
@@ -94,8 +94,8 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
         rs->SetTransform(D3DTS_WORLD, CMatrix());
 
         // move to the beginning
-        long first = 0; // end vertex 2 draw
-        for (long v = WAY_LENGTH - 2; v > -1; v--)
+        int32_t first = 0; // end vertex 2 draw
+        for (int32_t v = WAY_LENGTH - 2; v > -1; v--)
         {
             vrt[v * 2 + 2] = vrt[v * 2 + 0];
             vrt[v * 2 + 3] = vrt[v * 2 + 1];
@@ -212,7 +212,7 @@ BLADE::~BLADE()
 {
     EntityManager::EraseEntity(gun);
 
-    for (long i = 0; i < ITEMS_INFO_QUANTITY; i++)
+    for (int32_t i = 0; i < ITEMS_INFO_QUANTITY; i++)
         items[i].Release();
 }
 
@@ -261,7 +261,7 @@ void BLADE::Realize(uint32_t Delta_Time)
     //------------------------------------------------------
     // draw gun
     CMatrix perMtx;
-    long sti;
+    int32_t sti;
     auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(gun));
     if (obj != nullptr)
     {
@@ -311,7 +311,7 @@ void BLADE::Realize(uint32_t Delta_Time)
 
     //------------------------------------------------------
     // draw tied items
-    for (long n = 0; n < ITEMS_INFO_QUANTITY; n++)
+    for (int32_t n = 0; n < ITEMS_INFO_QUANTITY; n++)
         if (items[n].nItemIndex != -1)
             items[n].DrawItem(rs, blendValue, mdl, manNode);
 
@@ -376,7 +376,7 @@ void BLADE::GunFire()
     //------------------------------------------------------
     // search gunfire
     CMatrix perMtx;
-    long sti;
+    int32_t sti;
 
     auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(gun));
     if (obj == nullptr) // no pistol - look for saber pistol
@@ -425,7 +425,7 @@ void BLADE::GunFire()
 
 uint64_t BLADE::ProcessMessage(MESSAGE &message)
 {
-    long n;
+    int32_t n;
 
     switch (message.Long())
     {
@@ -554,23 +554,23 @@ void BLADE::AddTieItem(MESSAGE &message)
 void BLADE::DelTieItem(MESSAGE &message)
 {
     const auto nItemIdx = message.Long();
-    const long n = FindTieItemByIndex(nItemIdx);
+    const int32_t n = FindTieItemByIndex(nItemIdx);
     if (n >= 0)
         items[n].Release();
 }
 
 void BLADE::DelAllTieItem()
 {
-    for (long i = 0; i < ITEMS_INFO_QUANTITY; i++)
+    for (int32_t i = 0; i < ITEMS_INFO_QUANTITY; i++)
         if (items[i].nItemIndex != -1)
             items[i].Release();
 }
 
-long BLADE::FindTieItemByIndex(long n)
+int32_t BLADE::FindTieItemByIndex(int32_t n)
 {
     if (n < 0)
         return -1;
-    for (long i = 0; i < ITEMS_INFO_QUANTITY; i++)
+    for (int32_t i = 0; i < ITEMS_INFO_QUANTITY; i++)
         if (items[i].nItemIndex == n)
             return i;
     return -1;
@@ -603,7 +603,7 @@ void BLADE::TIEITEM_INFO::DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODE
         {
             mdlNode->SetTechnique("AnimationBlend");
         }
-        long sti = -1;
+        int32_t sti = -1;
         auto idLoc = manNode->geo->FindName(locatorName);
 
         if ((sti = manNode->geo->FindLabelN(sti + 1, idLoc)) > -1)

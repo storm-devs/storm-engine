@@ -362,7 +362,7 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
     //*/
 }
 
-inline void Sharks::Shark::IslandCollision(ISLAND_BASE *ib, long numPnt, float rad, float frc)
+inline void Sharks::Shark::IslandCollision(ISLAND_BASE *ib, int32_t numPnt, float rad, float frc)
 {
     const auto step = 2.0f * SHARK_PI / numPnt;
     auto vx = 0.0f;
@@ -370,7 +370,7 @@ inline void Sharks::Shark::IslandCollision(ISLAND_BASE *ib, long numPnt, float r
     auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(ib->GetSeabedEID()));
     if (!mdl)
         return;
-    for (long i = 0; i < numPnt; i++)
+    for (int32_t i = 0; i < numPnt; i++)
     {
         const auto x = sinf(i * step);
         const auto z = cosf(i * step);
@@ -401,7 +401,7 @@ inline void Sharks::Shark::IslandCollision(ISLAND_BASE *ib, long numPnt, float r
     fforce.z += vz * frc;
 }
 
-void Sharks::Shark::Event(Animation *animation, long index, long eventID, AnimationEvent event)
+void Sharks::Shark::Event(Animation *animation, int32_t index, int32_t eventID, AnimationEvent event)
 {
     if (aniTime > 0.0f)
         return;
@@ -409,7 +409,7 @@ void Sharks::Shark::Event(Animation *animation, long index, long eventID, Animat
     static const auto *actSwim = "Shark_Swim";
     static const auto *actJump = "Shark_Jump";
     const auto *const act = animation->Player(0).GetAction();
-    const long rnd = rand();
+    const int32_t rnd = rand();
     animation->Player(0).Stop();
     if (angs.x > 0.0f && (rnd & 1) || speedUp)
     {
@@ -439,7 +439,7 @@ void Sharks::Shark::Event(Animation *animation, long index, long eventID, Animat
     animation->Player(0).Play();
 }
 
-long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SEA_BASE *sb)
+int32_t Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SEA_BASE *sb)
 {
     // get a model
     auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
@@ -456,7 +456,7 @@ long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SE
     const auto width = 1.0f * 1.5f * k;
     // Indexes
     Assert(sizeof(indeces) / sizeof(uint16_t) == 30);
-    for (long i = 0; i < 30; i++)
+    for (int32_t i = 0; i < 30; i++)
         inds[i] = indeces[i] + base;
     // Vertices
     const CVECTOR s(0.0f, 0.0f, 0.75f);
@@ -490,7 +490,7 @@ long Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SE
     vrt[8].v = 1.0f;
     vrt[9].u = 1.0f;
     vrt[9].v = 1.0f;
-    for (long i = 0; i < 10; i++)
+    for (int32_t i = 0; i < 10; i++)
     {
         vrt[i].pos = mdl->mtx * CVECTOR(vrt[i].pos);
         vrt[i].pos.y = sb->WaveXZ(vrt[i].pos.x, vrt[i].pos.z) + 0.001f;
@@ -530,18 +530,18 @@ bool Sharks::Init()
     rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
-    for (long i = 0; i < numShakes; i++)
+    for (int32_t i = 0; i < numShakes; i++)
         if (!shark[i].Init(0.0f, 0.0f))
             return false;
     // Execution layers
-    const long emdl = AttributesPointer->GetAttributeAsDword("executeModels", 77);
-    const long rmdl = AttributesPointer->GetAttributeAsDword("realizeModels", 77);
-    const long eprt = AttributesPointer->GetAttributeAsDword("executeParticles", 77);
-    const long rprt = AttributesPointer->GetAttributeAsDword("realizeParticles", 100000);
+    const int32_t emdl = AttributesPointer->GetAttributeAsDword("executeModels", 77);
+    const int32_t rmdl = AttributesPointer->GetAttributeAsDword("realizeModels", 77);
+    const int32_t eprt = AttributesPointer->GetAttributeAsDword("executeParticles", 77);
+    const int32_t rprt = AttributesPointer->GetAttributeAsDword("realizeParticles", 100000);
     // Set the execution layers
     EntityManager::AddToLayer(SEA_EXECUTE, GetId(), eprt);
     EntityManager::AddToLayer(SEA_REALIZE, GetId(), rprt);
-    for (long i = 0; i < numShakes; i++)
+    for (int32_t i = 0; i < numShakes; i++)
     {
         EntityManager::AddToLayer(SEA_EXECUTE, shark[i].model, emdl);
         EntityManager::AddToLayer(SEA_REALIZE, shark[i].model, rmdl);
@@ -594,10 +594,10 @@ void Sharks::Execute(uint32_t delta_time)
     const auto dltTime = delta_time * 0.001f;
     const auto num = numShakes;
     // Reset the states
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         shark[i].Reset(camPos.x, camPos.z);
     // calculate the forces
-    for (long i = 0; i < num - 1; i++)
+    for (int32_t i = 0; i < num - 1; i++)
         for (auto j = i + 1; j < num; j++)
             shark[i].Repulsion(shark[j]);
     // take into account ships
@@ -615,7 +615,7 @@ void Sharks::Execute(uint32_t delta_time)
         const auto s = ship->GetBoxsize();
         const auto rd2 = (s.x * s.x + s.z * s.z) * 3.0f;
         // Tell sharks about ships
-        for (long i = 0; i < num; i++)
+        for (int32_t i = 0; i < num; i++)
             shark[i].ShipApply(shipPos.x, shipPos.z, rd2);
     }
     // The sea
@@ -636,7 +636,7 @@ void Sharks::Execute(uint32_t delta_time)
             return;
     }
     // Calculating new positions
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         shark[i].Coordination(camPos.x, camPos.z, dltTime, sb, ib);
     // Processing the periscope
     if (!ib)
@@ -720,8 +720,8 @@ void Sharks::Realize(uint32_t delta_time)
     auto *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
     if (!sb)
         return;
-    long num = 0;
-    for (long i = 0; i < numShakes; i++)
+    int32_t num = 0;
+    for (int32_t i = 0; i < numShakes; i++)
     {
         num += shark[i].GenerateTrack(indeces + num * 3, vrt + num, static_cast<uint16_t>(num), sb);
     }
@@ -738,8 +738,8 @@ void Sharks::Realize(uint32_t delta_time)
     ISLAND_BASE * ib = (ISLAND_BASE *)EntityManager::GetEntityPointer(island);
     if(!ib) return;
     float maxRad = 0.0f;
-    long s = 30;
-    for(long i = 0; i < numShakes; i++)
+    int32_t s = 30;
+    for(int32_t i = 0; i < numShakes; i++)
     {
       float r = sqrtf(~(shark[i].spos - shark[i].pos));
       if(r > maxRad) maxRad = r;

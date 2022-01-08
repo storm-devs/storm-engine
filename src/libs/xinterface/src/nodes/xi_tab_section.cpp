@@ -61,7 +61,7 @@ int CXI_TABSECTION::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_TABSECTION::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_TABSECTION::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos >= m_rect.left && xPos <= m_rect.right && yPos >= m_rect.top && yPos <= m_rect.bottom && m_bClickable &&
         m_bSelected && m_bUse)
@@ -90,7 +90,7 @@ void CXI_TABSECTION::SaveParametersToIni()
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 }
 
-uint32_t CXI_TABSECTION::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_TABSECTION::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {

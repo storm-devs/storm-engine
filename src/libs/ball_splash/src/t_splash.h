@@ -56,7 +56,7 @@ class TSplash
     SEA_BASE *sea;
     IDirect3DDevice9 *device;
 
-    static long vBuffer, iBuffer, texture, texture2, vBuffer2, iBuffer2;
+    static int32_t vBuffer, iBuffer, texture, texture2, vBuffer2, iBuffer2;
     static int buffersUsage;
     uint32_t time;
 

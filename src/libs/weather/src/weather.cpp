@@ -99,8 +99,8 @@ void WEATHER::Execute(uint32_t Delta_Time)
 
         UpdateSunMoonPos();
 
-        if (static_cast<long>(fFloats[whf_time_counter] * fUpdateFrequence) !=
-            static_cast<long>(fOldTimer * fUpdateFrequence))
+        if (static_cast<int32_t>(fFloats[whf_time_counter] * fUpdateFrequence) !=
+            static_cast<int32_t>(fOldTimer * fUpdateFrequence))
         {
             core.Event("WeatherTimeUpdate", "f", fFloats[whf_time_counter]);
         }
@@ -189,7 +189,7 @@ void WEATHER::CleanUP()
 /*void WEATHER::LoadWeatherIni()
 {
     char    section[256],param[256],str[256];
-    long    i;
+    int32_t    i;
     uint32_t    r,g,b;
 
     CleanUP();
@@ -218,7 +218,7 @@ void WEATHER::CleanUP()
         fFloats[FloatNames[i].dwCode] = (float)ini->GetDouble(section,FloatNames[i].name,1000.0);
     }
 
-    // load long parameters
+    // load int32_t parameters
     for (i=0;i<iNumLongNames;i++)
     {
         iLongs[LongNames[i].dwCode] = ini->GetLong(section,LongNames[i].name,0);
@@ -332,7 +332,7 @@ void WEATHER::SetCommonStates()
     pRS->SetRenderState(D3DRS_LIGHTING, false);
 }
 
-/*bool WEATHER::SetHour(long hour)
+/*bool WEATHER::SetHour(int32_t hour)
 {
     if (iHour == hour) return false;
     iHour = hour;
@@ -348,7 +348,7 @@ void WEATHER::SetCommonStates()
     return true;
 }*/
 
-long WEATHER::GetLong(uint32_t dwCode)
+int32_t WEATHER::GetLong(uint32_t dwCode)
 {
     return iLongs[dwCode];
 }

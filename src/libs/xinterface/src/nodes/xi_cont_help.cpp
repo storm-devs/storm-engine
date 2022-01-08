@@ -173,7 +173,7 @@ void CXI_CONTEXTHELP::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
     }
 }
 
-bool CXI_CONTEXTHELP::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_CONTEXTHELP::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -250,7 +250,7 @@ void CXI_CONTEXTHELP::SetTempHelp(const char *pStr)
     delete m_sTempString;
     m_sTempString = nullptr;
 
-    long nCurStrWidth = 0;
+    int32_t nCurStrWidth = 0;
     if (pStr[0] == '#')
     {
         // get the help line directly
@@ -297,7 +297,7 @@ char *CXI_CONTEXTHELP::GetCurrentHelpString(uint32_t deltaTime)
     return pStringService->GetString(m_defaultString);
 }
 
-uint32_t CXI_CONTEXTHELP::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_CONTEXTHELP::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {

@@ -68,8 +68,8 @@ struct TEXTURESLIST
 {
     int texCount;
     int uses[TEXTUREMAXCOUNTER];
-    long ntex[TEXTUREMAXCOUNTER];
-    long htex[TEXTUREMAXCOUNTER];
+    int32_t ntex[TEXTUREMAXCOUNTER];
+    int32_t htex[TEXTUREMAXCOUNTER];
     char *nname[TEXTUREMAXCOUNTER];
     char *hname[TEXTUREMAXCOUNTER];
 };
@@ -277,9 +277,9 @@ class SAILONE : public SAILONE_BASE
     float m_fMaxAngle;
     float m_fMinAngle;
 
-    long surfaceTex;
+    int32_t surfaceTex;
     bool m_bIsGerald;
-    long m_nGeraldTex;
+    int32_t m_nGeraldTex;
     IDirect3DTexture9 *m_pGeraldTex;
 
     float m_fHorzGeraldScale;

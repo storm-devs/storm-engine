@@ -4,7 +4,7 @@
 
 #define MAXIMAGEQUANTITY 100
 
-long GetTexFromEvent(VDATA *vdat);
+int32_t GetTexFromEvent(VDATA *vdat);
 
 CXI_VIMAGESCROLL::CXI_VIMAGESCROLL()
 {
@@ -273,8 +273,8 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected, uint32_t Delta_Time)
                                     m_rect.left - m_leftTextLimit, m_rect.right + m_rightTextLimit,
                                     m_pStrParam[l].m_nFont, m_pStrParam[l].m_dwForeColor, m_pStrParam[l].m_dwBackColor,
                                     m_pStrParam[l].m_nAlign, true, m_pStrParam[l].m_fScale, m_screenSize.x,
-                                    m_screenSize.y, static_cast<long>(pScroll->pCenter.x + m_pStrParam[l].m_nStrX),
-                                    static_cast<long>(pScroll->pCenter.y + m_pStrParam[l].m_nStrY),
+                                    m_screenSize.y, static_cast<int32_t>(pScroll->pCenter.x + m_pStrParam[l].m_nStrX),
+                                    static_cast<int32_t>(pScroll->pCenter.y + m_pStrParam[l].m_nStrY),
                                     pStringService->GetString(m_Image[pScroll->imageNum].strNum[l]),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_pStrParam[l].m_fScale));
@@ -283,8 +283,8 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected, uint32_t Delta_Time)
                                     m_rect.left - m_leftTextLimit, m_rect.right + m_rightTextLimit,
                                     m_pStrParam[l].m_nFont, m_pStrParam[l].m_dwForeColor, m_pStrParam[l].m_dwBackColor,
                                     m_pStrParam[l].m_nAlign, true, m_pStrParam[l].m_fScale, m_screenSize.x,
-                                    m_screenSize.y, static_cast<long>(pScroll->pCenter.x + m_pStrParam[l].m_nStrX),
-                                    static_cast<long>(pScroll->pCenter.y + m_pStrParam[l].m_nStrY),
+                                    m_screenSize.y, static_cast<int32_t>(pScroll->pCenter.x + m_pStrParam[l].m_nStrX),
+                                    static_cast<int32_t>(pScroll->pCenter.y + m_pStrParam[l].m_nStrY),
                                     m_Image[pScroll->imageNum].strSelf[l],
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_pStrParam[l].m_fScale));
@@ -368,7 +368,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         m_dwCurColor = new uint32_t[m_nSlotsQnt];
         m_dwNormalColor = new uint32_t[m_nSlotsQnt];
         m_dwSelectColor = new uint32_t[m_nSlotsQnt];
-        m_pPicOffset = new long[m_nSlotsQnt];
+        m_pPicOffset = new int32_t[m_nSlotsQnt];
         if (!m_dwCurColor || !m_dwNormalColor || !m_dwSelectColor || !m_pPicOffset)
         {
             throw std::runtime_error("allocate memory error");
@@ -468,7 +468,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
             m_nGroupQuantity = pA->GetAttributesNum();
             if (m_nGroupQuantity != 0)
             {
-                m_nGroupTex = new long[m_nGroupQuantity];
+                m_nGroupTex = new int32_t[m_nGroupQuantity];
                 m_sGroupName = new char *[m_nGroupQuantity];
                 if (m_nGroupTex == nullptr || m_sGroupName == nullptr)
                 {
@@ -494,8 +494,8 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         // get bad picture
         if (m_nSlotsQnt > 0)
         {
-            m_idBadTexture = new long[m_nSlotsQnt];
-            m_idBadPic = new long[m_nSlotsQnt];
+            m_idBadTexture = new int32_t[m_nSlotsQnt];
+            m_idBadPic = new int32_t[m_nSlotsQnt];
             if (!m_idBadTexture || !m_idBadPic)
             {
                 throw std::runtime_error("allocate memory error");
@@ -539,7 +539,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
             //------------------------------------------------------
             if (m_nStringQuantity > 0)
             {
-                m_Image[i].strNum = new long[m_nStringQuantity];
+                m_Image[i].strNum = new int32_t[m_nStringQuantity];
                 m_Image[i].strSelf = new char *[m_nStringQuantity];
             }
             else
@@ -555,10 +555,10 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
             if (m_nSlotsQnt > 0)
             {
                 m_Image[i].bUseSpecTechnique = new bool[m_nSlotsQnt];
-                m_Image[i].img = new long[m_nSlotsQnt];
-                m_Image[i].ptex = new long[m_nSlotsQnt];
+                m_Image[i].img = new int32_t[m_nSlotsQnt];
+                m_Image[i].ptex = new int32_t[m_nSlotsQnt];
                 m_Image[i].saveName = new char *[m_nSlotsQnt];
-                m_Image[i].tex = new long[m_nSlotsQnt];
+                m_Image[i].tex = new int32_t[m_nSlotsQnt];
                 if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
                     !m_Image[i].tex)
                 {
@@ -987,7 +987,7 @@ int CXI_VIMAGESCROLL::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_VIMAGESCROLL::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_VIMAGESCROLL::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos >= m_rect.left && xPos <= m_rect.right && yPos >= m_rect.top && yPos <= m_rect.bottom && m_bClickable &&
         m_bUse)
@@ -1000,10 +1000,10 @@ bool CXI_VIMAGESCROLL::IsClick(int buttonID, long xPos, long yPos)
 
 void CXI_VIMAGESCROLL::ChangePosition(XYRECT &rNewPos)
 {
-    const long nLeftOffset = rNewPos.left - m_rect.left;
-    const long nTopOffset = rNewPos.top - m_rect.top;
-    const long nRightOffset = rNewPos.right - m_rect.right;
-    const long nBottomOffset = rNewPos.bottom - m_rect.bottom;
+    const int32_t nLeftOffset = rNewPos.left - m_rect.left;
+    const int32_t nTopOffset = rNewPos.top - m_rect.top;
+    const int32_t nRightOffset = rNewPos.right - m_rect.right;
+    const int32_t nBottomOffset = rNewPos.bottom - m_rect.bottom;
 
     m_rAbsolutePosition.left += nLeftOffset;
     m_rAbsolutePosition.top += nTopOffset;
@@ -1043,7 +1043,7 @@ void CXI_VIMAGESCROLL::ChangeScroll(int nScrollItemNum)
     if (pAttr != nullptr)
     {
         // check maybe the whole list needs to be changed
-        if (nScrollItemNum == -1 || m_nListSize != static_cast<long>(pAttr->GetAttributeAsDword("NotUsed", 0) +
+        if (nScrollItemNum == -1 || m_nListSize != static_cast<int32_t>(pAttr->GetAttributeAsDword("NotUsed", 0) +
                                                                      pAttr->GetAttributeAsDword("ListSize", 0)))
         {
             RefreshScroll();
@@ -1244,7 +1244,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
             if (m_nGroupQuantity != 0)
             {
                 // set new groups
-                m_nGroupTex = new long[m_nGroupQuantity];
+                m_nGroupTex = new int32_t[m_nGroupQuantity];
                 m_sGroupName = new char *[m_nGroupQuantity];
                 if (m_nGroupTex == nullptr || m_sGroupName == nullptr)
                 {
@@ -1306,7 +1306,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
             //------------------------------------------------------
             if (m_nStringQuantity > 0)
             {
-                m_Image[i].strNum = new long[m_nStringQuantity];
+                m_Image[i].strNum = new int32_t[m_nStringQuantity];
                 m_Image[i].strSelf = new char *[m_nStringQuantity];
             }
             else
@@ -1322,10 +1322,10 @@ void CXI_VIMAGESCROLL::RefreshScroll()
             if (m_nSlotsQnt > 0)
             {
                 m_Image[i].bUseSpecTechnique = new bool[m_nSlotsQnt];
-                m_Image[i].img = new long[m_nSlotsQnt];
-                m_Image[i].ptex = new long[m_nSlotsQnt];
+                m_Image[i].img = new int32_t[m_nSlotsQnt];
+                m_Image[i].ptex = new int32_t[m_nSlotsQnt];
                 m_Image[i].saveName = new char *[m_nSlotsQnt];
-                m_Image[i].tex = new long[m_nSlotsQnt];
+                m_Image[i].tex = new int32_t[m_nSlotsQnt];
                 if (!m_Image[i].bUseSpecTechnique || !m_Image[i].img || !m_Image[i].ptex || !m_Image[i].saveName ||
                     !m_Image[i].tex)
                 {
@@ -1572,7 +1572,7 @@ void CXI_VIMAGESCROLL::UpdateTexturesGroup()
     int i;
 
     char **pPrevGroup = m_sGroupName;
-    long *prevTex = m_nGroupTex;
+    int32_t *prevTex = m_nGroupTex;
     const int nPrevQ = m_nGroupQuantity;
 
     // get textures
@@ -1586,7 +1586,7 @@ void CXI_VIMAGESCROLL::UpdateTexturesGroup()
         m_nGroupQuantity = pA->GetAttributesNum();
         if (m_nGroupQuantity != 0)
         {
-            m_nGroupTex = new long[m_nGroupQuantity];
+            m_nGroupTex = new int32_t[m_nGroupQuantity];
             m_sGroupName = new char *[m_nGroupQuantity];
             if (m_nGroupTex == nullptr || m_sGroupName == nullptr)
             {
@@ -1689,7 +1689,7 @@ void CXI_VIMAGESCROLL::IMAGEDESCRIBE::Clear(int nQnt, int nStr) const
     }
 }
 
-uint32_t CXI_VIMAGESCROLL::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_VIMAGESCROLL::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -1704,7 +1704,7 @@ uint32_t CXI_VIMAGESCROLL::MessageProc(long msgcode, MESSAGE &message)
     return 0;
 }
 
-long CXI_VIMAGESCROLL::GetMousePointedPictureNum()
+int32_t CXI_VIMAGESCROLL::GetMousePointedPictureNum()
 {
     const FXYPOINT mp = ptrOwner->GetMousePoint();
     if (mp.x < m_rect.left || mp.x > m_rect.right || mp.y < m_rect.top || mp.y > m_rect.bottom)
@@ -1713,7 +1713,7 @@ long CXI_VIMAGESCROLL::GetMousePointedPictureNum()
     }
 
     const float curYCenter = m_pScroll ? m_pScroll->pCenter.y : (m_rect.top + m_rect.bottom) / 2;
-    long n = 0;
+    int32_t n = 0;
     if (mp.y < curYCenter)
     {
         // number reduction

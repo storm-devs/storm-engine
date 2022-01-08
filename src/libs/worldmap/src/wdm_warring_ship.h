@@ -46,7 +46,7 @@ class WdmWarringShip : public WdmEnemyShip
     // Particles for cannon smoke
     RS_RECT rect[24];
     MoveInfo move[24];
-    long numRects;
+    int32_t numRects;
     float brnTime;
-    long texture;
+    int32_t texture;
 };

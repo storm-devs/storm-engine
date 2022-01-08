@@ -30,7 +30,7 @@ bool Lizards::Init()
     if (!location)
         return false;
     // init lizards
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         lizard[i].Init(location);
     // Execution
     // core.LayerCreate("realize", true, false);
@@ -48,6 +48,6 @@ void Lizards::Execute(uint32_t delta_time)
 void Lizards::Realize(uint32_t delta_time)
 {
     const auto dltTime = delta_time * 0.001f;
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         lizard[i].Update(dltTime);
 }

@@ -17,7 +17,7 @@ const wchar_t *SVClass = L"Source View";
 extern int FONT_HEIGHT;
 bool SelectionInProgress = false;
 
-void SOURCE_VIEW::DoStep(long iCount)
+void SOURCE_VIEW::DoStep(int32_t iCount)
 {
     if (nActiveLine == 0xFFFFFFFF)
     {
@@ -136,10 +136,10 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
                 if (OpenClipboard(nullptr)) // hwnd))
                 {
                     EmptyClipboard();
-                    long dwBytes;
+                    int32_t dwBytes;
 
-                    dwBytes = abs(static_cast<long>(CDebug->SourceView->nEndSelection) -
-                                  static_cast<long>(CDebug->SourceView->nStartSelection)) +
+                    dwBytes = abs(static_cast<int32_t>(CDebug->SourceView->nEndSelection) -
+                                  static_cast<int32_t>(CDebug->SourceView->nStartSelection)) +
                               1;
 
                     auto *hMem = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, dwBytes);
@@ -186,9 +186,9 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
                 if (bPointerInWatchWindow)
                 {
                     ListView_SetItemState(CDebug->WatcherList->GetWindowHandle(), -1, 0, LVIS_SELECTED);
-                    long iItemCount = ListView_GetItemCount(CDebug->WatcherList->GetWindowHandle());
+                    int32_t iItemCount = ListView_GetItemCount(CDebug->WatcherList->GetWindowHandle());
                     ScreenToClient(CDebug->WatcherList->GetWindowHandle(), &pnt);
-                    for (long i = 0; i < iItemCount; i++)
+                    for (int32_t i = 0; i < iItemCount; i++)
                     {
                         RECT rect;
                         auto bRes = ListView_GetItemRect(CDebug->WatcherList->GetWindowHandle(), i, &rect, LVIR_BOUNDS);
@@ -247,8 +247,8 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
                 if (CDebug->SourceView->sCopyPasteBuffer.size() &&
                     WindowFromPoint(pnt) == CDebug->WatcherList->GetWindowHandle())
                 {
-                    long iItemCount = ListView_GetItemCount(CDebug->WatcherList->GetWindowHandle());
-                    for (long i = 0; i < iItemCount; i++)
+                    int32_t iItemCount = ListView_GetItemCount(CDebug->WatcherList->GetWindowHandle());
+                    for (int32_t i = 0; i < iItemCount; i++)
                     {
                         if (ListView_GetItemState(CDebug->WatcherList->GetWindowHandle(), i, LVIS_SELECTED) &
                             LVIS_SELECTED)
@@ -361,7 +361,7 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
             case SB_PAGEDOWN:
                 CDebug->SourceView->nTopLine +=
                     (CDebug->SourceView->nClientLinesSize - 1) * ((nScrollCode == SB_PAGEDOWN) ? 1 : -1);
-                if (static_cast<long>(CDebug->SourceView->nTopLine) < 0)
+                if (static_cast<int32_t>(CDebug->SourceView->nTopLine) < 0)
                     CDebug->SourceView->nTopLine = 0;
                 if (CDebug->SourceView->nTopLine >= CDebug->SourceView->nLinesNum - CDebug->SourceView->nClientLinesSize)
                     CDebug->SourceView->nTopLine = CDebug->SourceView->nLinesNum - CDebug->SourceView->nClientLinesSize;
@@ -706,7 +706,7 @@ void SOURCE_VIEW::OnPaint()
                         nTo = nStartSelection;
                     }
 
-                    long w;
+                    int32_t w;
 
                     uint32_t nPosted = 0;
 
@@ -810,7 +810,7 @@ void SOURCE_VIEW::SetActiveLine(uint32_t line)
 
     if (nActiveLine < nTopLine || nActiveLine >= nTopLine + nClientLinesSize)
     {
-        long newtopline = static_cast<long>(nActiveLine) - static_cast<long>(nClientLinesSize) / 2;
+        int32_t newtopline = static_cast<int32_t>(nActiveLine) - static_cast<int32_t>(nClientLinesSize) / 2;
         if (newtopline < 0)
             newtopline = 0;
         if (newtopline + nClientLinesSize >= nLinesNum)
@@ -928,7 +928,7 @@ void SOURCE_VIEW::MoveSelection(uint32_t x_pos)
 void SOURCE_VIEW::InvalidateLineSection(uint32_t line, uint32_t r1, uint32_t r2)
 {
     uint32_t from, to;
-    //    long x_diff;
+    //    int32_t x_diff;
 
     if (line >= nLinesNum)
         return;
@@ -973,7 +973,7 @@ void SOURCE_VIEW::InvalidateLineSection(uint32_t line, uint32_t r1, uint32_t r2)
 // work only for active line yet
 void SOURCE_VIEW::DetCursorPos(uint32_t x_pos, uint32_t y_pos)
 {
-    //    long x_diff;
+    //    int32_t x_diff;
 
     if (nActiveLine >= nLinesNum)
         return;
@@ -1053,7 +1053,7 @@ void SOURCE_VIEW::ToogleBookmark()
 
 void SOURCE_VIEW::ClearAllBookmarks()
 {
-    for (long i = 0; i < nLinesNum; i++)
+    for (int32_t i = 0; i < nLinesNum; i++)
         pBookmarks[i] = false;
     htBookmarks.clear();
     InvalidateRect(hMain, nullptr, true);
@@ -1063,7 +1063,7 @@ void SOURCE_VIEW::GoNextBookmark()
 {
     const int nStartLine =
         (nActiveLine < nTopLine || nActiveLine > nTopLine + nClientLinesSize) ? nTopLine : nActiveLine;
-    for (long i = 1; i < nLinesNum; i++)
+    for (int32_t i = 1; i < nLinesNum; i++)
     {
         const int iLine = (nStartLine + i) % nLinesNum;
         if (pBookmarks[iLine])
@@ -1111,7 +1111,7 @@ const char *SOURCE_VIEW::GetToken(const char *pStr, std::string &sResult)
 
 bool SOURCE_VIEW::SetVariableOnChange(const char *pString, bool bSet)
 {
-    long iDigit;
+    int32_t iDigit;
     std::string sVarName, sToken, sDigit;
     const char *pStr = (char *)pString;
     VDATA *pObject = nullptr;
@@ -1174,9 +1174,9 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     {
     case WM_DESTROY: {
         HWND hwndList = GetDlgItem(hwndDlg, IDC_XLIST);
-        long iNum = ListView_GetItemCount(hwndList);
+        int32_t iNum = ListView_GetItemCount(hwndList);
         CDebug->SourceView->aStrings.clear();
-        for (long i = 0; i < iNum; i++)
+        for (int32_t i = 0; i < iNum; i++)
         {
             wchar_t str[1024];
             str[0] = 0;
@@ -1202,7 +1202,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         uint32_t dwOld = ListView_GetExtendedListViewStyle(hwndList);
         ListView_SetExtendedListViewStyle(hwndList, dwOld | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
-        for (long i = 0; i < CDebug->SourceView->aStrings.size(); i++)
+        for (int32_t i = 0; i < CDebug->SourceView->aStrings.size(); i++)
         {
             LVITEM item;
             PZERO(&item, sizeof(item));
@@ -1260,7 +1260,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             StrW[0] = 0;
 
             HWND hwndList = GetDlgItem(hwndDlg, IDC_XLIST);
-            long iSel = ListView_GetSelectionMark(hwndList);
+            int32_t iSel = ListView_GetSelectionMark(hwndList);
             if (iSel == -1)
                 return false;
             ListView_GetItemText(hwndList, iSel, 0, StrW, sizeof(StrW));
@@ -1325,7 +1325,7 @@ void SOURCE_VIEW::FindNext()
 
     const int nStartLine =
         (nActiveLine < nTopLine || nActiveLine > nTopLine + nClientLinesSize) ? nTopLine : nActiveLine;
-    for (long i = 1; i < nLinesNum; i++)
+    for (int32_t i = 1; i < nLinesNum; i++)
     {
         const int iLine = (nStartLine + i) % nLinesNum;
         char str[2048];

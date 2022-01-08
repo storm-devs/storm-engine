@@ -18,7 +18,7 @@
 
 OctTree::OTNode::OTNode(const CVECTOR &_min, const CVECTOR &_max)
 {
-    for (long i = 0; i < 8; i++)
+    for (int32_t i = 0; i < 8; i++)
         node[i] = nullptr;
     min = _min;
     max = _max;
@@ -29,7 +29,7 @@ OctTree::OTNode::OTNode(const CVECTOR &_min, const CVECTOR &_max)
 OctTree::OTNode::~OTNode()
 {
     delete[] vrt;
-    for (long i = 0; i < 8; i++)
+    for (int32_t i = 0; i < 8; i++)
         if (node[i])
             delete node[i];
 }
@@ -59,29 +59,29 @@ void OctTree::Init(LGeometry *g)
     vrt = g->vrt.data();
     numVrt = g->numVrt;
     root = new OTNode(g->min, g->max);
-    for (long i = 0; i < numVrt; i++)
+    for (int32_t i = 0; i < numVrt; i++)
         AddVertex(root, &vrt[i]);
     Optimize(root);
     /*
     for(i = 0; i < numVrt; i++)
     {
-      long num = Check(root, vrt + i, 0);
+      int32_t num = Check(root, vrt + i, 0);
       Assert(num == 1);
     }
     */
 }
 
-long OctTree::Check(OTNode *node, Vertex *v, long num)
+int32_t OctTree::Check(OTNode *node, Vertex *v, int32_t num)
 {
     if (node->vrt)
     {
-        for (long i = 0; i < node->num; i++)
+        for (int32_t i = 0; i < node->num; i++)
             if (node->vrt[i] == v)
                 num++;
     }
     else
     {
-        for (long i = 0; i < 8; i++)
+        for (int32_t i = 0; i < 8; i++)
             if (node->node[i])
                 num += Check(node->node[i], v, 0);
     }
@@ -116,9 +116,9 @@ bool OctTree::AddVertex(OTNode *node, Vertex *v)
         node->node[5] = new OTNode(CVECTOR(min.x, cnt.y, cnt.z), CVECTOR(cnt.x, max.y, max.z));
         node->node[6] = new OTNode(CVECTOR(cnt.x, cnt.y, cnt.z), CVECTOR(max.x, max.y, max.z));
         node->node[7] = new OTNode(CVECTOR(cnt.x, cnt.y, min.z), CVECTOR(max.x, max.y, cnt.z));
-        for (long n = 0; n < node->num; n++)
+        for (int32_t n = 0; n < node->num; n++)
         {
-            long c;
+            int32_t c;
             for (c = 0; c < 8; c++)
             {
                 if (AddVertex(node->node[c], node->vrt[n]))
@@ -131,7 +131,7 @@ bool OctTree::AddVertex(OTNode *node, Vertex *v)
         node->num = 0;
     }
     // Adding children
-    long c;
+    int32_t c;
     for (c = 0; c < 8; c++)
     {
         if (AddVertex(node->node[c], v))
@@ -146,7 +146,7 @@ void OctTree::Optimize(OTNode *node)
 {
     if (!node->vrt)
     {
-        for (long i = 0; i < 8; i++)
+        for (int32_t i = 0; i < 8; i++)
         {
             if (!node->node[i])
                 continue;
@@ -200,13 +200,13 @@ void OctTree::FindVerts(OTNode *node)
     // If do not have our own array, send it to the children
     if (node->vrt == nullptr)
     {
-        for (long i = 0; i < 8; i++)
+        for (int32_t i = 0; i < 8; i++)
             if (node->node[i])
                 FindVerts(node->node[i]);
     }
     else
     {
-        for (long i = 0; i < node->num; i++)
+        for (int32_t i = 0; i < node->num; i++)
         {
             const auto r = ~(node->vrt[i]->p - vertsPos);
             if (r < vertsR)

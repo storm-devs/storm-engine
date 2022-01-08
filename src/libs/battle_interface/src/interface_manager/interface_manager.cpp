@@ -38,8 +38,8 @@ bool BI_InterfaceManager::Init()
 
     auto [nBaseWidth, nBaseHeight] = core.GetScreenSize();
 
-    long nBaseXOffset = 0;
-    long nBaseYOffset = 0;
+    int32_t nBaseXOffset = 0;
+    int32_t nBaseYOffset = 0;
     if (AttributesPointer)
     {
         auto *pA = AttributesPointer->GetAttributeClass("BaseWindow");
@@ -65,7 +65,7 @@ void BI_InterfaceManager::Realize(uint32_t delta_time)
     if (m_pInterfaceSheet)
         m_pInterfaceSheet->Update();
 
-    for (long n = 0; n < m_aNodes.size(); n++)
+    for (int32_t n = 0; n < m_aNodes.size(); n++)
         m_aNodes[n]->Update();
 
     m_pMouse->Update();
@@ -109,15 +109,15 @@ uint64_t BI_InterfaceManager::ProcessMessage(MESSAGE &message)
 }
 
 BI_ManagerNodeBase *BI_InterfaceManager::CreateImageNode(const char *texture, const FRECT &uv, const RECT &pos,
-                                                         uint32_t color, long nPrioritet)
+                                                         uint32_t color, int32_t nPrioritet)
 {
     BI_ManagerNodeBase *pNod = new BI_ImageNode(this, texture, uv, pos, color, nPrioritet);
     return pNod;
 }
 
 BI_ManagerNodeBase *BI_InterfaceManager::CreateStringNode(const char *text, const char *font, uint32_t color,
-                                                          float scale, const RECT &pos, long nHAlign, long nVAlign,
-                                                          long prioritet)
+                                                          float scale, const RECT &pos, int32_t nHAlign, int32_t nVAlign,
+                                                          int32_t prioritet)
 {
     BI_ManagerNodeBase *pNod = new BI_StringNode(this, text, font, color, scale, pos, nHAlign, nVAlign, prioritet);
     return pNod;
@@ -129,12 +129,12 @@ void BI_InterfaceManager::DeleteNode(BI_ManagerNodeBase *pNod)
     if (it != m_aNodes.end())
         m_aNodes.erase(it);
 
-    // long n = m_aNodes.Find( pNod );
+    // int32_t n = m_aNodes.Find( pNod );
     // if( n<0 ) return;
     // m_aNodes.DelIndex( n );
 }
 
-long BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
+int32_t BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
 {
     // remove the old interface
     STORM_DELETE(m_pInterfaceSheet);
@@ -156,25 +156,25 @@ long BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
     return 0;
 }
 
-long BI_InterfaceManager::MsgCreateImage(MESSAGE &message)
+int32_t BI_InterfaceManager::MsgCreateImage(MESSAGE &message)
 {
     /*char texture[MAX_PATH];    message.String( sizeof(texture), texture );
     FRECT uv;
     RECT pos;
     uint32_t color;
-    long nPrioritet;
+    int32_t nPrioritet;
 
-    return (long)CreateImageNode(texture,uv,pos,color,nPrioritet);*/
+    return (int32_t)CreateImageNode(texture,uv,pos,color,nPrioritet);*/
     return 0;
 }
 
-long BI_InterfaceManager::MsgCreateString(MESSAGE &message)
+int32_t BI_InterfaceManager::MsgCreateString(MESSAGE &message)
 {
-    // return (long)CreateStringNode();
+    // return (int32_t)CreateStringNode();
     return 0;
 }
 
-long BI_InterfaceManager::MsgDeleteNode(MESSAGE &message)
+int32_t BI_InterfaceManager::MsgDeleteNode(MESSAGE &message)
 {
     auto *pNod = (BI_ManagerNodeBase *)message.Pointer();
     if (!pNod)
@@ -191,7 +191,7 @@ long BI_InterfaceManager::MsgDeleteNode(MESSAGE &message)
     return 0;
 }
 
-long BI_InterfaceManager::MsgEvent(MESSAGE &message)
+int32_t BI_InterfaceManager::MsgEvent(MESSAGE &message)
 {
     return 0;
 }

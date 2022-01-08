@@ -102,7 +102,7 @@ void TM_LIST::Initialize(HWND hwnd, HINSTANCE hinst, uint32_t style, uint32_t st
     ShowWindow(hOwn, SW_SHOWNORMAL);
 }
 
-void TM_LIST::AddColumn(const char *name, long length)
+void TM_LIST::AddColumn(const char *name, int32_t length)
 {
     LVCOLUMN lvc;
 
@@ -150,7 +150,7 @@ void TM_LIST::AddItem(const char *name)
     Items_Num++;
 }
 
-void TM_LIST::SetItemText(long Item_index, long Subitem_index, const char *text)
+void TM_LIST::SetItemText(int32_t Item_index, int32_t Subitem_index, const char *text)
 {
     if (text)
     {
@@ -159,7 +159,7 @@ void TM_LIST::SetItemText(long Item_index, long Subitem_index, const char *text)
     }
 }
 
-void TM_LIST::GetItemText(long Item_index, long Subitem_index, const char *text, long max_size)
+void TM_LIST::GetItemText(int32_t Item_index, int32_t Subitem_index, const char *text, int32_t max_size)
 {
     if (text)
     {
@@ -168,9 +168,9 @@ void TM_LIST::GetItemText(long Item_index, long Subitem_index, const char *text,
     }
 }
 
-// if (text) for (long i=0, j=0; i<max_size && text[i]; i++) if (text[i] != '\n') text[j++] = text[i];
+// if (text) for (int32_t i=0, j=0; i<max_size && text[i]; i++) if (text[i] != '\n') text[j++] = text[i];
 
-void TM_LIST::SetItemImage(long Item_index, long Subitem_index, long image_code)
+void TM_LIST::SetItemImage(int32_t Item_index, int32_t Subitem_index, int32_t image_code)
 {
     LVITEM lvi;
     if (image_code < 0)
@@ -211,7 +211,7 @@ void TM_LIST::SelectItem(const char *name)
     if (!name)
         return;
     const auto items = GetItemsCount();
-    for (long n = 0; n < items; n++)
+    for (int32_t n = 0; n < items; n++)
     {
         GetItemText(n, 0, SearchName, sizeof(SearchName));
         if (_stricmp(SearchName, name) == 0)
@@ -284,11 +284,11 @@ void TM_LIST::ProcessMessageBase(uint64_t iMsg, uint64_t wParam, uint64_t lParam
                     {
                         std::string sTmpBuffer;
 
-                        for (long i = 0; i < static_cast<long>(lines); i++)
+                        for (int32_t i = 0; i < static_cast<int32_t>(lines); i++)
                         {
                             PZERO(&TextEditBuffer[0], MAX_STR_SIZE);
                             *(uint16_t *)TextEditBuffer = MAX_STR_SIZE - 2;
-                            const long chars =
+                            const int32_t chars =
                                 SendMessage(hEdit, EM_GETLINE, i, (LPARAM) static_cast<LPCSTR>(TextEditBuffer));
                             TextEditBuffer[chars] = 0;
                             if (chars)
@@ -355,7 +355,7 @@ void TM_LIST::ProcessMessageBase(uint64_t iMsg, uint64_t wParam, uint64_t lParam
                     EditPos.top = item_rect.top;
                     EditPos.bottom = EditPos.top + item_rect.bottom - item_rect.top - 1;
                     uint32_t subitem_spacing = 0;
-                    for (long n = 0; n < lpnmlv->iSubItem; n++)
+                    for (int32_t n = 0; n < lpnmlv->iSubItem; n++)
                     {
                         subitem_spacing += ListView_GetColumnWidth(GetWindowHandle(), n);
                     }
@@ -414,7 +414,7 @@ void TM_LIST::StartEditSelectedItem()
     }
 }
 
-long TM_LIST::GetItemsCount()
+int32_t TM_LIST::GetItemsCount()
 {
     return ListView_GetItemCount(hOwn);
 }

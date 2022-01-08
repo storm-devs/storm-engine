@@ -43,7 +43,7 @@ class Astronomy : public Entity
         {
             GEOS *pGeo;
             CVECTOR vPos;
-            long iTexture;
+            int32_t iTexture;
             float fDistance, fRealDistance;
             float fSpeed;
             float fInclination;
@@ -92,9 +92,9 @@ class Astronomy : public Entity
         const char *sCatalog, *sTexture;
         float fRadius, fSize, fHeightFade, fSunFade;
         float fVisualMagnitude, fTelescopeMagnitude;
-        long iTexture;
+        int32_t iTexture;
         bool bEnable;
-        long iVertexBuffer, iVertexBufferColors;
+        int32_t iVertexBuffer, iVertexBufferColors;
         IDirect3DVertexDeclaration9 *pDecl;
         float fPrevFov;
 

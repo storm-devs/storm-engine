@@ -48,7 +48,7 @@ class CXI_CHECKBUTTONS : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -56,7 +56,7 @@ class CXI_CHECKBUTTONS : public CINODE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
     bool GetInternalNameList(std::vector<std::string> &aStr) override;
     void SetInternalName(std::string &sName) override;
@@ -64,21 +64,21 @@ class CXI_CHECKBUTTONS : public CINODE
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void AddButton(const char *pcText, bool bDisable, bool bSelect);
-    void ChangeText(long nButtonNum, const char *pcText);
+    void ChangeText(int32_t nButtonNum, const char *pcText);
 
     void CheckMouseClick(const FXYPOINT &pntMouse);
-    void SetButtonOn(long nButtonNum);
-    void SetButtonOff(long nButtonNum);
+    void SetButtonOn(int32_t nButtonNum);
+    void SetButtonOff(int32_t nButtonNum);
     void SetAllButtonsToOff();
-    void SetCheckToButton(long nButtonNum, bool bCheck);
+    void SetCheckToButton(int32_t nButtonNum, bool bCheck);
 
     void UpdateAllTextInfo();
-    void UpdateTextInfo(long nButtonNum);
-    void WriteToAttributeButtonState(long nButtonIndex);
+    void UpdateTextInfo(int32_t nButtonNum);
+    void WriteToAttributeButtonState(int32_t nButtonIndex);
 
     bool m_bExclusiveChoose;
 
-    long m_nFontNum;
+    int32_t m_nFontNum;
     float m_fFontScale;
     uint32_t m_dwNormalFontColor;
     uint32_t m_dwSelectFontColor;
@@ -86,12 +86,12 @@ class CXI_CHECKBUTTONS : public CINODE
     FXYRECT m_frTextOffset;
     float m_fTextLineHeight;
     float m_fTextSectionInterval;
-    long m_nFontAlignment;
+    int32_t m_nFontAlignment;
 
     bool m_bClickIntoTextActive;
     bool m_bIndividualPos;
     std::vector<ButtonDescribe *> m_aButton;
-    long m_nEditableSectionIndex;
+    int32_t m_nEditableSectionIndex;
 
     FXYPOINT m_fpIconSize;
     FXYPOINT m_fpIconOffset;

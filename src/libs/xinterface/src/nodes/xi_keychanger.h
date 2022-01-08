@@ -20,7 +20,7 @@ class CXI_KEYCHANGER : public CINODE
         return -1;
     }
 
-    bool IsClick(int buttonID, long xPos, long yPos) override
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override
     {
         return false;
     }
@@ -31,7 +31,7 @@ class CXI_KEYCHANGER : public CINODE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override
     {
@@ -41,8 +41,8 @@ class CXI_KEYCHANGER : public CINODE
     void SetChoosingControls(ATTRIBUTES *pA);
 
   protected:
-    long *m_pControlsID;
+    int32_t *m_pControlsID;
     bool *m_pbControlsStick;
-    long m_keysQuantity;
+    int32_t m_keysQuantity;
     bool m_bKeyCheck;
 };

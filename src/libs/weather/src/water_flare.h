@@ -7,7 +7,7 @@ class WATERFLARE : public Entity
 {
     RS_RECT *pRSRect;
     float *pfAlpha;
-    long iFlareTex, iFlaresNum;
+    int32_t iFlareTex, iFlaresNum;
     WEATHER_BASE *pWeather;
     VDX9RENDER *RS;
 

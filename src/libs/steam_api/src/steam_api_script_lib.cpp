@@ -19,14 +19,14 @@ uint32_t getSteamEnabled(VS_STACK *pS)
     {
         return IFUNCRESULT_FAILED;
     }
-    pV->Set((long)SteamApi::getInstance().isSteamEnabled());
+    pV->Set((int32_t)SteamApi::getInstance().isSteamEnabled());
     return IFUNCRESULT_OK;
 }
 
 uint32_t getDlcEnabled(VS_STACK *pS)
 {
     auto *pV = pS->Pop();
-    long dlc{};
+    int32_t dlc{};
     if (!pV->Get(dlc))
     {
         return IFUNCRESULT_FAILED;
@@ -39,7 +39,7 @@ uint32_t getDlcEnabled(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    pV->Set((long)dlc_active);
+    pV->Set((int32_t)dlc_active);
     return IFUNCRESULT_OK;
 }
 
@@ -51,14 +51,14 @@ uint32_t getDlcCount(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    pV->Set((long)SteamApi::getInstance().getDLCCount());
+    pV->Set((int32_t)SteamApi::getInstance().getDLCCount());
     return IFUNCRESULT_OK;
 }
 
 uint32_t getDlcData(VS_STACK *pS)
 {
     auto *pV = pS->Pop();
-    long dlc{};
+    int32_t dlc{};
     if (!pV->Get(dlc))
     {
         return IFUNCRESULT_FAILED;
@@ -71,14 +71,14 @@ uint32_t getDlcData(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    pV->Set((long)dlc_data);
+    pV->Set((int32_t)dlc_data);
     return IFUNCRESULT_OK;
 }
 
 uint32_t activateGameOverlayDlc(VS_STACK *pS)
 {
     auto *pV = pS->Pop();
-    long dlc{};
+    int32_t dlc{};
     if (!pV->Get(dlc))
     {
         return IFUNCRESULT_FAILED;
@@ -91,7 +91,7 @@ uint32_t activateGameOverlayDlc(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    pV->Set((long)success);
+    pV->Set((int32_t)success);
     return IFUNCRESULT_OK;
 }
 
@@ -112,7 +112,7 @@ uint32_t slSetAchievement(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    const long ret = SteamApi::getInstance().SetAchievementState(name.c_str());
+    const int32_t ret = SteamApi::getInstance().SetAchievementState(name.c_str());
     pReturn->Set(ret);
 
     return IFUNCRESULT_OK;
@@ -135,7 +135,7 @@ uint32_t slGetAchievement(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    const long ret = SteamApi::getInstance().GetAchievementState(name.c_str());
+    const int32_t ret = SteamApi::getInstance().GetAchievementState(name.c_str());
     pReturn->Set(ret);
 
     return IFUNCRESULT_OK;
@@ -144,7 +144,7 @@ uint32_t slGetAchievement(VS_STACK *pS)
 uint32_t slSetStat(VS_STACK *pS)
 {
     auto pInt = pS->Pop();
-    long val = 0;
+    int32_t val = 0;
     if (!pInt->Get(val))
     {
         return IFUNCRESULT_FAILED;
@@ -165,7 +165,7 @@ uint32_t slSetStat(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    const long ret = SteamApi::getInstance().SetStatValue(name.c_str(), val);
+    const int32_t ret = SteamApi::getInstance().SetStatValue(name.c_str(), val);
     pReturn->Set(ret);
 
     return IFUNCRESULT_OK;
@@ -188,7 +188,7 @@ uint32_t slGetStat(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    const long ret = SteamApi::getInstance().GetStatValue(name.c_str());
+    const int32_t ret = SteamApi::getInstance().GetStatValue(name.c_str());
     pReturn->Set(ret);
 
     return IFUNCRESULT_OK;
@@ -202,7 +202,7 @@ uint32_t slStoreStats(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    const long ret = SteamApi::getInstance().StoreStats();
+    const int32_t ret = SteamApi::getInstance().StoreStats();
 
     pReturn->Set(ret);
     return IFUNCRESULT_OK;
@@ -225,7 +225,7 @@ uint32_t slClearAchievement(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    const long ret = SteamApi::getInstance().ClearAchievement(name.c_str());
+    const int32_t ret = SteamApi::getInstance().ClearAchievement(name.c_str());
     pReturn->Set(ret);
 
     return IFUNCRESULT_OK;
@@ -234,7 +234,7 @@ uint32_t slClearAchievement(VS_STACK *pS)
 uint32_t slResetStats(VS_STACK *pS)
 {
     auto pInt = pS->Pop();
-    long val = 0;
+    int32_t val = 0;
     if (!pInt->Get(val))
     {
         return IFUNCRESULT_FAILED;
@@ -246,7 +246,7 @@ uint32_t slResetStats(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
 
-    const long ret = SteamApi::getInstance().ResetStats(val);
+    const int32_t ret = SteamApi::getInstance().ResetStats(val);
     pReturn->Set(ret);
 
     return IFUNCRESULT_OK;

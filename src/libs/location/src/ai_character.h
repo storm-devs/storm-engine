@@ -34,16 +34,16 @@ class AICharacter : public Character
         CVECTOR pos; // Point of arrival
         CVECTOR nrm; // Path direction
         float dst;   // Distance to the plane
-        long node;   // Node to be reached
+        int32_t node;   // Node to be reached
     };
 
     struct Command
     {
         AICommand cmd;     // Command
         CVECTOR pnt;       // Point for the command
-        long node;         // Node to go to
+        int32_t node;         // Node to go to
         CVECTOR tpnt;      // The point we are going at the moment
-        long tnode;        // The node we're on
+        int32_t tnode;        // The node we're on
         float radius;      // Radius to complete the task
         float waitTime;    // Waiting time (stand)
         AICharacter *exch; // don't collide with this character
@@ -85,7 +85,7 @@ class AICharacter : public Character
     // To stand
     bool CmdStay();
     // Go to the point
-    bool CmdGotoPoint(float x, float y, float z, float rad, long node = -1, bool isCheckBusyPos = true);
+    bool CmdGotoPoint(float x, float y, float z, float rad, int32_t node = -1, bool isCheckBusyPos = true);
     // Move away from the point
     bool CmdEscape(float x, float y, float z, float rad);
     // Set the character we don't collide with
@@ -117,7 +117,7 @@ class AICharacter : public Character
     void CmdUpdateEscape(float dltTime);
 
     // Find the node index for a given coordinate
-    long FindNodeIndex(const CVECTOR &pos, float *hy = nullptr);
+    int32_t FindNodeIndex(const CVECTOR &pos, float *hy = nullptr);
     // Find direction where to go (orientation on the terrain)
     bool FindDirectional();
     // Find the pushing forces

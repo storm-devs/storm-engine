@@ -14,9 +14,9 @@ class SEA_OPERATOR;
 //--------------------------------------------------------------------
 struct tAction
 {
-    long timePassed;
+    int32_t timePassed;
     float timeK;
-    long actionTime;
+    int32_t actionTime;
     CVECTOR destination, direction;
     SHIP_BASE *attackerShip;
     int hitIntoShip;
@@ -86,7 +86,7 @@ class SEA_OPERATOR : public Entity
     SEA_BASE *sea;
     VDX9RENDER *renderer;
     SHIP_BASE *myShip, *enemyShip;
-    long actionTime;
+    int32_t actionTime;
     bool ballTracked;
     CVECTOR ballPosition, lastBallPosition, finalBallPosition;
 

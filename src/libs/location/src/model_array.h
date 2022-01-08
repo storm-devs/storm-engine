@@ -74,37 +74,37 @@ class ModelArray
     virtual ~ModelArray();
 
     // Create model
-    long CreateModel(const char *modelName, const char *technique, long level, bool isVisible = true,
+    int32_t CreateModel(const char *modelName, const char *technique, int32_t level, bool isVisible = true,
                      void *pLights = nullptr);
     // Delete model
-    void DeleteModel(long modelIndex);
+    void DeleteModel(int32_t modelIndex);
     // Set animation to the model
-    bool SetAnimation(long modelIndex, const char *modelAni);
+    bool SetAnimation(int32_t modelIndex, const char *modelAni);
     // Find model index by name
-    long FindModel(const char *modelName);
+    int32_t FindModel(const char *modelName);
 
     // Check if the index is correct
-    bool IsValidateIndex(long index) const;
+    bool IsValidateIndex(int32_t index) const;
     // Get model name
-    const char *GetModelName(long index);
+    const char *GetModelName(int32_t index);
 
     // Number of models
-    long Models() const;
+    int32_t Models() const;
     // Getting model ID by index
-    entid_t ID(long modelIndex);
+    entid_t ID(int32_t modelIndex);
     // Getting a model by index
-    MODEL *operator[](long modelIndex);
+    MODEL *operator[](int32_t modelIndex);
     // Getting animation by index
-    Animation *GetAnimation(long modelIndex);
+    Animation *GetAnimation(int32_t modelIndex);
     // Getting the renderer ID by index
-    entid_t RealizerID(long modelIndex);
+    entid_t RealizerID(int32_t modelIndex);
 
     // Set slide uv animation to the model
-    void SetUVSlide(long modelIndex, float u0, float v0, float u1, float v1);
+    void SetUVSlide(int32_t modelIndex, float u0, float v0, float u1, float v1);
     // Set a rotation animation to the model
-    void SetRotation(long modelIndex, float rx, float ry, float rz);
+    void SetRotation(int32_t modelIndex, float rx, float ry, float rz);
     // Set the reflection matrix generation mode to the model
-    void SetReflection(long modelIndex, float scale);
+    void SetReflection(int32_t modelIndex, float scale);
 
     // Animate
     void Update(float dltTime);
@@ -119,7 +119,7 @@ class ModelArray
     // Trace the ray through the location
     float Trace(const CVECTOR &src, const CVECTOR &dst);
     bool GetCollideTriangle(TRIANGLE &trg) const;
-    void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
+    void Clip(PLANE *p, int32_t numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, int32_t num));
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
@@ -131,8 +131,8 @@ class ModelArray
   private:
     // Location models
     std::vector<LocationModel> model;
-    long numModels;
-    long maxModels;
+    int32_t numModels;
+    int32_t maxModels;
     TRIANGLE ctrg;
     bool isHavecTrg;
 
@@ -145,13 +145,13 @@ class ModelArray
 };
 
 // Check if the index is correct
-inline bool ModelArray::IsValidateIndex(long index) const
+inline bool ModelArray::IsValidateIndex(int32_t index) const
 {
     return index >= 0 && index < numModels;
 }
 
 // Get model name
-inline const char *ModelArray::GetModelName(long index)
+inline const char *ModelArray::GetModelName(int32_t index)
 {
     if (index >= 0 && index < numModels)
         return model[index].name;

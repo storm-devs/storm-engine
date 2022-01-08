@@ -37,12 +37,12 @@ class WdmSea : public WdmRenderObject
         float speed;
         float curTime;
         float kTime;
-        long textureIndex;
+        int32_t textureIndex;
     };
 
     struct Flare
     {
-        long index;  // index of a used rectangle
+        int32_t index;  // index of a used rectangle
         float time;  // Lifetime 0 to 1
         float k;     // The speed of time
         float phase; // Phase defining the direction of rotation
@@ -73,21 +73,21 @@ class WdmSea : public WdmRenderObject
 
   private:
     // Geometry buffers
-    long vb, ib;
+    int32_t vb, ib;
     // Waves
     WhiteHorses wh[16];
     // Textures
-    long baseTexture;
-    long aniTextures[32];
+    int32_t baseTexture;
+    int32_t aniTextures[32];
     float aniFrame;
-    long whiteHorses[1];
+    int32_t whiteHorses[1];
     float seaSizeX;
     float seaSizeZ;
     float aniTiling;
     // Flares
     Flare flare[1024];
     RS_RECT flareRect[1024];
-    long flareCount;
-    long flareTexture;
+    int32_t flareCount;
+    int32_t flareTexture;
     float flareCerateCounter;
 };

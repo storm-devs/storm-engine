@@ -71,7 +71,7 @@ void Supervisor::Update(float dltTime)
         character[i].c->isCollision = false;
     }
     // calculate the distances, and determine the interacting characters
-    long chr = 0;
+    int32_t chr = 0;
     size_t i;
     for (i = 0; i < character.size() - 1; i++)
     {
@@ -225,7 +225,7 @@ void Supervisor::PostUpdate(float dltTime)
     // Executing the current character
     if (!character.empty())
     {
-        for (long i = 0; i < 5; i++)
+        for (int32_t i = 0; i < 5; i++)
         {
             if (curUpdate >= character.size())
                 break;
@@ -379,15 +379,15 @@ std::vector<Supervisor::FindCharacter> Supervisor::FindCharacters(Character *chr
 }
 
 // Find the best locator to continue walking the character
-long Supervisor::FindForvardLocator(LocatorArray *la, const CVECTOR &pos, const CVECTOR &norm, bool lookChr) const
+int32_t Supervisor::FindForvardLocator(LocatorArray *la, const CVECTOR &pos, const CVECTOR &norm, bool lookChr) const
 {
     if (!la)
         return -1;
     const auto num = la->Num();
     CVECTOR lpos;
     float maxcs;
-    long l = -1;
-    for (long i = 0; i < num; i++)
+    int32_t l = -1;
+    for (int32_t i = 0; i < num; i++)
     {
         if (!la->GetLocatorPos(i, lpos.x, lpos.y, lpos.z))
             continue;

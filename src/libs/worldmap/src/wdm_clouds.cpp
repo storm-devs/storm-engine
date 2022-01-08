@@ -31,7 +31,7 @@ bool WdmClouds::Cloud::Reset(bool isFirstTime)
     if (count > 0)
         return false;
     // Determine the quantity
-    count = static_cast<long>((rand() * (0.5f / RAND_MAX) + 0.5f) * WDMCLOUDSMAX);
+    count = static_cast<int32_t>((rand() * (0.5f / RAND_MAX) + 0.5f) * WDMCLOUDSMAX);
     if (count < 1)
         count = 1;
     // Base position
@@ -44,7 +44,7 @@ bool WdmClouds::Cloud::Reset(bool isFirstTime)
     scaleX *= nrm;
     scaleZ *= nrm;
     // Determining starting positions
-    for (long i = 0; i < count; i++)
+    for (int32_t i = 0; i < count; i++)
     {
         auto ang = rand() * (2.0f * PI / RAND_MAX);
         auto rad = rand() * (WdmCloudsCloudRad / RAND_MAX);
@@ -93,8 +93,8 @@ void WdmClouds::Cloud::Update(float dltTime)
     const auto minWorldZ = -0.5f * wdmObjects->worldSizeZ;
     const auto maxWorldZ = 0.5f * wdmObjects->worldSizeZ;
     // Moving the clouds
-    long outsideCount = 0;
-    for (long i = 0; i < count; i++)
+    int32_t outsideCount = 0;
+    for (int32_t i = 0; i < count; i++)
     {
         // Particle
         auto &cld = cloud[i];
@@ -212,16 +212,16 @@ void WdmClouds::Cloud::Update(float dltTime)
     }
 }
 
-long WdmClouds::Cloud::FillRects(RS_RECT *rects, long cnt, float galpha)
+int32_t WdmClouds::Cloud::FillRects(RS_RECT *rects, int32_t cnt, float galpha)
 {
-    for (long i = 0; i < count; i++)
+    for (int32_t i = 0; i < count; i++)
     {
         auto &c = cloud[i];
         // Calculating the alpha
         auto a = static_cast<float>(static_cast<uint8_t>(c.color >> 24));
         a *= alpha;
         a *= 0.1f + c.alpha * 0.9f;
-        auto la = static_cast<long>(a * galpha);
+        auto la = static_cast<int32_t>(a * galpha);
         if (la > 0xff)
             la = 0xff;
         if (la <= 0)
@@ -272,7 +272,7 @@ void WdmClouds::Cloud::Kill(const Cloud &cld)
 WdmClouds::WdmClouds()
 {
     // set positions and directions to groups
-    for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
+    for (int32_t i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
         clouds[i].Reset(true);
     }
@@ -292,18 +292,18 @@ WdmClouds::~WdmClouds()
 void WdmClouds::Update(float dltTime)
 {
     // Restart killed ones
-    for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
+    for (int32_t i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
         if (clouds[i].Reset())
             break;
     }
     // Updating positions
-    for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
+    for (int32_t i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
         clouds[i].Update(dltTime);
     }
     // Remove strongly intersecting
-    for (long i = 0; i < sizeof(clouds) / sizeof(Cloud) - 1; i++)
+    for (int32_t i = 0; i < sizeof(clouds) / sizeof(Cloud) - 1; i++)
     {
         for (auto j = i + 1; j < sizeof(clouds) / sizeof(Cloud); j++)
         {
@@ -315,7 +315,7 @@ void WdmClouds::Update(float dltTime)
 // Drawing
 void WdmClouds::LRender(VDX9RENDER *rs)
 {
-    long cnt = 0;
+    int32_t cnt = 0;
     // Getting camera frustum
     auto *plane = rs->GetPlanes();
     // Determine the global alpha depending on the distance to the camera
@@ -330,14 +330,14 @@ void WdmClouds::LRender(VDX9RENDER *rs)
         alpha = 1.0f;
     alpha *= alpha;
     // Draw visible
-    long count = 0;
-    for (long i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
+    int32_t count = 0;
+    for (int32_t i = 0; i < sizeof(clouds) / sizeof(Cloud); i++)
     {
         // get the sphere
         CVECTOR c;
         auto r = clouds[i].GetBound(c);
         // test for visibility
-        long j;
+        int32_t j;
         for (j = 0; j < 4; j++)
         {
             auto &p = plane[j];

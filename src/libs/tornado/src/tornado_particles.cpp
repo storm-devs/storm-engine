@@ -18,7 +18,7 @@
 
 TornadoParticles::TornadoParticles(Pillar &_pillar) : pillar(_pillar)
 {
-    for (long i = 0; i < sizeof(groundPrt) / sizeof(GroundParticle); i++)
+    for (int32_t i = 0; i < sizeof(groundPrt) / sizeof(GroundParticle); i++)
     {
         groundPrt[i].pos = 0.0f;
         groundPrt[i].size = GetRand(25.0f, 0.3f);
@@ -31,7 +31,7 @@ TornadoParticles::TornadoParticles(Pillar &_pillar) : pillar(_pillar)
         groundPrt[i].dt = 0.0f;
         groundPrt[i].p = 1.5f + 2.5f * rand() / RAND_MAX;
     }
-    for (long i = 0; i < sizeof(pillarPrt) / sizeof(PillarParticle); i++)
+    for (int32_t i = 0; i < sizeof(pillarPrt) / sizeof(PillarParticle); i++)
     {
         pillarPrt[i].ang = pillar.RandomPos(pillarPrt[i].pos);
         pillarPrt[i].sz = pillarPrt[i].size = GetRand(10.0f, 0.3f);
@@ -67,7 +67,7 @@ void TornadoParticles::Update(float dltTime)
     }
     // seaLevel -= 0.5f;
     // Particles near the ground
-    for (long i = 0; i < sizeof(groundPrt) / sizeof(GroundParticle); i++)
+    for (int32_t i = 0; i < sizeof(groundPrt) / sizeof(GroundParticle); i++)
     {
         auto k = pillarPrt[i].k;
         // Particle lifetime
@@ -75,7 +75,7 @@ void TornadoParticles::Update(float dltTime)
         groundPrt[i].t += k * dltTime * groundPrt[i].dt;
         if (groundPrt[i].t > 1.0f)
         {
-            groundPrt[i].t -= static_cast<long>(groundPrt[i].t);
+            groundPrt[i].t -= static_cast<int32_t>(groundPrt[i].t);
             groundPrt[i].dt = 0.0f;
         }
         const auto t = groundPrt[i].t;
@@ -108,7 +108,7 @@ void TornadoParticles::Update(float dltTime)
         // if(groundPrt[i].pos.y > 3.0f) groundPrt[i].alpha *= 1.0f - (groundPrt[i].pos.y - 3.0f)/(30.0f - 3.0f);
     }
     // Pillar Particles
-    for (long i = 0; i < sizeof(pillarPrt) / sizeof(PillarParticle); i++)
+    for (int32_t i = 0; i < sizeof(pillarPrt) / sizeof(PillarParticle); i++)
     {
         auto kh = pillar.GetKHeight(pillarPrt[i].pos.y);
         const auto k = pillarPrt[i].k;
@@ -149,11 +149,11 @@ void TornadoParticles::Draw(VDX9RENDER *rs)
     rs->SetTransform(D3DTS_VIEW, camMtx);
 }
 
-inline void TornadoParticles::DrawParticles(VDX9RENDER *rs, void *prts, long num, long size, long texture,
+inline void TornadoParticles::DrawParticles(VDX9RENDER *rs, void *prts, int32_t num, int32_t size, int32_t texture,
                                             const char *tech)
 {
-    long n = 0;
-    for (long i = 0; i < num; i++)
+    int32_t n = 0;
+    for (int32_t i = 0; i < num; i++)
     {
         auto *parts = static_cast<Particle *>(prts);
         prts = static_cast<char *>(prts) + size;
@@ -161,7 +161,7 @@ inline void TornadoParticles::DrawParticles(VDX9RENDER *rs, void *prts, long num
         const auto size = parts->size * 0.5f;
         const auto sn = sinf(parts->angle);
         const auto cs = cosf(parts->angle);
-        const auto color = (static_cast<long>(parts->alpha * galpha) << 24) | 0x00ffffff;
+        const auto color = (static_cast<int32_t>(parts->alpha * galpha) << 24) | 0x00ffffff;
         buffer[n * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), size * (sn + cs), 0.0f);
         buffer[n * 6 + 0].color = color;
         buffer[n * 6 + 0].u = 0.0f;

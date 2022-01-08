@@ -301,7 +301,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         auto *pACharacter1 = message.AttributePointer();
         auto *pACharacter2 = message.AttributePointer();
         auto *pVData = message.ScriptVariablePointer();
-        pVData->Set(static_cast<long>(Helper.GetRelationSafe(pACharacter1, pACharacter2)));
+        pVData->Set(static_cast<int32_t>(Helper.GetRelationSafe(pACharacter1, pACharacter2)));
     }
     break;
     case AI_MESSAGE_SET_COMPANION_ENEMY: {

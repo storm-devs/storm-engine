@@ -46,7 +46,7 @@ class NoiseCloud
 
     void SetGlobalAlpha(float a);
 
-    long texture;
+    int32_t texture;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
@@ -54,7 +54,7 @@ class NoiseCloud
   private:
     Pillar &pillar;
     float galpha;
-    long lightCnt;
+    int32_t lightCnt;
     Rect rect[64];
     Vertex buf[6 * 64];
 };

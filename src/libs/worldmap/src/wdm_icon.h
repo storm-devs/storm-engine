@@ -39,7 +39,7 @@ class WdmIcon : public WdmInterfaceObject
     // --------------------------------------------------------------------------------------------
   private:
     WdmEnemyShip *lastShip;
-    long texture;
+    int32_t texture;
     Icon icon[2];
     float islandAlpha;
     float skipAlpha;

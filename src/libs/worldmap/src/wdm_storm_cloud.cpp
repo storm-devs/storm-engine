@@ -42,7 +42,7 @@ WdmStormCloud::~WdmStormCloud()
     rainTexture = -1;
 }
 
-void WdmStormCloud::BuildCloud(long n)
+void WdmStormCloud::BuildCloud(int32_t n)
 {
     // Create a cloud
     WdmCloud::BuildCloud(n);
@@ -52,7 +52,7 @@ void WdmStormCloud::BuildCloud(long n)
 
 void WdmStormCloud::FillRects()
 {
-    for (long i = 0; i < numRects; i++)
+    for (int32_t i = 0; i < numRects; i++)
     {
         // Colour
         float r = (WDM_STORMCLOUD_COLOR >> 16) & 0xff;
@@ -73,9 +73,9 @@ void WdmStormCloud::FillRects()
             b = 0.0f;
         if (b > 255.0f)
             b = 255.0f;
-        rect[i].dwColor = 0xff000000 | (long(r) << 16) | (long(g) << 8) | (long(b) << 0);
+        rect[i].dwColor = 0xff000000 | (int32_t(r) << 16) | (int32_t(g) << 8) | (int32_t(b) << 0);
         // Rain coordinates
-        for (long j = 0; j < 256; j++)
+        for (int32_t j = 0; j < 256; j++)
         {
             float ang = rand() * 2.0f * 3.141592653f / RAND_MAX;
             float r = rand() * rect[i].fSize / RAND_MAX;
@@ -144,11 +144,11 @@ void WdmStormCloud::LRender(VDX9RENDER *rs)
 
     /*
     // Draw rain
-    for(long i = 0; i < numRects; i++)
+    for(int32_t i = 0; i < numRects; i++)
     {
-        for(long j = 0; j < 256; j++)
+        for(int32_t j = 0; j < 256; j++)
         {
-            long idx = i*256 + j;
+            int32_t idx = i*256 + j;
             rain[idx*2 + 0].x = rect[i].vPos.x + rainpos[idx].x;
             rain[idx*2 + 0].y = 0.0f;
             rain[idx*2 + 0].z = rect[i].vPos.z + rainpos[idx].z;

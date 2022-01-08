@@ -8,7 +8,7 @@
 #define BLOOD_RANDOM_DIST 0.8f  // spread of blood around in meters
 
 Blood::ClipTriangle Blood::clipT[MAX_CLIPPING_TRIANGLES];
-long Blood::nClipTQ;
+int32_t Blood::nClipTQ;
 CVECTOR Blood::normal;
 
 Blood::Blood()
@@ -47,7 +47,7 @@ void Blood::Execute(uint32_t delta_time)
         return;
 
     const auto fDeltaTime = delta_time * 0.001f;
-    for (long n = 0; n < aBlood.size(); n++)
+    for (int32_t n = 0; n < aBlood.size(); n++)
     {
         aBlood[n].fLiveTime -= fDeltaTime;
         if (aBlood[n].fLiveTime <= 0.f)
@@ -71,7 +71,7 @@ void Blood::Execute(uint32_t delta_time)
             if (dwCol > 255)
                 dwCol = 255;
             dwCol = (dwCol << 24) | 0xFFFFFF;
-            for (long i = 0, m = aBlood[n].nStartIdx; i < aBlood[n].nIdxQ; i++, m++)
+            for (int32_t i = 0, m = aBlood[n].nStartIdx; i < aBlood[n].nIdxQ; i++, m++)
             {
                 if (m >= MAX_BLOOD_TRIANGLES)
                     m -= MAX_BLOOD_TRIANGLES;
@@ -141,13 +141,13 @@ uint64_t Blood::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-bool Blood::AddClipPoligon(const CVECTOR *v, long nv)
+bool Blood::AddClipPoligon(const CVECTOR *v, int32_t nv)
 {
     if (nClipTQ >= MAX_CLIPPING_TRIANGLES)
         return false;
     if (nv < 3)
         return true;
-    for (long i = 2; i < nv; i++)
+    for (int32_t i = 2; i < nv; i++)
     {
         clipT[nClipTQ].v[0] = v[0];
         clipT[nClipTQ].v[1] = v[i - 1];
@@ -235,7 +235,7 @@ void Blood::AddBlood(const CVECTOR &pos)
     }
 
     // loop through the array of models
-    for (long n = 0; n < aModels.size(); n++)
+    for (int32_t n = 0; n < aModels.size(); n++)
     {
         auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(aModels[n]));
         if (!m)
@@ -312,7 +312,7 @@ void Blood::BuildBloodDataByCollision(const CVECTOR &cpos)
         fV0 = 0.5f;
         break;
     }
-    for (long i = 0, n = curBlood.nStartIdx; i < nClipTQ; i++, n++)
+    for (int32_t i = 0, n = curBlood.nStartIdx; i < nClipTQ; i++, n++)
     {
         if (n >= MAX_BLOOD_TRIANGLES)
             n -= MAX_BLOOD_TRIANGLES;
@@ -343,11 +343,11 @@ void Blood::SetVertexByPos(BloodVertex &v, const CVECTOR &pos, const CVECTOR &vc
     v.v += fV0;
 }
 
-long Blood::CheckBloodQuantityInRadius(const CVECTOR &cpos, float fDist, long nLimitQ)
+int32_t Blood::CheckBloodQuantityInRadius(const CVECTOR &cpos, float fDist, int32_t nLimitQ)
 {
     const auto fDistPow2 = fDist * fDist;
-    long nCurQ = 0;
-    for (long n = 0; n < aBlood.size(); n++)
+    int32_t nCurQ = 0;
+    for (int32_t n = 0; n < aBlood.size(); n++)
     {
         if ((~(aBlood[n].cpos - cpos)) > fDistPow2)
             continue;

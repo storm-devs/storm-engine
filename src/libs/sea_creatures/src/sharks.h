@@ -40,9 +40,9 @@ class Sharks : public Entity
         void Repulsion(Shark &shr);
         void ShipApply(float x, float z, float r2);
         void Coordination(float cam_x, float cam_z, float dltTime, SEA_BASE *sb, ISLAND_BASE *ib);
-        void IslandCollision(ISLAND_BASE *ib, long numPnt, float rad, float frc);
-        void Event(Animation *animation, long index, long eventID, AnimationEvent event) override;
-        long GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SEA_BASE *sb);
+        void IslandCollision(ISLAND_BASE *ib, int32_t numPnt, float rad, float frc);
+        void Event(Animation *animation, int32_t index, int32_t eventID, AnimationEvent event) override;
+        int32_t GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SEA_BASE *sb);
 
         // Waypoint
         CVECTOR pos;    // Waypoint position
@@ -118,13 +118,13 @@ class Sharks : public Entity
   private:
     VDX9RENDER *rs;
     Shark shark[6];
-    long numShakes;
+    int32_t numShakes;
     Periscope periscope;
     float waitPTime;
     CVECTOR camPos;
     entid_t sea;
     entid_t island;
-    long trackTx;
+    int32_t trackTx;
     uint16_t indeces[7 * 10 * 3];
     Vertex vrt[7 * 10];
 };

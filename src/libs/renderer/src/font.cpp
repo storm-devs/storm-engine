@@ -46,9 +46,9 @@ void FONT::Inverse(bool v)
     bInverse = v;
 }
 
-bool FONT::MakeLong(char **pDataPointer, long *result)
+bool FONT::MakeLong(char **pDataPointer, int32_t *result)
 {
-    long index;
+    int32_t index;
     char *pData;
     pData = *pDataPointer;
     index = 0;
@@ -79,8 +79,8 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
 {
     char key_name[MAX_PATH];
     char buffer[MAX_PATH];
-    long codepoint;
-    long ltmp;
+    int32_t codepoint;
+    int32_t ltmp;
     char *pData;
 
     auto ini = fio->OpenIniFile(iniName);
@@ -105,7 +105,7 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     }
 
     Height = ini->GetLong(font_name, "Height", 0);
-    Height = static_cast<long>(Height * m_fAspectRatioV);
+    Height = static_cast<int32_t>(Height * m_fAspectRatioV);
 
     if (ini->ReadString(font_name, "Texture", buffer, sizeof(buffer) - 1, ""))
     {
@@ -131,7 +131,7 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
 
     Shadow_offsetx = ini->GetLong(font_name, "Shadow_offsetx", 2);
     Shadow_offsety = ini->GetLong(font_name, "Shadow_offsety", 2);
-    Spacebar = static_cast<long>(ini->GetLong(font_name, "Spacebar", 8) * m_fAspectRatioH);
+    Spacebar = static_cast<int32_t>(ini->GetLong(font_name, "Spacebar", 8) * m_fAspectRatioH);
 
     ini->CaseSensitive(true);
     for (codepoint = 30; codepoint < USED_CODES; codepoint++)
@@ -160,13 +160,13 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
 
         if (!MakeLong(&pData, &ltmp))
             throw std::runtime_error("invalid font record");
-        CharT[codepoint].Pos.x2 = static_cast<float>(static_cast<long>(ltmp * m_fAspectRatioH));
+        CharT[codepoint].Pos.x2 = static_cast<float>(static_cast<int32_t>(ltmp * m_fAspectRatioH));
         CharT[codepoint].Tuv.x2 =
             CharT[codepoint].Tuv.x1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_XSize);
         if (!MakeLong(&pData, &ltmp))
             throw std::runtime_error("invalid font record");
-        CharT[codepoint].Pos.y1 = static_cast<float>(Height - static_cast<long>(ltmp * m_fAspectRatioV));
-        CharT[codepoint].Pos.y2 = static_cast<float>(Height); //((long)(ltmp*m_fAspectRatioV));
+        CharT[codepoint].Pos.y1 = static_cast<float>(Height - static_cast<int32_t>(ltmp * m_fAspectRatioV));
+        CharT[codepoint].Pos.y2 = static_cast<float>(Height); //((int32_t)(ltmp*m_fAspectRatioV));
         CharT[codepoint].Tuv.y2 =
             CharT[codepoint].Tuv.y1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(Texture_YSize);
     }
@@ -209,7 +209,7 @@ void FONT::SetColor(uint32_t color)
     Color = color;
 }
 
-long FONT::Printf(long x, long y, char *data_PTR, ...)
+int32_t FONT::Printf(int32_t x, int32_t y, char *data_PTR, ...)
 {
     va_list args;
     va_start(args, data_PTR);
@@ -226,15 +226,15 @@ void OffsetFRect(FLOAT_RECT &fr, float dx, float dy)
     fr.y2 += dy;
 }
 
-long FONT::GetStringWidth(const char *Text)
+int32_t FONT::GetStringWidth(const char *Text)
 {
     if (Text == nullptr)
         return 0;
     float xoffset = 0;
-    const long s_num = strlen(Text);
+    const int32_t s_num = strlen(Text);
     //  core.Trace("%s", Text);
 
-    for (long i = 0; i < s_num; i += utf8::u8_inc(Text + i))
+    for (int32_t i = 0; i < s_num; i += utf8::u8_inc(Text + i))
     {
         uint32_t Codepoint = utf8::Utf8ToCodepoint(Text + i);
         Assert(Codepoint < USED_CODES);
@@ -253,13 +253,13 @@ long FONT::GetStringWidth(const char *Text)
         }
     }
 
-    return static_cast<long>(xoffset);
+    return static_cast<int32_t>(xoffset);
 }
 
-long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
+int32_t FONT::UpdateVertexBuffer(int32_t x, int32_t y, char *data_PTR, int utf8length)
 {
-    long s_num;
-    long n;
+    int32_t s_num;
+    int32_t n;
     float xoffset;
     uint8_t sym;
     IMAGE_VERTEX *pVertex;
@@ -336,15 +336,15 @@ long FONT::UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length)
             pVertex[n + 5].rhw = fScale;
     }
     VBuffer->Unlock();
-    return static_cast<long>(xoffset);
+    return static_cast<int32_t>(xoffset);
 }
 
-long FONT::Print(long x, long y, char *data_PTR)
+int32_t FONT::Print(int32_t x, int32_t y, char *data_PTR)
 {
     if (data_PTR == nullptr || techniqueName == nullptr)
         return 0;
     auto xoffset = 0L;
-    long s_num = utf8::Utf8StringLength(data_PTR);
+    int32_t s_num = utf8::Utf8StringLength(data_PTR);
     if (s_num == 0)
         return 0;
 
@@ -401,13 +401,13 @@ long FONT::Print(long x, long y, char *data_PTR)
     return xoffset;
 }
 
-void FONT::SetShadowOffset(long ox, long oy)
+void FONT::SetShadowOffset(int32_t ox, int32_t oy)
 {
     Shadow_offsetx = ox;
     Shadow_offsety = oy;
 }
 
-void FONT::GetShadowOffset(long &ox, long &oy)
+void FONT::GetShadowOffset(int32_t &ox, int32_t &oy)
 {
     ox = Shadow_offsetx;
     oy = Shadow_offsety;

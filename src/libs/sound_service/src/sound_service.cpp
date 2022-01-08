@@ -310,10 +310,10 @@ int SoundService::GetAliasIndexByName(const char *szAliasName)
 
 TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType _volumeType,
                                bool _simpleCache /* = false*/, bool _looped /* = false*/, bool _cached /* = false*/,
-                               long _time /* = 0*/, const CVECTOR *_startPosition /* = 0*/,
+                               int32_t _time /* = 0*/, const CVECTOR *_startPosition /* = 0*/,
                                float _minDistance /* = -1.0f*/, float _maxDistance /* = -1.0f*/,
-                               long _loopPauseTime /* = 0*/, float _volume, /* = 1.0f*/
-                               long _prior)
+                               int32_t _loopPauseTime /* = 0*/, float _volume, /* = 1.0f*/
+                               int32_t _prior)
 {
     std::string FileName = _name;
 
@@ -662,7 +662,7 @@ bool SoundService::SoundIsPlaying(TSD_ID _id)
     return !IsFree(_id);
 }
 
-void SoundService::SoundResume(TSD_ID _id, long _time /* = 0*/)
+void SoundService::SoundResume(TSD_ID _id, int32_t _time /* = 0*/)
 {
     if (_id == 0 || _id == 1 || _id == -1)
     {
@@ -892,7 +892,7 @@ void SoundService::SetActiveWithFade(const bool active)
     }
 }
 
-void SoundService::SoundStop(TSD_ID _id, long _time)
+void SoundService::SoundStop(TSD_ID _id, int32_t _time)
 {
     bool is_playing; // boal fix
 
@@ -1342,12 +1342,12 @@ int SoundService::GetFromCache(const char *szName, eSoundType _type)
 }
 
 // Write text
-void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
+void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, int32_t line, float alpha, uint32_t color, float scale,
                                 const char *format, ...) const
 {
     static char buf[256];
     // print to the buffer
-    long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
+    int32_t len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
     // Looking for a point position on the screen
     static CMatrix mtx, view, prj;
@@ -1367,7 +1367,7 @@ void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, floa
     mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
                    sizeof(MTX_PRJ_VECTOR));
     // Looking for a position
-    const long fh = rs->CharHeight(FONT_DEFAULT) / 2;
+    const int32_t fh = rs->CharHeight(FONT_DEFAULT) / 2;
     vrt.y -= (line + 0.5f) * fh;
     // Transparency
     const float kDist = 0.75f;
@@ -1384,8 +1384,8 @@ void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, long line, floa
         return;
     color = (static_cast<uint32_t>(alpha * 255.0f) << 24) | (color & 0xffffff);
     // print the text
-    rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<long>(vrt.x),
-                 static_cast<long>(vrt.y), buf);
+    rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<int32_t>(vrt.x),
+                 static_cast<int32_t>(vrt.y), buf);
 }
 
 void SoundService::Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float fRadius, uint32_t dwColor2,
@@ -1541,7 +1541,7 @@ bool SoundService::AddSoundSchemeChannel(char *in_string, bool _looped /*= false
         NewChannel.minDelayTime = SCHEME_MIN_DELAY;
         NewChannel.maxDelayTime = SCHEME_MAX_DELAY;
         NewChannel.timeToNextPlay =
-            static_cast<long>(rand(static_cast<float>(NewChannel.maxDelayTime - NewChannel.minDelayTime)));
+            static_cast<int32_t>(rand(static_cast<float>(NewChannel.maxDelayTime - NewChannel.minDelayTime)));
         NewChannel.volume = 1.f;
         NewChannel.looped = _looped;
         if (_looped)
@@ -1583,7 +1583,7 @@ bool SoundService::AddSoundSchemeChannel(char *in_string, bool _looped /*= false
         NewChannel.timeToNextPlay = 0;
     else
         NewChannel.timeToNextPlay =
-            static_cast<long>(rand(static_cast<float>(NewChannel.maxDelayTime - NewChannel.minDelayTime)));
+            static_cast<int32_t>(rand(static_cast<float>(NewChannel.maxDelayTime - NewChannel.minDelayTime)));
 
     SoundSchemeChannels.push_back(NewChannel);
     return true;
@@ -1614,7 +1614,7 @@ void SoundService::ProcessSoundSchemes()
             {
                 SoundSchemeChannels[i].timeToNextPlay =
                     SoundSchemeChannels[i].minDelayTime +
-                    static_cast<long>(rand(
+                    static_cast<int32_t>(rand(
                         static_cast<float>(SoundSchemeChannels[i].maxDelayTime - SoundSchemeChannels[i].minDelayTime)));
                 SoundPlay(SoundSchemeChannels[i].soundName.c_str(), PCM_STEREO, VOLUME_FX, false, false, false, 0,
                           nullptr, -1.f, -1.f, 0, SoundSchemeChannels[i].volume);

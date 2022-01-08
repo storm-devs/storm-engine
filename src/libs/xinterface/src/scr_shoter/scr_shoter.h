@@ -8,7 +8,7 @@ class SCRSHOTER : public Entity
     {
         char *fileName;
         char *dataString;
-        long textureId = -1;
+        int32_t textureId = -1;
         SAVETEXTURES *next;
     };
 
@@ -39,14 +39,14 @@ class SCRSHOTER : public Entity
 
   private:
     bool MakeScreenShot();
-    long FindSaveTexture(const char *fileName) const;
+    int32_t FindSaveTexture(const char *fileName) const;
     char *FindSaveData(const char *fileName) const;
-    long AddSaveTexture(const char *dirName, const char *fileName);
+    int32_t AddSaveTexture(const char *dirName, const char *fileName);
     void DelSaveTexture(const char *fileName);
-    long GetTexFromSave(char *fileName, char **pDatStr) const;
+    int32_t GetTexFromSave(char *fileName, char **pDatStr) const;
     
     VDX9RENDER *rs = nullptr;
     IDirect3DTexture9 *texture_ = nullptr;
-    long textureIndex_ = -1;
+    int32_t textureIndex_ = -1;
     SAVETEXTURES *m_list = nullptr;
 };

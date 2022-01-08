@@ -56,7 +56,7 @@ class Tornado : public Entity
     VDX9RENDER *rs;
 
     VSoundService *soundService;
-    long sID;
+    int32_t sID;
 
     Pillar pillar;
     TornadoParticles particles;
@@ -68,5 +68,5 @@ class Tornado : public Entity
     float liveTime;
     float galhpa;
 
-    long ib, vb;
+    int32_t ib, vb;
 };

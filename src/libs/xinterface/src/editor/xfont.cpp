@@ -33,7 +33,7 @@ void GIFont::Print(float x, float y, const char *pcFormat, ...) const
     va_end(args);
     m_pEditor->m_pRS->ExtPrint(m_nFontID, m_dwColor, m_dwBackColor, PR_ALIGN_LEFT, false, m_fScale,
                                m_pEditor->m_pGIOwner->GetScreenWidth(), m_pEditor->m_pGIOwner->GetScreenHeight(),
-                               static_cast<long>(x), static_cast<long>(y), "%s", param);
+                               static_cast<int32_t>(x), static_cast<int32_t>(y), "%s", param);
 }
 
 void GIFont::PrintIntoWindow(const char *pcFormat, ...)

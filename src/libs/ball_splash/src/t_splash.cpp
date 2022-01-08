@@ -12,13 +12,13 @@ GRID_VERTEX *TSplash::vBuffer       = 0;
 WORD        *TSplash::iBuffer2      = 0;
 GRID_VERTEX *TSplash::vBuffer2      = 0;
 */
-long TSplash::iBuffer = 0;
-long TSplash::vBuffer = 0;
-long TSplash::iBuffer2 = 0;
-long TSplash::vBuffer2 = 0;
+int32_t TSplash::iBuffer = 0;
+int32_t TSplash::vBuffer = 0;
+int32_t TSplash::iBuffer2 = 0;
+int32_t TSplash::vBuffer2 = 0;
 
-long TSplash::texture = 0;
-long TSplash::texture2 = 0;
+int32_t TSplash::texture = 0;
+int32_t TSplash::texture2 = 0;
 
 uint64_t TSplash::lockTicks = 0;
 uint64_t TSplash::fillTicks = 0;

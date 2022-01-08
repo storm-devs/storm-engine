@@ -62,7 +62,7 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES *pAIsland)
         auto *pvdat = core.Event("evntGetLandData", "a", pATmp);
         if (pvdat)
         {
-            long lTmp;
+            int32_t lTmp;
             if (pvdat->Get(lTmp, 0))
                 if (lTmp == 0)
                     m_pLocators[i].locatorType = ISLAND_LOCATOR_LAND;

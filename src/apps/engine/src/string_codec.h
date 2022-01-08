@@ -55,7 +55,7 @@ class STRING_CODEC : public VSTRING_CODEC
         }
     }
 
-    uint32_t Convert(const char *pString, long iLen)
+    uint32_t Convert(const char *pString, int32_t iLen)
     {
         if (pString == nullptr)
             return 0xffffffff;

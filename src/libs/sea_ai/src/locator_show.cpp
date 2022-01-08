@@ -80,7 +80,7 @@ void SeaLocatorShow::PrintLocator(ATTRIBUTES *pA)
 
     auto d = view.Vz() | view.Pos();
 
-    auto fh = static_cast<long>(AIHelper::pRS->CharHeight(FONT_DEFAULT) * fScale);
+    auto fh = static_cast<int32_t>(AIHelper::pRS->CharHeight(FONT_DEFAULT) * fScale);
 
     auto vPos = GetLocatorPos(pA);
     auto fAng = GetLocatorAng(pA);
@@ -228,7 +228,7 @@ void SeaLocatorShow::CreateSphere()
         return;
 
     const auto myPI = 3.1415926535897932f;
-    const long a1 = 32;
+    const int32_t a1 = 32;
     const auto a2 = (a1 / 2);
 
     sphereNumTrgs = a1 * a2 * 2;
@@ -237,13 +237,13 @@ void SeaLocatorShow::CreateSphere()
     const auto light = !CVECTOR(0.0f, 0.0f, 1.0f);
     float kColor;
     // Filling the vertices
-    for (long i = 0, t = 0; i < a2; i++)
+    for (int32_t i = 0, t = 0; i < a2; i++)
     {
         const auto r1 = sinf(myPI * i / static_cast<float>(a2));
         const auto y1 = cosf(myPI * i / static_cast<float>(a2));
         const auto r2 = sinf(myPI * (i + 1) / static_cast<float>(a2));
         const auto y2 = cosf(myPI * (i + 1) / static_cast<float>(a2));
-        for (long j = 0; j < a1; j++)
+        for (int32_t j = 0; j < a1; j++)
         {
             const auto x1 = sinf(2.0f * myPI * j / static_cast<float>(a1));
             const auto z1 = cosf(2.0f * myPI * j / static_cast<float>(a1));

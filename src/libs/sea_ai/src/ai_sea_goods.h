@@ -12,7 +12,7 @@ class AISeaGoods : public Entity
     struct item_t
     {
         char sGoodName[48];
-        long iCharIndex, iQuantity;
+        int32_t iCharIndex, iQuantity;
         float fTime;
         CVECTOR vPos, vNormal;
     };

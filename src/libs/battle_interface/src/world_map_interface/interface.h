@@ -37,19 +37,19 @@ class WM_INTERFACE : public Entity
     WMShipIcon *m_pShipIcon; // icons for commands and targeting in the combat menu
     WMShipCommandList *m_pCommandList;
     bool m_bVisible;
-    long m_nCommandListVerticalOffset;
-    long m_nMainCharIndex;
-    long m_nCommandMode;
+    int32_t m_nCommandListVerticalOffset;
+    int32_t m_nMainCharIndex;
+    int32_t m_nCommandMode;
 
   protected:
     void LoadIniFile();
 
     void MakeControl();
-    void ExecuteCommand(long command);
+    void ExecuteCommand(int32_t command);
     void UpdateCommandList() const;
-    long GetCurrentCommandTopLine() const;
-    long GetCurrentCommandCharacterIndex() const;
-    long GetCurrentCommandMode() const;
+    int32_t GetCurrentCommandTopLine() const;
+    int32_t GetCurrentCommandCharacterIndex() const;
+    int32_t GetCurrentCommandMode() const;
 
     bool IsCommandMenuActive() const;
 };

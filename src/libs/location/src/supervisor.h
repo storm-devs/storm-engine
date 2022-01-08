@@ -65,7 +65,7 @@ class Supervisor
     void DelSavePositions(bool isTeleport) const;
 
     // Find the best locator to continue walking the character
-    long FindForvardLocator(LocatorArray *la, const CVECTOR &pos, const CVECTOR &norm, bool lookChr = false) const;
+    int32_t FindForvardLocator(LocatorArray *la, const CVECTOR &pos, const CVECTOR &norm, bool lookChr = false) const;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
@@ -77,7 +77,7 @@ class Supervisor
     void DelCharacter(Character *ch);
 
     float time, waveTime;
-    long curUpdate;
+    int32_t curUpdate;
 
   public:
     std::vector<CharacterEx> character;

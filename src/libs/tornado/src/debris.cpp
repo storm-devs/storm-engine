@@ -30,7 +30,7 @@ Debris::Debris(Pillar &_pillar) : pillar(_pillar)
 
 Debris::~Debris()
 {
-    for (long i = 0; i < numModels; i++)
+    for (int32_t i = 0; i < numModels; i++)
         EntityManager::EraseEntity(mdl[i].mdl->GetId());
 }
 
@@ -90,7 +90,7 @@ void Debris::Update(float dltTime)
     }
     // Flight
     const auto h = pillar.GetHeight();
-    for (long i = 0; i < flyCounter; i++)
+    for (int32_t i = 0; i < flyCounter; i++)
     {
         // Updating the height position
         fly[i].ay += dltTime * fly[i].maxSpeed;
@@ -136,7 +136,7 @@ void Debris::Update(float dltTime)
 
 void Debris::Draw(VDX9RENDER *rs)
 {
-    for (long i = 0; i < flyCounter; i++)
+    for (int32_t i = 0; i < flyCounter; i++)
     {
         // Model position
         CVECTOR pos;
@@ -144,10 +144,10 @@ void Debris::Draw(VDX9RENDER *rs)
         pos.y = fly[i].y;
         pos.z = pillar.GetZ(fly[i].y) + fly[i].r * cosf(fly[i].a);
         fly[i].mdl->mtx.BuildMatrix(fly[i].ang, pos);
-        for (long a = 0; a < 3; a++)
-            for (long b = 0; b < 3; b++)
+        for (int32_t a = 0; a < 3; a++)
+            for (int32_t b = 0; b < 3; b++)
                 fly[i].mdl->mtx.m[a][b] *= fly[i].scale;
-        rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(fly[i].alpha * galpha) << 24) | 0xffffff);
+        rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<int32_t>(fly[i].alpha * galpha) << 24) | 0xffffff);
         fly[i].mdl->ProcessStage(Entity::Stage::realize, 10);
     }
 }
@@ -193,9 +193,9 @@ void Debris::AddModel(const char *modelName, float prt, float spd)
 void Debris::NormalazedModels()
 {
     auto sum = 0.0f;
-    for (long i = 0; i < numModels; i++)
+    for (int32_t i = 0; i < numModels; i++)
         sum += mdl[i].prt;
-    for (long i = 0; i < numModels; i++)
+    for (int32_t i = 0; i < numModels; i++)
         mdl[i].prt /= sum;
 }
 
@@ -203,7 +203,7 @@ MODEL *Debris::SelectModel(float &maxSpd)
 {
     const auto rnd = rand() * (1.0f / RAND_MAX);
     auto sum = 0.0f;
-    long i;
+    int32_t i;
     for (i = 0; i < numModels - 1; i++)
     {
         sum += mdl[i].prt;

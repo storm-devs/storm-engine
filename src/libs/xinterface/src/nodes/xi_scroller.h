@@ -14,7 +14,7 @@ class CXI_SCROLLER : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -43,10 +43,10 @@ class CXI_SCROLLER : public CINODE
     FXYRECT m_downButtonPos;
     FXYPOINT m_pressOffset;
 
-    long m_idBaseTex;   // border texture identificator
-    long m_idRollerTex; // roller texture identificator
+    int32_t m_idBaseTex;   // border texture identificator
+    int32_t m_idRollerTex; // roller texture identificator
 
-    long m_idVBuf;
+    int32_t m_idVBuf;
 
     FXYRECT m_rollerPlace;
     FXYRECT m_rollerCur;

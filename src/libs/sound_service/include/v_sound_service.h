@@ -21,7 +21,7 @@ using TSD_ID = int32_t;
 
 using tSoundStatistics = struct
 {
-    long soundsCount, maxSoundsCount, bytesInBuffers, maxBytesInBuffers, bytesCached, maxBytesCached, totalMem, freeMem;
+    int32_t soundsCount, maxSoundsCount, bytesInBuffers, maxBytesInBuffers, bytesCached, maxBytesCached, totalMem, freeMem;
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -47,20 +47,20 @@ class VSoundService : public SERVICE
                              bool _simpleCache = false, // cache only, not play
                              bool _looped = false,      // looped?
                              bool _cached = false,      // unload after stoppping?
-                             long _time = 0,            // fade in, if _time > 0
+                             int32_t _time = 0,            // fade in, if _time > 0
                              const CVECTOR *_startPosition = nullptr, float _minDistance = -1.0f,
-                             float _maxDistance = -1.0f, long _loopPauseTime = 0, float _volume = 1.0f,
-                             long _prior = 128) = 0;
+                             float _maxDistance = -1.0f, int32_t _loopPauseTime = 0, float _volume = 1.0f,
+                             int32_t _prior = 128) = 0;
 
     virtual TSD_ID SoundDuplicate(TSD_ID _sourceID) = 0;
     virtual void SoundSet3DParam(TSD_ID _id, eSoundMessage _message, const void *_op) = 0;
-    virtual void SoundStop(TSD_ID _id, long _time = 0) = 0;
+    virtual void SoundStop(TSD_ID _id, int32_t _time = 0) = 0;
     virtual void SoundRelease(TSD_ID _id) = 0;
     virtual void SoundSetVolume(TSD_ID _id, float _volume) = 0;
     virtual bool SoundIsPlaying(TSD_ID _id) = 0;
     virtual float SoundGetPosition(TSD_ID _id) = 0;
     virtual void SoundRestart(TSD_ID _id) = 0;
-    virtual void SoundResume(TSD_ID _id, long _time = 0) = 0;
+    virtual void SoundResume(TSD_ID _id, int32_t _time = 0) = 0;
 
     // Service functions
     virtual void SetMasterVolume(float _fxVolume, float _musicVolume, float _speechVolume) = 0;

@@ -13,7 +13,7 @@ class CXI_TWOPICTURE : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
     void MouseThis(float fX, float fY) override;
 
     void ChangePosition(XYRECT &rNewPos) override;
@@ -27,8 +27,8 @@ class CXI_TWOPICTURE : public CINODE
 
     bool m_bMouseInsideIndifferent;
 
-    long m_idOneTex;
-    long m_idTwoTex;
+    int32_t m_idOneTex;
+    int32_t m_idTwoTex;
 
     FXYPOINT m_picSize;
     FXYPOINT m_leftPicCenter;

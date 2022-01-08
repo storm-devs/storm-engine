@@ -47,7 +47,7 @@ class FLAG : public Entity
     bool bFirstRun;
     VDX9RENDER *RenderService;
     char *TextureName;
-    long texl;
+    int32_t texl;
 
     struct WIND
     {
@@ -153,14 +153,14 @@ class FLAG : public Entity
     void GroupSTORM_DELETE(entid_t m_id);
     void DoSTORM_DELETE();
     void SetAdd(int flagNum);
-    void MoveOtherHost(entid_t newm_id, long flagNum, entid_t oldm_id);
+    void MoveOtherHost(entid_t newm_id, int32_t flagNum, entid_t oldm_id);
 
     FLAGLXVERTEX *vertBuf;
     uint16_t *indxBuf;
 
     D3DXMATRIX rootMatrix;
 
-    long vBuf, iBuf;
+    int32_t vBuf, iBuf;
     uint32_t nVert, nIndx;
     bool bYesDeleted;
     int wFlagLast;

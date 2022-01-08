@@ -74,7 +74,7 @@ Window::~Window()
         rs->UnloadFont("Lighter");
     if (list)
     {
-        for (long i = 0; i < numElements; i++)
+        for (int32_t i = 0; i < numElements; i++)
             delete list[i].name;
         delete list;
     }
@@ -111,8 +111,8 @@ bool Window::Init(VDX9RENDER *rs)
         if (rs->LockRect(pickerTexture, 0, &lockedRect, nullptr, 0) == D3D_OK)
         {
             auto *pnt = static_cast<uint8_t *>(lockedRect.pBits);
-            for (long y = 0; y < 256; y++)
-                for (long x = 0; x < 256; x++, pnt += 4)
+            for (int32_t y = 0; y < 256; y++)
+                for (int32_t x = 0; x < 256; x++, pnt += 4)
                 {
                     auto r = static_cast<float>(x);
                     auto g = static_cast<float>(y);
@@ -164,9 +164,9 @@ void Window::InitList(LighterLights &ls)
     list[6].name = new char[sizeof "Save lights"];
     strcpy_s(list[6].name, sizeof "Save lights", "Save lights");
     list[6].type = ListElement::t_savelight;
-    for (long i = 0; i < maxSize; i++)
+    for (int32_t i = 0; i < maxSize; i++)
         ls[i].isMark = false;
-    for (long i = 0; i < maxSize; i++)
+    for (int32_t i = 0; i < maxSize; i++)
     {
         if (ls[i].isMark)
             continue;
@@ -465,7 +465,7 @@ void Window::Draw(float dltTime)
     // DrawLine(lstbx + 6.0f, lsty + 6.0f, lstbx + lstbw/2 + 1, lsty + lsth - 6.0f, cl);
     // DrawLine(lstbx + lstbw - 6.0f, lsty + 6.0f, lstbx + lstbw/2 - 1, lsty + lsth - 6.0f, cl);
     // Controls
-    long prs;
+    int32_t prs;
     if (selected >= 0)
     {
         auto &le = list[selected];
@@ -583,7 +583,7 @@ void Window::Draw(float dltTime)
     // List
     if (isList)
     {
-        const long numLines = 16;
+        const int32_t numLines = 16;
         lsty += lsth;
         lsth = lsth * numLines;
         DrawLRect(lstx, lsty, lstx + lstw + lstbw, lsty + lsth, 0xe0000000, frmColor);
@@ -630,20 +630,20 @@ void Window::Draw(float dltTime)
             listPos = static_cast<float>(numElements - numLines / 2);
         if (listPos < 0.0f)
             listPos = 0.0f;
-        const auto str = static_cast<long>(listPos);
-        long sel = -1;
+        const auto str = static_cast<int32_t>(listPos);
+        int32_t sel = -1;
         if (cursx >= lstx && cursx < lstx + lstw && cursy >= lsty && cursy < lsty + lsth)
         {
             // Looking for the selected area
-            sel = static_cast<long>((cursy - lsty) / lstbw);
+            sel = static_cast<int32_t>((cursy - lsty) / lstbw);
             if (sel < 0)
                 sel = 0;
             if (sel >= numLines)
                 sel = numLines;
         }
-        long actItem = -1;
+        int32_t actItem = -1;
         y = lsty;
-        for (long i = str, cnt = 0; i < numElements && cnt < numLines; i++, cnt++)
+        for (int32_t i = str, cnt = 0; i < numElements && cnt < numLines; i++, cnt++)
         {
             const auto clr = textColor;
             if (cnt == sel)
@@ -673,7 +673,7 @@ void Window::Reset(bool isActive)
     isList = false;
     isVisible = isActive;
     entid_t loc;
-    core.Send_Message(EntityManager::GetEntityId("location"), "ll", MSG_LOCATION_PAUSE, static_cast<long>(isActive));
+    core.Send_Message(EntityManager::GetEntityId("location"), "ll", MSG_LOCATION_PAUSE, static_cast<int32_t>(isActive));
     slidID = -1;
     isPikerActive = false;
     isActiveMouseState = false;
@@ -732,7 +732,7 @@ void Window::DrawLRect(float x1, float y1, float x2, float y2, uint32_t bkgColor
     }
 }
 
-void Window::Print(long color, float xleft, float xright, float y, float scale, bool isAlign, const char *format, ...)
+void Window::Print(int32_t color, float xleft, float xright, float y, float scale, bool isAlign, const char *format, ...)
 {
     _vsnprintf_s(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));
     auto x = xleft;
@@ -741,7 +741,7 @@ void Window::Print(long color, float xleft, float xright, float y, float scale, 
         const auto strw = rs->StringWidth(stringBuffer, font) * scale;
         x = (xright + xleft - strw) * 0.5f;
     }
-    rs->ExtPrint(font, color, 0, 0, false, scale, 0, 0, static_cast<long>(x), static_cast<long>(y), stringBuffer);
+    rs->ExtPrint(font, color, 0, 0, false, scale, 0, 0, static_cast<int32_t>(x), static_cast<int32_t>(y), stringBuffer);
 }
 
 void Window::DrawCursor()
@@ -774,7 +774,7 @@ void Window::DrawCursor()
     DrawLine(p3x, p3y, cursx, cursy, 0xcf404040);
 }
 
-bool Window::Slider(long id, float y, const char *text, float &value, float min, float max, bool drawVal)
+bool Window::Slider(int32_t id, float y, const char *text, float &value, float min, float max, bool drawVal)
 {
     bool isUpdate = false;
     float v = (value - min) / (max - min);
@@ -838,7 +838,7 @@ bool Window::Slider(long id, float y, const char *text, float &value, float min,
     return isUpdate;
 }
 
-bool Window::ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res)
+bool Window::ColorPicker(int32_t id, float y, CVECTOR &ref, float st, CVECTOR &res)
 {
     bool isChange = false;
     // calculate the color
@@ -951,7 +951,7 @@ bool Window::ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res)
     return isChange;
 }
 
-bool Window::Button(float x, float y, float w, float h, const char *text, long *act, long init)
+bool Window::Button(float x, float y, float w, float h, const char *text, int32_t *act, int32_t init)
 {
     bool isInside = false;
     uint32_t c = selColor;
@@ -997,9 +997,9 @@ void Window::Checker(float x, float y, const char *text, bool &res)
           text);
 }
 
-long Window::SelPreset()
+int32_t Window::SelPreset()
 {
-    long prs = -1, ins = -1;
+    int32_t prs = -1, ins = -1;
     float vl = 40.0f;
     Print(textColor, winx, winx + winw, vl, 0.6f, true, "Hours Outside");
     if (Button(5.0f, vl + 20.0f, 20.0f, 20.0f, "1", &ins, 1))
@@ -1157,7 +1157,7 @@ long Window::SelPreset()
     return prs;
 }
 
-void Window::SavePreset(long prs)
+void Window::SavePreset(int32_t prs)
 {
     if (prs < 0)
         return;
@@ -1167,16 +1167,16 @@ void Window::SavePreset(long prs)
         return;
     char sect[32];
     sprintf_s(sect, "prs%i", prs);
-    for (long i = 0; i < numElements; i++)
+    for (int32_t i = 0; i < numElements; i++)
     {
         switch (list[i].type)
         {
         case ListElement::t_smooth:
-            ini->WriteLong(sect, "smoothUseNormals", static_cast<long>(smoothNorm));
+            ini->WriteLong(sect, "smoothUseNormals", static_cast<int32_t>(smoothNorm));
             ini->WriteDouble(sect, "smoothRadius", smoothRad);
             break;
         case ListElement::t_blur:
-            ini->WriteLong(sect, "blurTrace", static_cast<long>(isTraceBlur));
+            ini->WriteLong(sect, "blurTrace", static_cast<int32_t>(isTraceBlur));
             ini->WriteDouble(sect, "blurRadius", blurRad);
             ini->WriteDouble(sect, "blurAtt", blurAtt);
             ini->WriteDouble(sect, "blurCos", blurCos);
@@ -1198,7 +1198,7 @@ void Window::SavePreset(long prs)
             ini->WriteDouble(sect, GenerateName(list[i].name, "_bright"), *list[i].bright);
             ini->WriteDouble(sect, GenerateName(list[i].name, "_contr"), *list[i].contr);
             ini->WriteDouble(sect, GenerateName(list[i].name, "_gamma"), *list[i].gamma);
-            ini->WriteLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<long>(*list[i].isOn));
+            ini->WriteLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<int32_t>(*list[i].isOn));
             break;
         case ListElement::t_glight:
             ini->WriteDouble(sect, GenerateName(list[i].name, "_intens"), list[i].st);
@@ -1214,13 +1214,13 @@ void Window::SavePreset(long prs)
             ini->WriteDouble(sect, GenerateName(list[i].name, "_att1"), *list[i].att1);
             ini->WriteDouble(sect, GenerateName(list[i].name, "_att2"), *list[i].att2);
             ini->WriteDouble(sect, GenerateName(list[i].name, "_range"), *list[i].range);
-            ini->WriteLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<long>(*list[i].isOn));
+            ini->WriteLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<int32_t>(*list[i].isOn));
             break;
         }
     }
 }
 
-void Window::LoadPreset(long prs)
+void Window::LoadPreset(int32_t prs)
 {
     if (prs < 0)
         return;
@@ -1230,16 +1230,16 @@ void Window::LoadPreset(long prs)
         return;
     char sect[32];
     sprintf_s(sect, "prs%i", prs);
-    for (long i = 0; i < numElements; i++)
+    for (int32_t i = 0; i < numElements; i++)
     {
         switch (list[i].type)
         {
         case ListElement::t_smooth:
-            smoothNorm = ini->GetLong(sect, "smoothUseNormals", static_cast<long>(smoothNorm)) != 0;
+            smoothNorm = ini->GetLong(sect, "smoothUseNormals", static_cast<int32_t>(smoothNorm)) != 0;
             smoothRad = static_cast<float>(ini->GetDouble(sect, "smoothRadius", smoothRad));
             break;
         case ListElement::t_blur:
-            isTraceBlur = ini->GetLong(sect, "blurTrace", static_cast<long>(isTraceBlur)) != 0;
+            isTraceBlur = ini->GetLong(sect, "blurTrace", static_cast<int32_t>(isTraceBlur)) != 0;
             blurRad = static_cast<float>(ini->GetDouble(sect, "blurRadius", blurRad));
             blurAtt = static_cast<float>(ini->GetDouble(sect, "blurAtt", blurAtt));
             blurCos = static_cast<float>(ini->GetDouble(sect, "blurCos", blurCos));
@@ -1267,7 +1267,7 @@ void Window::LoadPreset(long prs)
             *list[i].gamma =
                 static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_gamma"), *list[i].gamma));
             *list[i].isOn =
-                ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<long>(*list[i].isOn)) != 0;
+                ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<int32_t>(*list[i].isOn)) != 0;
             break;
         case ListElement::t_glight:
             list[i].st = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_intens"), list[i].st));
@@ -1293,7 +1293,7 @@ void Window::LoadPreset(long prs)
             *list[i].range =
                 static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_range"), *list[i].range));
             *list[i].isOn =
-                ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<long>(*list[i].isOn)) != 0;
+                ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<int32_t>(*list[i].isOn)) != 0;
             break;
         }
     }
@@ -1305,7 +1305,7 @@ char *Window::GenerateName(const char *f, const char *n)
 {
     strcpy_s(stringBuffer, f);
     strcat_s(stringBuffer, n);
-    for (long i = 0; stringBuffer[i]; i++)
+    for (int32_t i = 0; stringBuffer[i]; i++)
         if (stringBuffer[i] == ' ')
             stringBuffer[i] = '_';
     return stringBuffer;
@@ -1313,7 +1313,7 @@ char *Window::GenerateName(const char *f, const char *n)
 
 void Window::UpdateColors()
 {
-    for (long i = 0; i < numElements; i++)
+    for (int32_t i = 0; i < numElements; i++)
     {
         switch (list[i].type)
         {
@@ -1327,7 +1327,7 @@ void Window::UpdateColors()
     }
 }
 
-void Window::UpdateLight(long idxLight, bool isCos, bool isAtt, bool isSdw)
+void Window::UpdateLight(int32_t idxLight, bool isCos, bool isAtt, bool isSdw)
 {
     if (updateLight == -1)
     {

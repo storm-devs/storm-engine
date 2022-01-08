@@ -22,7 +22,7 @@ CREATE_CLASS(Blots)
 //============================================================================================
 
 CVECTOR Blots::clipTriangles[3 * 32];
-long Blots::numClipTriangles;
+int32_t Blots::numClipTriangles;
 CVECTOR Blots::dir, Blots::normal;
 
 // ============================================================================================
@@ -32,7 +32,7 @@ CVECTOR Blots::dir, Blots::normal;
 Blots::Blots()
     : model(0), vrt{}
 {
-    for (long i = 0; i < BLOTS_MAX; i++)
+    for (int32_t i = 0; i < BLOTS_MAX; i++)
         blot[i].isUsed = 0;
     rs = nullptr;
     textureID = -1;
@@ -79,7 +79,7 @@ uint64_t Blots::ProcessMessage(MESSAGE &message)
             char buf[32];
             sprintf_s(buf, "%i", BLOTS_MAX);
             blotsInfo->SetValue(buf);
-            for (long i = 0; i < BLOTS_MAX; i++)
+            for (int32_t i = 0; i < BLOTS_MAX; i++)
                 LoadBlot(i);
         }
         break;
@@ -104,7 +104,7 @@ void Blots::Hit(MESSAGE &message)
     // Looking for a free blot and proximity to others
     CVECTOR lpos;
     m->mtx.MulToInv(pos, lpos);
-    long i, j = -1;
+    int32_t i, j = -1;
     for (i = 0; i < BLOTS_MAX; i++)
     {
         if (blot[i].isUsed)
@@ -131,7 +131,7 @@ void Blots::Hit(MESSAGE &message)
 }
 
 // Add blot
-void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, float time)
+void Blots::AddBlot(int32_t i, int32_t rnd, const CVECTOR &lpos, const CVECTOR &dir, float time)
 {
     // Model of a ship
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
@@ -208,7 +208,7 @@ void Blots::AddBlot(long i, long rnd, const CVECTOR &lpos, const CVECTOR &dir, f
         baseU += 0.5f;
     if (rnd & 2)
         baseV += 0.5f;
-    for (long n = 0; n < numClipTriangles; n++)
+    for (int32_t n = 0; n < numClipTriangles; n++)
     {
         v[n].pos = mtx * clipTriangles[n];
         v[n].c = 0xffffffff;
@@ -283,12 +283,12 @@ void Blots::SetNodesCollision(NODE *n, bool isSet)
         n->flags |= n->flags >> 24;
         n->flags &= 0x00ffffff;
     }
-    for (long i = 0; i < n->nnext; i++)
+    for (int32_t i = 0; i < n->nnext; i++)
         SetNodesCollision(n->next[i], isSet);
 }
 
 // Save blot parameters
-void Blots::SaveBlot(long i)
+void Blots::SaveBlot(int32_t i)
 {
     if (!blotsInfo)
         return;
@@ -314,7 +314,7 @@ void Blots::SaveBlot(long i)
 }
 
 // Load blot parameters
-void Blots::LoadBlot(long i)
+void Blots::LoadBlot(int32_t i)
 {
     if (!blotsInfo)
         return;
@@ -340,7 +340,7 @@ void Blots::LoadBlot(long i)
             return;
         if (!blt->GetAttribute("time"))
             return;
-        const long rnd = blt->GetAttributeAsDword("rnd");
+        const int32_t rnd = blt->GetAttributeAsDword("rnd");
         const auto x = blt->GetAttributeAsFloat("x");
         const auto y = blt->GetAttributeAsFloat("y");
         const auto z = blt->GetAttributeAsFloat("z");
@@ -376,13 +376,13 @@ void Blots::Realize(uint32_t delta_time)
     if (dist <= 0.0f)
         dist = 0.0f;
     dist = (1.0f - dist) * 255.0f;
-    auto color = static_cast<long>(dist);
+    auto color = static_cast<int32_t>(dist);
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, (color << 24) | (color << 16) | (color << 8) | color);
     // Settings
     rs->SetTransform(D3DTS_WORLD, m->mtx);
     rs->TextureSet(0, textureID);
     // Draw all the added blots
-    for (long i = 0; i < BLOTS_MAX; i++)
+    for (int32_t i = 0; i < BLOTS_MAX; i++)
     {
         // Skip unused
         if (!blot[i].isUsed)
@@ -396,27 +396,27 @@ void Blots::Realize(uint32_t delta_time)
         {
             blot[i].isUsed = false;
             const auto startIndex = blot[i].startIndex;
-            const long numDelVerts = blot[i].numTrgs * 3;
+            const int32_t numDelVerts = blot[i].numTrgs * 3;
 
             // -----------------------------------------------
             // !!! begin Checks
             blot[i].startIndex = -10000;
             blot[i].numTrgs = 0;
             static Vertex vr[3 * BLOTS_NTRGS * BLOTS_MAX];
-            for (long n = 0; n < BLOTS_MAX; n++)
+            for (int32_t n = 0; n < BLOTS_MAX; n++)
             {
                 if (!blot[n].isUsed)
                     continue;
                 auto *const v1 = vr + n * BLOTS_NTRGS * 3;
                 auto *const v2 = vrt + blot[n].startIndex;
-                for (long v = 0; v < blot[n].numTrgs * 3; v++)
+                for (int32_t v = 0; v < blot[n].numTrgs * 3; v++)
                     v1[v] = v2[v];
             }
             // !!! end Checks
             // -----------------------------------------------
 
             // Remove triangles from the array
-            long j;
+            int32_t j;
             for (j = 0; j < BLOTS_MAX; j++)
             {
                 if (!blot[j].isUsed)
@@ -433,7 +433,7 @@ void Blots::Realize(uint32_t delta_time)
             // -----------------------------------------------
             // !!! begin Checks
             Assert(j % 3 == 0);
-            long nnn = 0;
+            int32_t nnn = 0;
             for (j = 0; j < BLOTS_MAX; j++)
             {
                 if (!blot[j].isUsed)
@@ -442,13 +442,13 @@ void Blots::Realize(uint32_t delta_time)
                 Assert(blot[j].startIndex + blot[j].numTrgs * 3 <= useVrt);
             }
             Assert(nnn == useVrt);
-            for (long n = 0; n < BLOTS_MAX; n++)
+            for (int32_t n = 0; n < BLOTS_MAX; n++)
             {
                 if (!blot[n].isUsed)
                     continue;
                 auto *const v1 = vr + n * BLOTS_NTRGS * 3;
                 auto *const v2 = vrt + blot[n].startIndex;
-                for (long v = 0; v < blot[n].numTrgs * 3; v++)
+                for (int32_t v = 0; v < blot[n].numTrgs * 3; v++)
                 {
                     Assert(v1[v].pos.x == v2[v].pos.x);
                     Assert(v1[v].pos.y == v2[v].pos.y);
@@ -470,17 +470,17 @@ void Blots::Realize(uint32_t delta_time)
             k = 0.0f;
         if (k > 1.0f)
             k = 1.0f;
-        color = static_cast<long>((1.0f - k) * 255.0f);
+        color = static_cast<int32_t>((1.0f - k) * 255.0f);
         if (color != blot[i].lastAlpha)
         {
             // Update the vertices
             // Colour
             color = 0xff000000 | (color << 16) | (color << 8) | color;
             // amount
-            const long numVrt = blot[i].numTrgs * 3;
+            const int32_t numVrt = blot[i].numTrgs * 3;
             // Array
             auto *const v = vrt + blot[i].startIndex;
-            for (long j = 0; j < numVrt; j++)
+            for (int32_t j = 0; j < numVrt; j++)
                 v[j].c = color;
         }
     }
@@ -490,7 +490,7 @@ void Blots::Realize(uint32_t delta_time)
                             sizeof(Vertex), "Blot");
 }
 
-bool Blots::AddPolygon(const CVECTOR *v, long nv)
+bool Blots::AddPolygon(const CVECTOR *v, int32_t nv)
 {
     if (numClipTriangles >= BLOTS_NTRGS)
         return false;
@@ -502,7 +502,7 @@ bool Blots::AddPolygon(const CVECTOR *v, long nv)
         return true;
     normal += 100.0f * norm;
     // Add
-    for (long i = 2; i < nv; i++)
+    for (int32_t i = 2; i < nv; i++)
     {
         clipTriangles[numClipTriangles * 3 + 0] = v[0];
         clipTriangles[numClipTriangles * 3 + 1] = v[i - 1];

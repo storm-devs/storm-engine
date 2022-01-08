@@ -143,7 +143,7 @@ void CXI_STRCOLLECTION::ReleaseAll()
     m_nStr = 0;
 }
 
-bool CXI_STRCOLLECTION::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_STRCOLLECTION::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -154,7 +154,7 @@ bool CXI_STRCOLLECTION::GetInternalNameList(std::vector<std::string> &aStr)
     // aStr.Add();
     // aStr[0] = "All";
     aStr.push_back("All");
-    for (long n = 0; n < m_nStr; n++)
+    for (int32_t n = 0; n < m_nStr; n++)
     {
         if (m_pStrDescr[n].strID)
             continue;
@@ -192,7 +192,7 @@ void CXI_STRCOLLECTION::ChangePosition(XYRECT &rNewPos)
             m_pStrDescr[m_nEditIndex].scrPos.y += nY;
             return;
         }
-        for (long n = 0; n < m_nStr; n++)
+        for (int32_t n = 0; n < m_nStr; n++)
         {
             m_pStrDescr[n].scrPos.x += nX;
             m_pStrDescr[n].scrPos.y += nY;
@@ -214,7 +214,7 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
     pIni->DeleteSection(m_nodeName);
     // save position
     char param[2048];
-    for (long n = 0; n < m_nStr; n++)
+    for (int32_t n = 0; n < m_nStr; n++)
     {
         if (m_pStrDescr[n].strID)
             continue; // dynamically added string
@@ -261,7 +261,7 @@ void CXI_STRCOLLECTION::SaveParametersToIni()
     }
 }
 
-uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_STRCOLLECTION::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -329,7 +329,7 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     break;
     case 3: // change line color
     {
-        const long nStr = message.Long() - 1;
+        const int32_t nStr = message.Long() - 1;
         const uint32_t nColor = message.Long();
         ChangeStringColor(nStr, nColor);
     }
@@ -338,7 +338,7 @@ uint32_t CXI_STRCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
     return -1;
 }
 
-void CXI_STRCOLLECTION::ChangeString(long num, const char *sValue) const
+void CXI_STRCOLLECTION::ChangeString(int32_t num, const char *sValue) const
 {
     if (num >= 0 && num < m_nStr)
     {
@@ -354,13 +354,13 @@ void CXI_STRCOLLECTION::ChangeString(long num, const char *sValue) const
     }
 }
 
-void CXI_STRCOLLECTION::ChangeStringColor(long num, uint32_t dwColor) const
+void CXI_STRCOLLECTION::ChangeStringColor(int32_t num, uint32_t dwColor) const
 {
     if (num >= 0 && num < m_nStr)
         m_pStrDescr[num].foreColor = dwColor;
 }
 
-void CXI_STRCOLLECTION::ChangeStringPos(long num, XYPOINT &pntNewPos) const
+void CXI_STRCOLLECTION::ChangeStringPos(int32_t num, XYPOINT &pntNewPos) const
 {
     if (num >= 0 && num < m_nStr)
         m_pStrDescr[num].scrPos = pntNewPos;

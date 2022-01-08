@@ -97,7 +97,7 @@ int CXI_PCEDITBOX::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_PCEDITBOX::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_PCEDITBOX::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos < m_rect.left)
         return false;
@@ -303,7 +303,7 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
         if (!m_bWaitKeyRelease)
         {
             const KeyDescr *pKeys = core.Controls->GetKeyBuffer();
-            for (long n = 0; n < core.Controls->GetKeyBufferLength(); n++)
+            for (int32_t n = 0; n < core.Controls->GetKeyBufferLength(); n++)
             {
                 if (pKeys[n].bSystem)
                 {
@@ -358,11 +358,11 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
               case SpecSymbol_end:    m_nEditPos = str.size(); break;
               case SpecSymbol_home:    m_nEditPos = 0; break;
               case SpecSymbol_delete:
-                if( m_nEditPos < (long)str.size() )
+                if( m_nEditPos < (int32_t)str.size() )
                   str.STORM_DELETE( m_nEditPos, 1 );
                 break;
               case SpecSymbol_left: if( m_nEditPos > 0 ) m_nEditPos--; break;
-              case SpecSymbol_right: if( m_nEditPos < (long)str.size() ) m_nEditPos++; break;
+              case SpecSymbol_right: if( m_nEditPos < (int32_t)str.size() ) m_nEditPos++; break;
 
               // skip unnecessary characters
               case SpecSymbol_up:
@@ -424,14 +424,14 @@ void CXI_PCEDITBOX::ShowCursorPosition(std::string &str)
         return;
 
     int offset = utf8::u8_offset(str.c_str(), m_nFirstShowCharacterIndex);
-    long nPos = m_rs->StringWidth(strForPosCalculate.c_str() + offset, m_nFontID, m_fFontScale);
+    int32_t nPos = m_rs->StringWidth(strForPosCalculate.c_str() + offset, m_nFontID, m_fFontScale);
 
     if (m_nStringAlign == PR_ALIGN_CENTER)
         nPos -= m_rs->StringWidth((char *)str.c_str() + offset, m_nFontID, m_fFontScale) / 2;
     else if (m_nStringAlign == PR_ALIGN_RIGHT)
         nPos -= m_rs->StringWidth((char *)str.c_str() + offset, m_nFontID, m_fFontScale);
 
-    long x = m_rect.left + m_pntFontOffset.x;
+    int32_t x = m_rect.left + m_pntFontOffset.x;
     if (m_nStringAlign == PR_ALIGN_CENTER)
     {
         x = (m_rect.left + m_rect.right) / 2;
@@ -476,8 +476,8 @@ void CXI_PCEDITBOX::InsertSymbol(std::string &str, utf8::u8_char chr)
 
 void CXI_PCEDITBOX::DisguiseString(std::string &str)
 {
-    const long q = str.size();
-    for (long n = 0; n < q; n++)
+    const int32_t q = str.size();
+    for (int32_t n = 0; n < q; n++)
         str[n] = '*';
 }
 

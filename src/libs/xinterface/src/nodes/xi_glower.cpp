@@ -16,7 +16,7 @@ CXI_GLOWER::~CXI_GLOWER()
 void CXI_GLOWER::Draw(bool bSelected, uint32_t Delta_Time)
 {
     m_rs->TextureSet(0, m_texID);
-    for (long i = 0; i < m_nQuantity; i++)
+    for (int32_t i = 0; i < m_nQuantity; i++)
     {
         if (m_glows[i].action != GLOW_ACTION_NONE)
         {
@@ -41,11 +41,11 @@ void CXI_GLOWER::Draw(bool bSelected, uint32_t Delta_Time)
                     m_glows[i].action = GLOW_ACTION_SHOW;
                     m_glows[i].rect.dwColor = m_dwMaxColor;
                     m_glows[i].curTime = m_glows[i].allTime =
-                        static_cast<long>(m_minShowTime + (m_maxShowTime - m_minShowTime) * rand() / RAND_MAX);
+                        static_cast<int32_t>(m_minShowTime + (m_maxShowTime - m_minShowTime) * rand() / RAND_MAX);
                     break;
                 case GLOW_ACTION_SHOW:
                     m_glows[i].action = GLOW_ACTION_BLEND;
-                    m_glows[i].curTime = m_glows[i].allTime = static_cast<long>(
+                    m_glows[i].curTime = m_glows[i].allTime = static_cast<int32_t>(
                         m_minGlowTime + static_cast<float>(m_maxGlowTime - m_minGlowTime) * rand() / RAND_MAX);
                     break;
                 case GLOW_ACTION_BLEND:
@@ -61,7 +61,7 @@ void CXI_GLOWER::Draw(bool bSelected, uint32_t Delta_Time)
             {
                 // yes! this new glow
                 m_glows[i].action = GLOW_ACTION_COLORUP;
-                m_glows[i].curTime = m_glows[i].allTime = static_cast<long>(
+                m_glows[i].curTime = m_glows[i].allTime = static_cast<int32_t>(
                     m_minGlowTime + static_cast<float>(m_maxGlowTime - m_minGlowTime) * rand() / RAND_MAX);
                 m_glows[i].angleSpeed = -(m_fAngleSpeedMin + (m_fAngleSpeedMax - m_fAngleSpeedMin) * rand() / RAND_MAX);
             }
@@ -88,7 +88,7 @@ int CXI_GLOWER::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_GLOWER::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_GLOWER::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -118,7 +118,7 @@ void CXI_GLOWER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
 {
     int i;
     char param[255];
-    long x, y;
+    int32_t x, y;
 
     // get texture
     m_texID = -1;
@@ -168,7 +168,7 @@ void CXI_GLOWER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
     m_minShowTime = GetIniLong(ini1, name1, ini2, name2, "minShowTime", 200);
     m_maxShowTime = GetIniLong(ini1, name1, ini2, name2, "maxShowTime", 600);
 
-    m_nRandomMax = static_cast<long>(GetIniFloat(ini1, name1, ini2, name2, "createProbability", 0.1f) * RAND_MAX);
+    m_nRandomMax = static_cast<int32_t>(GetIniFloat(ini1, name1, ini2, name2, "createProbability", 0.1f) * RAND_MAX);
 
     m_fAngleSpeedMin = GetIniFloat(ini1, name1, ini2, name2, "minRotateSpeed", 15.f) * PI / 180000.f;
     m_fAngleSpeedMax = GetIniFloat(ini1, name1, ini2, name2, "maxRotateSpeed", 180.f) * PI / 180000.f;

@@ -343,7 +343,7 @@ void IFS::DecReference()
     Reference--;
 }
 
-long IFS::GetReference()
+int32_t IFS::GetReference()
 {
     return Reference;
 }
@@ -409,17 +409,17 @@ bool IFS::LoadFile(const char *_file_name)
     return true;
 }
 
-void IFS::Format(char *file_data, long file_size)
+void IFS::Format(char *file_data, int32_t file_size)
 {
-    long n, z;
-    long backcount;
-    long forecount;
+    int32_t n, z;
+    int32_t backcount;
+    int32_t forecount;
 
     auto *Current_Section = new SECTION;
     Current_Section->Add(&SectionRoot, &SectionTop);
 
     char *data_PTR = nullptr;
-    long lines = 0;
+    int32_t lines = 0;
 
     // terminate each line by zero symbol
     for (n = 0; n < file_size; n++)
@@ -432,7 +432,7 @@ void IFS::Format(char *file_data, long file_size)
         }
     }
 
-    long offset = 0;
+    int32_t offset = 0;
     for (data_PTR = file_data; data_PTR < file_data + file_size; data_PTR += offset)
     {
         while (data_PTR < file_data + file_size && *data_PTR == '\0')
@@ -447,7 +447,7 @@ void IFS::Format(char *file_data, long file_size)
         {
         }
 
-        for (long i = 0; data_PTR[i]; i++)
+        for (int32_t i = 0; data_PTR[i]; i++)
         {
             if (VoidSym(data_PTR[i]))
                 continue; // skip void syms
@@ -923,22 +923,22 @@ bool IFS::ReadStringNext(SEARCH_DATA *sd, const char *section_name, const char *
     return false;
 }
 
-long IFS::GetLong(SEARCH_DATA *sd, const char *section_name, const char *key_name)
+int32_t IFS::GetLong(SEARCH_DATA *sd, const char *section_name, const char *key_name)
 {
     char buffer[256];
     ReadString(sd, section_name, key_name, buffer, sizeof(buffer));
-    return static_cast<long>(atoll(buffer));
+    return static_cast<int32_t>(atoll(buffer));
 }
 
-long IFS::GetLong(SEARCH_DATA *sd, const char *section_name, const char *key_name, long def_val)
+int32_t IFS::GetLong(SEARCH_DATA *sd, const char *section_name, const char *key_name, int32_t def_val)
 {
     char buffer[256];
     if (ReadString(sd, section_name, key_name, buffer, sizeof(buffer), ""))
-        return static_cast<long>(atoll(buffer));
+        return static_cast<int32_t>(atoll(buffer));
     return def_val;
 }
 
-bool IFS::GetLongNext(SEARCH_DATA *sd, const char *section_name, const char *key_name, long *val)
+bool IFS::GetLongNext(SEARCH_DATA *sd, const char *section_name, const char *key_name, int32_t *val)
 {
     char buffer[256];
     if (ReadStringNext(sd, section_name, key_name, buffer, sizeof(buffer)))
@@ -1039,7 +1039,7 @@ void IFS::WriteString(const char *section_name, const char *key_name, const char
     AddString(section_name, key_name, string);
 }
 
-void IFS::WriteLong(const char *section_name, const char *key_name, long value)
+void IFS::WriteLong(const char *section_name, const char *key_name, int32_t value)
 {
     char buffer[256];
     _ltoa(value, buffer, 10);
@@ -1074,7 +1074,7 @@ uint32_t IFS::CompareStrings(const char *s1, const char *s2)
     return 1;
 }
 
-bool IFS::GetSectionName(char *section_name_buffer, long buffer_size)
+bool IFS::GetSectionName(char *section_name_buffer, int32_t buffer_size)
 {
     if (SectionRoot == nullptr)
         return false;
@@ -1085,7 +1085,7 @@ bool IFS::GetSectionName(char *section_name_buffer, long buffer_size)
 
     if (section_name_buffer == nullptr)
         throw std::runtime_error("zero buffer");
-    const long len = strlen(node->GetName());
+    const int32_t len = strlen(node->GetName());
     if (len > buffer_size)
         throw std::runtime_error("buffer too small");
     strcpy_s(section_name_buffer, buffer_size, node->GetName());
@@ -1093,7 +1093,7 @@ bool IFS::GetSectionName(char *section_name_buffer, long buffer_size)
     return true;
 }
 
-bool IFS::GetSectionNameNext(char *section_name_buffer, long buffer_size)
+bool IFS::GetSectionNameNext(char *section_name_buffer, int32_t buffer_size)
 {
     if (SectionRoot == nullptr)
         return false;
@@ -1110,7 +1110,7 @@ bool IFS::GetSectionNameNext(char *section_name_buffer, long buffer_size)
                 SectionSNode = nullptr;
                 return false;
             }
-            const long len = strlen(node->GetName());
+            const int32_t len = strlen(node->GetName());
             if (len > buffer_size)
                 throw std::runtime_error("buffer too small");
             strcpy_s(section_name_buffer, buffer_size, node->GetName());

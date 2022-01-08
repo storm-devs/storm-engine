@@ -555,7 +555,7 @@ int CXI_TEXTBUTTON::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_TEXTBUTTON::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_TEXTBUTTON::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos >= m_rect.left && xPos <= m_rect.right && yPos >= m_rect.top && yPos <= m_rect.bottom && m_bClickable &&
         m_bUse)
@@ -587,7 +587,7 @@ void CXI_TEXTBUTTON::SaveParametersToIni()
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 }
 
-uint32_t CXI_TEXTBUTTON::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_TEXTBUTTON::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -652,7 +652,7 @@ void CXI_TEXTBUTTON::MakeLClickPreaction()
 
 void CXI_TEXTBUTTON::FillPositionIntoVertices()
 {
-    long i;
+    int32_t i;
     FXYRECT texRect;
     XYRECT natureRect;
 

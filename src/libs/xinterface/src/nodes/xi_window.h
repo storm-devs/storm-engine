@@ -38,7 +38,7 @@ class CXI_WINDOW : public CINODE
 
     void ReleaseAll() override{};
 
-    bool IsClick(int buttonID, long xPos, long yPos) override
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override
     {
         return false;
     };

@@ -45,8 +45,8 @@ class LocLife : public AnimationEventListener
     bool IsNearPlayer(float radius) const;
 
   private:
-    long FindPos();
-    long FindRandomPos(CVECTOR &pos) const;
+    int32_t FindPos();
+    int32_t FindRandomPos(CVECTOR &pos) const;
 
     //--------------------------------------------------------------------------------------------
   protected:
@@ -56,7 +56,7 @@ class LocLife : public AnimationEventListener
   private:
     Location *location;
     entid_t model;
-    long node;
+    int32_t node;
     float ay;
     CVECTOR pos;
     CVECTOR npos;

@@ -40,5 +40,5 @@ class WdmWindRose : public WdmRenderModel
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    long shadowTexture;
+    int32_t shadowTexture;
 };

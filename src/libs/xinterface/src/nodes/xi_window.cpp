@@ -34,7 +34,7 @@ void CXI_WINDOW::ChangePosition(XYRECT &rNewPos)
     const auto nYAdd = rNewPos.top - m_rect.top;
     m_rect = rNewPos;
 
-    for (long n = 0; n < m_aNodeNameList.size(); n++)
+    for (int32_t n = 0; n < m_aNodeNameList.size(); n++)
     {
         auto *pNod = ptrOwner->FindNode(m_aNodeNameList[n].c_str(), nullptr);
         if (pNod)
@@ -64,7 +64,7 @@ void CXI_WINDOW::SaveParametersToIni()
     sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_rect.left, m_rect.top, m_rect.right, m_rect.bottom);
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 
-    for (long n = 0; n < m_aNodeNameList.size(); n++)
+    for (int32_t n = 0; n < m_aNodeNameList.size(); n++)
     {
         auto *pNod = ptrOwner->FindNode(m_aNodeNameList[n].c_str(), nullptr);
         if (pNod)
@@ -81,7 +81,7 @@ void CXI_WINDOW::SetShow(bool bShow)
     m_bShow = bShow;
 
     // walk through all nodes and turn them on / off
-    for (long n = 0; n < m_aNodeNameList.size(); n++)
+    for (int32_t n = 0; n < m_aNodeNameList.size(); n++)
     {
         auto *const pNod = ptrOwner->FindNode(m_aNodeNameList[n].c_str(), nullptr);
         if (pNod)
@@ -100,7 +100,7 @@ void CXI_WINDOW::SetActive(bool bActive)
     m_bActive = bActive;
 
     // pass through all nodes and lock / unlock them
-    for (long n = 0; n < m_aNodeNameList.size(); n++)
+    for (int32_t n = 0; n < m_aNodeNameList.size(); n++)
     {
         auto *const pNod = ptrOwner->FindNode(m_aNodeNameList[n].c_str(), nullptr);
         if (pNod)

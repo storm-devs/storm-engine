@@ -14,10 +14,10 @@ class LOCAL_COLLIDE
     virtual ~LOCAL_COLLIDE(){};
 
     // clip faces into the box and returns num of faces
-    virtual long SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOnly = false) = 0;
+    virtual int32_t SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOnly = false) = 0;
 
     // returns pointer to clipped face and fills num of vertices in face
-    virtual const CVECTOR *GetFace(long &numVertices) = 0;
+    virtual const CVECTOR *GetFace(int32_t &numVertices) = 0;
 
     // trace a ray inside the box
     virtual float Trace(const CVECTOR &src, const CVECTOR &dst) = 0;
@@ -34,10 +34,10 @@ class COLLIDE : public SERVICE
     virtual float Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst) = 0;
 
     virtual float Trace(EntityManager::LayerIterators its, const CVECTOR &src, const CVECTOR &dst,
-                        const entid_t *exclude_list, long entities) = 0;
+                        const entid_t *exclude_list, int32_t entities) = 0;
 
-    virtual bool Clip(EntityManager::LayerIterators its, const PLANE *planes, long nplanes, const CVECTOR &center,
-                      float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, long entities) = 0;
+    virtual bool Clip(EntityManager::LayerIterators its, const PLANE *planes, int32_t nplanes, const CVECTOR &center,
+                      float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, int32_t entities) = 0;
 
     virtual entid_t GetObjectID() = 0;
 };

@@ -21,7 +21,7 @@ class BI_BaseGroup
     {
     }
 
-    virtual long Event(const char *pcEventName) = 0;
+    virtual int32_t Event(const char *pcEventName) = 0;
 
     BI_ManagerBase *Manager() const
     {

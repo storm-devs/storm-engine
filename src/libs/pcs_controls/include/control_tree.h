@@ -14,9 +14,9 @@ struct ControlTree
         ~ControlChild();
 
         void Process(float fDeltaTime, ControlTree *pControlTree);
-        bool ControlInAction(ControlTree *pControlTree, const char *pcControlName, long _nLayer);
+        bool ControlInAction(ControlTree *pControlTree, const char *pcControlName, int32_t _nLayer);
 
-        long index;
+        int32_t index;
         std::string sControlName;
         std::vector<ControlChild> aChild;
         bool bActive;
@@ -24,7 +24,7 @@ struct ControlTree
         float fTimeOut;
         float fCurTime;
         std::string sOutControlName;
-        long nLayer;
+        int32_t nLayer;
     };
 
     struct OutControlInfo
@@ -39,21 +39,21 @@ struct ControlTree
 
     void Process();
 
-    long AddControlChild(long nParentIdx, const char *pcControlName, const char *pcOutControlName, float fTimeOut);
+    int32_t AddControlChild(int32_t nParentIdx, const char *pcControlName, const char *pcOutControlName, float fTimeOut);
     CONTROL_STATE_TYPE CheckControlActivated(const char *pcControlName);
 
     bool AddOutControl(const char *pcOutControlName, bool isActive);
-    void ControlInAction(const char *pcControlName, long nLayer);
+    void ControlInAction(const char *pcControlName, int32_t nLayer);
     bool ExcludeControlFromActive(const char *pcControlName);
 
   protected:
     void Init();
     void Release();
-    ControlChild *FindControlChild(long idx);
-    ControlChild *FindControlChild(long idx, ControlChild *pParent);
+    ControlChild *FindControlChild(int32_t idx);
+    ControlChild *FindControlChild(int32_t idx, ControlChild *pParent);
 
   protected:
-    long m_nControlsNum;
+    int32_t m_nControlsNum;
     ControlChild m_RootControl;
 
     std::vector<OutControlInfo> m_aOutControlList;

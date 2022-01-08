@@ -47,13 +47,13 @@ WdmSea::WdmSea()
     aniTiling *= WDM_SEA_ANITILING / (2000.0f * 1.414f);
     ib = -1;
     vb = -1;
-    for (long i = 0; i < sizeof(wh) / sizeof(WhiteHorses); i++)
+    for (int32_t i = 0; i < sizeof(wh) / sizeof(WhiteHorses); i++)
         wh[i].textureIndex = -1;
-    for (long i = 0; i < sizeof(aniTextures) / sizeof(long); i++)
+    for (int32_t i = 0; i < sizeof(aniTextures) / sizeof(int32_t); i++)
         aniTextures[i] = -1;
     aniFrame = 0.0f;
     baseTexture = -1;
-    for (long i = 0; i < sizeof(whiteHorses) / sizeof(long); i++)
+    for (int32_t i = 0; i < sizeof(whiteHorses) / sizeof(int32_t); i++)
         whiteHorses[i] = -1;
     // Init
     // Create a buffer for indexes
@@ -65,11 +65,11 @@ WdmSea::WdmSea()
     // Indexes
     auto *triangle = static_cast<Triangle *>(wdmObjects->rs->LockIndexBuffer(ib));
     Assert(triangle);
-    for (long j = 0, p = 0; j < WDM_SEA_SECTIONS_Z; j++)
+    for (int32_t j = 0, p = 0; j < WDM_SEA_SECTIONS_Z; j++)
     {
         auto *const trg = triangle + j * WDM_SEA_SECTIONS_X * 2;
         const auto base = j * (WDM_SEA_SECTIONS_X + 1);
-        for (long i = 0; i < WDM_SEA_SECTIONS_X; i++)
+        for (int32_t i = 0; i < WDM_SEA_SECTIONS_X; i++)
         {
             trg[i * 2 + 0].index[0] = static_cast<uint16_t>(base + i);
             trg[i * 2 + 0].index[1] = static_cast<uint16_t>(base + WDM_SEA_SECTIONS_X + 1 + i + 1);
@@ -84,9 +84,9 @@ WdmSea::WdmSea()
     auto *vertex = static_cast<Vertex *>(wdmObjects->rs->LockVertexBuffer(vb));
     Assert(vertex);
     // The sea
-    for (long z = 0, p = 0; z <= WDM_SEA_SECTIONS_Z; z++)
+    for (int32_t z = 0, p = 0; z <= WDM_SEA_SECTIONS_Z; z++)
     {
-        for (long x = 0; x <= WDM_SEA_SECTIONS_X; x++, p++)
+        for (int32_t x = 0; x <= WDM_SEA_SECTIONS_X; x++, p++)
         {
             auto &v = vertex[p];
             v.x = (x / static_cast<float>(WDM_SEA_SECTIONS_X) - 0.5f) * seaSizeX;
@@ -126,17 +126,17 @@ WdmSea::WdmSea()
     // Loading textures
     char buf[256];
     baseTexture = wdmObjects->rs->TextureCreate("\\WorldMap\\Sea\\sea.tga");
-    for (long i = 0; i < sizeof(aniTextures) / sizeof(long); i++)
+    for (int32_t i = 0; i < sizeof(aniTextures) / sizeof(int32_t); i++)
     {
         sprintf_s(buf, "\\WorldMap\\Sea\\Ani\\wave_%.4i.tga", i);
         aniTextures[i] = wdmObjects->rs->TextureCreate(buf);
     }
-    for (long i = 0; i < sizeof(whiteHorses) / sizeof(long); i++)
+    for (int32_t i = 0; i < sizeof(whiteHorses) / sizeof(int32_t); i++)
     {
         sprintf_s(buf, "\\WorldMap\\Sea\\WhiteHorses\\wh%.3i.tga", i);
         whiteHorses[i] = -1; // wdmObjects->rs->TextureCreate(buf);
     }
-    for (long i = 0; i < sizeof(flare) / sizeof(flare[0]); i++)
+    for (int32_t i = 0; i < sizeof(flare) / sizeof(flare[0]); i++)
     {
         flare[i].index = -1;
     }
@@ -151,7 +151,7 @@ WdmSea::~WdmSea()
         wdmObjects->rs->ReleaseIndexBuffer(ib);
     if (vb >= 0)
         wdmObjects->rs->ReleaseVertexBuffer(vb);
-    for (long i = 0; i < sizeof(aniTextures) / sizeof(long); i++)
+    for (int32_t i = 0; i < sizeof(aniTextures) / sizeof(int32_t); i++)
         if (aniTextures[i] >= 0)
             wdmObjects->rs->TextureRelease(aniTextures[i]);
     if (baseTexture >= 0)
@@ -160,13 +160,13 @@ WdmSea::~WdmSea()
         wdmObjects->rs->TextureRelease(flareTexture);
     ib = -1;
     vb = -1;
-    for (long i = 0; i < sizeof(wh) / sizeof(WhiteHorses); i++)
+    for (int32_t i = 0; i < sizeof(wh) / sizeof(WhiteHorses); i++)
         wh[i].textureIndex = -1;
-    for (long i = 0; i < sizeof(aniTextures) / sizeof(long); i++)
+    for (int32_t i = 0; i < sizeof(aniTextures) / sizeof(int32_t); i++)
         aniTextures[i] = -1;
     aniFrame = 0.0f;
     baseTexture = -1;
-    for (long i = 0; i < sizeof(whiteHorses) / sizeof(long); i++)
+    for (int32_t i = 0; i < sizeof(whiteHorses) / sizeof(int32_t); i++)
         whiteHorses[i] = -1;
 }
 
@@ -174,12 +174,12 @@ void WdmSea::Update(float dltTime)
 {
     // Animated texture
     aniFrame += dltTime * WDM_SEA_ANIFPS;
-    const float maxAni = sizeof(aniTextures) / sizeof(long);
+    const float maxAni = sizeof(aniTextures) / sizeof(int32_t);
     aniFrame /= maxAni;
-    aniFrame = (aniFrame - static_cast<long>(aniFrame)) * maxAni;
+    aniFrame = (aniFrame - static_cast<int32_t>(aniFrame)) * maxAni;
     Assert(aniFrame < maxAni);
     // waves
-    for (long i = 0; i < sizeof(wh) / sizeof(WhiteHorses); i++)
+    for (int32_t i = 0; i < sizeof(wh) / sizeof(WhiteHorses); i++)
     {
         if (wh[i].textureIndex >= 0)
         {
@@ -199,7 +199,7 @@ void WdmSea::Update(float dltTime)
             if (rand() & 255)
                 continue;
             // Texture
-            wh[i].textureIndex = rand() % (sizeof(whiteHorses) / sizeof(long));
+            wh[i].textureIndex = rand() % (sizeof(whiteHorses) / sizeof(int32_t));
             // Position
             wh[i].x = seaSizeX * (0.5f - rand() * (1.0f / RAND_MAX));
             wh[i].z = seaSizeZ * (0.5f - rand() * (1.0f / RAND_MAX));
@@ -215,7 +215,7 @@ void WdmSea::Update(float dltTime)
         }
     }
     // Flares
-    long i;
+    int32_t i;
     for (i = 0; i < sizeof(flare) / sizeof(flare[0]); i++)
     {
         auto &f = flare[i];
@@ -238,7 +238,7 @@ void WdmSea::Update(float dltTime)
         auto &r = flareRect[f.index];
         const auto k = 1.0f - (f.time - 0.5f) * (f.time - 0.5f) * 4.0f;
         r.fSize = k * 0.3f;
-        r.dwColor = (r.dwColor & 0xffff) | (static_cast<long>(k * k * k * k * k * k * 255.0f) << 24);
+        r.dwColor = (r.dwColor & 0xffff) | (static_cast<int32_t>(k * k * k * k * k * k * 255.0f) << 24);
         r.fAngle += dltTime * 8.0f * sinf(f.phase + f.time * 6.0f);
     }
     Assert(wdmObjects->playerShip);
@@ -301,11 +301,11 @@ void WdmSea::LRender(VDX9RENDER *rs)
     Render(rs, "WdmSeaDraw2");
     // Drawing an animated texture
     // Determine a pair of frames and the blending coefficient between them
-    const auto curFrame = static_cast<long>(aniFrame);
+    const auto curFrame = static_cast<int32_t>(aniFrame);
     auto nextFrame = curFrame + 1;
-    if (nextFrame >= sizeof(aniTextures) / sizeof(long))
+    if (nextFrame >= sizeof(aniTextures) / sizeof(int32_t))
         nextFrame = 0;
-    auto k = 255.0f * (aniFrame - static_cast<long>(aniFrame));
+    auto k = 255.0f * (aniFrame - static_cast<int32_t>(aniFrame));
     if (k < 0.0f)
         k = 0.0f;
     if (k > 255.0f)
@@ -338,7 +338,7 @@ void WdmSea::LRender(VDX9RENDER *rs)
             if (y < 0.0f)
                 y = 0.0f;
             y = (1.0f - y) * (1.0f - y);
-            const auto c = static_cast<long>(y * 255.0f) << 24;
+            const auto c = static_cast<int32_t>(y * 255.0f) << 24;
             rs->TextureSet(0, flareTexture);
             rs->SetRenderState(D3DRS_TEXTUREFACTOR, (c << 24) | (c << 16) | (c << 8) | c);
             rs->DrawRects(flareRect, flareCount, "WdmSeaDrawFlare");

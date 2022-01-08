@@ -68,13 +68,13 @@ class Fader : public Entity
 
     bool eventStart;
     bool eventEnd;
-    long deleteMe;
+    int32_t deleteMe;
 
-    long textureID;
-    long textureBackID;
-    long tipsID;
+    int32_t textureID;
+    int32_t textureBackID;
+    int32_t tipsID;
 
   public:
-    static long numberOfTips;
-    static long currentTips;
+    static int32_t numberOfTips;
+    static int32_t currentTips;
 };

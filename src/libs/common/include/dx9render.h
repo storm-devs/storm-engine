@@ -73,11 +73,11 @@ class VDX9RENDER : public SERVICE
     ~VDX9RENDER() override{};
 
     // DX9Render: Init/Release
-    virtual bool InitDevice(bool windowed, HWND hwnd, long width, long height) = 0;
+    virtual bool InitDevice(bool windowed, HWND hwnd, int32_t width, int32_t height) = 0;
     virtual bool ReleaseDevice() = 0;
 
     // DX9Render: Animation
-    virtual void RenderAnimation(long ib, void *src, long numVrts, long minv, long numv, long startidx, long numtrg,
+    virtual void RenderAnimation(int32_t ib, void *src, int32_t numVrts, int32_t minv, int32_t numv, int32_t startidx, int32_t numtrg,
                                  bool isUpdateVB) = 0;
 
     // DX9Render: Return d3d9 device
@@ -85,7 +85,7 @@ class VDX9RENDER : public SERVICE
     virtual void *GetD3DDevice() = 0; // (very bad function/don't use!!!)
 
     // DX9Render: Render Target/Begin/End/Clear
-    virtual bool DX9Clear(long type) = 0; // D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
+    virtual bool DX9Clear(int32_t type) = 0; // D3DCLEAR_STENCIL | D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
     virtual bool DX9BeginScene() = 0;
     virtual bool DX9EndScene() = 0;
 
@@ -104,8 +104,8 @@ class VDX9RENDER : public SERVICE
     virtual PLANE *GetPlanes() = 0;
 
     // DX9Render: Camera Section
-    virtual void SetTransform(long type, D3DMATRIX *mtx) = 0;
-    virtual void GetTransform(long type, D3DMATRIX *mtx) = 0;
+    virtual void SetTransform(int32_t type, D3DMATRIX *mtx) = 0;
+    virtual void GetTransform(int32_t type, D3DMATRIX *mtx) = 0;
 
     virtual bool SetCamera(const CVECTOR &pos, const CVECTOR &ang, float perspective) = 0;
     virtual bool SetCamera(const CVECTOR &pos, const CVECTOR &ang) = 0;
@@ -116,27 +116,27 @@ class VDX9RENDER : public SERVICE
     virtual bool SetCurrentMatrix(D3DMATRIX *mtx) = 0;
 
     // DX9Render: Textures Section
-    virtual long TextureCreate(const char *fname) = 0;
-    virtual long TextureCreate(UINT width, UINT height, UINT levels, uint32_t usage, D3DFORMAT format, D3DPOOL pool) = 0;
-    virtual bool TextureSet(long stage, long texid) = 0;
-    virtual bool TextureRelease(long texid) = 0;
-    virtual bool TextureIncReference(long texid) = 0;
+    virtual int32_t TextureCreate(const char *fname) = 0;
+    virtual int32_t TextureCreate(UINT width, UINT height, UINT levels, uint32_t usage, D3DFORMAT format, D3DPOOL pool) = 0;
+    virtual bool TextureSet(int32_t stage, int32_t texid) = 0;
+    virtual bool TextureRelease(int32_t texid) = 0;
+    virtual bool TextureIncReference(int32_t texid) = 0;
 
     // DX9Render: Fonts Section
-    virtual long Print(long x, long y, const char *format, ...) = 0;
-    virtual long Print(long nFontNum, uint32_t color, long x, long y, const char *format, ...) = 0;
-    virtual long ExtPrint(long nFontNum, uint32_t foreColor, uint32_t backColor, int wAlignment, bool bShadow,
-                          float fScale, long scrWidth, long scrHeight, long x, long y, const char *format, ...) = 0;
-    virtual long StringWidth(const char *string, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
-    virtual long CharWidth(utf8::u8_char ucVKey, long nFontNum = 0, float fScale = 1.f, long scrWidth = 0) = 0;
-    virtual long CharHeight(long fontID) = 0;
-    virtual long LoadFont(const char *fontName) = 0;   // returns the number \ font id, or -1 on error
+    virtual int32_t Print(int32_t x, int32_t y, const char *format, ...) = 0;
+    virtual int32_t Print(int32_t nFontNum, uint32_t color, int32_t x, int32_t y, const char *format, ...) = 0;
+    virtual int32_t ExtPrint(int32_t nFontNum, uint32_t foreColor, uint32_t backColor, int wAlignment, bool bShadow,
+                          float fScale, int32_t scrWidth, int32_t scrHeight, int32_t x, int32_t y, const char *format, ...) = 0;
+    virtual int32_t StringWidth(const char *string, int32_t nFontNum = 0, float fScale = 1.f, int32_t scrWidth = 0) = 0;
+    virtual int32_t CharWidth(utf8::u8_char ucVKey, int32_t nFontNum = 0, float fScale = 1.f, int32_t scrWidth = 0) = 0;
+    virtual int32_t CharHeight(int32_t fontID) = 0;
+    virtual int32_t LoadFont(const char *fontName) = 0;   // returns the number \ font id, or -1 on error
     virtual bool UnloadFont(const char *fontName) = 0; // returns true if the font is still in use
-    virtual bool UnloadFont(long fontID) = 0;          // returns true if the font is still in use
-    virtual bool IncRefCounter(long fontID) = 0;       // increase reference counter if object is being copied
+    virtual bool UnloadFont(int32_t fontID) = 0;          // returns true if the font is still in use
+    virtual bool IncRefCounter(int32_t fontID) = 0;       // increase reference counter if object is being copied
     virtual bool SetCurFont(const char *fontName) = 0; // returns true if the given font is installed
-    virtual bool SetCurFont(long fontID) = 0;          // returns true if the given font is installed
-    virtual long GetCurFont() = 0;
+    virtual bool SetCurFont(int32_t fontID) = 0;          // returns true if the given font is installed
+    virtual int32_t GetCurFont() = 0;
     virtual char *GetFontIniFileName() = 0;
     virtual bool SetFontIniFileName(const char *iniName) = 0;
 
@@ -154,12 +154,12 @@ class VDX9RENDER : public SERVICE
                             const char *pTechniqueName = "DXVector") = 0;
     virtual void DrawLines2D(RS_LINE2D *pRSL2D, size_t dwLinesNum, const char *cBlockName = nullptr) = 0;
 
-    virtual void DrawBuffer(long vbuff, long stride, long ibuff, long minv, size_t numv, size_t startidx, size_t numtrg,
+    virtual void DrawBuffer(int32_t vbuff, int32_t stride, int32_t ibuff, int32_t minv, size_t numv, size_t startidx, size_t numtrg,
                             const char *cBlockName = nullptr) = 0;
-    virtual void DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iIBuff,
-                                               long iMinV, long iNumV, long iStartIdx, long iNumTrg,
+    virtual void DrawIndexedPrimitiveNoVShader(D3DPRIMITIVETYPE dwPrimitiveType, int32_t iVBuff, int32_t iStride, int32_t iIBuff,
+                                               int32_t iMinV, int32_t iNumV, int32_t iStartIdx, int32_t iNumTrg,
                                                const char *cBlockName = nullptr) = 0;
-    virtual void DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, long iVBuff, long iStride, long iStartV, long iNumPT,
+    virtual void DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, int32_t iVBuff, int32_t iStride, int32_t iStartV, int32_t iNumPT,
                                const char *cBlockName = nullptr) = 0;
     virtual void DrawPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwVertexBufferFormat, uint32_t dwNumPT,
                                  void *pVerts, uint32_t dwStride, const char *cBlockName = nullptr) = 0;
@@ -174,18 +174,18 @@ class VDX9RENDER : public SERVICE
     virtual void ReleaseVideoTexture(CVideoTexture *pVTexture) = 0;
 
     // DX9Render: Vertex/Index Buffers Section
-    virtual long CreateVertexBuffer(long type, size_t nverts, uint32_t usage) = 0;
-    virtual long CreateIndexBuffer(size_t ntrgs, uint32_t dwUsage = D3DUSAGE_WRITEONLY) = 0;
+    virtual int32_t CreateVertexBuffer(int32_t type, size_t nverts, uint32_t usage) = 0;
+    virtual int32_t CreateIndexBuffer(size_t ntrgs, uint32_t dwUsage = D3DUSAGE_WRITEONLY) = 0;
 
-    virtual IDirect3DVertexBuffer9 *GetVertexBuffer(long id) = 0;
-    virtual long GetVertexBufferFVF(long id) = 0;
-    virtual void *LockVertexBuffer(long id, uint32_t dwFlags = 0) = 0;
-    virtual void UnLockVertexBuffer(long id) = 0;
-    virtual long GetVertexBufferSize(long id) = 0;
-    virtual void *LockIndexBuffer(long id, uint32_t dwFlags = 0) = 0;
-    virtual void UnLockIndexBuffer(long id) = 0;
-    virtual void ReleaseVertexBuffer(long id) = 0;
-    virtual void ReleaseIndexBuffer(long id) = 0;
+    virtual IDirect3DVertexBuffer9 *GetVertexBuffer(int32_t id) = 0;
+    virtual int32_t GetVertexBufferFVF(int32_t id) = 0;
+    virtual void *LockVertexBuffer(int32_t id, uint32_t dwFlags = 0) = 0;
+    virtual void UnLockVertexBuffer(int32_t id) = 0;
+    virtual int32_t GetVertexBufferSize(int32_t id) = 0;
+    virtual void *LockIndexBuffer(int32_t id, uint32_t dwFlags = 0) = 0;
+    virtual void UnLockIndexBuffer(int32_t id) = 0;
+    virtual void ReleaseVertexBuffer(int32_t id) = 0;
+    virtual void ReleaseIndexBuffer(int32_t id) = 0;
 
     // DX9Render: Render/Texture States Section
     virtual uint32_t SetRenderState(uint32_t State, uint32_t Value) = 0;
@@ -278,7 +278,7 @@ class VDX9RENDER : public SERVICE
     virtual HRESULT EndScene() = 0;
 
     virtual HRESULT ImageBlt(const char *pName, RECT *pDstRect = nullptr, RECT *pSrcRect = nullptr) = 0;
-    virtual HRESULT ImageBlt(long nTextureId, RECT *pDstRect = nullptr, RECT *pSrcRect = nullptr) = 0;
+    virtual HRESULT ImageBlt(int32_t nTextureId, RECT *pDstRect = nullptr, RECT *pSrcRect = nullptr) = 0;
 
     virtual void SetProgressImage(const char *image) = 0;
     virtual void SetProgressBackImage(const char *image) = 0;
@@ -297,7 +297,7 @@ class VDX9RENDER : public SERVICE
     virtual void SetNearFarPlane(float fNear, float fFar) = 0;
 
     virtual void SetLoadTextureEnable(bool bEnable = true) = 0;
-    virtual IDirect3DBaseTexture9 *GetBaseTexture(long iTexture) = 0;
+    virtual IDirect3DBaseTexture9 *GetBaseTexture(int32_t iTexture) = 0;
 
     virtual IDirect3DBaseTexture9 *CreateTextureFromFileInMemory(const char *pFile, uint32_t dwSize) = 0;
 
@@ -317,7 +317,7 @@ class VDX9RENDER : public SERVICE
                                                          D3DPOOL Pool) = 0;
 
     virtual void MakePostProcess() = 0;
-    virtual void SetGLOWParams(float _fBlurBrushSize, long _GlowIntensity, long _GlowPasses) = 0;
+    virtual void SetGLOWParams(float _fBlurBrushSize, int32_t _GlowIntensity, int32_t _GlowPasses) = 0;
 
-    virtual IDirect3DBaseTexture9 *GetTextureFromID(long nTextureID) = 0;
+    virtual IDirect3DBaseTexture9 *GetTextureFromID(int32_t nTextureID) = 0;
 };

@@ -17,8 +17,8 @@
 // Construction, destruction
 // ============================================================================================
 
-long Fader::numberOfTips = 0;
-long Fader::currentTips = -1;
+int32_t Fader::numberOfTips = 0;
+int32_t Fader::currentTips = -1;
 
 Fader::Fader()
     : fadeIn(false), isStart(false), isAutodelete(false), fadeSpeed(0), w(0), h(0)

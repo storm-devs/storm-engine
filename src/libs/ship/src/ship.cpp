@@ -156,7 +156,7 @@ CVECTOR SHIP::ShipRocking(float fDeltaTime)
 
     if (!pSea)
         return vAng;
-    // core.Send_Message(model,"ll",2,(long)&mat);
+    // core.Send_Message(model,"ll",2,(int32_t)&mat);
 
     auto vAng2 = State.vAng;
 
@@ -166,7 +166,7 @@ CVECTOR SHIP::ShipRocking(float fDeltaTime)
     fang.z = 0.0f;
     auto fFullY = 0.0f, fup = 0.0f;
 
-    long ix, iz;
+    int32_t ix, iz;
 
     auto fCos = cosf(State.vAng.y);
     auto fSin = sinf(State.vAng.y);
@@ -238,7 +238,7 @@ CVECTOR SHIP::ShipRocking(float fDeltaTime)
 
 BOOL SHIP::CalculateNewSpeedVector(CVECTOR *Speed, CVECTOR *Rotate)
 {
-    long i;
+    int32_t i;
     CVECTOR result(0.0f, 0.0f, 0.0f);
     for (i = 0; i < RESERVED_STRENGTH; i++)
     {
@@ -255,7 +255,7 @@ BOOL SHIP::CalculateNewSpeedVector(CVECTOR *Speed, CVECTOR *Rotate)
 BOOL SHIP::ApplyStrength(float dtime, BOOL bCollision)
 {
     float sign, fK;
-    long i;
+    int32_t i;
 
     // apply impulse strength
     for (i = RESERVED_STRENGTH; i < MAX_STRENGTH; i++)
@@ -458,7 +458,7 @@ void SHIP::CheckShip2Strand(float fDeltaTime)
     auto *pModel = GetModel();
     Assert(pModel);
     auto bNewShip2Strand = false;
-    for (long i = 0; i < MAX_KEEL_POINTS; i++)
+    for (int32_t i = 0; i < MAX_KEEL_POINTS; i++)
     {
         float fRes;
         const auto vTmp = pModel->mtx * vKeelContour[i];
@@ -756,7 +756,7 @@ void SHIP::Execute(uint32_t DeltaTime)
     // activate mast tracer
     if (dtMastTrace.Update(fDeltaTime))
     {
-        for (long i = 0; i < iNumMasts; i++)
+        for (int32_t i = 0; i < iNumMasts; i++)
             if (!pMasts[i].bBroken)
             {
                 CVECTOR v1, v2;
@@ -845,7 +845,7 @@ void SHIP::Execute(uint32_t DeltaTime)
         auto vBoxSize = State.vBoxSize / 2.0f;
 
         auto fWaterSpeed = pASounds->GetAttributeAsFloat("WaterSpeed", 40.0f);
-        auto iWaterSound = static_cast<long>(pASounds->GetAttributeAsDword("WaterID", -1));
+        auto iWaterSound = static_cast<int32_t>(pASounds->GetAttributeAsDword("WaterID", -1));
         if (iWaterSound > 0)
         {
             auto x = pAWaterID->GetAttributeAsFloat("x", 0.0f);
@@ -859,7 +859,7 @@ void SHIP::Execute(uint32_t DeltaTime)
         }
 
         auto fTurnSpeed = pASounds->GetAttributeAsFloat("TurnSpeed", 20.0f);
-        auto iTurnSound = static_cast<long>(pASounds->GetAttributeAsDword("TurnID", -1));
+        auto iTurnSound = static_cast<int32_t>(pASounds->GetAttributeAsDword("TurnID", -1));
         if (iTurnSound > 0)
         {
             auto x = pATurnID->GetAttributeAsFloat("x", 0.0f);
@@ -872,7 +872,7 @@ void SHIP::Execute(uint32_t DeltaTime)
                               vPos.x + fXOffset, vPos.y, vPos.z + fZOffset);
         }
 
-        auto iSailSound = static_cast<long>(pASounds->GetAttributeAsDword("SailsID", -1));
+        auto iSailSound = static_cast<int32_t>(pASounds->GetAttributeAsDword("SailsID", -1));
         if (iSailSound > 0)
         {
             auto x = pASailsID->GetAttributeAsFloat("x", 0.0f);
@@ -933,18 +933,18 @@ void SHIP::MastFall(mast_t *pM)
 {
     if (pM && pM->pNode && pM->fDamage >= 1.0f)
     {
-        long iNum, iBase;
+        int32_t iNum, iBase;
         char cMastNodeName[256];
         sprintf_s(cMastNodeName, "%s", pM->pNode->GetName());
         sscanf((char *)&cMastNodeName[_countof(MAST_IDENTIFY) - 1], "%d", &iNum);
         iBase = iNum / TOPMAST_BEGIN;
         //        core.Trace("SHIP::MastFall : nodeName %s  iNum = %d base = %d iNumMasts = %d", cMastNodeName, iNum,
         // iBase, iNumMasts );
-        for (long i = 0; i < iNumMasts; i++)
+        for (int32_t i = 0; i < iNumMasts; i++)
         {
             mast_t *pMast = &pMasts[i];
             char str[256];
-            long iMastNum;
+            int32_t iMastNum;
             if (pMast && pMast->pNode && !pMasts[i].bBroken)
             {
                 sprintf_s(str, "%s", pMast->pNode->GetName());
@@ -998,7 +998,7 @@ CMatrix SHIP::UpdateModelMatrix()
 void SHIP::RecalculateWorldOffset()
 {
     // calculate X offset
-    /*long nTmp = (long)((State.vPos.x + fXOffset) * 0.001f) * 1000;
+    /*int32_t nTmp = (int32_t)((State.vPos.x + fXOffset) * 0.001f) * 1000;
     float fTmp = fXOffset - (float)nTmp;
     if( fTmp != 0.f ) {
       fXOffset = (float)nTmp;
@@ -1006,7 +1006,7 @@ void SHIP::RecalculateWorldOffset()
       vPos.x = State.vPos.x;
     }
     // calculate Z offset
-    nTmp = (long)((State.vPos.z + fZOffset) * 0.001f) * 1000;
+    nTmp = (int32_t)((State.vPos.z + fZOffset) * 0.001f) * 1000;
     fTmp = fZOffset - (float)nTmp;
     if( fTmp != 0.f ) {
       fZOffset = (float)nTmp;
@@ -1148,7 +1148,7 @@ float SHIP::GetWindAgainst()
     return (pAWindAgainst) ? pAWindAgainst->GetAttributeAsFloat() : 0.0f;
 }
 
-bool SHIP::DelStrength(long iIdx)
+bool SHIP::DelStrength(int32_t iIdx)
 {
     if (iIdx < RESERVED_STRENGTH || iIdx >= MAX_STRENGTH)
         return false;
@@ -1156,9 +1156,9 @@ bool SHIP::DelStrength(long iIdx)
     return true;
 }
 
-long SHIP::AddStrength(STRENGTH *strength)
+int32_t SHIP::AddStrength(STRENGTH *strength)
 {
-    long i;
+    int32_t i;
     for (i = RESERVED_STRENGTH; i < MAX_STRENGTH; i++)
         if (!Strength[i].bUse)
         {
@@ -1212,7 +1212,7 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         const std::string &str = message.String();
         const std::string &str1 = message.String();
         const std::string &str2 = message.String();
-        // long iSoundID = message.Long();
+        // int32_t iSoundID = message.Long();
         const auto fRunTime = message.Float();
         const auto iBallCharacterIndex = message.Long();
         Assert(dwFPIndex != INVALID_ARRAY_INDEX && dwFPIndex < aFirePlaces.size());
@@ -1221,12 +1221,12 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
     break;
     case MSG_SHIP_GET_CHARACTER_INDEX: {
         auto *pVData = message.ScriptVariablePointer();
-        pVData->Set(static_cast<long>(GetIndex(GetACharacter())));
+        pVData->Set(static_cast<int32_t>(GetIndex(GetACharacter())));
     }
     break;
     case MSG_SHIP_GET_NUM_FIRE_PLACES: {
         auto *pVData = message.ScriptVariablePointer();
-        pVData->Set(static_cast<long>(aFirePlaces.size()));
+        pVData->Set(static_cast<int32_t>(aFirePlaces.size()));
     }
     break;
     case MSG_SHIP_RESET_TRACK: {
@@ -1545,7 +1545,7 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
 
     if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
     {
-        for (long i = 0; i < iNumMasts; i++)
+        for (int32_t i = 0; i < iNumMasts; i++)
         {
             if (pMasts[i].bBroken)
             {
@@ -1609,7 +1609,7 @@ void SHIP::CalcRealBoxsize()
     MODEL *pM = GetModel();
     Assert(pM);
 
-    for (long i = 0;; i++)
+    for (int32_t i = 0;; i++)
     {
         NODE *pN = pM->GetNode(i);
         if (!pN)
@@ -1707,16 +1707,16 @@ float SHIP::Trace(const CVECTOR &src, const CVECTOR &dst)
     return pModel->Trace(src, dst);
 };
 
-float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
+float SHIP::Cannon_Trace(int32_t iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
 {
     MODEL *pModel = GetModel();
     Assert(pModel);
 
-    const long iOurIndex = GetIndex(GetACharacter());
+    const int32_t iOurIndex = GetIndex(GetACharacter());
     if (iBallOwner == iOurIndex)
         return 2.0f;
 
-    for (long i = 0; i < iNumMasts; i++)
+    for (int32_t i = 0; i < iNumMasts; i++)
         if (!pMasts[i].bBroken)
         {
             mast_t *pM = &pMasts[i];
@@ -1734,7 +1734,7 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
 
     if (core.GetTargetEngineVersion() >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN)
     {
-        for (long i = 0; i < iNumHulls; i++)
+        for (int32_t i = 0; i < iNumHulls; i++)
             if (!pHulls[i].bBroken)
             {
                 hull_t *pM = &pHulls[i];
@@ -1766,7 +1766,7 @@ float SHIP::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vD
         CVECTOR vTemp = vSrc + fRes * (vDst - vSrc);
         // search nearest fire place
         float fMinDistance = 1e8f;
-        long iBestIndex = -1;
+        int32_t iBestIndex = -1;
         for (uint32_t i = 0; i < aFirePlaces.size(); i++)
             if (!aFirePlaces[i].isActive())
             {

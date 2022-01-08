@@ -23,7 +23,7 @@ class PtcData
   public:
     struct Triangle
     {
-        long index;
+        int32_t index;
         CVECTOR v[3];
         CVECTOR n;
     };
@@ -44,23 +44,23 @@ class PtcData
     // load the patch
     bool Load(const char *path);
     // Determine the current position
-    long FindNode(const CVECTOR &pos, float &y);
+    int32_t FindNode(const CVECTOR &pos, float &y);
     // Moves "pos" to "to", returns a new node
-    long Move(long curNode, const CVECTOR &to, CVECTOR &pos, long depth = 0);
+    int32_t Move(int32_t curNode, const CVECTOR &to, CVECTOR &pos, int32_t depth = 0);
     // Get normal to a node
-    void GetNodeNormal(long curNode, CVECTOR &n) const;
+    void GetNodeNormal(int32_t curNode, CVECTOR &n) const;
     // Find the direction of the path
-    bool FindPathDir(long curNode, const CVECTOR &cur, long toNode, const CVECTOR &to, long &node, CVECTOR &toPos);
+    bool FindPathDir(int32_t curNode, const CVECTOR &cur, int32_t toNode, const CVECTOR &to, int32_t &node, CVECTOR &toPos);
     // Find patch intersection
     float Trace(const CVECTOR &s, const CVECTOR &d) const;
     // Find the force pushing away from the edges
-    void FindForce(long curNode, CVECTOR &force) const;
-    void FindForce(long curNode, const CVECTOR &pos, float dist, CVECTOR &force) const;
+    void FindForce(int32_t curNode, CVECTOR &force) const;
+    void FindForce(int32_t curNode, const CVECTOR &pos, float dist, CVECTOR &force) const;
     // Get node material
-    const char *GetMaterial(long curNode);
+    const char *GetMaterial(int32_t curNode);
 
     // Get triangles intersecting a given square
-    // Triangle * GetTriangles(float x, float z, float sx, float sz, long & num);
+    // Triangle * GetTriangles(float x, float z, float sx, float sz, int32_t & num);
 
     // Last move results
     bool isSlide;     // Slided
@@ -68,7 +68,7 @@ class PtcData
     bool isBearing;   // Fell on a bearing
 
     CVECTOR stepPos[PTCDATA_MAXSTEPS];
-    long numSteps;
+    int32_t numSteps;
 
     CVECTOR middle;
 
@@ -83,16 +83,16 @@ class PtcData
     void SFLB_PotectionLoad();
 
     // Calculate the height of a point on the plane of a triangle
-    float FindHeight(long trgID, float x, float z);
+    float FindHeight(int32_t trgID, float x, float z);
     // Find the direction of the path
-    bool FindPathDir(long step, long curNode, const CVECTOR &cur, long toNode, const CVECTOR &to, long &node,
+    bool FindPathDir(int32_t step, int32_t curNode, const CVECTOR &cur, int32_t toNode, const CVECTOR &to, int32_t &node,
                      CVECTOR &pos);
     // Find a point on an edge
     CVECTOR FindEdgePoint(const CVECTOR &vs, const CVECTOR &ve, const CVECTOR &cur, const CVECTOR &to);
     // Check the intersection of a triangle with a line segment
     float Trace(PtcTriangle &trg, const CVECTOR &s, const CVECTOR &d) const;
     // Add triangle to buffer
-    // void AddClTriangle(long i);
+    // void AddClTriangle(int32_t i);
 
     // private:
   public:
@@ -101,13 +101,13 @@ class PtcData
 
     // Geometry
     PtcTriangle *triangle; // Geometry triangles
-    long numTriangles;     // Number of geometry triangles
+    int32_t numTriangles;     // Number of geometry triangles
 
     PtcVertex *vertex; // Vertices of geometry
-    long numVerteces;  // Number of geometry vertices
+    int32_t numVerteces;  // Number of geometry vertices
 
     PtcNormal *normal; // Geometry triangle normals
-    long numNormals;   // Number of geometry normals
+    int32_t numNormals;   // Number of geometry normals
 
     PtcMaterials *materials; // Materials
 
@@ -115,20 +115,20 @@ class PtcData
     CVECTOR min, max; // What to fit into
 
     PtcMap *map;  // Quick search map
-    long l, w;    // Quick Search Map Size
+    int32_t l, w;    // Quick Search Map Size
     float ls, ws; // Size of one square
 
     uint16_t *indeces; // Indexes
-    long numIndeces;   // Number of indexes
+    int32_t numIndeces;   // Number of indexes
 
     // Pathfinding data
     uint8_t *table; // Direction table
-    long lineSize;  // Line size
+    int32_t lineSize;  // Line size
 
     // Triangles after collision
     Triangle *ctriangle;
-    long numClTriangles;
-    long maxClTriangles;
+    int32_t numClTriangles;
+    int32_t maxClTriangles;
 
     // Debug information
     DbgVertex *dbgTriangles;

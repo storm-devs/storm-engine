@@ -49,7 +49,7 @@ enum USER_CONTROL_TYPE
 struct USER_CONTROL
 {
     char *name;
-    long system_code;
+    int32_t system_code;
     uint32_t flags;
     CONTROL_STATE_TYPE state;
     uint32_t nframe;
@@ -69,7 +69,7 @@ struct CONTROL_STATE
 {
     CONTROL_STATE_TYPE state;
     float fValue;
-    long lValue;
+    int32_t lValue;
 };
 
 struct KeyDescr
@@ -87,75 +87,75 @@ class CONTROLS
 
     virtual void Update(uint32_t DeltaTime){};
 
-    virtual long GetSystemControlsNum()
+    virtual int32_t GetSystemControlsNum()
     {
         return 0;
     };
 
-    virtual bool GetSystemControlDesc(long code, SYSTEM_CONTROL_DESC &_control_desc_struct)
+    virtual bool GetSystemControlDesc(int32_t code, SYSTEM_CONTROL_DESC &_control_desc_struct)
     {
         return false;
     };
 
     virtual void ResetControlsMap(){};
 
-    virtual long CreateControl(const char *control_name)
+    virtual int32_t CreateControl(const char *control_name)
     {
         return 0;
     };
 
-    virtual long GetControlsNum()
+    virtual int32_t GetControlsNum()
     {
         return 0;
     };
 
-    virtual bool GetControlDesc(long code, USER_CONTROL &_user_desc_struct)
+    virtual bool GetControlDesc(int32_t code, USER_CONTROL &_user_desc_struct)
     {
         return false;
     };
 
-    virtual bool SetControlFlags(long code, uint32_t flags)
+    virtual bool SetControlFlags(int32_t code, uint32_t flags)
     {
         return true;
     }
 
-    virtual long GetDevicesNum()
+    virtual int32_t GetDevicesNum()
     {
         return 0;
     };
 
-    virtual bool GetDeviceDesc(long code, DEVICE_DESC &_device_desc)
+    virtual bool GetDeviceDesc(int32_t code, DEVICE_DESC &_device_desc)
     {
         return false;
     };
 
-    virtual long GetDeviceControlsNum(long device_code)
+    virtual int32_t GetDeviceControlsNum(int32_t device_code)
     {
         return 0;
     };
 
-    virtual char *GetDeviceControlName(long device_code, long code)
+    virtual char *GetDeviceControlName(int32_t device_code, int32_t code)
     {
         return nullptr;
     };
 
-    virtual long AddControlTreeNode(long nParent, const char *pcBaseControl, const char *pcOutControl, float fTimeOut)
+    virtual int32_t AddControlTreeNode(int32_t nParent, const char *pcBaseControl, const char *pcOutControl, float fTimeOut)
     {
         return -1;
     }
 
-    virtual void MapControl(long control_code, long system_control_code){};
+    virtual void MapControl(int32_t control_code, int32_t system_control_code){};
 
     virtual void AppState(bool state){};
 
     /*    virtual CONTROL_STATE_TYPE GetControlState(char * control_name, float * pvalue = 0){return CST_INACTIVE;};
-      virtual CONTROL_STATE_TYPE GetControlState(long control_code, float * pvalue = 0){return CST_INACTIVE;};
+      virtual CONTROL_STATE_TYPE GetControlState(int32_t control_code, float * pvalue = 0){return CST_INACTIVE;};
       virtual float GetControlValue(char * control_name, CONTROL_STATE_TYPE * pstate = 0){return 0;};
-      virtual float GetControlValue(long control_code, CONTROL_STATE_TYPE * pstate = 0){return 0;};
+      virtual float GetControlValue(int32_t control_code, CONTROL_STATE_TYPE * pstate = 0){return 0;};
     */
-    virtual void SetControlEffect(FFB_EFFECT effect, long time = 0){};
+    virtual void SetControlEffect(FFB_EFFECT effect, int32_t time = 0){};
 
-    virtual bool GetControlState(long control_code, CONTROL_STATE &_state_struct)
+    virtual bool GetControlState(int32_t control_code, CONTROL_STATE &_state_struct)
     {
         memset(&_state_struct, 0, sizeof(_state_struct));
         return false;
@@ -173,18 +173,18 @@ class CONTROLS
         return false;
     };
 
-    virtual bool SetControlState(long control_code, CONTROL_STATE &_state_struct)
+    virtual bool SetControlState(int32_t control_code, CONTROL_STATE &_state_struct)
     {
         memset(&_state_struct, 0, sizeof(_state_struct));
         return false;
     };
 
-    virtual long LastControlTime()
+    virtual int32_t LastControlTime()
     {
         return 0;
     };
 
-    virtual void SetControlTreshold(long control_code, float thval){};
+    virtual void SetControlTreshold(int32_t control_code, float thval){};
 
     virtual void LockControl(const char *control_name, bool mode){};
 
@@ -208,7 +208,7 @@ class CONTROLS
     }
 
     // Get the keystroke buffer per frame (taking into account the language)
-    virtual long GetKeyBufferLength()
+    virtual int32_t GetKeyBufferLength()
     {
         return 0;
     }

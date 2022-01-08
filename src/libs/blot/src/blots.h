@@ -29,15 +29,15 @@ class Blots : public Entity
         uint8_t lastAlpha; // Latest alpha value
         uint16_t numTrgs;  // Number of triangles
         float liveTime;    // Lifetime
-        long startIndex;   // Starting index in the array
-        long rnd;
+        int32_t startIndex;   // Starting index in the array
+        int32_t rnd;
         CVECTOR pos, dir;
     };
 
     struct Vertex
     {
         CVECTOR pos;
-        long c;
+        int32_t c;
         float u, v;
     };
 
@@ -81,29 +81,29 @@ class Blots : public Entity
     // Register a hit
     void Hit(MESSAGE &message);
     // Add a blot
-    void AddBlot(long i, long rnd, const CVECTOR &pos, const CVECTOR &dir, float time);
+    void AddBlot(int32_t i, int32_t rnd, const CVECTOR &pos, const CVECTOR &dir, float time);
     //
     void SetNodesCollision(NODE *n, bool isSet);
     // Save blot parameters
-    void SaveBlot(long i);
+    void SaveBlot(int32_t i);
     // Load blot parameters
-    void LoadBlot(long i);
+    void LoadBlot(int32_t i);
 
   private:
     VDX9RENDER *rs;
     entid_t model;
-    long textureID;
+    int32_t textureID;
     ATTRIBUTES *blotsInfo;
     ATTRIBUTES *pCharAttributeRoot;
 
     Blot blot[BLOTS_MAX];
     Vertex vrt[3 * BLOTS_NTRGS * BLOTS_MAX];
-    long useVrt;
+    int32_t useVrt;
 
-    long updateBlot;
+    int32_t updateBlot;
 
-    static bool AddPolygon(const CVECTOR *v, long nv);
+    static bool AddPolygon(const CVECTOR *v, int32_t nv);
     static CVECTOR clipTriangles[3 * BLOTS_NTRGS];
-    static long numClipTriangles;
+    static int32_t numClipTriangles;
     static CVECTOR dir, normal;
 };

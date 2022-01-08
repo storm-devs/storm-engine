@@ -23,7 +23,7 @@
 // ============================================================================================
 
 CVECTOR WdmIslands::centPos;
-long WdmIslands::numEdges;
+int32_t WdmIslands::numEdges;
 CVECTOR WdmIslands::curPos;
 bool WdmIslands::checkMode;
 CMatrix WdmIslands::curMatrix;
@@ -50,7 +50,7 @@ WdmIslands::WdmIslands()
     // Finding the size of the world and iterating over the locators
     CVECTOR vmin, vmax, center = 0.0f, vmn, vmx;
     auto isMin = false, isMax = false;
-    for (long i = 0; i < ginfo.nlabels; i++)
+    for (int32_t i = 0; i < ginfo.nlabels; i++)
     {
         baseModel->geo->GetLabel(i, label);
         if (!label.group_name || !label.group_name[0])
@@ -95,7 +95,7 @@ WdmIslands::WdmIslands()
     }
     // Reading the islands
     std::string name;
-    for (long i = 0; i < ginfo.nlabels; i++)
+    for (int32_t i = 0; i < ginfo.nlabels; i++)
     {
         // receive information
         baseModel->geo->GetLabel(i, label);
@@ -106,7 +106,7 @@ WdmIslands::WdmIslands()
         if (_stricmp(label.group_name, "islands") != 0)
             continue;
         // Skip if added
-        long j;
+        int32_t j;
         for (j = 0; j < islands.size(); j++)
         {
             if (islands[j].modelName == label.name)
@@ -180,7 +180,7 @@ WdmIslands::~WdmIslands()
         patch = nullptr;
     }
     wdmObjects->islands = nullptr;
-    for (long i = 0; i < islands.size(); i++)
+    for (int32_t i = 0; i < islands.size(); i++)
     {
         wdmObjects->wm->DeleteObject(islands[i].model);
         islands[i].model = nullptr;
@@ -208,7 +208,7 @@ bool WdmIslands::CollisionTest(CMatrix &objMtx, float length, float width, bool 
     centPos = 0.0f;
     checkMode = !heighTest;
     // walk through all the islands
-    for (long i = 0; i < islands.size(); i++)
+    for (int32_t i = 0; i < islands.size(); i++)
     {
         // The island we work with
         Islands &island = islands[i];
@@ -276,7 +276,7 @@ bool WdmIslands::CollisionTest(CMatrix &objMtx, float length, float width, bool 
     return false;
 }
 
-bool WdmIslands::AddEdges(const GEOS::VERTEX *vrt, long numVrt)
+bool WdmIslands::AddEdges(const GEOS::VERTEX *vrt, int32_t numVrt)
 {
     // Skip broken Data
     if (numVrt < 3)
@@ -296,7 +296,7 @@ bool WdmIslands::AddEdges(const GEOS::VERTEX *vrt, long numVrt)
         return true;
     // Adding edges
     numEdges += numVrt;
-    for (long i = 0; i < numVrt; i++)
+    for (int32_t i = 0; i < numVrt; i++)
     {
         centPos += curMatrix * CVECTOR(vrt[i].x, 0.0f, vrt[i].z);
     }
@@ -311,7 +311,7 @@ bool WdmIslands::ObstacleTest(float x, float z, float radius)
         return false;
     const CVECTOR wPos(x, 0.0f, z);
     // walk through all the islands
-    for (long i = 0; i < islands.size(); i++)
+    for (int32_t i = 0; i < islands.size(); i++)
     {
         // The island we work with
         Islands &island = islands[i];
@@ -373,7 +373,7 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         char *id = a->GetAttribute("id");
         char *locator = a->GetAttribute("locator");
         char *text = a->GetAttribute("text");
-        const long icon = static_cast<long>(a->GetAttributeAsDword("icon", static_cast<uint32_t>(-1)));
+        const int32_t icon = static_cast<int32_t>(a->GetAttributeAsDword("icon", static_cast<uint32_t>(-1)));
         char *font = a->GetAttribute("font");
         const float pivotX = -0.5f;
         const float pivotY = -0.5f;
@@ -387,7 +387,7 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         }
         // looking for a label among existing
         const uint32_t hash = TOREMOVE::HashNoCase(id);
-        long index = LabelsFind(id, hash);
+        int32_t index = LabelsFind(id, hash);
         if (index < 0)
         {
             if (!LabelsFindLocator(locator, pos))
@@ -397,7 +397,7 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
                 continue;
             }
             // Adding a new label
-            const long iEntry = hash & (sizeof(labelsEntry) / sizeof(labelsEntry[0]) - 1);
+            const int32_t iEntry = hash & (sizeof(labelsEntry) / sizeof(labelsEntry[0]) - 1);
             // index = labels.Add();
             labels.push_back(Label{});
             index = labels.size() - 1;
@@ -423,7 +423,7 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         // Font
         labels[index].font = LabelsAddFont(font);
         // Picture
-        labels[index].icon = icon < static_cast<long>(icons.num) ? icon : icons.num - 1;
+        labels[index].icon = icon < static_cast<int32_t>(icons.num) ? icon : icons.num - 1;
         // Position
         labels[index].pos = pos;
         // Blanking height
@@ -508,11 +508,11 @@ void WdmIslands::LabelsReadIconParams(ATTRIBUTES *apnt)
     }
 }
 
-long WdmIslands::LabelsFind(const char *id, uint32_t hash)
+int32_t WdmIslands::LabelsFind(const char *id, uint32_t hash)
 {
     if (!id)
         id = "";
-    long i = hash & (sizeof(labelsEntry) / sizeof(labelsEntry[0]) - 1);
+    int32_t i = hash & (sizeof(labelsEntry) / sizeof(labelsEntry[0]) - 1);
     for (i = labelsEntry[i]; i >= 0; i = labels[i].next)
     {
         if (labels[i].idHash == hash)
@@ -532,7 +532,7 @@ bool WdmIslands::LabelsFindLocator(const char *name, CVECTOR &pos) const
     GEOS::INFO ginfo;
     GEOS::LABEL label;
     baseModel->geo->GetInfo(ginfo);
-    for (long i = 0; i < ginfo.nlabels; i++)
+    for (int32_t i = 0; i < ginfo.nlabels; i++)
     {
         baseModel->geo->GetLabel(i, label);
         if (!label.group_name || !label.group_name[0])
@@ -549,11 +549,11 @@ bool WdmIslands::LabelsFindLocator(const char *name, CVECTOR &pos) const
     return false;
 }
 
-long WdmIslands::LabelsAddFont(const char *name)
+int32_t WdmIslands::LabelsAddFont(const char *name)
 {
     if (!name)
         name = "";
-    for (long i = 0; i < fonts.size(); i++)
+    for (int32_t i = 0; i < fonts.size(); i++)
     {
         if (_stricmp(fonts[i].name.c_str(), name) == 0)
         {
@@ -574,12 +574,12 @@ void WdmIslands::LabelsRelease()
 {
     // Remove all labels
     labels.clear();
-    for (long i = 0; i < sizeof(labelsEntry) / sizeof(labelsEntry[0]); i++)
+    for (int32_t i = 0; i < sizeof(labelsEntry) / sizeof(labelsEntry[0]); i++)
     {
         labelsEntry[i] = -1;
     }
     // Remove all fonts
-    for (long i = 0; i < fonts.size(); i++)
+    for (int32_t i = 0; i < fonts.size(); i++)
     {
         if (fonts[i].id != FONT_DEFAULT)
         {
@@ -602,7 +602,7 @@ void WdmIslands::Update(float dltTime)
         CVECTOR pos;
         wdmObjects->playerShip->GetPosition(pos.x, pos.z, pos.y);
         pos.y = 0.0f;
-        for (long i = 0; i < islands.size(); i++)
+        for (int32_t i = 0; i < islands.size(); i++)
         {
             if (IsShipInArea(i, pos))
             {
@@ -644,13 +644,13 @@ void WdmIslands::LRender(VDX9RENDER *rs)
     }
     // Update the state of the pictures
     icons.frame += core.GetDeltaTime() * 0.001f * icons.fps;
-    icons.frame = (icons.frame / icons.frames - static_cast<long>(icons.frame / icons.frames)) * icons.frames;
+    icons.frame = (icons.frame / icons.frames - static_cast<int32_t>(icons.frame / icons.frames)) * icons.frames;
     if (icons.frame < 0.0f)
     {
         icons.frame += icons.frames;
     }
-    icons.f[0] = static_cast<float>(static_cast<long>(icons.frame));
-    icons.blend = static_cast<long>((icons.frame - icons.f[0]) * 255.0f);
+    icons.f[0] = static_cast<float>(static_cast<int32_t>(icons.frame));
+    icons.blend = static_cast<int32_t>((icons.frame - icons.f[0]) * 255.0f);
     if (icons.blend < 0)
         icons.blend = 0;
     if (icons.blend > 255)
@@ -683,7 +683,7 @@ void WdmIslands::LRender(VDX9RENDER *rs)
     // Projecting to the screen
     labelSort.clear();
     MTX_PRJ_VECTOR prjVertex;
-    for (long i = 0; i < labels.size(); i++)
+    for (int32_t i = 0; i < labels.size(); i++)
     {
         // Label
         Label &label = labels[i];
@@ -721,13 +721,13 @@ void WdmIslands::LRender(VDX9RENDER *rs)
     // place the labels so that they do not overlap in order
     // !!!
     // Draw icons and write text
-    for (long i = 0; i < labelSort.size(); i++)
+    for (int32_t i = 0; i < labelSort.size(); i++)
     {
         // Label
         Label &label = labels[labelSort[i]];
         // writing a text
-        const uint32_t color = (static_cast<long>(label.alpha) << 24) | 0xffffff;
-        rs->Print(label.font, color, static_cast<long>(label.l + label.textX), static_cast<long>(label.t + label.textY),
+        const uint32_t color = (static_cast<int32_t>(label.alpha) << 24) | 0xffffff;
+        rs->Print(label.font, color, static_cast<int32_t>(label.l + label.textX), static_cast<int32_t>(label.t + label.textY),
                   (char *)label.text.c_str());
         // Draw a picture
         if (label.icon < 0)
@@ -800,9 +800,9 @@ void WdmIslands::FindDirection(const CVECTOR &position, const CVECTOR &destinati
     }
     // trying to determine the node on which we are standing and the node to which we need to sail
     float y = 0.0f;
-    const long from = patch->FindNode(position, y);
+    const int32_t from = patch->FindNode(position, y);
     y = 0.0f;
-    long to = patch->FindNode(destination, y);
+    int32_t to = patch->FindNode(destination, y);
     if (from < 0 || to < 0)
     {
         direction = Norm2D(destination - position);
@@ -823,7 +823,7 @@ void WdmIslands::FindReaction(const CVECTOR &position, CVECTOR &reaction) const
     if (patch)
     {
         float y = 0.0f;
-        const long n = patch->FindNode(position, y);
+        const int32_t n = patch->FindNode(position, y);
         if (n >= 0)
         {
             patch->FindForce(n, position, 20.0f, reaction);
@@ -859,7 +859,7 @@ bool WdmIslands::GetQuestLocator(const char *locName, CVECTOR &p)
         p = 0.0f;
         return false;
     }
-    for (long i = 0; i < quests.size(); i++)
+    for (int32_t i = 0; i < quests.size(); i++)
     {
         if (storm::iEquals(quests[i].name, std::string_view(locName)))
         {
@@ -874,7 +874,7 @@ bool WdmIslands::GetQuestLocator(const char *locName, CVECTOR &p)
 // Check if the ship is in the island zone
 bool WdmIslands::CheckIslandArea(const char *islandName, float x, float z)
 {
-    for (long i = 0; i < islands.size(); i++)
+    for (int32_t i = 0; i < islands.size(); i++)
     {
         if (!islands[i].area)
             continue;
@@ -890,7 +890,7 @@ bool WdmIslands::CheckIslandArea(const char *islandName, float x, float z)
 void WdmIslands::GetNearPointToArea(const char *islandName, float &x, float &z)
 {
     // Looking for an area
-    long i;
+    int32_t i;
     for (i = 0; i < islands.size(); i++)
     {
         if (!islands[i].area)
@@ -924,10 +924,10 @@ void WdmIslands::GetNearPointToArea(const char *islandName, float &x, float &z)
     }
 }
 
-bool WdmIslands::FindNearPoint(const GEOS::VERTEX *vrt, long numVrt)
+bool WdmIslands::FindNearPoint(const GEOS::VERTEX *vrt, int32_t numVrt)
 {
     // Skip broken Data
-    for (long i = 0; i < numVrt; i++)
+    for (int32_t i = 0; i < numVrt; i++)
     {
         const float dx = vrt[i].x - curPos.x;
         const float dz = vrt[i].z - curPos.z;
@@ -943,7 +943,7 @@ bool WdmIslands::FindNearPoint(const GEOS::VERTEX *vrt, long numVrt)
     return true;
 }
 
-bool WdmIslands::IsShipInArea(long islIndex, const CVECTOR &pos)
+bool WdmIslands::IsShipInArea(int32_t islIndex, const CVECTOR &pos)
 {
     static const float testRadius = 0.01f;
     // No area, no intersection
@@ -1026,6 +1026,6 @@ void WdmIslandWaves::Render(VDX9RENDER *rs, float k)
     const float a = sinf(k * PI) * (1.0f - k * 0.5f) * 1.25f;
     // Draw the model
     SetTech("WdmIslandWaves", nullptr);
-    rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(a * a * a * a * 255.0f) << 24) | 0xffffff);
+    rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<int32_t>(a * a * a * a * 255.0f) << 24) | 0xffffff);
     WdmRenderModel::LRender(rs);
 }

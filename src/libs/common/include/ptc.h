@@ -12,6 +12,8 @@
 
 #pragma pack(push, 1)
 
+#include <cstdint>
+
 // ============================================================================================
 //
 // Ptc file structure:
@@ -38,18 +40,18 @@
 // File header
 struct PtcHeader
 {
-    long id;                // File ID
-    long space0;            // Unused
-    long ver;               // File version
-    long space1;            // Unused
-    long isSea;             // Writes whether the patch is for a marine location or not
-    long space2;            // Unused
-    long numTriangles;      // Number of triangles
-    long numVerteces;       // Number of indexed vertices
-    long numNormals;        // Number of normals
-    long mapL, mapW;        // Collision map dimensions
-    long numIndeces;        // Index table size
-    long lineSize;          // The size of the row in the path lookup table
+    int32_t id;                // File ID
+    int32_t space0;            // Unused
+    int32_t ver;               // File version
+    int32_t space1;            // Unused
+    int32_t isSea;             // Writes whether the patch is for a marine location or not
+    int32_t space2;            // Unused
+    int32_t numTriangles;      // Number of triangles
+    int32_t numVerteces;       // Number of indexed vertices
+    int32_t numNormals;        // Number of normals
+    int32_t mapL, mapW;        // Collision map dimensions
+    int32_t numIndeces;        // Index table size
+    int32_t lineSize;          // The size of the row in the path lookup table
     float minX, minY, minZ; // Minimum box border
     float maxX, maxY, maxZ; // Maximum box border
 };
@@ -79,13 +81,13 @@ struct PtcNormal
 
 struct PtcMap
 {
-    long start; // The beginning of the table of polygons included in the map cell
-    long size;  // Size of the table of polygons included in the map cell
+    int32_t start; // The beginning of the table of polygons included in the map cell
+    int32_t size;  // Size of the table of polygons included in the map cell
 };
 
 struct PtcMaterials
 {
-    long numMaterials;     // Number of materials
+    int32_t numMaterials;     // Number of materials
     char material[16][16]; // Material table
 };
 
