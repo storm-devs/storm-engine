@@ -13,6 +13,7 @@ SDLWindow::SDLWindow(int width, int height, bool fullscreen) : fullscreen_(fulls
         [](SDL_Window *w) { SDL_DestroyWindow(w); });
 
     sdlID_ = SDL_GetWindowID(window_.get());
+    SDL_SetWindowBordered(window_.get(), SDL_FALSE);
     SDL_AddEventWatch(&SDLEventHandler, this);
 }
 
