@@ -199,13 +199,13 @@ bool SEAFOAM_PS::Init(INIFILE *ini, const char *psname)
     memcpy(TechniqueName, string, len);
 
     // configure particles
-    ParticlesNum = ini->GetLong(psname, PSKEY_PNUM, 32);
+    ParticlesNum = ini->GetInt(psname, PSKEY_PNUM, 32);
     EmissionTime = ini->GetFloat(psname, PSKEY_EMISSIONTIME, 0);
     DeltaTimeSLE = static_cast<int32_t>(EmissionTime);
     EmissionTimeRand = ini->GetFloat(psname, PSKEY_EMISSIONTIMERAND, 0);
     CurrentEmissionTimeRand = static_cast<float>(EmissionTimeRand) * rand() / RAND_MAX;
     fSurfaceOffset = ini->GetFloat(psname, PSKEY_SURFACEOFFSET, 0);
-    ParticleColor = ini->GetLong(psname, "color", 0xffffffff);
+    ParticleColor = ini->GetInt(psname, "color", 0xffffffff);
 
     fWindEffect = ini->GetFloat(psname, PSKEY_WINDEFFECT, 0.0f);
 
@@ -213,13 +213,13 @@ bool SEAFOAM_PS::Init(INIFILE *ini, const char *psname)
     Gravity = ini->GetFloat(psname, PSKEY_GRAVITY, 0.0f);
     Inispeed = ini->GetFloat(psname, PSKEY_INISPEED, 0.0f);
     SpeedDeviation = ini->GetFloat(psname, PSKEY_SDEVIATION, 0.0f);
-    Lifetime = ini->GetLong(psname, PSKEY_LIFETIME, 1000);
+    Lifetime = ini->GetInt(psname, PSKEY_LIFETIME, 1000);
     Spin = ini->GetFloat(psname, PSKEY_SPIN, 0.0f);
     SpinDeviation = ini->GetFloat(psname, PSKEY_SPINDEV, 0.0f);
-    EmitterIniTime = ini->GetLong(psname, PSKEY_EMITTERINITIME, 0);
+    EmitterIniTime = ini->GetInt(psname, PSKEY_EMITTERINITIME, 0);
     Weight = ini->GetFloat(psname, PSKEY_WEIGHT, 0.0f);
     WeightDeviation = ini->GetFloat(psname, PSKEY_WEIGHTDEVIATION, 0.0f);
-    Emitdelta = ini->GetLong(psname, PSKEY_EMITDELTA, 0);
+    Emitdelta = ini->GetInt(psname, PSKEY_EMITDELTA, 0);
     ESpace = ini->GetFloat(psname, PSKEY_EMITRADIUS, 0);
     fTrackPointRadius = ini->GetFloat(psname, PSKEY_TRACKPOINTRADIUS, 1.0f);
 

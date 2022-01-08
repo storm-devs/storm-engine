@@ -90,7 +90,7 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
     m_fAspectRatioH = 1.f;
     // m_fAspectRatioV = _render->GetHeightDeformator();
     m_fAspectRatioV = 1.f; // ugeen - for TEHO so that fonts are not crushed
-    if (ini->GetLong(font_name, "AspectHeightConstant", 0) == 1)
+    if (ini->GetInt(font_name, "AspectHeightConstant", 0) == 1)
     {
         m_fAspectRatioH = 1.f / m_fAspectRatioV;
         m_fAspectRatioV = 1.f;
@@ -104,7 +104,7 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
         m_fAspectRatioV *= _fscale;
     }
 
-    Height = ini->GetLong(font_name, "Height", 0);
+    Height = ini->GetInt(font_name, "Height", 0);
     Height = static_cast<int32_t>(Height * m_fAspectRatioV);
 
     if (ini->ReadString(font_name, "Texture", buffer, sizeof(buffer) - 1, ""))
@@ -121,17 +121,17 @@ bool FONT::Init(const char *font_name, const char *iniName, IDirect3DDevice9 *_d
             throw std::runtime_error("allocate memory error");
         strcpy_s(techniqueName, len, buffer);
     }
-    Texture_XSize = ini->GetLong(font_name, "Texture_xsize", 1);
-    Texture_YSize = ini->GetLong(font_name, "Texture_ysize", 1);
-    Symbol_interval = ini->GetLong(font_name, "Symbol_interval", 0);
+    Texture_XSize = ini->GetInt(font_name, "Texture_xsize", 1);
+    Texture_YSize = ini->GetInt(font_name, "Texture_ysize", 1);
+    Symbol_interval = ini->GetInt(font_name, "Symbol_interval", 0);
 
     bShadow = bOldShadow = false;
     if (ini->TestKey(font_name, "Shadow", nullptr))
         bShadow = bOldShadow = true;
 
-    Shadow_offsetx = ini->GetLong(font_name, "Shadow_offsetx", 2);
-    Shadow_offsety = ini->GetLong(font_name, "Shadow_offsety", 2);
-    Spacebar = static_cast<int32_t>(ini->GetLong(font_name, "Spacebar", 8) * m_fAspectRatioH);
+    Shadow_offsetx = ini->GetInt(font_name, "Shadow_offsetx", 2);
+    Shadow_offsety = ini->GetInt(font_name, "Shadow_offsety", 2);
+    Spacebar = static_cast<int32_t>(ini->GetInt(font_name, "Spacebar", 8) * m_fAspectRatioH);
 
     ini->CaseSensitive(true);
     for (codepoint = 30; codepoint < USED_CODES; codepoint++)

@@ -22,7 +22,7 @@ void ISPYGLASS::ImageParam::LoadFromAttr(BIImageRender *pImgRender, ATTRIBUTES *
                                          int32_t nPrior)
 {
     sTextureName = BIUtils::GetStringFromAttr(pA, "texture", pcDefName);
-    dwColor = BIUtils::GetLongFromAttr(pA, "color", 0xFF808080);
+    dwColor = BIUtils::GetIntFromAttr(pA, "color", 0xFF808080);
     FULLRECT(rUV);
     BIUtils::ReadRectFromAttr(pA, "uv", rUV, rUV);
     rPos.left = nDefLeftPos;
@@ -59,7 +59,7 @@ void ISPYGLASS::TextParam::LoadFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const ch
     nFontID = BIUtils::GetFontIDFromAttr(pA, "font", rs, "interface_normal");
     BIUtils::ReadPosFromAttr(pA, "pos", pos.x, pos.y, nDefXPos, nDefYPos);
     fScale = BIUtils::GetFloatFromAttr(pA, "scale", 1.f);
-    dwColor = BIUtils::GetLongFromAttr(pA, "color", 0xFFFFFFFF);
+    dwColor = BIUtils::GetIntFromAttr(pA, "color", 0xFFFFFFFF);
     nAlign = BIUtils::GetAlignmentFromAttr(pA, "align", PR_ALIGN_LEFT);
     sText = BIUtils::GetStringFromAttr(pA, "text", pcDefText);
 }

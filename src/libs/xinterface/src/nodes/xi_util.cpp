@@ -246,10 +246,10 @@ int32_t CXI_UTILS::StringGetTokenCode(const char *pcTokenID)
 
 uint32_t CXI_UTILS::StringGetColor(const char *pcARGBString)
 {
-    const auto nA = StringGetLong(pcARGBString);
-    const auto nR = StringGetLong(pcARGBString);
-    const auto nG = StringGetLong(pcARGBString);
-    const auto nB = StringGetLong(pcARGBString);
+    const auto nA = StringGetInt(pcARGBString);
+    const auto nR = StringGetInt(pcARGBString);
+    const auto nG = StringGetInt(pcARGBString);
+    const auto nB = StringGetInt(pcARGBString);
     return ARGB(nA, nR, nG, nB);
 }
 
@@ -270,11 +270,11 @@ void CXI_UTILS::StringDoublicate(const char *pcSrc, char *&pcDst)
 
 void CXI_UTILS::StringTwoLong(const char *pcString, int32_t &nLong1, int32_t &nLong2)
 {
-    nLong1 = StringGetLong(pcString);
-    nLong2 = StringGetLong(pcString);
+    nLong1 = StringGetInt(pcString);
+    nLong2 = StringGetInt(pcString);
 }
 
-int32_t CXI_UTILS::StringGetLong(const char *&pcString)
+int32_t CXI_UTILS::StringGetInt(const char *&pcString)
 {
     if (!pcString)
         return 0;

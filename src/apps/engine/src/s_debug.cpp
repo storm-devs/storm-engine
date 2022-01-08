@@ -129,7 +129,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
             auto ini = fio->OpenIniFile(PROJECT_NAME);
             if (!ini)
                 break;
-            if (ini->GetLong("options", "break_on_error", 0) == 1)
+            if (ini->GetInt("options", "break_on_error", 0) == 1)
             {
                 CheckMenuItem(static_cast<HMENU>(GetMenu(hwnd)), LOWORD(wParam), MF_UNCHECKED);
                 ini->WriteLong("options", "break_on_error", 0);
@@ -223,7 +223,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         auto ini = fio->OpenIniFile(PROJECT_NAME);
         if (ini)
         {
-            if (ini->GetLong("options", "break_on_error", 0) == 1)
+            if (ini->GetInt("options", "break_on_error", 0) == 1)
             {
                 CheckMenuItem(static_cast<HMENU>(GetMenu(hwnd)), ID_OPTIONS_BREAKONERROR, MF_CHECKED);
                 core_internal.Compiler->bBreakOnError = true;

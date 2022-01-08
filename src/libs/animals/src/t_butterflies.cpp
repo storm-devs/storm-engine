@@ -26,7 +26,7 @@ void TButterflies::LoadSettings()
     if (!ini)
         return;
 
-    butterfliesCount = ini->GetLong(ANIMALS_BUTTERFLIES_SECTION, "count", BUTTERFLY_COUNT);
+    butterfliesCount = ini->GetInt(ANIMALS_BUTTERFLIES_SECTION, "count", BUTTERFLY_COUNT);
     maxDistance = ini->GetFloat(ANIMALS_BUTTERFLIES_SECTION, "distance", BUTTERFLY_DISTANCE);
 
     // DEBUG!

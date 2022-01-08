@@ -1235,11 +1235,11 @@ void Window::LoadPreset(int32_t prs)
         switch (list[i].type)
         {
         case ListElement::t_smooth:
-            smoothNorm = ini->GetLong(sect, "smoothUseNormals", static_cast<int32_t>(smoothNorm)) != 0;
+            smoothNorm = ini->GetInt(sect, "smoothUseNormals", static_cast<int32_t>(smoothNorm)) != 0;
             smoothRad = static_cast<float>(ini->GetDouble(sect, "smoothRadius", smoothRad));
             break;
         case ListElement::t_blur:
-            isTraceBlur = ini->GetLong(sect, "blurTrace", static_cast<int32_t>(isTraceBlur)) != 0;
+            isTraceBlur = ini->GetInt(sect, "blurTrace", static_cast<int32_t>(isTraceBlur)) != 0;
             blurRad = static_cast<float>(ini->GetDouble(sect, "blurRadius", blurRad));
             blurAtt = static_cast<float>(ini->GetDouble(sect, "blurAtt", blurAtt));
             blurCos = static_cast<float>(ini->GetDouble(sect, "blurCos", blurCos));
@@ -1267,7 +1267,7 @@ void Window::LoadPreset(int32_t prs)
             *list[i].gamma =
                 static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_gamma"), *list[i].gamma));
             *list[i].isOn =
-                ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<int32_t>(*list[i].isOn)) != 0;
+                ini->GetInt(sect, GenerateName(list[i].name, "_isOn"), static_cast<int32_t>(*list[i].isOn)) != 0;
             break;
         case ListElement::t_glight:
             list[i].st = static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_intens"), list[i].st));
@@ -1293,7 +1293,7 @@ void Window::LoadPreset(int32_t prs)
             *list[i].range =
                 static_cast<float>(ini->GetDouble(sect, GenerateName(list[i].name, "_range"), *list[i].range));
             *list[i].isOn =
-                ini->GetLong(sect, GenerateName(list[i].name, "_isOn"), static_cast<int32_t>(*list[i].isOn)) != 0;
+                ini->GetInt(sect, GenerateName(list[i].name, "_isOn"), static_cast<int32_t>(*list[i].isOn)) != 0;
             break;
         }
     }

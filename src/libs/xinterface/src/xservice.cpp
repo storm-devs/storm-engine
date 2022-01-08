@@ -272,8 +272,8 @@ void XSERVICE::LoadAllPicturesInfo()
             strcpy_s(m_pList[i].sTextureName, sizeof param, param);
 
             // get texture width & height
-            m_pList[i].textureWidth = ini->GetLong(section, "wTextureWidth", 1024);
-            m_pList[i].textureHeight = ini->GetLong(section, "wTextureHeight", 1024);
+            m_pList[i].textureWidth = ini->GetInt(section, "wTextureWidth", 1024);
+            m_pList[i].textureHeight = ini->GetInt(section, "wTextureHeight", 1024);
 
             m_pList[i].pictureStart = m_dwImageQuantity;
             // get pictures quantity

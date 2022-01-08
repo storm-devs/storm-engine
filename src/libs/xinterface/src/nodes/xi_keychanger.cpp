@@ -40,7 +40,7 @@ void CXI_KEYCHANGER::Draw(bool bSelected, uint32_t Delta_Time)
                     auto bAllowChange = false;
                     auto *pdat = core.Event("evntKeyChoose", "ll", i, cs.fValue > 0);
                     if (pdat != nullptr)
-                        bAllowChange = pdat->GetLong() != 0;
+                        bAllowChange = pdat->GetInt() != 0;
                     if (bAllowChange)
                     {
                         m_bUse = false;

@@ -664,7 +664,7 @@ void VANT::LoadIni()
     // rope thickness
     ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
     // number of ropes
-    ROPE_QUANT = static_cast<int>(ini->GetLong(section, "fRopeQuant", 5));
+    ROPE_QUANT = static_cast<int>(ini->GetInt(section, "fRopeQuant", 5));
     if (ROPE_QUANT < 2)
         ROPE_QUANT = 2;
     // xBeg horizontal rope texture coordinates
@@ -745,7 +745,7 @@ void VANTL::LoadIni()
     // rope thickness
     ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
     // number of ropes
-    ROPE_QUANT = (int)ini->GetLong(section, "fRopeQuant", 5);
+    ROPE_QUANT = (int)ini->GetInt(section, "fRopeQuant", 5);
     if (ROPE_QUANT < 2)
         ROPE_QUANT = 2;
     // xBeg horizontal rope texture coordinates
@@ -826,7 +826,7 @@ void VANTZ::LoadIni()
     // rope thickness
     ROPE_WIDTH = ini->GetFloat(section, "fWidth", 0.1f);
     // number of ropes
-    ROPE_QUANT = (int)ini->GetLong(section, "fRopeQuant", 5);
+    ROPE_QUANT = (int)ini->GetInt(section, "fRopeQuant", 5);
     if (ROPE_QUANT < 2)
         ROPE_QUANT = 2;
     // xBeg horizontal rope texture coordinates

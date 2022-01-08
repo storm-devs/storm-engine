@@ -94,7 +94,7 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
                 sprintf_s(pcToolTipType, sizeof(pcToolTipType), "%s", tokenString);
                 break;
             case InterfaceToken_width:
-                m_nMaxStrWidth = CXI_UTILS::StringGetLong(pStr);
+                m_nMaxStrWidth = CXI_UTILS::StringGetInt(pStr);
             }
         }
     }
@@ -121,14 +121,14 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
         m_fFontScale = pDefIni->GetFloat(pcToolTipType, "font_scale", m_fFontScale);
         m_dwFontColor = CINODE::GetIniARGB(pDefIni, pcToolTipType, nullptr, nullptr, "font_color", m_dwFontColor);
         if (m_nMaxStrWidth <= 0)
-            m_nMaxStrWidth = pDefIni->GetLong(pcToolTipType, "str_width", m_pntScreenSize.x);
+            m_nMaxStrWidth = pDefIni->GetInt(pcToolTipType, "str_width", m_pntScreenSize.x);
         m_pntTextOffset =
             CINODE::GetIniLongPoint(pDefIni, pcToolTipType, nullptr, nullptr, "str_offset", m_pntTextOffset);
 
         // read back info
         m_dwBackColor = CINODE::GetIniARGB(pDefIni, pcToolTipType, nullptr, nullptr, "back_color", m_dwBackColor);
-        m_nLeftSideWidth = pDefIni->GetLong(pcToolTipType, "back_leftwidth", m_nLeftSideWidth);
-        m_nRightSideWidth = pDefIni->GetLong(pcToolTipType, "back_rightwidth", m_nRightSideWidth);
+        m_nLeftSideWidth = pDefIni->GetInt(pcToolTipType, "back_leftwidth", m_nLeftSideWidth);
+        m_nRightSideWidth = pDefIni->GetInt(pcToolTipType, "back_rightwidth", m_nRightSideWidth);
         if (pDefIni->ReadString(pcToolTipType, "back_imagegroup", param, sizeof(param), ""))
         {
             m_sGroupName = param;
@@ -150,9 +150,9 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
             }
         }
         m_fTurnOnDelay = pDefIni->GetFloat(pcToolTipType, "turnondelay", m_fTurnOnDelay);
-        m_nXRectangleOffset = pDefIni->GetLong(pcToolTipType, "horzcursoroffset", 0);
-        m_nYRectangleOffsetUp = pDefIni->GetLong(pcToolTipType, "vertupcursoroffset", 0);
-        m_nYRectangleOffsetDown = pDefIni->GetLong(pcToolTipType, "vertdowncursoroffset", 0);
+        m_nXRectangleOffset = pDefIni->GetInt(pcToolTipType, "horzcursoroffset", 0);
+        m_nYRectangleOffsetUp = pDefIni->GetInt(pcToolTipType, "vertupcursoroffset", 0);
+        m_nYRectangleOffsetDown = pDefIni->GetInt(pcToolTipType, "vertdowncursoroffset", 0);
     }
     if (m_nMaxStrWidth <= 0)
         m_nMaxStrWidth = m_pntScreenSize.x;

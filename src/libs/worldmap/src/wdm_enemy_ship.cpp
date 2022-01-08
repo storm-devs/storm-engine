@@ -119,7 +119,7 @@ void WdmEnemyShip::Update(float dltTime)
                     pVDat = core.Event("WorldMap_EncounterDelete", "s", delEnc);
                 }
                 deleteAlpha = 0;
-                if (!pVDat || pVDat->GetLong() != 0)
+                if (!pVDat || pVDat->GetInt() != 0)
                 {
                     killMe = true;
                 }

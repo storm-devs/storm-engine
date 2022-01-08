@@ -92,7 +92,7 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                     {
                         auto *pVData = core.Event(SHIP_EAT_SWIM_GOOD, "llsl", iCharacterIndex, pI->iCharIndex,
                                                   pI->sGoodName, pI->iQuantity);
-                        if (pVData->GetLong() || bDeleteGoodAnyway)
+                        if (pVData->GetInt() || bDeleteGoodAnyway)
                         {
                             // aGoods[i]->aItems.ExtractNoShift(j);
                             aGoods[i]->aItems[j] = aGoods[i]->aItems.back();

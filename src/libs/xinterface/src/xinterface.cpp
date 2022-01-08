@@ -1085,23 +1085,23 @@ void XINTERFACE::LoadIni()
     sprintf_s(section, "COMMON");
 
     // set screen parameters
-    if (ini->GetLong(platform, "bDynamicScaling", 0) == 0)
+    if (ini->GetInt(platform, "bDynamicScaling", 0) == 0)
     {
         const auto &canvas_size = core.GetScreenSize();
         fScale = ini->GetFloat(platform, "fScale", 1.f);
         if (fScale < MIN_SCALE || fScale > MAX_SCALE)
             fScale = 1.f;
-        dwScreenWidth = ini->GetLong(platform, "wScreenWidth", canvas_size.width);
-        dwScreenHeight = ini->GetLong(platform, "wScreenHeight", canvas_size.height);
-        GlobalScreenRect.left = ini->GetLong(platform, "wScreenLeft", 0);
-        GlobalScreenRect.top = ini->GetLong(platform, "wScreenTop", canvas_size.height);
-        GlobalScreenRect.right = ini->GetLong(platform, "wScreenRight", canvas_size.width);
-        GlobalScreenRect.bottom = ini->GetLong(platform, "wScreenDown", 0);
+        dwScreenWidth = ini->GetInt(platform, "wScreenWidth", canvas_size.width);
+        dwScreenHeight = ini->GetInt(platform, "wScreenHeight", canvas_size.height);
+        GlobalScreenRect.left = ini->GetInt(platform, "wScreenLeft", 0);
+        GlobalScreenRect.top = ini->GetInt(platform, "wScreenTop", canvas_size.height);
+        GlobalScreenRect.right = ini->GetInt(platform, "wScreenRight", canvas_size.width);
+        GlobalScreenRect.bottom = ini->GetInt(platform, "wScreenDown", 0);
     }
 
     m_fpMouseOutZoneOffset.x = ini->GetFloat(section, "mouseOutZoneWidth", 0.f);
     m_fpMouseOutZoneOffset.y = ini->GetFloat(section, "mouseOutZoneHeight", 0.f);
-    m_nMouseLastClickTimeMax = ini->GetLong(section, "mouseDblClickInterval", 300);
+    m_nMouseLastClickTimeMax = ini->GetInt(section, "mouseDblClickInterval", 300);
 
     CMatrix oldmatp;
     pRenderService->GetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&oldmatp);
@@ -1122,7 +1122,7 @@ void XINTERFACE::LoadIni()
     matv.m[3][1] = -(GlobalScreenRect.top + GlobalScreenRect.bottom) / 2.f;
 
     // set key press data
-    m_nMaxPressDelay = ini->GetLong(section, "RepeatDelay", 500);
+    m_nMaxPressDelay = ini->GetInt(section, "RepeatDelay", 500);
 
     // set mouse cursor
     char param[256];
@@ -1153,12 +1153,12 @@ void XINTERFACE::LoadIni()
     m_fBlindSpeed = 0.002f / m_fBlindSpeed;
 
     // set wave parameters
-    m_nColumnQuantity = ini->GetLong(section, "columnQuantity", m_nColumnQuantity);
+    m_nColumnQuantity = ini->GetInt(section, "columnQuantity", m_nColumnQuantity);
     m_fWaveAmplitude = ini->GetFloat(section, "waveAmplitude", m_fWaveAmplitude);
     m_fWavePhase = ini->GetFloat(section, "wavePhase", m_fWavePhase);
     m_fWaveSpeed = ini->GetFloat(section, "waveSpeed", m_fWaveSpeed);
-    m_nBlendStepMax = ini->GetLong(section, "waveStepQuantity", m_nBlendStepMax);
-    m_nBlendSpeed = ini->GetLong(section, "blendSpeed", m_nBlendSpeed);
+    m_nBlendStepMax = ini->GetInt(section, "waveStepQuantity", m_nBlendStepMax);
+    m_nBlendSpeed = ini->GetInt(section, "blendSpeed", m_nBlendSpeed);
 
     oldKeyState.dwKeyCode = -1;
     DoControl();

@@ -67,7 +67,7 @@ class VDATA
 
     virtual void SetElementsNum(uint32_t asize) = 0;
 
-    virtual int32_t GetLong() = 0;
+    virtual int32_t GetInt() = 0;
     virtual uintptr_t GetPtr() = 0;
     virtual float GetFloat() = 0;
     virtual const char *GetString() = 0;

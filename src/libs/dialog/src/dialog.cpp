@@ -102,14 +102,14 @@ void DIALOG::DlgTextDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *p
     nFontID = rs->LoadFont(FName);
 
     dwColor = ARGB(255, 210, 227, 227);
-    dwColor = pIni ? pIni->GetLong("DIALOG", "mainFontColor", dwColor) : dwColor;
+    dwColor = pIni ? pIni->GetInt("DIALOG", "mainFontColor", dwColor) : dwColor;
     fScale = GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "mainFontScale", 1.f) : 1.f);
     nLineInterval = static_cast<int32_t>(rs->CharHeight(nFontID) * fScale);
 
     nStartIndex = 0;
     nShowQuantity = 5;
     if (pIni)
-        nShowQuantity = pIni->GetLong("DIALOG", "maxtextlines", nShowQuantity);
+        nShowQuantity = pIni->GetInt("DIALOG", "maxtextlines", nShowQuantity);
     nSelectLine = -1;
 }
 
@@ -231,15 +231,15 @@ void DIALOG::DlgLinkDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *p
 
     dwColor = 0xFF808080;
     dwSelColor = 0xFFFFFFFF;
-    dwColor = pIni ? pIni->GetLong("DIALOG", "subFontColor", dwColor) : dwColor;
-    dwSelColor = pIni ? pIni->GetLong("DIALOG", "subFontColorSelect", dwSelColor) : dwSelColor;
+    dwColor = pIni ? pIni->GetInt("DIALOG", "subFontColor", dwColor) : dwColor;
+    dwSelColor = pIni ? pIni->GetInt("DIALOG", "subFontColorSelect", dwSelColor) : dwSelColor;
     fScale = GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "subFontScale", 1.f) : 1.f);
     nLineInterval = static_cast<int32_t>(rs->CharHeight(nFontID) * fScale * .9f);
 
     nStartIndex = 0;
     nShowQuantity = 5;
     if (pIni)
-        nShowQuantity = pIni->GetLong("DIALOG", "maxlinkslines", nShowQuantity);
+        nShowQuantity = pIni->GetInt("DIALOG", "maxlinkslines", nShowQuantity);
     nSelectLine = 0;
 
     nEditLine = -1;
@@ -716,8 +716,8 @@ void DIALOG::LoadFromIni()
     m_BackParams.fCharacterNameRectRightWidth = GetScrWidth(pIni->GetFloat("BACKPARAM", "ChrNameRightWidth", 16.f));
 
     m_BackParams.bShowDivider = false;
-    m_BackParams.nDividerHeight = GetScrHeight(static_cast<float>(pIni->GetLong("BACKPARAM", "dividerHeight", 8)));
-    m_BackParams.nDividerOffsetX = GetScrWidth(static_cast<float>(pIni->GetLong("BACKPARAM", "dividerOffsetX", 8)));
+    m_BackParams.nDividerHeight = GetScrHeight(static_cast<float>(pIni->GetInt("BACKPARAM", "dividerHeight", 8)));
+    m_BackParams.nDividerOffsetX = GetScrWidth(static_cast<float>(pIni->GetInt("BACKPARAM", "dividerOffsetX", 8)));
     m_BackParams.nDividerOffsetY = 0;
 
     GetRectFromIni(pIni.get(), "BACKPARAM", "backBorderOffset", m_BackParams.frBorderRect);
@@ -745,7 +745,7 @@ void DIALOG::LoadFromIni()
     char FName[MAX_PATH];
     pIni->ReadString("DIALOG", "charnamefont", FName, MAX_PATH, "DIALOG2");
     m_nCharNameTextFont = RenderService->LoadFont(FName);
-    m_dwCharNameTextColor = pIni->GetLong("DIALOG", "charnamecolor", 0xFFFFFFFF);
+    m_dwCharNameTextColor = pIni->GetInt("DIALOG", "charnamecolor", 0xFFFFFFFF);
     m_fCharNameTextScale = pIni->GetFloat("DIALOG", "charnamescale", 1.f);
     GetPointFromIni(pIni.get(), "DIALOG", "charnameoffset", m_fpCharNameTextOffset);
     m_fpCharNameTextOffset.x = GetScrWidth(m_fpCharNameTextOffset.x);

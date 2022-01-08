@@ -103,7 +103,7 @@ bool SHIP::Init()
     const auto priorityExecutePtr = static_cast<VDATA *>(core.GetScriptVariable("iShipPriorityExecute"));
     if (priorityExecutePtr)
     {
-        iShipPriorityExecute = priorityExecutePtr->GetLong();
+        iShipPriorityExecute = priorityExecutePtr->GetInt();
     }
     else
     {
@@ -113,7 +113,7 @@ bool SHIP::Init()
     const auto priorityRealizePtr = static_cast<VDATA *>(core.GetScriptVariable("iShipPriorityRealize"));
     if (priorityRealizePtr)
     {
-        iShipPriorityRealize = priorityRealizePtr->GetLong();
+        iShipPriorityRealize = priorityRealizePtr->GetInt();
     }
     else
     {

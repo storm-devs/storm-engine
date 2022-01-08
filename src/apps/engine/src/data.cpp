@@ -2799,7 +2799,7 @@ void DATA::BadIndex(uint32_t index, uint32_t array_size)
     Error(buffer);
 }
 
-int32_t DATA::GetLong()
+int32_t DATA::GetInt()
 {
     return lValue;
 }

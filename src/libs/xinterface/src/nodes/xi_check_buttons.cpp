@@ -143,8 +143,8 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         if (!ReadIniString(ini1, name1, ini2, name2, pcKeyName, param, sizeof(param), ""))
             break;
         const char *pTmpChar = param;
-        const auto bSelect = CXI_UTILS::StringGetLong(pTmpChar) != 0;
-        const auto bDisable = CXI_UTILS::StringGetLong(pTmpChar) != 0;
+        const auto bSelect = CXI_UTILS::StringGetInt(pTmpChar) != 0;
+        const auto bDisable = CXI_UTILS::StringGetInt(pTmpChar) != 0;
         AddButton(pTmpChar, bDisable, bSelect);
     }
 
@@ -158,8 +158,8 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
             {
                 const char *pTmpChar = param;
                 m_aButton[n]->bSetPos = true;
-                m_aButton[n]->pos.x = static_cast<float>(CXI_UTILS::StringGetLong(pTmpChar));
-                m_aButton[n]->pos.y = static_cast<float>(CXI_UTILS::StringGetLong(pTmpChar));
+                m_aButton[n]->pos.x = static_cast<float>(CXI_UTILS::StringGetInt(pTmpChar));
+                m_aButton[n]->pos.y = static_cast<float>(CXI_UTILS::StringGetInt(pTmpChar));
             }
         }
     }

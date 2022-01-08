@@ -64,7 +64,7 @@ bool GEOMETRY::Init()
     auto ini = fio->OpenIniFile(core.EngineIniFileName());
     if (ini)
     {
-        geoLog = ini->GetLong(nullptr, "geometry_log", 0) == 1;
+        geoLog = ini->GetInt(nullptr, "geometry_log", 0) == 1;
     }
 
     return true;

@@ -41,16 +41,16 @@ class INIFILE_T : public INIFILE
     bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, size_t buffer_size) override;
 
     // return int32_t value of key in pointed section if section and key exist, throw EXS object otherwise
-    int32_t GetLong(const char *section_name, const char *key_name) override;
+    int32_t GetInt(const char *section_name, const char *key_name) override;
     // return int32_t value of key in pointed section if section and key exist, if not - return def_value
-    int32_t GetLong(const char *section_name, const char *key_name, int32_t def_val) override;
+    int32_t GetInt(const char *section_name, const char *key_name, int32_t def_val) override;
 
     // return double value of key in pointed section if section and key exist, throw EXS object otherwise
     double GetDouble(const char *section_name, const char *key_name) override;
     // return double value of key in pointed section if section and key exist, if not - return def_value
     double GetDouble(const char *section_name, const char *key_name, double def_val) override;
 
-    bool GetLongNext(const char *section_name, const char *key_name, int32_t *val) override;
+    bool GetIntNext(const char *section_name, const char *key_name, int32_t *val) override;
     bool GetDoubleNext(const char *section_name, const char *key_name, double *val) override;
 
     float GetFloat(const char *section_name, const char *key_name) override;

@@ -1089,7 +1089,7 @@ void SoundService::AddAlias(INIFILE &_iniFile, char *_sectionName)
     alias.fMaxDistance = _iniFile.GetFloat(_sectionName, "maxDistance", -1.0f);
     alias.fMinDistance = _iniFile.GetFloat(_sectionName, "minDistance", -1.0f);
     alias.fVolume = _iniFile.GetFloat(_sectionName, "volume", -1.0f);
-    alias.iPrior = _iniFile.GetLong(_sectionName, "prior", 128);
+    alias.iPrior = _iniFile.GetInt(_sectionName, "prior", 128);
     alias.fMaxProbabilityValue = 0.0f;
 
     if (_iniFile.ReadString(_sectionName, "name", tempString, COMMON_STRING_LENGTH, ""))

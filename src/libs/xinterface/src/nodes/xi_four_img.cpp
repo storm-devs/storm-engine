@@ -39,7 +39,7 @@ int CXI_FOURIMAGE::CommandExecute(int wActCode)
             break;
         case ACTION_UPSTEP: {
             auto *pvdat = core.Event("FI_UpCom", "l", m_nSelectItem);
-            if (pvdat == nullptr || pvdat->GetLong() == 0)
+            if (pvdat == nullptr || pvdat->GetInt() == 0)
                 newSelectItem -= 2;
         }
         break;

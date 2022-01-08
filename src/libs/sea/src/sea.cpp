@@ -187,7 +187,7 @@ bool SEA::Init()
     CreateVertexDeclaration();
     {
         auto pEngineIni = fio->OpenIniFile(core.EngineIniFileName());
-        bIniFoamEnable = (pEngineIni) ? pEngineIni->GetLong("Sea", "FoamEnable", 1) != 0 : false;
+        bIniFoamEnable = (pEngineIni) ? pEngineIni->GetInt("Sea", "FoamEnable", 1) != 0 : false;
     }
 
     iFoamTexture = rs->TextureCreate("weather\\sea\\pena\\pena.tga");

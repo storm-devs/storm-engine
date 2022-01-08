@@ -602,13 +602,13 @@ void FLAG::LoadIni()
 
     if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
     {
-        FlagTextureQuantity = static_cast<int>(ini->GetLong(section, "TextureCount", 10));
+        FlagTextureQuantity = static_cast<int>(ini->GetInt(section, "TextureCount", 10));
         FlagTextureQuantityRow = 1;
     }
     else
     {
-        FlagTextureQuantity = static_cast<int>(ini->GetLong(section, "TextureCountColumn", 4));
-        FlagTextureQuantityRow = static_cast<int>(ini->GetLong(section, "TextureCountRow", 8));
+        FlagTextureQuantity = static_cast<int>(ini->GetInt(section, "TextureCountColumn", 4));
+        FlagTextureQuantityRow = static_cast<int>(ini->GetInt(section, "TextureCountRow", 8));
     }
 
     SetTextureCoordinate();
@@ -641,7 +641,7 @@ void FLAG::LoadIni()
     // maximum wind value
     fWindMaxValue = ini->GetFloat(section, "fWindMaxValue", 12.f);
     // minimum number of segments in the flag
-    MinSegmentQuantity = ini->GetLong(section, "MinSegQuantity", 4);
+    MinSegmentQuantity = ini->GetInt(section, "MinSegQuantity", 4);
     // UNGUARD
 }
 

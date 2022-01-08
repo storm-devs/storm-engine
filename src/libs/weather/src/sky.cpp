@@ -25,7 +25,7 @@ FOGVERTEX CreateFogVertex(const CVECTOR &vPos)
     auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
     Assert(pvData);
 
-    return {vPos, static_cast<uint32_t>(pvData->GetLong())};
+    return {vPos, static_cast<uint32_t>(pvData->GetInt())};
 }
 
 }

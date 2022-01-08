@@ -139,8 +139,8 @@ void Shadow::Realize(uint32_t Delta_Time)
         return;
 
     auto *pV = core.Event("EWhr_GetShadowDensity");
-    HEAD_DENSITY = ((VDATA *)pV->GetArrayElement(0))->GetLong();
-    DENSITY = ((VDATA *)pV->GetArrayElement(1))->GetLong();
+    HEAD_DENSITY = ((VDATA *)pV->GetArrayElement(0))->GetInt();
+    DENSITY = ((VDATA *)pV->GetArrayElement(1))->GetInt();
 
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);

@@ -70,7 +70,7 @@ void WATERFLARE::Execute(uint32_t Delta_Time)
 {
     // GUARD(void WATERFLARE::Execute(uint32_t Delta_Time))
 
-    /*if (pWeather->GetLong(whi_weather_update))
+    /*if (pWeather->GetInt(whi_weather_update))
     {
       char str[256];
       // create texture

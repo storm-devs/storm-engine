@@ -155,7 +155,7 @@ class DATA : public VDATA
 
     void BadIndex(uint32_t index, uint32_t array_size);
 
-    int32_t GetLong() override;
+    int32_t GetInt() override;
     uintptr_t GetPtr() override;
     float GetFloat() override;
     const char *GetString() override;

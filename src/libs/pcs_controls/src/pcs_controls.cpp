@@ -32,7 +32,7 @@ PCS_CONTROLS::PCS_CONTROLS()
     auto pIni = fio->OpenIniFile(core.EngineIniFileName());
     if (pIni)
     {
-        m_bIsOffDebugKeys = pIni->GetLong("controls", "ondebugkeys", 0) == 0;
+        m_bIsOffDebugKeys = pIni->GetInt("controls", "ondebugkeys", 0) == 0;
     }
 
     input_ = Input::Create();

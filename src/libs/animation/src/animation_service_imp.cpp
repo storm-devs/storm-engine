@@ -218,13 +218,13 @@ int32_t AnimationServiceImp::LoadAnimation(const char *animationName)
             continue;
         }
         // Reading the times
-        const auto stime = ani->GetLong(path, ASKW_STIME, -1);
+        const auto stime = ani->GetInt(path, ASKW_STIME, -1);
         if (stime < 0)
         {
             core.Trace("Incorrect %s in action [%s] of animation file %s.ani", ASKW_STIME, path, animationName);
             continue;
         }
-        const auto etime = ani->GetLong(path, ASKW_ETIME, -1);
+        const auto etime = ani->GetInt(path, ASKW_ETIME, -1);
         if (etime < 0)
         {
             core.Trace("Incorrect %s in action [%s] of animation file %s.ani", ASKW_ETIME, path, animationName);

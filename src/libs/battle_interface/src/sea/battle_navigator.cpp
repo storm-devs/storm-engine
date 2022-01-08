@@ -467,10 +467,10 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_fAspectRatio = BIUtils::GetFloatFromAttr(pARoot, "aspectRatio", 1.f);
 
     // Get navigation window parameters
-    m_NavigationWidth = BIUtils::GetLongFromAttr(pARoot, "navigatorWidth", 128);
-    m_NavigationHeight = BIUtils::GetLongFromAttr(pARoot, "navigatorHeight", 128);
-    m_XNavigator = BIUtils::GetLongFromAttr(pARoot, "rightPos", 640) - m_NavigationWidth / 2;
-    m_YNavigator = BIUtils::GetLongFromAttr(pARoot, "topPos", 0) + m_NavigationHeight / 2;
+    m_NavigationWidth = BIUtils::GetIntFromAttr(pARoot, "navigatorWidth", 128);
+    m_NavigationHeight = BIUtils::GetIntFromAttr(pARoot, "navigatorHeight", 128);
+    m_XNavigator = BIUtils::GetIntFromAttr(pARoot, "rightPos", 640) - m_NavigationWidth / 2;
+    m_YNavigator = BIUtils::GetIntFromAttr(pARoot, "topPos", 0) + m_NavigationHeight / 2;
 
     // visibility radius on the minimap
     m_fWorldRad = BIUtils::GetFloatFromAttr(pARoot, "horizontRadius", 400.f);
@@ -480,30 +480,30 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_fScaleStep = BIUtils::GetFloatFromAttr(pARoot, "scaleStep", .01f);
     m_fShipShowRad = BIUtils::GetFloatFromAttr(pARoot, "shipShowRadius", 2.f);
 
-    m_windWidth = BIUtils::GetLongFromAttr(pARoot, "windWidth", 20);
-    m_windHeight = BIUtils::GetLongFromAttr(pARoot, "windHeight", 158);
+    m_windWidth = BIUtils::GetIntFromAttr(pARoot, "windWidth", 20);
+    m_windHeight = BIUtils::GetIntFromAttr(pARoot, "windHeight", 158);
 
     // color of loaded cannons
-    m_dwReadyCannon = BIUtils::GetLongFromAttr(pARoot, "argbReadyCannonColor", m_dwReadyCannon);
+    m_dwReadyCannon = BIUtils::GetIntFromAttr(pARoot, "argbReadyCannonColor", m_dwReadyCannon);
     // color of loading cannons
-    m_dwChargeCannon = BIUtils::GetLongFromAttr(pARoot, "argbChargeCannonColor", m_dwChargeCannon);
+    m_dwChargeCannon = BIUtils::GetIntFromAttr(pARoot, "argbChargeCannonColor", m_dwChargeCannon);
     // color of damaged cannons
-    m_dwDamagedCannon = BIUtils::GetLongFromAttr(pARoot, "argbDamageCannonColor", m_dwDamagedCannon);
+    m_dwDamagedCannon = BIUtils::GetIntFromAttr(pARoot, "argbDamageCannonColor", m_dwDamagedCannon);
     // color of the sea
-    m_dwSeaColor = BIUtils::GetLongFromAttr(pARoot, "argbSeaColor", ARGB(255, 255, 255, 255));
+    m_dwSeaColor = BIUtils::GetIntFromAttr(pARoot, "argbSeaColor", ARGB(255, 255, 255, 255));
     // color of the cannon fire zone
-    m_dwFireZoneColor = BIUtils::GetLongFromAttr(pARoot, "argbFireZoneColor", ARGB(255, 255, 255, 255));
+    m_dwFireZoneColor = BIUtils::GetIntFromAttr(pARoot, "argbFireZoneColor", ARGB(255, 255, 255, 255));
     // enemy ship color
-    m_dwEnemyShipColor = BIUtils::GetLongFromAttr(pARoot, "argbEnemyShipColor", ARGB(255, 255, 255, 255));
+    m_dwEnemyShipColor = BIUtils::GetIntFromAttr(pARoot, "argbEnemyShipColor", ARGB(255, 255, 255, 255));
     // color of your ship
-    m_dwFrendShipColor = BIUtils::GetLongFromAttr(pARoot, "argbFrendShipColor", ARGB(255, 255, 255, 255));
+    m_dwFrendShipColor = BIUtils::GetIntFromAttr(pARoot, "argbFrendShipColor", ARGB(255, 255, 255, 255));
     // neutral ship color
-    m_dwNeutralShipColor = BIUtils::GetLongFromAttr(pARoot, "argbNeutralShipColor", ARGB(255, 255, 255, 255));
+    m_dwNeutralShipColor = BIUtils::GetIntFromAttr(pARoot, "argbNeutralShipColor", ARGB(255, 255, 255, 255));
     // color of a sinking ship
-    m_dwDeadShipColor = BIUtils::GetLongFromAttr(pARoot, "argbDeadShipColor", ARGB(255, 255, 255, 255));
+    m_dwDeadShipColor = BIUtils::GetIntFromAttr(pARoot, "argbDeadShipColor", ARGB(255, 255, 255, 255));
     // background gradient color
-    m_dwBackGradColor1 = BIUtils::GetLongFromAttr(pARoot, "argbBackMaxColor", ARGB(255, 0, 0, 128));
-    m_dwBackGradColor2 = BIUtils::GetLongFromAttr(pARoot, "argbBackMinColor", ARGB(55, 0, 0, 128));
+    m_dwBackGradColor1 = BIUtils::GetIntFromAttr(pARoot, "argbBackMaxColor", ARGB(255, 0, 0, 128));
+    m_dwBackGradColor2 = BIUtils::GetIntFromAttr(pARoot, "argbBackMinColor", ARGB(55, 0, 0, 128));
 
     // get strings parameters
     tmpstr = BIUtils::GetStringFromAttr(pARoot, "speedShowFont", nullptr);
@@ -511,9 +511,9 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
         m_speedFont = -1;
     else
         m_speedFont = rs->LoadFont(tmpstr);
-    m_ySpeedShow = m_YNavigator + BIUtils::GetLongFromAttr(pARoot, "speedOutYOffset", -m_NavigationHeight / 2);
-    m_xShipSpeed = m_XNavigator + BIUtils::GetLongFromAttr(pARoot, "shipSpeedXOffset", 10);
-    m_xWindSpeed = m_XNavigator + BIUtils::GetLongFromAttr(pARoot, "windSpeedXOffset", -20);
+    m_ySpeedShow = m_YNavigator + BIUtils::GetIntFromAttr(pARoot, "speedOutYOffset", -m_NavigationHeight / 2);
+    m_xShipSpeed = m_XNavigator + BIUtils::GetIntFromAttr(pARoot, "shipSpeedXOffset", 10);
+    m_xWindSpeed = m_XNavigator + BIUtils::GetIntFromAttr(pARoot, "windSpeedXOffset", -20);
     m_fFontScale = BIUtils::GetFloatFromAttr(pARoot, "fontScale", 1.f);
 
     tmpstr = BIUtils::GetStringFromAttr(pARoot, "compasTexture", nullptr);
@@ -577,29 +577,29 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
         m_idWindTexture = rs->TextureCreate(tmpstr);
 
     // get cannon charge angles
-    m_fBegAnglLeftCharge = static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "leftChargeBegAngle", 0)) / 180.f * PI;
-    m_fEndAnglLeftCharge = static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "leftChargeEndAngle", 0)) / 180.f * PI;
+    m_fBegAnglLeftCharge = static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "leftChargeBegAngle", 0)) / 180.f * PI;
+    m_fEndAnglLeftCharge = static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "leftChargeEndAngle", 0)) / 180.f * PI;
 
-    m_fBegAnglRightCharge = static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "rightChargeBegAngle", 0)) / 180.f * PI;
-    m_fEndAnglRightCharge = static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "rightChargeEndAngle", 0)) / 180.f * PI;
+    m_fBegAnglRightCharge = static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "rightChargeBegAngle", 0)) / 180.f * PI;
+    m_fEndAnglRightCharge = static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "rightChargeEndAngle", 0)) / 180.f * PI;
 
     m_fBegAnglForwardCharge =
-        static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "forwardChargeBegAngle", 0)) / 180.f * PI;
+        static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "forwardChargeBegAngle", 0)) / 180.f * PI;
     m_fEndAnglForwardCharge =
-        static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "forwardChargeEndAngle", 0)) / 180.f * PI;
+        static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "forwardChargeEndAngle", 0)) / 180.f * PI;
 
     m_fBegAnglBackCharge =
-        static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "backwardChargeBegAngle", 0)) / 180.f * PI;
+        static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "backwardChargeBegAngle", 0)) / 180.f * PI;
     m_fEndAnglBackCharge =
-        static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "backwardChargeEndAngle", 0)) / 180.f * PI;
+        static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "backwardChargeEndAngle", 0)) / 180.f * PI;
 
     // get speed angles
-    m_fBegAnglShipSpeed = static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "shipSpeedBegAngle", 0)) / 180.f * PI;
+    m_fBegAnglShipSpeed = static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "shipSpeedBegAngle", 0)) / 180.f * PI;
     m_fCurAnglShipSpeed = m_fEndAnglShipSpeed =
-        static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "shipSpeedEndAngle", 0)) / 180.f * PI;
-    m_fBegAnglWindSpeed = static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "windSpeedBegAngle", 0)) / 180.f * PI;
+        static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "shipSpeedEndAngle", 0)) / 180.f * PI;
+    m_fBegAnglWindSpeed = static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "windSpeedBegAngle", 0)) / 180.f * PI;
     m_fCurAnglWindSpeed = m_fEndAnglWindSpeed =
-        static_cast<float>(BIUtils::GetLongFromAttr(pARoot, "windSpeedEndAngle", 0)) / 180.f * PI;
+        static_cast<float>(BIUtils::GetIntFromAttr(pARoot, "windSpeedEndAngle", 0)) / 180.f * PI;
 
     // current charge type
     m_ChargeGreed.x = 1;

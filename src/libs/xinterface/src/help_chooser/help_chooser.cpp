@@ -298,10 +298,10 @@ bool HELPCHOOSER::RunChooser(const char *ChooserGroup)
     // set the mouse
     m_fCurMouseX = 0.f;
     m_fCurMouseY = 0.f;
-    m_nMouseWidth = ini->GetLong("COMMON", "mouseWidth", 32);
-    m_nMouseHeight = ini->GetLong("COMMON", "mouseHeight", 32);
-    m_nMouseCornerX = ini->GetLong("COMMON", "mouseCornerX", 0);
-    m_nMouseCornerY = ini->GetLong("COMMON", "mouseCornerY", 0);
+    m_nMouseWidth = ini->GetInt("COMMON", "mouseWidth", 32);
+    m_nMouseHeight = ini->GetInt("COMMON", "mouseHeight", 32);
+    m_nMouseCornerX = ini->GetInt("COMMON", "mouseCornerX", 0);
+    m_nMouseCornerY = ini->GetInt("COMMON", "mouseCornerY", 0);
     if (m_nMouseWidth > 0 && m_nMouseHeight > 0)
         if (ini->ReadString("COMMON", "mouseTexture", param, sizeof(param) - 1, ""))
             m_idMouseTexture = rs->TextureCreate(param);

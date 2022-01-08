@@ -352,7 +352,7 @@ void COMPILER::LoadPreprocess()
     auto engine_ini = fio->OpenIniFile(core_internal.EngineIniFileName());
     if (engine_ini)
     {
-        if (engine_ini->GetLong("script", "debuginfo", 0) == 0)
+        if (engine_ini->GetInt("script", "debuginfo", 0) == 0)
         {
             bDebugInfo = false;
             // FuncTab.KeepNameMode(false);
@@ -368,24 +368,24 @@ void COMPILER::LoadPreprocess()
             // DefTab.KeepNameMode(true);
             // EventTab.KeepNameMode(true);
         }
-        if (engine_ini->GetLong("script", "codefiles", 0) == 0)
+        if (engine_ini->GetInt("script", "codefiles", 0) == 0)
             bWriteCodeFile = false;
         else
             bWriteCodeFile = true;
 
-        if (engine_ini->GetLong("script", "runtimelog", 0) == 0)
+        if (engine_ini->GetInt("script", "runtimelog", 0) == 0)
             bRuntimeLog = false;
         else
             bRuntimeLog = true;
 
-        // if(engine_ini->GetLong("script","tracefiles",0) == 0) bScriptTrace = false;
+        // if(engine_ini->GetInt("script","tracefiles",0) == 0) bScriptTrace = false;
         // else bScriptTrace = true;
     }
 
     auto ini = fio->OpenIniFile(PROJECT_NAME);
     if (ini)
     {
-        bBreakOnError = (ini->GetLong("options", "break_on_error", 0) == 1);
+        bBreakOnError = (ini->GetInt("options", "break_on_error", 0) == 1);
     }
 }
 
@@ -396,7 +396,7 @@ bool COMPILER::CreateProgram(const char *file_name)
     engine_ini = fio->OpenIniFile(core_internal.EngineIniFileName());
     if(engine_ini != null)
     {
-      if(engine_ini->GetLong("script","debuginfo",0) == 0)
+      if(engine_ini->GetInt("script","debuginfo",0) == 0)
       {
         bDebugInfo = false;
         FuncTab.KeepNameMode(false);
@@ -412,7 +412,7 @@ bool COMPILER::CreateProgram(const char *file_name)
         DefTab.KeepNameMode(true);
         EventTab.KeepNameMode(true);
       }
-      if(engine_ini->GetLong("script","codefiles",0) == 0) bWriteCodeFile = false;
+      if(engine_ini->GetInt("script","codefiles",0) == 0) bWriteCodeFile = false;
       else bWriteCodeFile = true;
 
 

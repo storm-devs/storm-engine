@@ -24,7 +24,7 @@ uint32_t _RDTSC_E(VS_STACK *pS)
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
         return IFUNCRESULT_FAILED;
-    uint64_t dwRDTSC = static_cast<uint32_t>(pValue->GetLong());
+    uint64_t dwRDTSC = static_cast<uint32_t>(pValue->GetInt());
     RDTSC_E(dwRDTSC);
     pVR->Set(static_cast<int32_t>(dwRDTSC));
     return IFUNCRESULT_OK;

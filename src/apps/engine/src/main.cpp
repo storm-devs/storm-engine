@@ -143,17 +143,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     if (ini)
     {
-        dwMaxFPS = static_cast<uint32_t>(ini->GetLong(nullptr, "max_fps", 0));
-        auto bDebugWindow = ini->GetLong(nullptr, "DebugWindow", 0) == 1;
-        auto bAcceleration = ini->GetLong(nullptr, "Acceleration", 0) == 1;
-        if (ini->GetLong(nullptr, "logs", 1) == 0) // disable logging
+        dwMaxFPS = static_cast<uint32_t>(ini->GetInt(nullptr, "max_fps", 0));
+        auto bDebugWindow = ini->GetInt(nullptr, "DebugWindow", 0) == 1;
+        auto bAcceleration = ini->GetInt(nullptr, "Acceleration", 0) == 1;
+        if (ini->GetInt(nullptr, "logs", 1) == 0) // disable logging
         {
             spdlog::set_level(spdlog::level::off);
         }
-        width = ini->GetLong(nullptr, "screen_x", 1024);
-        height = ini->GetLong(nullptr, "screen_y", 768);
-        fullscreen = ini->GetLong(nullptr, "full_screen", false) ? true : false;
-        bSteam = ini->GetLong(nullptr, "Steam", 1) != 0;
+        width = ini->GetInt(nullptr, "screen_x", 1024);
+        height = ini->GetInt(nullptr, "screen_y", 768);
+        fullscreen = ini->GetInt(nullptr, "full_screen", false) ? true : false;
+        bSteam = ini->GetInt(nullptr, "Steam", 1) != 0;
     }
 
     // initialize SteamApi through evaluating its singleton

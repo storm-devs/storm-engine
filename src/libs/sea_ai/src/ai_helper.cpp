@@ -94,7 +94,7 @@ void AIHelper::CalculateRelations()
                 auto *pData =
                     core.Event(GET_RELATION_EVENT, "ll", GetIndex(aMainCharacters[y]), GetIndex(aMainCharacters[x]));
                 Assert(pData);
-                *GetRelation(y, x) = static_cast<uint32_t>(pData->GetLong());
+                *GetRelation(y, x) = static_cast<uint32_t>(pData->GetInt());
             }
             else
             {

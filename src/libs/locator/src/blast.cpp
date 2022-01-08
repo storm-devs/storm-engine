@@ -39,7 +39,7 @@ bool BLAST::Init()
         return false;
     }
 
-    const auto RandomNum = ini->GetLong("geo", "randomnum", 0);
+    const auto RandomNum = ini->GetInt("geo", "randomnum", 0);
 
     char name[MAX_PATH];
     if (ini->ReadString("geo", "file", name, sizeof(name), ""))

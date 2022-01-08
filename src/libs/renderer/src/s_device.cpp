@@ -130,7 +130,7 @@ uint32_t DX9SetTexturePath(VS_STACK *pS)
     auto *pString = (VDATA *)pS->Pop();
     auto *pNumber = (VDATA *)pS->Pop();
 
-    const uintptr_t iNumber = pNumber->GetLong();
+    const uintptr_t iNumber = pNumber->GetInt();
     auto *const pStr = pString->GetString();
 
     if (!DX9RENDER::pRS)
@@ -158,8 +158,8 @@ uint32_t DX9SetTexturePath(VS_STACK *pS)
 uint32_t RPrint(VS_STACK *pS)
 {
     auto *pString = (VDATA *)pS->Pop();
-    const int32_t y = ((VDATA *)pS->Pop())->GetLong();
-    const int32_t x = ((VDATA *)pS->Pop())->GetLong();
+    const int32_t y = ((VDATA *)pS->Pop())->GetInt();
+    const int32_t x = ((VDATA *)pS->Pop())->GetInt();
 
     if (pString->GetString())
         DX9RENDER::pRS->Print(x, y, pString->GetString());
@@ -171,8 +171,8 @@ uint32_t RPrint(VS_STACK *pS)
 uint32_t SetGlowParams(VS_STACK *pS)
 {
     const float fBlurBrushSize = ((VDATA *)pS->Pop())->GetFloat();
-    const int32_t Intensivity = ((VDATA *)pS->Pop())->GetLong();
-    const int32_t BlurPasses = ((VDATA *)pS->Pop())->GetLong();
+    const int32_t Intensivity = ((VDATA *)pS->Pop())->GetInt();
+    const int32_t BlurPasses = ((VDATA *)pS->Pop())->GetInt();
 
     DX9RENDER::pRS->SetGLOWParams(fBlurBrushSize, Intensivity, BlurPasses);
 
@@ -193,7 +193,7 @@ uint32_t slGetTexture(VS_STACK *pS)
 
 uint32_t slReleaseTexture(VS_STACK *pS)
 {
-    int32_t texNum = ((VDATA *)pS->Pop())->GetLong();
+    int32_t texNum = ((VDATA *)pS->Pop())->GetInt();
 
     DX9RENDER::pRS->TextureRelease(texNum);
     return IFUNCRESULT_OK;
@@ -494,7 +494,7 @@ bool DX9RENDER::Init()
     auto ini = fio->OpenIniFile(core.EngineIniFileName());
     if (ini)
     {
-        // bPostProcessEnabled = ini->GetLong(0, "PostProcess", 0) == 1;
+        // bPostProcessEnabled = ini->GetInt(0, "PostProcess", 0) == 1;
         bPostProcessEnabled = false; //~!~
 
         // screenshot format and extension
@@ -509,24 +509,24 @@ bool DX9RENDER::Init()
             screenshotFormat = D3DXIFF_JPG;
         }
 
-        bShowFps = ini->GetLong(nullptr, "show_fps", 0) == 1;
-        bShowExInfo = ini->GetLong(nullptr, "show_exinfo", 0) == 1;
-        bSafeRendering = ini->GetLong(nullptr, "safe_render", 0) == 0;
-        bDropVideoConveyor = ini->GetLong(nullptr, "DropVideoConveyor", 0) != 0;
-        texLog = ini->GetLong(nullptr, "texture_log", 0) == 1;
-        bUseLargeBackBuffer = ini->GetLong(nullptr, "UseLargeBackBuffer", 0) != 0;
+        bShowFps = ini->GetInt(nullptr, "show_fps", 0) == 1;
+        bShowExInfo = ini->GetInt(nullptr, "show_exinfo", 0) == 1;
+        bSafeRendering = ini->GetInt(nullptr, "safe_render", 0) == 0;
+        bDropVideoConveyor = ini->GetInt(nullptr, "DropVideoConveyor", 0) != 0;
+        texLog = ini->GetInt(nullptr, "texture_log", 0) == 1;
+        bUseLargeBackBuffer = ini->GetInt(nullptr, "UseLargeBackBuffer", 0) != 0;
 
-        bWindow = ini->GetLong(nullptr, "full_screen", 1) == 0;
+        bWindow = ini->GetInt(nullptr, "full_screen", 1) == 0;
 
-        nTextureDegradation = ini->GetLong(nullptr, "texture_degradation", 0);
+        nTextureDegradation = ini->GetInt(nullptr, "texture_degradation", 0);
 
         FovMultiplier = ini->GetFloat(nullptr, "fov_multiplier", 1.0f);
 
-        screen_size.x = ini->GetLong(nullptr, "screen_x", 1024);
-        screen_size.y = ini->GetLong(nullptr, "screen_y", 768);
+        screen_size.x = ini->GetInt(nullptr, "screen_x", 1024);
+        screen_size.y = ini->GetInt(nullptr, "screen_y", 768);
         fNearClipPlane = ini->GetFloat(nullptr, "NearClipPlane", 0.1f);
         fFarClipPlane = ini->GetFloat(nullptr, "FarClipPlane", 4000.0f);
-        bBackBufferCanLock = ini->GetLong(nullptr, "lockable_back_buffer", 0) != 0;
+        bBackBufferCanLock = ini->GetInt(nullptr, "lockable_back_buffer", 0) != 0;
         ini->ReadString(nullptr, "screen_bpp", str, sizeof(str), "D3DFMT_R5G6B5");
         screen_bpp = D3DFMT_R5G6B5;
         stencil_format = D3DFMT_D16;
@@ -547,9 +547,9 @@ bool DX9RENDER::Init()
         }
 
         // new renderer settings
-        vSyncEnabled = ini->GetLong(nullptr, "vsync", 0);
+        vSyncEnabled = ini->GetInt(nullptr, "vsync", 0);
 
-        msaa = ini->GetLong(nullptr, "msaa", D3DMULTISAMPLE_16_SAMPLES);
+        msaa = ini->GetInt(nullptr, "msaa", D3DMULTISAMPLE_16_SAMPLES);
         if (msaa != D3DMULTISAMPLE_NONE)
         {
             if (msaa < D3DMULTISAMPLE_2_SAMPLES || msaa > D3DMULTISAMPLE_16_SAMPLES)
@@ -558,7 +558,7 @@ bool DX9RENDER::Init()
             }
         }
 
-        videoAdapterIndex = ini->GetLong(nullptr, "adapter", std::numeric_limits<int32_t>::max());
+        videoAdapterIndex = ini->GetInt(nullptr, "adapter", std::numeric_limits<int32_t>::max());
 
         // stencil_format = D3DFMT_D24S8;
         if (!InitDevice(bWindow, static_cast<HWND>(core.GetAppHWND()), screen_size.x, screen_size.y))
@@ -614,7 +614,7 @@ bool DX9RENDER::Init()
         fFixedFPS = ini->GetFloat("VideoCapture", "FPS", 25);
         if (fFixedFPS == 0.0f)
             fFixedFPS = 25.0f;
-        const int32_t iCapBuffers = ini->GetLong("VideoCapture", "Buffers", 0);
+        const int32_t iCapBuffers = ini->GetInt("VideoCapture", "Buffers", 0);
         for (int32_t i = 0; i < iCapBuffers; i++)
             aCaptureBuffers.push_back(new char[sizeof(uint32_t) * screen_size.x * screen_size.y]);
 

@@ -42,7 +42,7 @@ class WEATHER : public WEATHER_BASE
     void CleanUP();
 
     // Weather_Base function
-    int32_t GetLong(uint32_t dwCode) override;
+    int32_t GetInt(uint32_t dwCode) override;
     uint32_t GetColor(uint32_t, CVECTOR *) override;
     uint32_t GetColor(uint32_t) override;
     float GetFloat(uint32_t) override;

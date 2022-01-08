@@ -1353,14 +1353,14 @@ void SAIL::LoadSailIni()
     sprintf(section, "SAILS");
 
     // load texture names
-    texQuantity = static_cast<int>(ini->GetLong(section, "TextureCount", 1));
+    texQuantity = static_cast<int>(ini->GetInt(section, "TextureCount", 1));
     if (texQuantity == 0)
     {
         texQuantity = 1;
     }
-    texNumCommon = static_cast<float>(ini->GetLong(section, "TexNumCommon", 0)) / static_cast<float>(texQuantity);
-    texNumEnglish = static_cast<float>(ini->GetLong(section, "TexNumEnglish", 0)) / static_cast<float>(texQuantity);
-    texNumTreangle = static_cast<float>(ini->GetLong(section, "TexNumTreangle", 0)) / static_cast<float>(texQuantity);
+    texNumCommon = static_cast<float>(ini->GetInt(section, "TexNumCommon", 0)) / static_cast<float>(texQuantity);
+    texNumEnglish = static_cast<float>(ini->GetInt(section, "TexNumEnglish", 0)) / static_cast<float>(texQuantity);
+    texNumTreangle = static_cast<float>(ini->GetInt(section, "TexNumTreangle", 0)) / static_cast<float>(texQuantity);
 
     // load speed calculate parameters:
     g_fSailHoleDepend = ini->GetFloat(section, "fHoleDepend", 1.0f);
@@ -1377,11 +1377,11 @@ void SAIL::LoadSailIni()
     fWindAdding = ini->GetFloat(section, "fWindAdding", .3f);
     FLEXSPEED = ini->GetFloat(section, "FLEXSPEED", .001f);
     MAXSUMWIND = ini->GetFloat(section, "MAXSUMWIND", .02f);
-    WINDVECTOR_QUANTITY = static_cast<int>(ini->GetLong(section, "WINDVECTOR_QNT", 60));
-    WINDVECTOR_TINCR = static_cast<int>(ini->GetLong(section, "WINDVECTOR_TINCR", 3));
-    WINDVECTOR_TADD = static_cast<int>(ini->GetLong(section, "WINDVECTOR_TADD", 3));
-    WINDVECTOR_SINCR = static_cast<int>(ini->GetLong(section, "WINDVECTOR_SINCR", 6));
-    WINDVECTOR_SADD = static_cast<int>(ini->GetLong(section, "WINDVECTOR_SADD", 3));
+    WINDVECTOR_QUANTITY = static_cast<int>(ini->GetInt(section, "WINDVECTOR_QNT", 60));
+    WINDVECTOR_TINCR = static_cast<int>(ini->GetInt(section, "WINDVECTOR_TINCR", 3));
+    WINDVECTOR_TADD = static_cast<int>(ini->GetInt(section, "WINDVECTOR_TADD", 3));
+    WINDVECTOR_SINCR = static_cast<int>(ini->GetInt(section, "WINDVECTOR_SINCR", 6));
+    WINDVECTOR_SADD = static_cast<int>(ini->GetInt(section, "WINDVECTOR_SADD", 3));
 
     // load rolling sail parameters
     ROLL_Z_VAL = ini->GetFloat(section, "ROLL_Z_VAL", .01f);
@@ -1435,7 +1435,7 @@ void SAIL::LoadSailIni()
     FALL_TSAIL_ADD_MIN = ini->GetFloat(section, "fFallTSailAddMin", 0.2f);
     FALL_TSAIL_ADD_RAND = ini->GetFloat(section, "fFallTSailAddRand", 0.2f);
 
-    GROUP_UPDATE_TIME = ini->GetLong(section, "msecSailUpdateTime", GROUP_UPDATE_TIME);
+    GROUP_UPDATE_TIME = ini->GetInt(section, "msecSailUpdateTime", GROUP_UPDATE_TIME);
 
     // UNGUARD
 }

@@ -6,7 +6,7 @@ int32_t GetTexFromEvent(VDATA *vdat)
 {
     if (vdat == nullptr)
         return -1;
-    return vdat->GetLong();
+    return vdat->GetInt();
 }
 
 CXI_SCROLLIMAGE::CXI_SCROLLIMAGE()

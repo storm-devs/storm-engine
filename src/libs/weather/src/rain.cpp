@@ -97,7 +97,7 @@ void RAIN::GenerateRain()
     // fRainHeight = Weather->GetFloat(whf_rain_height);
     // fRainRadius = Weather->GetFloat(whf_rain_radius);
     // float fRainRadiusD2 = fRainRadius / 2.0f;
-    // dwNumDrops = Weather->GetLong(whi_rain_drops_num);
+    // dwNumDrops = Weather->GetInt(whi_rain_drops_num);
 
     if (dwNumDrops == 0)
         return;

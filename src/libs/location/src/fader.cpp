@@ -96,7 +96,7 @@ bool Fader::Init()
         auto ini = fio->OpenIniFile(core.EngineIniFileName());
         if (ini)
         {
-            numberOfTips = ini->GetLong(nullptr, "ProgressFrame", 1);
+            numberOfTips = ini->GetInt(nullptr, "ProgressFrame", 1);
         }
         else
             numberOfTips = -1;

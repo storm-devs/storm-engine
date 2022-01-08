@@ -838,10 +838,10 @@ void CoastFoam::Load()
         return;
 
     clear();
-    const auto iNumFoams = pI->GetLong(nullptr, "NumFoams", 0);
+    const auto iNumFoams = pI->GetInt(nullptr, "NumFoams", 0);
     fMaxFoamDistance = pI->GetFloat(nullptr, "MaxFoamDistance", 1000.0f);
     fFoamDeltaY = pI->GetFloat(nullptr, "FoamDeltaY", 0.2f);
-    iFoamDivides = pI->GetLong(nullptr, "FoamDivides", 4);
+    iFoamDivides = pI->GetInt(nullptr, "FoamDivides", 4);
     for (int32_t i = 0; i < iNumFoams; i++)
     {
         // Foam * pF = aFoams[aFoams.Add(new Foam)];
@@ -850,7 +850,7 @@ void CoastFoam::Load()
 
         sprintf_s(cSection, "foam_%d", i);
 
-        const int32_t iNumParts = pI->GetLong(cSection, "NumParts", 0);
+        const int32_t iNumParts = pI->GetInt(cSection, "NumParts", 0);
 
         pI->ReadString(cSection, "Alpha", cTemp, sizeof(cTemp), "148, 196");
         sscanf(cTemp, "%f, %f", &pF->fAlphaMin, &pF->fAlphaMax);
@@ -867,12 +867,12 @@ void CoastFoam::Load()
         pI->ReadString(cSection, "TexScaleX", cTemp, sizeof(cTemp), "0.050");
         sscanf(cTemp, "%f", &pF->fTexScaleX);
 
-        pF->iNumFoams = (pI->GetLong(cSection, "NumFoams", 2) == 2) ? 2 : 1;
+        pF->iNumFoams = (pI->GetInt(cSection, "NumFoams", 2) == 2) ? 2 : 1;
 
         pI->ReadString(cSection, "Texture", cTemp, sizeof(cTemp), "foam.tga");
         pF->sTexture = cTemp;
         pF->iTexture = rs->TextureCreate((std::string("weather\\coastfoam\\") + cTemp).c_str());
-        pF->Type = static_cast<FOAMTYPE>(pI->GetLong(cSection, "Type", FOAM_TYPE_2));
+        pF->Type = static_cast<FOAMTYPE>(pI->GetInt(cSection, "Type", FOAM_TYPE_2));
 
         for (int32_t j = 0; j < ((iNumParts) ? iNumParts : 100000); j++)
         {
