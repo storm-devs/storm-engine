@@ -1597,7 +1597,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                         if (bNeg)
                                             real_var->value->Set(-atoi(Token.GetData()), aindex);
                                         else
-                                            real_var->value->Set(atoi(Token.GetData()), aindex);
+                                            real_var->value->Set(static_cast<int32_t>(atoll(Token.GetData())), aindex);
                                         aindex++;
                                         break;
                                     case FLOAT_NUMBER:
@@ -1668,7 +1668,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                     if (bNeg)
                                         real_var->value->Set(-atoi(Token.GetData()));
                                     else
-                                        real_var->value->Set(atoi(Token.GetData()));
+                                        real_var->value->Set(static_cast<int32_t>(atoll(Token.GetData())));
                                     break;
                                 case FLOAT_NUMBER:
                                     if (vi.type != VAR_FLOAT)
