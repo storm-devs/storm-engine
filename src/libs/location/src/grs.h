@@ -35,8 +35,8 @@
 
 struct GRSHeader
 {
-    unsigned long id;     // Identifier
-    unsigned long ver;    // Version
+    uint32_t id;     // Identifier
+    uint32_t ver;    // Version
     long miniX, miniZ;    // Minimap sizes
     float startX, startZ; // Map position
     long numElements;     // Number of elements (blades of grass)

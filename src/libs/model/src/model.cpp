@@ -540,7 +540,7 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
                 {
                     GEOS::OBJECT go;
                     root->geo->GetObj(o, go);
-                    if (go.vertex_buff != static_cast<unsigned long>(avb))
+                    if (go.vertex_buff != static_cast<uint32_t>(avb))
                         continue;
 
                     nt += go.ntriangles;
@@ -559,7 +559,7 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
                 {
                     GEOS::OBJECT go;
                     root->geo->GetObj(o, go);
-                    if (go.vertex_buff != static_cast<unsigned long>(avb))
+                    if (go.vertex_buff != static_cast<uint32_t>(avb))
                         continue;
 
                     // for all triangles in object
@@ -604,7 +604,7 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
             {
                 GEOS::OBJECT go;
                 root->geo->GetObj(o, go);
-                if (go.vertex_buff != static_cast<unsigned long>(avb))
+                if (go.vertex_buff != static_cast<uint32_t>(avb))
                     continue;
 
                 // for all triangles in object

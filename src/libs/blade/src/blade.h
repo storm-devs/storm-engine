@@ -23,7 +23,7 @@ class BLADE : public Entity
     struct VERTEX
     {
         CVECTOR pos;
-        unsigned long diffuse;
+        uint32_t diffuse;
     };
 
 #define WAY_LENGTH 64

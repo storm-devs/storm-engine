@@ -12,8 +12,8 @@ dynamic shadow cpp file
 
 CREATE_CLASS(Shadow)
 
-static unsigned long HEAD_DENSITY = 0xFF606060;
-static unsigned long DENSITY = 0xFF606040;
+static uint32_t HEAD_DENSITY = 0xFF606060;
+static uint32_t DENSITY = 0xFF606040;
 static const float nearBlend = 8.0f;
 static const float farBlend = 16.0f;
 

@@ -423,7 +423,7 @@ const char *GEOM::GetTextureName(long tx) const
 // will think later
 auto unbelievable_workaround(void *ptr)
 {
-    return reinterpret_cast<unsigned long long>(ptr) & 0x7FFFFFFF;
+    return reinterpret_cast<uint64_t>(ptr) & 0x7FFFFFFF;
 }
 
 long GEOM::FindName(const char *name) const

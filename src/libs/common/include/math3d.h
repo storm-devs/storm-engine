@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include <xmmintrin.h> // espkk # remove inline asm # 30/Dec/2017
 
 //#define inline __forceinline
@@ -79,7 +81,7 @@ inline long fceil(float f)
 // Fast fasb in memory
 inline float &ffabs(float &f)
 {
-    *(unsigned long *)&f &= 0x7fffffff;
+    *(uint32_t *)&f &= 0x7fffffff;
     return f;
 }
 

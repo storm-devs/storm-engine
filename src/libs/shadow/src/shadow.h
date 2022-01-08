@@ -14,7 +14,7 @@ class Shadow : public Entity
     entid_t entity;
     void Smooth();
     float shading;
-    unsigned long blendValue;
+    uint32_t blendValue;
 
   public:
 #define SHADOW_FVF (D3DFVF_XYZ | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1)

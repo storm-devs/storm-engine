@@ -1404,7 +1404,7 @@ long DX9RENDER::TextureCreate(const char *fname)
 
         _strupr(_fname);
 
-        const unsigned long hf = hash_string(_fname);
+        const uint32_t hf = hash_string(_fname);
 
         long t;
         for (t = 0; t < MAX_STEXTURES; t++)
@@ -2970,7 +2970,7 @@ long DX9RENDER::LoadFont(const char *fontName)
         sDup[sizeof(sDup) - 1] = 0;
     }
     fontName = _strupr(sDup);
-    const unsigned long hashVal = hash_string(fontName);
+    const uint32_t hashVal = hash_string(fontName);
 
     long i;
     for (i = 0; i < nFontQuantity; i++)
@@ -3021,7 +3021,7 @@ bool DX9RENDER::UnloadFont(const char *fontName)
         sDup[sizeof(sDup) - 1] = 0;
     }
     fontName = _strupr(sDup);
-    const unsigned long hashVal = hash_string(fontName);
+    const uint32_t hashVal = hash_string(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)
         if (FontList[i].hash == hashVal && _stricmp(FontList[i].name, fontName) == 0)
@@ -3074,7 +3074,7 @@ bool DX9RENDER::SetCurFont(const char *fontName)
         sDup[sizeof(sDup) - 1] = 0;
     }
     fontName = _strupr(sDup);
-    const unsigned long hashVal = hash_string(fontName);
+    const uint32_t hashVal = hash_string(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)
         if (FontList[i].hash == hashVal)
@@ -3867,7 +3867,7 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     VideoTextureEntity *pVTLcur = pVTL;
 
     // check already loaded
-    const unsigned long newHash = hash_string(sVideoName);
+    const uint32_t newHash = hash_string(sVideoName);
     while (pVTLcur != nullptr)
     {
         if (pVTLcur->hash == newHash && _stricmp(pVTLcur->name, sVideoName) == 0)

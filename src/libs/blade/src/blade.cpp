@@ -110,19 +110,19 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
 
             auto fcol0 = static_cast<float>((color[0] >> 24) & 0xFF);
             auto fcol1 = static_cast<float>((color[1] >> 24) & 0xFF);
-            auto a = static_cast<unsigned long>(fcol0 + blend * (fcol1 - fcol0));
+            auto a = static_cast<uint32_t>(fcol0 + blend * (fcol1 - fcol0));
 
             fcol0 = static_cast<float>((color[0] >> 16) & 0xFF);
             fcol1 = static_cast<float>((color[1] >> 16) & 0xFF);
-            auto r = static_cast<unsigned long>(fcol0 + blend * (fcol1 - fcol0));
+            auto r = static_cast<uint32_t>(fcol0 + blend * (fcol1 - fcol0));
 
             fcol0 = static_cast<float>((color[0] >> 8) & 0xFF);
             fcol1 = static_cast<float>((color[1] >> 8) & 0xFF);
-            auto g = static_cast<unsigned long>(fcol0 + blend * (fcol1 - fcol0));
+            auto g = static_cast<uint32_t>(fcol0 + blend * (fcol1 - fcol0));
 
             fcol0 = static_cast<float>((color[0] >> 0) & 0xFF);
             fcol1 = static_cast<float>((color[1] >> 0) & 0xFF);
-            auto b = static_cast<unsigned long>(fcol0 + blend * (fcol1 - fcol0));
+            auto b = static_cast<uint32_t>(fcol0 + blend * (fcol1 - fcol0));
 
             vrt[v * 2 + 2].diffuse = vrt[v * 2 + 3].diffuse = (a << 24) | (r << 16) | (g << 8) | b;
         }

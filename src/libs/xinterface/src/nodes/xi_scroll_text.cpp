@@ -203,10 +203,10 @@ long CXI_SCROLLTEXT::FillPices(char *pt, size_t beg, size_t size, long &idx, STR
                 retVal = 0;
                 break;
             }
-            if (static_cast<unsigned long>(chQuantity + sw) > size)
+            if (static_cast<uint32_t>(chQuantity + sw) > size)
                 break;
         }
-        if (static_cast<unsigned long>(chQuantity) == size)
+        if (static_cast<uint32_t>(chQuantity) == size)
         {
         }
         else
@@ -221,7 +221,7 @@ long CXI_SCROLLTEXT::FillPices(char *pt, size_t beg, size_t size, long &idx, STR
 
 long CXI_SCROLLTEXT::GetStringWord(char *pstr, char *buff, size_t size)
 {
-    unsigned long retVal = 0;
+    uint32_t retVal = 0;
 
     auto bSpace = false;
     while (*pstr != 0)

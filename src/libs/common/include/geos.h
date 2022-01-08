@@ -63,7 +63,7 @@ class GEOS
     {
         VERTEX pos;
         float weight;
-        unsigned long boneid;
+        uint32_t boneid;
         VERTEX nrm;
         long color;
         float tu0, tv0;

@@ -307,7 +307,7 @@ rec_loop:;
     if (ssrc * ssrc < radius * radius)
     {
         auto *pface = (unsigned char *)&node->face;
-        for (unsigned long f = 0; f < node->nfaces; f++)
+        for (uint32_t f = 0; f < node->nfaces; f++)
         {
             const long face = (static_cast<long>(*(pface + 2)) << 16) | (static_cast<long>(*(pface + 1)) << 8) |
                               (static_cast<long>(*(pface + 0)) << 0);

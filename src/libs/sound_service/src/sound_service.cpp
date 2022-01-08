@@ -848,13 +848,13 @@ void SoundService::SetActiveWithFade(const bool active)
 
     FMOD::ChannelGroup* mastergroup;
     CHECKFMODERR(system->getMasterChannelGroup(&mastergroup));
-    unsigned long long parentclock;
+    uint64_t parentclock;
     int rate;
     system->getSoftwareFormat(&rate, nullptr, nullptr);
     mastergroup->getDSPClock(nullptr, &parentclock);
 
     const auto dsp_clock_start = parentclock;
-    const auto dsp_clock_end = static_cast<unsigned long long>(parentclock + fadeTimeInSeconds * rate);
+    const auto dsp_clock_end = static_cast<uint64_t>(parentclock + fadeTimeInSeconds * rate);
 
     if (active)
     {

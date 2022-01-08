@@ -12,6 +12,8 @@ geometry file format
 
 #pragma pack(push, 1)
 
+#include <cstdint>
+
 #include "c_vector.h"
 
 /*
@@ -250,7 +252,7 @@ struct RDF_AVERTEX0
 {
     CVECTOR pos;
     float weight;
-    unsigned long boneid;
+    uint32_t boneid;
     CVECTOR norm;
     long color;
     float tu0, tv0;
@@ -277,7 +279,7 @@ struct BSP_NODE
 {
     CVECTOR norm;
     float pd;
-    unsigned long node : 22, sign : 1, left : 1, nfaces : 4, right : 2, type : 2;
+    uint32_t node : 22, sign : 1, left : 1, nfaces : 4, right : 2, type : 2;
 
     long face;
 };

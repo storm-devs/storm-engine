@@ -876,7 +876,7 @@ bool DIALOG::Init()
     textViewport.X = static_cast<long>(m_BackParams.m_frBorderInt.left + GetScrWidth(4));
     textViewport.Y = static_cast<long>(GetScrY(437));
     textViewport.Width = static_cast<long>(m_BackParams.m_frBorderInt.right - GetScrWidth(4)) - textViewport.X;
-    textViewport.Height = static_cast<unsigned long>(GetScrHeight(66));
+    textViewport.Height = static_cast<uint32_t>(GetScrHeight(66));
     textViewport.MinZ = 0.0f;
     textViewport.MaxZ = 1.0f;
 
@@ -1188,7 +1188,7 @@ void DIALOG::UpdateDlgViewport()
     }
 
     textViewport.Height = nAllHeight;
-    textViewport.Y = static_cast<unsigned long>(static_cast<long>(m_BackParams.m_frBorderInt.bottom) - nAllHeight -
+    textViewport.Y = static_cast<uint32_t>(static_cast<long>(m_BackParams.m_frBorderInt.bottom) - nAllHeight -
                                                 GetScrHeight(DIALOG_BOTTOM_LINESPACE));
 
     const float fTopBorder = textViewport.Y - GetScrHeight(DIALOG_TOP_LINESPACE);

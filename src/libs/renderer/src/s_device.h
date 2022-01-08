@@ -32,7 +32,7 @@ struct STEXTURE
 {
     IDirect3DBaseTexture9 *d3dtex;
     char *name;
-    unsigned long hash;
+    uint32_t hash;
     long ref;
     uint32_t dwSize;
     bool isCubeMap;
@@ -60,7 +60,7 @@ struct INDEX_BUFFER
 struct FONTEntity
 {
     char *name;
-    unsigned long hash;
+    uint32_t hash;
     FONT *font;
     long ref;
 };
@@ -68,7 +68,7 @@ struct FONTEntity
 struct VideoTextureEntity
 {
     char *name;
-    unsigned long hash;
+    uint32_t hash;
     long ref;
     entid_t videoTexture_id;
     CVideoTexture *VideoTexture;
