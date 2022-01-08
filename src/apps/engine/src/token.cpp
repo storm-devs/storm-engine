@@ -1,9 +1,10 @@
 #include "token.h"
+
 #include <cstdio>
 
 #include "defines.h"
-
 #include "utf8.h"
+#include <storm/string_compare.hpp>
 
 #define DISCARD_DATABUFFER                                                                                             \
     {                                                                                                                  \
@@ -1063,7 +1064,7 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
     /*keywords_num = sizeof(Keywords)/sizeof(S_KEYWORD);
     for(n=0;n<keywords_num;n++)
     {
-      if(_stricmp(pTokenData,Keywords[n].name) == 0)
+      if(storm::iEquals(pTokenData,Keywords[n].name))
       {
         eTokenType = Keywords[n].type;
         break;
@@ -1205,7 +1206,7 @@ S_TOKEN_TYPE TOKEN::Keyword2TokenType(const char *pString)
     /*    DWORD n;
       for(n=0;n<dwKeywordsNum;n++)
       {
-        if(_stricmp(pString,Keywords[n].name) == 0)
+        if(storm::iEquals(pString,Keywords[n].name))
         {
           return Keywords[n].type;
         }
@@ -1216,7 +1217,7 @@ S_TOKEN_TYPE TOKEN::Keyword2TokenType(const char *pString)
     for (uint32_t n = 0; n < KeywordsHash[hash].dwNum; n++)
     {
         const uint32_t index = KeywordsHash[hash].pIndex[n];
-        if (_stricmp(pString, Keywords[index].name) == 0)
+        if (storm::iEquals(pString, Keywords[index].name))
         {
             return Keywords[index].type;
         }

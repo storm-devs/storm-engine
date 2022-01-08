@@ -230,7 +230,7 @@ KEY_NODE *SECTION::FindKey(KEY_NODE *from, const char *key_name, const char *key
         const auto flags = node->SetFlags(0);
         if (flags & KNF_KEY)
         {
-            if (_stricmp(key_name, node->GetName()) == 0)
+            if (storm::iEquals(key_name, node->GetName()))
             {
                 if (key_value == nullptr)
                     return node;
@@ -238,7 +238,7 @@ KEY_NODE *SECTION::FindKey(KEY_NODE *from, const char *key_name, const char *key
                 auto *const char_PTR = node->GetValue();
                 if (char_PTR != nullptr)
                 {
-                    if (_stricmp(key_value, char_PTR) == 0)
+                    if (storm::iEquals(key_value, char_PTR))
                         return node;
                 }
             }
@@ -709,7 +709,7 @@ SECTION *IFS::FindSection(const char *section_name)
             return nullptr;
         }
         if (node->GetName() != nullptr)
-            if (_stricmp(section_name, node->GetName()) == 0)
+            if (storm::iEquals(section_name, node->GetName()))
                 return node;
         node = node->GetRightNode();
     }
@@ -730,7 +730,7 @@ SECTION *IFS::FindSection(const char *section_name, SECTION *snode)
             // if node exist and name is correct return ok
             if (section_name != nullptr)
             {
-                if (_stricmp(section_name, node->GetName()) == 0)
+                if (storm::iEquals(section_name, node->GetName()))
                     return node;
             }
             else
@@ -754,7 +754,7 @@ SECTION *IFS::FindSection(const char *section_name, SECTION *snode)
                 return node;
         }
         if (node->GetName() != nullptr)
-            if (_stricmp(section_name, node->GetName()) == 0)
+            if (storm::iEquals(section_name, node->GetName()))
                 return node;
         node = node->GetRightNode();
     }
@@ -891,7 +891,7 @@ bool IFS::ReadStringNext(SEARCH_DATA *sd, const char *section_name, const char *
         if (start == true)
         {
             // if(CompareStrings(node->GetName(),key_name) == 0)
-            if (_stricmp(node->GetName(), key_name) == 0)
+            if (storm::iEquals(node->GetName(), key_name))
             {
                 if (buffer == nullptr)
                     throw std::runtime_error("zero buffer");

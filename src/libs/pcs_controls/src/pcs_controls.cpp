@@ -127,7 +127,7 @@ int32_t PCS_CONTROLS::CreateControl(const char *control_name)
         return INVALID_CONTROL_CODE;
     for (n = 0; n < nControlsNum; n++)
     {
-        if (_stricmp(control_name, pUserControls[n].name) == 0)
+        if (storm::iEquals(control_name, pUserControls[n].name))
             return n;
     }
     n = nControlsNum;
@@ -209,7 +209,7 @@ bool PCS_CONTROLS::GetControlState(const char *control_name, CONTROL_STATE &_sta
       if(control_name == 0) return false;
       for(n=0;n<nControlsNum;n++)
       {
-        if(_stricmp(control_name,pUserControls[n].name)==0) return GetControlState(n,_state_struct);
+        if(storm::iEquals(control_name,pUserControls[n].name)) return GetControlState(n,_state_struct);
       }
       return false;
       //*/
@@ -227,7 +227,7 @@ bool PCS_CONTROLS::GetControlState(const char *control_name, CONTROL_STATE &_sta
         return false;
     for (n = 0; n < nControlsNum; n++)
     {
-        if (_stricmp(control_name, pUserControls[n].name) == 0)
+        if (storm::iEquals(control_name, pUserControls[n].name))
         {
             if (pUserControls[n].bLocked)
             {
@@ -522,7 +522,7 @@ bool PCS_CONTROLS::SetControlState(const char *control_name, CONTROL_STATE &_sta
         return false;
     for (n = 0; n < nControlsNum; n++)
     {
-        if (_stricmp(control_name, pUserControls[n].name) == 0)
+        if (storm::iEquals(control_name, pUserControls[n].name))
             return SetControlState(n, _state_struct);
     }
     return false;
@@ -556,7 +556,7 @@ void PCS_CONTROLS::LockControl(const char *control_name, bool mode)
     }
     for (n = 0; n < nControlsNum; n++)
     {
-        if (_stricmp(control_name, pUserControls[n].name) == 0)
+        if (storm::iEquals(control_name, pUserControls[n].name))
         {
             pUserControls[n].bLocked = mode;
             pUserControls[n].state = FORCE_DWORD;

@@ -218,27 +218,27 @@ const char *CXI_UTILS::StringGetTokenString(char *&pcString, char *pcBuffer, int
 
 int32_t CXI_UTILS::StringGetTokenCode(const char *pcTokenID)
 {
-    if (_stricmp(pcTokenID, "color") == 0)
+    if (storm::iEquals(pcTokenID, "color"))
         return InterfaceToken_color;
-    if (_stricmp(pcTokenID, "file") == 0)
+    if (storm::iEquals(pcTokenID, "file"))
         return InterfaceToken_file;
-    if (_stricmp(pcTokenID, "piclist") == 0)
+    if (storm::iEquals(pcTokenID, "piclist"))
         return InterfaceToken_picture_list;
-    if (_stricmp(pcTokenID, "picname") == 0)
+    if (storm::iEquals(pcTokenID, "picname"))
         return InterfaceToken_picture_name;
-    if (_stricmp(pcTokenID, "piccutuv") == 0)
+    if (storm::iEquals(pcTokenID, "piccutuv"))
         return InterfaceToken_picture_cut_uv;
-    if (_stricmp(pcTokenID, "size") == 0)
+    if (storm::iEquals(pcTokenID, "size"))
         return InterfaceToken_size;
-    if (_stricmp(pcTokenID, "rectUV") == 0)
+    if (storm::iEquals(pcTokenID, "rectUV"))
         return InterfaceToken_rectUV;
-    if (_stricmp(pcTokenID, "pos") == 0)
+    if (storm::iEquals(pcTokenID, "pos"))
         return InterfaceToken_pos;
-    if (_stricmp(pcTokenID, "text") == 0)
+    if (storm::iEquals(pcTokenID, "text"))
         return InterfaceToken_text;
-    if (_stricmp(pcTokenID, "width") == 0)
+    if (storm::iEquals(pcTokenID, "width"))
         return InterfaceToken_width;
-    if (_stricmp(pcTokenID, "class") == 0)
+    if (storm::iEquals(pcTokenID, "class"))
         return InterfaceToken_class;
 
     return InterfaceToken_unknown;

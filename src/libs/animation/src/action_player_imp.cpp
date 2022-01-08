@@ -10,6 +10,8 @@
 
 #include "animation_imp.h"
 
+#include "../../util/include/storm/string_compare.hpp"
+
 // ============================================================================================
 // Construction, destruction
 // ============================================================================================
@@ -50,7 +52,7 @@ void ActionPlayerImp::SetAnimation(AnimationImp *animation, int32_t index)
 // Set current action
 bool ActionPlayerImp::SetAction(const char *actionName)
 {
-    if (actionName && action && _stricmp(action->GetName(), actionName) == 0)
+    if (actionName && action && storm::iEquals(action->GetName(), actionName))
         return true;
     action = nullptr;
     isPlay = isPause = false;

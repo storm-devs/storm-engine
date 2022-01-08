@@ -82,9 +82,9 @@ uint64_t ActivePerkShower::ProcessMessage(MESSAGE &message)
     case MSG_ACTIVE_PERK_LIST_REFRESH: {
         const std::string &param = message.String();
         auto *const pA = message.AttributePointer();
-        if (_stricmp(param.c_str(), "add") == 0)
+        if (storm::iEquals(param, "add"))
             AddIconToList(pA);
-        else if (_stricmp(param.c_str(), "del") == 0)
+        else if (storm::iEquals(param, "del"))
             DelIconFromList(pA);
     }
     break;

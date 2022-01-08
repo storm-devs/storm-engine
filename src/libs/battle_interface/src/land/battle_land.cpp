@@ -104,7 +104,7 @@ uint64_t BATTLE_LAND_INTERFACE::ProcessMessage(MESSAGE &message)
 
     case MSG_BATTLE_LAND_MAKE_COMMAND: {
         const std::string &param = message.String();
-        if (_stricmp(param.c_str(), "cancel") == 0)
+        if (storm::iEquals(param, "cancel"))
         {
             if (m_pManSign)
                 m_pManSign->ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);

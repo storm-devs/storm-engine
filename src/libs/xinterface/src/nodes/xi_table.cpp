@@ -230,21 +230,21 @@ void XI_TableCellDescribe::SetData(int32_t nColIndex, ATTRIBUTES *pAttr, bool bH
     pcTmpStr = pAttr->GetAttribute("align");
     if (pcTmpStr)
     {
-        if (_stricmp(pcTmpStr, "left") == 0)
+        if (storm::iEquals(pcTmpStr, "left"))
             m_nAlignment = PR_ALIGN_LEFT;
-        if (_stricmp(pcTmpStr, "center") == 0)
+        if (storm::iEquals(pcTmpStr, "center"))
             m_nAlignment = PR_ALIGN_CENTER;
-        if (_stricmp(pcTmpStr, "right") == 0)
+        if (storm::iEquals(pcTmpStr, "right"))
             m_nAlignment = PR_ALIGN_RIGHT;
     }
     pcTmpStr = pAttr->GetAttribute("valign");
     if (pcTmpStr)
     {
-        if (_stricmp(pcTmpStr, "top") == 0)
+        if (storm::iEquals(pcTmpStr, "top"))
             m_nVAlignment = ALIGN_TOP;
-        if (_stricmp(pcTmpStr, "center") == 0)
+        if (storm::iEquals(pcTmpStr, "center"))
             m_nVAlignment = PR_ALIGN_CENTER;
-        if (_stricmp(pcTmpStr, "bottom") == 0)
+        if (storm::iEquals(pcTmpStr, "bottom"))
             m_nVAlignment = ALIGN_BOTTOM;
     }
 
@@ -340,9 +340,9 @@ void XI_TableCellDescribe::LoadImageParam(ImgDescribe *pImg, ATTRIBUTES *pA) con
     if ((pcStr = pA->GetAttribute("valign")) != nullptr)
     {
         nImgAlign = ALIGN_TOP;
-        if (_stricmp(pcStr, "center") == 0)
+        if (storm::iEquals(pcStr, "center"))
             nImgAlign = PR_ALIGN_CENTER;
-        else if (_stricmp(pcStr, "bottom") == 0)
+        else if (storm::iEquals(pcStr, "bottom"))
             nImgAlign = ALIGN_BOTTOM;
         if (nImgAlign != ALIGN_TOP)
         {
@@ -795,16 +795,16 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     m_nFontCellVAlignment = ALIGN_TOP;
     if (ReadIniString(ini1, name1, ini2, name2, "fontcellalignment", param, sizeof(param), ""))
     {
-        if (_stricmp(param, "center") == 0)
+        if (storm::iEquals(param, "center"))
             m_nFontCellAlignment = PR_ALIGN_CENTER;
-        if (_stricmp(param, "right") == 0)
+        if (storm::iEquals(param, "right"))
             m_nFontCellAlignment = PR_ALIGN_RIGHT;
     }
     if (ReadIniString(ini1, name1, ini2, name2, "fontcellvalignment", param, sizeof(param), ""))
     {
-        if (_stricmp(param, "center") == 0)
+        if (storm::iEquals(param, "center"))
             m_nFontCellVAlignment = PR_ALIGN_CENTER;
-        if (_stricmp(param, "bottom") == 0)
+        if (storm::iEquals(param, "bottom"))
             m_nFontCellVAlignment = ALIGN_BOTTOM;
     }
 
@@ -817,16 +817,16 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     m_nFontTitleVAlignment = ALIGN_TOP;
     if (ReadIniString(ini1, name1, ini2, name2, "fonttitlealignment", param, sizeof(param), ""))
     {
-        if (_stricmp(param, "center") == 0)
+        if (storm::iEquals(param, "center"))
             m_nFontTitleAlignment = PR_ALIGN_CENTER;
-        if (_stricmp(param, "right") == 0)
+        if (storm::iEquals(param, "right"))
             m_nFontTitleAlignment = PR_ALIGN_RIGHT;
     }
     if (ReadIniString(ini1, name1, ini2, name2, "fonttitlevalignment", param, sizeof(param), ""))
     {
-        if (_stricmp(param, "center") == 0)
+        if (storm::iEquals(param, "center"))
             m_nFontTitleVAlignment = PR_ALIGN_CENTER;
-        if (_stricmp(param, "bottom") == 0)
+        if (storm::iEquals(param, "bottom"))
             m_nFontTitleVAlignment = ALIGN_BOTTOM;
     }
 

@@ -28,7 +28,7 @@ struct LocationFindCacheElement
     {
         if (v.size != size)
             return false;
-        if (_stricmp(v.name, name) == 0)
+        if (storm::iEquals(v.name, name))
             return true;
         return false;
     };
@@ -70,7 +70,7 @@ inline bool CheckID(VDATA *vd, const char *id, bool &res)
     auto *const attr = a->GetThisAttr();
     if (!attr)
         return true;
-    res = _stricmp(attr, id) == 0;
+    res = storm::iEquals(attr, id);
     return true;
 }
 

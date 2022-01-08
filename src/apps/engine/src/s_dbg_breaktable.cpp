@@ -131,7 +131,7 @@ void BREAKPOINTS_TABLE::AddBreakPoint(const char *filename, uint32_t line)
     {
         if (pTable[n].nLineNumber != line)
             continue;
-        if (_stricmp(pTable[n].pFileName, filename) != 0)
+        if (!storm::iEquals(pTable[n].pFileName, filename))
             continue;
         return; // already in list
     }
@@ -163,7 +163,7 @@ void BREAKPOINTS_TABLE::DelBreakPoint(const char *filename, uint32_t line)
     {
         if (pTable[n].nLineNumber != line)
             continue;
-        if (_stricmp(pTable[n].pFileName, filename) != 0)
+        if (!storm::iEquals(pTable[n].pFileName, filename))
             continue;
 
         delete pTable[n].pFileName;
@@ -188,7 +188,7 @@ bool BREAKPOINTS_TABLE::Find(const char *filename, uint32_t line)
     {
         if (pTable[n].nLineNumber != line)
             continue;
-        if (_stricmp(pTable[n].pFileName, filename) != 0)
+        if (!storm::iEquals(pTable[n].pFileName, filename))
             continue;
 
         return true;

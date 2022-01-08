@@ -208,7 +208,7 @@ void CXI_PICTURE::SetNewPictureFromDir(const char *dirName)
 
 void CXI_PICTURE::SetNewPictureByGroup(const char *groupName, const char *picName)
 {
-    if (!m_pcGroupName || _stricmp(m_pcGroupName, groupName) != 0)
+    if (!m_pcGroupName || !storm::iEquals(m_pcGroupName, groupName))
     {
         ReleasePicture();
         if (groupName)

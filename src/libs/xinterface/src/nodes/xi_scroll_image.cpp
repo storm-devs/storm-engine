@@ -1565,7 +1565,7 @@ int CXI_SCROLLIMAGE::FindTexGroupFromOld(char **pGroupList, char *groupName, int
         return -1;
     for (int i = 0; i < listSize; i++)
     {
-        if (pGroupList[i] != nullptr && _stricmp(pGroupList[i], groupName) == 0)
+        if (pGroupList[i] != nullptr && storm::iEquals(pGroupList[i], groupName))
             return i;
     }
     return -1;

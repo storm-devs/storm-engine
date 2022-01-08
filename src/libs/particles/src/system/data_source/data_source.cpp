@@ -285,7 +285,7 @@ int DataSource::FindEmitter(const char *Name)
         auto *const pString = Emitters[n].Fields.FindString(EMITTER_NAME);
         if (pString)
         {
-            if (_stricmp(pString->GetValue(), Name) == 0)
+            if (storm::iEquals(pString->GetValue(), Name))
             {
                 return n;
             }

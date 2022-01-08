@@ -177,7 +177,7 @@ int32_t ModelArray::FindModel(const char *modelName)
     {
         if (model[i].hash == hash)
         {
-            if (_stricmp(model[i].name, buf) == 0)
+            if (storm::iEquals(model[i].name, buf))
             {
                 return i;
             }

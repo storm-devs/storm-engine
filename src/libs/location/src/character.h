@@ -850,5 +850,5 @@ inline bool Character::IsSetBlade() const
 inline bool Character::PriorityActionIsJump() const
 {
     return (priorityAction.name &&
-            (_stricmp(priorityAction.name, jump.name) == 0 || _stricmp(priorityAction.name, fall.name) == 0));
+            (storm::iEquals(priorityAction.name, jump.name) || storm::iEquals(priorityAction.name, fall.name)));
 }

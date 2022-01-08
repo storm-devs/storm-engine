@@ -373,7 +373,7 @@ CXI_STRCOLLECTION::STRINGDESCR *CXI_STRCOLLECTION::CreateNewDinamicString(const 
     int i;
     for (i = 0; i < m_nStr; i++)
     {
-        if (m_pStrDescr[i].strID != nullptr && _stricmp(m_pStrDescr[i].strID, strID) == 0)
+        if (m_pStrDescr[i].strID != nullptr && storm::iEquals(m_pStrDescr[i].strID, strID))
             break;
     }
     if (i < m_nStr)

@@ -2266,7 +2266,7 @@ uint32_t SAIL::ScriptProcessing(const char *name, MESSAGE &message)
     if (name == nullptr)
         return 0;
 
-    if (_stricmp(name, "RandomSailsDmg") == 0)
+    if (storm::iEquals(name, "RandomSailsDmg"))
     {
         const int32_t chrIdx = message.Long();
         const float fDmg = message.Float();
@@ -2275,7 +2275,7 @@ uint32_t SAIL::ScriptProcessing(const char *name, MESSAGE &message)
             DoRandomsSailsDmg(chrIdx, gn, fDmg);
     }
 
-    if (_stricmp(name, "SailRollSpeed") == 0)
+    if (storm::iEquals(name, "SailRollSpeed"))
     {
         const int32_t chrIdx = message.Long();
         const float fSpeed = message.Float();
@@ -2284,7 +2284,7 @@ uint32_t SAIL::ScriptProcessing(const char *name, MESSAGE &message)
             gdata[gn].fRollingSpeed = fSpeed * ROLLINGSPEED;
     }
 
-    if (_stricmp(name, "GetSailStatus") == 0)
+    if (storm::iEquals(name, "GetSailStatus"))
     {
         int32_t chrIdx = message.Long();
         int gn = FindGroupForCharacter(chrIdx);

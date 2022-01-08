@@ -123,7 +123,7 @@ void AIBalls::AddBall(ATTRIBUTES *pABall)
 
     uint32_t i;
     for (i = 0; i < aBallTypes.size(); i++)
-        if (_stricmp(aBallTypes[i].sName.c_str(), pBallName) == 0)
+        if (storm::iEquals(aBallTypes[i].sName, pBallName))
             break;
     if (i == aBallTypes.size())
         return;

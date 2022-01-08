@@ -216,7 +216,7 @@ class EntityManager final
         VMA *pClass = nullptr;
         for (const auto &c : __STORM_CLASSES_REGISTRY)
         {
-            if (c->GetHash() == hash && _stricmp(name, c->GetName()) == 0)
+            if (c->GetHash() == hash && storm::iEquals(name, c->GetName()))
             {
                 pClass = c;
                 break;

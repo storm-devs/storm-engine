@@ -67,7 +67,7 @@ class AIShipCannonController
         int operator==(const char *pStr) const
         {
             Assert(pStr && pStr[0]);
-            return (_stricmp(sName.c_str(), pStr) == 0);
+            return (storm::iEquals(sName, pStr));
         }
     };
 

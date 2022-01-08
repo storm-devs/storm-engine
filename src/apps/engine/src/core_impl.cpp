@@ -443,7 +443,7 @@ void *CoreImpl::MakeClass(const char *class_name)
 {
     const int32_t hash = MakeHashValue(class_name);
     for (auto *const c : __STORM_CLASSES_REGISTRY)
-        if (c->GetHash() == hash && _stricmp(class_name, c->GetName()) == 0)
+        if (c->GetHash() == hash && storm::iEquals(class_name, c->GetName()))
             return c->CreateClass();
 
     return nullptr;
@@ -462,7 +462,7 @@ VMA *CoreImpl::FindVMA(const char *class_name)
 {
     const int32_t hash = MakeHashValue(class_name);
     for (auto *const c : __STORM_CLASSES_REGISTRY)
-        if (c->GetHash() == hash && _stricmp(class_name, c->GetName()) == 0)
+        if (c->GetHash() == hash && storm::iEquals(class_name, c->GetName()))
             return c;
 
     return nullptr;

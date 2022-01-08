@@ -244,13 +244,13 @@ int32_t AnimationServiceImp::LoadAnimation(const char *animationName)
         auto type = at_normal;
         if (ani->ReadString(path, ASKW_TYPE, key, 256, ASKWAT_NORMAL))
         {
-            if (_stricmp(key, ASKWAT_NORMAL) == 0)
+            if (storm::iEquals(key, ASKWAT_NORMAL))
                 type = at_normal;
-            else if (_stricmp(key, ASKWAT_REVERSE) == 0)
+            else if (storm::iEquals(key, ASKWAT_REVERSE))
                 type = at_reverse;
-            else if (_stricmp(key, ASKWAT_PINGPONG) == 0)
+            else if (storm::iEquals(key, ASKWAT_PINGPONG))
                 type = at_pingpong;
-            else if (_stricmp(key, ASKWAT_RPINGPONG) == 0)
+            else if (storm::iEquals(key, ASKWAT_RPINGPONG))
                 type = at_rpingpong;
             else
             {
@@ -263,9 +263,9 @@ int32_t AnimationServiceImp::LoadAnimation(const char *animationName)
         auto isLoop = true;
         if (ani->ReadString(path, ASKW_LOOP, key, 256, "false"))
         {
-            if (_stricmp(key, ASKWAL_TRUE) == 0)
+            if (storm::iEquals(key, ASKWAL_TRUE))
                 isLoop = true;
-            else if (_stricmp(key, ASKWAL_FALSE) == 0)
+            else if (storm::iEquals(key, ASKWAL_FALSE))
                 isLoop = false;
             else
             {
@@ -368,15 +368,15 @@ int32_t AnimationServiceImp::LoadAnimation(const char *animationName)
                     if (em[0] == 0)
                     {
                     }
-                    else if (_stricmp(em, ASKWAE_ALWAYS) == 0)
+                    else if (storm::iEquals(em, ASKWAE_ALWAYS))
                     {
                         ev = eae_always;
                     }
-                    else if (_stricmp(em, ASKWAE_NORMAL) == 0)
+                    else if (storm::iEquals(em, ASKWAE_NORMAL))
                     {
                         ev = eae_normal;
                     }
-                    else if (_stricmp(em, ASKWAE_REVERSE) == 0)
+                    else if (storm::iEquals(em, ASKWAE_REVERSE))
                     {
                         ev = eae_reverse;
                     }

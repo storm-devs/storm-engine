@@ -167,7 +167,7 @@ CINODE *CINODE::FindNode(CINODE *pNod, const char *sNodName)
         return nullptr;
     while (pNod)
     {
-        if (pNod->m_nodeName && _stricmp(sNodName, pNod->m_nodeName) == 0)
+        if (pNod->m_nodeName && storm::iEquals(sNodName, pNod->m_nodeName))
             break;
         if (pNod->m_list)
         {
@@ -217,7 +217,7 @@ CINODE *CINODE::FindNode(CINODE *pNod, float x, float y)
 
 /*CINODE*    CINODE::FindNode(const char* sNodName)
 {
-    if( sNodName!=null && _stricmp(sNodName,m_nodeName)==0 )
+    if( sNodName!=null && storm::iEquals(sNodName,m_nodeName))
         return this;
     CINODE* retVal;
     if( m_list!=null )

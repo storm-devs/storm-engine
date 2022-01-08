@@ -477,9 +477,9 @@ void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     }
 
     ReadIniString(ini1, name1, ini2, name2, "alignment", param, sizeof(param), "left");
-    if (_stricmp(param, "center") == 0)
+    if (storm::iEquals(param, "center"))
         m_nAlignment = PR_ALIGN_CENTER;
-    else if (_stricmp(param, "right") == 0)
+    else if (storm::iEquals(param, "right"))
         m_nAlignment = PR_ALIGN_RIGHT;
     else
         m_nAlignment = PR_ALIGN_LEFT;

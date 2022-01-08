@@ -1049,7 +1049,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
             if (pA)
             {
                 char *goName = pA->GetAttribute("go");
-                if (!goName || _stricmp(goName, selectedLinkName) == 0)
+                if (!goName || storm::iEquals(goName, selectedLinkName))
                     EmergencyExit();
                 else
                 {
@@ -1101,14 +1101,14 @@ uint32_t DIALOG::AttributeChanged(ATTRIBUTES *pA)
     if (par != nullptr)
     {
         const char *parname = par->GetThisName();
-        if (parname != nullptr && _stricmp(parname, "Links") == 0)
+        if (parname != nullptr && storm::iEquals(parname, "Links"))
             parLinks = true;
     }
 
     const char *nm = pA->GetThisName();
 
     // play sound d.speech
-    if (!parLinks && nm && _stricmp(nm, "greeting") == 0) // was "snd"
+    if (!parLinks && nm && storm::iEquals(nm, "greeting")) // was "snd"
     {
         strcpy_s(soundName, pA->GetThisAttr());
         if (start)

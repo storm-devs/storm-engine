@@ -320,7 +320,7 @@ uint32_t CXI_BUTTON::MessageProc(int32_t msgcode, MESSAGE &message)
         if (len == 1)
             break;
 
-        if (m_sGroupName == nullptr || _stricmp(m_sGroupName, param.c_str()) != 0)
+        if (m_sGroupName == nullptr || !storm::iEquals(m_sGroupName, param))
         {
             PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
             STORM_DELETE(m_sGroupName);

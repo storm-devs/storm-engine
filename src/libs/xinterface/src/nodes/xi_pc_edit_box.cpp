@@ -190,9 +190,9 @@ void CXI_PCEDITBOX::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     m_nStringAlign = PR_ALIGN_LEFT;
     if (ReadIniString(ini1, name1, ini2, name2, "stringalign", param, sizeof(param), "center"))
     {
-        if (_stricmp(param, "center") == 0)
+        if (storm::iEquals(param, "center"))
             m_nStringAlign = PR_ALIGN_CENTER;
-        else if (_stricmp(param, "right") == 0)
+        else if (storm::iEquals(param, "right"))
             m_nStringAlign = PR_ALIGN_RIGHT;
     }
     // m_pntFontOffset.x += m_rect.left;

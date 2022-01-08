@@ -140,7 +140,7 @@ int32_t BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
     STORM_DELETE(m_pInterfaceSheet);
 
     const std::string &param = message.String();
-    if (_stricmp(param.c_str(), "sea") == 0)
+    if (storm::iEquals(param, "sea"))
     {
         // loading sea interface
         m_pInterfaceSheet = new BI_SeaGroup(this);
@@ -149,7 +149,7 @@ int32_t BI_InterfaceManager::MsgLoadSheet(MESSAGE &message)
             m_pInterfaceSheet->Init();
         }
     }
-    else if (_stricmp(param.c_str(), "land") == 0)
+    else if (storm::iEquals(param, "land"))
     {
         // loading the land interface
     }

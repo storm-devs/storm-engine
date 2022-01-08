@@ -214,7 +214,7 @@ void TM_LIST::SelectItem(const char *name)
     for (int32_t n = 0; n < items; n++)
     {
         GetItemText(n, 0, SearchName, sizeof(SearchName));
-        if (_stricmp(SearchName, name) == 0)
+        if (storm::iEquals(SearchName, name))
         {
             ListView_SetItemState(GetWindowHandle(), n, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
             return;

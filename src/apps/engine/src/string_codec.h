@@ -94,7 +94,7 @@ class STRING_CODEC : public VSTRING_CODEC
 
         for (n = 0; n < pE->nStringsNum; n++)
         {
-            if (pE->pElements[n].dwHashCode == nHash && _stricmp(pString, pE->pElements[n].pStr) == 0)
+            if (pE->pElements[n].dwHashCode == nHash && storm::iEquals(pString, pE->pElements[n].pStr))
             {
                 nStringCode = (nTableIndex << 16) | (n & 0xffff);
                 bNew = false;

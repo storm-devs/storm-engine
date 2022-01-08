@@ -484,7 +484,7 @@ bool InterfaceBackScene::FindLocator(const char *pcLocName, CMatrix *pMtx, CVECT
         for (int32_t l = 0; l < ginf.nlabels; l++)
         {
             pNod->geo->GetLabel(l, lbl);
-            if (lbl.name && _stricmp(pcLocName, lbl.name) == 0)
+            if (lbl.name && storm::iEquals(pcLocName, lbl.name))
             {
                 if (pMtx)
                 {
@@ -523,7 +523,7 @@ void InterfaceBackScene::SetLocatorPosition(MODEL *pModel, const char *pcLocName
             for (int32_t l = 0; l < ginf.nlabels; l++)
             {
                 pNod->geo->GetLabel(l, lbl);
-                if (lbl.name && _stricmp(pcLocName, lbl.name) == 0)
+                if (lbl.name && storm::iEquals(pcLocName, lbl.name))
                 {
                     pos.x = lbl.m[3][0];
                     pos.y = lbl.m[3][1];

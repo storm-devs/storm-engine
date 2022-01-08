@@ -182,7 +182,7 @@ uint64_t ILogAndActions::ProcessMessage(MESSAGE &message)
         break;
     case LI_OTHER_MSG: {
         const std::string &param = message.String();
-        if (_stricmp(param.c_str(), "SetTimeScale") == 0)
+        if (storm::iEquals(param, "SetTimeScale"))
         {
             core.SetTimeScale(message.Float());
         }
@@ -428,7 +428,7 @@ void ILogAndActions::SetString(const char *str, bool immortal)
             last = last->next;
 
     // Return if such a line already exists and it is last
-    if (last != nullptr && last->str != nullptr && _stricmp(last->str, str) == 0)
+    if (last != nullptr && last->str != nullptr && storm::iEquals(last->str, str))
         return;
 
     // create a new line descriptor

@@ -606,7 +606,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
     bool bCurrentActionIsFire = false;
     if (fgtCurType == fgt_none && priorityAction.name && shot.name)
     {
-        if (_stricmp(priorityAction.name, shot.name) == 0)
+        if (storm::iEquals(priorityAction.name, shot.name))
         {
             bCurrentActionIsFire = true;
         }
@@ -767,7 +767,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
     SetExCharacter(c);
     if (fgtCurType == fgt_none && priorityAction.name && shot.name)
     {
-        if (_stricmp(priorityAction.name, shot.name) == 0)
+        if (storm::iEquals(priorityAction.name, shot.name))
         {
             float kdst;
             auto target = static_cast<NPCharacter *>(FindGunTarget(kdst, true));
@@ -1302,7 +1302,7 @@ NPCharacter::NPCTask NPCharacter::GetTaskID(const char *taskName)
     for (int32_t i = 0; i < npct_max; i++)
     {
         const char *task = GetTaskName(static_cast<NPCTask>(i));
-        if (_stricmp(task, taskName) == 0)
+        if (storm::iEquals(task, taskName))
             return static_cast<NPCTask>(i);
     }
     return npct_unknow;

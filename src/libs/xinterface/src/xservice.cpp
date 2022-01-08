@@ -54,7 +54,7 @@ int32_t XSERVICE::GetTextureID(const char *sImageListName)
     if (sImageListName != nullptr)
     {
         for (auto i = 0; i < m_dwListQuantity; i++)
-            if (!_stricmp(m_pList[i].sImageListName, sImageListName))
+            if (storm::iEquals(m_pList[i].sImageListName, sImageListName))
             {
                 if (m_pList[i].textureQuantity <= 0)
                 {
@@ -77,7 +77,7 @@ int32_t XSERVICE::FindGroup(const char *sImageListName) const
     if (!sImageListName)
         return -1;
     for (auto n = 0; n < m_dwListQuantity; n++)
-        if (!_stricmp(m_pList[n].sImageListName, sImageListName))
+        if (storm::iEquals(m_pList[n].sImageListName, sImageListName))
             return n;
     return -1;
 }
@@ -88,7 +88,7 @@ bool XSERVICE::ReleaseTextureID(const char *sImageListName)
         return false;
 
     for (auto i = 0; i < m_dwListQuantity; i++)
-        if (!_stricmp(m_pList[i].sImageListName, sImageListName))
+        if (storm::iEquals(m_pList[i].sImageListName, sImageListName))
             if (--m_pList[i].textureQuantity == 0)
             {
                 m_pRS->TextureRelease(m_pList[i].textureID);
@@ -362,10 +362,10 @@ int32_t XSERVICE::GetImageNum(const char *sImageListName, const char *sImageName
         if (sImageListName != nullptr)
         {
             for (int i = 0; i < m_dwListQuantity; i++)
-                if (!_stricmp(m_pList[i].sImageListName, sImageListName))
+                if (storm::iEquals(m_pList[i].sImageListName, sImageListName))
                 {
                     for (int j = m_pList[i].pictureStart; j < m_pList[i].pictureStart + m_pList[i].pictureQuantity; j++)
-                        if (!_stricmp(m_pImage[j].sPictureName, sImageName))
+                        if (storm::iEquals(m_pImage[j].sPictureName, sImageName))
                         {
                             retVal = j;
                             break;
@@ -376,7 +376,7 @@ int32_t XSERVICE::GetImageNum(const char *sImageListName, const char *sImageName
         else
         {
             for (int i = 0; i < m_dwImageQuantity; i++)
-                if (!_stricmp(m_pImage[i].sPictureName, sImageName))
+                if (storm::iEquals(m_pImage[i].sPictureName, sImageName))
                 {
                     retVal = i;
                     break;

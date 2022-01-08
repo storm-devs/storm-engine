@@ -180,25 +180,25 @@ void Lighter::Realize(uint32_t delta_time)
 uint64_t Lighter::ProcessMessage(MESSAGE &message)
 {
     const std::string &command = message.String();
-    if (_stricmp(command.c_str(), "AddModel") == 0)
+    if (storm::iEquals(command, "AddModel"))
     {
         // Adding the model
         MsgAddModel(message);
         return true;
     }
-    if (_stricmp(command.c_str(), "ModelsPath") == 0)
+    if (storm::iEquals(command, "ModelsPath"))
     {
         // Adding the model
         MsgModelsPath(message);
         return true;
     }
-    if (_stricmp(command.c_str(), "LightPath") == 0)
+    if (storm::iEquals(command, "LightPath"))
     {
         // Adding the model
         MsgLightPath(message);
         return true;
     }
-    if (_stricmp(command.c_str(), "AddLight") == 0)
+    if (storm::iEquals(command, "AddLight"))
     {
         // Adding the model
         MsgAddLight(message);
