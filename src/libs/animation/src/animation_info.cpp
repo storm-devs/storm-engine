@@ -10,7 +10,7 @@
 
 #include "animation_info.h"
 
-#include "../../util/include/storm/string_compare.hpp"
+#include "storm/string_compare.hpp"
 
 // ============================================================================================
 // Construction, destruction

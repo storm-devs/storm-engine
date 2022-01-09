@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "storm_assert.h"
-#include "../../util/include/storm/string_compare.hpp"
+#include "storm/string_compare.hpp"
 
 class VSTRING_CODEC
 {

@@ -7,7 +7,7 @@
 
 #include <fstream>
 
-#include <storm/string_compare.hpp>
+#include "storm/string_compare.hpp"
 
 namespace storm
 {
