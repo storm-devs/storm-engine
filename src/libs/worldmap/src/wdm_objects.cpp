@@ -143,7 +143,7 @@ GEOS *WdmObjects::CreateGeometry(const char *path)
     {
         if (models[i].hash == hash)
         {
-            if (_stricmp(models[i].path.c_str(), path) == 0)
+            if (storm::iEquals(models[i].path, path))
             {
                 return models[i].geo;
             }

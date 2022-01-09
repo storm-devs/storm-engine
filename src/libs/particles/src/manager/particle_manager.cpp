@@ -104,7 +104,7 @@ bool ParticleManager::OpenProject(const char *FileName)
     // std::string LongFileName = "resource\\particles\\";
     auto path = std::filesystem::path() / "resource" / "particles" / FileName;
     auto pathStr = path.extension().string();
-    if (_stricmp(pathStr.c_str(), ".prj") != 0)
+    if (!storm::iEquals(pathStr, ".prj"))
         path += ".prj";
     pathStr = path.string();
     // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
@@ -480,7 +480,7 @@ bool ParticleManager::FindInEnumUsedGeom(const char *GeomName)
     for (uint32_t n = 0; n < EnumUsedGeom.size(); n++)
     {
         const char *StoredGeomName = EnumUsedGeom[n].c_str();
-        if (_stricmp(StoredGeomName, GeomName) == 0)
+        if (storm::iEquals(StoredGeomName, GeomName))
             return true;
     }
     return false;

@@ -544,7 +544,7 @@ uint32_t S_DEBUG::GetLineStatus(const char *_pFileName, uint32_t _linecode)
 {
     // nDebugTraceLineCode
     if (core_internal.Compiler->pRun_fi && !core_internal.Compiler->pRun_fi->decl_file_name.empty())
-        if (_stricmp(core_internal.Compiler->pRun_fi->decl_file_name.c_str(), _pFileName) == 0)
+        if (storm::iEquals(core_internal.Compiler->pRun_fi->decl_file_name, _pFileName))
         {
             if (_linecode == core_internal.Compiler->nDebugTraceLineCode)
                 return LST_CONTROL;
@@ -719,7 +719,7 @@ void S_DEBUG::Add2RecentFiles(const char *pFileName)
         buffer[0] = 0;
         if (RegQueryValueEx(hKey, knW, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize) == ERROR_SUCCESS)
         {
-            if (_stricmp(buffer, pFileName) == 0)
+            if (storm::iEquals(buffer, pFileName))
             {
                 // already in recent files list
                 RegCloseKey(hKey);
@@ -896,7 +896,7 @@ int32_t S_DEBUG::GetRecentFileALine(const char *pFileName)
         buffer[0] = 0;
         if (RegQueryValueEx(hKey, knW, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize) == ERROR_SUCCESS)
         {
-            if (_stricmp(buffer, pFileName) == 0)
+            if (storm::iEquals(buffer, pFileName))
             {
                 wsprintf(knW, L"line%d", n);
 
@@ -938,7 +938,7 @@ void S_DEBUG::SaveRecentFileALine(const char *pFileName, int32_t nLine)
         buffer[0] = 0;
         if (RegQueryValueEx(hKey, knW, nullptr, nullptr, (unsigned char *)buffer, (LPDWORD)&dwSize) == ERROR_SUCCESS)
         {
-            if (_stricmp(buffer, pFileName) == 0)
+            if (storm::iEquals(buffer, pFileName))
             {
                 wsprintf(knW, L"line%d", n);
                 RegSetValueEx(hKey, knW, 0, REG_DWORD, (const unsigned char *)&nLine, sizeof(uint32_t));

@@ -67,7 +67,7 @@ bool Lights::Init()
         int32_t i;
         for (i = 0; i < numTypes; i++)
         {
-            if (_stricmp(lName, types[i].name) == 0)
+            if (storm::iEquals(lName, types[i].name))
             {
                 core.Trace("Location lights redefinition light: %s", lName);
                 break;
@@ -375,7 +375,7 @@ int32_t Lights::FindLight(const char *name)
     if (!name || !name[0])
         return -1;
     for (int32_t i = 0; i < numTypes; i++)
-        if (_stricmp(name, types[i].name) == 0)
+        if (storm::iEquals(name, types[i].name))
             return i;
     return -1;
 }

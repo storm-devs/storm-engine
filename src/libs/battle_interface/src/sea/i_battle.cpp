@@ -318,7 +318,7 @@ uint64_t BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
 
     case MSG_BATTLE_LAND_MAKE_COMMAND: {
         const std::string &param = message.String();
-        if (_stricmp(param.c_str(), "cancel") == 0)
+        if (storm::iEquals(param, "cancel"))
         {
             if (m_pShipIcon)
                 m_pShipIcon->ExecuteCommand(BIShipIcon::Command_cancel);

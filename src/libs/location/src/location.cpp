@@ -597,11 +597,11 @@ bool Location::LoadGrass(const char *modelName, const char *texture)
 
 bool Location::MessageEx(const char *name, MESSAGE &message)
 {
-    if (_stricmp(name, "DelAllLights") == 0)
+    if (storm::iEquals(name, "DelAllLights"))
     {
         lights->DelAllLights();
     }
-    else if (_stricmp(name, "AddFlys") == 0)
+    else if (storm::iEquals(name, "AddFlys"))
     {
         const auto effects = EntityManager::GetEntityId("LocationEffects");
         const auto x = message.Float();
@@ -610,13 +610,13 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         core.Send_Message(effects, "sfff", "AddFly", x, y, z);
         return true;
     }
-    else if (_stricmp(name, "DelFlys") == 0)
+    else if (storm::iEquals(name, "DelFlys"))
     {
         const auto effects = EntityManager::GetEntityId("LocationEffects");
         core.Send_Message(effects, "s", "DelFlys");
         return true;
     }
-    else if (_stricmp(name, "GetPatchMiddlePos") == 0)
+    else if (storm::iEquals(name, "GetPatchMiddlePos"))
     {
         VDATA *vx = message.ScriptVariablePointer();
         if (!vx)
@@ -632,17 +632,17 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         vz->Set(ptc.middle.z);
         return true;
     }
-    else if (_stricmp(name, "AddEagle") == 0)
+    else if (storm::iEquals(name, "AddEagle"))
     {
         eagle = EntityManager::CreateEntity("LocEagle");
         return true;
     }
-    else if (_stricmp(name, "AddLizards") == 0)
+    else if (storm::iEquals(name, "AddLizards"))
     {
         lizards = EntityManager::CreateEntity("Lizards");
         return true;
     }
-    else if (_stricmp(name, "AddRats") == 0)
+    else if (storm::iEquals(name, "AddRats"))
     {
         rats = EntityManager::CreateEntity("LocRats");
         if (!core.Send_Message(rats, "l", message.Long()))
@@ -652,7 +652,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         }
         return true;
     }
-    else if (_stricmp(name, "AddCrabs") == 0)
+    else if (storm::iEquals(name, "AddCrabs"))
     {
         crabs = EntityManager::CreateEntity("LocCrabs");
         if (!core.Send_Message(crabs, "l", message.Long()))
@@ -663,7 +663,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
 
         return true;
     }
-    else if (_stricmp(name, "AddBlood") == 0)
+    else if (storm::iEquals(name, "AddBlood"))
     {
         if (!EntityManager::GetEntityPointer(blood))
         {
@@ -678,12 +678,12 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         core.Send_Message(blood, "lfff", 2, vPos.x, vPos.y, vPos.z);
         return true;
     }
-    else if (_stricmp(name, "TestLocatorsGroup") == 0)
+    else if (storm::iEquals(name, "TestLocatorsGroup"))
     {
         TestLocatorsInPatch(message);
         return true;
     }
-    else if (_stricmp(name, "DeleteLocationModel") == 0)
+    else if (storm::iEquals(name, "DeleteLocationModel"))
     {
         const std::string &modelname = message.String();
         const int32_t n = model.FindModel(modelname.c_str());
@@ -691,7 +691,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
             model.DeleteModel(n);
         return true;
     }
-    else if (_stricmp(name, "HideLocationModel") == 0)
+    else if (storm::iEquals(name, "HideLocationModel"))
     {
         const std::string &modelname = message.String();
         const int32_t n = model.FindModel(modelname.c_str());
@@ -699,7 +699,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
             // core.LayerDel("realize", model.RealizerID(n));
             core.Send_Message(model.RealizerID(n), "ll", 2, 0);
     }
-    else if (_stricmp(name, "ShowLocationModel") == 0)
+    else if (storm::iEquals(name, "ShowLocationModel"))
     {
         const std::string &modelname = message.String();
         int32_t layer = message.Long();
@@ -708,7 +708,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
             // EntityManager::AddToLayer(realize, model.RealizerID(n), layer);
             core.Send_Message(model.RealizerID(n), "ll", 2, 1);
     }
-    else if (_stricmp(name, "SetGrassParams") == 0)
+    else if (storm::iEquals(name, "SetGrassParams"))
     {
         const float fScale = message.Float();
         const float fMaxWidth = message.Float();
@@ -719,11 +719,11 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         core.Send_Message(grass, "lffffff", MSG_GRASS_SET_PARAM, fScale, fMaxWidth, fMaxHeight, fMinVisibleDist,
                           fMaxVisibleDist, fMinGrassLod);
     }
-    else if (_stricmp(name, "LoadCaustic") == 0)
+    else if (storm::iEquals(name, "LoadCaustic"))
     {
         LoadCaustic();
     }
-    else if (_stricmp(name, "EnableCaustic") == 0)
+    else if (storm::iEquals(name, "EnableCaustic"))
     {
         bCausticEnable = message.Long() != 0;
     }

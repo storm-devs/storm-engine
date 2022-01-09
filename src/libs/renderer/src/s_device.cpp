@@ -530,17 +530,17 @@ bool DX9RENDER::Init()
         ini->ReadString(nullptr, "screen_bpp", str, sizeof(str), "D3DFMT_R5G6B5");
         screen_bpp = D3DFMT_R5G6B5;
         stencil_format = D3DFMT_D16;
-        if (_stricmp(str, "D3DFMT_A8R8G8B8") == 0)
+        if (storm::iEquals(str, "D3DFMT_A8R8G8B8"))
         {
             screen_bpp = D3DFMT_A8R8G8B8;
             stencil_format = D3DFMT_D24S8;
         }
-        if (_stricmp(str, "D3DFMT_X8R8G8B8") == 0)
+        if (storm::iEquals(str, "D3DFMT_X8R8G8B8"))
         {
             screen_bpp = D3DFMT_X8R8G8B8;
             stencil_format = D3DFMT_D24S8;
         }
-        if (_stricmp(str, "D3DFMT_R5G6B5") == 0)
+        if (storm::iEquals(str, "D3DFMT_R5G6B5"))
         {
             screen_bpp = D3DFMT_R5G6B5;
             stencil_format = D3DFMT_D16;
@@ -1358,7 +1358,7 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
 
     std::filesystem::path path = fname;
     std::string pathStr = path.extension().string();
-    if (_stricmp(pathStr.c_str(), ".tx") == 0)
+    if (storm::iEquals(pathStr, ".tx"))
         path.replace_extension();
     pathStr = path.string();
     fname = pathStr.c_str(); //~!~ msvc still doesn't have working c_str for path
@@ -1398,7 +1398,7 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
 
         if (strlen(_fname) > _countof(".tx") - 1)
         {
-            if (_stricmp(&_fname[strlen(_fname) - 3], ".tx") == 0)
+            if (storm::iEquals(&_fname[strlen(_fname) - 3], ".tx"))
                 _fname[strlen(_fname) - 3] = 0;
         }
 
@@ -1410,7 +1410,7 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
         for (t = 0; t < MAX_STEXTURES; t++)
             if (Textures[t].ref != 0)
                 if (Textures[t].name)
-                    if (Textures[t].hash == hf && _stricmp(Textures[t].name, _fname) == 0)
+                    if (Textures[t].hash == hf && storm::iEquals(Textures[t].name, _fname))
                     {
                         Textures[t].ref++;
                         return t;
@@ -2974,7 +2974,7 @@ int32_t DX9RENDER::LoadFont(const char *fontName)
 
     int32_t i;
     for (i = 0; i < nFontQuantity; i++)
-        if (FontList[i].hash == hashVal && _stricmp(FontList[i].name, fontName) == 0)
+        if (FontList[i].hash == hashVal && storm::iEquals(FontList[i].name, fontName))
         {
             if (FontList[i].ref > 0)
                 FontList[i].ref++;
@@ -3024,7 +3024,7 @@ bool DX9RENDER::UnloadFont(const char *fontName)
     const uint32_t hashVal = hash_string(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)
-        if (FontList[i].hash == hashVal && _stricmp(FontList[i].name, fontName) == 0)
+        if (FontList[i].hash == hashVal && storm::iEquals(FontList[i].name, fontName))
             return UnloadFont(i);
     core.Trace("Font name \"%s\" is not containing", fontName);
     return false;
@@ -3108,7 +3108,7 @@ char *DX9RENDER::GetFontIniFileName()
 
 bool DX9RENDER::SetFontIniFileName(const char *iniName)
 {
-    if (fontIniFileName != nullptr && iniName != nullptr && _stricmp(fontIniFileName, iniName) == 0)
+    if (fontIniFileName != nullptr && iniName != nullptr && storm::iEquals(fontIniFileName, iniName))
         return true;
 
     delete fontIniFileName;
@@ -3870,7 +3870,7 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     const uint32_t newHash = hash_string(sVideoName);
     while (pVTLcur != nullptr)
     {
-        if (pVTLcur->hash == newHash && _stricmp(pVTLcur->name, sVideoName) == 0)
+        if (pVTLcur->hash == newHash && storm::iEquals(pVTLcur->name, sVideoName))
         {
             if (EntityManager::GetEntityPointer(pVTLcur->videoTexture_id))
             {

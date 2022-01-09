@@ -122,7 +122,7 @@ void LOCATOR::LocateForI(VDATA *pData)
                             core.Trace("LOCATOR: no name");
                             continue;
                         }
-                        if (_stricmp(pAA->GetAttributeClass(n)->GetAttribute("name"), label.name) == 0)
+                        if (storm::iEquals(pAA->GetAttributeClass(n)->GetAttribute("name"), label.name))
                         {
                             pAA->GetAttributeClass(n)->SetAttributeUseFloat("x", label.m[3][0]);
                             pAA->GetAttributeClass(n)->SetAttributeUseFloat("y", label.m[3][1]);

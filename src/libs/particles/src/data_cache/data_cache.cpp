@@ -29,7 +29,7 @@ void DataCache::CacheSystem(const char *FileName)
     // LongFileName.AddExtention(".xps");
     auto path = std::filesystem::path() / "resource" / "particles" / FileName;
     auto pathStr = path.extension().string();
-    if (_stricmp(pathStr.c_str(), ".xps") != 0)
+    if (!storm::iEquals(pathStr, ".xps"))
         path += ".xps";
     pathStr = path.string();
     std::transform(pathStr.begin(), pathStr.end(), pathStr.begin(), tolower);
@@ -76,7 +76,7 @@ DataSource *DataCache::GetParticleSystemDataSource(const char *FileName)
     // NameWithExt.Lower();
     std::filesystem::path path = FileName;
     auto pathStr = path.extension().string();
-    if (_stricmp(pathStr.c_str(), ".xps") != 0)
+    if (!storm::iEquals(pathStr, ".xps"))
         path += ".xps";
     pathStr = path.string();
     std::transform(pathStr.begin(), pathStr.end(), pathStr.begin(), tolower);

@@ -447,7 +447,7 @@ void NODER::Draw()
 //----------------------------------------------------------
 NODER *NODER::FindNode(const char *cNodeName)
 {
-    if (_stricmp(cNodeName, name) == 0)
+    if (storm::iEquals(cNodeName, name))
         return this;
     for (int32_t i = 0; i < nnext; i++)
     {

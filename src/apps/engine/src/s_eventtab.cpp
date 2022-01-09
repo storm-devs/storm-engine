@@ -76,7 +76,7 @@ uint32_t S_EVENTTAB::AddEventHandler(const char *event_name, uint32_t func_code,
     {
         if (pTable[ti][n].hash == hash)
         {
-            if (_stricmp(event_name, pTable[ti][n].name) != 0)
+            if (!storm::iEquals(event_name, pTable[ti][n].name))
                 continue;
             // event already in list
             for (i = 0; i < pTable[ti][n].elements; i++)
@@ -175,7 +175,7 @@ bool S_EVENTTAB::DelEventHandler(const char *event_name, uint32_t func_code)
     for (uint32_t n = 0; n < Event_num[ti]; n++)
     {
         if (pTable[ti][n].hash == hash)
-            if (_stricmp(pTable[ti][n].name, event_name) == 0)
+            if (storm::iEquals(pTable[ti][n].name, event_name))
             {
                 return DelEventHandler(ti, n, func_code);
                 // return;
@@ -195,7 +195,7 @@ void S_EVENTTAB::SetStatus(const char *event_name, uint32_t func_code, uint32_t 
     for (uint32_t n = 0; n < Event_num[ti]; n++)
     {
         if (pTable[ti][n].hash == hash)
-            if (_stricmp(pTable[ti][n].name, event_name) == 0)
+            if (storm::iEquals(pTable[ti][n].name, event_name))
             {
                 for (uint32_t i = 0; i < pTable[ti][n].elements; i++)
                 {
@@ -255,7 +255,7 @@ uint32_t S_EVENTTAB::FindEvent(const char *event_name)
     for (uint32_t n = 0; n < Event_num[ti]; n++)
     {
         if (pTable[ti][n].hash == hash)
-            if (_stricmp(pTable[ti][n].name, event_name) == 0)
+            if (storm::iEquals(pTable[ti][n].name, event_name))
                 return (((ti << 24) & 0xff000000) | (n & 0xffffff));
     }
     return INVALID_EVENT_CODE;

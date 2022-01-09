@@ -281,7 +281,7 @@ int32_t SCRSHOTER::FindSaveTexture(const char *fileName) const
     auto *ps = m_list;
     while (ps)
     {
-        if (ps->fileName && _stricmp(fileName, ps->fileName) == 0)
+        if (ps->fileName && storm::iEquals(fileName, ps->fileName))
             return ps->textureId;
         ps = ps->next;
     }
@@ -295,7 +295,7 @@ char *SCRSHOTER::FindSaveData(const char *fileName) const
     SAVETEXTURES *ps = m_list;
     while (ps)
     {
-        if (ps->fileName && _stricmp(fileName, ps->fileName) == 0)
+        if (ps->fileName && storm::iEquals(fileName, ps->fileName))
             return ps->dataString;
         ps = ps->next;
     }
@@ -309,7 +309,7 @@ int32_t SCRSHOTER::AddSaveTexture(const char *dirName, const char *fileName)
     int32_t rval = FindSaveTexture(fileName);
     if (rval != -1)
         return rval;
-    if (_stricmp(fileName, "newsave") == 0)
+    if (storm::iEquals(fileName, "newsave"))
         return textureIndex_;
     auto *ps = new SAVETEXTURES;
     if (ps == nullptr)
@@ -343,7 +343,7 @@ void SCRSHOTER::DelSaveTexture(const char *fileName)
     SAVETEXTURES *ps = m_list;
     while (ps)
     {
-        if (ps->fileName && _stricmp(fileName, ps->fileName) == 0)
+        if (ps->fileName && storm::iEquals(fileName, ps->fileName))
         {
             if (oldps)
                 oldps->next = ps->next;

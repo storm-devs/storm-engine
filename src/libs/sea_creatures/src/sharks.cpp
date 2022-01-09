@@ -416,7 +416,7 @@ void Sharks::Shark::Event(Animation *animation, int32_t index, int32_t eventID, 
         animation->Player(0).SetAction(actSwim);
         aniTime = 3.0f + rand() * 3.0f / RAND_MAX;
     }
-    if (_stricmp(act, actSwim) == 0 || (rnd & 1))
+    if (storm::iEquals(act, actSwim) || (rnd & 1))
     {
         animation->Player(0).SetAction(actStand);
         aniTime = 3.0f + rand() * 3.0f / RAND_MAX;

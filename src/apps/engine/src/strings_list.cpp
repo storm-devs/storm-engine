@@ -1,6 +1,9 @@
 #include "strings_list.h"
+
 #include <cstring>
 #include <stdexcept>
+
+#include "storm/string_compare.hpp"
 
 STRINGS_LIST::STRINGS_LIST()
 {
@@ -101,7 +104,7 @@ uint32_t STRINGS_LIST::GetStringCode(const char *_char_PTR)
       if(hash == *((DWORD *)String_Table_PTR[Cache[n]]))
       {
         //return Cache[n];
-        if(_stricmp(String_Table_PTR[Cache[n]] + used_data_size + sizeof(DWORD),_char_PTR) == 0) return Cache[n];
+        if(storm::iEquals(String_Table_PTR[Cache[n]] + used_data_size + sizeof(DWORD),_char_PTR)) return Cache[n];
       }
     }*/
 
@@ -109,7 +112,7 @@ uint32_t STRINGS_LIST::GetStringCode(const char *_char_PTR)
     {
         if (hash == *((uint32_t *)String_Table_PTR[n]))
         {
-            if (_stricmp(String_Table_PTR[n] + used_data_size + sizeof(uint32_t), _char_PTR) == 0)
+            if (storm::iEquals(String_Table_PTR[n] + used_data_size + sizeof(uint32_t), _char_PTR))
             {
                 // CacheString(n);
                 return n;
@@ -125,12 +128,12 @@ uint32_t STRINGS_LIST::GetStringCode(const char *_char_PTR)
       {
         if(Cache[n] == INVALID_ORDINAL_NUMBER) break;
         if(Cache[n] >= Strings) throw std::runtime_error(cache error);
-        if(_stricmp(String_Table_PTR[Cache[n]] + used_data_size + sizeof(DWORD),_char_PTR) == 0) return Cache[n];
+        if(storm::iEquals(String_Table_PTR[Cache[n]] + used_data_size + sizeof(DWORD),_char_PTR)) return Cache[n];
       }
 
       for(n = 0; n < Strings; n++)
       {
-        if(_stricmp(String_Table_PTR[n] + used_data_size + sizeof(DWORD),_char_PTR) == 0)
+        if(storm::iEquals(String_Table_PTR[n] + used_data_size + sizeof(DWORD),_char_PTR))
         {
           CacheString(n);
           return n;

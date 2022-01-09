@@ -174,7 +174,7 @@ void CXI_IMGCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
                 }
                 else
                 {
-                    if (_stricmp(&param[12], "end") == 0)
+                    if (storm::iEquals(&param[12], "end"))
                     {
                         n = m_aSections.size() - 1;
                         if (n >= 0)
@@ -405,7 +405,7 @@ uint32_t CXI_IMGCOLLECTION::MessageProc(int32_t msgcode, MESSAGE &message)
     {
         const std::string &param = message.String();
 
-        if (!sGroupName || _stricmp(sGroupName, param.c_str()) != 0)
+        if (!sGroupName || !storm::iEquals(sGroupName, param))
         {
             STORM_DELETE(sGroupName);
             PICTURE_TEXTURE_RELEASE(pPictureService, sGroupName, texl);

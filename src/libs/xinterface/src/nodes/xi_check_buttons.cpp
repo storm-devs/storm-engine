@@ -167,9 +167,9 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     m_nFontAlignment = PR_ALIGN_LEFT;
     if (ReadIniString(ini1, name1, ini2, name2, "alignment", param, sizeof(param), ""))
     {
-        if (_stricmp(param, "center") == 0)
+        if (storm::iEquals(param, "center"))
             m_nFontAlignment = PR_ALIGN_CENTER;
-        if (_stricmp(param, "right") == 0)
+        if (storm::iEquals(param, "right"))
             m_nFontAlignment = PR_ALIGN_RIGHT;
     }
 

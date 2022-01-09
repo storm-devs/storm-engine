@@ -194,7 +194,7 @@ std::fstream GEOM_SERVICE_R::OpenFile(const char *fname)
     auto fileS = fio->_CreateFile(fname, std::ios::binary | std::ios::in);
     if (!fileS.is_open())
     {
-        if (_strcmpi(&fname[strlen(fname) - 4], ".col") == 0)
+        if (storm::iEquals(&fname[strlen(fname) - 4], ".col"))
         {
             //    core.Trace("geometry::can't open file %s", fname);
         }
@@ -235,7 +235,7 @@ void GEOM_SERVICE_R::free(void *ptr)
 GEOS::ID GEOM_SERVICE_R::CreateTexture(const char *fname)
 {
     char tex[256];
-    if (_strcmpi(fname, "shadow.tga") == 0)
+    if (storm::iEquals(fname, "shadow.tga"))
     {
         sprintf_s(tex, "lighting\\%s\\%s", lightPath, fname);
     }

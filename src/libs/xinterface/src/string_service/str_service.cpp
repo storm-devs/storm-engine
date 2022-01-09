@@ -192,7 +192,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     }
 
     // This language is already set
-    if (m_sLanguage != nullptr && _stricmp(sLanguage, m_sLanguage) == 0)
+    if (m_sLanguage != nullptr && storm::iEquals(sLanguage, m_sLanguage))
         return;
 
     // initialize ini file
@@ -250,7 +250,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
         // compare the current language with the default
         if (langIni->ReadString("COMMON", "defaultLanguage", param, sizeof(param) - 1, ""))
         {
-            if (_stricmp(m_sLanguage, param) == 0)
+            if (storm::iEquals(m_sLanguage, param))
                 break;
             core.Trace("WARNING! Language %s not exist some ini parameters. Language set to default %s", m_sLanguage,
                        param);
@@ -415,7 +415,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
                 {
                     if (pUSB->psStrName[itmp2] == nullptr)
                         continue;
-                    if (_stricmp(pUSB->psStrName[itmp2], pUTmp->psStrName[itmp1]) == 0)
+                    if (storm::iEquals(pUSB->psStrName[itmp2], pUTmp->psStrName[itmp1]))
                         break;
                 }
                 if (itmp2 >= pUSB->nStringsQuantity)
@@ -430,7 +430,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
                 {
                     if (pUTmp->psStrName[itmp2] == nullptr)
                         continue;
-                    if (_stricmp(pUTmp->psStrName[itmp2], pUSB->psStrName[itmp1]) == 0)
+                    if (storm::iEquals(pUTmp->psStrName[itmp2], pUSB->psStrName[itmp1]))
                         break;
                 }
                 if (itmp2 >= pUTmp->nStringsQuantity)
@@ -465,7 +465,7 @@ char *STRSERVICE::GetString(const char *stringName, char *sBuffer, size_t buffer
 
     if (stringName != nullptr)
         for (int i = 0; i < m_nStringQuantity; i++)
-            if (!_stricmp(m_psStrName[i], stringName))
+            if (storm::iEquals(m_psStrName[i], stringName))
             {
                 auto len = strlen(m_psString[i]) + 1;
                 if (sBuffer == nullptr)
@@ -534,7 +534,7 @@ int32_t STRSERVICE::GetStringNum(const char *stringName)
 
     if (stringName != nullptr)
         for (int32_t i = 0; i < m_nStringQuantity; i++)
-            if (!_stricmp(m_psStrName[i], stringName))
+            if (storm::iEquals(m_psStrName[i], stringName))
                 return i;
     return -1L;
 
@@ -575,7 +575,7 @@ int32_t STRSERVICE::OpenUsersStringFile(const char *fileName)
     UsersStringBlock *itUSB;
     for (itUSB = m_pUsersBlocks; itUSB != nullptr; itUSB = itUSB->next)
     {
-        if (itUSB->fileName != nullptr && _stricmp(itUSB->fileName, fileName) == 0)
+        if (itUSB->fileName != nullptr && storm::iEquals(itUSB->fileName, fileName))
         {
             break;
         }
@@ -739,7 +739,7 @@ char *STRSERVICE::TranslateFromUsers(int32_t id, const char *inStr)
         return nullptr;
 
     for (i = 0; i < pUSB->nStringsQuantity; i++)
-        if (pUSB->psStrName[i] != nullptr && _stricmp(pUSB->psStrName[i], inStr) == 0)
+        if (pUSB->psStrName[i] != nullptr && storm::iEquals(pUSB->psStrName[i], inStr))
             break;
     if (i < pUSB->nStringsQuantity)
         return pUSB->psString[i];
@@ -1493,15 +1493,15 @@ uint32_t _IsKeyPressed(VS_STACK *pS)
     bool bIsPressed = false;
     if (strKeyName)
     {
-        if (_stricmp(strKeyName, "shift") == 0)
+        if (storm::iEquals(strKeyName, "shift"))
         {
             bIsPressed = (GetAsyncKeyState(VK_SHIFT) < 0);
         }
-        else if (_stricmp(strKeyName, "control") == 0)
+        else if (storm::iEquals(strKeyName, "control"))
         {
             bIsPressed = (GetAsyncKeyState(VK_CONTROL) < 0);
         }
-        else if (_stricmp(strKeyName, "alt") == 0)
+        else if (storm::iEquals(strKeyName, "alt"))
         {
             bIsPressed = (GetAsyncKeyState(VK_MENU) < 0);
         }

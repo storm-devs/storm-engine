@@ -561,7 +561,7 @@ uint32_t SEAFOAM::AttributeChanged(ATTRIBUTES *pA)
 {
     const auto *const nm = pA->GetThisName();
 
-    if (!_stricmp(nm, "storm"))
+    if (storm::iEquals(nm, "storm"))
     {
         if (!strcmp(pA->GetThisAttr(), "true"))
             isStorm = true;
@@ -569,7 +569,7 @@ uint32_t SEAFOAM::AttributeChanged(ATTRIBUTES *pA)
             isStorm = false;
     }
 
-    /*if (_stricmp(nm, "AddNetShip") == 0)
+    /*if (storm::iEquals(nm, "AddNetShip"))
     {
       entid_t shipID;
       uint32_t dwShipNetID = pA->GetAttributeAsDword();

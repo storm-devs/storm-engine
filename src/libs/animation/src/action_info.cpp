@@ -10,6 +10,7 @@
 
 #include "action_info.h"
 #include "storm_assert.h"
+#include "storm/string_compare.hpp"
 
 // ============================================================================================
 // Construction, destruction
@@ -64,7 +65,7 @@ bool ActionInfo::AddEvent(const char *ename, float frame, ExtAnimationEventType 
 // Compare with current name
 bool ActionInfo::operator==(const char *actionName) const
 {
-    return _stricmp(actionName, name) == 0;
+    return storm::iEquals(actionName, name);
 }
 
 // check if the event generation condition is satisfied

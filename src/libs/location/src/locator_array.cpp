@@ -10,6 +10,8 @@
 
 #include "locator_array.h"
 
+#include "storm/string_compare.hpp"
+
 // ============================================================================================
 // Construction, destruction
 // ============================================================================================
@@ -142,7 +144,7 @@ int32_t LocatorArray::FindByName(const char *locName)
         if (locator[i].name >= 0)
         {
             if (locator[i].hash == hash)
-                if (_stricmp(locatorNames + locator[i].name, locName) == 0)
+                if (storm::iEquals(locatorNames + locator[i].name, locName))
                 {
                     return i;
                 }
@@ -177,5 +179,5 @@ bool LocatorArray::CompareGroup(const char *groupName, int32_t ghash) const
         return false;
     if (!groupName)
         return group[0] == 0;
-    return _stricmp(group, groupName) == 0;
+    return storm::iEquals(group, groupName);
 }

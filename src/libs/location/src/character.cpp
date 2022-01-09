@@ -12,11 +12,11 @@
 #include "characters_groups.h"
 #include "lights.h"
 
-#include "v_sound_service.h"
 #include "defines.h"
 #include "geometry.h"
 #include "sea_base.h"
 #include "shared/messages.h"
+#include "v_sound_service.h"
 
 #include "core.h"
 #include "v_data.h"
@@ -836,15 +836,15 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
         return 0;
     if (!apnt || !apnt->GetThisName())
         return 0;
-    if (_stricmp(apnt->GetThisName(), "model") == 0)
+    if (storm::iEquals(apnt->GetThisName(), "model"))
     {
         SetSignModel();
     }
-    else if (_stricmp(apnt->GetThisName(), "technique") == 0)
+    else if (storm::iEquals(apnt->GetThisName(), "technique"))
     {
         SetSignTechnique();
     }
-    else if (_stricmp(apnt->GetThisName(), "id") == 0 && apnt->GetParent() && !apnt->GetParent()->GetParent())
+    else if (storm::iEquals(apnt->GetThisName(), "id") && apnt->GetParent() && !apnt->GetParent()->GetParent())
     {
         const char *id = apnt->GetThisAttr();
         if (!id)
@@ -854,7 +854,7 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
         characterID = new char[len];
         strcpy_s(characterID, len, id);
     }
-    else if (_stricmp(apnt->GetThisName(), "actions") == 0 && apnt->GetParent() && !apnt->GetParent()->GetParent())
+    else if (storm::iEquals(apnt->GetThisName(), "actions") && apnt->GetParent() && !apnt->GetParent()->GetParent())
     {
         // Reading move actions
         // Simple
@@ -1233,7 +1233,7 @@ void Character::DelSavePosition(bool isTeleport)
     if (aPosLocator)
     {
         const char *pcLocGroupName = aPosLocator->GetAttribute("group");
-        if (pcLocGroupName && _stricmp(pcLocGroupName, "sit") == 0)
+        if (pcLocGroupName && storm::iEquals(pcLocGroupName, "sit"))
             isTeleport = false;
     }
 
@@ -1408,7 +1408,7 @@ bool Character::IsFireFindTarget() const
 {
     if (!priorityAction.name || !shot.name)
         return false;
-    if (_stricmp(priorityAction.name, shot.name) == 0)
+    if (storm::iEquals(priorityAction.name, shot.name))
         return !isFired;
     return false;
 }
@@ -1668,7 +1668,7 @@ void Character::Hit(FightAction type)
     /*
     //!!!
     entid_t eid;
-    if(_stricmp(characterID, "Blaze") == 0)
+    if(storm::iEquals(characterID, "Blaze"))
     {
       core.FindClass(&eid, "ILogAndActions", 0);
     }
@@ -2316,7 +2316,7 @@ void Character::Update(float dltTime)
     PtcData &ptc = location->GetPtcData();
     if (deadName)
     {
-        if (!priorityAction.name || _stricmp(priorityAction.name, deadName) != 0)
+        if (!priorityAction.name || !storm::iEquals(priorityAction.name, deadName))
         {
             priorityAction.SetName(deadName);
             isSetPriorityAction = false;
@@ -2380,7 +2380,7 @@ void Character::Update(float dltTime)
     isUp = nodeNorm.x * m->mtx.Vz().x + nodeNorm.z * m->mtx.Vz().z <= 0;
     // Animation
     /*
-    if(_stricmp(characterID, "Blaze") == 0)
+    if(storm::iEquals(characterID, "Blaze"))
     {
       location->GetRS()->Print(10, 150, "curFgt = %s", fightNamesTbl[fgtCurType]);
       location->GetRS()->Print(10, 170, "setFgt = %s", fightNamesTbl[fgtSetType]);
@@ -2483,7 +2483,7 @@ void Character::Update(float dltTime)
     Animation *ani = m->GetAnimation();
     if (!ani)
         return;
-    
+
     bool isControllableHead = ani->IsControllableHead();
 
     if (curHeadLookState != HeadLookState::dflt || isControllableHead)
@@ -2592,9 +2592,9 @@ void Character::ActionEvent(const char *actionName, Animation *animation, int32_
     if (fgtCurType != fgt_block)
         fgtCurType = fgt_none;
     isTurnLock = false;
-    if (priorityAction.name && _stricmp(actionName, priorityAction.name) == 0)
+    if (priorityAction.name && storm::iEquals(actionName, priorityAction.name))
     {
-        if (_stricmp(priorityAction.name, CHARACTER_NORM_TO_FIGHT) == 0)
+        if (storm::iEquals(priorityAction.name, CHARACTER_NORM_TO_FIGHT))
         {
             core.Send_Message(blade, "ll", MSG_BLADE_HAND, 0);
             core.Send_Message(blade, "ll", MSG_BLADE_HAND, 1);
@@ -2605,7 +2605,7 @@ void Character::ActionEvent(const char *actionName, Animation *animation, int32_
                 animation->Player(0).SetPosition(1.0f);
             }
         }
-        else if (_stricmp(priorityAction.name, CHARACTER_FIGHT_TO_NORM) == 0)
+        else if (storm::iEquals(priorityAction.name, CHARACTER_FIGHT_TO_NORM))
         {
             core.Send_Message(blade, "ll", MSG_BLADE_BELT, 0);
             core.Send_Message(blade, "ll", MSG_BLADE_BELT, 1);
@@ -2616,7 +2616,7 @@ void Character::ActionEvent(const char *actionName, Animation *animation, int32_
                 animation->Player(0).SetPosition(1.0f);
             }
         }
-        else if (shot.name && _stricmp(priorityAction.name, shot.name) == 0)
+        else if (shot.name && storm::iEquals(priorityAction.name, shot.name))
         {
             core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
             if (event == ae_end)
@@ -2631,13 +2631,13 @@ void Character::ActionEvent(const char *actionName, Animation *animation, int32_
                 }
             }
         }
-        else if (recoil.name && _stricmp(priorityAction.name, recoil.name) == 0)
+        else if (recoil.name && storm::iEquals(priorityAction.name, recoil.name))
         {
             if (rand() % 10 > 7)
                 recoilLook = true; // able to play the teaser
             priorityAction.SetName(nullptr);
         }
-        else if (deadName && _stricmp(priorityAction.name, deadName) == 0)
+        else if (deadName && storm::iEquals(priorityAction.name, deadName))
         {
             animation->Player(0).Pause();
             animation->Player(0).SetPosition(1.0f);
@@ -2661,8 +2661,8 @@ void Character::ActionEvent(const char *actionName, Animation *animation, int32_
             else
                 SetPriorityAction(fall_land.name);
         }
-        else if (_stricmp(priorityAction.name, fall_land.name) == 0 ||
-                 _stricmp(priorityAction.name, fall_water.name) == 0)
+        else if (storm::iEquals(priorityAction.name, fall_land.name) ||
+                 storm::iEquals(priorityAction.name, fall_water.name))
         {
             priorityAction.SetName(nullptr);
             animation->Player(0).Pause();
@@ -2671,7 +2671,7 @@ void Character::ActionEvent(const char *actionName, Animation *animation, int32_
     }
     else if (userIdle.name)
     {
-        if (_stricmp(actionName, userIdle.name) != 0)
+        if (!storm::iEquals(actionName, userIdle.name))
             return;
         core.Event("Location_Character_EndAction", "i", GetId());
     }
@@ -2685,15 +2685,15 @@ void Character::ActionEvent(Animation *animation, int32_t playerIndex, const cha
     const char *alliace = nullptr;
     if (!actionName)
         return;
-    if (_stricmp(eventName, "LStep") == 0)
+    if (storm::iEquals(eventName, "LStep"))
     {
         soundStep = true;
     }
-    else if (_stricmp(eventName, "RStep") == 0)
+    else if (storm::iEquals(eventName, "RStep"))
     {
         soundStep = true;
     }
-    else if (_stricmp(eventName, "swim") == 0)
+    else if (storm::iEquals(eventName, "swim"))
     {
         PlaySound("swiming");
     }
@@ -2703,69 +2703,69 @@ void Character::ActionEvent(Animation *animation, int32_t playerIndex, const cha
     }
     else
         /*
-        if(_stricmp(eventName, "Sound_wind_fast") == 0)
+        if(storm::iEquals(eventName, "Sound_wind_fast"))
         {
           PlaySound("sword_wind_fast");
         }else
-        if(_stricmp(eventName, "Sound_wind_force") == 0)
+        if(storm::iEquals(eventName, "Sound_wind_force"))
         {
           PlaySound("sword_wind_force");
         }else
-        if(_stricmp(eventName, "Sound_wind_round") == 0)
+        if(storm::iEquals(eventName, "Sound_wind_round"))
         {
           PlaySound("sword_wind_round");
         }else
-        if(_stricmp(eventName, "Sound_wind_break") == 0)
+        if(storm::iEquals(eventName, "Sound_wind_break"))
         {
           PlaySound("sword_wind_break");
         }else
-        if(_stricmp(eventName, "Sound_wind_feint") == 0)
+        if(storm::iEquals(eventName, "Sound_wind_feint"))
         {
           PlaySound("sword_wind_feint");
         }else
-        if(_stricmp(eventName, "Sound_wind_feintc") == 0)
+        if(storm::iEquals(eventName, "Sound_wind_feintc"))
         {
           PlaySound("sword_wind_feintc");
         }else
-        if(_stricmp(eventName, "Sound_wind_feintend") == 0)
+        if(storm::iEquals(eventName, "Sound_wind_feintend"))
         {
           PlaySound("sword_wind_feintend");
         }else*/
-        if (_stricmp(eventName, "Resact") == 0)
+        if (storm::iEquals(eventName, "Resact"))
     {
         fgtSetType = fgt_none;
         fgtSetIndex = -1;
     }
-    else if (_stricmp(eventName, "Attack") == 0)
+    else if (storm::iEquals(eventName, "Attack"))
     {
         CheckAttackHit();
     }
-    else if (_stricmp(eventName, "Parry start") == 0)
+    else if (storm::iEquals(eventName, "Parry start"))
     {
         isParryState = true;
         isFeintState = false;
     }
-    else if (_stricmp(eventName, "Parry end") == 0)
+    else if (storm::iEquals(eventName, "Parry end"))
     {
         isParryState = false;
         isFeintState = false;
     }
-    else if (_stricmp(eventName, "Feint start") == 0)
+    else if (storm::iEquals(eventName, "Feint start"))
     {
         isParryState = false;
         isFeintState = true;
     }
-    else if (_stricmp(eventName, "Feint end") == 0)
+    else if (storm::iEquals(eventName, "Feint end"))
     {
         isParryState = false;
         isFeintState = false;
     }
     else /*
-if(_stricmp(eventName, "sound_pistol") == 0)
+if(storm::iEquals(eventName, "sound_pistol"))
 {
     PlaySound("pistol_out");
 }else
-if(_stricmp(eventName, "Blade to hand") == 0)
+if(storm::iEquals(eventName, "Blade to hand"))
 {
     if(!isFightWOWps)
     {
@@ -2773,7 +2773,7 @@ if(_stricmp(eventName, "Blade to hand") == 0)
         if(pos < 0.99f) PlaySound("sword_sh");
     }
 }else
-if(_stricmp(eventName, "Blade to belt") == 0)
+if(storm::iEquals(eventName, "Blade to belt"))
 {
     if(!isFightWOWps)
     {
@@ -2781,7 +2781,7 @@ if(_stricmp(eventName, "Blade to belt") == 0)
         if(pos < 0.99f) PlaySound("sword_out");
     }
 }else */
-        if (_stricmp(eventName, "Death sound") == 0)
+        if (storm::iEquals(eventName, "Death sound"))
     {
         core.Event("Event_ChrSnd_Body", "i", GetId());
     }
@@ -2804,31 +2804,31 @@ if(_stricmp(eventName, "Blade to belt") == 0)
         if (pcActionName)
             core.Event("Location_CharacterItemAction", "isl", GetId(), pcActionName, nIdx);
     }
-    else if (priorityAction.name && _stricmp(actionName, priorityAction.name) == 0)
+    else if (priorityAction.name && storm::iEquals(actionName, priorityAction.name))
     {
-        if (_stricmp(priorityAction.name, CHARACTER_NORM_TO_FIGHT) == 0)
+        if (storm::iEquals(priorityAction.name, CHARACTER_NORM_TO_FIGHT))
         {
             core.Send_Message(blade, "ll", MSG_BLADE_HAND, 0);
             core.Send_Message(blade, "ll", MSG_BLADE_HAND, 1);
         }
-        else if (_stricmp(priorityAction.name, CHARACTER_FIGHT_TO_NORM) == 0)
+        else if (storm::iEquals(priorityAction.name, CHARACTER_FIGHT_TO_NORM))
         {
             core.Send_Message(blade, "ll", MSG_BLADE_BELT, 0);
             core.Send_Message(blade, "ll", MSG_BLADE_BELT, 1);
         }
-        else if (shot.name && _stricmp(priorityAction.name, shot.name) == 0)
+        else if (shot.name && storm::iEquals(priorityAction.name, shot.name))
         {
             if (eventName)
             {
-                if (_stricmp(eventName, CHARACTER_FIGHT_GUNBELT) == 0)
+                if (storm::iEquals(eventName, CHARACTER_FIGHT_GUNBELT))
                 {
                     core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
                 }
-                else if (_stricmp(eventName, CHARACTER_FIGHT_GUNHAND) == 0)
+                else if (storm::iEquals(eventName, CHARACTER_FIGHT_GUNHAND))
                 {
                     core.Send_Message(blade, "l", MSG_BLADE_GUNHAND);
                 }
-                else if (_stricmp(eventName, CHARACTER_FIGHT_GUNFIRE) == 0)
+                else if (storm::iEquals(eventName, CHARACTER_FIGHT_GUNFIRE))
                 {
                     core.Send_Message(blade, "l", MSG_BLADE_GUNFIRE);
                     // PlaySound("pistol_shot");
@@ -2847,7 +2847,7 @@ if(_stricmp(eventName, "Blade to belt") == 0)
         }
         else if (isJump && PriorityActionIsJump())
         {
-            if (eventName && _stricmp("Jump pause", eventName) == 0)
+            if (eventName && storm::iEquals("Jump pause", eventName))
             {
                 animation->Player(playerIndex).Pause();
             }
@@ -2855,21 +2855,21 @@ if(_stricmp(eventName, "Blade to belt") == 0)
     }
     else if (userIdle.name)
     {
-        if (_stricmp(actionName, userIdle.name) == 0)
+        if (storm::iEquals(actionName, userIdle.name))
         {
-            if (shot.name && _stricmp(actionName, shot.name) == 0)
+            if (shot.name && storm::iEquals(actionName, shot.name))
             {
                 if (eventName)
                 {
-                    if (_stricmp(eventName, CHARACTER_FIGHT_GUNBELT) == 0)
+                    if (storm::iEquals(eventName, CHARACTER_FIGHT_GUNBELT))
                     {
                         core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
                     }
-                    else if (_stricmp(eventName, CHARACTER_FIGHT_GUNHAND) == 0)
+                    else if (storm::iEquals(eventName, CHARACTER_FIGHT_GUNHAND))
                     {
                         core.Send_Message(blade, "l", MSG_BLADE_GUNHAND);
                     }
-                    else if (_stricmp(eventName, CHARACTER_FIGHT_GUNFIRE) == 0)
+                    else if (storm::iEquals(eventName, CHARACTER_FIGHT_GUNFIRE))
                     {
                         core.Send_Message(blade, "l", MSG_BLADE_GUNFIRE);
                         core.Event("ActorMakeShot", "i", GetId());
@@ -2917,44 +2917,44 @@ void Character::PlayStep()
             const char *mtl = location->GetPtcData().GetMaterial(currentNode);
             if (mtl)
             {
-                if (_stricmp(mtl, "run_grass") == 0)
+                if (storm::iEquals(mtl, "run_grass"))
                 {
                     defSnd = "run_grass";
                 }
-                else if (_stricmp(mtl, "snd_wood") == 0)
+                else if (storm::iEquals(mtl, "snd_wood"))
                 {
                     defSnd = "run_wood";
                 }
-                else if (_stricmp(mtl, "snd_ground") == 0)
+                else if (storm::iEquals(mtl, "snd_ground"))
                 {
                     defSnd = "run_ground";
                 }
-                else if (_stricmp(mtl, "snd_sand") == 0)
+                else if (storm::iEquals(mtl, "snd_sand"))
                 {
                     defSnd = "run_sand";
                 }
-                else if (_stricmp(mtl, "snd_stone") == 0)
+                else if (storm::iEquals(mtl, "snd_stone"))
                 {
                     defSnd = "run_stone";
                 }
-                else if (_stricmp(mtl, "snd_stairway") == 0)
+                else if (storm::iEquals(mtl, "snd_stairway"))
                 {
                     defSnd = "run_stairway";
                 }
-                else if (_stricmp(mtl, "snd_carpet") == 0)
+                else if (storm::iEquals(mtl, "snd_carpet"))
                 {
                     defSnd = "run_carpet";
                 }
-                else if (_stricmp(mtl, "snd_church") == 0)
+                else if (storm::iEquals(mtl, "snd_church"))
                 {
                     defSnd = "run_church";
                 }
-                else if (_stricmp(mtl, "snd_echo") == 0)
+                else if (storm::iEquals(mtl, "snd_echo"))
                 {
                     defSnd = "run_echo";
                 }
                 /*else
-                if(_stricmp(mtl, "snd_iron") == 0)
+                if(storm::iEquals(mtl, "snd_iron"))
                 {
                   defSnd = "run_iron";
                 }*/
@@ -2974,43 +2974,43 @@ void Character::PlayStep()
             const char *mtl = location->GetPtcData().GetMaterial(currentNode);
             if (mtl)
             {
-                if (_stricmp(mtl, "snd_grass") == 0)
+                if (storm::iEquals(mtl, "snd_grass"))
                 {
                     defSnd = "step_grass";
                 }
-                else if (_stricmp(mtl, "snd_wood") == 0)
+                else if (storm::iEquals(mtl, "snd_wood"))
                 {
                     defSnd = "step_wood";
                 }
-                else if (_stricmp(mtl, "snd_ground") == 0)
+                else if (storm::iEquals(mtl, "snd_ground"))
                 {
                     defSnd = "step_ground";
                 }
-                else if (_stricmp(mtl, "snd_sand") == 0)
+                else if (storm::iEquals(mtl, "snd_sand"))
                 {
                     defSnd = "step_sand";
                 }
-                else if (_stricmp(mtl, "snd_stone") == 0)
+                else if (storm::iEquals(mtl, "snd_stone"))
                 {
                     defSnd = "step_stone";
                 }
-                else if (_stricmp(mtl, "snd_stairway") == 0)
+                else if (storm::iEquals(mtl, "snd_stairway"))
                 {
                     defSnd = "step_stairway";
                 }
-                else if (_stricmp(mtl, "snd_carpet") == 0)
+                else if (storm::iEquals(mtl, "snd_carpet"))
                 {
                     defSnd = "step_carpet";
                 }
-                else if (_stricmp(mtl, "snd_church") == 0)
+                else if (storm::iEquals(mtl, "snd_church"))
                 {
                     defSnd = "step_church";
                 }
-                else if (_stricmp(mtl, "snd_echo") == 0)
+                else if (storm::iEquals(mtl, "snd_echo"))
                 {
                     defSnd = "step_echo";
                 }
-                else if (_stricmp(mtl, "snd_iron") == 0)
+                else if (storm::iEquals(mtl, "snd_iron"))
                 {
                     defSnd = "step_iron";
                 }
@@ -3152,7 +3152,7 @@ bool Character::zAddDetector(MESSAGE &message)
     // Checking for creation
     for (int32_t i = 0; i < numDetectors; i++)
     {
-        if (_stricmp(detector[i]->la->GetGroupName(), group.c_str()) == 0)
+        if (storm::iEquals(detector[i]->la->GetGroupName(), group))
             return false;
     }
     // Looking for a group
@@ -3169,7 +3169,7 @@ bool Character::zDelDetector(MESSAGE &message)
     const std::string &group = message.String();
     for (int32_t i = 0; i < numDetectors; i++)
     {
-        if (_stricmp(detector[i]->la->GetGroupName(), group.c_str()) == 0)
+        if (storm::iEquals(detector[i]->la->GetGroupName(), group))
         {
             detector[i]->Exit(this);
             delete detector[i];
@@ -3326,7 +3326,7 @@ uint32_t Character::zExMessage(MESSAGE &message)
     int32_t i;
     VDATA *v;
     CVECTOR pos;
-    if (_stricmp(msg.c_str(), "TieItem") == 0)
+    if (storm::iEquals(msg, "TieItem"))
     {
         i = message.Long();
         const std::string &modelName = message.String();
@@ -3340,14 +3340,14 @@ uint32_t Character::zExMessage(MESSAGE &message)
         core.Send_Message(blade, "lilss", 1001, mdl, i, modelName.c_str(), locatorName.c_str());
         return 1;
     }
-    if (_stricmp(msg.c_str(), "UntieItem") == 0)
+    if (storm::iEquals(msg, "UntieItem"))
     {
         i = message.Long();
         core.Send_Message(blade, "ll", 1002, i);
         return 1;
     }
     auto *const location = GetLocation();
-    if (_stricmp(msg.c_str(), "HandLightOn") == 0)
+    if (storm::iEquals(msg, "HandLightOn"))
     {
         // remove the old source
         if (m_nHandLightID >= 0)
@@ -3357,33 +3357,33 @@ uint32_t Character::zExMessage(MESSAGE &message)
         m_nHandLightID = location->GetLights()->AddMovingLight(secondMsg.c_str(), GetHandLightPos());
         return 1;
     }
-    if (_stricmp(msg.c_str(), "HandLightOff") == 0)
+    if (storm::iEquals(msg, "HandLightOff"))
     {
         if (m_nHandLightID >= 0)
             location->GetLights()->DelMovingLight(m_nHandLightID);
         m_nHandLightID = -1;
         return 1;
     }
-    if (_stricmp(msg.c_str(), "PlaySound") == 0)
+    if (storm::iEquals(msg, "PlaySound"))
     {
         const std::string &secondMsg = message.String();
         return PlaySound(secondMsg.c_str()) != SOUND_INVALID_ID;
     }
-    if (_stricmp(msg.c_str(), "IsFightMode") == 0)
+    if (storm::iEquals(msg, "IsFightMode"))
     {
         return IsFight();
     }
-    if (_stricmp(msg.c_str(), "IsSetBalde") == 0)
+    if (storm::iEquals(msg, "IsSetBalde"))
     {
         return IsSetBlade();
     }
-    if (_stricmp(msg.c_str(), "IsDead") == 0)
+    if (storm::iEquals(msg, "IsDead"))
     {
         return deadName != nullptr;
     }
     if (!deadName)
     {
-        if (_stricmp(msg.c_str(), "FindDialogCharacter") == 0)
+        if (storm::iEquals(msg, "FindDialogCharacter"))
         {
             Character *chr = FindDialogCharacter();
             if (chr && chr->AttributesPointer)
@@ -3392,15 +3392,15 @@ uint32_t Character::zExMessage(MESSAGE &message)
             }
             return -1;
         }
-        if (_stricmp(msg.c_str(), "SetFightMode") == 0)
+        if (storm::iEquals(msg, "SetFightMode"))
         {
             return SetFightMode(message.Long() != 0, false);
         }
-        if (_stricmp(msg.c_str(), "ChangeFightMode") == 0)
+        if (storm::iEquals(msg, "ChangeFightMode"))
         {
             return SetFightMode(message.Long() != 0, true);
         }
-        if (_stricmp(msg.c_str(), "FindForvardLocator") == 0)
+        if (storm::iEquals(msg, "FindForvardLocator"))
         {
             // Group name
             const std::string &grp = message.String();
@@ -3417,7 +3417,7 @@ uint32_t Character::zExMessage(MESSAGE &message)
             v->Set((char *)la->LocatorName(i));
             return 1;
         }
-        if (_stricmp(msg.c_str(), "DistToLocator") == 0)
+        if (storm::iEquals(msg, "DistToLocator"))
         {
             // Group name
             const std::string &grp = message.String();
@@ -3437,36 +3437,36 @@ uint32_t Character::zExMessage(MESSAGE &message)
             v->Set(sqrtf(~(pos - curPos)));
             return 1;
         }
-        if (_stricmp(msg.c_str(), "InDialog") == 0)
+        if (storm::iEquals(msg, "InDialog"))
         {
             isDialog = message.Long() != 0;
             return 1;
         }
-        if (_stricmp(msg.c_str(), "SetSex") == 0)
+        if (storm::iEquals(msg, "SetSex"))
         {
             isMale = message.Long() != 0;
             return 1;
         }
-        if (_stricmp(msg.c_str(), "SetFightWOWeapon") == 0)
+        if (storm::iEquals(msg, "SetFightWOWeapon"))
         {
             isFightWOWps = message.Long() != 0;
             UpdateWeapons();
             return 1;
         }
-        if (_stricmp(msg.c_str(), "LockFightMode") == 0)
+        if (storm::iEquals(msg, "LockFightMode"))
         {
             lockFightMode = message.Long() != 0;
             return 1;
         }
-        if (_stricmp(msg.c_str(), "CheckFightMode") == 0)
+        if (storm::iEquals(msg, "CheckFightMode"))
         {
             return isFight;
         }
-        if (_stricmp(msg.c_str(), "IsActive") == 0)
+        if (storm::iEquals(msg, "IsActive"))
         {
             return isActiveState;
         }
-        if (_stricmp(msg.c_str(), "CheckID") == 0)
+        if (storm::iEquals(msg, "CheckID"))
         {
 #ifdef _DEBUG
             const std::string &msg = message.String();
@@ -3486,7 +3486,7 @@ uint32_t Character::zExMessage(MESSAGE &message)
 #endif
             return 1;
         }
-        if (_stricmp(msg.c_str(), "GunBelt") == 0)
+        if (storm::iEquals(msg, "GunBelt"))
         {
             if (message.Long() != 0)
                 core.Send_Message(blade, "l", MSG_BLADE_GUNBELT);
@@ -3830,7 +3830,7 @@ bool Character::SetAction(const char *actionName, float tblend, float movespeed,
     if (a->Player(0).IsPlaying() && !a->Player(0).IsPause())
     {
         curAction = a->Player(0).GetAction();
-        if (!forceStart && curAction && actionName && _stricmp(curAction, actionName) == 0)
+        if (!forceStart && curAction && actionName && storm::iEquals(curAction, actionName))
             return true;
     }
     if (noBlendTime > 0.0f)
@@ -3937,8 +3937,8 @@ void Character::UpdateAnimation()
             {
                 isNFHit = false;
                 curMove = nullptr;
-                if (userIdle.name &&
-                    (_stricmp(userIdle.name, "Ground_SitDown") == 0 || _stricmp(userIdle.name, "Ground_StandUp") == 0))
+                if (userIdle.name && (storm::iEquals(userIdle.name, "Ground_SitDown") ||
+                                      storm::iEquals(userIdle.name, "Ground_StandUp")))
                 {
                     core.Trace("Not int: \"%s\"", userIdle.name);
                 }
@@ -4208,7 +4208,7 @@ void Character::UpdateAnimation()
                 isParryState = false;
                 isFeintState = false;
                 /*
-                        if(_stricmp(characterID, "Blaze") == 0)
+                        if(storm::iEquals(characterID, "Blaze"))
                         {
                           entid_t eid;
                           core.FindClass(&eid, "ILogAndActions", 0);
@@ -4247,7 +4247,7 @@ void Character::UpdateAnimation()
                     }
                     break;
                 case fgt_attack_force: // Slash and lunge with a slashing blow
-                    if (_stricmp(pWeaponID, "topor") == 0 && fgtSetIndex == 3)
+                    if (storm::iEquals(pWeaponID, "topor") && fgtSetIndex == 3)
                     {
                         // if with an ax, then the lunge is changed to a chopping blow
                         fgtSetIndex = rand() % 2;
@@ -4426,7 +4426,7 @@ void Character::UpdateAnimation()
                 }
                 case fgt_block: // Saber protection
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
-                    if (_stricmp(pWeaponID, "topor") == 0)
+                    if (storm::iEquals(pWeaponID, "topor"))
                     {
                         if (!(isSet = SetAction(blockaxe.name, blockaxe.tblend, 0.0f, 5.0f, true)))
                         {
@@ -4442,14 +4442,14 @@ void Character::UpdateAnimation()
                     }
                     break;
                 case fgt_blockhit: // Saber protection
-                    if (_stricmp(characterID, "Blaze") == 0)
+                    if (storm::iEquals(characterID, "Blaze"))
                     // boal did not find a better one, but ours always has this ID, it will work
                     {
                         if (rand() % 100 >= 65)
                             break; // boal doesn't always break into animation
                     }
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
-                    if (_stricmp(pWeaponID, "topor") == 0)
+                    if (storm::iEquals(pWeaponID, "topor"))
                     {
                         if (!(isSet = SetAction(blockaxehit.name, blockaxehit.tblend, 0.0f, 2.0f, true)))
                         {
@@ -4913,8 +4913,7 @@ inline void Character::CheckAttackHit()
     {
         return;
     }
-    auto fndCharacter =
-        location->supervisor.FindCharacters(this, attackDist, attackAng, 0.1f, 0.0f, false, true);
+    auto fndCharacter = location->supervisor.FindCharacters(this, attackDist, attackAng, 0.1f, 0.0f, false, true);
     if (fndCharacter.empty())
         return;
     // go through all the enemies
@@ -4970,7 +4969,8 @@ inline void Character::CheckAttackHit()
                 }
             }
             fc.c->Hit(hitReaction);
-            core.Event("Location_CharacterAttack", "iisl", GetId(), fc.c->GetId(), aname, static_cast<int32_t>(isBlocked));
+            core.Event("Location_CharacterAttack", "iisl", GetId(), fc.c->GetId(), aname,
+                       static_cast<int32_t>(isBlocked));
             // boal 09/12/06 energy consumption after impact -->
             if (isUseEnergy && fgtCurType != fgt_attack_feintc)
             {

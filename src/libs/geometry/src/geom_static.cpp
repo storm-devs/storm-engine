@@ -13,6 +13,8 @@ Import library main file
 #include <cstring>
 #include <vector>
 
+#include "../../util/include/storm/string_compare.hpp"
+
 namespace
 {
 std::vector<uint32_t> getColData(GEOM_SERVICE &srv, const std::string_view &file_name)
@@ -429,7 +431,7 @@ auto unbelievable_workaround(void *ptr)
 int32_t GEOM::FindName(const char *name) const
 {
     for (int32_t n = 0; n < rhead.names; n++)
-        if (_strcmpi(&globname[names[n]], name) == 0)
+        if (storm::iEquals(&globname[names[n]], name))
             return unbelievable_workaround(&globname[names[n]]);
     return -1;
 }

@@ -107,7 +107,7 @@ bool CharactersGroups::String::Cmp(const char *str, int32_t l, int32_t h) const
         return false;
     if (len != l)
         return false;
-    return _stricmp(name, str) == 0;
+    return storm::iEquals(name, str);
 }
 
 int32_t CharactersGroups::String::GetHash(const char *str)
@@ -339,7 +339,7 @@ bool CharactersGroups::AddEnemyTarget(Character *chr, Character *enemy, float ma
     if (chr->numTargets >= sizeof(chr->grpTargets) / sizeof(Character::GrpTarget))
         return false;
     // Add a new target
-    Assert(_stricmp(chr->group, enemy->group) != 0);
+    Assert(!storm::iEquals(chr->group, enemy->group));
     auto &trg = chr->grpTargets[chr->numTargets++];
     trg.chr = enemy->GetId();
     trg.time = 0.0f;
@@ -408,117 +408,117 @@ uint64_t CharactersGroups::ProcessMessage(MESSAGE &message)
     const std::string &cmd = message.String();
     if (cmd.empty())
         return 0;
-    if (_stricmp(cmd.c_str(), "VldTrg") == 0)
+    if (storm::iEquals(cmd, "VldTrg"))
     {
         return MsgIsValidateTarget(message);
     }
-    if (_stricmp(cmd.c_str(), "GetTrg") == 0)
+    if (storm::iEquals(cmd, "GetTrg"))
     {
         return MsgGetOptimalTarget(message);
     }
-    if (_stricmp(cmd.c_str(), "IsEnemy") == 0)
+    if (storm::iEquals(cmd, "IsEnemy"))
     {
         return MsgIsEnemy(message);
     }
-    if (_stricmp(cmd.c_str(), "MoveChr") == 0)
+    if (storm::iEquals(cmd, "MoveChr"))
     {
         return MoveCharacterToGroup(message);
     }
-    if (_stricmp(cmd.c_str(), "Attack") == 0)
+    if (storm::iEquals(cmd, "Attack"))
     {
         MsgAttack(message);
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "AddTarget") == 0)
+    if (storm::iEquals(cmd, "AddTarget"))
     {
         MsgAddTarget(message);
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "UpdChrTrg") == 0)
+    if (storm::iEquals(cmd, "UpdChrTrg"))
     {
         MsgUpdChrTrg(message);
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "RegistryGroup") == 0)
+    if (storm::iEquals(cmd, "RegistryGroup"))
     {
         MsgRegistryGroup(message);
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "ReleaseGroup") == 0)
+    if (storm::iEquals(cmd, "ReleaseGroup"))
     {
         MsgReleaseGroup(message);
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "SetRelation") == 0)
+    if (storm::iEquals(cmd, "SetRelation"))
     {
         MsgSetRelation(message);
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "SetAlarmReaction") == 0)
+    if (storm::iEquals(cmd, "SetAlarmReaction"))
     {
         MsgSetAlarmReaction(message);
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "SetGroupLook") == 0)
+    if (storm::iEquals(cmd, "SetGroupLook"))
     {
         return MsgSetGroupLook(message);
     }
-    if (_stricmp(cmd.c_str(), "SetGroupHear") == 0)
+    if (storm::iEquals(cmd, "SetGroupHear"))
     {
         return MsgSetGroupHear(message);
     }
-    if (_stricmp(cmd.c_str(), "SetGroupSay") == 0)
+    if (storm::iEquals(cmd, "SetGroupSay"))
     {
         return MsgSetGroupSay(message);
     }
-    if (_stricmp(cmd.c_str(), "SetGroupPriority") == 0)
+    if (storm::iEquals(cmd, "SetGroupPriority"))
     {
         return MsgSetGroupPriority(message);
     }
-    if (_stricmp(cmd.c_str(), "UnloadCharacter") == 0)
+    if (storm::iEquals(cmd, "UnloadCharacter"))
     {
         UnloadCharacter(message);
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "ResetWaveTime") == 0)
+    if (storm::iEquals(cmd, "ResetWaveTime"))
     {
         waveTime = 1000.0f;
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "SetAlarm") == 0)
+    if (storm::iEquals(cmd, "SetAlarm"))
     {
         return MsgSetAlarm(message);
     }
-    if (_stricmp(cmd.c_str(), "SetAlarmDown") == 0)
+    if (storm::iEquals(cmd, "SetAlarmDown"))
     {
         return MsgSetAlarmDown(message);
     }
-    if (_stricmp(cmd.c_str(), "ClearAllTargets") == 0)
+    if (storm::iEquals(cmd, "ClearAllTargets"))
     {
         ClearAllTargets();
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "SaveData") == 0)
+    if (storm::iEquals(cmd, "SaveData"))
     {
         SaveData();
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "LoadDataRelations") == 0)
+    if (storm::iEquals(cmd, "LoadDataRelations"))
     {
         LoadDataRelations();
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "RestoreStates") == 0)
+    if (storm::iEquals(cmd, "RestoreStates"))
     {
         RestoreStates();
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "DeleteEmptyGroups") == 0)
+    if (storm::iEquals(cmd, "DeleteEmptyGroups"))
     {
         DeleteEmptyGroups();
         return 1;
     }
-    if (_stricmp(cmd.c_str(), "DumpRelations") == 0)
+    if (storm::iEquals(cmd, "DumpRelations"))
     {
         DumpRelations();
         return 1;
@@ -959,7 +959,7 @@ void CharactersGroups::MsgSetRelation(MESSAGE &message)
     const std::string &buf = message.String();
     auto actState = rs_enemy;
     auto relState = rs_neitral;
-    if (_stricmp(buf.c_str(), "friend") == 0)
+    if (storm::iEquals(buf, "friend"))
     {
         r.curState = rs_friend;
         actState = rs_enemy;
@@ -970,7 +970,7 @@ void CharactersGroups::MsgSetRelation(MESSAGE &message)
         r.alarmmax = CGS_ALARMMAX;
         r.isActive = false;
     }
-    else if (_stricmp(buf.c_str(), "neitral") == 0)
+    else if (storm::iEquals(buf, "neitral"))
     {
         r.curState = rs_neitral;
         actState = rs_enemy;
@@ -980,7 +980,7 @@ void CharactersGroups::MsgSetRelation(MESSAGE &message)
         r.alarmmin = CGS_ALARMMIN;
         r.alarmmax = CGS_ALARMMAX;
     }
-    else if (_stricmp(buf.c_str(), "enemy") == 0)
+    else if (storm::iEquals(buf, "enemy"))
     {
         r.curState = rs_enemy;
         actState = rs_enemy;
@@ -1007,20 +1007,20 @@ void CharactersGroups::MsgSetAlarmReaction(MESSAGE &message)
     const std::string &act = message.String();
     const std::string &rel = message.String();
     auto actState = rs_enemy;
-    if (_stricmp(act.c_str(), "neitral") == 0)
+    if (storm::iEquals(act, "neitral"))
     {
         actState = rs_neitral;
     }
-    else if (_stricmp(act.c_str(), "friend") == 0)
+    else if (storm::iEquals(act, "friend"))
     {
         actState = rs_friend;
     }
     auto relState = rs_neitral;
-    if (_stricmp(rel.c_str(), "enemy") == 0)
+    if (storm::iEquals(rel, "enemy"))
     {
         relState = rs_enemy;
     }
-    else if (_stricmp(rel.c_str(), "friend") == 0)
+    else if (storm::iEquals(rel, "friend"))
     {
         relState = rs_friend;
     }
@@ -1164,7 +1164,7 @@ int32_t CharactersGroups::GetCharacterGroup(Character *c)
         return -1;
     if (c->groupID >= 0 && c->groupID < numGroups)
     {
-        if (_stricmp(c->group, groups[c->groupID]->name) == 0)
+        if (storm::iEquals(c->group, groups[c->groupID]->name.name))
         {
             return c->groupID;
         }

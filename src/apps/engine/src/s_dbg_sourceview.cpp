@@ -522,7 +522,7 @@ bool SOURCE_VIEW::OpenSourceFile(const char *_filename)
 {
     ShowWindow(hMain, SW_NORMAL);
 
-    if (_stricmp(SourceFileName, _filename) == 0)
+    if (storm::iEquals(SourceFileName, _filename))
     {
         return true;
     }

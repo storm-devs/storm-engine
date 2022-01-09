@@ -141,11 +141,11 @@ int32_t BIUtils::GetAlignmentFromAttr(ATTRIBUTES *pA, const char *name, int32_t 
         char *pcTmp = pA->GetAttribute(name);
         if (pcTmp)
         {
-            if (_stricmp(pcTmp, "left") == 0)
+            if (storm::iEquals(pcTmp, "left"))
                 return PR_ALIGN_LEFT;
-            if (_stricmp(pcTmp, "center") == 0)
+            if (storm::iEquals(pcTmp, "center"))
                 return PR_ALIGN_CENTER;
-            if (_stricmp(pcTmp, "right") == 0)
+            if (storm::iEquals(pcTmp, "right"))
                 return PR_ALIGN_RIGHT;
         }
     }

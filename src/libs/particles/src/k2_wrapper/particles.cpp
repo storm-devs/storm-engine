@@ -192,7 +192,7 @@ PARTICLE_SYSTEM *PARTICLES::CreateSystem(const char *pFileName, uint32_t LifeTim
     //__debugbreak(); //~!~
     auto path = std::filesystem::path() / "resource" / "particles" / pFileName;
     std::string pathStr = path.extension().string();
-    if (_stricmp(pathStr.c_str(), ".xps") != 0)
+    if (!storm::iEquals(pathStr, ".xps"))
         path += ".xps";
     pathStr = path.string();
     // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~

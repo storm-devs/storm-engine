@@ -700,7 +700,7 @@ bool AIShipCannonController::ScanShipForCannons()
             pNode->geo->GetLabel(i, label);
             for (j = 0; j < aShipBorts.size(); j++)
                 //       if (aShipBorts[j] == label.group_name) {
-                if (_strcmpi(aShipBorts[j].sName.c_str(), label.group_name) == 0)
+                if (storm::iEquals(aShipBorts[j].sName, label.group_name))
                 {
                     // ugeen : akella bug fix
                     aShipBorts[j].aCannons.push_back(AICannon{});

@@ -1,10 +1,10 @@
 #include "file_service.h"
 #include "core_impl.h"
 #include "storm_assert.h"
+#include "storm/string_compare.hpp"
 
 #include <SDL2/SDL.h>
 #include <exception>
-#include <storm/string_compare.hpp>
 #include <string>
 
 #define COMMENT ';'
@@ -246,7 +246,7 @@ std::unique_ptr<INIFILE> FILE_SERVICE::OpenIniFile(const char *file_name)
     {
         if (OpenFiles[n] == nullptr || OpenFiles[n]->GetFileName() == nullptr)
             continue;
-        if (_stricmp(OpenFiles[n]->GetFileName(), file_name) == 0)
+        if (storm::iEquals(OpenFiles[n]->GetFileName(), file_name))
         {
             OpenFiles[n]->IncReference();
 

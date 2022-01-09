@@ -577,7 +577,7 @@ void COMPILER::DelEventHandler(const char *event_name, const char *func_name)
             continue;
         if (pM->ProcessTime(0))
             continue; // skip events, possible executed on this frame
-        if (_stricmp(pM->pEventName, event_name) == 0)
+        if (storm::iEquals(pM->pEventName, event_name))
         {
             EventMsg.Del(n);
             n--;
@@ -7204,7 +7204,7 @@ void COMPILER::FormatDialog(char *file_name)
                 if (Token.GetData())
                 {
                     // node text --------------------------------------------
-                    if (_stricmp(Token.GetData(), "text") == 0)
+                    if (storm::iEquals(Token.GetData(), "text"))
                     {
                         fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
 
@@ -7275,7 +7275,7 @@ void COMPILER::FormatDialog(char *file_name)
             if (Token.GetData())
             {
                 fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));
-                if (_stricmp(Token.GetData(), "link") == 0)
+                if (storm::iEquals(Token.GetData(), "link"))
                 {
                     Token_type = Token.FormatGet();
                     fio->_WriteFile(fileS, Token.GetData(), strlen(Token.GetData()));

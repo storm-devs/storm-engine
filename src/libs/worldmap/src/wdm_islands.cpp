@@ -55,24 +55,24 @@ WdmIslands::WdmIslands()
         baseModel->geo->GetLabel(i, label);
         if (!label.group_name || !label.group_name[0])
             continue;
-        if (_stricmp(label.group_name, "locators") == 0)
+        if (storm::iEquals(label.group_name, "locators"))
         {
-            if (_stricmp(label.name, "min") == 0)
+            if (storm::iEquals(label.name, "min"))
             {
                 vmn = ((CMatrix *)label.m)->Pos();
                 isMin = true;
             }
-            if (_stricmp(label.name, "max") == 0)
+            if (storm::iEquals(label.name, "max"))
             {
                 vmx = ((CMatrix *)label.m)->Pos();
                 isMax = true;
             }
         }
-        else if (_stricmp(label.group_name, "merchant") == 0)
+        else if (storm::iEquals(label.group_name, "merchant"))
         {
             merchants.push_back(((CMatrix *)label.m)->Pos());
         }
-        else if (label.name && label.name[0] && _stricmp(label.group_name, "quests") == 0)
+        else if (label.name && label.name[0] && storm::iEquals(label.group_name, "quests"))
         {
             quests.push_back(Quest{((CMatrix *)label.m)->Pos(), label.name});
             // Quest & q = quests[quests.Add()];
@@ -103,7 +103,7 @@ WdmIslands::WdmIslands()
             continue;
         if (!label.name || !label.name[0])
             continue;
-        if (_stricmp(label.group_name, "islands") != 0)
+        if (!storm::iEquals(label.group_name, "islands"))
             continue;
         // Skip if added
         int32_t j;
@@ -410,7 +410,7 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         }
         else
         {
-            if (_stricmp(labels[index].locatorName.c_str(), locator) != 0)
+            if (!storm::iEquals(labels[index].locatorName, locator))
             {
                 if (LabelsFindLocator(locator, pos))
                 {
@@ -517,7 +517,7 @@ int32_t WdmIslands::LabelsFind(const char *id, uint32_t hash)
     {
         if (labels[i].idHash == hash)
         {
-            if (_stricmp(labels[i].id.c_str(), id) == 0)
+            if (storm::iEquals(labels[i].id, id))
                 return i;
         }
     }
@@ -537,10 +537,10 @@ bool WdmIslands::LabelsFindLocator(const char *name, CVECTOR &pos) const
         baseModel->geo->GetLabel(i, label);
         if (!label.group_name || !label.group_name[0])
             continue;
-        if (_stricmp(label.group_name, "labels") != 0)
+        if (!storm::iEquals(label.group_name, "labels"))
             continue;
-        // if(_stricmp(label.group_name, "geometry") != 0) continue;
-        if (_stricmp(label.name, name) == 0)
+        // if(!storm::iEquals(label.group_name, "geometry")) continue;
+        if (storm::iEquals(label.name, name))
         {
             pos = ((CMatrix *)label.m)->Pos();
             return true;
@@ -555,7 +555,7 @@ int32_t WdmIslands::LabelsAddFont(const char *name)
         name = "";
     for (int32_t i = 0; i < fonts.size(); i++)
     {
-        if (_stricmp(fonts[i].name.c_str(), name) == 0)
+        if (storm::iEquals(fonts[i].name, name))
         {
             return fonts[i].id;
         }

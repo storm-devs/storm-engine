@@ -413,11 +413,11 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         sprintf_s(param1, sizeof(param1), "align%d", i + 1);
         if (ReadIniString(ini1, name1, ini2, name2, param1, param, sizeof(param), ""))
         {
-            if (_stricmp(param, "left") == 0)
+            if (storm::iEquals(param, "left"))
                 m_pStrParam[i].m_nAlign = PR_ALIGN_LEFT;
-            else if (_stricmp(param, "right") == 0)
+            else if (storm::iEquals(param, "right"))
                 m_pStrParam[i].m_nAlign = PR_ALIGN_RIGHT;
-            else if (_stricmp(param, "center") == 0)
+            else if (storm::iEquals(param, "center"))
                 m_pStrParam[i].m_nAlign = PR_ALIGN_CENTER;
             else
                 core.Trace("Warning! unknown align: %s", param);
@@ -1641,7 +1641,7 @@ int CXI_VIMAGESCROLL::FindTexGroupFromOld(char **pGroupList, char *groupName, in
         return -1;
     for (int i = 0; i < listSize; i++)
     {
-        if (pGroupList[i] != nullptr && _stricmp(pGroupList[i], groupName) == 0)
+        if (pGroupList[i] != nullptr && storm::iEquals(pGroupList[i], groupName))
             return i;
     }
     return -1;
