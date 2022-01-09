@@ -866,23 +866,16 @@ void SoundService::SetActiveWithFade(const bool active)
         if (PlayingSound.bFree)
             continue;
 
-        float volume = 0.0f;
-
-        if (PlayingSound.type == VOLUME_FX)
+        if (active)
         {
-            volume = fFXVolume;
+            PlayingSound.channel->addFadePoint(dsp_clock_start, 0.0f);
+            PlayingSound.channel->addFadePoint(dsp_clock_end, 1.0f);
         }
-        else if (PlayingSound.type == VOLUME_MUSIC)
+        else
         {
-            volume = fMusicVolume;
+            PlayingSound.channel->addFadePoint(dsp_clock_start, 1.0f);
+            PlayingSound.channel->addFadePoint(dsp_clock_end, 0.0f);
         }
-        else if (PlayingSound.type == VOLUME_SPEECH)
-        {
-            volume = fSpeechVolume;
-        }
-
-        PlayingSound.channel->addFadePoint(dsp_clock_start, active ? 0.0f : volume);
-        PlayingSound.channel->addFadePoint(dsp_clock_end, active ? volume : 0.0f);
     }
 
     if (!active)
