@@ -34,6 +34,10 @@ class VAI_OBJBASE : public CANNON_TRACE_BASE
     virtual CVECTOR GetAng() const = 0;
     virtual CMatrix *GetMatrix() = 0;
     virtual CVECTOR GetBoxsize() const = 0;
+    virtual CVECTOR GetRealBoxsize() const
+    {
+        return GetBoxsize();
+    }
 
     virtual MODEL *GetModel() const = 0;
     virtual entid_t GetModelEID() const = 0;
