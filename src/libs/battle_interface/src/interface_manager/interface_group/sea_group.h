@@ -14,7 +14,7 @@ class BI_SeaGroup : public BI_BaseGroup
     {
     }
 
-    long Event(const char *pcEventName) override
+    int32_t Event(const char *pcEventName) override
     {
         return 0;
     }

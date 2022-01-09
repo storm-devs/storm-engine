@@ -102,7 +102,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
             char buf[4];
             buf[0] = 'm';
             buf[3] = 0;
-            for (long i = 1; i <= 12; i++)
+            for (int32_t i = 1; i <= 12; i++)
             {
                 if (i < 10)
                     buf[1] = '0';
@@ -112,7 +112,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
                 s = a->GetAttribute(buf);
                 if (s && s[0])
                 {
-                    long sl = strlen(s) + 1;
+                    int32_t sl = strlen(s) + 1;
                     if (sl > 128)
                         sl = 128;
                     memcpy(month[i - 1], s, sl);
@@ -136,14 +136,14 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         data = core.Event("WorldMap_GetFood");
         if (data)
         {
-            food = static_cast<long>(data->GetFloat() + 0.5f);
+            food = static_cast<int32_t>(data->GetFloat() + 0.5f);
             if (food < 0)
                 food = 0;
         }
         data = core.Event("WorldMap_GetRum");
         if (data)
         {
-            rum = static_cast<long>(data->GetFloat() + 0.5f);
+            rum = static_cast<int32_t>(data->GetFloat() + 0.5f);
             if (rum < 0)
                 rum = 0;
         }
@@ -202,7 +202,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectUV1(buf, -0.5f, 0.0f, 1.0f, 1.0f);
     CMatrix rot(0.0f, 1.8f * (1.0f - widForce), 0.0f, 0.5f, 0.0f, 0.0f);
-    for (long i = 0; i < 6; i++)
+    for (int32_t i = 0; i < 6; i++)
     {
         CVECTOR v(buf[i].tu1, 0.0f, buf[i].tv1);
         const auto vrot = rot * v;
@@ -225,13 +225,13 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i %s %i", wdmObjects->wm->day, month[wdmObjects->wm->mon - 1],
               wdmObjects->wm->year);
     tbuf[sizeof(tbuf) - 1] = 0;
-    long font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
-    long fw = rs->StringWidth(tbuf, font);
-    long fh = rs->CharHeight(font);
+    int32_t font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
+    int32_t fw = rs->StringWidth(tbuf, font);
+    int32_t fh = rs->CharHeight(font);
 
-    // rs->Print(font, 0xffffffff, long(cx - fw*0.5f), long(cy + 98.0f - fh*0.5f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, long(cx),
-                 long(cy + (98.0f - fh * 0.5f) * resizeRatio), tbuf);
+    // rs->Print(font, 0xffffffff, int32_t(cx - fw*0.5f), int32_t(cy + 98.0f - fh*0.5f), tbuf);
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
+                 int32_t(cy + (98.0f - fh * 0.5f) * resizeRatio), tbuf);
 
     // Centre
     // cy += 128.0f + 32.0f;
@@ -262,20 +262,20 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
 
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i%s", food > 99999 ? 99999 : food, food > 99999 ? "+" : "");
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
 
     rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
-                 long(cx - foodRumSpacing * resizeRatio), long(cy + 30.0f * resizeRatio), tbuf);
+                 int32_t(cx - foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
 
     // write the amount of rum
     if (rum)
     {
         _snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum.value());
         tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
+        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
 
         rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
-                     long(cx + foodRumSpacing * resizeRatio), long(cy + 30.0f * resizeRatio), tbuf);
+                     int32_t(cx + foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
     }
 
     if (!wdmObjects->coordinate.empty())
@@ -293,19 +293,19 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         // display a line with coordinates
         _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate.c_str());
         tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
+        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
         fh = rs->CharHeight(font);
 
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, long(cx),
-                     long(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
+                     int32_t(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
 
         _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
         tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<long>(w));
+        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
         fh = rs->CharHeight(font);
 
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, long(cx),
-                     long(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
+                     int32_t(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
     }
 
     if (wdmObjects->nationFlagIndex)

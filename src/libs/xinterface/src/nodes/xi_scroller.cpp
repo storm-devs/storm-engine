@@ -165,7 +165,7 @@ void CXI_SCROLLER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, cons
 
 void CXI_SCROLLER::MakeOwnedControl()
 {
-    for (long n = 0; n < static_cast<long>(m_asOwnedNodes.size()); n++)
+    for (int32_t n = 0; n < static_cast<int32_t>(m_asOwnedNodes.size()); n++)
     {
         auto *const pNode = static_cast<XINTERFACE *>(EntityManager::GetEntityPointer(g_idInterface))
                                 ->FindNode(m_asOwnedNodes[n].c_str(), nullptr);
@@ -217,7 +217,7 @@ void CXI_SCROLLER::DownPress()
 float CXI_SCROLLER::GetOwnedStep()
 {
     CINODE *pNode = nullptr;
-    for (long n = 0; n < static_cast<long>(m_asOwnedNodes.size()); n++)
+    for (int32_t n = 0; n < static_cast<int32_t>(m_asOwnedNodes.size()); n++)
     {
         pNode = static_cast<XINTERFACE *>(EntityManager::GetEntityPointer(g_idInterface))
                     ->FindNode(m_asOwnedNodes[n].c_str(), nullptr);
@@ -247,7 +247,7 @@ float CXI_SCROLLER::GetOwnedStep()
     return 0.f;
 }
 
-bool CXI_SCROLLER::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_SCROLLER::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos >= m_rect.left && xPos <= m_rect.right && yPos >= m_rect.top && yPos <= m_rect.bottom)
     {

@@ -118,7 +118,7 @@ void CXI_RECTANGLE::UpdateColors()
     m_pVert[3].color = ARGB(alpha, red, green, blue);
 }
 
-bool CXI_RECTANGLE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_RECTANGLE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (!m_bClickable)
         return false;
@@ -157,7 +157,7 @@ void CXI_RECTANGLE::SaveParametersToIni()
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 }
 
-uint32_t CXI_RECTANGLE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_RECTANGLE::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {

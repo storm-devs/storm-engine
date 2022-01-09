@@ -39,7 +39,7 @@ int CXI_FOURIMAGE::CommandExecute(int wActCode)
             break;
         case ACTION_UPSTEP: {
             auto *pvdat = core.Event("FI_UpCom", "l", m_nSelectItem);
-            if (pvdat == nullptr || pvdat->GetLong() == 0)
+            if (pvdat == nullptr || pvdat->GetInt() == 0)
                 newSelectItem -= 2;
         }
         break;
@@ -169,7 +169,7 @@ void CXI_FOURIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
 
             for (auto i = 0; i < 4; i++)
             {
-                long posX, posY;
+                int32_t posX, posY;
                 posX = (m_imgRect[i].left + m_imgRect[i].right) / 2;
                 const auto color = 0xFFFFFFFF;
                 /*if(i==m_nSelectItem) color=m_dwCurSelectColor;
@@ -328,7 +328,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
         else
         {
             m_nTexturesQuantity = pA->GetAttributesNum();
-            m_nTextureId = new long[m_nTexturesQuantity];
+            m_nTextureId = new int32_t[m_nTexturesQuantity];
             m_sGroupName = new char *[m_nTexturesQuantity];
             if (m_sGroupName == nullptr || m_nTextureId == nullptr)
             {
@@ -622,7 +622,7 @@ void CXI_FOURIMAGE::Update(bool bSelected, uint32_t DeltaTime)
     }
 }
 
-bool CXI_FOURIMAGE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_FOURIMAGE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     for (auto i = 0; i < 4; i++)
         if (xPos >= m_imgRect[i].left && xPos <= m_imgRect[i].right && yPos >= m_imgRect[i].top &&
@@ -646,7 +646,7 @@ void CXI_FOURIMAGE::ChangePosition(XYRECT &rNewPos)
 
     m_rect = rNewPos;
 
-    for (long n = 0; n < 4; n++)
+    for (int32_t n = 0; n < 4; n++)
     {
         m_imgRect[n].left += nXOffset;
         m_imgRect[n].top += nYOffset;
@@ -654,9 +654,9 @@ void CXI_FOURIMAGE::ChangePosition(XYRECT &rNewPos)
         m_imgRect[n].bottom += nYOffset;
 
         // find whether the position is right or bottom
-        long nXLessMore = 0;
-        long nYLessMore = 0;
-        for (long i = 0; i < 4; i++)
+        int32_t nXLessMore = 0;
+        int32_t nYLessMore = 0;
+        for (int32_t i = 0; i < 4; i++)
         {
             if (i == n)
                 continue;
@@ -693,7 +693,7 @@ void CXI_FOURIMAGE::SaveParametersToIni()
 
     // save position
     char pcWriteKeyName[256];
-    for (long n = 0; n < 4; n++)
+    for (int32_t n = 0; n < 4; n++)
     {
         sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d,%d,%d", m_imgRect[n].left, m_imgRect[n].top,
                   m_imgRect[n].right, m_imgRect[n].bottom);

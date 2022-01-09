@@ -140,7 +140,7 @@ void BATTLE_LAND_INTERFACE::EndShow()
 void BATTLE_LAND_INTERFACE::SetShowParameters()
 {
     auto *const pA = AttributesPointer ? AttributesPointer->GetAttributeClass("Parameters") : nullptr;
-    m_bShowCommandos = 0 != BIUtils::GetLongFromAttr(pA, "DoShowCommandos", true);
+    m_bShowCommandos = 0 != BIUtils::GetIntFromAttr(pA, "DoShowCommandos", true);
 
     m_pManSign = new BIManSign(GetId(), m_pRS);
     Assert(m_pManSign);

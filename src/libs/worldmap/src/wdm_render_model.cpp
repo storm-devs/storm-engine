@@ -92,7 +92,7 @@ void WdmRenderModel::SetTech(const char *t, const char *ta)
         techa = WDM_MODEL_TECHA;
 }
 
-long WdmRenderModel::GetTexture(long stage) const
+int32_t WdmRenderModel::GetTexture(int32_t stage) const
 {
     if (stage >= 4 || stage < 0 || !geo)
         return -1;
@@ -101,7 +101,7 @@ long WdmRenderModel::GetTexture(long stage) const
     return mtl.texture[stage];
 }
 
-void WdmRenderModel::SetTexture(long stage, long id) const
+void WdmRenderModel::SetTexture(int32_t stage, int32_t id) const
 {
     if (stage >= 4 || stage < 0 || !geo)
         return;
@@ -129,14 +129,14 @@ void WdmRenderModel::Render(VDX9RENDER *rs) const
     else
     {
         wdmObjects->gs->SetTechnique(techa);
-        rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(a) << 24) | 0xffffff);
+        rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<int32_t>(a) << 24) | 0xffffff);
     }
     // Check for visibility
     auto *const plane = rs->GetPlanes();
     static CMatrix mtx;
     rs->GetTransform(D3DTS_WORLD, mtx);
     const auto v = mtx * center;
-    for (long i = 0; i < 4; i++)
+    for (int32_t i = 0; i < 4; i++)
     {
         auto &p = plane[i];
         const auto dist = v.x * p.Nx + v.y * p.Ny + v.z * p.Nz - p.D;

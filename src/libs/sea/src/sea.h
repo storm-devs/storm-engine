@@ -28,14 +28,14 @@ class SEA : public SEA_BASE
 
     struct SeaBlock
     {
-        long iX1, iX2, iY1, iY2; // result rectangle(in units)
-        long iSize0;             //
+        int32_t iX1, iX2, iY1, iY2; // result rectangle(in units)
+        int32_t iSize0;             //
 
-        long iTX, iTY;
-        long iSize;
-        long iLOD;
-        long iIStart;
-        long iIFirst, iILast;
+        int32_t iTX, iTY;
+        int32_t iSize;
+        int32_t iLOD;
+        int32_t iIStart;
+        int32_t iIFirst, iILast;
 
         bool bInProgress, bDone;
 
@@ -84,7 +84,7 @@ class SEA : public SEA_BASE
     bool bUnderSeaEnable;
     float bUnderSeaStarted;
 
-    long iVSeaBuffer, iISeaBuffer;
+    int32_t iVSeaBuffer, iISeaBuffer;
 
     IDirect3DVolumeTexture9 *pVolumeTexture;
     IDirect3DCubeTexture9 *pEnvMap, *pSunRoadMap;
@@ -98,17 +98,17 @@ class SEA : public SEA_BASE
     SeaVertex *pVSea;
     uint16_t *pTriangles;
     uint32_t *pIndices;
-    long iVStart, iTStart, iIStart;
+    int32_t iVStart, iTStart, iIStart;
 
     PLANE *pFrustumPlanes;
     uint32_t dwNumFrustumPlanes;
 
-    long iSeaTrashTexture;
+    int32_t iSeaTrashTexture;
     float fLastTrashTime;
     std::vector<SeaTrash> aSeaTrash;
     std::vector<RS_RECT> aTrashRects;
 
-    long iSeaLightTexture;
+    int32_t iSeaLightTexture;
     std::vector<SeaLight> aSeaLights;
     float fLastLightTime;
     std::vector<RS_RECT> aLightsRects;
@@ -144,26 +144,26 @@ class SEA : public SEA_BASE
 
     bool bIniFoamEnable, bFoamEnable;
     float fFoamV, fFoamK, fFoamUV, fFoamTextureDisturb;
-    long iFoamTexture;
+    int32_t iFoamTexture;
 
     CMatrix mTexProjection;
 
     void SSE_WaveXZ(SeaVertex **pArray);
     float WaveXZ(float x, float z, CVECTOR *pNormal = nullptr) override;
 
-    void AddBlock(long iTX, long iTY, long iSize, long iLOD);
-    void BuildTree(long iTX, long iTY, long iLev);
+    void AddBlock(int32_t iTX, int32_t iTY, int32_t iSize, int32_t iLOD);
+    void BuildTree(int32_t iTX, int32_t iTY, int32_t iLev);
     void SetBlock(uint32_t dwBlockIndex);
 
     bool isVisibleBBox(const CVECTOR &vCenter, const CVECTOR &v1, const CVECTOR &v2);
-    void CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, long &iMaxLOD, long &iMinLOD);
+    void CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, int32_t &iMaxLOD, int32_t &iMinLOD);
     inline float CalcLod(const float &x, const float &y, const float &z);
     [[deprecated]] void WaveXZBlock(SeaBlock &pB);
     void SSE_WaveXZBlock(SeaBlock &pB);
     SeaBlock *GetUndoneBlock();
     void PrepareIndicesForBlock(uint32_t dwBlockIndex);
 
-    long VisCode(const CVECTOR &vP);
+    int32_t VisCode(const CVECTOR &vP);
 
     void CalculateHeightMap(float fFrame, float fAmplitude, float *pfOut, std::vector<uint8_t *> &aFrames);
     void CalculateNormalMap(float fFrame, float fAmplitude, float *pfOut, std::vector<uint32_t *> &aFrames);
@@ -186,9 +186,9 @@ class SEA : public SEA_BASE
     void Realize(uint32_t dwDeltaTime);
 
     float Trace(const CVECTOR &vSrc, const CVECTOR &vDst) override;
-    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
+    float Cannon_Trace(int32_t iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
 
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
+    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
     {
         return false;
     }

@@ -1,17 +1,22 @@
 #pragma once
 
+// includes
+#include "math3d.h"
+#include <cstdint>
+#include <cstring>
+
 namespace TOREMOVE
 {
-inline unsigned long HashNoCase(const char *str)
+inline uint32_t HashNoCase(const char *str)
 {
-    unsigned long hval = 0;
+    uint32_t hval = 0;
     while (*str != '\0')
     {
         auto c = *str++;
         if (c >= 'A' && c <= 'Z')
             c += 'a' - 'A';
-        hval = (hval << 4) + static_cast<unsigned long>(c);
-        const auto g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
+        hval = (hval << 4) + static_cast<uint32_t>(c);
+        const auto g = hval & (static_cast<uint32_t>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
@@ -22,16 +27,16 @@ inline unsigned long HashNoCase(const char *str)
 }
 } // namespace TOREMOVE
 
-// includes
-#include "math3d.h"
-#include <cstdint>
-#include <cstring>
-
 #define _FILE_ __FILE__
 #define _L __LINE__
 #define _FL_ __FILE__, __LINE__
 #define _FL __FILE__, __LINE__
 #define _FILELINE_ _FL_
+
+struct IPOINT
+{
+    int32_t x, y;
+};
 
 struct FPOINT
 {

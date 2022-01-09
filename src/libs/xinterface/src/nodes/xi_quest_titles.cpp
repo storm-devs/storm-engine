@@ -4,7 +4,7 @@ void SubRightWord(char *buf, int fontNum, int width, VDX9RENDER *rs)
 {
     if (buf == nullptr)
         return;
-    const long bufSize = strlen(buf);
+    const int32_t bufSize = strlen(buf);
     for (auto *pEnd = buf + bufSize; pEnd > buf; pEnd--)
     {
         if (*pEnd == ' ')
@@ -200,14 +200,14 @@ int CXI_QUESTTITLE::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_QUESTTITLE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_QUESTTITLE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (!m_bUse)
         return false;
     if (xPos < (m_rect.left - m_selectOffset) || xPos > m_rect.right)
         return false;
 
-    long top, bottom;
+    int32_t top, bottom;
     top = m_rect.top;
     for (auto i = 0; i < m_stringQuantity; i++)
     {
@@ -325,7 +325,7 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
 
     if (pA == nullptr)
         return;
-    const long aq = pA->GetAttributesNum();
+    const int32_t aq = pA->GetAttributesNum();
     if (topNum < 0 || topNum >= aq)
     {
         core.Trace("quest number out of range");

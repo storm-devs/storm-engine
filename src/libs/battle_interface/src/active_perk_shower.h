@@ -35,8 +35,8 @@ class ActivePerkShower : public Entity
   protected:
     void ReleaseAll();
 
-    long m_idVBuf;
-    long m_idIBuf;
+    int32_t m_idVBuf;
+    int32_t m_idIBuf;
     void FillVIBuffers();
     void FillRectData(void *vbuf, const FRECT &rectPos, const FRECT &rectTex);
 
@@ -44,13 +44,13 @@ class ActivePerkShower : public Entity
 
     struct _TEXTURE_DESCR
     {
-        long m_idTexture;
-        long m_nCol;
-        long m_nRow;
+        int32_t m_idTexture;
+        int32_t m_nCol;
+        int32_t m_nRow;
 
-        long m_nPicsQ;
-        long m_nVertStart;
-        long m_nIndxStart;
+        int32_t m_nPicsQ;
+        int32_t m_nVertStart;
+        int32_t m_nIndxStart;
     } * m_pTexDescr;
 
     bool CreateTextures(ATTRIBUTES *pATextureRoot);
@@ -71,8 +71,8 @@ class ActivePerkShower : public Entity
 
     struct _PICTURE_DESCR
     {
-        long m_nPicNum;
-        long m_nPicTexIdx;
+        int32_t m_nPicNum;
+        int32_t m_nPicTexIdx;
     } * m_pIconsList;
 
     bool InitIconsList(ATTRIBUTES *pAIconsRoot);

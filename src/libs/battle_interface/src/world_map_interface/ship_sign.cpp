@@ -13,9 +13,9 @@ void WMShipIcon::ExecuteCommand(CommandType command)
 {
 }
 
-long WMShipIcon::CalculateSignQuantity()
+int32_t WMShipIcon::CalculateSignQuantity()
 {
-    long n;
+    int32_t n;
     char param[256];
 
     if (m_pAData)

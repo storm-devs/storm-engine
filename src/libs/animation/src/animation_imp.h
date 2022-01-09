@@ -25,7 +25,7 @@ class AnimationImp final : public Animation
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
   public:
-    AnimationImp(long id, AnimationInfo *animationInfo);
+    AnimationImp(int32_t id, AnimationInfo *animationInfo);
     ~AnimationImp() override;
 
     // Set pointer to animation service
@@ -36,26 +36,26 @@ class AnimationImp final : public Animation
     //--------------------------------------------------------------------------------------------
   public:
     // Access the action player
-    ActionPlayer &Player(long index) override;
+    ActionPlayer &Player(int32_t index) override;
     // Access the animation timer
-    AnimationTimer &Timer(long index) override;
+    AnimationTimer &Timer(int32_t index) override;
     // Events
     // Set internal event
-    long SetEvent(AnimationEvent event, long index, AnimationEventListener *ael) override;
+    int32_t SetEvent(AnimationEvent event, int32_t index, AnimationEventListener *ael) override;
     // Delete internal event
-    void DelEvent(long eventID) override;
+    void DelEvent(int32_t eventID) override;
     // Set an external event handler
     void SetEventListener(AnimationEventListener *ael) override;
     // Access to bones
     // Get the number of bones in a skeleton
-    long GetNumBones() const override;
+    int32_t GetNumBones() const override;
     // Get animation matrix for bone
-    CMatrix &GetAnimationMatrix(long iBone) const override;
+    CMatrix &GetAnimationMatrix(int32_t iBone) const override;
     // misc
     // Get custom data for animation
     const char *GetData(const char *dataName) const override;
     // Copy the state of one player to another
-    void CopyPlayerState(long indexSrc, long indexDst, bool copyTimerState = false) override;
+    void CopyPlayerState(int32_t indexSrc, int32_t indexDst, bool copyTimerState = false) override;
     // Get animation speed
     float GetFPS() override;
     // Set blending modes
@@ -75,52 +75,52 @@ class AnimationImp final : public Animation
     //--------------------------------------------------------------------------------------------
   public:
     // Get thisID
-    long GetThisID();
+    int32_t GetThisID();
     // Get pointer to AnimationInfo
     AnimationInfo *GetAnimationInfo();
     // Find action by name
     ActionInfo *GetActionInfo(const char *actionName);
     // Take a step in time
-    void Execute(long dltTime);
+    void Execute(int32_t dltTime);
     // Calculate animation matrices
     void BuildAnimationMatrices();
     // Get a pointer to the animation srvis
     static AnimationServiceImp *GetAniService();
     // AnimationPlayer events
     // A new action has been set for the player
-    void ApeSetnewaction(long index);
+    void ApeSetnewaction(int32_t index);
     // Action playback enabled
-    void ApePlay(long index);
+    void ApePlay(int32_t index);
     // Paused playing an action
-    void ApePauseOn(long index);
+    void ApePauseOn(int32_t index);
     // Continued playing action
-    void ApePauseOff(long index);
+    void ApePauseOff(int32_t index);
     // Stop playing an action
-    void ApeStop(long index);
+    void ApeStop(int32_t index);
     // Generate event on every frame
-    void ApeAlways(long index);
+    void ApeAlways(int32_t index);
     // On the action starts
-    void ApeStart(long index);
+    void ApeStart(int32_t index);
     // On the action ends
-    void ApeEnd(long index);
+    void ApeEnd(int32_t index);
     // On changing the direction of playback (pingpong)
-    void ApeChange(long index);
+    void ApeChange(int32_t index);
     // Timer has ended or has been stopped
-    void AteTimerstop(long index);
+    void AteTimerstop(int32_t index);
 
     // External event
-    void AteExtern(long plIndex, const char *evt);
+    void AteExtern(int32_t plIndex, const char *evt);
 
   private:
     // Send events
-    void SendEvent(AnimationEvent event, long index);
+    void SendEvent(AnimationEvent event, int32_t index);
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
     // identifier
-    long thisID;
+    int32_t thisID;
     // Animation pointer
     AnimationInfo *aniInfo;
     // Animations
@@ -141,7 +141,7 @@ class AnimationImp final : public Animation
     static AnimationServiceImp *aniService;
 	// Procedural head look
     bool isControllableHead;
-    long headBoneIndex;
+    int32_t headBoneIndex;
     float customHeadAX;
     float customHeadAY;
 };
@@ -162,7 +162,7 @@ inline void AnimationImp::SetAnimationService(AnimationServiceImp *animationServ
 //--------------------------------------------------------------------------------------------
 
 // Get thisID
-inline long AnimationImp::GetThisID()
+inline int32_t AnimationImp::GetThisID()
 {
     return thisID;
 }
@@ -187,61 +187,61 @@ inline AnimationServiceImp *AnimationImp::GetAniService()
 
 // AnimationPlayer events
 // A new action has been set for the player
-inline void AnimationImp::ApeSetnewaction(long index)
+inline void AnimationImp::ApeSetnewaction(int32_t index)
 {
     SendEvent(ae_setnewaction, index);
 }
 
 // Action playback enabled
-inline void AnimationImp::ApePlay(long index)
+inline void AnimationImp::ApePlay(int32_t index)
 {
     SendEvent(ae_play, index);
 }
 
 // Paused playing an action
-inline void AnimationImp::ApePauseOn(long index)
+inline void AnimationImp::ApePauseOn(int32_t index)
 {
     SendEvent(ae_pauseon, index);
 }
 
 // Continued playing an action
-inline void AnimationImp::ApePauseOff(long index)
+inline void AnimationImp::ApePauseOff(int32_t index)
 {
     SendEvent(ae_pauseoff, index);
 }
 
 // Stop playing an action
-inline void AnimationImp::ApeStop(long index)
+inline void AnimationImp::ApeStop(int32_t index)
 {
     SendEvent(ae_stop, index);
 }
 
 // When the action starts
-inline void AnimationImp::ApeStart(long index)
+inline void AnimationImp::ApeStart(int32_t index)
 {
     SendEvent(ae_start, index);
 }
 
 // When the action ends
-inline void AnimationImp::ApeEnd(long index)
+inline void AnimationImp::ApeEnd(int32_t index)
 {
     SendEvent(ae_end, index);
 }
 
 // When changing the direction of playback (pingpong)
-inline void AnimationImp::ApeChange(long index)
+inline void AnimationImp::ApeChange(int32_t index)
 {
     SendEvent(ae_change, index);
 }
 
 // Timer has ended or has been stopped
-inline void AnimationImp::AteTimerstop(long index)
+inline void AnimationImp::AteTimerstop(int32_t index)
 {
     SendEvent(ae_timerstop, index);
 }
 
 // External event
-inline void AnimationImp::AteExtern(long plIndex, const char *evt)
+inline void AnimationImp::AteExtern(int32_t plIndex, const char *evt)
 {
     if (ae_listenersExt)
         ae_listenersExt->Event(this, plIndex, evt);

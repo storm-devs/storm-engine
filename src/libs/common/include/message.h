@@ -11,7 +11,7 @@ class VDATA;
 
 namespace storm
 {
-using MessageParam = std::variant<uint8_t, uint16_t, uint32_t, long, float, double, ATTRIBUTES *, entid_t, VDATA *,
+using MessageParam = std::variant<uint8_t, uint16_t, uint32_t, int32_t, float, double, ATTRIBUTES *, entid_t, VDATA *,
                                   CVECTOR, std::string>;
 } // namespace storm
 
@@ -35,16 +35,16 @@ class MESSAGE final
         return get<uint16_t>(params_[index - 1]);
     }
 
-    long Long()
+    int32_t Long()
     {
         ValidateFormat('l');
-        return get<long>(params_[index - 1]);
+        return get<int32_t>(params_[index - 1]);
     }
 
-    long Dword()
+    int32_t Dword()
     {
         ValidateFormat('u');
-        return static_cast<long>(get<uint32_t>(params_[index - 1]));
+        return static_cast<int32_t>(get<uint32_t>(params_[index - 1]));
     }
 
     float Float()
@@ -95,7 +95,7 @@ class MESSAGE final
         return get<std::string>(params_[index - 1]);
     }
 
-    bool Set(long value)
+    bool Set(int32_t value)
     {
         ValidateFormat('l');
         params_[index - 1] = value;
@@ -194,7 +194,7 @@ class MESSAGE final
         case 'w':
             return va_arg(args, uint16_t);
         case 'l':
-            return va_arg(args, long);
+            return va_arg(args, int32_t);
         case 'u':
             return va_arg(args, uint32_t);
         case 'f':
@@ -222,5 +222,5 @@ class MESSAGE final
 
     std::string format_;
     std::vector<storm::MessageParam> params_;
-    long index{};
+    int32_t index{};
 };

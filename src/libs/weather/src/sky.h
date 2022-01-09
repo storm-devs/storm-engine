@@ -63,14 +63,14 @@ class SKY : public Entity
     std::string sTechSkyFog = "SkyFog";
 
     VDX9RENDER *pRS;
-    long TexturesID[SKY_NUM_TEXTURES];
-    long TexturesNextID[SKY_NUM_TEXTURES];
+    int32_t TexturesID[SKY_NUM_TEXTURES];
+    int32_t TexturesNextID[SKY_NUM_TEXTURES];
     float fTimeFactor;
 
-    long iSkyVertsID = -1;
-    long iSkyIndexID = -1;
-    long iFogVertsID = -1;
-    long iFogIndexID = -1;
+    int32_t iSkyVertsID = -1;
+    int32_t iSkyIndexID = -1;
+    int32_t iFogVertsID = -1;
+    int32_t iFogIndexID = -1;
 
     Entity *pAstronomy;
     Entity *pSunGlow;

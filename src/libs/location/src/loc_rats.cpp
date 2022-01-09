@@ -54,7 +54,7 @@ uint64_t LocRats::ProcessMessage(MESSAGE &message)
     if (!location)
         return 0;
     // Init rats
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         rat[i].Init(location);
     return 1;
 }
@@ -68,6 +68,6 @@ void LocRats::Execute(uint32_t delta_time)
 void LocRats::Realize(uint32_t delta_time)
 {
     const auto dltTime = delta_time * 0.001f;
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         rat[i].Update(dltTime);
 }

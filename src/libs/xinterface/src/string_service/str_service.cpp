@@ -14,7 +14,7 @@
 static const char *sLanguageFile = "resource\\ini\\TEXTS\\language.ini";
 
 static VSTRSERVICE *g_StringServicePointer = nullptr;
-static long g_idGlobLanguageFileID = -1;
+static int32_t g_idGlobLanguageFileID = -1;
 
 bool GetStringDescribe(char *inStr, char *strName, char *outStr)
 {
@@ -389,7 +389,7 @@ void STRSERVICE::SetLanguage(const char *sLanguage)
     {
         if (pUSB->nref <= 0)
             continue;
-        const long newID = OpenUsersStringFile(pUSB->fileName);
+        const int32_t newID = OpenUsersStringFile(pUSB->fileName);
         UsersStringBlock *pUTmp;
         for (pUTmp = m_pUsersBlocks; pUTmp != nullptr; pUTmp = pUTmp->next)
             if (pUTmp->blockID == newID)
@@ -528,12 +528,12 @@ void STRSERVICE::LoadIni()
     // UNGUARD
 }
 
-long STRSERVICE::GetStringNum(const char *stringName)
+int32_t STRSERVICE::GetStringNum(const char *stringName)
 {
-    // GUARD(long STRSERVICE::GetStringNum(const char* stringName))
+    // GUARD(int32_t STRSERVICE::GetStringNum(const char* stringName))
 
     if (stringName != nullptr)
-        for (long i = 0; i < m_nStringQuantity; i++)
+        for (int32_t i = 0; i < m_nStringQuantity; i++)
             if (!_stricmp(m_psStrName[i], stringName))
                 return i;
     return -1L;
@@ -541,9 +541,9 @@ long STRSERVICE::GetStringNum(const char *stringName)
     // UNGUARD
 }
 
-char *STRSERVICE::GetString(long strNum)
+char *STRSERVICE::GetString(int32_t strNum)
 {
-    // GUARD(char* STRSERVICE::GetString(long strNum))
+    // GUARD(char* STRSERVICE::GetString(int32_t strNum))
 
     if (strNum < 0 || strNum >= m_nStringQuantity)
         return nullptr;
@@ -552,9 +552,9 @@ char *STRSERVICE::GetString(long strNum)
     // UNGUARD
 }
 
-char *STRSERVICE::GetStringName(long strNum)
+char *STRSERVICE::GetStringName(int32_t strNum)
 {
-    // GUARD(char* STRSERVICE::GetStringName(long strNum))
+    // GUARD(char* STRSERVICE::GetStringName(int32_t strNum))
 
     if (strNum < 0 || strNum >= m_nStringQuantity)
         return nullptr;
@@ -563,7 +563,7 @@ char *STRSERVICE::GetStringName(long strNum)
     // UNGUARD
 }
 
-long STRSERVICE::OpenUsersStringFile(const char *fileName)
+int32_t STRSERVICE::OpenUsersStringFile(const char *fileName)
 {
     int i;
     if (fileName == nullptr)
@@ -599,7 +599,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
         return -1;
     }
 
-    const long filesize = fio->_GetFileSize(param);
+    const int32_t filesize = fio->_GetFileSize(param);
 
     if (filesize <= 0)
     {
@@ -633,7 +633,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     memcpy(pUSB->fileName, fileName, len);
     pUSB->blockID = GetFreeUsersID();
 
-    long stridx = 0;
+    int32_t stridx = 0;
     pUSB->psStrName = nullptr;
     pUSB->psString = nullptr;
     for (pUSB->nStringsQuantity = 0;; pUSB->nStringsQuantity++)
@@ -664,7 +664,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
 
     STORM_DELETE(fileBuf);
 
-    const long block_id = pUSB->blockID;
+    const int32_t block_id = pUSB->blockID;
     pUSB->next = nullptr;
     if (pPrev == nullptr)
     {
@@ -677,7 +677,7 @@ long STRSERVICE::OpenUsersStringFile(const char *fileName)
     return block_id;
 }
 
-void STRSERVICE::CloseUsersStringFile(long id)
+void STRSERVICE::CloseUsersStringFile(int32_t id)
 {
     int i;
     if (id == -1)
@@ -726,7 +726,7 @@ void STRSERVICE::CloseUsersStringFile(long id)
     delete pUSB;
 }
 
-char *STRSERVICE::TranslateFromUsers(long id, const char *inStr)
+char *STRSERVICE::TranslateFromUsers(int32_t id, const char *inStr)
 {
     int i;
     if (inStr == nullptr || id == -1)
@@ -746,7 +746,7 @@ char *STRSERVICE::TranslateFromUsers(long id, const char *inStr)
     return nullptr;
 }
 
-long STRSERVICE::GetFreeUsersID() const
+int32_t STRSERVICE::GetFreeUsersID() const
 {
     int id;
     for (id = 0;; id++)
@@ -761,7 +761,7 @@ long STRSERVICE::GetFreeUsersID() const
     return id;
 }
 
-bool STRSERVICE::GetNextUsersString(char *src, long &idx, char **strName, char **strData) const
+bool STRSERVICE::GetNextUsersString(char *src, int32_t &idx, char **strName, char **strData) const
 {
     char *tmpStr;
     char *dataBeg;
@@ -942,7 +942,7 @@ uint32_t _Language_OpenFile(VS_STACK *pS)
     pLngFileName->Get(strLngFileName);
 
     // get the ID for the given file
-    const long nLngFileID = g_StringServicePointer->OpenUsersStringFile(strLngFileName);
+    const int32_t nLngFileID = g_StringServicePointer->OpenUsersStringFile(strLngFileName);
 
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
@@ -958,7 +958,7 @@ uint32_t _Language_CloseFile(VS_STACK *pS)
     auto pLngFileID = (VDATA *)pS->Pop();
     if (!pLngFileID)
         return IFUNCRESULT_FAILED;
-    long nLngFileID = -1;
+    int32_t nLngFileID = -1;
     pLngFileID->Get(nLngFileID);
 
     g_StringServicePointer->CloseUsersStringFile(nLngFileID);
@@ -978,7 +978,7 @@ uint32_t _Language_ConvertString(VS_STACK *pS)
     auto *pLngFileID = (VDATA *)pS->Pop();
     if (!pLngFileID)
         return IFUNCRESULT_FAILED;
-    long nLngFileID = -1;
+    int32_t nLngFileID = -1;
     pLngFileID->Get(nLngFileID);
 
     char *strOutStr = g_StringServicePointer->TranslateFromUsers(nLngFileID, strInStr);
@@ -1146,7 +1146,7 @@ uint32_t _ControlMakeInvert(VS_STACK *pS)
     auto *pControlFlag = (VDATA *)pS->Pop();
     if (!pControlFlag)
         return IFUNCRESULT_FAILED;
-    long nControlFlag = 0;
+    int32_t nControlFlag = 0;
     pControlFlag->Get(nControlFlag);
 
     auto pControlName = (VDATA *)pS->Pop();
@@ -1174,7 +1174,7 @@ uint32_t _InterfaceMakeNode(VS_STACK *pS)
     VDATA* pDat = (VDATA *)pS->Pop();
     if (!pDat)
         return IFUNCRESULT_FAILED;
-    const long nPriority = pDat->GetLong();
+    const int32_t nPriority = pDat->GetInt();
 
     pDat = (VDATA *)pS->Pop();
     if (!pDat)
@@ -1213,7 +1213,7 @@ uint32_t _InterfaceWindowShow(VS_STACK *pS)
     VDATA *pDat = (VDATA *)pS->Pop();
     if (!pDat)
         return IFUNCRESULT_FAILED;
-    long nShow = pDat->GetLong();
+    int32_t nShow = pDat->GetInt();
 
     pDat = (VDATA *)pS->Pop();
     if (!pDat)
@@ -1231,7 +1231,7 @@ uint32_t _InterfaceWindowDisable(VS_STACK *pS)
     VDATA * pDat = (VDATA *)pS->Pop();
     if (!pDat)
         return IFUNCRESULT_FAILED;
-    long nShow = pDat->GetLong();
+    int32_t nShow = pDat->GetInt();
 
     pDat = (VDATA *)pS->Pop();
     if (!pDat)
@@ -1260,7 +1260,7 @@ uint32_t _InterfaceIsWindowEnable(VS_STACK *pS)
     pDat = (VDATA *)pS->Push();
     if (!pDat)
         return IFUNCRESULT_FAILED;
-    pDat->Set(static_cast<long>(bActive ? 1 : 0));
+    pDat->Set(static_cast<int32_t>(bActive ? 1 : 0));
 
     return IFUNCRESULT_OK;
 }
@@ -1305,7 +1305,7 @@ uint32_t _InterfaceCreateFolder(VS_STACK *pS)
         pcCurPtr++;
     }
     // create self directory
-    const long nSuccess = fio->_CreateDirectory(sFolderName);
+    const int32_t nSuccess = fio->_CreateDirectory(sFolderName);
 
     pDat = (VDATA *)pS->Push();
     if (!pDat)
@@ -1323,7 +1323,7 @@ uint32_t _InterfaceCheckFolder(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     }
     const char *sFolderName = pDat->GetString();
-    long nSuccess = fio->_FileOrDirectoryExists(sFolderName);
+    int32_t nSuccess = fio->_FileOrDirectoryExists(sFolderName);
     pDat = (VDATA *)pS->Push();
     if (!pDat)
     {
@@ -1345,8 +1345,8 @@ uint32_t _InterfaceDeleteFolder(VS_STACK *pS)
     if (!pDat)
         return IFUNCRESULT_FAILED;
     const char *sFolderName = pDat->GetString();
-    // long nSuccess = fio->_RemoveDirectory(sFolderName);
-    const long nSuccess = DeleteFolderWithCantainment(sFolderName);
+    // int32_t nSuccess = fio->_RemoveDirectory(sFolderName);
+    const int32_t nSuccess = DeleteFolderWithCantainment(sFolderName);
     pDat = (VDATA *)pS->Push();
     if (!pDat)
         return IFUNCRESULT_FAILED;
@@ -1373,7 +1373,7 @@ uint32_t _InterfaceFindFolders(VS_STACK *pS)
     const auto mask = p.filename().string();
     const auto vFilenames =
         fio->_GetPathsOrFilenamesByMask(p.remove_filename().string().c_str(), mask.c_str(), false, true, false);
-    long n = 0;
+    int32_t n = 0;
     for (std::string curName : vFilenames)
     {
         char pctmp[64];
@@ -1385,7 +1385,7 @@ uint32_t _InterfaceFindFolders(VS_STACK *pS)
     {
         return IFUNCRESULT_FAILED;
     }
-    const long nSuccess = (pA->GetAttributesNum() > 0);
+    const int32_t nSuccess = (pA->GetAttributesNum() > 0);
     pDat->Set(nSuccess);
     return IFUNCRESULT_OK;
 }
@@ -1460,7 +1460,7 @@ uint32_t _DialogAddParamToStr(VS_STACK *pS)
 
 uint32_t _StoreNodeLocksWithOff(VS_STACK *pS)
 {
-    long nStoreIndex = -1;
+    int32_t nStoreIndex = -1;
     if (XINTERFACE::pThis != nullptr)
         nStoreIndex = XINTERFACE::pThis->StoreNodeLocksWithOff();
     auto pDat = (VDATA *)pS->Push();
@@ -1475,7 +1475,7 @@ uint32_t _RestoreNodeLocks(VS_STACK *pS)
     auto pDat = (VDATA *)pS->Pop();
     if (!pDat)
         return IFUNCRESULT_FAILED;
-    const long nStoreIndex = pDat->GetLong();
+    const int32_t nStoreIndex = pDat->GetInt();
     if (XINTERFACE::pThis != nullptr)
         XINTERFACE::pThis->RestoreNodeLocks(nStoreIndex);
     return IFUNCRESULT_OK;
@@ -1510,7 +1510,7 @@ uint32_t _IsKeyPressed(VS_STACK *pS)
     pDat = (VDATA *)pS->Push();
     if (!pDat)
         return IFUNCRESULT_FAILED;
-    pDat->Set(static_cast<long>(bIsPressed));
+    pDat->Set(static_cast<int32_t>(bIsPressed));
     return IFUNCRESULT_OK;
 }
 
@@ -1522,7 +1522,7 @@ uint32_t IsVirtualKeyPressed(VS_STACK *stack)
         return IFUNCRESULT_FAILED;
     }
 
-    const auto key_code = data->GetLong();
+    const auto key_code = data->GetInt();
 
     data = stack->Push();
     if (!data)
@@ -1530,7 +1530,7 @@ uint32_t IsVirtualKeyPressed(VS_STACK *stack)
         return IFUNCRESULT_FAILED;
     }
 
-    data->Set(static_cast<long>(core.Controls->IsKeyPressed(key_code)));
+    data->Set(static_cast<int32_t>(core.Controls->IsKeyPressed(key_code)));
     return IFUNCRESULT_OK;
 }
 
@@ -1569,9 +1569,9 @@ uint32_t _AddControlTreeNode(VS_STACK *pS)
     pDat = (VDATA *)pS->Pop();
     if (!pDat)
         return IFUNCRESULT_FAILED;
-    const long nParent = pDat->GetLong();
+    const int32_t nParent = pDat->GetInt();
 
-    const long nNodIdx = core.Controls->AddControlTreeNode(nParent, pcBaseControl, pcOutControl, fTimeOut);
+    const int32_t nNodIdx = core.Controls->AddControlTreeNode(nParent, pcBaseControl, pcOutControl, fTimeOut);
 
     // set return data
     pDat = (VDATA *)pS->Push();

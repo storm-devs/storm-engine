@@ -22,7 +22,7 @@ class OctTree
         CVECTOR min;     // Minimum value
         CVECTOR max;     // Maximum value
         Vertex **vrt;    // Vertex indices
-        long num;        // Number of vertices
+        int32_t num;        // Number of vertices
     };
 
     // --------------------------------------------------------------------------------------------
@@ -38,8 +38,8 @@ class OctTree
     void FindVerts(const CVECTOR &pos, float r);
 
     std::vector<OctFndVerts> verts;
-    long numVerts;
-    long maxVerts;
+    int32_t numVerts;
+    int32_t maxVerts;
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
@@ -52,11 +52,11 @@ class OctTree
     // Search
     void FindVerts(OTNode *node);
 
-    long Check(OTNode *node, Vertex *v, long num);
+    int32_t Check(OTNode *node, Vertex *v, int32_t num);
 
   private:
     Vertex *vrt;
-    long numVrt;
+    int32_t numVrt;
     OTNode *root;
     CVECTOR vertsPos, vertsPosMin, vertsPosMax;
     float vertsR;

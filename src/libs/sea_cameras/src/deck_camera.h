@@ -44,9 +44,9 @@ class DECK_CAMERA : public COMMON_CAMERA
     CVECTOR camera_pos, camera_ang;
     float h_eye;
     RECT Screen_Rect;
-    long lock_x;
-    long lock_y;
-    long vb_id;
+    int32_t lock_x;
+    int32_t lock_y;
+    int32_t vb_id;
     bool bLoad;
     NODE *pathNode;
     void SetStartPos();

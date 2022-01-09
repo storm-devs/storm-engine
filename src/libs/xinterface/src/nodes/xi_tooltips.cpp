@@ -50,11 +50,11 @@ void CXI_ToolTip::Draw()
 
     const auto nX = (m_rPos.left + m_rPos.right) / 2;
     auto nY = m_rPos.top + m_pntTextOffset.y;
-    for (long n = 0; n < m_aSubText.size(); n++)
+    for (int32_t n = 0; n < m_aSubText.size(); n++)
     {
         m_rs->ExtPrint(m_nFontID, m_dwFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_pntScreenSize.x,
                        m_pntScreenSize.y, nX, nY, "%s", m_aSubText[n].c_str());
-        nY += static_cast<long>(m_rs->CharHeight(m_nFontID) * m_fFontScale);
+        nY += static_cast<int32_t>(m_rs->CharHeight(m_nFontID) * m_fFontScale);
     }
 }
 
@@ -66,13 +66,13 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
     char tokenString[2048];
     char pcToolTipType[128];
     char param[512];
-    long n;
+    int32_t n;
 
     m_rActiveZone = rectOwner;
 
     sprintf_s(pcToolTipType, sizeof(pcToolTipType), "ToolTip");
     // TODO: figure out why this was done:
-    long m_nMaxStrWidth = -1; //~!~
+    int32_t m_nMaxStrWidth = -1; //~!~
 
     for (auto *pcParam = (char *)pFmtStr; pcParam && pcParam[0];)
     {
@@ -94,7 +94,7 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
                 sprintf_s(pcToolTipType, sizeof(pcToolTipType), "%s", tokenString);
                 break;
             case InterfaceToken_width:
-                m_nMaxStrWidth = CXI_UTILS::StringGetLong(pStr);
+                m_nMaxStrWidth = CXI_UTILS::StringGetInt(pStr);
             }
         }
     }
@@ -121,14 +121,14 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
         m_fFontScale = pDefIni->GetFloat(pcToolTipType, "font_scale", m_fFontScale);
         m_dwFontColor = CINODE::GetIniARGB(pDefIni, pcToolTipType, nullptr, nullptr, "font_color", m_dwFontColor);
         if (m_nMaxStrWidth <= 0)
-            m_nMaxStrWidth = pDefIni->GetLong(pcToolTipType, "str_width", m_pntScreenSize.x);
+            m_nMaxStrWidth = pDefIni->GetInt(pcToolTipType, "str_width", m_pntScreenSize.x);
         m_pntTextOffset =
             CINODE::GetIniLongPoint(pDefIni, pcToolTipType, nullptr, nullptr, "str_offset", m_pntTextOffset);
 
         // read back info
         m_dwBackColor = CINODE::GetIniARGB(pDefIni, pcToolTipType, nullptr, nullptr, "back_color", m_dwBackColor);
-        m_nLeftSideWidth = pDefIni->GetLong(pcToolTipType, "back_leftwidth", m_nLeftSideWidth);
-        m_nRightSideWidth = pDefIni->GetLong(pcToolTipType, "back_rightwidth", m_nRightSideWidth);
+        m_nLeftSideWidth = pDefIni->GetInt(pcToolTipType, "back_leftwidth", m_nLeftSideWidth);
+        m_nRightSideWidth = pDefIni->GetInt(pcToolTipType, "back_rightwidth", m_nRightSideWidth);
         if (pDefIni->ReadString(pcToolTipType, "back_imagegroup", param, sizeof(param), ""))
         {
             m_sGroupName = param;
@@ -150,9 +150,9 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
             }
         }
         m_fTurnOnDelay = pDefIni->GetFloat(pcToolTipType, "turnondelay", m_fTurnOnDelay);
-        m_nXRectangleOffset = pDefIni->GetLong(pcToolTipType, "horzcursoroffset", 0);
-        m_nYRectangleOffsetUp = pDefIni->GetLong(pcToolTipType, "vertupcursoroffset", 0);
-        m_nYRectangleOffsetDown = pDefIni->GetLong(pcToolTipType, "vertdowncursoroffset", 0);
+        m_nXRectangleOffset = pDefIni->GetInt(pcToolTipType, "horzcursoroffset", 0);
+        m_nYRectangleOffsetUp = pDefIni->GetInt(pcToolTipType, "vertupcursoroffset", 0);
+        m_nYRectangleOffsetDown = pDefIni->GetInt(pcToolTipType, "vertdowncursoroffset", 0);
     }
     if (m_nMaxStrWidth <= 0)
         m_nMaxStrWidth = m_pntScreenSize.x;
@@ -173,7 +173,7 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
     }
     m_nUseWidth += m_pntTextOffset.x * 2;
     m_nUseHeight =
-        m_aSubText.size() * static_cast<long>(m_rs->CharHeight(m_nFontID) * m_fFontScale) + 2 * m_pntTextOffset.x;
+        m_aSubText.size() * static_cast<int32_t>(m_rs->CharHeight(m_nFontID) * m_fFontScale) + 2 * m_pntTextOffset.x;
 
     m_nSquareQ = 3;
     CreateIndexBuffer();
@@ -183,7 +183,7 @@ void CXI_ToolTip::SetByFormatString(XYRECT &rectOwner, INIFILE *pDefIni, const c
     ReplaceRectangle(rectOwner.right, rectOwner.bottom);
 }
 
-void CXI_ToolTip::MousePos(float fDeltaTime, long nX, long nY)
+void CXI_ToolTip::MousePos(float fDeltaTime, int32_t nX, int32_t nY)
 {
     if (m_nMouseX != nX || m_nMouseY != nY || nX < m_rActiveZone.left || nX > m_rActiveZone.right ||
         nY < m_rActiveZone.top || nY > m_rActiveZone.bottom)
@@ -238,7 +238,7 @@ void CXI_ToolTip::UpdateIndexBuffer() const
 {
     if (!m_pI)
         return;
-    for (long n = 0; n < m_nSquareQ; n++)
+    for (int32_t n = 0; n < m_nSquareQ; n++)
     {
         m_pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
         m_pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
@@ -262,7 +262,7 @@ void CXI_ToolTip::UpdateVertexBuffer()
                                          m_rPos.top, m_rPos.right, m_rPos.bottom);
 }
 
-void CXI_ToolTip::ReplaceRectangle(long x, long y)
+void CXI_ToolTip::ReplaceRectangle(int32_t x, int32_t y)
 {
     auto top = y + m_nYRectangleOffsetUp;
     auto bottom = y + m_nYRectangleOffsetDown;

@@ -13,7 +13,7 @@ class CXI_BOUNDER : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -28,21 +28,21 @@ class CXI_BOUNDER : public CINODE
   protected:
     // texture parameters
     char *m_sGroupName;
-    long m_idTex;
+    int32_t m_idTex;
     uint32_t m_dwColor;
 
     // picture index & vertex buffers
-    long m_idVBuf; // identificator of the vertex buffer
-    long m_idIBuf; // identificator of the index buffer
-    long m_nVert;  // vertex quantity
-    long m_nIndx;  // index quantity
+    int32_t m_idVBuf; // identificator of the vertex buffer
+    int32_t m_idIBuf; // identificator of the index buffer
+    int32_t m_nVert;  // vertex quantity
+    int32_t m_nIndx;  // index quantity
 
     float m_fAngleWidth;
     float m_fAngleHeight;
 
-    long m_idAngle;
-    long m_idHorzLine;
+    int32_t m_idAngle;
+    int32_t m_idHorzLine;
 
-    long m_nHorzLineQuantity;
-    long m_nVertLineQuantity;
+    int32_t m_nHorzLineQuantity;
+    int32_t m_nVertLineQuantity;
 };

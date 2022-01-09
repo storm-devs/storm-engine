@@ -14,6 +14,6 @@ class WMShipIcon : public BISignIcon
     void ExecuteCommand(CommandType command) override;
 
   protected:
-    long CalculateSignQuantity() override;
+    int32_t CalculateSignQuantity() override;
     void UpdateChildrens() override;
 };

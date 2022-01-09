@@ -16,7 +16,7 @@ class CXI_EDITBOX : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
     void MouseThis(float fX, float fY) override;
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
@@ -37,7 +37,7 @@ class CXI_EDITBOX : public CINODE
     FXYRECT m_frNormTex;
     FXYRECT m_frSelTex;
 
-    long m_idBtnTex;
+    int32_t m_idBtnTex;
     uint32_t m_dwEditBoxColor;
     uint32_t m_dwBorderColor;
 
@@ -45,19 +45,19 @@ class CXI_EDITBOX : public CINODE
     int m_nTopOffset;
     int m_nLeftOffset;
 
-    long m_nChrFontNum;
-    long m_nStrFontNum;
+    int32_t m_nChrFontNum;
+    int32_t m_nStrFontNum;
     float m_fChrScale;
     float m_fStrScale;
     float m_fChrTopOffset;
 
     bool m_bOldSelected;
 
-    long m_idVBRect;
-    long m_idVB;
-    long m_idIB;
-    long m_nVQ;
-    long m_nIQ;
+    int32_t m_idVBRect;
+    int32_t m_idVB;
+    int32_t m_idIB;
+    int32_t m_nVQ;
+    int32_t m_nIQ;
 
     float m_fVAdd;
     float m_fHAdd;

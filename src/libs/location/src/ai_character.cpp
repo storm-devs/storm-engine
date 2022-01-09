@@ -182,7 +182,7 @@ bool AICharacter::CmdStay()
 }
 
 // Go to the point
-bool AICharacter::CmdGotoPoint(float x, float y, float z, float rad, long node, bool isCheckBusyPos)
+bool AICharacter::CmdGotoPoint(float x, float y, float z, float rad, int32_t node, bool isCheckBusyPos)
 {
     if (bMusketer && bMusketerNoMove)
         return true;
@@ -300,7 +300,7 @@ void AICharacter::CmdProcessGotoPoint(float dltTime)
         auto dist = sqrtf(d) * 10.0f;
         if (dist > 255.0f)
             dist = 255.0f;
-        uint32_t color = static_cast<long>(dist);
+        uint32_t color = static_cast<int32_t>(dist);
         color |= (255 - color) << 16;
         color |= 0xff00ff00;
         location->DrawLine(command.pnt + CVECTOR(0, 0.01f, 0), color, command.pnt + CVECTOR(0, 3.01f, 0), color, false);
@@ -460,7 +460,7 @@ void AICharacter::CmdUpdateEscape(float dltTime)
 //--------------------------------------------------------------------------------------------
 
 // Find the node index for a given coordinate
-long AICharacter::FindNodeIndex(const CVECTOR &pos, float *hy)
+int32_t AICharacter::FindNodeIndex(const CVECTOR &pos, float *hy)
 {
     auto *const location = GetLocation();
     float yy;
@@ -481,7 +481,7 @@ bool AICharacter::FindDirectional()
         return false;
     if (location->IsDebugView())
     {
-        for (long i = 0; i < location->GetPtcData().numSteps; i++)
+        for (int32_t i = 0; i < location->GetPtcData().numSteps; i++)
         {
             location->DrawLine(location->GetPtcData().stepPos[i] + CVECTOR(0, 0.01f, 0), 0xffff00ff,
                                location->GetPtcData().stepPos[i] + CVECTOR(0, 2.01f, 0), 0xff2f80ff, false);
@@ -497,7 +497,7 @@ void AICharacter::CalcRepulsionForces()
         return;
     float k;
     const auto kn = 1.0f / numColCharacter;
-    for (long i = 0; i < numColCharacter; i++)
+    for (int32_t i = 0; i < numColCharacter; i++)
     {
         auto *const location = GetLocation();
         auto &ci = location->supervisor.colchr[startColCharacter + i];

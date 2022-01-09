@@ -53,16 +53,16 @@ class ILogAndActions : public Entity
   protected:
     // log stings parameters
     // -----------------------
-    long m_nWindowWidth;  // X window size
-    long m_nWindowHeight; // Y window size
-    long m_nWindowLeft;
-    long m_nWindowRight;
-    long m_nWindowUp;
-    long m_fontID;
+    int32_t m_nWindowWidth;  // X window size
+    int32_t m_nWindowHeight; // Y window size
+    int32_t m_nWindowLeft;
+    int32_t m_nWindowRight;
+    int32_t m_nWindowUp;
+    int32_t m_fontID;
     float m_fFontScale;
     uint32_t m_dwColor;
-    long m_nStringBegin;
-    long m_nStringOffset;
+    int32_t m_nStringBegin;
+    int32_t m_nStringOffset;
     float m_fShiftSpeed;
     float m_fBlendSpeed;
     STRING_DESCR *m_sRoot;
@@ -70,13 +70,13 @@ class ILogAndActions : public Entity
     // Action parameters
     //-------------------
     bool m_bThatRealAction;
-    long m_nIconWidth;  // X icon size
-    long m_nIconHeight; // Y icon size
-    long m_nIconLeft;
-    long m_nIconUp;
-    long m_idIconTexture;
-    long m_horzDiv;
-    long m_vertDiv;
+    int32_t m_nIconWidth;  // X icon size
+    int32_t m_nIconHeight; // Y icon size
+    int32_t m_nIconLeft;
+    int32_t m_nIconUp;
+    int32_t m_idIconTexture;
+    int32_t m_horzDiv;
+    int32_t m_vertDiv;
     BI_ONETEXTURE_VERTEX m_IconVertex[4];
     char m_sActionName[64];
     char m_sOldActionName[64];
@@ -85,7 +85,7 @@ class ILogAndActions : public Entity
     bool m_bShowLogStrings;
     bool m_bDontShowAll;
 
-    long m_nTimeCounter;
+    int32_t m_nTimeCounter;
 
     BITextInfo m_ActionHint1;
     BITextInfo m_ActionHint2;

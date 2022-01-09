@@ -234,8 +234,8 @@ void COMPILER::DTrace(const char *data_PTR, ...)
 
 // append one block of code to another
 // return new pointer
-/*char * COMPILER::AppendProgram(char * pBase_program, long Base_program_size, char * pAppend_program, long
-Append_program_size, long& new_program_size)
+/*char * COMPILER::AppendProgram(char * pBase_program, int32_t Base_program_size, char * pAppend_program, int32_t
+Append_program_size, int32_t& new_program_size)
 {
     char * pTemp;
     char * pBase;
@@ -352,7 +352,7 @@ void COMPILER::LoadPreprocess()
     auto engine_ini = fio->OpenIniFile(core_internal.EngineIniFileName());
     if (engine_ini)
     {
-        if (engine_ini->GetLong("script", "debuginfo", 0) == 0)
+        if (engine_ini->GetInt("script", "debuginfo", 0) == 0)
         {
             bDebugInfo = false;
             // FuncTab.KeepNameMode(false);
@@ -368,24 +368,24 @@ void COMPILER::LoadPreprocess()
             // DefTab.KeepNameMode(true);
             // EventTab.KeepNameMode(true);
         }
-        if (engine_ini->GetLong("script", "codefiles", 0) == 0)
+        if (engine_ini->GetInt("script", "codefiles", 0) == 0)
             bWriteCodeFile = false;
         else
             bWriteCodeFile = true;
 
-        if (engine_ini->GetLong("script", "runtimelog", 0) == 0)
+        if (engine_ini->GetInt("script", "runtimelog", 0) == 0)
             bRuntimeLog = false;
         else
             bRuntimeLog = true;
 
-        // if(engine_ini->GetLong("script","tracefiles",0) == 0) bScriptTrace = false;
+        // if(engine_ini->GetInt("script","tracefiles",0) == 0) bScriptTrace = false;
         // else bScriptTrace = true;
     }
 
     auto ini = fio->OpenIniFile(PROJECT_NAME);
     if (ini)
     {
-        bBreakOnError = (ini->GetLong("options", "break_on_error", 0) == 1);
+        bBreakOnError = (ini->GetInt("options", "break_on_error", 0) == 1);
     }
 }
 
@@ -396,7 +396,7 @@ bool COMPILER::CreateProgram(const char *file_name)
     engine_ini = fio->OpenIniFile(core_internal.EngineIniFileName());
     if(engine_ini != null)
     {
-      if(engine_ini->GetLong("script","debuginfo",0) == 0)
+      if(engine_ini->GetInt("script","debuginfo",0) == 0)
       {
         bDebugInfo = false;
         FuncTab.KeepNameMode(false);
@@ -412,7 +412,7 @@ bool COMPILER::CreateProgram(const char *file_name)
         DefTab.KeepNameMode(true);
         EventTab.KeepNameMode(true);
       }
-      if(engine_ini->GetLong("script","codefiles",0) == 0) bWriteCodeFile = false;
+      if(engine_ini->GetInt("script","codefiles",0) == 0) bWriteCodeFile = false;
       else bWriteCodeFile = true;
 
 
@@ -516,7 +516,7 @@ void COMPILER::FindErrorSource()
     } while (Token_type != END_OF_PROGRAMM);
 }
 
-void COMPILER::SetEventHandler(const char *event_name, const char *func_name, long flag, bool bStatic)
+void COMPILER::SetEventHandler(const char *event_name, const char *func_name, int32_t flag, bool bStatic)
 {
     FuncInfo fi;
 
@@ -570,7 +570,7 @@ void COMPILER::DelEventHandler(const char *event_name, const char *func_name)
 
     EventTab.SetStatus(event_name, func_code, FSTATUS_DELETED);
 
-    for (long n = 0; n < static_cast<long>(EventMsg.GetClassesNum()); n++)
+    for (int32_t n = 0; n < static_cast<int32_t>(EventMsg.GetClassesNum()); n++)
     {
         S_EVENTMSG *pM = EventMsg.Read(n);
         if (!pM->pEventName)
@@ -998,7 +998,7 @@ void COMPILER::ProcessFrame(uint32_t DeltaTime)
 
     EventTab.ProcessFrame();
 
-    for (long ln = 0; ln < static_cast<long>(EventMsg.GetClassesNum()); ln++)
+    for (int32_t ln = 0; ln < static_cast<int32_t>(EventMsg.GetClassesNum()); ln++)
     {
         S_EVENTMSG *pMsg = EventMsg.Read(ln);
         if (pMsg->bInvalide)
@@ -1184,7 +1184,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
     //    bool bCDStop;
     bool bFunctionBlock;
-    long lvalue;
+    int32_t lvalue;
     float fvalue;
 
     Control_offset = 0;
@@ -1364,10 +1364,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 switch (Token.GetType())
                 {
                 case NUMBER:
-                    lvalue = static_cast<long>(atoll(Token.GetData()));
+                    lvalue = static_cast<int32_t>(atoll(Token.GetData()));
                     if (bMinus)
                         lvalue = -lvalue;
-                    memcpy(&di.data4b, &lvalue, sizeof(long));
+                    memcpy(&di.data4b, &lvalue, sizeof(int32_t));
                     break;
                 case FLOAT_NUMBER:
                     fvalue = static_cast<float>(atof(Token.GetData()));
@@ -1519,7 +1519,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 }
                             }
                             else
-                                lvalue = static_cast<long>(atoll(Token.GetData()));
+                                lvalue = static_cast<int32_t>(atoll(Token.GetData()));
                             vi.elements = lvalue;
                             Token.Get(); // SQUARE_CLOSE_BRACKET
                             Token.Get();
@@ -1577,7 +1577,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             SetError("Invalid array '%s' initialization parameter", vi.name.c_str());
                                             return false;
                                         }
-                                        real_var->value->Set(static_cast<long>(1));
+                                        real_var->value->Set(1);
                                         break;
                                     case FALSE_CONST:
                                         if (vi.type != VAR_INTEGER)
@@ -1585,7 +1585,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             SetError("Invalid array '%s' initialization parameter", vi.name.c_str());
                                             return false;
                                         }
-                                        real_var->value->Set(static_cast<long>(0));
+                                        real_var->value->Set(0);
                                         break;
 
                                     case NUMBER:
@@ -1595,9 +1595,9 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         if (bNeg)
-                                            real_var->value->Set(-atol(Token.GetData()), aindex);
+                                            real_var->value->Set(-atoi(Token.GetData()), aindex);
                                         else
-                                            real_var->value->Set(static_cast<long>(atoll(Token.GetData())), aindex);
+                                            real_var->value->Set(static_cast<int32_t>(atoll(Token.GetData())), aindex);
                                         aindex++;
                                         break;
                                     case FLOAT_NUMBER:
@@ -1655,20 +1655,20 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 case TRUE_CONST:
                                     if (vi.type != VAR_INTEGER)
                                         break;
-                                    real_var->value->Set(static_cast<long>(1));
+                                    real_var->value->Set(1);
                                     break;
                                 case FALSE_CONST:
                                     if (vi.type != VAR_INTEGER)
                                         break;
-                                    real_var->value->Set(static_cast<long>(0));
+                                    real_var->value->Set(0);
                                     break;
                                 case NUMBER:
                                     if (vi.type != VAR_INTEGER)
                                         break;
                                     if (bNeg)
-                                        real_var->value->Set(-atol(Token.GetData()));
+                                        real_var->value->Set(-atoi(Token.GetData()));
                                     else
-                                        real_var->value->Set(static_cast<long>(atoll(Token.GetData())));
+                                        real_var->value->Set(static_cast<int32_t>(atoll(Token.GetData())));
                                     break;
                                 case FLOAT_NUMBER:
                                     if (vi.type != VAR_FLOAT)
@@ -1752,7 +1752,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                             }
                         }
                         else
-                            lvalue = static_cast<long>(atoll(Token.GetData()));
+                            lvalue = static_cast<int32_t>(atoll(Token.GetData()));
                         lvi.elements = lvalue;
                         Token.Get(); // SQUARE_CLOSE_BRACKET
                         Token.Get();
@@ -1990,7 +1990,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
     BreakUpdateTable.SetStringDataSize(sizeof(uint32_t));
     bool bExtern;
     bool bImport;
-    long lvalue;
+    int32_t lvalue;
     uint32_t def_code;
     DEFINFO di;
     uint32_t dwRCode;
@@ -3357,11 +3357,11 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
 
         case TRUE_CONST:
             lvalue = 1;
-            CompileToken(Segment, NUMBER, 1, (char *)&lvalue, sizeof(long));
+            CompileToken(Segment, NUMBER, 1, (char *)&lvalue, sizeof(int32_t));
             break;
         case FALSE_CONST:
             lvalue = 0;
-            CompileToken(Segment, NUMBER, 1, (char *)&lvalue, sizeof(long));
+            CompileToken(Segment, NUMBER, 1, (char *)&lvalue, sizeof(int32_t));
             break;
 
             // write value
@@ -3494,7 +3494,7 @@ bool COMPILER::BC_CallFunction(uint32_t func_code, uint32_t &ip, DATA *&pVResult
         SetError("missing args_num token");
         return false;
     }
-    arguments = *((long *)&pRunCodeBase[TLR_DataOffset]);
+    arguments = *((int32_t *)&pRunCodeBase[TLR_DataOffset]);
 
     check_sp = SStack.GetDataNum() - arguments;
     /*
@@ -3655,7 +3655,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     uint32_t func_code;
     uint32_t nLeftOperandCode;
     uint32_t bLeftOperandType;
-    long nLeftOperandIndex;
+    int32_t nLeftOperandIndex;
     S_TOKEN_TYPE Token_type;
     FuncInfo fi;
     const VarInfo *real_var;
@@ -3664,12 +3664,12 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     //    DATA   ExpressionResult;    // while compile expression not ready, each function have its own register
     const char *pCodeBase;
     bool bExit;
-    long lvalue;
+    int32_t lvalue;
     S_TOKEN_TYPE vtype;
     DATA *pVV;
     uint32_t var_code;
     const char *pAccess_string;
-    //    long array_index;
+    //    int32_t array_index;
     //    DATA * pRef;
     DATA *pVar;
     entid_t eid;
@@ -3679,7 +3679,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
     DATA *pVDst;
     DATA *pVSrc;
     bool bUseIndex;
-    long dwBXIndex;
+    int32_t dwBXIndex;
 
     CompilerStage = CS_RUNTIME;
 
@@ -3857,13 +3857,13 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
         case LOCAL_VARIABLE:
             pLeftOperandAClass = nullptr;            // reset attribute
             nLeftOperandIndex = INVALID_ARRAY_INDEX; // reset index
-            nLeftOperandCode = *((long *)&pRunCodeBase[TLR_DataOffset]);
+            nLeftOperandCode = *((int32_t *)&pRunCodeBase[TLR_DataOffset]);
             bLeftOperandType = LOCAL_VARIABLE;
             break;
         case VARIABLE:
             pLeftOperandAClass = nullptr;            // reset attribute
             nLeftOperandIndex = INVALID_ARRAY_INDEX; // reset index
-            nLeftOperandCode = *((long *)&pRunCodeBase[TLR_DataOffset]);
+            nLeftOperandCode = *((int32_t *)&pRunCodeBase[TLR_DataOffset]);
             bLeftOperandType = VARIABLE;
             break;
         case ACCESS_WORD_CODE:
@@ -3905,7 +3905,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     return false;
                 }
                 pLeftOperandAClass =
-                    pLeftOperandAClass->VerifyAttributeClassByCode(*((long *)&pRunCodeBase[TLR_DataOffset]));
+                    pLeftOperandAClass->VerifyAttributeClassByCode(*((int32_t *)&pRunCodeBase[TLR_DataOffset]));
                 break;
             }
             if (pLeftOperandAClass == nullptr)
@@ -3938,7 +3938,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 return false;
             }
             pLeftOperandAClass =
-                pLeftOperandAClass->VerifyAttributeClassByCode(*((long *)&pRunCodeBase[TLR_DataOffset]));
+                pLeftOperandAClass->VerifyAttributeClassByCode(*((int32_t *)&pRunCodeBase[TLR_DataOffset]));
             break;
             break;
         case ACCESS_WORD:
@@ -4052,7 +4052,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 }
 
                 vtype = BC_TokenGet();
-                var_code = *((long *)&pRunCodeBase[TLR_DataOffset]);
+                var_code = *((int32_t *)&pRunCodeBase[TLR_DataOffset]);
                 if (!(vtype == VARIABLE || vtype == LOCAL_VARIABLE))
                 {
                     SetError("invalid access var");
@@ -4115,7 +4115,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             }
 
             vtype = BC_TokenGet();
-            var_code = *((long *)&pRunCodeBase[TLR_DataOffset]);
+            var_code = *((int32_t *)&pRunCodeBase[TLR_DataOffset]);
             if (!(vtype == VARIABLE || vtype == LOCAL_VARIABLE))
             {
                 SetError("invalid access var");
@@ -4209,9 +4209,9 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
 
             /*if(!bTraceMode) break;
 
-            long index;
-            long file_line_offset;
-            long file_name_size;
+            int32_t index;
+            int32_t file_line_offset;
+            int32_t file_name_size;
             index = ip;
             memcpy(&file_line_offset,&pCodeBase[index],sizeof(uint32_t)); index += sizeof(uint32_t);
             memcpy(&file_name_size,&pCodeBase[index],sizeof(uint32_t)); index += sizeof(uint32_t);
@@ -4231,7 +4231,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
 
         case CALL:                                               // undetermined function call
             vtype = BC_TokenGet();                               // read variable
-            var_code = *((long *)&pRunCodeBase[TLR_DataOffset]); // var code
+            var_code = *((int32_t *)&pRunCodeBase[TLR_DataOffset]); // var code
             if (vtype == VARIABLE)
             {
                 real_var = VarTab.GetVar(var_code);
@@ -4270,11 +4270,11 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 return false;
             if (pVResult)
             {
-                ExpressionResult.Set(static_cast<long>(1));
+                ExpressionResult.Set(1);
                 // SStack.Pop();
             }
             else
-                ExpressionResult.Set(static_cast<long>(0));
+                ExpressionResult.Set(0);
             break;
         case CALL_FUNCTION:
             memcpy(&func_code, &pCodeBase[ip], sizeof(uint32_t));
@@ -4725,7 +4725,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
               {
                 if(TokenType() == ACCESS_WORD_CODE)
                 {
-                  pRoot = pRoot->VerifyAttributeClassByCode(*((long *)&pRunCodeBase[TLR_DataOffset]));
+                  pRoot = pRoot->VerifyAttributeClassByCode(*((int32_t *)&pRunCodeBase[TLR_DataOffset]));
                   // pRoot = pRoot->CreateSubAClass(pRoot,(char *)&pRunCodeBase[TLR_DataOffset]);
                 } else
                 if(TokenType() == ACCESS_WORD)
@@ -4735,7 +4735,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 if(TokenType() == ACCESS_VAR)
                 {
                   vtype = BC_TokenGet();
-                  var_code = *((long *)&pRunCodeBase[TLR_DataOffset]);
+                  var_code = *((int32_t *)&pRunCodeBase[TLR_DataOffset]);
                   if(!(vtype == VARIABLE || vtype == LOCAL_VARIABLE)){SetError("invalid access var");return false;}
                   if(vtype == VARIABLE)
                   {
@@ -5195,7 +5195,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             switch (Token_type)
             {
             case NUMBER:
-                pV->Set(*((long *)&pRunCodeBase[TLR_DataOffset]));
+                pV->Set(*((int32_t *)&pRunCodeBase[TLR_DataOffset]));
                 break;
             case FLOAT_NUMBER:
                 pV->Set(*((float *)&pRunCodeBase[TLR_DataOffset]));
@@ -5532,14 +5532,14 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             {
             case ACCESS_WORD_CODE:
                 if (sttV == VERIFY_AP)
-                    rAP = rAP->VerifyAttributeClassByCode(*((long *)&pRunCodeBase[TLR_DataOffset]));
+                    rAP = rAP->VerifyAttributeClassByCode(*((int32_t *)&pRunCodeBase[TLR_DataOffset]));
                 else
-                    rAP = rAP->GetAttributeClassByCode(*((long *)&pRunCodeBase[TLR_DataOffset]));
+                    rAP = rAP->GetAttributeClassByCode(*((int32_t *)&pRunCodeBase[TLR_DataOffset]));
                 if (!rAP)
-                    SetError("missed attribute: %s", SCodec.Convert(*((long *)&pRunCodeBase[TLR_DataOffset])));
+                    SetError("missed attribute: %s", SCodec.Convert(*((int32_t *)&pRunCodeBase[TLR_DataOffset])));
                 break;
             case VARIABLE:
-                real_var = VarTab.GetVar(*((long *)&pRunCodeBase[TLR_DataOffset]));
+                real_var = VarTab.GetVar(*((int32_t *)&pRunCodeBase[TLR_DataOffset]));
                 if (real_var == nullptr)
                 {
                     SetError("Global variable not found");
@@ -5567,7 +5567,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     SetError("missed attribute: %s", pChar);
                 break;
             case LOCAL_VARIABLE:
-                pV = SStack.Read(pRun_fi->stack_offset, *((long *)&pRunCodeBase[TLR_DataOffset]));
+                pV = SStack.Read(pRun_fi->stack_offset, *((int32_t *)&pRunCodeBase[TLR_DataOffset]));
                 if (pV == nullptr)
                 {
                     SetError("Local variable not found");
@@ -5619,9 +5619,9 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
 
 void COMPILER::CompileNumber(SEGMENT_DESC &Segment)
 {
-    long lvalue;
-    lvalue = static_cast<long>(atoll(Token.GetData()));
-    CompileToken(Segment, NUMBER, 1, (char *)&lvalue, sizeof(long));
+    int32_t lvalue;
+    lvalue = static_cast<int32_t>(atoll(Token.GetData()));
+    CompileToken(Segment, NUMBER, 1, (char *)&lvalue, sizeof(int32_t));
 }
 
 void COMPILER::CompileFloatNumber(SEGMENT_DESC &Segment)
@@ -5955,7 +5955,7 @@ ATTRIBUTES *COMPILER::TraceARoot(ATTRIBUTES *pA, const char *&pAccess)
     if (pA->GetThisNameCode() == 0)
         return nullptr; // fix crash at NewGame start
 
-    const long slen = strlen(pA->GetThisName()) + 1;
+    const int32_t slen = strlen(pA->GetThisName()) + 1;
 
     char *pAS = new char[slen];
 
@@ -6062,7 +6062,7 @@ char *COMPILER::ReadString()
 
 bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_index)
 {
-    long nLongValue;
+    int32_t nLongValue;
     uintptr_t ptrValue;
     float fFloatValue;
     char *pString;
@@ -6145,7 +6145,7 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
             if (bSkipVariable)
             {
                 if (eType == S_TOKEN_TYPE::VAR_INTEGER)
-                    ReadData(nullptr, sizeof(long));
+                    ReadData(nullptr, sizeof(int32_t));
                 else if (eType == S_TOKEN_TYPE::VAR_FLOAT)
                     ReadData(nullptr, sizeof(float));
                 else if (eType == S_TOKEN_TYPE::VAR_STRING)
@@ -6280,7 +6280,7 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
 
 void COMPILER::SaveVariable(DATA *pV, bool bdim)
 {
-    long nLongValue;
+    int32_t nLongValue;
     uintptr_t ptrValue;
     float fFloatValue;
     const char *pString;
@@ -6666,7 +6666,7 @@ void COMPILER::AddPostEvent(S_EVENTMSG *pEM)
     EventMsg.Add(pEM);
 }
 
-bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_size)
+bool COMPILER::SetSaveData(const char *file_name, void *save_data, int32_t data_size)
 {
     EXTDATA_HEADER exdh;
 
@@ -6701,7 +6701,7 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
     return true;
 }
 
-/*bool COMPILER::SetSaveData(char * file_name, void * save_data, long data_size)
+/*bool COMPILER::SetSaveData(char * file_name, void * save_data, int32_t data_size)
                            //const char * file_name, const char * save_data)
 {
     EXTDATA_HEADER exdh;
@@ -6787,7 +6787,7 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, long data_siz
 
 }*/
 
-void *COMPILER::GetSaveData(const char *file_name, long &data_size)
+void *COMPILER::GetSaveData(const char *file_name, int32_t &data_size)
 {
     auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::in);
     if (!fileS.is_open())
@@ -6838,7 +6838,7 @@ void *COMPILER::GetSaveData(const char *file_name, long &data_size)
     return pBuffer;
 }
 
-/*void * COMPILER::GetSaveData(char * file_name, long & data_size)
+/*void * COMPILER::GetSaveData(char * file_name, int32_t & data_size)
 {
     DWORD n;
 

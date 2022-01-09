@@ -18,8 +18,8 @@ class TM_LIST
     uint32_t Columns_Num;
     uint32_t Items_Num;
     uint32_t Bind_Mask;
-    long edit_item;
-    long edit_subitem;
+    int32_t edit_item;
+    int32_t edit_subitem;
     char CharID[MAX_PATH];
     char SearchName[MAX_PATH];
     uint32_t EditMask;
@@ -52,17 +52,17 @@ class TM_LIST
         return Pos;
     };
     void UpdatePosition();
-    void AddColumn(const char *name, long length);
+    void AddColumn(const char *name, int32_t length);
     void AddItem(const char *name);
-    void SetItemText(long Item_index, long Subitem_index, const char *text);
-    void GetItemText(long Item_index, long Subitem_index, const char *text, long max_size);
-    void SetItemImage(long Item_index, long Subitem_index, long image_code);
+    void SetItemText(int32_t Item_index, int32_t Subitem_index, const char *text);
+    void GetItemText(int32_t Item_index, int32_t Subitem_index, const char *text, int32_t max_size);
+    void SetItemImage(int32_t Item_index, int32_t Subitem_index, int32_t image_code);
 
     void SetBindMask(uint32_t bind_mask)
     {
         Bind_Mask = bind_mask;
     };
-    long GetItemsCount();
+    int32_t GetItemsCount();
     char *GetSelectedName();
     void ProcessMessageBase(uint64_t, uint64_t, uint64_t);
     void SetCharID(const char *text);
@@ -75,7 +75,7 @@ class TM_LIST
     }
 
     virtual void ProcessMessage(uint32_t, uint32_t, uint32_t){};
-    virtual void ItemChanged(long Item_index, long Subitem_index) = 0;
+    virtual void ItemChanged(int32_t Item_index, int32_t Subitem_index) = 0;
 
     virtual void PostProcess(){};
 

@@ -24,12 +24,12 @@ class ShipInfoImages
   protected:
     void Release();
     void Init(ATTRIBUTES *pAttr);
-    void CheckAndRecreateBuffers(long nShipQ);
+    void CheckAndRecreateBuffers(int32_t nShipQ);
     void UpdateShipList();
-    void UpdateShipData(long nShipNum, SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
+    void UpdateShipData(int32_t nShipNum, SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
     bool IsEnableShowShipInfo(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD) const;
 
-    const FRECT &GetUVForRelation(long nRelation) const;
+    const FRECT &GetUVForRelation(int32_t nRelation) const;
     float GetProgressHull(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
     float GetProgressSail(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
     float GetProgressCrew(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD);
@@ -42,18 +42,18 @@ class ShipInfoImages
     VDX9RENDER *pRS;
     bool m_bVisible;
 
-    long m_idRelationTexture;
-    long m_vbRelation;
-    long m_ibRelation;
+    int32_t m_idRelationTexture;
+    int32_t m_vbRelation;
+    int32_t m_ibRelation;
 
-    long m_idProgressTexture;
-    long m_vbBackProgress;
-    long m_ibBackProgress;
-    long m_vbProgress;
-    long m_ibProgress;
+    int32_t m_idProgressTexture;
+    int32_t m_vbBackProgress;
+    int32_t m_ibBackProgress;
+    int32_t m_vbProgress;
+    int32_t m_ibProgress;
 
-    long m_nShipQ;
-    long m_nCurMaxQuantity;
+    int32_t m_nShipQ;
+    int32_t m_nCurMaxQuantity;
 
     CVECTOR m_vRelationOffset;
     FPOINT m_fpRelationSize;

@@ -17,7 +17,7 @@ Astronomy::PLANETS::~PLANETS()
 
 void Astronomy::PLANETS::ReleasePlanets()
 {
-    for (long i = 0; i < aPlanets.size(); i++)
+    for (int32_t i = 0; i < aPlanets.size(); i++)
     {
         // Astronomy::pGS->DeleteGeometry(aPlanets[i].pGeo);
         if (aPlanets[i].iTexture >= 0)

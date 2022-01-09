@@ -104,7 +104,7 @@ int CXI_VIDEORECT::CommandExecute(int wActCode)
     return -1;
 }
 
-uint32_t CXI_VIDEORECT::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_VIDEORECT::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {

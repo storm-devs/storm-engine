@@ -28,14 +28,14 @@ class TSink
 
     VDX9RENDER *renderer;
     SEA_BASE *sea;
-    long texture;
+    int32_t texture;
     IVBufferManager *ivManager;
     uint32_t time;
 
     TSinkSplash splashes[sink_effect::MAX_SPLASHES];
-    long times[sink_effect::MAX_SPLASHES];
-    long ivIndexes[sink_effect::MAX_SPLASHES];
-    long flotsamTimes[sink_effect::MAX_FLOTSAMS];
+    int32_t times[sink_effect::MAX_SPLASHES];
+    int32_t ivIndexes[sink_effect::MAX_SPLASHES];
+    int32_t flotsamTimes[sink_effect::MAX_FLOTSAMS];
     TFlotsam flotsams[sink_effect::MAX_FLOTSAMS];
     float distortDivider;
     float radius;

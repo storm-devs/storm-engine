@@ -14,7 +14,7 @@ struct BALL_PARAMS
     CVECTOR vFirstPos, vPos; // first and current ball position
     VPARTICLE_SYSTEM *pParticle;
     std::string sBallEvent;
-    long iBallOwner;    // ball owner(character index)
+    int32_t iBallOwner;    // ball owner(character index)
     float fTime;        // ball time: in seconds
     float fSpeedV0;     // initial speed: in m/s
     float fDirX, fDirZ; // X/Z identity moving(cos(dir),sin(dir))

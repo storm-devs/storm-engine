@@ -36,10 +36,10 @@ WdmCounter::WdmCounter()
     mtx.Vy() *= 0.25f;
     mtx.Vz() *= -0.25f;
 
-    for (long i = 0; i < WMD_NUM_SKYS; i++)
+    for (int32_t i = 0; i < WMD_NUM_SKYS; i++)
         skytx[i] = -1;
     lastSkys[0] = lastSkys[1] = -1;
-    for (long i = 0; i < sizeof(skyseq) / sizeof(long); i++)
+    for (int32_t i = 0; i < sizeof(skyseq) / sizeof(int32_t); i++)
         skyseq[i] = -1;
     skyCounter = 0;
     dayCounter = -1;
@@ -71,7 +71,7 @@ WdmCounter::~WdmCounter()
         delete y[3];
     if (wdmObjects->rs)
     {
-        for (long i = 0; i < WMD_NUM_SKYS; i++)
+        for (int32_t i = 0; i < WMD_NUM_SKYS; i++)
         {
             if (skytx[i] >= 0)
                 wdmObjects->rs->TextureRelease(skytx[i]);
@@ -103,11 +103,11 @@ bool WdmCounter::Init()
         return false;
     if (!LoadModel(y[3], "counter\\y4", "WdmCounterDrawNumber"))
         return false;
-    for (long i = 0; i < WMD_NUM_SKYS; i++)
+    for (int32_t i = 0; i < WMD_NUM_SKYS; i++)
         skytx[i] = wdmObjects->rs->TextureCreate(skytex[i]);
     lastSkys[0] = sky->GetTexture(0);
     lastSkys[1] = sky->GetTexture(1);
-    for (long i = 0; i < sizeof(skyseq) / sizeof(long); i += 2)
+    for (int32_t i = 0; i < sizeof(skyseq) / sizeof(int32_t); i += 2)
     {
         skyseq[i + 0] = skytx[(rand() % (WMD_NUM_SKYS / 2)) * 2 + 0];
         skyseq[i + 1] = skytx[(rand() % (WMD_NUM_SKYS / 2)) * 2 + 1];
@@ -133,7 +133,7 @@ void WdmCounter::LRender(VDX9RENDER *rs)
     rs->SetTransform(D3DTS_PROJECTION, prj);
     rs->SetTransform(D3DTS_VIEW, CMatrix());
     // Sky
-    const long numSkys = sizeof(skyseq) / sizeof(long);
+    const int32_t numSkys = sizeof(skyseq) / sizeof(int32_t);
     if (dayCounter < 0)
         dayCounter = wdmObjects->wm->day;
     if (dayCounter != wdmObjects->wm->day)
@@ -149,7 +149,7 @@ void WdmCounter::LRender(VDX9RENDER *rs)
     // wdmObjects->wm->mon = 12;
     // wdmObjects->wm->hour = 9.0f;
     auto hr = (wdmObjects->wm->hour + 11.0f) * 2.0f / 24.0f;
-    const auto ofs = static_cast<long>(hr);
+    const auto ofs = static_cast<int32_t>(hr);
     auto one = skyCounter + ofs;
     auto two = one + 1;
     one &= numSkys - 1;
@@ -164,7 +164,7 @@ void WdmCounter::LRender(VDX9RENDER *rs)
     sky->SetTexture(0, skyseq[one]);
     sky->SetTexture(1, skyseq[two]);
     rs->TextureSet(1, skyseq[two]);
-    rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<long>(hr * 255.0f) << 24) | 0x00ffffff);
+    rs->SetRenderState(D3DRS_TEXTUREFACTOR, (static_cast<int32_t>(hr * 255.0f) << 24) | 0x00ffffff);
     sky->LRender(rs);
     // Housing
     WdmRenderModel::LRender(rs);

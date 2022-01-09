@@ -58,9 +58,9 @@ void LightProcessor::Process()
             auto *const vrt = geometry->vrt.data();
             const auto numVrt = geometry->numVrt;
             const auto numLights = lights->Num();
-            for (long i = 0; i < numVrt; i++)
+            for (int32_t i = 0; i < numVrt; i++)
             {
-                for (long j = 0; j < numLights; j++)
+                for (int32_t j = 0; j < numLights; j++)
                 {
                     if (vrt[i].shadow[j].nrm > 0.0)
                     {
@@ -123,9 +123,9 @@ void LightProcessor::Process()
         auto *const vrt = geometry->vrt.data();
         const auto numVrt = geometry->numVrt;
         const auto numLights = lights->Num();
-        for (long i = 0; i < numVrt; i++)
+        for (int32_t i = 0; i < numVrt; i++)
         {
-            for (long j = 0; j < numLights; j++)
+            for (int32_t j = 0; j < numLights; j++)
             {
                 vrt[i].shadow[j].v = 0.0f;
                 vrt[i].shadow[j].nrm = 0.0f;
@@ -152,7 +152,7 @@ void LightProcessor::Process()
     {
         auto *const vrt = geometry->vrt.data();
         const auto numVrt = geometry->numVrt;
-        for (long i = 0; i < numVrt; i++)
+        for (int32_t i = 0; i < numVrt; i++)
             vrt[i].bc = 0.0f;
         window->isResetBlurLight = false;
         CalcLights();
@@ -177,10 +177,10 @@ void LightProcessor::UpdateLightsParam()
     float cs, att;
     float dst;
     CVECTOR nrm;
-    for (long i = 0; i < numVrt; i++)
+    for (int32_t i = 0; i < numVrt; i++)
     {
         auto &v = vrt[i];
-        for (long j = 0; j < numLights; j++)
+        for (int32_t j = 0; j < numLights; j++)
         {
             auto &lt = ls[j];
             auto &swh = v.shadow[j];
@@ -244,7 +244,7 @@ void LightProcessor::UpdateLightsParam()
 void LightProcessor::CalcShadows()
 {
     // Calculating shading
-    for (long i = 0; i < LIGHTPRC_TRACE_NUM && shadowTriangle < geometry->numTrg; i++, shadowTriangle++)
+    for (int32_t i = 0; i < LIGHTPRC_TRACE_NUM && shadowTriangle < geometry->numTrg; i++, shadowTriangle++)
         ApplyTriangleShadows(geometry->trg[shadowTriangle]);
     if (shadowTriangle == geometry->numTrg)
         shadowTriangle = -1;
@@ -256,7 +256,7 @@ void LightProcessor::ApplyTriangleShadows(Triangle &t)
     auto &ls = *lights;
     const auto num = ls.Num();
     auto *const vrt = geometry->vrt.data();
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
     {
         // need to trace?
         if (ls[i].type == Light::t_none || ls[i].type == Light::t_amb)
@@ -336,7 +336,7 @@ void LightProcessor::SmoothShadows()
     auto &ls = *lights;
     const auto num = ls.Num();
     auto &vrt = geometry->vrt;
-    for (long i = 0; i < LIGHTPRC_SMOOTH_NUM && smoothVertex < geometry->numVrt; i++, smoothVertex++)
+    for (int32_t i = 0; i < LIGHTPRC_SMOOTH_NUM && smoothVertex < geometry->numVrt; i++, smoothVertex++)
     {
         auto &v = vrt[smoothVertex];
         // Looking for surrounding vertices
@@ -348,9 +348,9 @@ void LightProcessor::SmoothShadows()
         {
           float r2 = smoothRad * smoothRad;
           static Vertex* ov[16384];
-          long numV = 0;
-          long num = geometry->numVrt;
-          long n;
+          int32_t numV = 0;
+          int32_t num = geometry->numVrt;
+          int32_t n;
           for (n = 0; n < num; n++)
           {
             float r = ~(vrt[n].p - v.p);
@@ -363,7 +363,7 @@ void LightProcessor::SmoothShadows()
           if (numVerts != numV) core.Trace("numVerts(%i) != numV(%i)", numVerts, numV);
           for (n = 0; n < numVerts; n++)
           {
-            long k;
+            int32_t k;
             for (k = 0; k < numV; k++)
               if (verts[n].v == ov[k]) break;
             if (k >= numV) core.Trace("k >= numV");
@@ -371,13 +371,13 @@ void LightProcessor::SmoothShadows()
         }*/
         // Assert(numVerts > 0);
         // go through all the sources
-        for (long n = 0; n < num; n++)
+        for (int32_t n = 0; n < num; n++)
         {
             // Set to zero
             auto sm = 0.0;
             double kNorm = 0.0f;
             // All the vertices
-            for (long j = 0; j < numVerts; j++)
+            for (int32_t j = 0; j < numVerts; j++)
             {
                 if (lookNorm && (v.n | verts[j].v->n) <= 0.6f)
                     continue;
@@ -413,7 +413,7 @@ void LightProcessor::BlurLight()
     double blurRad2 = blurRad * blurRad;
     auto *const vrt = geometry->vrt.data();
     const auto numVrt = geometry->numVrt;
-    for (long i = 0; i < LIGHTPRC_BLUR_NUM && blurVertex < numVrt; i++, blurVertex++)
+    for (int32_t i = 0; i < LIGHTPRC_BLUR_NUM && blurVertex < numVrt; i++, blurVertex++)
     {
         auto &v = vrt[blurVertex];
         // Looking for surrounding vertices
@@ -429,7 +429,7 @@ void LightProcessor::BlurLight()
         step = 1;
         auto r = 0.0, g = 0.0, b = 0.0, sum = 0.0;
         // All the vertices
-        for (long j = 0; j < numVerts; j += step)
+        for (int32_t j = 0; j < numVerts; j += step)
         {
             auto &vs = *verts[j].v;
             if (vs.c.x + vs.c.y + vs.c.z <= 0.0f)
@@ -492,7 +492,7 @@ void LightProcessor::BlurLight()
 }
 
 // Calculate lighting
-void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
+void LightProcessor::CalcLights(int32_t lit, bool isCos, bool isAtt, bool isSdw)
 {
     lights->UpdateLights(lit);
     auto &ls = *lights;
@@ -500,7 +500,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
     auto *const vrt = geometry->vrt.data();
     const auto kBlur = window->kBlur;
     CVECTOR c;
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
     {
         if (!ls[i].isOn)
             continue;
@@ -510,7 +510,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
         ls[i].curgm = 1.0f / ls[i].curgm;
         ls[i].curct = ls[i].contr >= 0.5f ? 1.0f + (ls[i].contr - 0.5f) * 20.0f : 0.05f + ls[i].contr * 2.0f * 0.95f;
     }
-    for (long n = 0; n < geometry->numVrt; n++)
+    for (int32_t n = 0; n < geometry->numVrt; n++)
     {
         auto &v = vrt[n];
         if (!v.shadow)
@@ -518,7 +518,7 @@ void LightProcessor::CalcLights(long lit, bool isCos, bool isAtt, bool isSdw)
         c = v.bc * (kBlur * kBlur * 2.0f);
         float sw;
         double vl;
-        for (long i = 0; i < num; i++)
+        for (int32_t i = 0; i < num; i++)
         {
             auto &lt = ls[i];
             if (!lt.isOn)

@@ -46,8 +46,8 @@ class ParticleManager : public IParticleManager
     // Billboard Particle Processor
     BillBoardProcessor *BB_Processor;
 
-    long pProjectTexture;
-    long pProjectTextureNormalMap;
+    int32_t pProjectTexture;
+    int32_t pProjectTextureNormalMap;
     DataCache *pDataCache;
     GeomCache *pGeomCache;
 
@@ -104,7 +104,7 @@ class ParticleManager : public IParticleManager
     bool IsSystemAvailable(const char *FileName) override;
 
     // Get the global texture of the project
-    long GetProjectTexture() override;
+    int32_t GetProjectTexture() override;
     // Set project texture
     void SetProjectTexture(const char *FileName = nullptr) override;
 

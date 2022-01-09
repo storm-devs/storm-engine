@@ -50,19 +50,19 @@ class WdmIslands : public WdmRenderObject
         float iconX, iconY;      // The relative position of the picture
         float alpha;             // The current state of the rectangle
         float heightView;        // Height from which the label goes out
-        long font;               // Font index in font array
-        long icon;               // Image index
+        int32_t font;               // Font index in font array
+        int32_t icon;               // Image index
         uint32_t weight;         // Offset weight
         std::string id;          // Label ID
         uint32_t idHash;         // Hash value of identifier
-        long next;               // Next label on the list
+        int32_t next;               // Next label on the list
         std::string locatorName; // The name of the locator in which it is located
     };
 
     struct Font
     {
         std::string name; // Font name
-        long id;          // Its identifier
+        int32_t id;          // Its identifier
     };
 
     struct Icons
@@ -74,8 +74,8 @@ class WdmIslands : public WdmRenderObject
         float fps;
         float frame;
         float f[2];
-        long blend;
-        long texture;
+        int32_t blend;
+        int32_t texture;
     };
 
     struct Quest
@@ -122,13 +122,13 @@ class WdmIslands : public WdmRenderObject
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    bool IsShipInArea(long islIndex, const CVECTOR &pos);
-    static bool AddEdges(const GEOS::VERTEX *vrt, long numVrt);
-    static bool FindNearPoint(const GEOS::VERTEX *vrt, long numVrt);
+    bool IsShipInArea(int32_t islIndex, const CVECTOR &pos);
+    static bool AddEdges(const GEOS::VERTEX *vrt, int32_t numVrt);
+    static bool FindNearPoint(const GEOS::VERTEX *vrt, int32_t numVrt);
     void LabelsReadIconParams(ATTRIBUTES *apnt);
-    long LabelsFind(const char *id, uint32_t hash);
+    int32_t LabelsFind(const char *id, uint32_t hash);
     bool LabelsFindLocator(const char *name, CVECTOR &pos) const;
-    long LabelsAddFont(const char *name);
+    int32_t LabelsAddFont(const char *name);
     void LabelsRelease();
     static CVECTOR Norm2D(const CVECTOR &ret);
 
@@ -146,17 +146,17 @@ class WdmIslands : public WdmRenderObject
     // Images
     Icons icons;
     // Labels registered for rendering
-    std::vector<long> labelSort;
+    std::vector<int32_t> labelSort;
     // Merchant destinations
     std::vector<CVECTOR> merchants;
     // Destination Points of Quest Encounters
     std::vector<Quest> quests;
 
     // Input table for finding labels
-    long labelsEntry[1024];
+    int32_t labelsEntry[1024];
 
     static CMatrix curMatrix, locMatrix;
-    static long numEdges;
+    static int32_t numEdges;
     static CVECTOR curPos;
     static bool checkMode;
 

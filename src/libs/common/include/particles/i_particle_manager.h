@@ -47,7 +47,7 @@ class IParticleManager
     virtual bool IsSystemAvailable(const char *FileName) = 0;
 
     // Get the global texture of the project
-    virtual long GetProjectTexture() = 0;
+    virtual int32_t GetProjectTexture() = 0;
 
     // Set project texture
     virtual void SetProjectTexture(const char *FileName = nullptr) = 0;

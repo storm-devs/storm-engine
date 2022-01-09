@@ -95,7 +95,7 @@ class Character : public Entity
         void Exit(Character *ch);
 
         LocatorArray *la;
-        long lastLocator;
+        int32_t lastLocator;
         float timeInLocator;
         float lastEventTime;
     };
@@ -124,9 +124,9 @@ class Character : public Entity
       public:
         Character *character;
         // Accept event
-        void Event(Animation *animation, long index, long eventID, AnimationEvent event) override;
+        void Event(Animation *animation, int32_t index, int32_t eventID, AnimationEvent event) override;
         // Accept event
-        void Event(Animation *animation, long playerIndex, const char *eventName) override;
+        void Event(Animation *animation, int32_t playerIndex, const char *eventName) override;
     };
 
     friend RTuner;
@@ -205,14 +205,14 @@ class Character : public Entity
 
     void SetSignModel();
     void SetSignTechnique();
-    void ReadFightActions(ATTRIBUTES *at, ActionCharacter actions[4], long &counter);
+    void ReadFightActions(ATTRIBUTES *at, ActionCharacter actions[4], int32_t &counter);
 
     virtual bool PostInit()
     {
         return true;
     };
 
-    virtual uint32_t ChlProcessMessage(long messageID, MESSAGE &message)
+    virtual uint32_t ChlProcessMessage(int32_t messageID, MESSAGE &message)
     {
         return 0;
     };
@@ -365,17 +365,17 @@ class Character : public Entity
     virtual void Update(float dltTime);
 
     // Action animation end event
-    virtual void ActionEvent(const char *actionName, Animation *animation, long index, long eventID,
+    virtual void ActionEvent(const char *actionName, Animation *animation, int32_t index, int32_t eventID,
                              AnimationEvent event);
-    virtual void ActionEvent(Animation *animation, long playerIndex, const char *eventName);
+    virtual void ActionEvent(Animation *animation, int32_t playerIndex, const char *eventName);
 
     // The character attacks, analyze to whom to apply damage
     // virtual void CharacterNowIsAttacked(){};
 
-    long PlaySound(const char *soundName, bool isLoop = false, bool isCached = false);
+    int32_t PlaySound(const char *soundName, bool isLoop = false, bool isCached = false);
     void PlayStep();
-    void SetSoundPosition(long id);
-    void ReleaseSound(long id);
+    void SetSoundPosition(int32_t id);
+    void ReleaseSound(int32_t id);
 
     virtual bool IsPlayer()
     {
@@ -386,8 +386,8 @@ class Character : public Entity
     // Find a character for dialogue
     Character *FindDialogCharacter();
 
-    long startColCharacter;
-    long numColCharacter;
+    int32_t startColCharacter;
+    int32_t numColCharacter;
     bool isSlide;
     CVECTOR slideDir;
 
@@ -459,7 +459,7 @@ class Character : public Entity
     float strafeMove;
     float seaY;
 
-    long currentNode; // Current node
+    int32_t currentNode; // Current node
 
     float speed;    // Current travel speed
     float turnspd;  // Turn speed
@@ -503,8 +503,8 @@ class Character : public Entity
     bool isNFHit;         // Out of combat mode
     float movecs;         // Cosine of the angle of inclination of the plane
     const char *deadName; // Death action name
-    long jumpSound;       // The sound of clothing when jumping
-    long recoilSound;     // The sound of recoil
+    int32_t jumpSound;       // The sound of clothing when jumping
+    int32_t recoilSound;     // The sound of recoil
 
     float noBlendTime;
 
@@ -533,17 +533,17 @@ class Character : public Entity
     ActionIdle nfhit; // Reaction outside combat mode
 
     // Idle actions
-    long curIdleIndex;
+    int32_t curIdleIndex;
     ActionIdle actionIdle[32];
-    long numActionIdles;
+    int32_t numActionIdles;
     ActionIdle actionFightIdle[32];
-    long numFightActionIdles;
+    int32_t numFightActionIdles;
 
     // Death
     ActionDead actionDead[8];
-    long numActionDead;
+    int32_t numActionDead;
     ActionDead actionFightDead[8];
-    long numActionFightDead;
+    int32_t numActionFightDead;
 
     ActionCharacter actionTurnL; // Left turn action
     ActionCharacter actionTurnR; // Right turn action
@@ -557,23 +557,23 @@ class Character : public Entity
     ActionMove fightbackrun;  // Running back in combat mode
     // Attacks
     ActionCharacter attackFast[4];   // Rapid attacks
-    long numAttackFast;              // Number of quick attacks
+    int32_t numAttackFast;              // Number of quick attacks
     ActionCharacter attackForce[4];  // Power attacks
-    long numAttackForce;             // Number of power attacks
+    int32_t numAttackForce;             // Number of power attacks
     ActionCharacter attackRound[4];  // Circular attack
-    long numAttackRound;             // Number of circular attacks
+    int32_t numAttackRound;             // Number of circular attacks
     ActionCharacter attackBreak[4];  // Providing attacks
-    long numAttackBreak;             // Number of piercing attacks
+    int32_t numAttackBreak;             // Number of piercing attacks
     ActionCharacter attackFeint[4];  // Feint
     ActionCharacter attackFeintC[4]; // Attacking continuation of the feint
-    long numAttackFeint;             // Number of feints
+    int32_t numAttackFeint;             // Number of feints
     ActionCharacter parry[4];        // Parry
-    long numParry;                   // Number of parries
+    int32_t numParry;                   // Number of parries
     // Remote attacks
     ActionCharacter shot; // Pistol shot
     // Reactions
     ActionCharacter hit[4];   // Character hit
-    long numHits;             // Number of hit options
+    int32_t numHits;             // Number of hit options
     ActionCharacter hitFeint; // Reaction to feint
     ActionCharacter hitParry; // Parry reaction
     ActionCharacter hitRound; // Knockback reaction with a circular hit
@@ -587,12 +587,12 @@ class Character : public Entity
     ActionCharacter recoil;      // Bounce back
     ActionCharacter strafe_l;    // Bounce to the left
     ActionCharacter strafe_r;    // Bounce to the right
-    long stunChance;             // Is the stun allowed after the enemy's blow
+    int32_t stunChance;             // Is the stun allowed after the enemy's blow
     // Logical state
     FightAction fgtCurType;   // Current action type
-    long fgtCurIndex;         // Current Activity Index
+    int32_t fgtCurIndex;         // Current Activity Index
     FightAction fgtSetType;   // Set action type
-    long fgtSetIndex;         // Set action index
+    int32_t fgtSetIndex;         // Set action index
     bool isParryState;        // Parry condition
     bool isFeintState;        // Parry condition
     bool isFired;             // Is a shot fired
@@ -618,7 +618,7 @@ class Character : public Entity
 
     // Detectors
     Detector *detector[64];
-    long numDetectors;
+    int32_t numDetectors;
 
     // Character model
     entid_t mdl;
@@ -659,27 +659,27 @@ class Character : public Entity
     EventListener eventListener;
 
     float ayStack[16];
-    long ayStackPointer;
+    int32_t ayStackPointer;
 
     CVECTOR jumpTrack[50];
     CVECTOR osculationPoint;
     float jumpFallTime;
     float curJumpFallTime;
-    long jumpPoints;
+    int32_t jumpPoints;
 
     char *characterID; // Character ID
 
     //
-    long m_nHandLightID;
+    int32_t m_nHandLightID;
     const char *m_pcHandLightLocator;
     CVECTOR GetHandLightPos();
 
     bool CheckObstacle(float fx, float fz, float fzlen);
-    long GetRandomIndexByObstacle(ObstacleZone *pZone, long num);
+    int32_t GetRandomIndexByObstacle(ObstacleZone *pZone, int32_t num);
 
     Location *GetLocation();
 
-    long eventId = {};
+    int32_t eventId = {};
 
     // Procedural head look
     HeadLookState curHeadLookState;
@@ -701,8 +701,8 @@ class Character : public Entity
     };
 
     GrpTarget grpTargets[32]; // Goal list
-    long numTargets;          // Number of targets
-    long groupID;             // Group index for faster search
+    int32_t numTargets;          // Number of targets
+    int32_t groupID;             // Group index for faster search
     char group[128];          // Current group name
 
   private:

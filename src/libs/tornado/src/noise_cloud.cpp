@@ -20,7 +20,7 @@
 
 NoiseCloud::NoiseCloud(Pillar &_pillar) : pillar(_pillar)
 {
-    for (long i = 0; i < sizeof(rect) / sizeof(Rect); i++)
+    for (int32_t i = 0; i < sizeof(rect) / sizeof(Rect); i++)
     {
         rect[i].a = rand() * 2.0f * TRND_PI / RAND_MAX;
         rect[i].r = i * (TRND_CLDRADIUS / static_cast<float>(sizeof(rect) / sizeof(Rect) - 1));
@@ -42,7 +42,7 @@ NoiseCloud::~NoiseCloud()
 
 void NoiseCloud::Update(float dltTime)
 {
-    for (long i = 0; i < sizeof(rect) / sizeof(Rect); i++)
+    for (int32_t i = 0; i < sizeof(rect) / sizeof(Rect); i++)
     {
         if (rect[i].r >= TRND_CLDRADIUS)
             rect[i].r = 0.0f;
@@ -99,7 +99,7 @@ void NoiseCloud::Update(float dltTime)
 void NoiseCloud::Draw(VDX9RENDER *rs)
 {
     rs->TextureSet(0, texture);
-    for (long i = 0; i < sizeof(rect) / sizeof(Rect); i++)
+    for (int32_t i = 0; i < sizeof(rect) / sizeof(Rect); i++)
     {
         // The size
         const auto size = rect[i].size;
@@ -128,8 +128,8 @@ void NoiseCloud::Draw(VDX9RENDER *rs)
         buf[i * 6 + 5].v = 1.0f;
         // Colour
         const auto clr = rect[i].light * 200.0f;
-        const auto color = (static_cast<long>(clr * 1.0f) << 16) | (static_cast<long>(clr * 0.95f) << 8) |
-                           static_cast<long>(clr * 0.9f) | (static_cast<long>(rect[i].alpha * galpha * 0.4f) << 24);
+        const auto color = (static_cast<int32_t>(clr * 1.0f) << 16) | (static_cast<int32_t>(clr * 0.95f) << 8) |
+                           static_cast<int32_t>(clr * 0.9f) | (static_cast<int32_t>(rect[i].alpha * galpha * 0.4f) << 24);
         buf[i * 6 + 0].color = color;
         buf[i * 6 + 1].color = color;
         buf[i * 6 + 2].color = color;

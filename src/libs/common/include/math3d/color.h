@@ -151,7 +151,7 @@ class Color
     // Scalar rgb multiplication, the result is copied to all components
     Color &operator|=(const Color &c);
 
-    // Get packed color as long
+    // Get packed color as int32_t
     operator uint32_t() const;
 
     // -----------------------------------------------------------
@@ -248,9 +248,9 @@ class DColor
     // Assign
     DColor &operator=(uint32_t color);
     // Assign
-    DColor &operator=(long color);
+    DColor &operator=(int32_t color);
 
-    // Get long
+    // Get int32_t
     operator uint32_t() const;
 };
 
@@ -604,12 +604,12 @@ inline Color &Color::operator|=(const Color &c)
     return *this;
 }
 
-// Get packed color as long
+// Get packed color as int32_t
 inline Color::operator uint32_t() const
 {
     auto c(*this);
     c.Clamp();
-    return static_cast<long>(c.GetDword());
+    return static_cast<int32_t>(c.GetDword());
 }
 
 /*!\relates Color
@@ -1213,7 +1213,7 @@ inline Color &Color::SwapRB()
 // Get packed color as uint32_t
 inline uint32_t Color::GetDword() const
 {
-    /*    long l;*/
+    /*    int32_t l;*/
     DColor color;
     const auto k = 255.0f;
 
@@ -1312,16 +1312,16 @@ inline DColor &DColor::operator=(uint32_t color)
 }
 
 // Assign
-inline DColor &DColor::operator=(long color)
+inline DColor &DColor::operator=(int32_t color)
 {
     c = static_cast<uint32_t>(color);
     return *this;
 }
 
-// Get long
+// Get int32_t
 inline DColor::operator uint32_t() const
 {
-    return static_cast<long>(c);
+    return static_cast<int32_t>(c);
 }
 
 #pragma pack(pop)

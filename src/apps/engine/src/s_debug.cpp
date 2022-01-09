@@ -129,7 +129,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
             auto ini = fio->OpenIniFile(PROJECT_NAME);
             if (!ini)
                 break;
-            if (ini->GetLong("options", "break_on_error", 0) == 1)
+            if (ini->GetInt("options", "break_on_error", 0) == 1)
             {
                 CheckMenuItem(static_cast<HMENU>(GetMenu(hwnd)), LOWORD(wParam), MF_UNCHECKED);
                 ini->WriteLong("options", "break_on_error", 0);
@@ -223,7 +223,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         auto ini = fio->OpenIniFile(PROJECT_NAME);
         if (ini)
         {
-            if (ini->GetLong("options", "break_on_error", 0) == 1)
+            if (ini->GetInt("options", "break_on_error", 0) == 1)
             {
                 CheckMenuItem(static_cast<HMENU>(GetMenu(hwnd)), ID_OPTIONS_BREAKONERROR, MF_CHECKED);
                 core_internal.Compiler->bBreakOnError = true;
@@ -387,8 +387,8 @@ bool S_DEBUG::OpenDebugWindow_NT(HINSTANCE hInstance)
     wndclass.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
     RegisterClassEx(&wndclass);
 
-    const long xs = GetSystemMetrics(SM_CXSCREEN);
-    const long ys = GetSystemMetrics(SM_CYSCREEN);
+    const int32_t xs = GetSystemMetrics(SM_CXSCREEN);
+    const int32_t ys = GetSystemMetrics(SM_CYSCREEN);
     // MoveWindow(hMain,(xs - DBGWIN_WIDTH)/2,(ys - DBGWIN_HEIGHT)/2,DBGWIN_WIDTH,DBGWIN_HEIGHT,false);
 
     hMain = CreateWindow(DClass, DClass,
@@ -873,7 +873,7 @@ bool S_DEBUG::ProcessRegistry_Open()
     return true;
 }
 
-long S_DEBUG::GetRecentFileALine(const char *pFileName)
+int32_t S_DEBUG::GetRecentFileALine(const char *pFileName)
 {
     HKEY hKey;
     char buffer[MAX_PATH];
@@ -916,7 +916,7 @@ long S_DEBUG::GetRecentFileALine(const char *pFileName)
     return 0;
 }
 
-void S_DEBUG::SaveRecentFileALine(const char *pFileName, long nLine)
+void S_DEBUG::SaveRecentFileALine(const char *pFileName, int32_t nLine)
 {
     HKEY hKey;
     char buffer[MAX_PATH];

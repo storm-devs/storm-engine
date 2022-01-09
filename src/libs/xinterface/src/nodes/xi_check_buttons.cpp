@@ -49,8 +49,8 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected, uint32_t Delta_Time)
         if (button->pImg)
         {
             button->pImg->SetDifferentPosition(
-                static_cast<long>(fX + m_fpIconOffset.x), static_cast<long>(fY + m_fpIconOffset.y),
-                static_cast<long>(m_fpIconSize.x), static_cast<long>(m_fpIconSize.y));
+                static_cast<int32_t>(fX + m_fpIconOffset.x), static_cast<int32_t>(fY + m_fpIconOffset.y),
+                static_cast<int32_t>(m_fpIconSize.x), static_cast<int32_t>(m_fpIconSize.y));
             button->pImg->Draw();
         }
 
@@ -58,8 +58,8 @@ void CXI_CHECKBUTTONS::Draw(bool bSelected, uint32_t Delta_Time)
         for (auto &line : button->aStr)
         {
             m_rs->ExtPrint(m_nFontNum, dwColor, 0, PR_ALIGN_LEFT, true, m_fFontScale, m_screenSize.x, m_screenSize.y,
-                           static_cast<long>(fX + m_frTextOffset.left + line.fX),
-                           static_cast<long>(fY + m_frTextOffset.top), "%s", line.str.c_str());
+                           static_cast<int32_t>(fX + m_frTextOffset.left + line.fX),
+                           static_cast<int32_t>(fY + m_frTextOffset.top), "%s", line.str.c_str());
             fY += m_fTextLineHeight;
         }
 
@@ -137,29 +137,29 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
 
     // read out all the sections in turn
     char pcKeyName[128];
-    for (long n = 0; n < 100; n++)
+    for (int32_t n = 0; n < 100; n++)
     {
         sprintf_s(pcKeyName, "section%d", n + 1);
         if (!ReadIniString(ini1, name1, ini2, name2, pcKeyName, param, sizeof(param), ""))
             break;
         const char *pTmpChar = param;
-        const auto bSelect = CXI_UTILS::StringGetLong(pTmpChar) != 0;
-        const auto bDisable = CXI_UTILS::StringGetLong(pTmpChar) != 0;
+        const auto bSelect = CXI_UTILS::StringGetInt(pTmpChar) != 0;
+        const auto bDisable = CXI_UTILS::StringGetInt(pTmpChar) != 0;
         AddButton(pTmpChar, bDisable, bSelect);
     }
 
     // special positions for sections
     if (m_bIndividualPos)
     {
-        for (long n = 0; n < m_aButton.size(); n++)
+        for (int32_t n = 0; n < m_aButton.size(); n++)
         {
             sprintf_s(pcKeyName, "pos%d", n + 1);
             if (ReadIniString(ini1, name1, ini2, name2, pcKeyName, param, sizeof(param), ""))
             {
                 const char *pTmpChar = param;
                 m_aButton[n]->bSetPos = true;
-                m_aButton[n]->pos.x = static_cast<float>(CXI_UTILS::StringGetLong(pTmpChar));
-                m_aButton[n]->pos.y = static_cast<float>(CXI_UTILS::StringGetLong(pTmpChar));
+                m_aButton[n]->pos.x = static_cast<float>(CXI_UTILS::StringGetInt(pTmpChar));
+                m_aButton[n]->pos.y = static_cast<float>(CXI_UTILS::StringGetInt(pTmpChar));
             }
         }
     }
@@ -175,14 +175,14 @@ void CXI_CHECKBUTTONS::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
 
     if (m_bExclusiveChoose)
     {
-        long n;
+        int32_t n;
         for (n = 0; n < m_aButton.size(); n++)
             if (m_aButton[n]->bChoose)
                 break;
         if (n == m_aButton.size()) // none have been installed
             SetButtonOn(0);        // first option by default
     }
-    for (long n = 0; n < m_aButton.size(); n++)
+    for (int32_t n = 0; n < m_aButton.size(); n++)
         WriteToAttributeButtonState(n);
 
     UpdateAllTextInfo();
@@ -215,7 +215,7 @@ int CXI_CHECKBUTTONS::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_CHECKBUTTONS::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_CHECKBUTTONS::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     for (auto &btn : m_aButton)
         if (btn->pImg && btn->pImg->IsPointInside(xPos, yPos))
@@ -250,7 +250,7 @@ void CXI_CHECKBUTTONS::SaveParametersToIni()
 
     if (m_bIndividualPos)
     {
-        for (long n = 0; n < m_aButton.size(); n++)
+        for (int32_t n = 0; n < m_aButton.size(); n++)
         {
             sprintf_s(pcWriteKeyName, "pos%d", n + 1);
             if (m_aButton[n]->bSetPos)
@@ -267,7 +267,7 @@ void CXI_CHECKBUTTONS::SaveParametersToIni()
     }
 }
 
-uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_CHECKBUTTONS::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -300,7 +300,7 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
 
     case 3: // get the state of the button
     {
-        const long nButtonNum = message.Long() - 1;
+        const int32_t nButtonNum = message.Long() - 1;
         if (nButtonNum < 0 || nButtonNum >= m_aButton.size())
             return 0;
         return m_aButton[nButtonNum]->bChoose;
@@ -309,7 +309,7 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
 
     case 4: // get the selected button (for non-exclusive selection, it gives the number of the first selected)
     {
-        for (long n = 0; n < m_aButton.size(); n++)
+        for (int32_t n = 0; n < m_aButton.size(); n++)
             if (m_aButton[n]->bChoose)
                 return n;
     }
@@ -317,7 +317,7 @@ uint32_t CXI_CHECKBUTTONS::MessageProc(long msgcode, MESSAGE &message)
 
     case 5: // disable / enable button
     {
-        const long nButtonNum = message.Long() - 1;
+        const int32_t nButtonNum = message.Long() - 1;
         const bool bDisable = (message.Long() != 0);
         if (nButtonNum < 0 || nButtonNum >= m_aButton.size())
             return 0;
@@ -338,7 +338,7 @@ bool CXI_CHECKBUTTONS::GetInternalNameList(std::vector<std::string> &aStr)
     {
         std::string sTmp = "all";
         aStr.push_back(sTmp);
-        for (long n = 0; n < m_aButton.size(); n++)
+        for (int32_t n = 0; n < m_aButton.size(); n++)
             if (m_aButton[n]->bSetPos)
             {
                 sTmp = "btn";
@@ -384,12 +384,12 @@ void CXI_CHECKBUTTONS::AddButton(const char *pcText, bool bDisable, bool bSelect
     Assert(pBD->pImg);
     pBD->pImg->LoadFromBase(m_sIconGroupName.c_str(), PicName(bDisable, bSelect).c_str());
     pBD->pImg->SetColor(PicColor(bDisable, bSelect));
-    pBD->pImg->SetSize(static_cast<long>(m_fpIconSize.x), static_cast<long>(m_fpIconSize.y));
+    pBD->pImg->SetSize(static_cast<int32_t>(m_fpIconSize.x), static_cast<int32_t>(m_fpIconSize.y));
 
     m_aButton.push_back(pBD);
 }
 
-void CXI_CHECKBUTTONS::ChangeText(long nButtonNum, const char *pcText)
+void CXI_CHECKBUTTONS::ChangeText(int32_t nButtonNum, const char *pcText)
 {
     if (nButtonNum < 0 || nButtonNum >= m_aButton.size())
         return;
@@ -407,11 +407,11 @@ void CXI_CHECKBUTTONS::CheckMouseClick(const FXYPOINT &pntMouse)
         {
             if (pntMouse.x < m_rect.left || pntMouse.x > m_rect.right)
                 return;
-            long nY = m_rect.top;
-            long n;
+            int32_t nY = m_rect.top;
+            int32_t n;
             for (n = 0; n < m_aButton.size(); n++)
             {
-                const long nHeight = static_cast<long>(m_aButton[n]->aStr.size() * m_fTextLineHeight);
+                const int32_t nHeight = static_cast<int32_t>(m_aButton[n]->aStr.size() * m_fTextLineHeight);
                 if (!m_aButton[n]->bDisable)
                 {
                     if (pntMouse.y >= nY && pntMouse.y <= nY + nHeight)
@@ -426,20 +426,20 @@ void CXI_CHECKBUTTONS::CheckMouseClick(const FXYPOINT &pntMouse)
                         break;
                     }
                 }
-                nY += nHeight + static_cast<long>(m_fTextSectionInterval);
+                nY += nHeight + static_cast<int32_t>(m_fTextSectionInterval);
             }
             if (n < m_aButton.size())
                 return;
         }
     }
 
-    for (long n = 0; n < m_aButton.size(); n++)
+    for (int32_t n = 0; n < m_aButton.size(); n++)
     {
         if (m_aButton[n]->bDisable)
             continue;
         if (!m_aButton[n]->pImg)
             continue;
-        if (m_aButton[n]->pImg->IsPointInside(static_cast<long>(pntMouse.x), static_cast<long>(pntMouse.y)))
+        if (m_aButton[n]->pImg->IsPointInside(static_cast<int32_t>(pntMouse.x), static_cast<int32_t>(pntMouse.y)))
         {
             if (m_bExclusiveChoose)
             {
@@ -455,7 +455,7 @@ void CXI_CHECKBUTTONS::CheckMouseClick(const FXYPOINT &pntMouse)
     }
 }
 
-void CXI_CHECKBUTTONS::SetButtonOn(long nButtonNum)
+void CXI_CHECKBUTTONS::SetButtonOn(int32_t nButtonNum)
 {
     if (nButtonNum < 0 || nButtonNum >= m_aButton.size())
         return;
@@ -466,7 +466,7 @@ void CXI_CHECKBUTTONS::SetButtonOn(long nButtonNum)
     WriteToAttributeButtonState(nButtonNum);
 }
 
-void CXI_CHECKBUTTONS::SetButtonOff(long nButtonNum)
+void CXI_CHECKBUTTONS::SetButtonOff(int32_t nButtonNum)
 {
     if (nButtonNum < 0 || nButtonNum >= m_aButton.size())
         return;
@@ -479,12 +479,12 @@ void CXI_CHECKBUTTONS::SetButtonOff(long nButtonNum)
 
 void CXI_CHECKBUTTONS::SetAllButtonsToOff()
 {
-    for (long n = 0; n < m_aButton.size(); n++)
+    for (int32_t n = 0; n < m_aButton.size(); n++)
         if (!m_aButton[n]->bDisable && m_aButton[n]->bChoose)
             SetButtonOff(n);
 }
 
-void CXI_CHECKBUTTONS::SetCheckToButton(long nButtonNum, bool bCheck)
+void CXI_CHECKBUTTONS::SetCheckToButton(int32_t nButtonNum, bool bCheck)
 {
     if (nButtonNum < 0 || nButtonNum >= m_aButton.size())
         return; // there is no such button
@@ -509,18 +509,18 @@ void CXI_CHECKBUTTONS::SetCheckToButton(long nButtonNum, bool bCheck)
 
 void CXI_CHECKBUTTONS::UpdateAllTextInfo()
 {
-    for (long n = 0; n < m_aButton.size(); n++)
+    for (int32_t n = 0; n < m_aButton.size(); n++)
         UpdateTextInfo(n);
 }
 
-void CXI_CHECKBUTTONS::UpdateTextInfo(long nButtonNum)
+void CXI_CHECKBUTTONS::UpdateTextInfo(int32_t nButtonNum)
 {
     // get the full text
     std::string sAllText;
     for (auto &btn : m_aButton[nButtonNum]->aStr)
         sAllText += btn.str;
 
-    long nWidth = (m_rect.right - m_rect.left) - static_cast<long>(m_frTextOffset.right + m_frTextOffset.left);
+    int32_t nWidth = (m_rect.right - m_rect.left) - static_cast<int32_t>(m_frTextOffset.right + m_frTextOffset.left);
     if (nWidth < 10)
         nWidth = 10;
     std::vector<std::string> asOutStr;
@@ -528,11 +528,11 @@ void CXI_CHECKBUTTONS::UpdateTextInfo(long nButtonNum)
 
     // m_aButton[nButtonNum]->aStr.clear();
     m_aButton[nButtonNum]->aStr.resize(asOutStr.size());
-    for (long n = 0; n < asOutStr.size(); n++)
+    for (int32_t n = 0; n < asOutStr.size(); n++)
     {
         // m_aButton[nButtonNum]->aStr.Add();
         m_aButton[nButtonNum]->aStr[n].str = asOutStr[n];
-        const long nOffset = m_rs->StringWidth(asOutStr[n].c_str(), m_nFontNum, m_fFontScale, 0);
+        const int32_t nOffset = m_rs->StringWidth(asOutStr[n].c_str(), m_nFontNum, m_fFontScale, 0);
         switch (m_nFontAlignment)
         {
         case PR_ALIGN_LEFT:
@@ -548,7 +548,7 @@ void CXI_CHECKBUTTONS::UpdateTextInfo(long nButtonNum)
     }
 }
 
-void CXI_CHECKBUTTONS::WriteToAttributeButtonState(long nButtonIndex)
+void CXI_CHECKBUTTONS::WriteToAttributeButtonState(int32_t nButtonIndex)
 {
     if (nButtonIndex < 0 || nButtonIndex >= m_aButton.size())
         return;

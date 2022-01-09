@@ -65,7 +65,7 @@ class Lighter : public Entity
     LighterLights lights;
     LightProcessor lightProcessor;
 
-    long initCounter;
+    int32_t initCounter;
     float waitChange;
     bool isInited, autoTrace, autoSmooth;
 };

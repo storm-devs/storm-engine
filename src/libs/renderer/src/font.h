@@ -49,21 +49,21 @@ class FONT
     IDirect3DVertexBuffer9 *VBuffer;
     char *techniqueName;
     char *textureName;
-    long TextureID;
+    int32_t TextureID;
     uint32_t Color, oldColor;
     float fScale, fOldScale;
     FLOAT_RECT Pos;
     FONT_SYMBOL CharT[USED_CODES];
-    long Height;
-    long Texture_XSize;
-    long Texture_YSize;
-    long Symbol_interval;
+    int32_t Height;
+    int32_t Texture_XSize;
+    int32_t Texture_YSize;
+    int32_t Symbol_interval;
 
     bool bShadow, bOldShadow;
-    long Shadow_offsetx;
-    long Shadow_offsety;
+    int32_t Shadow_offsetx;
+    int32_t Shadow_offsety;
 
-    long Spacebar;
+    int32_t Spacebar;
 
     bool bInverse, bOldInverse;
 
@@ -81,19 +81,19 @@ class FONT
     void SetScale(float scale);
     void SetShadow(bool s);
     void SetCenter(bool c);
-    bool MakeLong(char **pDataPointer, long *result);
-    long Printf(long x, long y, char *Text, ...);
-    long Print(long x, long y, char *Text);
-    long UpdateVertexBuffer(long x, long y, char *data_PTR, int utf8length);
-    long GetStringWidth(const char *Text);
+    bool MakeLong(char **pDataPointer, int32_t *result);
+    int32_t Printf(int32_t x, int32_t y, char *Text, ...);
+    int32_t Print(int32_t x, int32_t y, char *Text);
+    int32_t UpdateVertexBuffer(int32_t x, int32_t y, char *data_PTR, int utf8length);
+    int32_t GetStringWidth(const char *Text);
 
-    long GetHeight()
+    int32_t GetHeight()
     {
         return Height;
     };
     void Inverse(bool v);
-    void SetShadowOffset(long ox, long oy);
-    void GetShadowOffset(long &ox, long &oy);
+    void SetShadowOffset(int32_t ox, int32_t oy);
+    void GetShadowOffset(int32_t &ox, int32_t &oy);
 
     void StoreFontParameters()
     {

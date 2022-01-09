@@ -251,7 +251,7 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
                     if (fFadeValue > 1.f)
                         fFadeValue = 1.f;
 
-                    if (static_cast<long>(20.f * fOldFadeValue) != static_cast<long>(20.f * fFadeValue))
+                    if (static_cast<int32_t>(20.f * fOldFadeValue) != static_cast<int32_t>(20.f * fFadeValue))
                         fPrevFov = -1.f;
 
                     bEnable = fFadeValue > 0.f;
@@ -288,7 +288,7 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
         fTmpK[2] = 0.75f + 0.25f * sinf(m_fTwinklingTime * 2.f);
         fTmpK[3] = 0.8f + 0.2f * sinf(m_fTwinklingTime * 5.f);
         fTmpK[4] = 0.85f + 0.15f * sinf(m_fTwinklingTime * 7.f);
-        for (long n = 0; n < 7; n++)
+        for (int32_t n = 0; n < 7; n++)
             fTmpRnd[n] = 0.8f + FRAND(0.2f);
         auto *pVColors = static_cast<uint32_t *>(pRS->LockVertexBuffer(iVertexBufferColors, D3DLOCK_DISCARD));
         auto size = aStars.size();
@@ -351,7 +351,7 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
     Astronomy::pRS->SetTransform(D3DTS_WORLD, IMatrix);
 
     uint32_t dwStars = 0;
-    long idx = 0;
+    int32_t idx = 0;
     for (uint32_t i=0; i<aStars.size(); i+=1)
     {
       if (idx == 0 && !pV)
@@ -363,7 +363,7 @@ void Astronomy::STARS::Realize(double dDeltaTime, double dHour)
       Star & s = aStars[i];
       RS_RECT & r = rr[idx];
 
-      long iRA;
+      int32_t iRA;
       float fRa = float(COS_TABLE_SIZE) * (fRAHour + s.fRA); FTOL(iRA, fRa);
 
       float fCosRA = fCosTable[iRA & (COS_TABLE_SIZE - 1)];

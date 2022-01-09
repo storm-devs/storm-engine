@@ -16,7 +16,7 @@ class CXI_TEXTBUTTON : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -24,7 +24,7 @@ class CXI_TEXTBUTTON : public CINODE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
     void NotUsingTime(uint32_t Delta_Time)
     {
@@ -40,14 +40,14 @@ class CXI_TEXTBUTTON : public CINODE
 
   protected:
     char *m_sGroupName;
-    long m_idTex;            // texture identity
-    long m_idShadowTex;      // shadow texture
-    long m_idUnSelectMiddle; // picture id for middle part of unselect button
-    long m_idSelectMiddle;   // picture id for middle part of select button
-    long m_idUnSelectLeft;   // picture id for left part of unselect button
-    long m_idSelectLeft;     // picture id for left part of select button
-    long m_idUnSelectRight;  // picture id for right part of unselect button
-    long m_idSelectRight;    // picture id for right part of select button
+    int32_t m_idTex;            // texture identity
+    int32_t m_idShadowTex;      // shadow texture
+    int32_t m_idUnSelectMiddle; // picture id for middle part of unselect button
+    int32_t m_idSelectMiddle;   // picture id for middle part of select button
+    int32_t m_idUnSelectLeft;   // picture id for left part of unselect button
+    int32_t m_idSelectLeft;     // picture id for left part of select button
+    int32_t m_idUnSelectRight;  // picture id for right part of unselect button
+    int32_t m_idSelectRight;    // picture id for right part of select button
     bool m_bCurrentSelected;
 
     CVideoTexture *m_pTex;
@@ -72,15 +72,15 @@ class CXI_TEXTBUTTON : public CINODE
 
     // string parameters
     int m_nFontNum;
-    long m_idString;
+    int32_t m_idString;
     int m_dwStrOffset;
     char *m_sString;
 
     // picture index & vertex buffers
-    long m_idVBuf; // identificator of the vertex buffer
-    long m_idIBuf; // identificator of the index buffer
-    long m_nVert;  // vertex quantity
-    long m_nIndx;  // index quantity
+    int32_t m_idVBuf; // identificator of the vertex buffer
+    int32_t m_idIBuf; // identificator of the index buffer
+    int32_t m_nVert;  // vertex quantity
+    int32_t m_nIndx;  // index quantity
 
     bool m_bVideoToBack;
     uint32_t m_dwBackColor;

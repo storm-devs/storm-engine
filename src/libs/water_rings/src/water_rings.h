@@ -38,8 +38,8 @@ enum tRingState
 struct tRing
 {
     bool active;
-    long activeTime;
-    long ivIndex;
+    int32_t activeTime;
+    int32_t ivIndex;
     float x, z;
     tRingState state;
     bool firstUpdate;
@@ -72,11 +72,11 @@ class WaterRings : public Entity
     }
 
   private:
-    void UpdateGrid(int _ringI, uint16_t *iPointer, RING_VERTEX *vPointer, long vOffset);
+    void UpdateGrid(int _ringI, uint16_t *iPointer, RING_VERTEX *vPointer, int32_t vOffset);
 
     VDX9RENDER *renderService;
     SEA_BASE *sea;
     IVBufferManager *ivManager;
-    long ringTexture;
+    int32_t ringTexture;
     tRing rings[waterrings::MAX_RINGS];
 };

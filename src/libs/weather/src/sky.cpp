@@ -25,7 +25,7 @@ FOGVERTEX CreateFogVertex(const CVECTOR &vPos)
     auto *pvData = core.Event(WEATHER_CALC_FOG_COLOR, "fff", vPos.x, vPos.y, vPos.z);
     Assert(pvData);
 
-    return {vPos, static_cast<uint32_t>(pvData->GetLong())};
+    return {vPos, static_cast<uint32_t>(pvData->GetInt())};
 }
 
 }
@@ -47,7 +47,7 @@ SKY::~SKY()
 
 void SKY::Release()
 {
-    for (long i = 0; i < SKY_NUM_TEXTURES; i++)
+    for (int32_t i = 0; i < SKY_NUM_TEXTURES; i++)
     {
         if (TexturesID[i] >= 0)
         {
@@ -111,7 +111,7 @@ void SKY::UpdateFogSphere(const bool initialize)
     uint16_t indices[kFogTrgsNum];
     auto *pIndices = indices;
 
-    long idx = 0;
+    int32_t idx = 0;
     for (size_t y = 0; y < kNumLevels; y++)
     {
         const auto h = y * kR / kNumLevels;
@@ -294,7 +294,7 @@ void SKY::LoadTextures()
     std::string sSkyDir, sSkyDirNext;
     GetSkyDirStrings(sSkyDir, sSkyDirNext);
 
-    for (long i = 0; i < SKY_NUM_TEXTURES; i++)
+    for (int32_t i = 0; i < SKY_NUM_TEXTURES; i++)
     {
         sprintf_s(str, "%s%s", static_cast<const char *>(sSkyDir.c_str()), names[i]);
         TexturesID[i] = pRS->TextureCreate(str);
@@ -341,18 +341,18 @@ void SKY::Realize(uint32_t Delta_Time)
     if (aSkyDirArray.size() > 1)
     {
         UpdateTimeFactor();
-        auto fBlendFactor = fTimeFactor - static_cast<long>(fTimeFactor);
+        auto fBlendFactor = fTimeFactor - static_cast<int32_t>(fTimeFactor);
         if (fBlendFactor < 0.f)
             fBlendFactor = 0.f;
         if (fBlendFactor > 1.f)
             fBlendFactor = 1.f;
-        uint32_t dwColor = (dwSkyColor & 0x00FFFFFF) | (static_cast<long>(0xFF000000 * fBlendFactor) & 0xFF000000);
+        uint32_t dwColor = (dwSkyColor & 0x00FFFFFF) | (static_cast<int32_t>(0xFF000000 * fBlendFactor) & 0xFF000000);
         pRS->SetRenderState(D3DRS_TEXTUREFACTOR, dwColor);
 
         if (pRS->TechniqueExecuteStart(sTechSkyBlend.c_str()))
             do
             {
-                for (long i = 0; i < SKY_NUM_TEXTURES; i++)
+                for (int32_t i = 0; i < SKY_NUM_TEXTURES; i++)
                 {
                     pRS->TextureSet(0, TexturesID[i]);
                     pRS->TextureSet(1, TexturesNextID[i]);
@@ -385,7 +385,7 @@ void SKY::Realize(uint32_t Delta_Time)
                 if (pRS->TechniqueExecuteStart(sTechSkyBlendAlpha.c_str()))
                     do
                     {
-                        for (long i = 0; i < SKY_NUM_TEXTURES; i++)
+                        for (int32_t i = 0; i < SKY_NUM_TEXTURES; i++)
                         {
                             pRS->TextureSet(0, TexturesID[i]);
                             pRS->TextureSet(1, TexturesNextID[i]);
@@ -409,7 +409,7 @@ void SKY::Realize(uint32_t Delta_Time)
         if (pRS->TechniqueExecuteStart(sTechSky.c_str()))
             do
             {
-                for (long i = 0; i < SKY_NUM_TEXTURES; i++)
+                for (int32_t i = 0; i < SKY_NUM_TEXTURES; i++)
                 {
                     pRS->TextureSet(0, TexturesID[i]);
                     pRS->DrawBuffer(iSkyVertsID, sizeof(SKYVERTEX), iSkyIndexID, 0, 20, i * 6, 2);
@@ -510,7 +510,7 @@ void SKY::RestoreRender()
 void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)
 {
     aSkyDirArray.clear();
-    const long q = pAttribute->GetAttributesNum();
+    const int32_t q = pAttribute->GetAttributesNum();
     if (q < 1)
         return;
 
@@ -518,7 +518,7 @@ void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)
     aSkyDirArray.resize(aSkyDirArray.size() + q);
     if (q > 1)
     {
-        for (long n = 0; n < q; n++)
+        for (int32_t n = 0; n < q; n++)
         {
             const auto *const attrName = pAttribute->GetAttributeName(n);
             if (attrName && attrName[0] == 'd' && attrName[1] >= '0' && attrName[1] <= '9')
@@ -541,13 +541,13 @@ void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)
 
 void SKY::GetSkyDirStrings(std::string &sSkyDir, std::string &sSkyDirNext)
 {
-    auto n1 = static_cast<long>(fTimeFactor);
+    auto n1 = static_cast<int32_t>(fTimeFactor);
     if (n1 >= 0)
     {
-        if (n1 >= static_cast<long>(aSkyDirArray.size()))
+        if (n1 >= static_cast<int32_t>(aSkyDirArray.size()))
             n1 -= aSkyDirArray.size();
         auto n2 = n1 + 1;
-        if (n2 >= static_cast<long>(aSkyDirArray.size()))
+        if (n2 >= static_cast<int32_t>(aSkyDirArray.size()))
             n2 -= aSkyDirArray.size();
 
         sSkyDir = aSkyDirArray[n1];
@@ -559,7 +559,7 @@ void SKY::GetSkyDirStrings(std::string &sSkyDir, std::string &sSkyDirNext)
 
 void SKY::UpdateTimeFactor()
 {
-    const auto nPrev = static_cast<long>(fTimeFactor);
+    const auto nPrev = static_cast<int32_t>(fTimeFactor);
 
     // fTimeFactor += core.GetDeltaTime() * 0.00005f;
     entid_t eid;
@@ -568,9 +568,9 @@ void SKY::UpdateTimeFactor()
     fTimeFactor = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(eid))->GetFloat(whf_time_counter);
     fTimeFactor *= (1.f / 24.f) * aSkyDirArray.size();
 
-    if (static_cast<long>(fTimeFactor) >= static_cast<long>(aSkyDirArray.size()))
+    if (static_cast<int32_t>(fTimeFactor) >= static_cast<int32_t>(aSkyDirArray.size()))
         fTimeFactor -= aSkyDirArray.size();
-    const auto nNext = static_cast<long>(fTimeFactor);
+    const auto nNext = static_cast<int32_t>(fTimeFactor);
     if (nPrev != nNext)
     {
         // re-read textures
@@ -581,7 +581,7 @@ void SKY::UpdateTimeFactor()
         std::string sSkyDir, sSkyDirNext;
         GetSkyDirStrings(sSkyDir, sSkyDirNext);
 
-        for (long i = 0; i < SKY_NUM_TEXTURES; i++)
+        for (int32_t i = 0; i < SKY_NUM_TEXTURES; i++)
         {
             if (TexturesID[i] >= 0)
                 pRS->TextureRelease(TexturesID[i]);
@@ -613,7 +613,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
     // calculate where we end up
     if (fSkySize > 0.f)
     {
-        long nTexNum = -1;
+        int32_t nTexNum = -1;
         float fu, fv, fk;
 
         // check the hit to the top side
@@ -711,7 +711,7 @@ float SKY::CalculateAlphaForSun(const CVECTOR &vSunPos, float fSunSize)
             const auto dwCol2 =
                 GetPixelColor(static_cast<IDirect3DTexture9 *>(pRS->GetTextureFromID(TexturesNextID[nTexNum])), fu, fv);
 
-            const auto fK = fTimeFactor - static_cast<long>(fTimeFactor);
+            const auto fK = fTimeFactor - static_cast<int32_t>(fTimeFactor);
             const auto fAlpha = (1.f - fK) * (dwCol1 >> 24) / 255.f + fK * (dwCol2 >> 24) / 255.f;
             return fAlpha;
         }
@@ -730,9 +730,9 @@ uint32_t SKY::GetPixelColor(IDirect3DTexture9 *pTex, float fu, float fv) const
 
     D3DSURFACE_DESC texdesc;
     pRS->GetLevelDesc(pTex, 0, &texdesc);
-    const auto x = static_cast<long>(Bring2Range(0.0f, static_cast<float>(texdesc.Width - 1), 0.0f,
+    const auto x = static_cast<int32_t>(Bring2Range(0.0f, static_cast<float>(texdesc.Width - 1), 0.0f,
                                                  static_cast<float>(texdesc.Width), texdesc.Width * fu));
-    const auto y = static_cast<long>(Bring2Range(0.0f, static_cast<float>(texdesc.Height - 1), 0.0f,
+    const auto y = static_cast<int32_t>(Bring2Range(0.0f, static_cast<float>(texdesc.Height - 1), 0.0f,
                                                  static_cast<float>(texdesc.Height), texdesc.Height * fv));
 
     D3DLOCKED_RECT lockRect;

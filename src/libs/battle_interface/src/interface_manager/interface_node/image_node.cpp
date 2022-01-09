@@ -2,7 +2,7 @@
 #include "../../image/img_render.h"
 
 BI_ImageNode::BI_ImageNode(BI_ManagerBase *pManager, const char *texture, const FRECT &uv, const RECT &pos,
-                           uint32_t color, long nPrioritet)
+                           uint32_t color, int32_t nPrioritet)
     : BI_BaseNode(pManager)
 {
     m_pImage = Manager()->GetImageRender()->CreateImage(BIType_square, texture, color, uv, pos, nPrioritet);

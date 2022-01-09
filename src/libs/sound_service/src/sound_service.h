@@ -117,7 +117,7 @@ class SoundService : public VSoundService
         float fMaxProbabilityValue;
         float fMinDistance;
         float fMaxDistance;
-        long iPrior;
+        int32_t iPrior;
         float fVolume;
         std::vector<tAliasSound> SoundFiles;
 
@@ -140,10 +140,10 @@ class SoundService : public VSoundService
     {
         TSD_ID SoundID;
         std::string soundName;
-        long minDelayTime;
-        long maxDelayTime;
+        int32_t minDelayTime;
+        int32_t maxDelayTime;
         float volume;
-        long timeToNextPlay;
+        int32_t timeToNextPlay;
         bool looped; // not working
 
         tSoundSchemeChannel()
@@ -184,19 +184,19 @@ class SoundService : public VSoundService
     void RunEnd() override;
 
     TSD_ID SoundPlay(const char *_name, eSoundType _type, eVolumeType _volumeType, bool _simpleCache = false,
-                     bool _looped = false, bool _cached = false, long _time = 0,
+                     bool _looped = false, bool _cached = false, int32_t _time = 0,
                      const CVECTOR *_startPosition = nullptr, float _minDistance = -1.0f, float _maxDistance = -1.0f,
-                     long _loopPauseTime = 0, float _volume = 1.0f, long _prior = 128) override;
+                     int32_t _loopPauseTime = 0, float _volume = 1.0f, int32_t _prior = 128) override;
 
     TSD_ID SoundDuplicate(TSD_ID _sourceID) override;
     void SoundSet3DParam(TSD_ID _id, eSoundMessage _message, const void *_op) override;
-    void SoundStop(TSD_ID _id, long _time = 0) override;
+    void SoundStop(TSD_ID _id, int32_t _time = 0) override;
     void SoundRelease(TSD_ID _id) override;
     void SoundSetVolume(TSD_ID _id, float _volume) override;
     bool SoundIsPlaying(TSD_ID _id) override;
     float SoundGetPosition(TSD_ID _id) override;
     void SoundRestart(TSD_ID _id) override;
-    void SoundResume(TSD_ID _id, long _time = 0) override;
+    void SoundResume(TSD_ID _id, int32_t _time = 0) override;
 
     // Service functions
     void SetMasterVolume(float _fxVolume, float _musicVolume, float _speechVolume) override;
@@ -215,7 +215,7 @@ class SoundService : public VSoundService
     void SetActiveWithFade(bool active) override;
 
     void DebugDraw();
-    void DebugPrint3D(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale,
+    void DebugPrint3D(const CVECTOR &pos3D, float rad, int32_t line, float alpha, uint32_t color, float scale,
                       const char *format, ...) const;
     void Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float fRadius, uint32_t dwColor2, float fRadius2) const;
 

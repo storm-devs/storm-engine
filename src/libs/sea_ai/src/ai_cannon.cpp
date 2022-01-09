@@ -184,7 +184,7 @@ void AICannon::Load()
 {
     auto *pVData = core.Event(CANNON_LOAD, "a", pAHolder->GetACharacter());
     Assert(pVData);
-    bEmpty = pVData->GetLong() == 0;
+    bEmpty = pVData->GetInt() == 0;
 }
 
 void AICannon::Recharge()

@@ -10,16 +10,16 @@
 
 struct STRING_PICE
 {
-    long type;
+    int32_t type;
 
     union {
         struct
         {
-            long startOffset;
-            long charQuantity;
+            int32_t startOffset;
+            int32_t charQuantity;
         } strDescr;
 
-        long fontID;
+        int32_t fontID;
         uint32_t color;
     } data;
 };
@@ -35,7 +35,7 @@ class CXI_SCROLLTEXT : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -48,7 +48,7 @@ class CXI_SCROLLTEXT : public CINODE
 
   protected:
     void ClearText();
-    long FillPices(char *pt, size_t beg, size_t size, long &idx, STRING_PICE *spl, long wid);
+    int32_t FillPices(char *pt, size_t beg, size_t size, int32_t &idx, STRING_PICE *spl, int32_t wid);
 
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
@@ -57,14 +57,14 @@ class CXI_SCROLLTEXT : public CINODE
 
   protected:
     CINODE *m_pScroller; // link to the scroller (!!! must be registered beforehand)
-    long m_nMaxStringes; // the number of lines in the displayed window
+    int32_t m_nMaxStringes; // the number of lines in the displayed window
 
     uint32_t m_dwFontColor; // current color
-    long m_idFont;          // current font
+    int32_t m_idFont;          // current font
 
     char *m_pText;
-    long m_nPiceQuantity;
+    int32_t m_nPiceQuantity;
     STRING_PICE *m_pStrList;
 
-    long GetStringWord(char *pstr, char *buff, size_t size);
+    int32_t GetStringWord(char *pstr, char *buff, size_t size);
 };

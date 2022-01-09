@@ -84,9 +84,9 @@ class WdmShip : public WdmRenderModel
     float baseV;
     float kMaxSpeed;
     CVECTOR rspeed;
-    long collisionCounter;
+    int32_t collisionCounter;
     float slope;
-    long wmtexture;
+    int32_t wmtexture;
     bool isWMRender;
 
     Line lines[8];

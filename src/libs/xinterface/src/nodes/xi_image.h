@@ -23,13 +23,13 @@ class CXI_IMAGE
     void SetPointerToTexture(IDirect3DTexture9 *pTex);
 
     void Draw();
-    void Draw(long nX, long nY, ImagePointType alignment);
+    void Draw(int32_t nX, int32_t nY, ImagePointType alignment);
 
-    void SetSize(long nWidth, long nHeight);
-    void SetPosition(long nX, long nY, ImagePointType ptype = IPType_LeftTop);
+    void SetSize(int32_t nWidth, int32_t nHeight);
+    void SetPosition(int32_t nX, int32_t nY, ImagePointType ptype = IPType_LeftTop);
     void SetPosition(XYRECT &pos);
     void SetUV(float fLeft, float fTop, float fRight, float fBottom);
-    void SetDifferentPosition(long nLeft, long nTop, long nWidth, long nHeight, ImagePointType ptype = IPType_LeftTop);
+    void SetDifferentPosition(int32_t nLeft, int32_t nTop, int32_t nWidth, int32_t nHeight, ImagePointType ptype = IPType_LeftTop);
 
     void SetColor(uint32_t dwColor);
 
@@ -38,12 +38,12 @@ class CXI_IMAGE
         return m_dwImageColor;
     }
 
-    long GetWidth() const
+    int32_t GetWidth() const
     {
         return m_pntSize.x;
     }
 
-    long GetHeight() const
+    int32_t GetHeight() const
     {
         return m_pntSize.y;
     }
@@ -60,7 +60,7 @@ class CXI_IMAGE
         return (m_nTextureID >= 0 || m_pTexture);
     }
 
-    bool IsPointInside(long nX, long nY) const;
+    bool IsPointInside(int32_t nX, int32_t nY) const;
 
     void DisableDraw(bool bDisable)
     {
@@ -72,10 +72,10 @@ class CXI_IMAGE
 
     bool m_bDisableDraw;
     char *m_pcPictureListName;
-    long m_nPictureNum;
+    int32_t m_nPictureNum;
     FXYPOINT m_nLeftTopCutUV;
 
-    long m_nTextureID;
+    int32_t m_nTextureID;
     IDirect3DTexture9 *m_pTexture;
 
     FXYRECT m_frUV;

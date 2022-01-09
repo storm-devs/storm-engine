@@ -48,7 +48,7 @@ class WdmObjects
         GEOS *geo;
         std::string path;
         uint32_t hash;
-        long next;
+        int32_t next;
     };
 
     // --------------------------------------------------------------------------------------------
@@ -130,7 +130,7 @@ class WdmObjects
     char attrYear[256];   // Year at the current frame
     bool isNextDayUpdate; // Time to update next day data
 
-    std::optional<long> nationFlagIndex; // national flag index
+    std::optional<int32_t> nationFlagIndex; // national flag index
 
     std::string coordinate; // to output the coordinate string
     char stCoordinate[128];
@@ -140,7 +140,7 @@ class WdmObjects
     float worldSizeZ;  // The size of the world by Z
 
     std::vector<Model> models; // Models
-    long entryModels[1024];    // Geometry Quick Find Table
+    int32_t entryModels[1024];    // Geometry Quick Find Table
     std::string modelPath;
 
     // Get wind direction and strength
@@ -154,7 +154,7 @@ class WdmObjects
     // Add float to string
     void AddDataToString(std::string &str, uint8_t d);
     // Get float from string
-    long GetDataFromString(const char *&cur);
+    int32_t GetDataFromString(const char *&cur);
 
     WindField windField;
 

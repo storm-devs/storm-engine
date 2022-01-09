@@ -45,7 +45,7 @@ class ROPE : public ROPE_BASE
     int wRopeLast;
 
     char *TextureName;
-    long texl;
+    int32_t texl;
 
     VDX9RENDER *RenderService;
 
@@ -127,8 +127,8 @@ class ROPE : public ROPE_BASE
         entid_t shipEI;
         entid_t modelEI;
         CMatrix *pMatWorld;
-        long sv, nv;
-        long st, nt;
+        int32_t sv, nv;
+        int32_t st, nt;
     };
 
     int groupQuantity;
@@ -144,7 +144,7 @@ class ROPE : public ROPE_BASE
     void LoadIni();
     void FirstRun();
 
-    long vBuf, iBuf;
+    int32_t vBuf, iBuf;
     uint32_t nVert, nIndx;
 
     uint64_t execute_tm;

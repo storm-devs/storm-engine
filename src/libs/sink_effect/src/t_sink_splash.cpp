@@ -33,7 +33,7 @@ void TSinkSplash::Release()
 }
 
 //--------------------------------------------------------------------
-void TSinkSplash::Start(const CVECTOR &_pos, uint16_t *_indexes, SINK_VERTEX *_vertexes, long vOffset)
+void TSinkSplash::Start(const CVECTOR &_pos, uint16_t *_indexes, SINK_VERTEX *_vertexes, int32_t vOffset)
 {
     time = 0;
     center = _pos;
@@ -132,7 +132,7 @@ void TSinkSplash::Process(uint32_t _dTime, uint16_t *_indexes, SINK_VERTEX *_ver
 
             _vertexes->pos.x = center.x + growK * (stepSize * x * prolongK - halfSize);
             _vertexes->pos.z = center.z + growK * (stepSize * z * prolongK - halfSize);
-            _vertexes->color = ((((3 * sink_effect::SPLASH_FADE_TIME - static_cast<long>(time))) << 8) /
+            _vertexes->color = ((((3 * sink_effect::SPLASH_FADE_TIME - static_cast<int32_t>(time))) << 8) /
                                 (3 * sink_effect::SPLASH_FADE_TIME))
                                << 24;
 

@@ -204,8 +204,8 @@ uint32_t STRINGS_LIST::MakeHashValue(const char *string)
         if ('A' <= v && v <= 'Z')
             v += 'a' - 'A';
 
-        hval = (hval << 4) + static_cast<unsigned long>(v);
-        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
+        hval = (hval << 4) + static_cast<uint32_t>(v);
+        const uint32_t g = hval & (static_cast<uint32_t>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);

@@ -34,8 +34,8 @@ class WdmRenderModel : public WdmRenderObject
     void LRender(VDX9RENDER *rs) override;
 
     void SetTech(const char *t, const char *ta);
-    long GetTexture(long stage) const;
-    void SetTexture(long stage, long id) const;
+    int32_t GetTexture(int32_t stage) const;
+    void SetTexture(int32_t stage, int32_t id) const;
 
     CMatrix mtx;
     float alpha;

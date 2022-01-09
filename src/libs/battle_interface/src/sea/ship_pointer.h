@@ -33,15 +33,15 @@ class SHIPPOINTER : public Entity
 
   protected:
     void UpdateShipPointer() const;
-    VAI_OBJBASE *FindShipByChrIndex(long chrIdx) const;
+    VAI_OBJBASE *FindShipByChrIndex(int32_t chrIdx) const;
 
     bool m_bVisible;
     bool m_bFriend;
 
-    long m_idFriendTex;
-    long m_idEnemyTex;
+    int32_t m_idFriendTex;
+    int32_t m_idEnemyTex;
 
-    long m_idVBuf;
+    int32_t m_idVBuf;
 
     float m_fShiftVal;
     float m_fShiftSpeed;

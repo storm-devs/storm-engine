@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 ///////////////////////////////////////////////////////////////////
 // CONSTANTS
 ///////////////////////////////////////////////////////////////////
@@ -14,7 +16,7 @@
 #define ERROR_POSITION -1.0f
 #define MIN_VOLUME 0.01f
 
-extern long lg[100];
+extern int32_t lg[100];
 
 #define MAX_SOUNDS 150
 #define MAX_QUEUE_SOUNDS 30

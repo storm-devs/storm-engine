@@ -10,10 +10,10 @@ class STRSERVICE : public VSTRSERVICE
 {
     struct UsersStringBlock
     {
-        long nref;
+        int32_t nref;
         char *fileName;
-        long blockID;
-        long nStringsQuantity;
+        int32_t blockID;
+        int32_t nStringsQuantity;
         char **psStrName;
         char **psString;
 
@@ -34,13 +34,13 @@ class STRSERVICE : public VSTRSERVICE
     char *GetLanguage() override;
 
     char *GetString(const char *stringName, char *sBuffer = nullptr, size_t bufferSize = 0) override;
-    long GetStringNum(const char *stringName) override;
-    char *GetString(long strNum) override;
-    char *GetStringName(long strNum) override;
+    int32_t GetStringNum(const char *stringName) override;
+    char *GetString(int32_t strNum) override;
+    char *GetStringName(int32_t strNum) override;
 
-    long OpenUsersStringFile(const char *fileName) override;
-    void CloseUsersStringFile(long id) override;
-    char *TranslateFromUsers(long id, const char *inStr) override;
+    int32_t OpenUsersStringFile(const char *fileName) override;
+    void CloseUsersStringFile(int32_t id) override;
+    char *TranslateFromUsers(int32_t id, const char *inStr) override;
 
     void SetDialogSourceFile(const char *fileName);
 
@@ -51,21 +51,21 @@ class STRSERVICE : public VSTRSERVICE
 
   protected:
     void LoadIni();
-    long GetFreeUsersID() const;
-    bool GetNextUsersString(char *src, long &idx, char **strName, char **strData) const;
+    int32_t GetFreeUsersID() const;
+    bool GetNextUsersString(char *src, int32_t &idx, char **strName, char **strData) const;
 
   protected:
     char *m_sLanguage;
     char *m_sIniFileName;
     char *m_sLanguageDir;
 
-    long m_nStringQuantity;
+    int32_t m_nStringQuantity;
     char **m_psStrName;
     char **m_psString;
 
     UsersStringBlock *m_pUsersBlocks;
 
-    long m_nDialogSourceFile;
+    int32_t m_nDialogSourceFile;
 };
 
 class SCRIPT_INTERFACE_FUNCTIONS : public SCRIPT_LIBRIARY

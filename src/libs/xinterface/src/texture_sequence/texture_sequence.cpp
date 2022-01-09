@@ -68,15 +68,15 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
         core.Trace("ini file %s not found!", INI_FILENAME);
         return nullptr;
     }
-    m_dwDeltaTime = ini->GetLong((char *)cTSfileName, "timeDelay", 128);
+    m_dwDeltaTime = ini->GetInt((char *)cTSfileName, "timeDelay", 128);
     if (m_dwDeltaTime == 0)
     {
         return nullptr;
     }
-    m_texWidth = ini->GetLong((char *)cTSfileName, "width", 128);
-    m_texHeight = ini->GetLong((char *)cTSfileName, "height", 128);
-    m_xQuantity = ini->GetLong((char *)cTSfileName, "horzQ", 1);
-    m_yQuantity = ini->GetLong((char *)cTSfileName, "vertQ", 1);
+    m_texWidth = ini->GetInt((char *)cTSfileName, "width", 128);
+    m_texHeight = ini->GetInt((char *)cTSfileName, "height", 128);
+    m_xQuantity = ini->GetInt((char *)cTSfileName, "horzQ", 1);
+    m_yQuantity = ini->GetInt((char *)cTSfileName, "vertQ", 1);
     m_maxCurNum = m_xQuantity * m_yQuantity;
     if (m_maxCurNum == 0)
     {
@@ -93,8 +93,8 @@ IDirect3DTexture9 *TextureSequence::Initialize(VDX9RENDER *pRS, const char *cTSf
         return nullptr;
     }
 
-    m_bHorzFlip = ini->GetLong((char *)cTSfileName, "flipH", 0) != 0;
-    m_bVertFlip = ini->GetLong((char *)cTSfileName, "flipV", 0) != 0;
+    m_bHorzFlip = ini->GetInt((char *)cTSfileName, "flipH", 0) != 0;
+    m_bVertFlip = ini->GetInt((char *)cTSfileName, "flipV", 0) != 0;
 
     m_pTexture = nullptr;
     // create output texture
@@ -135,8 +135,8 @@ bool TextureSequence::FrameUpdate()
 
 void TextureSequence::ToTextureRender(float blendValue) const
 {
-    const auto newTFactor = ARGB(static_cast<long>(255.f * blendValue), static_cast<long>(255.f * blendValue),
-                                 static_cast<long>(255.f * blendValue), static_cast<long>(255.f * blendValue));
+    const auto newTFactor = ARGB(static_cast<int32_t>(255.f * blendValue), static_cast<int32_t>(255.f * blendValue),
+                                 static_cast<int32_t>(255.f * blendValue), static_cast<int32_t>(255.f * blendValue));
 
     // set texture as render target
     IDirect3DSurface9 *pRenderTarg = nullptr, *pOldRenderTarg = nullptr;

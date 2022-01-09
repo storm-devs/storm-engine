@@ -65,7 +65,7 @@ int CXI_TITLE::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_TITLE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_TITLE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -281,7 +281,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
 
 void CXI_TITLE::FillVertexBuffer() const
 {
-    long i;
+    int32_t i;
     auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
     if (pVert != nullptr)
     {

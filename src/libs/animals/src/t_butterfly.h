@@ -42,8 +42,8 @@ class TButterfly
     TButterfly();
     virtual ~TButterfly();
 
-    void Initialize(const CVECTOR &_center, float _radius, long _bufferIndex, int _tI, int _tJ);
-    void Calculate(long _dTime, COLLIDE *_collide, EntityManager::LayerIterators its);
+    void Initialize(const CVECTOR &_center, float _radius, int32_t _bufferIndex, int _tI, int _tJ);
+    void Calculate(int32_t _dTime, COLLIDE *_collide, EntityManager::LayerIterators its);
     void Effect(const CVECTOR &_position);
 
     static void SetCenter(const CVECTOR &_center)
@@ -74,9 +74,9 @@ class TButterfly
   private:
     CVECTOR centerPosition, centerVelocity, oldPos;
     CVECTOR displaceVector;
-    long timeToNextDisplace;
-    long fullActiveTime, activeTime, waitTime;
-    long bufferIndex;
+    int32_t timeToNextDisplace;
+    int32_t fullActiveTime, activeTime, waitTime;
+    int32_t bufferIndex;
     bool active;
 
     static CVECTOR center;

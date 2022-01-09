@@ -98,7 +98,7 @@ void AnimationServiceImp::RunStart()
     if (dltTime > 1000)
         dltTime = 1000;
     // Check all animations
-    for (long i = 0; i < ainfo.size(); i++)
+    for (int32_t i = 0; i < ainfo.size(); i++)
         if (ainfo[i])
         {
             ainfo[i]->AddDowntime(dltTime);
@@ -114,7 +114,7 @@ void AnimationServiceImp::RunStart()
     for (auto i = 0; i < animations.size(); i++)
         if (animations[i])
         {
-            long dt;
+            int32_t dt;
             for (dt = dltTime; dt > ASRV_MAXDLTTIME; dt -= ASRV_MAXDLTTIME)
                 animations[i]->Execute(ASRV_MAXDLTTIME);
             if (dt > 0)
@@ -131,7 +131,7 @@ void AnimationServiceImp::RunEnd()
 Animation *AnimationServiceImp::CreateAnimation(const char *animationName)
 {
     // looking for animation, load if not found
-    long i;
+    int32_t i;
     for (i = 0; i < ainfo.size(); i++)
         if (ainfo[i])
         {
@@ -174,7 +174,7 @@ void AnimationServiceImp::Event(const char *eventName)
 }
 
 // load animation
-long AnimationServiceImp::LoadAnimation(const char *animationName)
+int32_t AnimationServiceImp::LoadAnimation(const char *animationName)
 {
     // Form the file name
     static char path[MAX_PATH];
@@ -218,13 +218,13 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
             continue;
         }
         // Reading the times
-        const auto stime = ani->GetLong(path, ASKW_STIME, -1);
+        const auto stime = ani->GetInt(path, ASKW_STIME, -1);
         if (stime < 0)
         {
             core.Trace("Incorrect %s in action [%s] of animation file %s.ani", ASKW_STIME, path, animationName);
             continue;
         }
-        const auto etime = ani->GetLong(path, ASKW_ETIME, -1);
+        const auto etime = ani->GetInt(path, ASKW_ETIME, -1);
         if (etime < 0)
         {
             core.Trace("Incorrect %s in action [%s] of animation file %s.ani", ASKW_ETIME, path, animationName);
@@ -290,7 +290,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
                     continue;
                 }
                 // End of name
-                long p;
+                int32_t p;
                 for (p = 1; key[p] && key[p] != '"'; p++)
                     ;
                 if (!key[p])
@@ -403,7 +403,7 @@ long AnimationServiceImp::LoadAnimation(const char *animationName)
         LoadUserData(ani.get(), path, aci->GetUserData(), animationName);
     }
     // Looking for a free pointer
-    long i;
+    int32_t i;
     for (i = 0; i < ainfo.size(); i++)
         if (!ainfo[i])
             break;
@@ -437,7 +437,7 @@ void AnimationServiceImp::LoadUserData(INIFILE *ani, const char *sectionName,
                 continue;
             }
             // End of name
-            long p;
+            int32_t p;
             for (p = 1; key[p] && key[p] != '"'; p++)
                 ;
             if (!key[p])
@@ -528,15 +528,15 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         // Create the required number of bones
         info->CreateBones(header.nJoints);
         // Setting parents
-        auto *const prntIndeces = new long[header.nJoints];
-        if (!fio->_ReadFile(fileS, prntIndeces, header.nJoints * sizeof(long)))
+        auto *const prntIndeces = new int32_t[header.nJoints];
+        if (!fio->_ReadFile(fileS, prntIndeces, header.nJoints * sizeof(int32_t)))
         {
             core.Trace("Incorrect parent indeces block in animation file: %s", fname);
             delete[] prntIndeces;
             fio->_CloseFile(fileS);
             return false;
         }
-        for (long i = 1; i < header.nJoints; i++)
+        for (int32_t i = 1; i < header.nJoints; i++)
         {
             Assert(prntIndeces[i] >= 0 || prntIndeces[i] < header.nJoints);
             Assert(prntIndeces[i] != i);
@@ -552,7 +552,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
             fio->_CloseFile(fileS);
             return false;
         }
-        for (long i = 0; i < header.nJoints; i++)
+        for (int32_t i = 0; i < header.nJoints; i++)
         {
             info->GetBone(i).SetNumFrames(header.nFrames, vrt[i], i == 0);
         }
@@ -572,7 +572,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
 
         // Angles
         auto *ang = new D3DXQUATERNION[header.nFrames];
-        for (long i = 0; i < header.nJoints; i++)
+        for (int32_t i = 0; i < header.nJoints; i++)
         {
             if (!fio->_ReadFile(fileS, ang, header.nFrames * sizeof(*ang)))
             {
@@ -585,11 +585,11 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         delete[] ang;
 
         //-----------------------------------------------
-        for (long i = 0; i < header.nJoints; i++)
+        for (int32_t i = 0; i < header.nJoints; i++)
         {
             info->GetBone(i).BuildStartMatrix();
         }
-        for (long i = 0; i < header.nJoints; i++)
+        for (int32_t i = 0; i < header.nJoints; i++)
         {
             info->GetBone(i).start.Transposition();
         }

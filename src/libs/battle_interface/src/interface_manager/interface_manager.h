@@ -35,17 +35,17 @@ class BI_InterfaceManager : public BI_ManagerBase
     }
 
     BI_ManagerNodeBase *CreateImageNode(const char *texture, const FRECT &uv, const RECT &pos, uint32_t color,
-                                        long nPrioritet) override;
+                                        int32_t nPrioritet) override;
     BI_ManagerNodeBase *CreateStringNode(const char *text, const char *font, uint32_t color, float scale,
-                                         const RECT &pos, long nHAlign, long nVAlign, long prioritet) override;
+                                         const RECT &pos, int32_t nHAlign, int32_t nVAlign, int32_t prioritet) override;
     void DeleteNode(BI_ManagerNodeBase *pNod) override;
 
   protected:
-    long MsgLoadSheet(MESSAGE &message);
-    long MsgCreateImage(MESSAGE &message);
-    long MsgCreateString(MESSAGE &message);
-    long MsgDeleteNode(MESSAGE &message);
-    long MsgEvent(MESSAGE &message);
+    int32_t MsgLoadSheet(MESSAGE &message);
+    int32_t MsgCreateImage(MESSAGE &message);
+    int32_t MsgCreateString(MESSAGE &message);
+    int32_t MsgDeleteNode(MESSAGE &message);
+    int32_t MsgEvent(MESSAGE &message);
 
     std::vector<BI_ManagerNodeBase *> m_aNodes;
 

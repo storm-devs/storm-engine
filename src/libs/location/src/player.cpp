@@ -82,7 +82,7 @@ void Player::Move(float dltTime)
     auto *vd = core.Event("EventSGMode", nullptr);
     if (vd)
     {
-        long data = 0;
+        int32_t data = 0;
         if (vd->Get(data))
             shootgunMode = (data != 0);
     }
@@ -268,8 +268,8 @@ void Player::Update(float dltTime)
                 {
                     Assert(AttributesPointer);
                     Assert(chr->AttributesPointer);
-                    const long first = AttributesPointer->GetAttributeAsDword("index", -1);
-                    const long next = chr->AttributesPointer->GetAttributeAsDword("index", -1);
+                    const int32_t first = AttributesPointer->GetAttributeAsDword("index", -1);
+                    const int32_t next = chr->AttributesPointer->GetAttributeAsDword("index", -1);
                     if (first >= 0 && next >= 0)
                     {
                         core.Event("dlgReady", "ll", next, first);
@@ -637,13 +637,13 @@ Player *Player::FindAttackCharacter()
         return nullptr;
     // Choosing the best
     float minDst;
-    long task = -1;
+    int32_t task = -1;
     auto isFgt = false;
     const auto isEnemy = false;
     auto enemyCos = -1.0f;
     const auto cdx = sinf(ay);
     const auto cdz = cosf(ay);
-    long j = -1;
+    int32_t j = -1;
     for (size_t i = 0; i < fndCharacter.size(); i++)
     {
         // Character
@@ -749,10 +749,10 @@ void Player::FireFromShootgun()
         float dmg;
     };
     ChrsDmg chrs[16];
-    long numChrs = 0;
+    int32_t numChrs = 0;
 
     const auto ids = EntityManager::GetEntityIdIterators(SUN_TRACE);
-    for (long i = 0; i < 6; i++)
+    for (int32_t i = 0; i < 6; i++)
     {
         // Get the position where the buckshot will fall
         const auto r = rand() * 3.0f / RAND_MAX;
@@ -770,7 +770,7 @@ void Player::FireFromShootgun()
                 auto *const e = EntityManager::GetEntityPointer(collide->GetObjectID());
                 if (e && e != this)
                 {
-                    long nm;
+                    int32_t nm;
                     size_t n;
                     for (n = 0, nm = location->supervisor.character.size(); n < nm; n++)
                     {
@@ -781,7 +781,7 @@ void Player::FireFromShootgun()
                                               dir.z);
                             c->impulse -= dir * (1.5f + rand() * (1.0f / RAND_MAX));
                             c->impulse.y += 1.5f + rand() * (1.0f / RAND_MAX);
-                            long j;
+                            int32_t j;
                             for (j = 0; j < numChrs; j++)
                             {
                                 if (chrs[j].chr == c)
@@ -807,7 +807,7 @@ void Player::FireFromShootgun()
             }
         }
     }
-    for (long i = 0; i < numChrs; i++)
+    for (int32_t i = 0; i < numChrs; i++)
     {
         core.Event("Location_CharacterSGFire", "iif", GetId(), chrs[i].chr->GetId(), chrs[i].dmg);
     }

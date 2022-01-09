@@ -317,7 +317,7 @@ void CXI_BOUNDER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const
     m_rs->UnLockIndexBuffer(m_idIBuf);
 }
 
-bool CXI_BOUNDER::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_BOUNDER::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -330,7 +330,7 @@ void CXI_BOUNDER::ChangePosition(XYRECT &rNewPos)
     if (pVert == nullptr)
         throw std::runtime_error("can not create the index&vertex buffers");
 
-    long i;
+    int32_t i;
 
     m_rect = rNewPos;
 

@@ -136,7 +136,7 @@ void LocRat::IsStopMove(Animation *ani)
     kSpeed = 1.0f;
 }
 
-void LocRat::Event(Animation *animation, long index, long eventID, AnimationEvent event)
+void LocRat::Event(Animation *animation, int32_t index, int32_t eventID, AnimationEvent event)
 {
     if (moveTime > 0.0f)
         return;

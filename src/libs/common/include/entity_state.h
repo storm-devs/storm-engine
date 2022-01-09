@@ -19,7 +19,7 @@ class ENTITY_STATE
     virtual ~ENTITY_STATE(){};
     virtual uint8_t Byte() = 0;
     virtual uint16_t Word() = 0;
-    virtual long Long() = 0;
+    virtual int32_t Long() = 0;
     virtual uint32_t Dword() = 0;
     virtual float Float() = 0;
     virtual double Double() = 0;

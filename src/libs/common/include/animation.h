@@ -113,7 +113,7 @@ class ActionPlayer
     virtual float GetSpeed() const = 0;
     virtual float GetDefSpeed() const = 0;
     // Get duration of action in frames
-    virtual long GetFrames() const = 0;
+    virtual int32_t GetFrames() const = 0;
     // Set blending coefficient 0..1
     virtual void SetBlend(float k) = 0;
     // Get a blending coefficient of 0..1
@@ -151,12 +151,12 @@ class AnimationTimer
     // Get the specified timer running time
     virtual float GetTime() const = 0;
     // Assign ActionPlayer for blending (isInverse == false --> kBlend = [0..1])
-    virtual void SetPlayer(long playerIndex, bool isInverse = false) = 0;
-    virtual void ResetPlayer(long playerIndex) = 0;
+    virtual void SetPlayer(int32_t playerIndex, bool isInverse = false) = 0;
+    virtual void ResetPlayer(int32_t playerIndex) = 0;
     // Find out if ActionPlayer is being used
-    virtual bool IsUsedPlayer(long playerIndex, bool *isInverse = nullptr) = 0;
+    virtual bool IsUsedPlayer(int32_t playerIndex, bool *isInverse = nullptr) = 0;
     // Get the blending value for the player (if not used then 1.0f)
-    virtual float GetPlayerValue(long playerIndex) = 0;
+    virtual float GetPlayerValue(int32_t playerIndex) = 0;
 };
 
 // ============================================================================================
@@ -171,26 +171,26 @@ class Animation
   public:
     virtual ~Animation(){};
     // Access the action player
-    virtual ActionPlayer &Player(long index) = 0;
+    virtual ActionPlayer &Player(int32_t index) = 0;
     // Access the animation timer
-    virtual AnimationTimer &Timer(long index) = 0;
+    virtual AnimationTimer &Timer(int32_t index) = 0;
     // Events
     // Set an internal event handler
-    virtual long SetEvent(AnimationEvent event, long index, AnimationEventListener *ael) = 0;
+    virtual int32_t SetEvent(AnimationEvent event, int32_t index, AnimationEventListener *ael) = 0;
     // Remove internal event handler
-    virtual void DelEvent(long eventID) = 0;
+    virtual void DelEvent(int32_t eventID) = 0;
     // Set an external event handler
     virtual void SetEventListener(AnimationEventListener *ael = nullptr) = 0;
     // Access to bones
     // Get the number of bones in a skeleton
-    virtual long GetNumBones() const = 0;
+    virtual int32_t GetNumBones() const = 0;
     // Get animation matrix for bone
-    virtual CMatrix &GetAnimationMatrix(long iBone) const = 0;
+    virtual CMatrix &GetAnimationMatrix(int32_t iBone) const = 0;
     // miscellanea
     // Get custom data for animation
     virtual const char *GetData(const char *dataName) const = 0;
     // Copy the state of one player to another
-    virtual void CopyPlayerState(long indexSrc, long indexDst, bool copyTimerState = false) = 0;
+    virtual void CopyPlayerState(int32_t indexSrc, int32_t indexDst, bool copyTimerState = false) = 0;
     // Get animation speed
     virtual float GetFPS() = 0;
     // Set blending modes
@@ -215,12 +215,12 @@ class AnimationEventListener
   public:
     virtual ~AnimationEventListener(){};
     // Accept event
-    virtual void Event(Animation *animation, long index, long eventID, AnimationEvent event)
+    virtual void Event(Animation *animation, int32_t index, int32_t eventID, AnimationEvent event)
     {
     }
 
     // Accept event
-    virtual void Event(Animation *animation, long playerIndex, const char *eventName)
+    virtual void Event(Animation *animation, int32_t playerIndex, const char *eventName)
     {
     }
 };

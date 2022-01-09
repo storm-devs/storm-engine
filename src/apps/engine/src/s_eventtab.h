@@ -39,7 +39,7 @@ class S_EVENTTAB
     ~S_EVENTTAB();
     // uint32_t GetEventNum(){return Event_num;};
     void SetStatus(const char *event_name, uint32_t func_code, uint32_t status);
-    uint32_t AddEventHandler(const char *event_name, uint32_t func_code, uint32_t func_segment_id, long flag,
+    uint32_t AddEventHandler(const char *event_name, uint32_t func_code, uint32_t func_segment_id, int32_t flag,
                              bool bStatic = false);
     bool DelEventHandler(const char *event_name, uint32_t func_code);
     bool DelEventHandler(uint8_t ti, uint32_t event_code, uint32_t func_code, bool bDelStatic = false);

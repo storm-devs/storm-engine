@@ -38,7 +38,7 @@ LGeometry::LGeometry()
 
 LGeometry::~LGeometry()
 {
-    for (long i = 0; i < numObjects; i++)
+    for (int32_t i = 0; i < numObjects; i++)
     {
         delete object[i].name;
         delete object[i].nameReal;
@@ -84,7 +84,7 @@ void LGeometry::AddObject(const char *name, entid_t model)
     strcat_s(object[numObjects].name, len, lightPath);
     strcat_s(object[numObjects].name, len, ".col");
     auto *const str = object[numObjects].name;
-    for (long s = 0, d = 0; str[d]; s++)
+    for (int32_t s = 0, d = 0; str[d]; s++)
     {
         if (str[s] >= 'a' && str[s] <= 'z')
             str[s] -= 'a' - 'A';
@@ -103,14 +103,14 @@ void LGeometry::AddObject(const char *name, entid_t model)
 }
 
 // Process data
-bool LGeometry::Process(VDX9RENDER *rs, long numLights)
+bool LGeometry::Process(VDX9RENDER *rs, int32_t numLights)
 {
     // Preparing data for lighting
-    for (long i = 0; i < numObjects; i++)
+    for (int32_t i = 0; i < numObjects; i++)
     {
         // Vertices ------------------------------------------------- -------------------------------
         // Index in the final file
-        long cindex = 0;
+        int32_t cindex = 0;
         // Check
         if (object[i].m != static_cast<MODEL *>(EntityManager::GetEntityPointer(object[i].model)))
         {
@@ -146,7 +146,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             maxVBuffers += info.nvrtbuffs + 16;
             vbuffer.resize(maxVBuffers);
         }
-        for (long vb = 0; vb < info.nvrtbuffs; vb++)
+        for (int32_t vb = 0; vb < info.nvrtbuffs; vb++)
         {
             auto vbID = g->GetVertexBuffer(vb);
             if (vbID < 0)
@@ -174,7 +174,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                 return false;
             }
             // Vertex size
-            long stride = 6 * sizeof(float) + sizeof(uint32_t);
+            int32_t stride = 6 * sizeof(float) + sizeof(uint32_t);
             stride += ((desc.FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT) * 2 * sizeof(float);
             if (desc.FVF & D3DFVF_SPECULAR)
                 stride += sizeof(uint32_t);
@@ -199,7 +199,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                 core.Trace("Location lighter: vertex buffer no locked, model %s, vbID %i", object[i].nameReal, vbID);
                 return false;
             }
-            for (long v = 0; v < num; v++)
+            for (int32_t v = 0; v < num; v++)
             {
                 auto *pos = (CVECTOR *)(pnt + v * stride);
                 vrt[numVrt].p = *pos;
@@ -248,13 +248,13 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             return false;
         }
         GEOS::OBJECT obj;
-        for (long n = 0; n < info.nobjects; n++)
+        for (int32_t n = 0; n < info.nobjects; n++)
         {
             g->GetObj(n, obj);
             // looking for a vertex buffer
-            long vb;
+            int32_t vb;
             for (vb = 0; vb < numVBuffers; vb++)
-                if (vbuffer[vb].vbID == static_cast<long>(obj.vertex_buff))
+                if (vbuffer[vb].vbID == static_cast<int32_t>(obj.vertex_buff))
                     break;
             if (vb >= numVBuffers)
             {
@@ -265,12 +265,12 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
             vb = vbuffer[vb].start + obj.start_vertex;
             // Reading triangles
             auto *triangles = idx + obj.striangle * 3;
-            for (long t = 0; t < obj.ntriangles; t++)
+            for (int32_t t = 0; t < obj.ntriangles; t++)
             {
                 // Relative indices
-                long i1 = triangles[t * 3 + 0];
-                long i2 = triangles[t * 3 + 1];
-                long i3 = triangles[t * 3 + 2];
+                int32_t i1 = triangles[t * 3 + 0];
+                int32_t i2 = triangles[t * 3 + 1];
+                int32_t i3 = triangles[t * 3 + 2];
                 if (i1 >= obj.num_vertices || i2 >= obj.num_vertices || i3 >= obj.num_vertices)
                 {
                     core.Trace("Location lighter: model %s have incorrect vertex index, (obj: %i, trg: %i)",
@@ -305,7 +305,7 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
                 trg[numTrg].i[0] = i1;
                 trg[numTrg].i[1] = i2;
                 trg[numTrg].i[2] = i3;
-                for (long nv = 0; nv < 3; nv++)
+                for (int32_t nv = 0; nv < 3; nv++)
                 {
                     Vertex &vr = vrt[trg[numTrg].i[nv]];
                     bool isInv = (trg[numTrg].n | vr.n) < 0.0f;
@@ -334,8 +334,8 @@ bool LGeometry::Process(VDX9RENDER *rs, long numLights)
     memset(shadows, 0, numVrt * numLights * sizeof(lighter::Shadow));
     min = vrt[0].p;
     max = vrt[0].p;
-    long lghtpnt = 0;
-    for (long i = 0; i < numVrt; i++)
+    int32_t lghtpnt = 0;
+    for (int32_t i = 0; i < numVrt; i++)
     {
         Vertex &v = vrt[i];
         v.shadow = shadows + lghtpnt;
@@ -372,8 +372,8 @@ void LGeometry::DrawNormals(VDX9RENDER *rs)
     if (!drawbuf)
         drawbuf = new CVECTOR[1024];
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, 0xff00ff00);
-    long p = 0;
-    for (long i = 0; i < numVrt; i++)
+    int32_t p = 0;
+    for (int32_t i = 0; i < numVrt; i++)
     {
         drawbuf[p + 0] = vrt[i].p;
         drawbuf[p + 1] = vrt[i].p + vrt[i].n;
@@ -393,9 +393,9 @@ void LGeometry::DrawNormals(VDX9RENDER *rs)
 // Update colors in buffers
 void LGeometry::UpdateColors(VDX9RENDER *rs)
 {
-    long lockedVB = -1;
+    int32_t lockedVB = -1;
     uint8_t *pnt = nullptr;
-    for (long i = 0; i < numVrt; i++)
+    for (int32_t i = 0; i < numVrt; i++)
     {
         if (vrt[i].vbid != lockedVB)
         {
@@ -434,7 +434,7 @@ void LGeometry::UpdateColors(VDX9RENDER *rs)
 // Trace the ray
 float LGeometry::Trace(const CVECTOR &src, const CVECTOR &dst)
 {
-    for (long i = 0; i < numObjects; i++)
+    for (int32_t i = 0; i < numObjects; i++)
     {
         const float res = object[i].m->Trace(src, dst);
         if (res <= 1.0f)
@@ -451,16 +451,16 @@ bool LGeometry::Save()
     char *dir = new char[4096];
     // Saving objects
     bool result = true;
-    const long bufSize = 16384;
+    const int32_t bufSize = 16384;
     auto *buf = new uint32_t[bufSize];
-    for (long i = 0, pnt = 0; i < numObjects; i++)
+    for (int32_t i = 0, pnt = 0; i < numObjects; i++)
     {
         if (object[i].lBufSize <= 0)
             continue;
         // Create a path
         fio->_SetCurrentDirectory(oldPath.c_str());
         bool isCont = false;
-        for (long c = 0, p = 0; true; c++, p++)
+        for (int32_t c = 0, p = 0; true; c++, p++)
         {
             dir[p] = object[i].name[c];
             if (dir[p] == '\\')
@@ -489,8 +489,8 @@ bool LGeometry::Save()
             result = false;
             continue;
         }
-        long sv = 0;
-        for (long j = 0, n = object[i].lBufSize; j < n; j++)
+        int32_t sv = 0;
+        for (int32_t j = 0, n = object[i].lBufSize; j < n; j++)
         {
             CVECTOR c = vrt[pnt].c * vrt[pnt].mc * 255.0f;
             pnt++;

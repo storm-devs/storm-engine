@@ -106,14 +106,14 @@ class Location : public Entity
     // Trace the ray through the location
     float Trace(const CVECTOR &src, const CVECTOR &dst);
     bool GetCollideTriangle(TRIANGLE &trg) const;
-    void Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num));
+    void Clip(PLANE *p, int32_t numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, int32_t num));
 
     Lights *GetLights() const;
 
     VDX9RENDER *GetRS() const;
     void DrawLine(const CVECTOR &s, uint32_t cs, const CVECTOR &d, uint32_t cd, bool useZ = true) const;
     // Write text
-    void Print(const CVECTOR &pos3D, float rad, long line, float alpha, uint32_t color, float scale, const char *format,
+    void Print(const CVECTOR &pos3D, float rad, int32_t line, float alpha, uint32_t color, float scale, const char *format,
                ...) const;
 
     bool IsDebugView();
@@ -137,7 +137,7 @@ class Location : public Entity
     // --------------------------------------------------------------------------------------------
   private:
     void Update(uint32_t delta_time);
-    long LoadStaticModel(const char *modelName, const char *tech, long level, bool useDynamicLights);
+    int32_t LoadStaticModel(const char *modelName, const char *tech, int32_t level, bool useDynamicLights);
     bool LoadCharacterPatch(const char *ptcName);
     void LoadCaustic() const;
     bool LoadJumpPatch(const char *modelName);
@@ -154,14 +154,14 @@ class Location : public Entity
 
   private:
     PtcData ptc;
-    long patchJump;
+    int32_t patchJump;
 
-    long lastLoadStaticModel;
+    int32_t lastLoadStaticModel;
 
     // All locators
     std::vector<LocatorArray *> locators;
-    long numLocators;
-    long maxLocators;
+    int32_t numLocators;
+    int32_t maxLocators;
 
     bool isPause;
     bool isDebugView;
@@ -190,7 +190,7 @@ class Location : public Entity
     entid_t loceffectsid;
 
     SphVertex *sphereVertex;
-    long sphereNumTrgs;
+    int32_t sphereNumTrgs;
 
     float locationTimeUpdate;
 
@@ -198,11 +198,11 @@ class Location : public Entity
     // entid_t cubeShotMaker;
 
     DmgMessage message[32];
-    long curMessage;
+    int32_t curMessage;
 
     EnemyBar enemyBar[32];
-    long enemyBarsCount;
-    long enemyBarsTexture;
+    int32_t enemyBarsCount;
+    int32_t enemyBarsTexture;
     bool bDrawBars;
 
     bool bSwimming;
@@ -249,7 +249,7 @@ inline bool Location::GetCollideTriangle(TRIANGLE &trg) const
     return model.GetCollideTriangle(trg);
 }
 
-inline void Location::Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, long num))
+inline void Location::Clip(PLANE *p, int32_t numPlanes, CVECTOR &cnt, float rad, bool (*fnc)(const CVECTOR *vtx, int32_t num))
 {
     model.Clip(p, numPlanes, cnt, rad, fnc);
 }

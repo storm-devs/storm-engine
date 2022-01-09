@@ -65,7 +65,7 @@ void WdmPlayerShip::PushOutFromIsland()
         }
     }
     // Didn't work out, try to randomly move
-    for (long i = 0; i < 256; i++)
+    for (int32_t i = 0; i < 256; i++)
     {
         const auto _x = x + areaRad * rand() * 1.0f / RAND_MAX;
         const auto _z = z + areaRad * rand() * 1.0f / RAND_MAX;
@@ -191,8 +191,8 @@ void WdmPlayerShip::Update(float dltTime)
         wdmObjects->wm->AttributesPointer->SetAttributeUseFloat("playerShipAY", ay);
     }
 
-    const long nOldIslandVal = wdmObjects->wm->AttributesPointer->GetAttributeAsDword("encounter_island", 0);
-    const long nOldEncounterType = wdmObjects->wm->AttributesPointer->GetAttributeAsDword("encounter_type", 0);
+    const int32_t nOldIslandVal = wdmObjects->wm->AttributesPointer->GetAttributeAsDword("encounter_island", 0);
+    const int32_t nOldEncounterType = wdmObjects->wm->AttributesPointer->GetAttributeAsDword("encounter_type", 0);
     // note hitting the island
     if (wdmObjects->curIsland)
     {
@@ -253,8 +253,8 @@ void WdmPlayerShip::LRender(VDX9RENDER *rs)
 bool WdmPlayerShip::ExitFromMap()
 {
     // looking for selected
-    long found = -1;
-    for (long i = 0; i < wdmObjects->ships.size(); i++)
+    int32_t found = -1;
+    for (int32_t i = 0; i < wdmObjects->ships.size(); i++)
     {
         wdmObjects->ships[i]->isSelect = false;
         if (wdmObjects->ships[i] == this)
@@ -279,11 +279,11 @@ bool WdmPlayerShip::ExitFromMap()
     return true;
 }
 
-long WdmPlayerShip::TestInStorm() const
+int32_t WdmPlayerShip::TestInStorm() const
 {
     auto inStormZone = false;
     auto isTornado = false;
-    for (long i = 0; i < wdmObjects->storms.size(); i++)
+    for (int32_t i = 0; i < wdmObjects->storms.size(); i++)
     {
         if (wdmObjects->storms[i]->killMe)
             continue;

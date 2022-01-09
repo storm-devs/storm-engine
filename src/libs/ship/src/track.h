@@ -45,9 +45,9 @@ class ShipTracks : public Entity
       public:
         static VDX9RENDER *pRS;
         static SEA_BASE *pSea;
-        static long iVTmpBuffer1, iVTmpBuffer2;
-        static long iITmpBuffer1, iITmpBuffer2;
-        static long iRefCount;
+        static int32_t iVTmpBuffer1, iVTmpBuffer2;
+        static int32_t iITmpBuffer1, iITmpBuffer2;
+        static int32_t iRefCount;
         static uint32_t dwMaxBufferSize1, dwMaxBufferSize2;
 
         SHIP_BASE *pShip;
@@ -86,7 +86,7 @@ class ShipTracks : public Entity
         CVECTOR vLastPos, vLastAng;
 
         std::vector<Track> aTrack1, aTrack2;
-        long iTrackTexture1, iTrackTexture2;
+        int32_t iTrackTexture1, iTrackTexture2;
         float fWidth11, fWidth12, fWidth21, fWidth22;
         float fSpeed11, fSpeed12, fSpeed21, fSpeed22;
         float fLifeTime1, fLifeTime2;

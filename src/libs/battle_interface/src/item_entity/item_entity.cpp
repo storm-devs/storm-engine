@@ -206,7 +206,7 @@ void ItemEntity::DrawIntoLocator()
     }
 
     CMatrix perMtx;
-    long sti;
+    int32_t sti;
     if (m_pModel)
     {
         sti = -1;
@@ -277,7 +277,7 @@ void ItemEntity::SetEventListener(entid_t mdlEID, entid_t mdlToTieEID, const cha
     }
 }
 
-void ItemEntity::EventListener::Event(Animation *animation, long playerIndex, const char *eventName)
+void ItemEntity::EventListener::Event(Animation *animation, int32_t playerIndex, const char *eventName)
 {
     if (m_bStartWaiting && m_sStartEvent == eventName)
     {

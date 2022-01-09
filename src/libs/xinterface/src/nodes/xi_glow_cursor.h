@@ -19,7 +19,7 @@ class CXI_GLOWCURSOR : public CINODE
         return 0;
     }
 
-    bool IsClick(int buttonID, long xPos, long yPos) override
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override
     {
         return false;
     }
@@ -50,7 +50,7 @@ class CXI_GLOWCURSOR : public CINODE
 
     float m_xOffset, m_yOffset;
 
-    long m_idBackTex;
+    int32_t m_idBackTex;
     CVideoTexture *m_pBackTex;
 
     XI_ONETEX_VERTEX m_pTexVert[14];

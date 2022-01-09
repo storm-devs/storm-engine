@@ -67,7 +67,7 @@ void CXI_BORDER::ReleaseAll()
     STORM_DELETE(m_pCaptionImage);
 }
 
-bool CXI_BORDER::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_BORDER::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -281,7 +281,7 @@ void CXI_BORDER::FillIndexBuffers() const
         return;
     auto *pI = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
 
-    for (long n = 0; n < m_nSquareQ; n++)
+    for (int32_t n = 0; n < m_nSquareQ; n++)
     {
         pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
         pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
@@ -301,7 +301,7 @@ void CXI_BORDER::FillVertexBuffers()
         return;
     auto *pV = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
 
-    for (long n = 0; n < m_nSquareQ * 4; n++)
+    for (int32_t n = 0; n < m_nSquareQ * 4; n++)
     {
         pV[n].color = m_dwColor;
         pV[n].pos.z = 1.f;
@@ -344,8 +344,8 @@ void CXI_BORDER::FillVertexBuffers()
     m_rs->UnLockVertexBuffer(m_idVBuf);
 }
 
-void CXI_BORDER::WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, uint32_t dwColor, long left, long top,
-                                      long right, long bottom)
+void CXI_BORDER::WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, uint32_t dwColor, int32_t left, int32_t top,
+                                      int32_t right, int32_t bottom)
 {
     pV[0].color = dwColor;
     pV[0].pos.x = static_cast<float>(left);
@@ -376,7 +376,7 @@ void CXI_BORDER::WriteVertexForSquare(XI_ONETEX_VERTEX *pV, FXYRECT &UVRect, uin
     pV[3].tv = UVRect.bottom;
 }
 
-uint32_t CXI_BORDER::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_BORDER::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {

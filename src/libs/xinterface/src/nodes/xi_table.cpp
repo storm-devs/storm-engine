@@ -32,7 +32,7 @@ XI_TableLineDescribe::~XI_TableLineDescribe()
 void XI_TableLineDescribe::Draw(float fTop)
 {
     auto fX = static_cast<float>(m_pTable->m_rect.left);
-    for (long n = 0; n < m_aCell.size(); n++)
+    for (int32_t n = 0; n < m_aCell.size(); n++)
     {
         m_aCell[n]->Draw(fX, fTop);
         fX += m_pTable->m_anColsWidth[n];
@@ -61,7 +61,7 @@ void XI_TableLineDescribe::DrawSpecColor(float fTop) const
     }
 }
 
-void XI_TableLineDescribe::SetData(long nRowIndex, ATTRIBUTES *pLA, bool bHeader)
+void XI_TableLineDescribe::SetData(int32_t nRowIndex, ATTRIBUTES *pLA, bool bHeader)
 {
     m_nRowIndex = nRowIndex;
     char pcAttrName[64];
@@ -82,7 +82,7 @@ void XI_TableLineDescribe::SetData(long nRowIndex, ATTRIBUTES *pLA, bool bHeader
     else
         m_nHeight = m_pTable->m_anRowsHeights[nRowIndex];
 
-    long c;
+    int32_t c;
     for (c = 0; c < 10000; c++)
     {
         sprintf_s(pcAttrName, "td%d", c + 1);
@@ -109,7 +109,7 @@ void XI_TableLineDescribe::SetData(long nRowIndex, ATTRIBUTES *pLA, bool bHeader
     }
 }
 
-long XI_TableLineDescribe::GetLineHeight() const
+int32_t XI_TableLineDescribe::GetLineHeight() const
 {
     if (!m_pTable)
         return 0;
@@ -137,14 +137,14 @@ XI_TableCellDescribe::~XI_TableCellDescribe()
 
 void XI_TableCellDescribe::Draw(float fLeft, float fTop)
 {
-    long n;
+    int32_t n;
 
     fLeft += m_pTable->m_pntSpaceSize.x;
     fTop += m_pTable->m_pntSpaceSize.y;
     if (m_aImage.size() > 0)
     {
-        const auto nX = static_cast<long>(fLeft) + m_nLeftLineWidth;
-        const auto nY = static_cast<long>(fTop) + m_nTopLineHeight;
+        const auto nX = static_cast<int32_t>(fLeft) + m_nLeftLineWidth;
+        const auto nY = static_cast<int32_t>(fTop) + m_nTopLineHeight;
         for (n = 0; n < m_aImage.size(); n++)
             if (m_aImage[n].pImage)
                 m_aImage[n].pImage->Draw(nX + m_aImage[n].offset.x, nY + m_aImage[n].offset.y, IPType_LeftTop);
@@ -164,14 +164,14 @@ void XI_TableCellDescribe::Draw(float fLeft, float fTop)
         CXI_UTILS::PrintTextIntoWindow(
             m_pTable->m_rs, m_nFontIndex < 0 ? m_nFontID : m_pTable->m_anFontList[m_nFontIndex], m_dwColor,
             PR_ALIGN_LEFT, true, m_fScale, m_pTable->m_screenSize.x, m_pTable->m_screenSize.y,
-            static_cast<long>(fLeft + m_aStrings[n].offset.x), static_cast<long>(fTop + fY), m_aStrings[n].str.c_str(),
-            static_cast<long>(fLeft), static_cast<long>(fTop), m_pTable->m_anColsWidth[m_nColIndex], 20);
+            static_cast<int32_t>(fLeft + m_aStrings[n].offset.x), static_cast<int32_t>(fTop + fY), m_aStrings[n].str.c_str(),
+            static_cast<int32_t>(fLeft), static_cast<int32_t>(fTop), m_pTable->m_anColsWidth[m_nColIndex], 20);
 
         fY = fNewY;
     }
 }
 
-void XI_TableCellDescribe::SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHeader)
+void XI_TableCellDescribe::SetData(int32_t nColIndex, ATTRIBUTES *pAttr, bool bHeader)
 {
     if (!pAttr)
     {
@@ -189,7 +189,7 @@ void XI_TableCellDescribe::SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHead
     m_nTopLineHeight = bHeader ? m_pTable->m_nHeaderLineHeight : m_pTable->m_nHLineHeight;
 
     // read the picture
-    long nIconQuantity = 0;
+    int32_t nIconQuantity = 0;
     pA = pAttr->GetAttributeClass("icon");
     if (pA)
     {
@@ -207,14 +207,14 @@ void XI_TableCellDescribe::SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHead
             pA = pAttr->GetAttributeClass(tmpaname);
             if (!pA)
                 break;
-            if (static_cast<long>(m_aImage.size()) <= nIconQuantity)
+            if (static_cast<int32_t>(m_aImage.size()) <= nIconQuantity)
                 m_aImage.push_back(ImgDescribe{});
             LoadImageParam(&m_aImage[nIconQuantity], pA);
             nIconQuantity++;
         }
     }
     // delete unnecessary pictures
-    while (static_cast<long>(m_aImage.size()) > nIconQuantity)
+    while (static_cast<int32_t>(m_aImage.size()) > nIconQuantity)
         m_aImage.erase(m_aImage.begin() + nIconQuantity);
 
     // read the line
@@ -254,7 +254,7 @@ void XI_TableCellDescribe::SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHead
     m_TextOffset.y += m_nTopLineHeight;
 
     auto nWidth = m_pTable->m_anColsWidth[nColIndex] - 2 * m_pTable->m_pntSpaceSize.x - m_nLeftLineWidth -
-                  static_cast<long>(m_TextOffset.x);
+                  static_cast<int32_t>(m_TextOffset.x);
     if (nWidth <= 0)
     {
         nWidth = 32;
@@ -276,7 +276,7 @@ void XI_TableCellDescribe::SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHead
 
     m_aStrings.clear();
     pA = pAttr->GetAttributeClass("textoffsets");
-    for (long n = 0; n < asStr.size(); n++)
+    for (int32_t n = 0; n < asStr.size(); n++)
     {
         // m_aStrings.Add();
         // asStr[n].TrimRight();
@@ -300,7 +300,7 @@ void XI_TableCellDescribe::LoadImageParam(ImgDescribe *pImg, ATTRIBUTES *pA) con
 {
     Assert(pImg && pA);
     const char *pcStr;
-    long nW, nH, nImgAlign;
+    int32_t nW, nH, nImgAlign;
 
     if (!pImg->pImage)
     {
@@ -408,7 +408,7 @@ void CXI_TABLE::Draw(bool bSelected, uint32_t Delta_Time)
         m_pHeader->DrawSpecColor(fY);
         fY += m_anRowsHeights[0];
     }
-    for (long n = 0; n < m_aLine.size(); n++)
+    for (int32_t n = 0; n < m_aLine.size(); n++)
     {
         m_aLine[n]->DrawSpecColor(fY);
         fY += m_anRowsHeights[n + (m_pHeader ? 1 : 0)];
@@ -432,7 +432,7 @@ void CXI_TABLE::Draw(bool bSelected, uint32_t Delta_Time)
         m_pHeader->Draw(fY);
         fY += m_anRowsHeights[0];
     }
-    for (long n = 0; n < m_aLine.size(); n++)
+    for (int32_t n = 0; n < m_aLine.size(); n++)
     {
         m_aLine[n]->Draw(fY);
         fY += m_anRowsHeights[n + (m_pHeader ? 1 : 0)];
@@ -468,7 +468,7 @@ void CXI_TABLE::ReleaseAll()
     // release fonts from list
     FONT_RELEASE(m_rs, m_nFontCellID);
     FONT_RELEASE(m_rs, m_nFontTitleID);
-    for (long n = 0; n < m_anFontList.size(); n++)
+    for (int32_t n = 0; n < m_anFontList.size(); n++)
     {
         FONT_RELEASE(m_rs, m_anFontList[n]);
     }
@@ -545,7 +545,7 @@ int CXI_TABLE::CommandExecute(int wActCode)
         case ACTION_RIGHTSTEP:
         case ACTION_SPEEDRIGHT:
             if (m_bDoColsSelect && m_nSelectIndex != -1 &&
-                m_nSelectColIndex < static_cast<long>(m_anColsWidth.size()) - 1)
+                m_nSelectColIndex < static_cast<int32_t>(m_anColsWidth.size()) - 1)
             {
                 m_nSelectColIndex++;
                 SelectCol(m_nSelectColIndex);
@@ -557,7 +557,7 @@ int CXI_TABLE::CommandExecute(int wActCode)
             const auto n = GetLineByPoint(ptrOwner->GetMousePoint());
             if (n >= 0 && n <= m_nLineQuantity - m_nTopIndex - (m_pHeader ? 0 : 1))
             {
-                const auto nCol = GetColByX(static_cast<long>(ptrOwner->GetMousePoint().x));
+                const auto nCol = GetColByX(static_cast<int32_t>(ptrOwner->GetMousePoint().x));
                 if (m_bDoColsSelect)
                     SelectRow(n, nCol);
                 else
@@ -571,7 +571,7 @@ int CXI_TABLE::CommandExecute(int wActCode)
             const auto n = GetLineByPoint(ptrOwner->GetMousePoint());
             if (n >= 0 && n <= m_nLineQuantity - m_nTopIndex - (m_pHeader ? 0 : 1))
             {
-                const auto nCol = GetColByX(static_cast<long>(ptrOwner->GetMousePoint().x));
+                const auto nCol = GetColByX(static_cast<int32_t>(ptrOwner->GetMousePoint().x));
                 if (m_bDoColsSelect)
                     SelectRow(n, nCol);
                 else
@@ -586,7 +586,7 @@ int CXI_TABLE::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_TABLE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_TABLE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos >= m_rect.left && xPos <= m_rect.right && yPos >= m_rect.top && yPos <= m_rect.bottom && m_bClickable &&
         m_bSelected && m_bUse)
@@ -596,7 +596,7 @@ bool CXI_TABLE::IsClick(int buttonID, long xPos, long yPos)
 
 void CXI_TABLE::ChangePosition(XYRECT &rNewPos)
 {
-    long n, nWAdd, nHAdd;
+    int32_t n, nWAdd, nHAdd;
 
     if (m_EditData.bAllEditable)
     {
@@ -691,7 +691,7 @@ void CXI_TABLE::SaveParametersToIni()
 
     // save cols width
     std::string sTmp;
-    for (long n = 0; n < m_anColsWidth.size(); n++)
+    for (int32_t n = 0; n < m_anColsWidth.size(); n++)
     {
         if (n > 0)
             sTmp += ",";
@@ -701,7 +701,7 @@ void CXI_TABLE::SaveParametersToIni()
 
     // save rows height
     sTmp = "";
-    for (long n = 0; n < m_anRowsHeights.size(); n++)
+    for (int32_t n = 0; n < m_anRowsHeights.size(); n++)
     {
         if (n > 0)
             sTmp += ",";
@@ -710,7 +710,7 @@ void CXI_TABLE::SaveParametersToIni()
     pIni->WriteString(m_nodeName, "rowsheight", (char *)sTmp.c_str());
 }
 
-uint32_t CXI_TABLE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_TABLE::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -729,10 +729,10 @@ bool CXI_TABLE::GetInternalNameList(std::vector<std::string> &aStr)
 {
     aStr.clear();
     aStr.push_back("all");
-    for (long n = 0; n < m_nColQuantity; n++)
+    for (int32_t n = 0; n < m_nColQuantity; n++)
         aStr.push_back("col" + std::to_string(n + 1));
 
-    for (long n = 0; n < m_nRowQuantity; n++)
+    for (int32_t n = 0; n < m_nRowQuantity; n++)
         aStr.push_back("row" + std::to_string(n + 1));
 
     return true;
@@ -756,7 +756,7 @@ void CXI_TABLE::ScrollerChanged(float fRelativeScrollPos)
 {
     if (m_nLineQuantity <= 1)
         return; // the only one
-    const long n = static_cast<long>(fRelativeScrollPos * (m_nLineQuantity - 1));
+    const int32_t n = static_cast<int32_t>(fRelativeScrollPos * (m_nLineQuantity - 1));
     if (n != m_nSelectIndex)
     {
         SetTopIndexForSelect(n);
@@ -769,7 +769,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     SetGlowCursor(false);
 
     char param[1024], pctmp[128];
-    long n, nCommonWidth, nUsedQ;
+    int32_t n, nCommonWidth, nUsedQ;
 
     // font list
     if (ini1 && name1)
@@ -913,7 +913,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
         while (pcTmp && pcTmp[0])
         {
             pcTmp = GetSubStr(pcTmp, pcTmpBuf, sizeof(pcTmpBuf));
-            long nTmp = atol(pcTmpBuf);
+            int32_t nTmp = atol(pcTmpBuf);
             if (nTmp <= 0)
                 nTmp = 0;
             else
@@ -926,7 +926,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
         m_anRowsHeights.push_back(0);
     if (m_nRowQuantity > nUsedQ && m_rect.bottom - m_rect.top > nCommonWidth)
     {
-        const long nH = (m_rect.bottom - m_rect.top - nCommonWidth) / (m_nRowQuantity - nUsedQ);
+        const int32_t nH = (m_rect.bottom - m_rect.top - nCommonWidth) / (m_nRowQuantity - nUsedQ);
         for (n = 0; n < m_anRowsHeights.size(); n++)
             if (m_anRowsHeights[n] == 0)
                 m_anRowsHeights[n] = nH;
@@ -950,7 +950,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
         while (pcTmp && pcTmp[0])
         {
             pcTmp = GetSubStr(pcTmp, pcTmpBuf, sizeof(pcTmpBuf));
-            long nTmp = atol(pcTmpBuf);
+            int32_t nTmp = atol(pcTmpBuf);
             if (nTmp <= 0)
                 nTmp = 0; // width 0 - default
             else
@@ -963,7 +963,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
         m_anColsWidth.push_back(0);
     if (m_nColQuantity > nUsedQ && m_rect.right - m_rect.left > nCommonWidth)
     {
-        const long nW = (m_rect.right - m_rect.left - m_nBorderWidth - nCommonWidth) / (m_nColQuantity - nUsedQ);
+        const int32_t nW = (m_rect.right - m_rect.left - m_nBorderWidth - nCommonWidth) / (m_nColQuantity - nUsedQ);
         for (n = 0; n < m_anColsWidth.size(); n++)
             if (m_anColsWidth[n] == 0)
                 m_anColsWidth[n] = nW;
@@ -997,7 +997,7 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
 
 void CXI_TABLE::UpdateBorders()
 {
-    long n, q, r, c, nTop, nLeft;
+    int32_t n, q, r, c, nTop, nLeft;
 
     // counting the number of lines in a frame
     q = 0;
@@ -1110,7 +1110,7 @@ void CXI_TABLE::UpdateBorders()
     m_rs->UnLockVertexBuffer(m_idBorderVBuf);
 }
 
-void CXI_TABLE::WriteSquare(XI_ONETEX_VERTEX *pV, long nImgID, uint32_t dwCol, long nX, long nY, long nW, long nH) const
+void CXI_TABLE::WriteSquare(XI_ONETEX_VERTEX *pV, int32_t nImgID, uint32_t dwCol, int32_t nX, int32_t nY, int32_t nW, int32_t nH) const
 {
     if (!pV)
         return;
@@ -1157,12 +1157,12 @@ void CXI_TABLE::UpdateTableCells()
         return;
     }
 
-    long r, q;
+    int32_t r, q;
     char pcTmp[64];
 
-    long nY = m_rect.top;
+    int32_t nY = m_rect.top;
 
-    long nNewSel = pARoot->GetAttributeAsDword("select", m_nSelectIndex + 1) - 1;
+    int32_t nNewSel = pARoot->GetAttributeAsDword("select", m_nSelectIndex + 1) - 1;
 
     // read lines from attributes
     m_nTopIndex = pARoot->GetAttributeAsDword("top", 0); // first index of the attribute being read
@@ -1201,7 +1201,7 @@ void CXI_TABLE::UpdateTableCells()
         nY += pTL->GetLineHeight();
     }
     // delete extra lines
-    while (static_cast<long>(m_aLine.size()) > r)
+    while (static_cast<int32_t>(m_aLine.size()) > r)
     {
         STORM_DELETE(m_aLine[r]);
         m_aLine.erase(m_aLine.begin() + r);
@@ -1226,12 +1226,12 @@ void CXI_TABLE::UpdateTableCells()
     }
 }
 
-long CXI_TABLE::GetLineByPoint(const FXYPOINT &pnt)
+int32_t CXI_TABLE::GetLineByPoint(const FXYPOINT &pnt)
 {
     if (pnt.x < m_rect.left || pnt.x > m_rect.right || pnt.y < m_rect.top || pnt.y > m_rect.bottom)
         return -1;
-    long nTop = m_rect.top;
-    for (long n = 0; n < m_anRowsHeights.size(); n++)
+    int32_t nTop = m_rect.top;
+    for (int32_t n = 0; n < m_anRowsHeights.size(); n++)
     {
         nTop += m_anRowsHeights[n];
         if (pnt.y < nTop)
@@ -1240,12 +1240,12 @@ long CXI_TABLE::GetLineByPoint(const FXYPOINT &pnt)
     return -1;
 }
 
-long CXI_TABLE::GetColByX(long x)
+int32_t CXI_TABLE::GetColByX(int32_t x)
 {
     x -= m_rect.left;
     if (x < 0)
         return -1;
-    for (long n = 0; n < m_anColsWidth.size(); n++)
+    for (int32_t n = 0; n < m_anColsWidth.size(); n++)
     {
         if (m_anColsWidth[n] >= x)
             return n;
@@ -1254,15 +1254,15 @@ long CXI_TABLE::GetColByX(long x)
     return -1;
 }
 
-void CXI_TABLE::SelectRow(long nRowNum)
+void CXI_TABLE::SelectRow(int32_t nRowNum)
 {
     if (nRowNum < (m_pHeader ? 1 : 0) || nRowNum >= m_anRowsHeights.size())
         return;
-    const long n = m_nTopIndex + nRowNum - (m_pHeader ? 1 : 0);
+    const int32_t n = m_nTopIndex + nRowNum - (m_pHeader ? 1 : 0);
     SelectLine(n);
 }
 
-void CXI_TABLE::SelectRow(long nRowNum, long nColNum)
+void CXI_TABLE::SelectRow(int32_t nRowNum, int32_t nColNum)
 {
     if (m_bDoColsSelect)
     {
@@ -1273,11 +1273,11 @@ void CXI_TABLE::SelectRow(long nRowNum, long nColNum)
     }
     if (nRowNum < (m_pHeader ? 1 : 0) || nRowNum >= m_anRowsHeights.size())
         return;
-    const long n = m_nTopIndex + nRowNum - (m_pHeader ? 1 : 0);
+    const int32_t n = m_nTopIndex + nRowNum - (m_pHeader ? 1 : 0);
     SelectLine(n);
 }
 
-void CXI_TABLE::SelectLine(long nLineNum)
+void CXI_TABLE::SelectLine(int32_t nLineNum)
 {
     if (nLineNum < 0)
         m_nSelectIndex = -1;
@@ -1289,7 +1289,7 @@ void CXI_TABLE::SelectLine(long nLineNum)
         core.Event("TableSelectChange", "sll", m_nodeName, m_nSelectIndex + 1, m_nSelectColIndex + 1);
 }
 
-void CXI_TABLE::SelectCol(long nColNum)
+void CXI_TABLE::SelectCol(int32_t nColNum)
 {
     if (!m_bDoColsSelect)
         return;
@@ -1304,14 +1304,14 @@ void CXI_TABLE::SelectCol(long nColNum)
 
 void CXI_TABLE::UpdateSelectImage()
 {
-    const long nRow = m_nSelectIndex - m_nTopIndex + (m_pHeader ? 1 : 0);
+    const int32_t nRow = m_nSelectIndex - m_nTopIndex + (m_pHeader ? 1 : 0);
     if (m_nSelectIndex < 0 || nRow < 0 || nRow >= m_anRowsHeights.size())
     {
         m_SelectImg.DisableDraw(true);
     }
     else
     {
-        const long nCol = m_nSelectColIndex;
+        const int32_t nCol = m_nSelectColIndex;
         m_SelectImg.DisableDraw(false);
         XYRECT pos;
         pos.top = GetRowTop(nRow);
@@ -1338,31 +1338,31 @@ void CXI_TABLE::UpdateSelectImage()
     }
 }
 
-long CXI_TABLE::GetRowTop(long nRow)
+int32_t CXI_TABLE::GetRowTop(int32_t nRow)
 {
     if (nRow < 0 || nRow >= m_anRowsHeights.size())
         return m_rect.top; // error situation
-    long nTop = m_rect.top;
-    for (long n = 0; n < nRow; n++)
+    int32_t nTop = m_rect.top;
+    for (int32_t n = 0; n < nRow; n++)
     {
         nTop += m_anRowsHeights[n];
     }
     return nTop;
 }
 
-long CXI_TABLE::GetColLeft(long nCol)
+int32_t CXI_TABLE::GetColLeft(int32_t nCol)
 {
     if (nCol < 0 || nCol >= m_anColsWidth.size())
         return m_rect.left; // error situation
-    long nLeft = m_rect.left;
-    for (long n = 0; n < nCol; n++)
+    int32_t nLeft = m_rect.left;
+    for (int32_t n = 0; n < nCol; n++)
     {
         nLeft += m_anColsWidth[n];
     }
     return nLeft;
 }
 
-void CXI_TABLE::SetTopIndexForSelect(long nSelIndex)
+void CXI_TABLE::SetTopIndexForSelect(int32_t nSelIndex)
 {
     if (nSelIndex < 0)
         return; // error situation
@@ -1372,7 +1372,7 @@ void CXI_TABLE::SetTopIndexForSelect(long nSelIndex)
         SetTopIndex(nSelIndex);
         UpdateTableCells();
     }
-    else if (nSelIndex >= m_nTopIndex + static_cast<long>(m_anRowsHeights.size()) - (m_pHeader ? 1 : 0))
+    else if (nSelIndex >= m_nTopIndex + static_cast<int32_t>(m_anRowsHeights.size()) - (m_pHeader ? 1 : 0))
     // after the last line - then put the selection down
     {
         nSelIndex = nSelIndex - m_anRowsHeights.size() + (m_pHeader ? 1 : 0) + 1;
@@ -1393,7 +1393,7 @@ void CXI_TABLE::UpdateLineQuantity()
     if (!pARoot->GetAttributeClass("tr1"))
         return; // no one
 
-    long nmin = 1;
+    int32_t nmin = 1;
     char pcAttrName[64];
 
     // find the minimum element
@@ -1407,10 +1407,10 @@ void CXI_TABLE::UpdateLineQuantity()
     }
 
     // binary search between min and max indices
-    long nmax = nmin * 2;
+    int32_t nmax = nmin * 2;
     while (true)
     {
-        const long n = (nmin + nmax) / 2;
+        const int32_t n = (nmin + nmax) / 2;
         if (n == nmin)
             break;
         sprintf_s(pcAttrName, "tr%d", n);
@@ -1427,7 +1427,7 @@ void CXI_TABLE::UpdateLineQuantity()
     m_nLineQuantity = nmin;
 }
 
-void CXI_TABLE::SetTopIndex(long nTopIndex)
+void CXI_TABLE::SetTopIndex(int32_t nTopIndex)
 {
     m_nTopIndex = nTopIndex;
     ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
@@ -1452,15 +1452,15 @@ void CXI_TABLE::UpdateScroller() const
 
 void CXI_TABLE::RecalculateLineHeights()
 {
-    long nY = m_rect.top; // current top of line
-    long n = 0;           // index in the array of heights
+    int32_t nY = m_rect.top; // current top of line
+    int32_t n = 0;           // index in the array of heights
 
     // header accounting
     if (m_pHeader)
         nY += m_anRowsHeights[n++];
 
     // take the actual sizes of the lines
-    for (long i = 0; i < m_aLine.size(); i++, n++)
+    for (int32_t i = 0; i < m_aLine.size(); i++, n++)
     {
         if (n < m_anRowsHeights.size())
             m_anRowsHeights[n] = m_aLine[i]->GetLineHeight();
@@ -1472,7 +1472,7 @@ void CXI_TABLE::RecalculateLineHeights()
     // if the last line goes beyond the dimensions, then shorten it in height
     if (nY > m_rect.bottom && m_aLine.size() > 0)
     {
-        // long nLine = m_aLine.Last();
+        // int32_t nLine = m_aLine.Last();
         m_aLine.back()->SetLineHeight(m_aLine.back()->GetLineHeight() - (nY - m_rect.bottom));
         nY = m_rect.bottom;
     }
@@ -1480,7 +1480,7 @@ void CXI_TABLE::RecalculateLineHeights()
     // the missing lines are set to the standard height
     for (; nY < m_rect.bottom; n++)
     {
-        long nH = m_nNormalLineHeight;
+        int32_t nH = m_nNormalLineHeight;
         if (nY + nH > m_rect.bottom)
             nH = m_rect.bottom - nY;
         if (n < m_anRowsHeights.size())

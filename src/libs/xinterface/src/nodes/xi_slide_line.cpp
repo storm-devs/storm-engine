@@ -99,7 +99,7 @@ int CXI_SLIDELINE::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_SLIDELINE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_SLIDELINE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     // if( buttonID == MOUSE_RBUTTON )
     {
@@ -188,18 +188,18 @@ void CXI_SLIDELINE::DoMouseControl()
         else if (fmp.x > m_rect.right - m_nBaseLeft)
             SetNewValue(m_nGrateQuantity);
         else
-            SetNewValue(static_cast<long>((fmp.x - m_rect.left - m_nBaseLeft) /
+            SetNewValue(static_cast<int32_t>((fmp.x - m_rect.left - m_nBaseLeft) /
                                           (m_rect.right - m_rect.left - m_nBaseLeft - m_nBaseLeft) * m_nGrateQuantity));
     }
 }
 
-uint32_t CXI_SLIDELINE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_SLIDELINE::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
     case 0: // Set slide to new value
     {
-        SetNewValue(static_cast<long>(message.Float() * m_nGrateQuantity));
+        SetNewValue(static_cast<int32_t>(message.Float() * m_nGrateQuantity));
     }
     break;
     case 1: //
@@ -262,7 +262,7 @@ void CXI_SLIDELINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     if (pA != nullptr)
         pA = pA->GetAttributeClass(m_nodeName);
     if (pA != nullptr)
-        m_nCurValue = static_cast<long>(pA->GetAttributeAsFloat("value", 0.f) * m_nGrateQuantity);
+        m_nCurValue = static_cast<int32_t>(pA->GetAttributeAsFloat("value", 0.f) * m_nGrateQuantity);
     m_nMinValue = m_nMaxValue = -1;
     if (pA)
     {
@@ -303,7 +303,7 @@ void CXI_SLIDELINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     m_bSelected = true;
 }
 
-void CXI_SLIDELINE::SetNewValue(long newValue)
+void CXI_SLIDELINE::SetNewValue(int32_t newValue)
 {
     if (m_nMinValue >= 0 && newValue < m_nMinValue)
         newValue = m_nMinValue;

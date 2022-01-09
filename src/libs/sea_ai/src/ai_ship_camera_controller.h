@@ -8,7 +8,7 @@ class AIShipCameraController
     ATTRIBUTES *pTargetAPointer;
     uint32_t dwTarget;
     float fDelta;
-    long iCrosshairTex;
+    int32_t iCrosshairTex;
     bool bCameraOutside;
 
     uint32_t Colors[4];

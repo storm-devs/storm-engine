@@ -32,5 +32,5 @@ class PathTracks
     //--------------------------------------------------------------------------------------------
   private:
     Point *point;
-    long numPoints;
+    int32_t numPoints;
 };

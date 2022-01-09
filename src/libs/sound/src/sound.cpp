@@ -46,10 +46,10 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
 
     auto code = message.Long();
     CVECTOR vector, vector2;
-    long temp, temp2, temp3, temp4, vt;
-    long id, tempLong;
+    int32_t temp, temp2, temp3, temp4, vt;
+    int32_t id, tempLong;
     float minD, maxD;
-    long loopPauseTime;
+    int32_t loopPauseTime;
     float v1, v2, v3;
     float pitch;
     float volume;

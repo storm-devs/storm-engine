@@ -134,7 +134,7 @@ int CXI_PICTURE::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_PICTURE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_PICTURE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (m_bClickable)
     {
@@ -229,7 +229,7 @@ void CXI_PICTURE::SetNewPictureByGroup(const char *groupName, const char *picNam
     }
 }
 
-uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_PICTURE::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -304,7 +304,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
 
     case 7: // set new picture by pointer to IDirect3DTexture9
     {
-        long pTex = -1;
+        int32_t pTex = -1;
         if (message.GetCurrentFormatType() == 'p') {
             // DEPRECATED
             core.Trace("Warning! Setting an interface picture by pointer is deprecated. Please use integers instead.");
@@ -339,7 +339,7 @@ uint32_t CXI_PICTURE::MessageProc(long msgcode, MESSAGE &message)
                 m_idTex = pOtherPic->m_idTex;
                 pOtherPic->m_idTex = -1;
             }
-            for (long n = 0; n < 4; n++)
+            for (int32_t n = 0; n < 4; n++)
             {
                 m_v[n].tu = pOtherPic->m_v[n].tu;
                 m_v[n].tv = pOtherPic->m_v[n].tv;
@@ -370,7 +370,7 @@ void CXI_PICTURE::ChangeColor(uint32_t dwColor)
     m_v[0].color = m_v[1].color = m_v[2].color = m_v[3].color = dwColor;
 }
 
-void CXI_PICTURE::SetPictureSize(long &nWidth, long &nHeight)
+void CXI_PICTURE::SetPictureSize(int32_t &nWidth, int32_t &nHeight)
 {
     if (!m_pTex && m_idTex == -1)
     {
@@ -411,7 +411,7 @@ void CXI_PICTURE::SetPictureSize(long &nWidth, long &nHeight)
     ChangePosition(rNewPos);
 }
 
-void CXI_PICTURE::SetNewPictureByPointer(long textureId)
+void CXI_PICTURE::SetNewPictureByPointer(int32_t textureId)
 {
     IDirect3DBaseTexture9 *texture = m_rs->GetTextureFromID(textureId);
     m_rs->TextureIncReference(textureId);

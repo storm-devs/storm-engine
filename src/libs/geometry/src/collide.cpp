@@ -126,9 +126,9 @@ rec_return:;
         pface = (unsigned char *)&node->face;
 
     loop0:
-        const auto face = (static_cast<long>(*(pface + 2)) << 16) | (static_cast<long>(*(pface + 1)) << 8) |
-                          (static_cast<long>(*(pface + 0)) << 0);
-        long vindex[3];
+        const auto face = (static_cast<int32_t>(*(pface + 2)) << 16) | (static_cast<int32_t>(*(pface + 1)) << 8) |
+                          (static_cast<int32_t>(*(pface + 0)) << 0);
+        int32_t vindex[3];
         vindex[0] = (btrg[face].vindex[0][0] << 0) | (btrg[face].vindex[0][1] << 8) | (btrg[face].vindex[0][2] << 16);
         vindex[1] = (btrg[face].vindex[1][0] << 0) | (btrg[face].vindex[1][1] << 8) | (btrg[face].vindex[1][2] << 16);
         vindex[2] = (btrg[face].vindex[2][0] << 0) | (btrg[face].vindex[2][1] << 8) | (btrg[face].vindex[2][2] << 16);
@@ -195,11 +195,11 @@ rec_return:;
 //--------------------------------------------------------------------------------------------
 static CVECTOR poly[256];
 
-long ClipByPlane(const GEOS::PLANE &plane, long n)
+int32_t ClipByPlane(const GEOS::PLANE &plane, int32_t n)
 {
-    long inside = 0;
+    int32_t inside = 0;
     CVECTOR cr0, cr1;
-    long i;
+    int32_t i;
     for (i = 0; i < n; i++)
         if (plane.nrm.x * poly[i].x + plane.nrm.y * poly[i].y + plane.nrm.z * poly[i].z - plane.d < 0.0)
             inside++;
@@ -208,7 +208,7 @@ long ClipByPlane(const GEOS::PLANE &plane, long n)
 
     // needs to be clipped
     float sign[4];
-    long ii, i3, i4;
+    int32_t ii, i3, i4;
     for (i = 0; i < n; i++)
     {
         sign[0] = plane.nrm.x * poly[i].x + plane.nrm.y * poly[i].y + plane.nrm.z * poly[i].z - plane.d;
@@ -279,11 +279,11 @@ long ClipByPlane(const GEOS::PLANE &plane, long n)
 //--------------------------------------------------------------------------------------------
 //
 //--------------------------------------------------------------------------------------------
-static long VOL[256];
+static int32_t VOL[256];
 static unsigned short attempt = 65535;
 static unsigned short trgclip[65536 * 4];
 
-bool GEOM::Clip(const PLANE *planes, long nplanes, const VERTEX &center, float radius, ADD_POLYGON_FUNC addpoly)
+bool GEOM::Clip(const PLANE *planes, int32_t nplanes, const VERTEX &center, float radius, ADD_POLYGON_FUNC addpoly)
 {
     if (!(rhead.flags & FLAGS_BSP_PRESENT))
         return false;
@@ -297,7 +297,7 @@ bool GEOM::Clip(const PLANE *planes, long nplanes, const VERTEX &center, float r
     }
 
     BSP_NODE *node = sroot;
-    long rec_level = -1;
+    int32_t rec_level = -1;
 
 rec_loop:;
 
@@ -307,10 +307,10 @@ rec_loop:;
     if (ssrc * ssrc < radius * radius)
     {
         auto *pface = (unsigned char *)&node->face;
-        for (unsigned long f = 0; f < node->nfaces; f++)
+        for (uint32_t f = 0; f < node->nfaces; f++)
         {
-            const long face = (static_cast<long>(*(pface + 2)) << 16) | (static_cast<long>(*(pface + 1)) << 8) |
-                              (static_cast<long>(*(pface + 0)) << 0);
+            const int32_t face = (static_cast<int32_t>(*(pface + 2)) << 16) | (static_cast<int32_t>(*(pface + 1)) << 8) |
+                              (static_cast<int32_t>(*(pface + 0)) << 0);
             // "fix" for broken models
             if (face < 0 || face >= sizeof(trgclip) / sizeof(*trgclip))
             {
@@ -324,16 +324,16 @@ rec_loop:;
                 trgclip[face] = attempt;
 
                 // copy vertices to poly container
-                for (long v = 0; v < 3; v++)
+                for (int32_t v = 0; v < 3; v++)
                 {
-                    const long vindex = (btrg[face].vindex[v][0] << 0) | (btrg[face].vindex[v][1] << 8) |
+                    const int32_t vindex = (btrg[face].vindex[v][0] << 0) | (btrg[face].vindex[v][1] << 8) |
                                         (btrg[face].vindex[v][2] << 16);
                     memcpy(&poly[v], &vrt[vindex], sizeof(CVECTOR));
                 }
 
                 // clip polygon by planes
-                long nverts = 3;
-                for (long p = 0; p < nplanes; p++)
+                int32_t nverts = 3;
+                for (int32_t p = 0; p < nplanes; p++)
                 {
                     nverts = ClipByPlane(planes[p], nverts);
                     if (nverts == 0)

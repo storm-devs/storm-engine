@@ -43,7 +43,7 @@ class XI_TableCellDescribe
     }
 
     void Draw(float fLeft, float fTop);
-    void SetData(long nColIndex, ATTRIBUTES *pAttr, bool bHeader);
+    void SetData(int32_t nColIndex, ATTRIBUTES *pAttr, bool bHeader);
     void LoadImageParam(ImgDescribe *pImg, ATTRIBUTES *pA) const;
 
   protected:
@@ -51,21 +51,21 @@ class XI_TableCellDescribe
     XI_TableLineDescribe *m_pLine;
 
     FPOINT m_TextOffset;
-    long m_nFontID;
-    long m_nFontIndex;
+    int32_t m_nFontID;
+    int32_t m_nFontIndex;
     uint32_t m_dwColor;
     float m_fScale;
-    long m_nAlignment;
-    long m_nVAlignment;
+    int32_t m_nAlignment;
+    int32_t m_nVAlignment;
 
-    long m_nLeftLineWidth;
-    long m_nTopLineHeight;
+    int32_t m_nLeftLineWidth;
+    int32_t m_nTopLineHeight;
 
     std::vector<StrDescribe> m_aStrings;
     std::vector<ImgDescribe> m_aImage;
 
   public:
-    long m_nColIndex;
+    int32_t m_nColIndex;
 };
 
 class XI_TableLineDescribe
@@ -81,11 +81,11 @@ class XI_TableLineDescribe
 
     void Draw(float fTop);
     void DrawSpecColor(float fTop) const;
-    void SetData(long nRowIndex, ATTRIBUTES *pLA, bool bHeader);
+    void SetData(int32_t nRowIndex, ATTRIBUTES *pLA, bool bHeader);
 
-    long GetLineHeight() const;
+    int32_t GetLineHeight() const;
 
-    void SetLineHeight(long nHeight)
+    void SetLineHeight(int32_t nHeight)
     {
         m_nHeight = nHeight;
     }
@@ -96,10 +96,10 @@ class XI_TableLineDescribe
 
     bool m_bUseSpecColor;
     uint32_t m_dwSpecColor;
-    long m_nHeight;
+    int32_t m_nHeight;
 
   public:
-    long m_nRowIndex;
+    int32_t m_nRowIndex;
 };
 
 // picture
@@ -119,7 +119,7 @@ class CXI_TABLE : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -127,7 +127,7 @@ class CXI_TABLE : public CINODE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
     bool GetInternalNameList(std::vector<std::string> &aStr) override;
     void SetInternalName(std::string &sName) override;
@@ -146,96 +146,96 @@ class CXI_TABLE : public CINODE
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void UpdateBorders();
-    void WriteSquare(XI_ONETEX_VERTEX *pV, long nImgID, uint32_t dwCol, long nX, long nY, long nW, long nH) const;
+    void WriteSquare(XI_ONETEX_VERTEX *pV, int32_t nImgID, uint32_t dwCol, int32_t nX, int32_t nY, int32_t nW, int32_t nH) const;
     void UpdateTableCells();
-    long GetLineByPoint(const FXYPOINT &pnt);
-    long GetColByX(long x);
-    void SelectRow(long nRowNum);
-    void SelectRow(long nRowNum, long nColNum);
-    void SelectLine(long nLineNum);
-    void SelectCol(long nColNum);
-    long GetRowTop(long nRow);
-    long GetColLeft(long nCol);
-    void SetTopIndexForSelect(long nSelIndex);
+    int32_t GetLineByPoint(const FXYPOINT &pnt);
+    int32_t GetColByX(int32_t x);
+    void SelectRow(int32_t nRowNum);
+    void SelectRow(int32_t nRowNum, int32_t nColNum);
+    void SelectLine(int32_t nLineNum);
+    void SelectCol(int32_t nColNum);
+    int32_t GetRowTop(int32_t nRow);
+    int32_t GetColLeft(int32_t nCol);
+    void SetTopIndexForSelect(int32_t nSelIndex);
     void UpdateSelectImage();
     void UpdateLineQuantity();
-    void SetTopIndex(long nTopIndex);
+    void SetTopIndex(int32_t nTopIndex);
     void UpdateScroller() const;
     void RecalculateLineHeights();
 
     bool m_bFirstFrame;
 
     bool m_bVariableLineHeight;
-    long m_nNormalLineHeight;
+    int32_t m_nNormalLineHeight;
 
     std::vector<XI_TableLineDescribe *> m_aLine;
     XI_TableLineDescribe *m_pHeader;
 
-    std::vector<long> m_anFontList;
+    std::vector<int32_t> m_anFontList;
 
-    long m_nFontCellID;
+    int32_t m_nFontCellID;
     uint32_t m_dwFontCellColor;
     float m_fFontCellScale;
-    long m_nFontCellAlignment;
-    long m_nFontCellVAlignment;
+    int32_t m_nFontCellAlignment;
+    int32_t m_nFontCellVAlignment;
 
-    long m_nFontTitleID;
+    int32_t m_nFontTitleID;
     uint32_t m_dwFontTitleColor;
     float m_fFontTitleScale;
-    long m_nFontTitleAlignment;
-    long m_nFontTitleVAlignment;
+    int32_t m_nFontTitleAlignment;
+    int32_t m_nFontTitleVAlignment;
 
     // back describe
     bool m_bBackPresent;
     CXI_IMAGE m_BackImg;
     CXI_IMAGE m_SelectImg;
     bool m_bDoColsSelect;
-    long m_nSelectColIndex;
+    int32_t m_nSelectColIndex;
 
     std::string m_sBorderIconGroupName;
-    long m_idBorderTexture;
-    long m_idBorderVBuf;
-    long m_idBorderIBuf;
-    long m_nBorderSubQ;
+    int32_t m_idBorderTexture;
+    int32_t m_idBorderVBuf;
+    int32_t m_idBorderIBuf;
+    int32_t m_nBorderSubQ;
 
-    long m_nBorderIcon_LeftTop;
-    long m_nBorderIcon_LeftBottom;
-    long m_nBorderIcon_RightTop;
-    long m_nBorderIcon_RightBottom;
-    long m_nBorderIcon_Left;
-    long m_nBorderIcon_Right;
-    long m_nBorderIcon_Top;
-    long m_nBorderIcon_Bottom;
-    long m_nBorderIcon_VLine;
-    long m_nBorderIcon_HLine;
+    int32_t m_nBorderIcon_LeftTop;
+    int32_t m_nBorderIcon_LeftBottom;
+    int32_t m_nBorderIcon_RightTop;
+    int32_t m_nBorderIcon_RightBottom;
+    int32_t m_nBorderIcon_Left;
+    int32_t m_nBorderIcon_Right;
+    int32_t m_nBorderIcon_Top;
+    int32_t m_nBorderIcon_Bottom;
+    int32_t m_nBorderIcon_VLine;
+    int32_t m_nBorderIcon_HLine;
 
     uint32_t m_dwBorderColor;
-    long m_nBorderWidth;
-    long m_nVLineWidth;
-    long m_nHLineHeight;
-    long m_nHeaderLineHeight;
+    int32_t m_nBorderWidth;
+    int32_t m_nVLineWidth;
+    int32_t m_nHLineHeight;
+    int32_t m_nHeaderLineHeight;
     bool m_bHLineIsBreakable;
     XYPOINT m_pntBorderCornerSize;
     XYPOINT m_pntSpaceSize;
 
-    long m_nRowQuantity;
-    long m_nColQuantity;
-    std::vector<long> m_anRowsHeights;
-    std::vector<long> m_anColsWidth;
+    int32_t m_nRowQuantity;
+    int32_t m_nColQuantity;
+    std::vector<int32_t> m_anRowsHeights;
+    std::vector<int32_t> m_anColsWidth;
 
     struct EditModeDescribe
     {
         bool bAllEditable;
         bool bColsEditable;
-        long nEditableIndex;
+        int32_t nEditableIndex;
     };
 
     EditModeDescribe m_EditData;
 
-    long m_nTopIndex;
-    long m_nSelectIndex;
+    int32_t m_nTopIndex;
+    int32_t m_nSelectIndex;
 
-    long m_nLineQuantity;
+    int32_t m_nLineQuantity;
 
     std::string m_sScrollerName;
 };

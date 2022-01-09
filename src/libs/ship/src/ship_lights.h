@@ -100,13 +100,13 @@ class ShipLights : public IShipLights
     std::vector<ShipLight> aLights;
     std::vector<SelectedLight> aSelectedLights;
     std::vector<LightType> aLightTypes;
-    long iMinLight, iMaxLight;
+    int32_t iMinLight, iMaxLight;
     uint32_t dwMaxD3DLights;
     bool bLoadLights;
     bool bReflection;
     float fSunRoadFlareSize;
 
-    long iCoronaTex, iFlareSunRoadTex;
+    int32_t iCoronaTex, iFlareSunRoadTex;
     std::string sCoronaTechnique;
     uint32_t dwCoronaSubTexX, dwCoronaSubTexY;
 

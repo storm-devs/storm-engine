@@ -51,8 +51,8 @@ class Pillar
     void FillVertexBuffer(Vertex *buffer);
     void FillIndexBuffer(uint16_t *buffer);
 
-    long GetNumVerteces();
-    long GetNumTriangles();
+    int32_t GetNumVerteces();
+    int32_t GetNumTriangles();
 
     float GetHeight();
     float GetKHeight(float y);

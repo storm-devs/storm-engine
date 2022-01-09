@@ -46,5 +46,5 @@ class LocCrabs : public Entity
     //--------------------------------------------------------------------------------------------
   private:
     LocCrab crab[32];
-    long num;
+    int32_t num;
 };

@@ -14,8 +14,8 @@ class CXI_GLOWER : public CINODE
     struct GLOW_DESCR
     {
         RS_RECT rect;
-        long allTime;
-        long curTime;
+        int32_t allTime;
+        int32_t curTime;
         float angleSpeed;
         int action;
     };
@@ -28,7 +28,7 @@ class CXI_GLOWER : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -40,17 +40,17 @@ class CXI_GLOWER : public CINODE
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
 
-    long m_nQuantity;
+    int32_t m_nQuantity;
     // glow describe
     GLOW_DESCR m_glows[MAX_USED_RECTANGLE];
-    long m_texID;
+    int32_t m_texID;
 
-    long m_minGlowTime;
-    long m_maxGlowTime;
-    long m_minShowTime;
-    long m_maxShowTime;
+    int32_t m_minGlowTime;
+    int32_t m_maxGlowTime;
+    int32_t m_minShowTime;
+    int32_t m_maxShowTime;
 
-    long m_nRandomMax;
+    int32_t m_nRandomMax;
 
     float m_fAngleSpeedMin;
     float m_fAngleSpeedMax;

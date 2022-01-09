@@ -54,7 +54,7 @@ class TCarcass
     CVECTOR levelStarts[MAX_LEVELS];
     int levelsCount;
     CMatrix sceneMatrix;
-    long ivElementIndex;
+    int32_t ivElementIndex;
     bool indexesCreated;
     uint32_t time;
 

@@ -56,7 +56,7 @@ int CXI_IMGCOLLECTION::CommandExecute(int wActCode)
 
 void CXI_IMGCOLLECTION::AddImage(const char *pcPicName, uint32_t dwColor, XYRECT pos)
 {
-    // long n = m_aEditInfo;
+    // int32_t n = m_aEditInfo;
     // m_aEditInfo.Add();
     PicEditInfo info;
     info.dwColor = dwColor;
@@ -86,7 +86,7 @@ void CXI_IMGCOLLECTION::AddImage(const char *pcPicName, uint32_t dwColor, XYRECT
 void CXI_IMGCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[256];
-    long n;
+    int32_t n;
 
     // Get texture name and load that texture
     sGroupName = nullptr;
@@ -266,7 +266,7 @@ void CXI_IMGCOLLECTION::UpdateBuffers()
         FXYRECT texRect;
         XYRECT scrRect;
 
-        for (long n = 0; n < m_aEditInfo.size(); n++)
+        for (int32_t n = 0; n < m_aEditInfo.size(); n++)
         {
             pPictureService->GetTexturePos(sGroupName, m_aEditInfo[n].sName.c_str(), texRect);
 
@@ -287,7 +287,7 @@ void CXI_IMGCOLLECTION::UpdateBuffers()
         m_rs->UnLockIndexBuffer(iBuf);
 }
 
-bool CXI_IMGCOLLECTION::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_IMGCOLLECTION::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -295,8 +295,8 @@ bool CXI_IMGCOLLECTION::IsClick(int buttonID, long xPos, long yPos)
 void CXI_IMGCOLLECTION::ChangePosition(XYRECT &rNewPos)
 {
     // if (m_aSections.size () == 0) return; // empty collection - created from script
-    long n = 0;
-    long q = m_aEditInfo.size();
+    int32_t n = 0;
+    int32_t q = m_aEditInfo.size();
 
     if (m_nCurSection >= 0 && m_nCurSection < m_aSections.size())
     {
@@ -313,7 +313,7 @@ void CXI_IMGCOLLECTION::ChangePosition(XYRECT &rNewPos)
     m_xyCommonOffset.x += rOffset.left;
     m_xyCommonOffset.y += rOffset.top;
 
-    // for( long n=m_aSections[m_nCurSection].nStartNum; n<q; n++ )
+    // for( int32_t n=m_aSections[m_nCurSection].nStartNum; n<q; n++ )
     for (; n < q; n++)
     {
         m_aEditInfo[n].nLeft += rOffset.left;
@@ -341,7 +341,7 @@ void CXI_IMGCOLLECTION::SaveParametersToIni()
     sprintf_s(pcWriteParam, sizeof(pcWriteParam), "%d,%d", m_xyCommonOffset.x, m_xyCommonOffset.y);
     pIni->AddString(m_nodeName, "offset", pcWriteParam);
 
-    long n;
+    int32_t n;
     for (n = 0; n < m_aEditInfo.size(); n++)
         if (m_aEditInfo[n].bNative)
             break;
@@ -355,7 +355,7 @@ void CXI_IMGCOLLECTION::SaveParametersToIni()
         {
             if (!m_aEditInfo[n].bNative)
                 continue;
-            for (long nGrp = 0; nGrp < m_aSections.size(); nGrp++)
+            for (int32_t nGrp = 0; nGrp < m_aSections.size(); nGrp++)
             {
                 if (n == m_aSections[nGrp].nStartNum)
                 {
@@ -377,7 +377,7 @@ void CXI_IMGCOLLECTION::SaveParametersToIni()
     }
 }
 
-uint32_t CXI_IMGCOLLECTION::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_IMGCOLLECTION::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -462,7 +462,7 @@ bool CXI_IMGCOLLECTION::GetInternalNameList(std::vector<std::string> &aStr)
     // aStr.Add();
     // aStr[0] = "All";
     aStr.push_back("All");
-    for (long n = 0; n < m_aSections.size(); n++)
+    for (int32_t n = 0; n < m_aSections.size(); n++)
         aStr.push_back(m_aSections[n].sName);
     return aStr.size() > 0;
 }
@@ -470,7 +470,7 @@ bool CXI_IMGCOLLECTION::GetInternalNameList(std::vector<std::string> &aStr)
 void CXI_IMGCOLLECTION::SetInternalName(std::string &sName)
 {
     m_nCurSection = -1;
-    for (long n = 0; n < m_aSections.size(); n++)
+    for (int32_t n = 0; n < m_aSections.size(); n++)
     {
         if (m_aSections[n].sName == sName)
         {

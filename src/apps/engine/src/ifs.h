@@ -13,8 +13,8 @@ class KEY_NODE
     char *key_name;
     char *key_val;
 
-    long name_size;
-    long val_size;
+    int32_t name_size;
+    int32_t val_size;
 
     KEY_NODE *l_PTR;
     KEY_NODE *r_PTR;
@@ -93,7 +93,7 @@ class IFS : public INIFILE
     SECTION *FindSection(const char *section_name);
     SECTION *FindSection(const char *section_name, SECTION *snode);
 
-    void Format(char *file_data, long file_size);
+    void Format(char *file_data, int32_t file_size);
     bool VoidSym(char symbol);
 
     VFILE_SERVICE *fs;
@@ -115,9 +115,9 @@ class IFS : public INIFILE
                                         size_t buffer_size, const char *def_string))
     IFS_NOT_IMPLEMENTED(bool ReadStringNext(const char *section_name, const char *key_name, char *buffer,
                                             size_t buffer_size))
-    IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name))
-    IFS_NOT_IMPLEMENTED(long GetLong(const char *section_name, const char *key_name, long def_val))
-    IFS_NOT_IMPLEMENTED(bool GetLongNext(const char *section_name, const char *key_name, long *val))
+    IFS_NOT_IMPLEMENTED(int32_t GetInt(const char *section_name, const char *key_name))
+    IFS_NOT_IMPLEMENTED(int32_t GetInt(const char *section_name, const char *key_name, int32_t def_val))
+    IFS_NOT_IMPLEMENTED(bool GetIntNext(const char *section_name, const char *key_name, int32_t *val))
     IFS_NOT_IMPLEMENTED(double GetDouble(const char *section_name, const char *key_name))
     IFS_NOT_IMPLEMENTED(double GetDouble(const char *section_name, const char *key_name, double def_val))
     IFS_NOT_IMPLEMENTED(bool GetDoubleNext(const char *section_name, const char *key_name, double *val))
@@ -142,7 +142,7 @@ class IFS : public INIFILE
     };
     void IncReference();
     void DecReference();
-    long GetReference();
+    int32_t GetReference();
 
     SECTION *CreateSection(const char *section_name);
     void DeleteSection(const char *section_name) override;
@@ -158,9 +158,9 @@ class IFS : public INIFILE
     bool ReadStringNext(SEARCH_DATA *sd, const char *section_name, const char *key_name, char *buffer,
                         uint32_t buffer_size);
 
-    long GetLong(SEARCH_DATA *sd, const char *section_name, const char *key_name);
-    long GetLong(SEARCH_DATA *sd, const char *section_name, const char *key_name, long def_val);
-    bool GetLongNext(SEARCH_DATA *sd, const char *section_name, const char *key_name, long *val);
+    int32_t GetInt(SEARCH_DATA *sd, const char *section_name, const char *key_name);
+    int32_t GetInt(SEARCH_DATA *sd, const char *section_name, const char *key_name, int32_t def_val);
+    bool GetIntNext(SEARCH_DATA *sd, const char *section_name, const char *key_name, int32_t *val);
 
     double GetDouble(SEARCH_DATA *sd, const char *section_name, const char *key_name);
     double GetDouble(SEARCH_DATA *sd, const char *section_name, const char *key_name, double def_val);
@@ -172,12 +172,12 @@ class IFS : public INIFILE
 
     void AddString(const char *section_name, const char *key_name, const char *string) override;
     void WriteString(const char *section_name, const char *key_name, const char *string) override;
-    void WriteLong(const char *section_name, const char *key_name, long value) override;
+    void WriteLong(const char *section_name, const char *key_name, int32_t value) override;
     void WriteDouble(const char *section_name, const char *key_name, double value) override;
     void WriteFloat(const char *section_name, const char *key_name, float value);
 
-    bool GetSectionName(char *section_name_buffer, long buffer_size) override;
-    bool GetSectionNameNext(char *section_name_buffer, long buffer_size) override;
+    bool GetSectionName(char *section_name_buffer, int32_t buffer_size) override;
+    bool GetSectionNameNext(char *section_name_buffer, int32_t buffer_size) override;
     void Flush() override;
     bool Reload() override;
     bool TestSection(const char *section_name) override;

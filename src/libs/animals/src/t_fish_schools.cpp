@@ -31,7 +31,7 @@ void TFishSchools::LoadSettings()
     if (!ini)
         return;
 
-    fishSchoolsCount = ini->GetLong(ANIMALS_FISHSCHOOLS_SECTION, "count", FISHSCHOOL_COUNT);
+    fishSchoolsCount = ini->GetInt(ANIMALS_FISHSCHOOLS_SECTION, "count", FISHSCHOOL_COUNT);
     maxDistance = ini->GetFloat(ANIMALS_FISHSCHOOLS_SECTION, "distance", FISHSCHOOL_DISTANCE);
 }
 
@@ -69,7 +69,7 @@ void TFishSchools::Init()
 }
 
 //--------------------------------------------------------------------
-uint64_t TFishSchools::ProcessMessage(long _code, MESSAGE &message)
+uint64_t TFishSchools::ProcessMessage(int32_t _code, MESSAGE &message)
 {
     const uint32_t outValue = 0;
 

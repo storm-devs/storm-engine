@@ -12,8 +12,8 @@ constexpr uint32_t MakeHashValue(const char *string)
         if ('A' <= v && v <= 'Z')
             v += 'a' - 'A';
 
-        hval = (hval << 4) + static_cast<unsigned long>(v);
-        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
+        hval = (hval << 4) + static_cast<uint32_t>(v);
+        const uint32_t g = hval & (static_cast<uint32_t>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
@@ -30,8 +30,8 @@ class VMA
 {
   protected:
     VMA *pNext;
-    long nHash;
-    long nReference;
+    int32_t nHash;
+    int32_t nReference;
 
   public:
     VMA() : pNext(nullptr)
@@ -48,17 +48,17 @@ class VMA
 
     virtual ~VMA() = default;
 
-    long Build_Version()
+    int32_t Build_Version()
     {
         return -1;
     }
 
-    void SetHash(long _hash)
+    void SetHash(int32_t _hash)
     {
         nHash = _hash;
     }
 
-    long GetHash() const
+    int32_t GetHash() const
     {
         return nHash;
     }
@@ -88,7 +88,7 @@ class VMA
         nReference--;
     }
 
-    virtual long GetReference()
+    virtual int32_t GetReference()
     {
         return nReference;
     }

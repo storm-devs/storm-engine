@@ -22,7 +22,7 @@ CharacterAnimationKipper::CharacterAnimationKipper()
     asr = nullptr;
     aniMan = nullptr;
     aniWoman = nullptr;
-    for (long i = 0; i < sizeof(lockTextures) / sizeof(long); i++)
+    for (int32_t i = 0; i < sizeof(lockTextures) / sizeof(int32_t); i++)
         lockTextures[i] = -1;
     numLTextures = 0;
     rs = nullptr;
@@ -34,7 +34,7 @@ CharacterAnimationKipper::~CharacterAnimationKipper()
     delete aniWoman;
     if (rs)
     {
-        for (long i = 0; i < sizeof(lockTextures) / sizeof(long); i++)
+        for (int32_t i = 0; i < sizeof(lockTextures) / sizeof(int32_t); i++)
             if (lockTextures[i] >= 0)
                 rs->TextureRelease(lockTextures[i]);
     }
@@ -68,7 +68,7 @@ bool CharacterAnimationKipper::Init()
 
 void CharacterAnimationKipper::LockTexture(const char *texture)
 {
-    if (numLTextures >= sizeof(lockTextures) / sizeof(long))
+    if (numLTextures >= sizeof(lockTextures) / sizeof(int32_t))
         return;
     lockTextures[numLTextures++] = rs->TextureCreate(texture);
 }

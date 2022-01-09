@@ -13,7 +13,7 @@ class CXI_SLIDEPICTURE : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -27,7 +27,7 @@ class CXI_SLIDEPICTURE : public CINODE
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void Update(uint32_t Delta_Time);
-    long m_idTex;
+    int32_t m_idTex;
     XI_ONETEX_VERTEX m_v[4];
     FXYRECT m_texRect;
 
@@ -36,8 +36,8 @@ class CXI_SLIDEPICTURE : public CINODE
     float curRotate;
     float curAngle;
 
-    long nLifeTime;
-    long nCurSlide;
+    int32_t nLifeTime;
+    int32_t nCurSlide;
 
     struct SLIDE_SPEED
     {
@@ -46,7 +46,7 @@ class CXI_SLIDEPICTURE : public CINODE
         float yspeed;
     } * pSlideSpeedList;
 
-    long nSlideListSize;
+    int32_t nSlideListSize;
 
     char *strTechniqueName;
 };

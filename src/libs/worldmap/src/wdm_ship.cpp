@@ -37,7 +37,7 @@ WdmShip::WdmShip()
     rspeed = 0.0f;
     turnspd = 0.0f;
     slope = 0.0f;
-    for (long i = 1; i < sizeof(lines) / sizeof(Line); i++)
+    for (int32_t i = 1; i < sizeof(lines) / sizeof(Line); i++)
     {
         lines[i].x = 0.0f;
         lines[i].z = 0.0f;
@@ -78,7 +78,7 @@ void WdmShip::Teleport(float x, float z, float ay)
 {
     mtx.BuildMatrix(0.0f, ay, 0.0f, x, 0.0f, z);
     this->ay = ay;
-    for (long i = 0; i < WDM_SHIP_WMSZ; i++)
+    for (int32_t i = 0; i < WDM_SHIP_WMSZ; i++)
     {
         lines[i].x = x;
         lines[i].z = z;
@@ -267,7 +267,7 @@ void WdmShip::LRender(VDX9RENDER *rs)
         vrt[0].color = color;
         vrt[0].tu = 0.5f;
         vrt[0].tv = 0.0f;
-        for (long i = 0; i < WDM_SHIP_WMSZ; i++)
+        for (int32_t i = 0; i < WDM_SHIP_WMSZ; i++)
         {
             float k = (WDM_SHIP_SPEED / 5.0f) * powf((i + 1) * 1.0f / WDM_SHIP_WMSZ, 0.4f) * lines[i].size;
             const float dx = -cosf(lines[i].ay) * k;
@@ -337,7 +337,7 @@ void WdmShip::UpdateWaterMark(float dltTime)
     if (ks > 10.0f)
         ks = 10.0f;
     ks *= modelW05 * 1.33f;
-    for (long i = 1; i < WDM_SHIP_WMSZ; i++)
+    for (int32_t i = 1; i < WDM_SHIP_WMSZ; i++)
     {
         lines[i].x += (lines[i - 1].x - lines[i].x) * kp;
         lines[i].z += (lines[i - 1].z - lines[i].z) * kp;
@@ -365,7 +365,7 @@ bool WdmShip::CheckPosition(float x, float z, float objRadius)
     if (z + objRadius > 0.5f * wdmObjects->worldSizeZ)
         return false;
     // The ships
-    long i;
+    int32_t i;
     for (i = 0; i < wdmObjects->ships.size(); i++)
     {
         if (!wdmObjects->ships[i]->isLive)

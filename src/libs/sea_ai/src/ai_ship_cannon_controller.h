@@ -89,7 +89,7 @@ class AIShipCannonController
     float GetFireDistance(bool bMaxFireDistance);
 
     // bort section
-    float GetBortHeightAngle(long iBortIndex);
+    float GetBortHeightAngle(int32_t iBortIndex);
     bool isCanFireBort(uint32_t dwBort, const CVECTOR &vFirePos, float *pfZapasDistance = nullptr);
     uint32_t GetFirstFireBort(const CVECTOR &vFirePos, float *pfZapasDistance = nullptr);
     bool isHaveEnoughtBallsForBort(uint32_t dwBortIdx);

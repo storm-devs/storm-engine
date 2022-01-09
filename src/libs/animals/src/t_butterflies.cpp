@@ -26,7 +26,7 @@ void TButterflies::LoadSettings()
     if (!ini)
         return;
 
-    butterfliesCount = ini->GetLong(ANIMALS_BUTTERFLIES_SECTION, "count", BUTTERFLY_COUNT);
+    butterfliesCount = ini->GetInt(ANIMALS_BUTTERFLIES_SECTION, "count", BUTTERFLY_COUNT);
     maxDistance = ini->GetFloat(ANIMALS_BUTTERFLIES_SECTION, "distance", BUTTERFLY_DISTANCE);
 
     // DEBUG!
@@ -57,7 +57,7 @@ void TButterflies::Init()
 }
 
 //--------------------------------------------------------------------
-uint64_t TButterflies::ProcessMessage(long _code, MESSAGE &message)
+uint64_t TButterflies::ProcessMessage(int32_t _code, MESSAGE &message)
 {
     const uint32_t outValue = 0;
     switch (_code)

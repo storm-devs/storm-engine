@@ -26,8 +26,8 @@ class INIFILE_T : public INIFILE
     void AddString(const char *section_name, const char *key_name, const char *string) override;
     // write string to file, overwrite data if exist, throw EXS exception object if failed
     void WriteString(const char *section_name, const char *key_name, const char *string) override;
-    // write long value of key in pointed section if section and key exist, throw EXS object otherwise
-    void WriteLong(const char *section_name, const char *key_name, long value) override;
+    // write int32_t value of key in pointed section if section and key exist, throw EXS object otherwise
+    void WriteLong(const char *section_name, const char *key_name, int32_t value) override;
     // write double value of key in pointed section if section and key exist, throw EXS object otherwise
     void WriteDouble(const char *section_name, const char *key_name, double value) override;
 
@@ -40,17 +40,17 @@ class INIFILE_T : public INIFILE
     // fill buffer with key value if section and key exist, otherwise return false
     bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, size_t buffer_size) override;
 
-    // return long value of key in pointed section if section and key exist, throw EXS object otherwise
-    long GetLong(const char *section_name, const char *key_name) override;
-    // return long value of key in pointed section if section and key exist, if not - return def_value
-    long GetLong(const char *section_name, const char *key_name, long def_val) override;
+    // return int32_t value of key in pointed section if section and key exist, throw EXS object otherwise
+    int32_t GetInt(const char *section_name, const char *key_name) override;
+    // return int32_t value of key in pointed section if section and key exist, if not - return def_value
+    int32_t GetInt(const char *section_name, const char *key_name, int32_t def_val) override;
 
     // return double value of key in pointed section if section and key exist, throw EXS object otherwise
     double GetDouble(const char *section_name, const char *key_name) override;
     // return double value of key in pointed section if section and key exist, if not - return def_value
     double GetDouble(const char *section_name, const char *key_name, double def_val) override;
 
-    bool GetLongNext(const char *section_name, const char *key_name, long *val) override;
+    bool GetIntNext(const char *section_name, const char *key_name, int32_t *val) override;
     bool GetDoubleNext(const char *section_name, const char *key_name, double *val) override;
 
     float GetFloat(const char *section_name, const char *key_name) override;
@@ -65,9 +65,9 @@ class INIFILE_T : public INIFILE
 
     bool TestKey(const char *section_name, const char *key_name, const char *key_value) override;
 
-    bool GetSectionName(char *section_name_buffer, long buffer_size) override;
+    bool GetSectionName(char *section_name_buffer, int32_t buffer_size) override;
 
-    bool GetSectionNameNext(char *section_name_buffer, long buffer_size) override;
+    bool GetSectionNameNext(char *section_name_buffer, int32_t buffer_size) override;
 
     void Flush() override;
 

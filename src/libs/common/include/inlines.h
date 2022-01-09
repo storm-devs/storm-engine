@@ -2,13 +2,13 @@
 
 #include "dx9render.h"
 
-inline unsigned long hash_string(const char *str)
+inline uint32_t hash_string(const char *str)
 {
-    unsigned long hval = 0;
+    uint32_t hval = 0;
     while (*str != '\0')
     {
-        hval = (hval << 4) + static_cast<unsigned long>(*str++);
-        const auto g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
+        hval = (hval << 4) + static_cast<uint32_t>(*str++);
+        const auto g = hval & (static_cast<uint32_t>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
@@ -28,15 +28,15 @@ inline void RotateAroundY(float &x, float &z, float cos, float sin)
 
 inline float NormalizeAngle(float fAngle)
 {
-    long times;
+    int32_t times;
     if (fAngle >= 2 * PI)
     {
-        times = static_cast<long>(fAngle / PIm2);
+        times = static_cast<int32_t>(fAngle / PIm2);
         return fAngle - times * PIm2;
     }
     if (fAngle < 0)
     {
-        times = static_cast<long>(-fAngle / PIm2);
+        times = static_cast<int32_t>(-fAngle / PIm2);
         return fAngle + PIm2 * (times + 1);
     }
     return fAngle;

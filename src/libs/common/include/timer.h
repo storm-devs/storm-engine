@@ -88,7 +88,7 @@ class TIMER
         return Delta_Time;
     }
 
-    void SetDelta(const long DeltaTime)
+    void SetDelta(const int32_t DeltaTime)
     {
         if (DeltaTime <= 0)
         {

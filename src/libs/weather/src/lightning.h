@@ -36,10 +36,10 @@ class LIGHTNING : public Entity
     std::vector<lightning_t> aLightnings;
 
     uint32_t dwSubTexX, dwSubTexY;
-    long iLightningTexture, iFlashTexture;
+    int32_t iLightningTexture, iFlashTexture;
 
     float fKDist;
-    long iFlickerTime;
+    int32_t iFlickerTime;
 
     WEATHER_BASE *pWeather;
     VDX9RENDER *pRS;

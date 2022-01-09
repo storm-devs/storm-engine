@@ -27,7 +27,7 @@ LocationEffects::LocationEffects()
 {
     // Splash
     chrSplashRefCounter = 0;
-    for (long i = 0; i < LFX_SPLASHES_NUM; i++)
+    for (int32_t i = 0; i < LFX_SPLASHES_NUM; i++)
         chrSplash[i].time = -1.0f;
     splashesTxt = -1;
     // Flies
@@ -165,8 +165,8 @@ uint64_t LocationEffects::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-inline void LocationEffects::DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx,
-                                           long numU)
+inline void LocationEffects::DrawParticles(void *prts, int32_t num, int32_t size, int32_t texture, const char *tech, bool isEx,
+                                           int32_t numU)
 {
     if (num <= 0)
         return;
@@ -175,8 +175,8 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
     rs->SetTransform(D3DTS_VIEW, CMatrix());
     rs->SetTransform(D3DTS_WORLD, CMatrix());
     rs->TextureSet(0, texture);
-    long n = 0;
-    for (long i = 0; i < num; i++)
+    int32_t n = 0;
+    for (int32_t i = 0; i < num; i++)
     {
         auto *parts = static_cast<Particle *>(prts);
         prts = static_cast<char *>(prts) + size;
@@ -184,7 +184,7 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
         const auto size = parts->size * 0.5f;
         const auto sn = sinf(parts->angle);
         const auto cs = cosf(parts->angle);
-        auto color = (static_cast<long>(parts->alpha) << 24);
+        auto color = (static_cast<int32_t>(parts->alpha) << 24);
         if (!isEx)
             color |= 0x00ffffff;
         else
@@ -194,7 +194,7 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
         if (isEx && numU)
         {
             u2 = 1.0f / static_cast<float>(numU);
-            u1 = static_cast<long>(static_cast<ParticleEx *>(parts)->frame) * u2;
+            u1 = static_cast<int32_t>(static_cast<ParticleEx *>(parts)->frame) * u2;
             u2 += u1;
         }
         buffer[n * 6 + 0].pos = pos + CVECTOR(size * (-cs + sn), size * (sn + cs), 0.0f);
@@ -240,7 +240,7 @@ inline void LocationEffects::DrawParticles(void *prts, long num, long size, long
 void LocationEffects::CreateSplash(const CVECTOR &pos, float power)
 {
     // Select the freed block
-    long i;
+    int32_t i;
     for (i = 0; i < LFX_SPLASHES_NUM; i++)
         if (chrSplash[i].time < 0.0f)
             break;
@@ -276,7 +276,7 @@ void LocationEffects::ProcessedChrSplash(float dltTime)
     dltTime *= 0.9f;
     if (chrSplashRefCounter <= 0)
         return;
-    for (long i = 0; i < LFX_SPLASHES_NUM; i++)
+    for (int32_t i = 0; i < LFX_SPLASHES_NUM; i++)
     {
         auto &spl = chrSplash[i];
         // Watching life time
@@ -298,7 +298,7 @@ void LocationEffects::ProcessedChrSplash(float dltTime)
             aprt = 1.0f;
         aprt = aprt * 255.0f * 0.2f;
         // Particles
-        for (long j = 0; j < LFX_SPLASHES_P_NUM; j++)
+        for (int32_t j = 0; j < LFX_SPLASHES_P_NUM; j++)
         {
             spl.prt[j].pos += spl.prt[j].dir * dltTime;
             spl.prt[j].alpha = aprt;
@@ -333,7 +333,7 @@ void LocationEffects::AddLampFlys(CVECTOR &pos)
     numFly += flys[numFlys].num;
     fly.resize(numFly);
     // Every fly
-    for (long i = 0; i < flys[numFlys].num; i++)
+    for (int32_t i = 0; i < flys[numFlys].num; i++)
     {
         ParticleFly &f = fly[flys[numFlys].start + i];
         f.ax = rand() * 2.0f * LFX_PI / RAND_MAX;
@@ -366,7 +366,7 @@ void LocationEffects::ProcessedFlys(float dltTime)
     const float day = dltTime * 1.4f;
     const float da = dltTime * 5.6f;
     // calculate
-    for (long i = 0; i < numFlys; i++)
+    for (int32_t i = 0; i < numFlys; i++)
     {
         // Coefficient of visibility
         CVECTOR dir = cam - flys[i].pos;
@@ -382,7 +382,7 @@ void LocationEffects::ProcessedFlys(float dltTime)
             k = 1.0f;
         // Updating flies
         ParticleFly *fl = &fly[flys[i].start];
-        for (long j = 0; j < flys[i].num; j++)
+        for (int32_t j = 0; j < flys[i].num; j++)
         {
             ParticleFly &f = fl[j];
             // Angles
@@ -415,7 +415,7 @@ void LocationEffects::ProcessedFlys(float dltTime)
                 cs = 0.0f;
             if (cs > 1.0f)
                 cs = 1.0f;
-            f.color = static_cast<long>(cs * 255.0f);
+            f.color = static_cast<int32_t>(cs * 255.0f);
             f.color |= (f.color << 16) | (f.color << 8);
             // Frame
             f.frame += dltTime * f.k * 25.0f;
@@ -463,9 +463,9 @@ void LocationEffects::SGRelease()
 void LocationEffects::SGEnvPrt(const CVECTOR &pos, const CVECTOR &ndir)
 {
     SGInited();
-    const long max = sizeof(flinders) / sizeof(flinders[0]);
-    const long num = 4 + (rand() & 3);
-    for (long i = 0; i < num && numFlinders < max; i++)
+    const int32_t max = sizeof(flinders) / sizeof(flinders[0]);
+    const int32_t num = 4 + (rand() & 3);
+    for (int32_t i = 0; i < num && numFlinders < max; i++)
     {
         flinders[numFlinders].pos = pos;
         flinders[numFlinders].spd = ndir;
@@ -497,9 +497,9 @@ void LocationEffects::SGEnvPrt(const CVECTOR &pos, const CVECTOR &ndir)
 void LocationEffects::SGBldPrt(const CVECTOR &pos, const CVECTOR &ndir)
 {
     SGInited();
-    const long max = sizeof(blood) / sizeof(blood[0]);
-    const long num = 16 + (rand() & 7);
-    for (long i = 0; i < num && numBlood < max; i++)
+    const int32_t max = sizeof(blood) / sizeof(blood[0]);
+    const int32_t num = 16 + (rand() & 7);
+    for (int32_t i = 0; i < num && numBlood < max; i++)
     {
         blood[numBlood].pos = pos;
         blood[numBlood].spd = ndir;
@@ -531,9 +531,9 @@ void LocationEffects::SGBldPrt(const CVECTOR &pos, const CVECTOR &ndir)
 void LocationEffects::SGFirePrt(const CVECTOR &pos, const CVECTOR &ndir)
 {
     SGInited();
-    const long max = sizeof(smoke) / sizeof(smoke[0]);
-    const long num = 5 + (rand() & 3);
-    for (long i = 0; i < num && numSmoke < max; i++)
+    const int32_t max = sizeof(smoke) / sizeof(smoke[0]);
+    const int32_t num = 5 + (rand() & 3);
+    for (int32_t i = 0; i < num && numSmoke < max; i++)
     {
         smoke[numSmoke].pos = pos;
         smoke[numSmoke].spd = ndir;
@@ -592,7 +592,7 @@ void LocationEffects::ProcessedShotgun(float dltTime)
     {
         winDir *= 0.05f;
     }
-    long i, j;
+    int32_t i, j;
     for (i = 0, j = 0; i < numSmoke; i++)
     {
         smoke[i].pos += (smoke[i].spd + winDir) * dltTime;

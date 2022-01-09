@@ -41,7 +41,7 @@ class ActionInfo final
     // Construction, destruction
     // --------------------------------------------------------------------------------------------
   public:
-    ActionInfo(const char *aname, long startframe, long endframe);
+    ActionInfo(const char *aname, int32_t startframe, int32_t endframe);
     // Set playback speed ratio
     void SetRate(float rate);
     // Set animation type
@@ -60,14 +60,14 @@ class ActionInfo final
     // Get action name
     const char *GetName();
     // Get the number of events
-    long GetNumEvents();
+    int32_t GetNumEvents();
     // check if the event generation condition is satisfied,
     // direction == true for normal direction
-    bool CheckEvent(long index, float time, bool direction);
+    bool CheckEvent(int32_t index, float time, bool direction);
     // Get message name
-    const char *EventName(long index);
+    const char *EventName(int32_t index);
     // Get duration in frames
-    long GetFrames();
+    int32_t GetFrames();
     // Access to user data
     std::unordered_map<std::string, std::string> &GetUserData();
 
@@ -77,8 +77,8 @@ class ActionInfo final
   private:
     char name[64]; // Action name
 
-    long startFrame; // Starting position in the whole animation
-    long endFrame;   // End position in the whole animation
+    int32_t startFrame; // Starting position in the whole animation
+    int32_t endFrame;   // End position in the whole animation
 
     float kRate;        // Playback speed ratio
     AnimationType type; // Animation type
@@ -87,7 +87,7 @@ class ActionInfo final
     uint32_t bonesMask[8]; // Bones used in animation
 
     Event event[ANI_MAX_EVENTS]; // Events
-    long numEvents;              // Number of events
+    int32_t numEvents;              // Number of events
 
     std::unordered_map<std::string, std::string> userData; // User data
 };
@@ -129,13 +129,13 @@ inline const char *ActionInfo::GetName()
 }
 
 // Get the number of events
-inline long ActionInfo::GetNumEvents()
+inline int32_t ActionInfo::GetNumEvents()
 {
     return numEvents;
 }
 
 // Get duration in frames
-inline long ActionInfo::GetFrames()
+inline int32_t ActionInfo::GetFrames()
 {
     return endFrame - startFrame;
 }

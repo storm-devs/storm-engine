@@ -28,7 +28,7 @@ class LocRat : public LocLife
     void IsStartMove(Animation *ani) override;
     void IsStopMove(Animation *ani) override;
 
-    void Event(Animation *animation, long index, long eventID, AnimationEvent event) override;
+    void Event(Animation *animation, int32_t index, int32_t eventID, AnimationEvent event) override;
 
     void StartNewAction(Animation *ani);
 

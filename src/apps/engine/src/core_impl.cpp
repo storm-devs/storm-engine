@@ -135,7 +135,7 @@ bool CoreImpl::Run()
 
     auto *pVCTime = static_cast<VDATA *>(core_internal.GetScriptVariable("iRealDeltaTime"));
     if (pVCTime)
-        pVCTime->Set(static_cast<long>(GetRDeltaTime()));
+        pVCTime->Set(static_cast<int32_t>(GetRDeltaTime()));
 
     SYSTEMTIME st;
     GetLocalTime(&st);
@@ -145,11 +145,11 @@ bool CoreImpl::Run()
     auto *pVDay = static_cast<VDATA *>(core_internal.GetScriptVariable("iRealDay"));
 
     if (pVYear)
-        pVYear->Set(static_cast<long>(st.wYear));
+        pVYear->Set(static_cast<int32_t>(st.wYear));
     if (pVMonth)
-        pVMonth->Set(static_cast<long>(st.wMonth));
+        pVMonth->Set(static_cast<int32_t>(st.wMonth));
     if (pVDay)
-        pVDay->Set(static_cast<long>(st.wDay));
+        pVDay->Set(static_cast<int32_t>(st.wDay));
 
     if (Controls && Controls->GetDebugAsyncKeyState('R') < 0)
         Timer.Delta_Time *= 10;
@@ -208,7 +208,7 @@ void CoreImpl::ProcessControls()
     if (!Controls)
         return;
 
-    for (long n = 0; n < Controls->GetControlsNum(); n++)
+    for (int32_t n = 0; n < Controls->GetControlsNum(); n++)
     {
         Controls->GetControlState(n, cs);
         if (cs.state == CST_ACTIVATED)
@@ -280,7 +280,7 @@ void CoreImpl::ProcessEngineIniFile()
         // Script version test
         if (targetVersion_ >= storm::ENGINE_VERSION::LATEST)
         {
-            long iScriptVersion = 0xFFFFFFFF;
+            int32_t iScriptVersion = 0xFFFFFFFF;
             auto *pVScriptVersion = static_cast<VDATA *>(core_internal.GetScriptVariable("iScriptVersion"));
             if (pVScriptVersion)
                 pVScriptVersion->Get(iScriptVersion);
@@ -374,7 +374,7 @@ uint32_t CoreImpl::PostEvent(const char *Event_name, uint32_t post_time, const c
             {
                 //-------------------------------------
             case 'l':
-                long v;
+                int32_t v;
                 v = message.Long();
                 pMS->Set(v);
                 break;
@@ -441,7 +441,7 @@ VDATA *CoreImpl::Event(const char *Event_name, const char *Format, ...)
 
 void *CoreImpl::MakeClass(const char *class_name)
 {
-    const long hash = MakeHashValue(class_name);
+    const int32_t hash = MakeHashValue(class_name);
     for (auto *const c : __STORM_CLASSES_REGISTRY)
         if (c->GetHash() == hash && _stricmp(class_name, c->GetName()) == 0)
             return c->CreateClass();
@@ -460,7 +460,7 @@ void CoreImpl::ReleaseServices()
 
 VMA *CoreImpl::FindVMA(const char *class_name)
 {
-    const long hash = MakeHashValue(class_name);
+    const int32_t hash = MakeHashValue(class_name);
     for (auto *const c : __STORM_CLASSES_REGISTRY)
         if (c->GetHash() == hash && _stricmp(class_name, c->GetName()) == 0)
             return c;
@@ -468,7 +468,7 @@ VMA *CoreImpl::FindVMA(const char *class_name)
     return nullptr;
 }
 
-VMA *CoreImpl::FindVMA(long hash)
+VMA *CoreImpl::FindVMA(int32_t hash)
 {
     for (auto *const c : __STORM_CLASSES_REGISTRY)
         if (c->GetHash() == hash)
@@ -655,7 +655,7 @@ uint32_t CoreImpl::EngineFps()
     return Timer.fps;
 }
 
-void CoreImpl::SetDeltaTime(long delta_time)
+void CoreImpl::SetDeltaTime(int32_t delta_time)
 {
     Timer.SetDelta(delta_time);
 }
@@ -790,8 +790,8 @@ uint32_t CoreImpl::MakeHashValue(const char *string)
         if ('A' <= v && v <= 'Z')
             v += 'a' - 'A';
 
-        hval = (hval << 4) + static_cast<unsigned long>(v);
-        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
+        hval = (hval << 4) + static_cast<uint32_t>(v);
+        const uint32_t g = hval & (static_cast<uint32_t>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);
@@ -870,12 +870,12 @@ void CoreImpl::DumpEntitiesInfo()
     Sleep(200);*/
 }
 
-void *CoreImpl::GetSaveData(const char *file_name, long &data_size)
+void *CoreImpl::GetSaveData(const char *file_name, int32_t &data_size)
 {
     return Compiler->GetSaveData(file_name, data_size);
 }
 
-bool CoreImpl::SetSaveData(const char *file_name, void *data_ptr, long data_size)
+bool CoreImpl::SetSaveData(const char *file_name, void *data_ptr, int32_t data_size)
 {
     return Compiler->SetSaveData(file_name, data_ptr, data_size);
 }

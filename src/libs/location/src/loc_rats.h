@@ -53,5 +53,5 @@ class LocRats : public Entity
     //--------------------------------------------------------------------------------------------
   private:
     LocRat rat[32];
-    long num;
+    int32_t num;
 };

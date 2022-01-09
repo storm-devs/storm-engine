@@ -19,21 +19,21 @@ inline char *GetLastName(ATTRIBUTES *pACharacter)
     return pName;
 }
 
-inline long GetIndex(ATTRIBUTES *pACharacter)
+inline int32_t GetIndex(ATTRIBUTES *pACharacter)
 {
     Assert(pACharacter);
     Assert(pACharacter->FindAClass(pACharacter, "index"));
     return pACharacter->GetAttributeAsDword("index");
 }
 
-inline long GetNation(ATTRIBUTES *pACharacter)
+inline int32_t GetNation(ATTRIBUTES *pACharacter)
 {
     Assert(pACharacter);
     Assert(pACharacter->FindAClass(pACharacter, "nation"));
     return pACharacter->GetAttributeAsDword("nation");
 }
 
-inline long GetRank(ATTRIBUTES *pACharacter)
+inline int32_t GetRank(ATTRIBUTES *pACharacter)
 {
     Assert(pACharacter);
     Assert(pACharacter->FindAClass(pACharacter, "rank"));

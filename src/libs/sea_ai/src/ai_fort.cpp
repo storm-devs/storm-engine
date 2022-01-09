@@ -141,7 +141,7 @@ void AIFort::Realize(uint32_t Delta_Time)
       CMatrix mI; mI.SetIdentity();
       AIHelper::pRS->SetTransform(D3DTS_WORLD, mI);
 
-      long iNumCannons = 0;
+      int32_t iNumCannons = 0;
       for (uint32_t k=0; k<aForts.size(); k++)
       {
         AI_FORT    * pF = aForts[k];
@@ -230,7 +230,7 @@ bool AIFort::AddFort(ATTRIBUTES *pIslandAP, ATTRIBUTES *pFortLabelAP, ATTRIBUTES
     return true;
 }
 
-void AIFort::AddFortHit(long iCharacterIndex, CVECTOR &vHitPos)
+void AIFort::AddFortHit(int32_t iCharacterIndex, CVECTOR &vHitPos)
 {
     uint32_t i, j, iMax;
     for (i = 0; i < aForts.size(); i++)
@@ -265,7 +265,7 @@ void AIFort::AddFortHit(long iCharacterIndex, CVECTOR &vHitPos)
 
 AIFort::AI_FORT *AIFort::FindFort(entid_t eidModel)
 {
-    for (long i = 0; i < aForts.size(); i++)
+    for (int32_t i = 0; i < aForts.size(); i++)
     {
         if (EntityManager::GetEntityPointer(aForts[i]->GetModelEID()) == EntityManager::GetEntityPointer(eidModel))
             return aForts[i];
@@ -276,7 +276,7 @@ AIFort::AI_FORT *AIFort::FindFort(entid_t eidModel)
 uint64_t AIFort::ProcessMessage(MESSAGE &message)
 {
     CVECTOR vHit;
-    long iCharacterIndex;
+    int32_t iCharacterIndex;
     entid_t eidFortModel, eidBlot;
     ATTRIBUTES *pFortAPLabel, *pCharacter, *pIslandAP;
     AI_FORT *pFort = nullptr;
@@ -346,7 +346,7 @@ bool AIFort::ScanFortForCannons(AI_FORT *pFort, char *pModelsDir, char *pLocator
     while (pNode = pModel->GetNode(dwIdx))
     {
         pNode->geo->GetInfo(info);
-        for (long i = 0; i < info.nlabels; i++)
+        for (int32_t i = 0; i < info.nlabels; i++)
         {
             pNode->geo->GetLabel(i, label);
             AICannon *pCannon = nullptr;
@@ -431,7 +431,7 @@ float AIFort::Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
     return fBestRes;
 }
 
-float AIFort::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
+float AIFort::Cannon_Trace(int32_t iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
 {
     float fBestRes = 2.0;
     for (uint32_t i = 0; i < GetNumForts(); i++)
@@ -553,6 +553,6 @@ void AIFort::AI_FORT::Load(CSaveLoad *pSL, entid_t eid)
 
 void AIFort::Fire(const CVECTOR &vPos)
 {
-    for (long i = 0; i < aForts.size(); i++)
+    for (int32_t i = 0; i < aForts.size(); i++)
         pShipsLights->AddDynamicLights(&aForts[i]->tmpObject, vPos);
 }

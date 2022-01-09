@@ -12,6 +12,8 @@ geometry file format
 
 #pragma pack(push, 1)
 
+#include <cstdint>
+
 #include "c_vector.h"
 
 /*
@@ -49,17 +51,17 @@ enum RDF_FLAGS
 
 struct RDF_HEAD
 {
-    long version; // RDF_VERSION
-    long flags;   // combination of RDF_FLAGS
-    long name_size;
-    long names;
-    long ntextures;
-    long nmaterials;
-    long nlights;
-    long nlabels;
-    long nobjects;
-    long ntriangles;
-    long nvrtbuffs;
+    int32_t version; // RDF_VERSION
+    int32_t flags;   // combination of RDF_FLAGS
+    int32_t name_size;
+    int32_t names;
+    int32_t ntextures;
+    int32_t nmaterials;
+    int32_t nlights;
+    int32_t nlabels;
+    int32_t nobjects;
+    int32_t ntriangles;
+    int32_t nvrtbuffs;
 
     CVECTOR bbox_size, bbox_center;
     float radius;
@@ -75,7 +77,7 @@ struct RDF_HEAD
 //------------------------------------------------------------
 struct RDF_TEXTURE
 {
-    long name;
+    int32_t name;
 };
 
 //------------------------------------------------------------
@@ -91,13 +93,13 @@ enum RDF_TEXTURE_TYPE
 
 struct RDF_MATERIAL
 {
-    long group_name;
-    long name;
+    int32_t group_name;
+    int32_t name;
     float diffuse;         // 0 - no diffuse material
     float specular, gloss; // spec=0 - no specular, gloss is a power of cosine
     float selfIllum;       // for area light sources
     RDF_TEXTURE_TYPE texture_type[4];
-    long texture[4];
+    int32_t texture[4];
 };
 
 //------------------------------------------------------------
@@ -119,10 +121,10 @@ enum RDF_LIGHT_FLAGS
 
 struct RDF_LIGHT
 {
-    long flags;
+    int32_t flags;
     RDF_LIGHT_TYPE type;
-    long group_name;
-    long name;
+    int32_t group_name;
+    int32_t name;
     float r, g, b;
     float range;
     CVECTOR pos;
@@ -141,11 +143,11 @@ enum RDF_LABEL_FLAGS
 
 struct RDF_LABEL
 {
-    long group_name;
-    long name;
-    long flags; // combination of LABEL_FLAGS
+    int32_t group_name;
+    int32_t name;
+    int32_t flags; // combination of LABEL_FLAGS
     float m[4][4];
-    long bones[4];
+    int32_t bones[4];
     float weight[4];
 };
 
@@ -174,17 +176,17 @@ enum RDF_OBJECT_FLAGS
 
 struct RDF_OBJECT
 {
-    long group_name;
-    long name;
-    long flags;
+    int32_t group_name;
+    int32_t name;
+    int32_t flags;
     CVECTOR center;
     float radius;
-    long vertex_buff;
-    long ntriangles, striangle, nvertices, svertex;
-    long material;
-    long lights[8];
-    long bones[4];
-    long atriangles;
+    int32_t vertex_buff;
+    int32_t ntriangles, striangle, nvertices, svertex;
+    int32_t material;
+    int32_t lights[8];
+    int32_t bones[4];
+    int32_t atriangles;
 };
 
 //------------------------------------------------------------
@@ -200,8 +202,8 @@ struct RDF_TRIANGLE
 //------------------------------------------------------------
 struct RDF_VERTEXBUFF
 {
-    long type;
-    long size;
+    int32_t type;
+    int32_t size;
 };
 
 //------------------------------------------------------------
@@ -211,7 +213,7 @@ struct RDF_VERTEX0
 {
     CVECTOR pos;
     CVECTOR norm;
-    long color;
+    int32_t color;
     float tu0, tv0;
 };
 
@@ -219,7 +221,7 @@ struct RDF_VERTEX1
 {
     CVECTOR pos;
     CVECTOR norm;
-    long color;
+    int32_t color;
     float tu0, tv0;
     float tu1, tv1;
 };
@@ -228,7 +230,7 @@ struct RDF_VERTEX2
 {
     CVECTOR pos;
     CVECTOR norm;
-    long color;
+    int32_t color;
     float tu0, tv0;
     float tu1, tv1;
     float tu2, tv2;
@@ -238,7 +240,7 @@ struct RDF_VERTEX3
 {
     CVECTOR pos;
     CVECTOR norm;
-    long color;
+    int32_t color;
     float tu0, tv0;
     float tu1, tv1;
     float tu2, tv2;
@@ -250,9 +252,9 @@ struct RDF_AVERTEX0
 {
     CVECTOR pos;
     float weight;
-    unsigned long boneid;
+    uint32_t boneid;
     CVECTOR norm;
-    long color;
+    int32_t color;
     float tu0, tv0;
 };
 
@@ -261,9 +263,9 @@ struct RDF_AVERTEX0
 //------------------------------------------------------------
 struct RDF_BSPHEAD
 {
-    long nnodes;
-    long nvertices;
-    long ntriangles;
+    int32_t nnodes;
+    int32_t nvertices;
+    int32_t ntriangles;
 };
 
 struct RDF_BSPTRIANGLE
@@ -277,9 +279,9 @@ struct BSP_NODE
 {
     CVECTOR norm;
     float pd;
-    unsigned long node : 22, sign : 1, left : 1, nfaces : 4, right : 2, type : 2;
+    uint32_t node : 22, sign : 1, left : 1, nfaces : 4, right : 2, type : 2;
 
-    long face;
+    int32_t face;
 };
 
 #pragma pack(pop)

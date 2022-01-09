@@ -222,7 +222,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
     float fMastDamage = 0.f;
     if (pAMasts != nullptr)
         fMastDamage = pAMasts->GetAttributeAsFloat((char *)mastNodePointer->GetName(), 0.f);
-    long chrIdx = -1;
+    int32_t chrIdx = -1;
     if (pA != nullptr)
         chrIdx = pA->GetAttributeAsDword("index", -1);
     core.Event("EventMastFall", "lsl", chrIdx, mastNodePointer->GetName(), fMastDamage < 1.f);
@@ -469,9 +469,9 @@ void MAST::LoadIni()
     // the step of lowering the mast in depth
     DEEP_FALL_STEP = ini->GetFloat(section, "fDeepStep", DEEP_FALL_STEP);
     // number of motion frames after which collision with objects is disabled
-    MAX_MOVE_CICLES = ini->GetLong(section, "maxMoveCicles", MAX_MOVE_CICLES);
+    MAX_MOVE_CICLES = ini->GetInt(section, "maxMoveCicles", MAX_MOVE_CICLES);
     // the number of motion frames after which the fall of the mast is switched on
-    MIN_MOV_COUNTER = ini->GetLong(section, "minMoveCicles", MIN_MOV_COUNTER);
+    MIN_MOV_COUNTER = ini->GetInt(section, "minMoveCicles", MIN_MOV_COUNTER);
     // minimum angle of rotation of the mast in X
     MIN_X_DANG = ini->GetFloat(section, "fMinXdang", MIN_X_DANG);
     // limit of change of the angle of rotation of the mast in X

@@ -64,13 +64,13 @@ void TSink::Start(const CVECTOR &_pos, float _radius)
     enabled = true;
     for (auto i = 0; i < sink_effect::MAX_SPLASHES; i++)
     {
-        times[i] = static_cast<long>(rand(sink_effect::SINK_TIME));
+        times[i] = static_cast<int32_t>(rand(sink_effect::SINK_TIME));
         // ivIndexes[i] = -1;
     }
 
     for (auto i = 0; i < sink_effect::MAX_FLOTSAMS; i++)
     {
-        flotsamTimes[i] = static_cast<long>(rand(sink_effect::SINK_TIME));
+        flotsamTimes[i] = static_cast<int32_t>(rand(sink_effect::SINK_TIME));
     }
 }
 
@@ -114,7 +114,7 @@ void TSink::Process(uint32_t _dTime)
                 if (ivIndexes[i] != -1)
                 {
                     ivManager->FreeElement(ivIndexes[i]);
-                    times[i] = static_cast<long>(rand(sink_effect::SINK_TIME));
+                    times[i] = static_cast<int32_t>(rand(sink_effect::SINK_TIME));
                     ivIndexes[i] = -1;
                 }
                 else
@@ -125,7 +125,7 @@ void TSink::Process(uint32_t _dTime)
                     ivIndexes[i] = ivManager->ReserveElement();
                     if (ivIndexes[i] != -1)
                     {
-                        long vOffset;
+                        int32_t vOffset;
                         ivManager->GetPointers(ivIndexes[i], &indexes, (void **)&vertices, &vOffset);
                         splashes[i].Start(splashCenter, indexes, vertices, vOffset);
                     }

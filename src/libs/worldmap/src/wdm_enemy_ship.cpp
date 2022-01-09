@@ -119,7 +119,7 @@ void WdmEnemyShip::Update(float dltTime)
                     pVDat = core.Event("WorldMap_EncounterDelete", "s", delEnc);
                 }
                 deleteAlpha = 0;
-                if (!pVDat || pVDat->GetLong() != 0)
+                if (!pVDat || pVDat->GetInt() != 0)
                 {
                     killMe = true;
                 }
@@ -140,7 +140,7 @@ void WdmEnemyShip::LRender(VDX9RENDER *rs)
 {
     if (isWMRender && wdmObjects->isDebug)
     {
-        auto a = static_cast<long>(alpha * 255.0f);
+        auto a = static_cast<int32_t>(alpha * 255.0f);
         if (a < 60)
             a = 60;
         if (a > 255)
@@ -373,18 +373,18 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float &x, 
     const auto psay = static_cast<WdmEnemyShip *>(wdmObjects->playerShip)->ay;
     // Choice fields
     uint8_t field[32];
-    for (long i = 0; i < 32; i++)
+    for (int32_t i = 0; i < 32; i++)
         field[i] = 0;
     // Attempts to setups
     while (true)
     {
         // define the angle
-        const long ang = rand() & 31;
+        const int32_t ang = rand() & 31;
         if (field[ang] != 0xff)
         {
             const auto angle = psay + brnDltAng * (0.5f - ang / 31.0f);
             // Determine the radius
-            long rad;
+            int32_t rad;
             for (rad = rand() & 7; field[ang] & (1 << rad); rad = rand() & 7)
                 ;
             const auto radius = wdmObjects->enemyshipBrnDistMin +
@@ -398,7 +398,7 @@ bool WdmEnemyShip::GeneratePosition(float objRadius, float brnDltAng, float &x, 
             field[ang] |= 1 << rad;
         }
         // Checking for the possibility of continuing
-        long i;
+        int32_t i;
         for (i = 0; i < 32 && field[i] == 0xff; i++)
             ;
         if (i == 32)

@@ -29,9 +29,9 @@ class WorldMap : public Entity
     struct RObject
     {
         WdmRenderObject *ro;
-        long level;
-        long next;
-        long prev;
+        int32_t level;
+        int32_t next;
+        int32_t prev;
     };
 
     // --------------------------------------------------------------------------------------------
@@ -77,19 +77,19 @@ class WorldMap : public Entity
     // --------------------------------------------------------------------------------------------
   public:
     // Add object
-    WdmRenderObject *AddObject(WdmRenderObject *obj, long level = 0);
+    WdmRenderObject *AddObject(WdmRenderObject *obj, int32_t level = 0);
     // Add object to render list before reflection
-    void AddPObject(WdmRenderObject *obj, long level = 0);
+    void AddPObject(WdmRenderObject *obj, int32_t level = 0);
     // Add object to reflection render list
-    void AddMObject(WdmRenderObject *obj, long level = 0);
+    void AddMObject(WdmRenderObject *obj, int32_t level = 0);
     // Add object to render list after reflection
-    void AddLObject(WdmRenderObject *obj, long level = 0);
+    void AddLObject(WdmRenderObject *obj, int32_t level = 0);
     // Delete object
     void DeleteObject(WdmRenderObject *obj);
 
     // Initialize the model and add it to the required render lists
     WdmRenderObject *CreateModel(WdmRenderModel *rm, const char *modelName, bool pr = false, bool mr = true,
-                                 bool lr = true, long objectLevel = 0, long drawLevel = 0);
+                                 bool lr = true, int32_t objectLevel = 0, int32_t drawLevel = 0);
 
     //--------------------------------------------------------------------------------------------
 
@@ -101,9 +101,9 @@ class WorldMap : public Entity
   private:
     // Objects management
     // Include a record about an object in the list with the required level
-    long GetObject(long &first, long level);
+    int32_t GetObject(int32_t &first, int32_t level);
     // Exclude entry from the list
-    void FreeObject(long &first, long i);
+    void FreeObject(int32_t &first, int32_t i);
 
     // Utilities
     // Create a storm if possible
@@ -143,11 +143,11 @@ class WorldMap : public Entity
     float encTime;
 
     // Objects
-    long firstFreeObject;
-    long firstObject;   // All existing objects
-    long firstPrObject; // Objects rendering before the mirror
-    long firstMrObject; // Objects rendered into the mirror
-    long firstLrObject; // Objects rendered after the mirror
+    int32_t firstFreeObject;
+    int32_t firstObject;   // All existing objects
+    int32_t firstPrObject; // Objects rendering before the mirror
+    int32_t firstMrObject; // Objects rendered into the mirror
+    int32_t firstLrObject; // Objects rendered after the mirror
 
     RObject object[WDMAP_MAXOBJECTS];
 
@@ -160,11 +160,11 @@ class WorldMap : public Entity
     uint32_t encCounter;
 
     float hour;
-    long day;
-    long mon;
-    long year;
+    int32_t day;
+    int32_t mon;
+    int32_t year;
 
-    static long month[];
+    static int32_t month[];
 };
 
 inline VDX9RENDER *WorldMap::GetRS() const

@@ -256,7 +256,7 @@ void CXI_CHANGER::SetRectanglesToPosition(int nPos)
     m_pTexVert[3].pos.y = bottom;
 }
 
-bool CXI_CHANGER::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_CHANGER::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (m_bClickable && m_bUse)
     {
@@ -316,7 +316,7 @@ XYRECT CXI_CHANGER::GetCursorRect()
     return rectPos;
 }
 
-uint32_t CXI_CHANGER::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_CHANGER::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {

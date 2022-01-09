@@ -25,11 +25,11 @@ class AnimationInfo final
     AnimationInfo(const char *animationName);
     ~AnimationInfo();
     // Set the number of frames in the animation
-    void SetNumFrames(long _numFrames);
+    void SetNumFrames(int32_t _numFrames);
     // Create bones
-    void CreateBones(long numbones);
+    void CreateBones(int32_t numbones);
     // Create action
-    ActionInfo *AddAction(const char *anctionName, long startframe, long endframe);
+    ActionInfo *AddAction(const char *anctionName, int32_t startframe, int32_t endframe);
     // Set execution speed
     void SetFPS(float _fps);
 
@@ -38,9 +38,9 @@ class AnimationInfo final
     // --------------------------------------------------------------------------------------------
   public:
     // Number of bones
-    long NumBones();
+    int32_t NumBones();
     // Access to the bone
-    Bone &GetBone(long iBone);
+    Bone &GetBone(int32_t iBone);
     // Compare with current name
     bool operator==(const char *animationName);
     // Increment reference count
@@ -48,15 +48,15 @@ class AnimationInfo final
     // Decrement reference count
     void RelRef();
     // Add downtime
-    void AddDowntime(long dltTime);
+    void AddDowntime(int32_t dltTime);
     // Get downtime
-    long GetDowntime();
+    int32_t GetDowntime();
     // Get animation name
     const char *GetName();
     // Find action by name
     ActionInfo *FindAction(const char *actionName);
     // Get animation time
-    long GetAniNumFrames();
+    int32_t GetAniNumFrames();
     // Access to user data
     std::unordered_map<std::string, std::string> &GetUserData();
     // Get animation speed
@@ -68,16 +68,16 @@ class AnimationInfo final
   private:
     char name[64]; // Animation name
 
-    long numFrames; // The number of frames in the entire animation
+    int32_t numFrames; // The number of frames in the entire animation
     float fps;      // Frames per second
 
     Bone *bone;    // Bones with animation keys
-    long numBones; // The number of bones in the skeleton
+    int32_t numBones; // The number of bones in the skeleton
 
     std::vector<ActionInfo> actions; // Actions
 
-    long refCounter; // Reference counter for this animation
-    long downtime;   // Downtime
+    int32_t refCounter; // Reference counter for this animation
+    int32_t downtime;   // Downtime
 
     std::unordered_map<std::string, std::string> userData; // User data
 };
@@ -87,7 +87,7 @@ class AnimationInfo final
 //============================================================================================
 
 // Set the number of frames in the animation
-inline void AnimationInfo::SetNumFrames(long _numFrames)
+inline void AnimationInfo::SetNumFrames(int32_t _numFrames)
 {
     if (_numFrames < 0)
         _numFrames = 0;
@@ -105,13 +105,13 @@ inline void AnimationInfo::SetFPS(float _fps)
 }
 
 // Number of bones
-inline long AnimationInfo::NumBones()
+inline int32_t AnimationInfo::NumBones()
 {
     return numBones;
 }
 
 // Access to the bone
-inline Bone &AnimationInfo::GetBone(long iBone)
+inline Bone &AnimationInfo::GetBone(int32_t iBone)
 {
     Assert(iBone >= 0 && iBone < numBones);
     return bone[iBone];
@@ -131,7 +131,7 @@ inline void AnimationInfo::RelRef()
 }
 
 // Add downtime
-inline void AnimationInfo::AddDowntime(long dltTime)
+inline void AnimationInfo::AddDowntime(int32_t dltTime)
 {
     if (refCounter == 0)
     {
@@ -146,7 +146,7 @@ inline void AnimationInfo::AddDowntime(long dltTime)
 }
 
 // Get downtime
-inline long AnimationInfo::GetDowntime()
+inline int32_t AnimationInfo::GetDowntime()
 {
     return downtime;
 }
@@ -158,7 +158,7 @@ inline const char *AnimationInfo::GetName()
 }
 
 // Get animation time
-inline long AnimationInfo::GetAniNumFrames()
+inline int32_t AnimationInfo::GetAniNumFrames()
 {
     return numFrames;
 }

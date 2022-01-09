@@ -33,7 +33,7 @@ Bone::~Bone()
 }
 
 // how many frames of animation there will be
-void Bone::SetNumFrames(long num, CVECTOR &sPos, bool isRoot)
+void Bone::SetNumFrames(int32_t num, CVECTOR &sPos, bool isRoot)
 {
     delete ang;
     delete pos;
@@ -62,7 +62,7 @@ void Bone::SetNumFrames(long num, CVECTOR &sPos, bool isRoot)
 }
 
 // Set animation positions
-void Bone::SetPositions(const CVECTOR *pArray, long numPos)
+void Bone::SetPositions(const CVECTOR *pArray, int32_t numPos)
 {
     Assert(numPos == numFrames);
     Assert(pArray);
@@ -79,12 +79,12 @@ void Bone::SetPositions(const CVECTOR *pArray, long numPos)
 //-------------------------------------
 
 // Set animation angles
-void Bone::SetAngles(const D3DXQUATERNION *aArray, long numAng)
+void Bone::SetAngles(const D3DXQUATERNION *aArray, int32_t numAng)
 {
     Assert(numAng == numFrames);
     Assert(aArray);
     Assert(ang);
-    for (long i = 0; i < numAng; i++)
+    for (int32_t i = 0; i < numAng; i++)
     {
         auto x = Clamp(aArray[i].x, "Animation is break: qt.x < -1.0f or qt.x > 1.0f !!!");
         auto y = Clamp(aArray[i].y, "Animation is break: qt.y < -1.0f or qt.y > 1.0f !!!");
@@ -94,14 +94,14 @@ void Bone::SetAngles(const D3DXQUATERNION *aArray, long numAng)
         y = static_cast<float>(asin(y) / (PI * 0.5)) * 32767.0f;
         z = static_cast<float>(asin(z) / (PI * 0.5)) * 32767.0f;
         w = static_cast<float>(asin(w) / (PI * 0.5)) * 32767.0f;
-        ang[i].x = static_cast<short>(static_cast<long>(x));
-        ang[i].y = static_cast<short>(static_cast<long>(y));
-        ang[i].z = static_cast<short>(static_cast<long>(z));
-        ang[i].w = static_cast<short>(static_cast<long>(w));
+        ang[i].x = static_cast<short>(static_cast<int32_t>(x));
+        ang[i].y = static_cast<short>(static_cast<int32_t>(y));
+        ang[i].z = static_cast<short>(static_cast<int32_t>(z));
+        ang[i].w = static_cast<short>(static_cast<int32_t>(w));
     }
 }
 
-inline void Bone::GetFrame(long f, D3DXQUATERNION &qt)
+inline void Bone::GetFrame(int32_t f, D3DXQUATERNION &qt)
 {
     qt.x = sinf((ang[f].x * (1.0f / 32767.0f)) * PI * 0.5f);
     qt.y = sinf((ang[f].y * (1.0f / 32767.0f)) * PI * 0.5f);
@@ -116,7 +116,7 @@ inline void Bone::GetFrame(long f, D3DXQUATERNION &qt)
 //-------------------------------------
 
 // Set animation angles
-void Bone::SetAngles(const D3DXQUATERNION *aArray, long numAng)
+void Bone::SetAngles(const D3DXQUATERNION *aArray, int32_t numAng)
 {
     Assert(numAng == numFrames);
     Assert(aArray);
@@ -124,7 +124,7 @@ void Bone::SetAngles(const D3DXQUATERNION *aArray, long numAng)
     memcpy(ang, aArray, numFrames * sizeof(*ang));
 }
 
-inline void Bone::GetFrame(long f, D3DXQUATERNION &qt)
+inline void Bone::GetFrame(int32_t f, D3DXQUATERNION &qt)
 {
     qt = ang[f];
 }
@@ -172,7 +172,7 @@ void Bone::BuildStartMatrix()
 // --------------------------------------------------------------------------------------------
 
 // Add animation frames
-void Bone::BlendFrame(long frame, float kBlend, D3DXQUATERNION &res)
+void Bone::BlendFrame(int32_t frame, float kBlend, D3DXQUATERNION &res)
 {
     if (numFrames <= 0)
         return;

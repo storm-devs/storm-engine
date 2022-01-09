@@ -88,12 +88,12 @@ WdmStorm::WdmStorm()
     num = 6;
     // Cloud location bitfield
     uint8_t w[8];
-    for (long i = 0; i < 8; i++)
+    for (int32_t i = 0; i < 8; i++)
         w[i] = 0;
     // Spawn the clouds
-    long x, z;
+    int32_t x, z;
     const auto globSign = (rand() & 1) != 0;
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
     {
         cloud[i] = static_cast<WdmCloud *>(wdmObjects->wm->AddObject(new WdmCloud(), 101));
         if (cloud[i])
@@ -130,7 +130,7 @@ WdmStorm::~WdmStorm()
     if (rainTexture >= 0)
         wdmObjects->rs->TextureRelease(rainTexture);
     rainTexture = -1;
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
     {
         wdmObjects->wm->DeleteObject(cloud[i]);
     }
@@ -143,7 +143,7 @@ bool WdmStorm::CheckIntersection(float x, float z, float r)
     // Crossing distance
     r = (r + WDM_STORM_CLOUDRAD) * (r + WDM_STORM_CLOUDRAD);
     // loop through all the clouds
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         if (cloud[i])
         {
             const auto cx = pos.x + cloudPos[i].x;
@@ -239,7 +239,7 @@ void WdmStorm::Update(float dltTime)
         }
     }
     // Setting positions to clouds
-    for (long i = 0; i < num; i++)
+    for (int32_t i = 0; i < num; i++)
         if (cloud[i])
         {
             // Rotate the cloud around the center
@@ -262,7 +262,7 @@ void WdmStorm::LRender(VDX9RENDER *rs)
         mtr.Pos() = pos;
         mtr.Pos().y = 0.1f;
         wdmObjects->DrawCircle(mtr, wdmObjects->stormZone, 0x2f202040);
-        for (long i = 0; i < num; i++)
+        for (int32_t i = 0; i < num; i++)
             if (cloud[i])
             {
                 mtr.Pos() = pos + cloudPos[i];
@@ -271,8 +271,8 @@ void WdmStorm::LRender(VDX9RENDER *rs)
             }
     }
 
-    long count = 0;
-    for (long i = 0; i < num; i++)
+    int32_t count = 0;
+    for (int32_t i = 0; i < num; i++)
     {
         if (cloud[i])
         {

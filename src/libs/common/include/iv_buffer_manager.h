@@ -8,16 +8,16 @@
 class IVBufferManager
 {
   public:
-    IVBufferManager(VDX9RENDER *renderer_, long vertex_type, int vertex_size, size_t index_count, size_t vertex_count,
+    IVBufferManager(VDX9RENDER *renderer_, int32_t vertex_type, int vertex_size, size_t index_count, size_t vertex_count,
                     size_t max_size);
     virtual ~IVBufferManager();
 
-    long ReserveElement();
+    int32_t ReserveElement();
     void FreeElement(size_t i);
     void FreeAll();
     void LockBuffers();
     void UnlockBuffers();
-    void GetPointers(long _i, uint16_t **iPointer, void **vPointer, long *vOffset = nullptr) const;
+    void GetPointers(int32_t _i, uint16_t **iPointer, void **vPointer, int32_t *vOffset = nullptr) const;
     void DrawBuffers(const char *_technique) const;
 
   private:

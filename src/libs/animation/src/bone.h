@@ -43,11 +43,11 @@ class Bone
     // Set parent
     void SetParent(Bone *parentBone);
     // how many frames of animation there will be
-    void SetNumFrames(long num, CVECTOR &sPos, bool isRoot = false);
+    void SetNumFrames(int32_t num, CVECTOR &sPos, bool isRoot = false);
     // Set animation positions
-    void SetPositions(const CVECTOR *pArray, long numPos);
+    void SetPositions(const CVECTOR *pArray, int32_t numPos);
     // Set animation angles
-    void SetAngles(const D3DXQUATERNION *aArray, long numAng);
+    void SetAngles(const D3DXQUATERNION *aArray, int32_t numAng);
     // Initialize start matrix
     void BuildStartMatrix();
 
@@ -56,7 +56,7 @@ class Bone
     // --------------------------------------------------------------------------------------------
   public:
     // Add animation frames
-    void BlendFrame(long frame, float kBlend, D3DXQUATERNION &res);
+    void BlendFrame(int32_t frame, float kBlend, D3DXQUATERNION &res);
     // void BlendFrame(float frame);
     // Create a matrix for the resulting position
     void BuildMatrix();
@@ -71,7 +71,7 @@ class Bone
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    void GetFrame(long f, D3DXQUATERNION &qt);
+    void GetFrame(int32_t f, D3DXQUATERNION &qt);
     float Clamp(float v, const char *str);
     // Linear position interpolation
     float LerpPos(float a, float b, float k);
@@ -88,7 +88,7 @@ class Bone
 #endif
 
     CVECTOR *pos;   // Animation frame positions
-    long numFrames; // Number of animation frames
+    int32_t numFrames; // Number of animation frames
     CVECTOR pos0;   // Bone position if there are no animation frame positions
 
     CVECTOR p;        // Bone position in local coordinates

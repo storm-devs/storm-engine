@@ -338,7 +338,7 @@ int CXI_SCROLLBAR::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_SCROLLBAR::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_SCROLLBAR::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (m_bClickable && m_bUse)
         if (xPos >= m_rect.left && xPos <= m_rect.right && yPos >= m_rect.top && yPos <= m_rect.bottom)
@@ -382,12 +382,12 @@ void CXI_SCROLLBAR::SaveParametersToIni()
 XYRECT CXI_SCROLLBAR::GetCursorRect()
 {
     auto retRect = m_rect;
-    retRect.right += static_cast<long>(m_fXShadow);
-    retRect.bottom += static_cast<long>(m_fYShadow);
+    retRect.right += static_cast<int32_t>(m_fXShadow);
+    retRect.bottom += static_cast<int32_t>(m_fYShadow);
     return retRect;
 }
 
-uint32_t CXI_SCROLLBAR::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_SCROLLBAR::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {

@@ -13,7 +13,7 @@ class BIImageMaterial
     BIImageMaterial(VDX9RENDER *pRS, BIImageRender *pImgRender);
     ~BIImageMaterial();
 
-    void Render(long nBegPrior, long nEndPrior);
+    void Render(int32_t nBegPrior, int32_t nEndPrior);
 
     bool IsUseTexture(const char *pcTextureName) const
     {
@@ -25,8 +25,8 @@ class BIImageMaterial
         return (m_sTechniqueName == pcTechniqueName);
     }
 
-    const BIImage *CreateImage(BIImageType type, uint32_t color, const FRECT &uv, long nLeft, long nTop, long nRight,
-                               long nBottom, long nPrior);
+    const BIImage *CreateImage(BIImageType type, uint32_t color, const FRECT &uv, int32_t nLeft, int32_t nTop, int32_t nRight,
+                               int32_t nBottom, int32_t nPrior);
     void DeleteImage(const BIImage *pImg);
 
     void SetTexture(const char *pcTextureName);
@@ -49,12 +49,12 @@ class BIImageMaterial
 
     void ReleaseAllImages();
 
-    long GetMinPriority() const
+    int32_t GetMinPriority() const
     {
         return m_nMinPriority;
     }
 
-    long GetMaxPriority() const
+    int32_t GetMaxPriority() const
     {
         return m_nMaxPriority;
     }
@@ -66,9 +66,9 @@ class BIImageMaterial
 
   protected:
     void Release();
-    void UpdateImageBuffers(long nStartIdx, size_t nEndIdx);
+    void UpdateImageBuffers(int32_t nStartIdx, size_t nEndIdx);
     void RemakeBuffers();
-    bool GetOutputRangeByPriority(long nBegPrior, long nEndPrior, size_t &nStartIndex, size_t &nTriangleQuantity);
+    bool GetOutputRangeByPriority(int32_t nBegPrior, int32_t nEndPrior, size_t &nStartIndex, size_t &nTriangleQuantity);
     void RecalculatePriorityRange();
     void InsertImageToList(BIImage *pImg);
 
@@ -78,16 +78,16 @@ class BIImageMaterial
     std::string m_sTextureName;
     std::string m_sTechniqueName;
 
-    long m_nTextureID;
-    long m_nVBufID;
-    long m_nIBufID;
+    int32_t m_nTextureID;
+    int32_t m_nVBufID;
+    int32_t m_nIBufID;
     size_t m_nVertexQuantity;
     size_t m_nTriangleQuantity;
 
     std::vector<BIImage *> m_apImage;
 
-    long m_nMinPriority;
-    long m_nMaxPriority;
+    int32_t m_nMinPriority;
+    int32_t m_nMaxPriority;
 
     bool m_bMakeBufferUpdate;
     bool m_bDeleteEverything;

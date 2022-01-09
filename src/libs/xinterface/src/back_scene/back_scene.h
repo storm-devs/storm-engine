@@ -15,7 +15,7 @@ class InterfaceBackScene : public Entity
     {
         bool bUse;
 
-        long indexLight;
+        int32_t indexLight;
         D3DLIGHT9 lightSource;
         D3DLIGHT9 lightOldSource;
 
@@ -115,7 +115,7 @@ class InterfaceBackScene : public Entity
     };
 
     std::vector<MenuDescr *> m_aMenuDescr;
-    long m_nSelectMenuIndex;
+    int32_t m_nSelectMenuIndex;
 
     void LoadModel(const char *pcModelName);
     void SetCameraPosition(const char *pcLocatorName);
@@ -125,19 +125,19 @@ class InterfaceBackScene : public Entity
     void SetLocatorPosition(MODEL *pModel, const char *pcLocName, CVECTOR &pos, NODE *&pNodPtr);
 
     void ReleaseMenuList();
-    void CreateMenuList(long nStartIndex, ATTRIBUTES *pAMenu);
+    void CreateMenuList(int32_t nStartIndex, ATTRIBUTES *pAMenu);
     void ChooseNextMenu();
     void ChoosePrevMenu();
-    void SetNewMenu(long nNewSelectIndex);
-    void SetMenuSelectableState(long nMenuIndex, bool bSelectable);
-    void ExecuteMenu(long nMenuIndex);
+    void SetNewMenu(int32_t nNewSelectIndex);
+    void SetMenuSelectableState(int32_t nMenuIndex, bool bSelectable);
+    void ExecuteMenu(int32_t nMenuIndex);
 
-    long CheckMousePos(float fX, float fY);
+    int32_t CheckMousePos(float fX, float fY);
 
     void InitLight(ATTRIBUTES *pAParam);
     void SetLight();
     void RestoreLight();
-    void FlareShow(long idx);
+    void FlareShow(int32_t idx);
 
     void InitAniModel(ATTRIBUTES *pAParam);
     void InitStaticModel(ATTRIBUTES *pAParam);
@@ -192,8 +192,8 @@ class InterfaceBackScene : public Entity
     {
         CVECTOR pos;
         float radius;
-        long start;
-        long num;
+        int32_t start;
+        int32_t num;
     };
 
     struct Vertex
@@ -204,19 +204,19 @@ class InterfaceBackScene : public Entity
     };
 
     std::vector<LampFlys> flys;
-    long numFlys;
-    long maxFlys;
+    int32_t numFlys;
+    int32_t maxFlys;
     std::vector<ParticleFly> fly;
-    long numFly;
-    long flyTex;
+    int32_t numFly;
+    int32_t flyTex;
     Vertex buffer[256 * 6];
 
     CVECTOR m_vFlarePos;
     float m_fFlareSize;
-    long m_nFlareTexture;
+    int32_t m_nFlareTexture;
 
     void AddLampFlys(CVECTOR &pos);
     void ProcessedFlys(float dltTime);
-    void DrawParticles(void *prts, long num, long size, long texture, const char *tech, bool isEx = false,
-                       long numU = 0);
+    void DrawParticles(void *prts, int32_t num, int32_t size, int32_t texture, const char *tech, bool isEx = false,
+                       int32_t numU = 0);
 };

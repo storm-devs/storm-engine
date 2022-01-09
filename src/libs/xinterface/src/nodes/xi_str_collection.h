@@ -16,7 +16,7 @@ class CXI_STRCOLLECTION : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -26,18 +26,18 @@ class CXI_STRCOLLECTION : public CINODE
     void SetInternalName(std::string &sName) override;
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
 
-    void ChangeString(long num, const char *sValue) const;
-    void ChangeStringColor(long num, uint32_t dwColor) const;
-    void ChangeStringPos(long num, XYPOINT &pntNewPos) const;
+    void ChangeString(int32_t num, const char *sValue) const;
+    void ChangeStringColor(int32_t num, uint32_t dwColor) const;
+    void ChangeStringPos(int32_t num, XYPOINT &pntNewPos) const;
 
   protected:
     struct STRINGDESCR
     {
         char *sFontName;
         int nFontNum;
-        long strNum;
+        int32_t strNum;
         char *strStr;
         char *strID;
         XYPOINT scrPos;     // screen position for string show
@@ -55,5 +55,5 @@ class CXI_STRCOLLECTION : public CINODE
   protected:
     int m_nStr;               // string quantity
     STRINGDESCR *m_pStrDescr; // pointer to array of the string descriptors
-    long m_nEditIndex;
+    int32_t m_nEditIndex;
 };

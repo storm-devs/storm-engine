@@ -46,11 +46,11 @@ class WdmCounter : public WdmRenderModel
     WdmRenderModel *m[2];
     WdmRenderModel *y[4];
 
-    long skytx[WMD_NUM_SKYS];
-    long lastSkys[2];
-    long skyseq[8];
-    long dayCounter;
-    long skyCounter;
+    int32_t skytx[WMD_NUM_SKYS];
+    int32_t lastSkys[2];
+    int32_t skyseq[8];
+    int32_t dayCounter;
+    int32_t skyCounter;
 
     static const char *skytex[WMD_NUM_SKYS];
 };

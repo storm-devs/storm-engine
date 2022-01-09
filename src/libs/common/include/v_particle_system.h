@@ -13,7 +13,7 @@ class VPARTICLE_SYSTEM
     virtual void Stop() = 0;
     virtual void SetEmitter(CVECTOR p, CVECTOR a) = 0;
     virtual void LinkToObject(entid_t id, CVECTOR _LinkPos) = 0;
-    virtual void SetDelay(long _delay) = 0;
+    virtual void SetDelay(int32_t _delay) = 0;
     virtual void SetLifeTime(uint32_t time) = 0;
 
     virtual void StopEmitter(){};

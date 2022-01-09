@@ -32,7 +32,7 @@ class WdmPlayerShip : public WdmShip
     // Check when exiting the map
     bool ExitFromMap();
     // Checking for a ship in a storm
-    long TestInStorm() const;
+    int32_t TestInStorm() const;
 
     float GetAy() const;
 

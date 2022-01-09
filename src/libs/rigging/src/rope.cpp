@@ -5,7 +5,7 @@
 #include "shared/sail_msg.h"
 #include "ship_base.h"
 
-extern void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);
+extern void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, int32_t line, const char *format, ...);
 
 ROPE::ROPE()
 {
@@ -962,7 +962,7 @@ void ROPE::SetAdd(int firstNum)
         // remove bad ropes
         while (rlist[rn]->bMatWorld == nullptr || rlist[rn]->eMatWorld == nullptr)
         {
-            const long gn = rlist[rn]->HostGroup;
+            const int32_t gn = rlist[rn]->HostGroup;
             const char *pcModlName = nullptr;
             auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[gn].modelEI));
             if (pMdl && pMdl->GetNode(0))

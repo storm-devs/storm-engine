@@ -97,8 +97,8 @@ void SUNGLOW::Release()
 
 void SUNGLOW::GenerateSunGlow()
 {
-    long iOldTex[16];
-    long nTex = 0;
+    int32_t iOldTex[16];
+    int32_t nTex = 0;
 
     iOldTex[nTex++] = iFlareTex;
     iOldTex[nTex++] = iSunTex;
@@ -120,7 +120,7 @@ void SUNGLOW::GenerateSunGlow()
     if (Reflection.sTexture.size())
         iReflTexture = pRS->TextureCreate(Reflection.sTexture.c_str());
 
-    for (long n = 0; n < nTex; n++)
+    for (int32_t n = 0; n < nTex; n++)
         if (iOldTex[n] >= 0)
             pRS->TextureRelease(iOldTex[n]);
 }
@@ -182,7 +182,7 @@ void SUNGLOW::Realize(uint32_t Delta_Time)
     auto *pPlane = pRS->GetPlanes();
     if (pPlane)
     {
-        for (long i = 0; i < 4; i++)
+        for (int32_t i = 0; i < 4; i++)
         {
             auto vpn = CVECTOR(pPlane[i].Nx, pPlane[i].Ny, pPlane[i].Nz);
             if ((vpn | vSunPos) < 0.0f)
@@ -560,7 +560,7 @@ void SUNGLOW::DrawReflection() const
     vSun = vCamPos + (vSunDir * Reflection.fDist);
 
     RS_RECT r_spr;
-    r_spr.dwColor = (0xFFFFFF & Reflection.dwColor) | (static_cast<long>(fFadeout * 255.f) << 24);
+    r_spr.dwColor = (0xFFFFFF & Reflection.dwColor) | (static_cast<int32_t>(fFadeout * 255.f) << 24);
     r_spr.dwSubTexture = 0;
     r_spr.fAngle = 0.0f;
     r_spr.fSize = Reflection.fSize;
@@ -608,7 +608,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
     vp3 = pos + vx - vy;
     vp4 = pos + vx + vy;
 
-    long nv = 0;
+    int32_t nv = 0;
     auto *pV = static_cast<SUNGLOWVERTEX *>(pRS->LockVertexBuffer(idRectBuf));
     if (pV)
     {
@@ -716,7 +716,7 @@ void SUNGLOW::DrawRect(uint32_t dwColor, const CVECTOR &pos, float fSize, float 
             }
         }
     }
-    for (long n = 0; n < nv; n++)
+    for (int32_t n = 0; n < nv; n++)
         pV[n].dwColor = dwColor;
     pRS->UnLockVertexBuffer(idRectBuf);
 

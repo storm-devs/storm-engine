@@ -32,7 +32,7 @@ class TFishSchools : public TDynamicSystem
     TFishSchools();
     ~TFishSchools() override;
 
-    uint64_t ProcessMessage(long _code, MESSAGE &message);
+    uint64_t ProcessMessage(int32_t _code, MESSAGE &message);
     void Init();
     void Realize(uint32_t dTime);
     void Execute(uint32_t dTime);
@@ -43,8 +43,8 @@ class TFishSchools : public TDynamicSystem
     VDX9RENDER *renderService;
     entid_t fishSchoolModel;
     TFishSchool *fishSchools[FISHSCHOOL_COUNT];
-    long shipsCount;
-    long fishSchoolsCount;
+    int32_t shipsCount;
+    int32_t fishSchoolsCount;
     TDynamicObject cameraObject;
 
     float maxDistance;

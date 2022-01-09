@@ -2,11 +2,11 @@
 
 #define MAXIMAGEQUANTITY 100
 
-long GetTexFromEvent(VDATA *vdat)
+int32_t GetTexFromEvent(VDATA *vdat)
 {
     if (vdat == nullptr)
         return -1;
-    return vdat->GetLong();
+    return vdat->GetInt();
 }
 
 CXI_SCROLLIMAGE::CXI_SCROLLIMAGE()
@@ -274,7 +274,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                                 ptrOwner->PrintIntoWindow(
                                     m_rect.left, m_rect.right, m_nOneStrFont, m_dwOneStrForeColor, m_dwOneStrBackColor,
                                     m_nOneStrAlign, true, m_nOneStrScale, m_screenSize.x, m_screenSize.y,
-                                    static_cast<long>(pScroll->pCenter.x + m_lOneStrX), m_rect.top + m_lOneStrOffset,
+                                    static_cast<int32_t>(pScroll->pCenter.x + m_lOneStrX), m_rect.top + m_lOneStrOffset,
                                     pStringService->GetString(m_Image[pScroll->imageNum].str1),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_nOneStrScale));
@@ -282,7 +282,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                                 ptrOwner->PrintIntoWindow(
                                     m_rect.left, m_rect.right, m_nOneStrFont, m_dwOneStrForeColor, m_dwOneStrBackColor,
                                     m_nOneStrAlign, true, m_nOneStrScale, m_screenSize.x, m_screenSize.y,
-                                    static_cast<long>(pScroll->pCenter.x + m_lOneStrX), m_rect.top + m_lOneStrOffset,
+                                    static_cast<int32_t>(pScroll->pCenter.x + m_lOneStrX), m_rect.top + m_lOneStrOffset,
                                     m_Image[pScroll->imageNum].string1.c_str(),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_nOneStrScale));
@@ -293,7 +293,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                                 ptrOwner->PrintIntoWindow(
                                     m_rect.left, m_rect.right, m_nTwoStrFont, m_dwTwoStrForeColor, m_dwTwoStrBackColor,
                                     m_nTwoStrAlign, true, m_nTwoStrScale, m_screenSize.x, m_screenSize.y,
-                                    static_cast<long>(pScroll->pCenter.x + m_lTwoStrX), m_rect.top + m_lTwoStrOffset,
+                                    static_cast<int32_t>(pScroll->pCenter.x + m_lTwoStrX), m_rect.top + m_lTwoStrOffset,
                                     pStringService->GetString(m_Image[pScroll->imageNum].str2),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_nTwoStrScale));
@@ -301,7 +301,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                                 ptrOwner->PrintIntoWindow(
                                     m_rect.left, m_rect.right, m_nTwoStrFont, m_dwTwoStrForeColor, m_dwTwoStrBackColor,
                                     m_nTwoStrAlign, true, m_nTwoStrScale, m_screenSize.x, m_screenSize.y,
-                                    static_cast<long>(pScroll->pCenter.x + m_lTwoStrX), m_rect.top + m_lTwoStrOffset,
+                                    static_cast<int32_t>(pScroll->pCenter.x + m_lTwoStrX), m_rect.top + m_lTwoStrOffset,
                                     m_Image[pScroll->imageNum].string2.c_str(),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
                                     static_cast<int>(-24 * m_nTwoStrScale));
@@ -382,9 +382,9 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
         m_dwCurColor = new uint32_t[m_nSlotsQnt];
         m_dwNormalColor = new uint32_t[m_nSlotsQnt];
         m_dwSelectColor = new uint32_t[m_nSlotsQnt];
-        m_pPicOffset = new long[m_nSlotsQnt];
-        m_idBadTexture = new long[m_nSlotsQnt];
-        m_idBadPic = new long[m_nSlotsQnt];
+        m_pPicOffset = new int32_t[m_nSlotsQnt];
+        m_idBadTexture = new int32_t[m_nSlotsQnt];
+        m_idBadPic = new int32_t[m_nSlotsQnt];
         if (!m_dwCurColor || !m_dwNormalColor || !m_dwSelectColor || !m_pPicOffset || !m_idBadTexture || !m_idBadPic)
         {
             throw std::runtime_error("allocate memory error");
@@ -475,7 +475,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
             m_nGroupQuantity = pA->GetAttributesNum();
             if (m_nGroupQuantity != 0)
             {
-                m_nGroupTex = new long[m_nGroupQuantity];
+                m_nGroupTex = new int32_t[m_nGroupQuantity];
                 m_sGroupName = new char *[m_nGroupQuantity];
                 if (m_nGroupTex == nullptr || m_sGroupName == nullptr)
                 {
@@ -634,8 +634,8 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
     bool bIncrement = true;
     float curXCenter = m_pCenter.x + fXDelta;
     int curImage = m_nCurImage;
-    const long lrBorderDist = m_rect.right - m_pCenter.x;
-    const long llBorderDist = m_pCenter.x - m_rect.left;
+    const int32_t lrBorderDist = m_rect.right - m_pCenter.x;
+    const int32_t llBorderDist = m_pCenter.x - m_rect.left;
 
     int newCurImage = m_nCurImage;
     float fNewCurCenter = curXCenter;
@@ -643,8 +643,8 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
     SCROLLEntity *pPrevScroll = nullptr;
     SCROLLEntity *pScroll = m_pScroll;
 
-    long aDeleteImageIndex[200];
-    long nDeleteImageQuantity = 0;
+    int32_t aDeleteImageIndex[200];
+    int32_t nDeleteImageQuantity = 0;
 
     while (true)
     {
@@ -793,7 +793,7 @@ float CXI_SCROLLIMAGE::ChangeDinamicParameters(float fXDelta)
         }
     }
 
-    long i;
+    int32_t i;
     pScroll = m_pScroll;
     for (pScroll = m_pScroll; pScroll; pScroll = pScroll->next)
     {
@@ -949,7 +949,7 @@ int CXI_SCROLLIMAGE::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_SCROLLIMAGE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_SCROLLIMAGE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     if (xPos >= m_rect.left && xPos <= m_rect.right && yPos >= m_rect.top && yPos <= m_rect.bottom && m_bClickable &&
         m_bUse)
@@ -962,10 +962,10 @@ bool CXI_SCROLLIMAGE::IsClick(int buttonID, long xPos, long yPos)
 
 void CXI_SCROLLIMAGE::ChangePosition(XYRECT &rNewPos)
 {
-    const long nLeftOffset = rNewPos.left - m_rect.left;
-    const long nTopOffset = rNewPos.top - m_rect.top;
-    const long nRightOffset = rNewPos.right - m_rect.right;
-    const long nBottomOffset = rNewPos.bottom - m_rect.bottom;
+    const int32_t nLeftOffset = rNewPos.left - m_rect.left;
+    const int32_t nTopOffset = rNewPos.top - m_rect.top;
+    const int32_t nRightOffset = rNewPos.right - m_rect.right;
+    const int32_t nBottomOffset = rNewPos.bottom - m_rect.bottom;
 
     m_rAbsolutePosition.left += nLeftOffset;
     m_rAbsolutePosition.top += nTopOffset;
@@ -1005,7 +1005,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
     if (pAttr != nullptr)
     {
         // check whether the whole list needs to be changed
-        if (nScrollItemNum == -1 || m_Image.size() != static_cast<long>(pAttr->GetAttributeAsDword("NotUsed", 0) +
+        if (nScrollItemNum == -1 || m_Image.size() != static_cast<int32_t>(pAttr->GetAttributeAsDword("NotUsed", 0) +
                                                                         pAttr->GetAttributeAsDword("ListSize", 0)))
         {
             RefreshScroll();
@@ -1195,7 +1195,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
             if (m_nGroupQuantity != 0)
             {
                 // set new groups
-                m_nGroupTex = new long[m_nGroupQuantity];
+                m_nGroupTex = new int32_t[m_nGroupQuantity];
                 m_sGroupName = new char *[m_nGroupQuantity];
                 if (m_nGroupTex == nullptr || m_sGroupName == nullptr)
                 {
@@ -1496,7 +1496,7 @@ void CXI_SCROLLIMAGE::UpdateTexturesGroup()
     int i;
 
     char **pPrevGroup = m_sGroupName;
-    long *prevTex = m_nGroupTex;
+    int32_t *prevTex = m_nGroupTex;
     const int nPrevQ = m_nGroupQuantity;
 
     // get textures
@@ -1510,7 +1510,7 @@ void CXI_SCROLLIMAGE::UpdateTexturesGroup()
         m_nGroupQuantity = pA->GetAttributesNum();
         if (m_nGroupQuantity != 0)
         {
-            m_nGroupTex = new long[m_nGroupQuantity];
+            m_nGroupTex = new int32_t[m_nGroupQuantity];
             m_sGroupName = new char *[m_nGroupQuantity];
             if (m_nGroupTex == nullptr || m_sGroupName == nullptr)
             {
@@ -1581,7 +1581,7 @@ void CXI_SCROLLIMAGE::IMAGEDESCRIBE::Clear()
     string2.clear();
 }
 
-uint32_t CXI_SCROLLIMAGE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_SCROLLIMAGE::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -1615,7 +1615,7 @@ uint32_t CXI_SCROLLIMAGE::MessageProc(long msgcode, MESSAGE &message)
     return 0;
 }
 
-long CXI_SCROLLIMAGE::GetMousePointedPictureNum() const
+int32_t CXI_SCROLLIMAGE::GetMousePointedPictureNum() const
 {
     const FXYPOINT mp = ptrOwner->GetMousePoint();
     if (mp.x < m_rect.left || mp.x > m_rect.right || mp.y < m_rect.top || mp.y > m_rect.bottom)
@@ -1624,7 +1624,7 @@ long CXI_SCROLLIMAGE::GetMousePointedPictureNum() const
     }
 
     const float curXCenter = m_pScroll ? m_pScroll->pCenter.x : (m_rect.left + m_rect.right) / 2;
-    long n = 0;
+    int32_t n = 0;
     if (mp.x < curXCenter)
     {
         // number reduction count

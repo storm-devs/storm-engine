@@ -70,7 +70,7 @@ void WATERFLARE::Execute(uint32_t Delta_Time)
 {
     // GUARD(void WATERFLARE::Execute(uint32_t Delta_Time))
 
-    /*if (pWeather->GetLong(whi_weather_update))
+    /*if (pWeather->GetInt(whi_weather_update))
     {
       char str[256];
       // create texture
@@ -88,7 +88,7 @@ void WATERFLARE::GenerateFlares()
     iFlaresNum = 1024 + (rand() % 64);
     pRSRect = static_cast<RS_RECT *>(new RS_RECT[iFlaresNum]);
     pfAlpha = static_cast<float *>(new float[iFlaresNum]);
-    for (long i = 0; i < iFlaresNum; i++)
+    for (int32_t i = 0; i < iFlaresNum; i++)
     {
         pfAlpha[i] = FRAND(-40.0f);
         pRSRect[i].vPos = CVECTOR(FRAND(1000.0f), 0.0f, FRAND(1000.0f));
@@ -102,7 +102,7 @@ void WATERFLARE::Realize(uint32_t Delta_Time) const
 {
     // GUARD(void WATERFLARE::Realize(uint32_t Delta_Time))
 
-    for (long i = 0; i < iFlaresNum; i++)
+    for (int32_t i = 0; i < iFlaresNum; i++)
     {
         const auto fDeltaTime = static_cast<float>(Delta_Time) * 0.001f;
         pfAlpha[i] += fDeltaTime;

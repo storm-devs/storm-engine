@@ -36,8 +36,8 @@ class IBoardingStatus : public Entity
   protected:
     // show parameters
     //-----------------------
-    long m_Width;
-    long m_Height;
+    int32_t m_Width;
+    int32_t m_Height;
     FPOINT m_myPos;
     FPOINT m_enemyPos;
     uint32_t m_myColor;

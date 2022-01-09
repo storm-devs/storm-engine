@@ -406,9 +406,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
     Access.SetVCompiler(this);
     float TempFloat1;
     float TempFloat2;
-    long TempLong1;
-    long TempLong2;
-    long TempLong;
+    int32_t TempLong1;
+    int32_t TempLong2;
+    int32_t TempLong;
     bool TempBool;
     const char *pChar;
     const char *pChar2;
@@ -430,7 +430,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
     pVResult = nullptr; // default - no return value
 
-    long slen, slen2;
+    int32_t slen, slen2;
     char sVarName[64];
     std::string utf8_character;
 
@@ -438,7 +438,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
     {
     case FUNC_GETENGINEVERSION:
         pV = SStack.Push();
-        pV->Set(static_cast<long>(ENGINE_SCRIPT_VERSION));
+        pV->Set(static_cast<int32_t>(ENGINE_SCRIPT_VERSION));
         pVResult = pV;
         return pV;
         break;
@@ -455,12 +455,12 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             if (FuncTab.FindFunc(pChar) == INVALID_FUNC_CODE)
             {
                 pV = SStack.Push();
-                pV->Set(static_cast<long>(0));
+                pV->Set(0);
             }
             else
             {
                 pV = SStack.Push();
-                pV->Set(static_cast<long>(1));
+                pV->Set(1);
             }
             pVResult = pV;
         }
@@ -554,7 +554,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             if(fh == INVALID_HANDLE_VALUE)
             {
                 pV = SStack.Push();
-                pV->Set((long)0);
+                pV->Set((int32_t)0);
                 pVResult = pV;
                 return pV;
             }
@@ -567,7 +567,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             {
                 fio->_CloseHandle(fh);
                 pV = SStack.Push();
-                pV->Set((long)0);
+                pV->Set((int32_t)0);
                 pVResult = pV;
                 return pV;
             }
@@ -585,7 +585,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             nIOFullSize = 0;
 
             pV = SStack.Push();
-            pV->Set((long)1);
+            pV->Set((int32_t)1);
             pVResult = pV;
         return pV;
 
@@ -602,7 +602,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             if(fh == INVALID_HANDLE_VALUE)
             {
                 pV = SStack.Push();
-                pV->Set((long)0);
+                pV->Set((int32_t)0);
                 pVResult = pV;
                 return pV;
             }
@@ -613,7 +613,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
             fio->_CloseHandle(fh);
             pV = SStack.Push();
-            pV->Set((long)1);
+            pV->Set((int32_t)1);
             pVResult = pV;
         return pV;*/
 
@@ -636,15 +636,15 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         if (static_cast<uint32_t>(TempLong1) >= strlen(pChar))
         {
             pV = SStack.Push();
-            pV->Set(static_cast<long>(0));
+            pV->Set(0);
             pVResult = pV;
             return pV;
         }
         pV = SStack.Push();
         if (pChar[TempLong1] >= 0x30 && pChar[TempLong1] <= 0x39)
-            pV->Set(static_cast<long>(1));
+            pV->Set(1);
         else
-            pV->Set(static_cast<long>(0));
+            pV->Set(0);
         pVResult = pV;
         return pV;
 
@@ -994,7 +994,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         break;
     case FUNC_GETDELTATIME:
         pV = SStack.Push();
-        pV->Set(static_cast<long>(core_internal.GetDeltaTime()));
+        pV->Set(static_cast<int32_t>(core_internal.GetDeltaTime()));
         pVResult = pV;
         return pV;
 
@@ -1006,7 +1006,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV2->Get(pChar2);
             SetSaveData(pChar2,pChar);
 
-            pV = SStack.Push();    pV->Set((long)1);    pVResult = pV;
+            pV = SStack.Push();    pV->Set((int32_t)1);    pVResult = pV;
         return pV;
 
         case FUNC_GETSAVEDATA:
@@ -1150,7 +1150,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         if (slen < slen2)
         {
             pV = SStack.Push();
-            pV->Set(static_cast<long>(-1));
+            pV->Set(-1);
             pVResult = pV;
             return pV;
         }
@@ -1161,14 +1161,14 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             if (_strnicmp(pChar + n, pChar2, slen2) == 0)
             {
                 pV = SStack.Push();
-                pV->Set(static_cast<long>(n));
+                pV->Set(static_cast<int32_t>(n));
                 pVResult = pV;
                 return pV;
             }
             n++;
         }
         pV = SStack.Push();
-        pV->Set(static_cast<long>(-1));
+        pV->Set(-1);
         pVResult = pV;
         return pV;
 
@@ -1567,13 +1567,13 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV->Set(ent);
             SStack.Pop();
             pV = SStack.Push();
-            pV->Set(static_cast<long>(1));
+            pV->Set(1);
             pVResult = pV;
             return pV;
         }
         SStack.Pop();
         pV = SStack.Push();
-        pV->Set(static_cast<long>(0));
+        pV->Set(0);
         pVResult = pV;
         SetError("Cant create class: %s", pChar);
         return pV;
@@ -1730,9 +1730,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         Access.Get(pChar);
         pV = SStack.Push();
         if (BC_LoadSegment(pChar))
-            pV->Set(static_cast<long>(1));
+            pV->Set(1);
         else
-            pV->Set(static_cast<long>(0));
+            pV->Set(0);
         pVResult = pV;
         return pV;
         //
@@ -1756,9 +1756,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->Get(pChar);
         pV = SStack.Push();
         if (BC_SegmentIsLoaded(pChar))
-            pV->Set(static_cast<long>(1));
+            pV->Set(1);
         else
-            pV->Set(static_cast<long>(0));
+            pV->Set(0);
         pVResult = pV;
         break;
         //
@@ -1975,7 +1975,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
                 SetError("Negative func 'sqrt' argument");
                 return nullptr;
             }
-            TempLong1 = static_cast<long>(sqrtf(static_cast<float>(TempLong1)));
+            TempLong1 = static_cast<int32_t>(sqrtf(static_cast<float>(TempLong1)));
             pV = SStack.Push();
             pV->Set(TempLong1);
             pVResult = pV;
@@ -2537,7 +2537,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
     return nullptr;
 }
 
-void COMPILER::DumpAttributes(ATTRIBUTES *pA, long level)
+void COMPILER::DumpAttributes(ATTRIBUTES *pA, int32_t level)
 {
     char buffer[128];
     if (pA == nullptr)
@@ -2560,7 +2560,7 @@ void COMPILER::DumpAttributes(ATTRIBUTES *pA, long level)
 bool COMPILER::CreateMessage(MESSAGE *pMs, uint32_t s_off, uint32_t var_offset, bool s2s)
 {
     uintptr_t TempPtr;
-    long TempLong1;
+    int32_t TempLong1;
     float TempFloat1;
     entid_t TempEid;
     ATTRIBUTES *pA;

@@ -52,16 +52,16 @@ class Core
     // return current fps
     virtual uint32_t EngineFps() = 0;
     // set fixed delta time mode, (-1) - off
-    virtual void SetDeltaTime(long delta_time) = 0;
+    virtual void SetDeltaTime(int32_t delta_time) = 0;
     virtual uint32_t GetDeltaTime() = 0;
     virtual uint32_t GetRDeltaTime() = 0;
     //
     virtual VDATA *Event(const char *Event_name, const char *Format = nullptr, ...) = 0;
     virtual uint32_t PostEvent(const char *Event_name, uint32_t post_time, const char *Format, ...) = 0;
 
-    virtual void *GetSaveData(const char *file_name, long &data_size) = 0;
+    virtual void *GetSaveData(const char *file_name, int32_t &data_size) = 0;
 
-    virtual bool SetSaveData(const char *file_name, void *data_ptr, long data_size) = 0;
+    virtual bool SetSaveData(const char *file_name, void *data_ptr, int32_t data_size) = 0;
 
     virtual uint32_t SetScriptFunction(IFUNCINFO *pFuncInfo) = 0;
 

@@ -105,8 +105,8 @@ class COMPILER : public VIRTUAL_COMPILER
     }
 
     char *LoadFile(const char *file_name, uint32_t &file_size, bool bFullPath = false);
-    // char *    AppendProgram(char * base_program, long base_program_size, char * append_program, long
-    // append_program_size, long& new_program_size);
+    // char *    AppendProgram(char * base_program, int32_t base_program_size, char * append_program, int32_t
+    // append_program_size, int32_t& new_program_size);
     bool AppendProgram(char *&pBase_program, uint32_t &Base_program_size, const char *pAppend_program,
                        uint32_t &Append_program_size, bool bAddLinefeed);
     void Trace(const char *data_PTR, ...);
@@ -125,7 +125,7 @@ class COMPILER : public VIRTUAL_COMPILER
     void SetProgramDirectory(const char *dir_name);
     VDATA *ProcessEvent(const char *event_name, MESSAGE message);
     VDATA *ProcessEvent(const char *event_name);
-    void SetEventHandler(const char *event_name, const char *func_name, long flag, bool bStatic = false);
+    void SetEventHandler(const char *event_name, const char *func_name, int32_t flag, bool bStatic = false);
     void DelEventHandler(const char *event_name, const char *func_name);
 
     bool Completed()
@@ -201,7 +201,7 @@ class COMPILER : public VIRTUAL_COMPILER
     void UpdateOffsets(SEGMENT_DESC &Segment, STRINGS_LIST &list, uint32_t offset, const char *sname = nullptr);
     S_TOKEN_TYPE DetectUnknown(uint32_t &code);
 
-    void DumpAttributes(ATTRIBUTES *pA, long level);
+    void DumpAttributes(ATTRIBUTES *pA, int32_t level);
 
     bool IsIntFuncVarArgsNum(uint32_t code);
     uint32_t GetInternalFunctionArgumentsNum(uint32_t code);
@@ -239,8 +239,8 @@ class COMPILER : public VIRTUAL_COMPILER
     // bool SetSaveData(const char * file_name, const char * save_data);
     // bool GetSaveData(const char * file_name, DATA * pV);
 
-    bool SetSaveData(const char *file_name, void *save_data, long data_size);
-    void *GetSaveData(const char *file_name, long &data_size);
+    bool SetSaveData(const char *file_name, void *save_data, int32_t data_size);
+    void *GetSaveData(const char *file_name, int32_t &data_size);
 
     void AddRuntimeEvent();
 

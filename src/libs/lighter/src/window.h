@@ -54,7 +54,7 @@ class Window
         float *att2;    // Attenuation D^2
         float *range;   // Radius of action
         bool *isOn;     // Included
-        long litIndex;  // Source index
+        int32_t litIndex;  // Source index
         float h;        // Additional window height
     };
 
@@ -92,7 +92,7 @@ class Window
     float kBlur;
     bool isLockCtrl;
     bool isUpdateLight;
-    long updateLight;
+    int32_t updateLight;
     bool updateLightCos, updateLightAtt, updateLightSdw;
     bool isSaveLight;
     float isSuccessful;
@@ -107,23 +107,23 @@ class Window
     void DrawRect(float x1, float y1, float x2, float y2, uint32_t color);
     void DrawLine(float x1, float y1, float x2, float y2, uint32_t color);
     void DrawLRect(float x1, float y1, float x2, float y2, uint32_t bkgColor, uint32_t lnColor);
-    void Print(long color, float xleft, float xright, float y, float scale, bool isAlign, const char *format, ...);
+    void Print(int32_t color, float xleft, float xright, float y, float scale, bool isAlign, const char *format, ...);
     void DrawCursor();
 
-    bool Slider(long id, float y, const char *text, float &value, float min = 0.0f, float max = 1.0f,
+    bool Slider(int32_t id, float y, const char *text, float &value, float min = 0.0f, float max = 1.0f,
                 bool drawVal = false);
-    bool ColorPicker(long id, float y, CVECTOR &ref, float st, CVECTOR &res);
-    bool Button(float x, float y, float w, float h, const char *text, long *act = nullptr, long init = -1);
+    bool ColorPicker(int32_t id, float y, CVECTOR &ref, float st, CVECTOR &res);
+    bool Button(float x, float y, float w, float h, const char *text, int32_t *act = nullptr, int32_t init = -1);
     void Checker(float x, float y, const char *text, bool &res);
-    long SelPreset();
+    int32_t SelPreset();
 
-    void SavePreset(long prs);
-    void LoadPreset(long prs);
+    void SavePreset(int32_t prs);
+    void LoadPreset(int32_t prs);
 
     char *GenerateName(const char *f, const char *n);
 
     void UpdateColors();
-    void UpdateLight(long idxLight, bool isCos, bool isAtt, bool isSdw);
+    void UpdateLight(int32_t idxLight, bool isCos, bool isAtt, bool isSdw);
 
   private:
     //
@@ -135,7 +135,7 @@ class Window
     uint32_t bkgColor, frmColor, textColor, selColor;
     float sldLen;
     // Font
-    long font;
+    int32_t font;
     float fontHeight;
     // Mouse
     bool isMouseDown;
@@ -145,19 +145,19 @@ class Window
     // List
     bool isList;
     ListElement *list;
-    long numElements;
-    long selected;
+    int32_t numElements;
+    int32_t selected;
     float listPos;
     float listWait;
     // Slider
-    long slidID;
+    int32_t slidID;
     float slidDltX;
     // Picker
     bool isPikerActive;
     float pikerWait;
     IDirect3DTexture9 *pickerTexture;
     // Presets
-    long lastPreset;
+    int32_t lastPreset;
     char prsComment[64];
     // String buffer
     char ver[256];

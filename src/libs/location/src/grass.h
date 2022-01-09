@@ -104,7 +104,7 @@ class Grass : public Entity
         CVECTOR pos;     // Current position
         CVECTOR lastPos; // Inertial position
         Character *chr;  // Character pointer
-        long useCounter; // Grass Influence Counter
+        int32_t useCounter; // Grass Influence Counter
     };
 
     // --------------------------------------------------------------------------------------------
@@ -152,15 +152,15 @@ class Grass : public Entity
     // --------------------------------------------------------------------------------------------
   private:
     // Render block
-    void RenderBlock(const CVECTOR &camPos, const PLANE *plane, long numPlanes, long mx, long mz);
+    void RenderBlock(const CVECTOR &camPos, const PLANE *plane, int32_t numPlanes, int32_t mx, int32_t mz);
     // Box visibility check
-    bool VisibleTest(const PLANE *plane, long numPlanes, const CVECTOR &min, const CVECTOR &max);
+    bool VisibleTest(const PLANE *plane, int32_t numPlanes, const CVECTOR &min, const CVECTOR &max);
     // Render block
     void RenderBlock(GRSMiniMapElement &mme, float kLod);
     // Draw the contents of the buffer
     void DrawBuffer();
     // Get the color
-    static long GetColor(CVECTOR color);
+    static int32_t GetColor(CVECTOR color);
     // Vertex declaration
     void CreateVertexDeclaration() const;
 
@@ -168,22 +168,22 @@ class Grass : public Entity
     // Render service
     VDX9RENDER *rs;
     // Buffers
-    long vb, ib;
-    long numPoints;
+    int32_t vb, ib;
+    int32_t numPoints;
     // Texture
-    long texture;
+    int32_t texture;
 
     // Minimap
     GRSMiniMapElement *miniMap;
     // Full non-empty cached minimap
-    std::vector<std::pair<long, long>> cachedMiniMap;
+    std::vector<std::pair<int32_t, int32_t>> cachedMiniMap;
     // Minimap sizes
-    long miniX, miniZ;
+    int32_t miniX, miniZ;
     // Starting position of the map
     float startX, startZ;
     // Blocks with heights
     GRSMapElementEx *block;
-    long numElements;
+    int32_t numElements;
     // Current parameters for grass turns
     AngleInfo angInfo[16];
     // Current swing phases
@@ -193,7 +193,7 @@ class Grass : public Entity
     CVECTOR lColor; // Source color
     CVECTOR aColor; // Ambient light color
 
-    std::vector<long> blockChrs; // Indexes of characters processed by the block
+    std::vector<int32_t> blockChrs; // Indexes of characters processed by the block
 
     float lodSelect; // Lod selection range factor (kLod = kLod^lodSelect)
     float winForce;  // Wind speed coefficient 0..1
@@ -205,7 +205,7 @@ class Grass : public Entity
 
     float cosPh1, sinPh2, sinPh5, sinPh6, winPow, winF10, kAmpWF, kDirWF, kLitWF;
     float windAng;
-    long initForce;
+    int32_t initForce;
 
     D3DXVECTOR3 aAngles[16];
     D3DXVECTOR2 aUV[16];
@@ -220,5 +220,5 @@ class Grass : public Entity
     float m_fMinGrassLod;
 
     // boal grass parameters
-    long isGrassLightsOn;
+    int32_t isGrassLightsOn;
 };

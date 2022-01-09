@@ -15,7 +15,7 @@
 // Construction, destruction
 // ============================================================================================
 
-ActionInfo::ActionInfo(const char *aname, long startframe, long endframe)
+ActionInfo::ActionInfo(const char *aname, int32_t startframe, int32_t endframe)
 {
     Assert(aname);
     Assert(aname[0] != '\0');
@@ -68,7 +68,7 @@ bool ActionInfo::operator==(const char *actionName) const
 }
 
 // check if the event generation condition is satisfied
-bool ActionInfo::CheckEvent(long index, float time, bool direction)
+bool ActionInfo::CheckEvent(int32_t index, float time, bool direction)
 {
     Assert(index >= 0 && index < numEvents);
     switch (event[index].event)
@@ -92,7 +92,7 @@ bool ActionInfo::CheckEvent(long index, float time, bool direction)
 }
 
 // Get message name
-const char *ActionInfo::EventName(long index)
+const char *ActionInfo::EventName(int32_t index)
 {
     Assert(index >= 0 && index < numEvents);
     return event[index].name;

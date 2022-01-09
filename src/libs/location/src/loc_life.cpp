@@ -158,7 +158,7 @@ void LocLife::Update(float dltTime)
     }
 }
 
-long LocLife::FindPos()
+int32_t LocLife::FindPos()
 {
     auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
     if (!m)
@@ -237,15 +237,15 @@ bool LocLife::IsNearPlayer(float radius) const
     return false;
 }
 
-long LocLife::FindRandomPos(CVECTOR &pos) const
+int32_t LocLife::FindRandomPos(CVECTOR &pos) const
 {
     auto &ptc = location->GetPtcData();
     if (!ptc.numTriangles)
         return -1;
     const auto i = rand() % ptc.numTriangles;
-    const long i1 = ptc.triangle[i].i[0];
-    const long i2 = ptc.triangle[i].i[1];
-    const long i3 = ptc.triangle[i].i[2];
+    const int32_t i1 = ptc.triangle[i].i[0];
+    const int32_t i2 = ptc.triangle[i].i[1];
+    const int32_t i3 = ptc.triangle[i].i[2];
     pos.x = ptc.vertex[i1].x;
     pos.x += ptc.vertex[i2].x;
     pos.x += ptc.vertex[i3].x;

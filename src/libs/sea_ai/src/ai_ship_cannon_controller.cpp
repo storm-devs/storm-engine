@@ -187,7 +187,7 @@ void AIShipCannonController::Execute(float fDeltaTime)
 
             bool bReloaded = pBort->fChargePercent < 0.999f;
 
-            long dwReadyCannonsAfter = 0, dwReadyCannonsBefore = 0;
+            int32_t dwReadyCannonsAfter = 0, dwReadyCannonsBefore = 0;
 
             pBort->fChargePercent = 0.0f;
             for (uint32_t j = 0; j < pBort->aCannons.size(); j++)
@@ -264,7 +264,7 @@ void AIShipCannonController::AddTrg(CVECTOR *pVerts, uint32_t dwColor)
 }
 
 // return (fire distance) angle
-float AIShipCannonController::GetBortHeightAngle(long iBortIndex)
+float AIShipCannonController::GetBortHeightAngle(int32_t iBortIndex)
 {
     CMatrix m;
     CVECTOR v;
@@ -781,7 +781,7 @@ bool AIShipCannonController::isHaveEnoughtBallsForBort(uint32_t dwBortIdx)
     Assert(dwBortIdx != INVALID_BORT_INDEX && dwBortIdx < aShipBorts.size());
     VDATA *pvData = core.Event(SHIP_GET_CURRENT_BALLS_NUM, "a", GetAIShip()->GetACharacter());
     Assert(pvData);
-    if (static_cast<long>(GetBortIntactCannonsNum(dwBortIdx)) > pvData->GetLong())
+    if (static_cast<int32_t>(GetBortIntactCannonsNum(dwBortIdx)) > pvData->GetInt())
         return false;
     return true;
 }

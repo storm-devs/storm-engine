@@ -18,8 +18,8 @@ class LocatorArray
     struct LocatorInfro
     {
         CMatrix mtx;
-        long name;
-        long hash;
+        int32_t name;
+        int32_t hash;
         float radius;
     };
 
@@ -37,51 +37,51 @@ class LocatorArray
     // Add locator
     void AddLocator(CMatrix &mtx, const char *name = nullptr);
     // Change locator matrix
-    void SetNewMatrix(long locIndex, CMatrix &mtx);
+    void SetNewMatrix(int32_t locIndex, CMatrix &mtx);
     // Find the nearest locator by ball
-    float FindNearesLocator(float x, float y, float z, long *locIndex = nullptr);
+    float FindNearesLocator(float x, float y, float z, int32_t *locIndex = nullptr);
     // Find the nearest locator by cylinder
-    long FindNearesLocatorCl(float x, float y, float z, float height2, float &dist);
+    int32_t FindNearesLocatorCl(float x, float y, float z, float height2, float &dist);
     // Find locator by name
-    long FindByName(const char *locName);
+    int32_t FindByName(const char *locName);
     // Get locator name
-    const char *LocatorName(long locIndex);
+    const char *LocatorName(int32_t locIndex);
     // Get locator coordinates
-    bool GetLocatorPos(long locIndex, float &x, float &y, float &z);
+    bool GetLocatorPos(int32_t locIndex, float &x, float &y, float &z);
     // Get locator matrix
-    bool GetLocatorPos(long locIndex, CMatrix &mtx);
+    bool GetLocatorPos(int32_t locIndex, CMatrix &mtx);
     // Check the index for correctness
-    bool IsValidateIndex(long locIndex) const;
+    bool IsValidateIndex(int32_t locIndex) const;
     // Number of locators
-    long Num() const;
+    int32_t Num() const;
     // Locator name
-    char *Name(long locIndex);
+    char *Name(int32_t locIndex);
     // Compare group names
-    bool CompareGroup(const char *groupName, long ghash) const;
+    bool CompareGroup(const char *groupName, int32_t ghash) const;
     // Get group name
     char *GetGroupName() const;
 
     // Set radius of the locator
-    void SetLocatorRadius(long locIndex, float radius);
+    void SetLocatorRadius(int32_t locIndex, float radius);
     // Get the radius of the locator
-    float GetLocatorRadius(long locIndex);
+    float GetLocatorRadius(int32_t locIndex);
 
     // --------------------------------------------------------------------------------------------
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   public:
-    static long CalcHashString(const char *str);
+    static int32_t CalcHashString(const char *str);
 
   private:
     // Group name
     char *group;
-    long hash;
+    int32_t hash;
     // Locators
     std::vector<LocatorInfro> locator;
-    long numLocators;
+    int32_t numLocators;
     // Locator names
     char *locatorNames;
-    long bytesInLNArray;
+    int32_t bytesInLNArray;
 
   public:
     bool isVisible;
@@ -92,7 +92,7 @@ class LocatorArray
 };
 
 // Get locator name
-inline const char *LocatorArray::LocatorName(long locIndex)
+inline const char *LocatorArray::LocatorName(int32_t locIndex)
 {
     if (locIndex < 0 || locIndex >= numLocators)
         return nullptr;
@@ -102,7 +102,7 @@ inline const char *LocatorArray::LocatorName(long locIndex)
 }
 
 // Get locator coordinates
-inline bool LocatorArray::GetLocatorPos(long locIndex, float &x, float &y, float &z)
+inline bool LocatorArray::GetLocatorPos(int32_t locIndex, float &x, float &y, float &z)
 {
     if (locIndex < 0 || locIndex >= numLocators)
         return false;
@@ -113,7 +113,7 @@ inline bool LocatorArray::GetLocatorPos(long locIndex, float &x, float &y, float
 }
 
 // Get locator matrix
-inline bool LocatorArray::GetLocatorPos(long locIndex, CMatrix &mtx)
+inline bool LocatorArray::GetLocatorPos(int32_t locIndex, CMatrix &mtx)
 {
     if (locIndex < 0 || locIndex >= numLocators)
         return false;
@@ -122,19 +122,19 @@ inline bool LocatorArray::GetLocatorPos(long locIndex, CMatrix &mtx)
 }
 
 // Check the index for correctness
-inline bool LocatorArray::IsValidateIndex(long locIndex) const
+inline bool LocatorArray::IsValidateIndex(int32_t locIndex) const
 {
     return (locIndex < 0 || locIndex >= numLocators);
 }
 
 // Number of locators
-inline long LocatorArray::Num() const
+inline int32_t LocatorArray::Num() const
 {
     return numLocators;
 }
 
 // Locator name
-inline char *LocatorArray::Name(long locIndex)
+inline char *LocatorArray::Name(int32_t locIndex)
 {
     Assert(locIndex >= 0 && locIndex < numLocators);
     return locatorNames + locator[locIndex].name;
@@ -147,14 +147,14 @@ inline char *LocatorArray::GetGroupName() const
 }
 
 // Set radius of the locator
-inline void LocatorArray::SetLocatorRadius(long locIndex, float radius)
+inline void LocatorArray::SetLocatorRadius(int32_t locIndex, float radius)
 {
     Assert(locIndex >= 0 && locIndex < numLocators);
     locator[locIndex].radius = radius;
 }
 
 // Get the radius of the locator
-inline float LocatorArray::GetLocatorRadius(long locIndex)
+inline float LocatorArray::GetLocatorRadius(int32_t locIndex)
 {
     Assert(locIndex >= 0 && locIndex < numLocators);
     if (locator[locIndex].radius < 0.0f)

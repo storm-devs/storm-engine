@@ -28,9 +28,9 @@ class CharactersGroups : public Entity
         String(const char *str);
         ~String();
         char *name;
-        long len;
-        long max;
-        long hash;
+        int32_t len;
+        int32_t max;
+        int32_t hash;
 
         void operator=(const char *str);
 
@@ -38,9 +38,9 @@ class CharactersGroups : public Entity
         {
             return name;
         };
-        bool Cmp(const char *str, long l, long h) const;
-        static long GetHash(const char *str);
-        static long GetLen(const char *str);
+        bool Cmp(const char *str, int32_t l, int32_t h) const;
+        static int32_t GetHash(const char *str);
+        static int32_t GetLen(const char *str);
     };
 
     enum RelState
@@ -66,12 +66,12 @@ class CharactersGroups : public Entity
 
     struct Group
     {
-        long index;                // Group index
+        int32_t index;                // Group index
         String name;               // Group name
         float look;                // Enemy sight radius
         float hear;                // The radius at which the character always determines the enemy
         float say;                 // The radius at which the character can inform neighbors about the danger
-        long priority;             // Protection priority
+        int32_t priority;             // Protection priority
         Relation *relations;       // Relationship list - the size corresponds to the group index in the list
         std::vector<entid_t> c;    // List of characters in the group
     };
@@ -142,7 +142,7 @@ class CharactersGroups : public Entity
     // Delete group
     void MsgReleaseGroup(MESSAGE &message);
     // Register a group
-    long RegistryGroup(const char *groupName);
+    int32_t RegistryGroup(const char *groupName);
     // Delete group
     void ReleaseGroup(const char *groupName);
 
@@ -180,15 +180,15 @@ class CharactersGroups : public Entity
     // Find a group by name
     Group *FindGroup(const char *name);
     // Find a group by name
-    long FindGroupIndex(const char *name);
+    int32_t FindGroupIndex(const char *name);
     // Find group relationship
     Relation &FindRelation(MESSAGE &message, bool *selfgroup = nullptr);
     // Find group relationship
     Relation &FindRelation(const char *name1, const char *name2, bool *selfgroup = nullptr);
     // Find group relationship
-    Relation &FindRelation(long g1, long g2, bool *selfgroup = nullptr);
+    Relation &FindRelation(int32_t g1, int32_t g2, bool *selfgroup = nullptr);
     // Get character group index
-    long GetCharacterGroup(Character *c);
+    int32_t GetCharacterGroup(Character *c);
 
     // Delete all targets
     void ClearAllTargets() const;
@@ -206,10 +206,10 @@ class CharactersGroups : public Entity
 
   private:
     std::vector<Group *> groups; // Groups
-    long numGroups;              // Number of groups
-    long maxGroups;              // Number of groups
+    int32_t numGroups;              // Number of groups
+    int32_t maxGroups;              // Number of groups
     Location *location;          // Current location
-    long curExecuteChr;          // The index of the currently executing character
+    int32_t curExecuteChr;          // The index of the currently executing character
     float waveTime;              // Time since last wave launch
 
     // Character search array

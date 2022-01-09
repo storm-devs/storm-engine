@@ -97,7 +97,7 @@ void RAIN::GenerateRain()
     // fRainHeight = Weather->GetFloat(whf_rain_height);
     // fRainRadius = Weather->GetFloat(whf_rain_radius);
     // float fRainRadiusD2 = fRainRadius / 2.0f;
-    // dwNumDrops = Weather->GetLong(whi_rain_drops_num);
+    // dwNumDrops = Weather->GetInt(whi_rain_drops_num);
 
     if (dwNumDrops == 0)
         return;
@@ -158,7 +158,7 @@ void RAIN::GenerateRain()
     auto *pI = static_cast<uint16_t *>(rs->LockIndexBuffer(iIBSeaDrops));
     if (pI)
     {
-        for (long i = 0; i < NUM_SEA_DROPS; i++)
+        for (int32_t i = 0; i < NUM_SEA_DROPS; i++)
         {
             *pI++ = static_cast<uint16_t>(i * 4 + 0);
             *pI++ = static_cast<uint16_t>(i * 4 + 3);
@@ -208,7 +208,7 @@ void RAIN::Execute(uint32_t Delta_Time)
 {
 }
 
-void RAIN::InitialSomeBlockParameters(long iIdx) const
+void RAIN::InitialSomeBlockParameters(int32_t iIdx) const
 {
     const auto fDist = 6.0f * 5.4f * fWindPower;
     pRainBlocks[iIdx].vPos.x = -fDist * sinf(fWindAngle);
@@ -238,8 +238,8 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
 
     fDropsDeltaTime += fDeltaTime;
 
-    auto iNumNewDrops1 = static_cast<long>(fDropsDeltaTime * static_cast<float>(dwDropsNearNum));
-    auto iNumNewDrops2 = static_cast<long>(fDropsDeltaTime * static_cast<float>(dwDropsFarNum));
+    auto iNumNewDrops1 = static_cast<int32_t>(fDropsDeltaTime * static_cast<float>(dwDropsNearNum));
+    auto iNumNewDrops2 = static_cast<int32_t>(fDropsDeltaTime * static_cast<float>(dwDropsFarNum));
     fDropsDeltaTime -= static_cast<float>(static_cast<double>(iNumNewDrops1 + iNumNewDrops2) /
                                           static_cast<double>(dwDropsNearNum + dwDropsFarNum));
     if (fDropsDeltaTime < 0.0f)
@@ -248,7 +248,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
     const auto its = EntityManager::GetEntityIdIterators(RAIN_DROPS);
     if (its.first != its.second)
     {
-        for (long i = 0; i < iNumNewDrops1 + iNumNewDrops2; i++)
+        for (int32_t i = 0; i < iNumNewDrops1 + iNumNewDrops2; i++)
         {
             SHIP_BASE *pShip = nullptr;
             float fA, fS, fR;
@@ -309,7 +309,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
                 drop.iShip = -1;
                 if (pShip)
                 {
-                    long k;
+                    int32_t k;
                     for (k = 0; k < aShips.size(); k++)
                         if (aShips[k].pShip == pShip)
                             break;
@@ -331,7 +331,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
 
     aRects.clear();
 
-    for (long i = 0; i < aShips.size(); i++)
+    for (int32_t i = 0; i < aShips.size(); i++)
     {
         if (!EntityManager::GetEntityPointer(aShips[i].eid))
         {
@@ -339,7 +339,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
         }
     }
 
-    for (long i = 0; i < aDrops.size(); i++)
+    for (int32_t i = 0; i < aDrops.size(); i++)
     {
         drop_t &drop = aDrops[i];
 
@@ -383,9 +383,9 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
     rs->TextureSet(0, iSeaDropTex);
 
     auto pVSeaDropBuffer = static_cast<SEADROPVERTEX *>(rs->LockVertexBuffer(iVBSeaDrops, D3DLOCK_DISCARD));
-    long n = 0;
+    int32_t n = 0;
     if (pVSeaDropBuffer)
-        for (long i = 0; i < aSeaDrops.size(); i++)
+        for (int32_t i = 0; i < aSeaDrops.size(); i++)
         {
             seadrop_t &drop = aSeaDrops[i];
 
@@ -405,7 +405,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
             SEADROPVERTEX *pV = &pVSeaDropBuffer[n * 4];
 
             float fSize = 0.15f;
-            long frame = static_cast<long>((1.0f - drop.fTime / drop.fLifeTime) * 8.0f);
+            int32_t frame = static_cast<int32_t>((1.0f - drop.fTime / drop.fLifeTime) * 8.0f);
             float du = 1.0f / 8.0f;
             float u = static_cast<float>(frame) * du;
 

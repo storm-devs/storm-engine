@@ -176,7 +176,7 @@ void CXI_STATUSLINE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
         m_rs->UnLockIndexBuffer(m_iBuf);
 }
 
-bool CXI_STATUSLINE::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_STATUSLINE::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -203,7 +203,7 @@ void CXI_STATUSLINE::SaveParametersToIni()
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 }
 
-uint32_t CXI_STATUSLINE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CXI_STATUSLINE::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {

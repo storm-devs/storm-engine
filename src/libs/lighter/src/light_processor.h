@@ -42,7 +42,7 @@ class LightProcessor
     // Smooth lighting
     void BlurLight();
     // Calculate lighting
-    void CalcLights(long lit = -1, bool isCos = true, bool isAtt = true, bool isSdw = true);
+    void CalcLights(int32_t lit = -1, bool isCos = true, bool isAtt = true, bool isSdw = true);
     // Distribute shading from triangle to vertices
     void ApplyTriangleShadows(Triangle &t);
 
@@ -53,7 +53,7 @@ class LightProcessor
     VDX9RENDER *rs;
     OctTree *octtree;
 
-    long shadowTriangle;
-    long smoothVertex;
-    long blurVertex;
+    int32_t shadowTriangle;
+    int32_t smoothVertex;
+    int32_t blurVertex;
 };

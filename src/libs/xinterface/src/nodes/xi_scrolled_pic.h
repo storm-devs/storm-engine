@@ -13,7 +13,7 @@ class CXI_SCROLLEDPICTURE : public CXI_PICTURE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -21,7 +21,7 @@ class CXI_SCROLLEDPICTURE : public CXI_PICTURE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
     void MoveMouseOutScreen(float fX, float fY) override;
     void ChangeUV(FXYRECT &frNewUV) override;
 
@@ -32,7 +32,7 @@ class CXI_SCROLLEDPICTURE : public CXI_PICTURE
     void RecalculateTexPerPixel();
     void UpdateBuildenImages();
     void SetPosToCenter(float fX, float fY);
-    void SetScale(long nScaleIdx);
+    void SetScale(int32_t nScaleIdx);
     void SetScale(float fsx, float fsy);
 
     float m_fUTexPerPixel;
@@ -48,7 +48,7 @@ class CXI_SCROLLEDPICTURE : public CXI_PICTURE
         bool bShow;
     };
 
-    long m_nScaleNum;
+    int32_t m_nScaleNum;
     std::vector<FXYPOINT> m_aScale;
     std::vector<BuildinImage> m_aImg;
 };

@@ -141,8 +141,8 @@ void CameraFollow::MoveCamera(float dltTime)
     lookTo.y += lc->lheight;
     // decide what to do
     const auto pi = 3.14159265359f;
-    auto chay = likeCamay - static_cast<long>(likeCamay / pi) * 2.0f * pi;
-    const auto cay = camay - static_cast<long>(camay / pi) * 2.0f * pi;
+    auto chay = likeCamay - static_cast<int32_t>(likeCamay / pi) * 2.0f * pi;
+    const auto cay = camay - static_cast<int32_t>(camay / pi) * 2.0f * pi;
     if (cay - chay > pi)
         chay += 2 * pi;
     if (cay - chay < -pi)
@@ -198,24 +198,24 @@ void CameraFollow::CalcPosition(float ang, float radius, float dax, CVECTOR &pos
 #ifdef LFC_DEBUG
 
 CVECTOR fndv[4096 * 3];
-long numTrg = 0;
+int32_t numTrg = 0;
 bool isFndTrg = false;
 CVECTOR fndvP1[4096];
-long numP1 = 0;
+int32_t numP1 = 0;
 CVECTOR fndvP2[4096];
-long numP2 = 0;
+int32_t numP2 = 0;
 CVECTOR fndvP3[4096 * 10];
-long numP3 = 0;
+int32_t numP3 = 0;
 
 CVECTOR fndvN[4096 * 10];
-long numN = 0;
+int32_t numN = 0;
 CVECTOR fndvE[4096 * 10];
-long numE = 0;
+int32_t numE = 0;
 
 CVECTOR fndvU[4096 * 10];
-long numU = 0;
+int32_t numU = 0;
 
-long numPoly1 = 0;
+int32_t numPoly1 = 0;
 
 int camSteps = 0;
 
@@ -257,7 +257,7 @@ float CameraFollow::FindRadius(float curAng) const
         float rhw;
     } vrt[64];
 
-    for (long ii = 0; ii < 32; ii++)
+    for (int32_t ii = 0; ii < 32; ii++)
     {
         float x = day * ii / 31.0f;
         vrt[ii * 2 + 0].p.x = 300.0f;
@@ -423,7 +423,7 @@ float CameraFollow::FindRadius(float curAng) const
 }
 
 // Consider polygon in radius search
-bool CameraFollow::ApplyPoly(const CVECTOR *v, long n)
+bool CameraFollow::ApplyPoly(const CVECTOR *v, int32_t n)
 {
 #ifdef LFC_DEBUG
     numPoly1++;
@@ -447,7 +447,7 @@ bool CameraFollow::ApplyPoly(const CVECTOR *v, long n)
     static EdgeInfo edge[32];
     if (n > 32)
         n = 32;
-    for (long i = 0; i < n; i++)
+    for (int32_t i = 0; i < n; i++)
     {
         // Edge
         auto j = i + 1;
@@ -504,12 +504,12 @@ bool CameraFollow::ApplyPoly(const CVECTOR *v, long n)
     return true;
 }
 
-void CameraFollow::ApplyPolyFindNearest(EdgeInfo *e, long ne, const CVECTOR &pos)
+void CameraFollow::ApplyPolyFindNearest(EdgeInfo *e, int32_t ne, const CVECTOR &pos)
 {
     // Testing with edges, determining the closest distance
     CVECTOR pnt;
     auto minDist = -1.0f;
-    for (long i = 0; i < ne; i++)
+    for (int32_t i = 0; i < ne; i++)
     {
         // Distance to planes from points
         auto d = (pos | e[i].n) - e[i].d;
@@ -642,7 +642,7 @@ float CameraFollow::Trace(const CVECTOR &src, const CVECTOR &dst)
     s = src - up * LCF_RADIUS;
     k[4] = SubTrace(s, s + dir);
     auto kRes = 2.0f;
-    for (long i = 0; i < 5; i++)
+    for (int32_t i = 0; i < 5; i++)
         if (kRes > k[i])
             kRes = k[i];
     return kRes;

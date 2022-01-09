@@ -30,14 +30,14 @@ class PCS_CONTROLS : public CONTROLS
     float fMouseSensivityX;
     float fMouseSensivityY;
 
-    long nSystemControlsNum;
+    int32_t nSystemControlsNum;
     std::vector<USER_CONTROL> pUserControls;
-    long nControlsNum;
+    int32_t nControlsNum;
     uint32_t nFrameCounter;
-    long nLastControlTime;
+    int32_t nLastControlTime;
 
-    long nMouseWheel;
-    long nMouseDx, nMouseDy;
+    int32_t nMouseWheel;
+    int32_t nMouseDx, nMouseDy;
 
     SYSTEM_CONTROL_ELEMENT ControlsTab[CONTROL_ELEMENTS_NUM];
 
@@ -53,30 +53,30 @@ class PCS_CONTROLS : public CONTROLS
     ~PCS_CONTROLS() override;
 
     void Update(uint32_t DeltaTime) override;
-    long GetSystemControlsNum() override;
-    bool GetSystemControlDesc(long code, SYSTEM_CONTROL_DESC &_control_desc_struct) override;
+    int32_t GetSystemControlsNum() override;
+    bool GetSystemControlDesc(int32_t code, SYSTEM_CONTROL_DESC &_control_desc_struct) override;
 
     void Release();
     void AddSystemControl(SYSTEM_CONTROL_DESC &_control_desc_struct);
 
-    long CreateControl(const char *control_name) override;
-    long GetControlsNum() override;
-    bool GetControlDesc(long code, USER_CONTROL &_user_desc_struct) override;
-    bool SetControlFlags(long code, uint32_t flags) override;
+    int32_t CreateControl(const char *control_name) override;
+    int32_t GetControlsNum() override;
+    bool GetControlDesc(int32_t code, USER_CONTROL &_user_desc_struct) override;
+    bool SetControlFlags(int32_t code, uint32_t flags) override;
 
-    long GetDevicesNum() override;
-    bool GetDeviceDesc(long code, DEVICE_DESC &_device_desc) override;
+    int32_t GetDevicesNum() override;
+    bool GetDeviceDesc(int32_t code, DEVICE_DESC &_device_desc) override;
 
-    long AddControlTreeNode(long nParent, const char *pcBaseControl, const char *pcOutControl, float fTimeOut) override;
+    int32_t AddControlTreeNode(int32_t nParent, const char *pcBaseControl, const char *pcOutControl, float fTimeOut) override;
 
-    void MapControl(long control_code, long system_control_code) override;
-    bool GetControlState(long control_code, CONTROL_STATE &_state_struct) override;
+    void MapControl(int32_t control_code, int32_t system_control_code) override;
+    bool GetControlState(int32_t control_code, CONTROL_STATE &_state_struct) override;
     bool GetControlState(const char *control_name, CONTROL_STATE &_state_struct) override;
     bool SetControlState(const char *control_name, CONTROL_STATE &_state_struct) override;
-    bool SetControlState(long control_code, CONTROL_STATE &_state_struct) override;
+    bool SetControlState(int32_t control_code, CONTROL_STATE &_state_struct) override;
     void AppState(bool state) override;
-    long LastControlTime() override;
-    void SetControlTreshold(long control_code, float thval) override;
+    int32_t LastControlTime() override;
+    void SetControlTreshold(int32_t control_code, float thval) override;
     void LockControl(const char *control_name, bool mode) override;
 
     void SetMouseSensivityX(float) override;
@@ -91,7 +91,7 @@ class PCS_CONTROLS : public CONTROLS
     void HandleEvent(const storm::InputEvent &evt);
 
     // Get the keystroke buffer per frame (taking into account the language)
-    long GetKeyBufferLength() override;
+    int32_t GetKeyBufferLength() override;
     const KeyDescr *GetKeyBuffer() override;
     void ClearKeyBuffer() override;
 };

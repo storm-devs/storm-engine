@@ -78,7 +78,7 @@ void WdmWarringShip::Update(float dltTime)
         }
     }
     // Moving
-    for (long i = 0; i < numRects; i++)
+    for (int32_t i = 0; i < numRects; i++)
     {
         auto &mi = move[i];
         mi.time += mi.kTime * dltTime;
@@ -103,7 +103,7 @@ void WdmWarringShip::Update(float dltTime)
         alpha = 1.0f - 4.0f * (alpha - 0.5f) * (alpha - 0.5f);
         Assert(alpha >= 0.0f && alpha <= 1.0f);
         alpha *= 255.0f * 0.3f * this->alpha;
-        rect[i].dwColor = (static_cast<long>(alpha) << 24) | 0xffffff;
+        rect[i].dwColor = (static_cast<int32_t>(alpha) << 24) | 0xffffff;
     }
 }
 

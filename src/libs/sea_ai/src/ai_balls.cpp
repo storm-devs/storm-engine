@@ -62,7 +62,7 @@ void AIBalls::FireBallFromCamera()
     auto *pMainCharIndex = static_cast<VDATA *>(core.GetScriptVariable("nMainCharacterIndex"));
     if (!pMainCharIndex)
         return;
-    auto iMainCharIndex = pMainCharIndex->GetLong();
+    auto iMainCharIndex = pMainCharIndex->GetInt();
     if (iMainCharIndex < 0)
         return;
     auto *pMainCharacter = static_cast<VDATA *>(core.GetScriptVariable("Characters"));

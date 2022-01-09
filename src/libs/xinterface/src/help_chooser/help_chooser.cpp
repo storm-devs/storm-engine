@@ -51,7 +51,7 @@ bool HELPCHOOSER::Init()
 
 void HELPCHOOSER::Execute(uint32_t Delta_Time)
 {
-    long newCurRect;
+    int32_t newCurRect;
     CONTROL_STATE cs;
 
     const auto bMouseMoved = MouseMove();
@@ -298,10 +298,10 @@ bool HELPCHOOSER::RunChooser(const char *ChooserGroup)
     // set the mouse
     m_fCurMouseX = 0.f;
     m_fCurMouseY = 0.f;
-    m_nMouseWidth = ini->GetLong("COMMON", "mouseWidth", 32);
-    m_nMouseHeight = ini->GetLong("COMMON", "mouseHeight", 32);
-    m_nMouseCornerX = ini->GetLong("COMMON", "mouseCornerX", 0);
-    m_nMouseCornerY = ini->GetLong("COMMON", "mouseCornerY", 0);
+    m_nMouseWidth = ini->GetInt("COMMON", "mouseWidth", 32);
+    m_nMouseHeight = ini->GetInt("COMMON", "mouseHeight", 32);
+    m_nMouseCornerX = ini->GetInt("COMMON", "mouseCornerX", 0);
+    m_nMouseCornerY = ini->GetInt("COMMON", "mouseCornerY", 0);
     if (m_nMouseWidth > 0 && m_nMouseHeight > 0)
         if (ini->ReadString("COMMON", "mouseTexture", param, sizeof(param) - 1, ""))
             m_idMouseTexture = rs->TextureCreate(param);
@@ -362,7 +362,7 @@ bool HELPCHOOSER::RunChooser(const char *ChooserGroup)
     return true;
 }
 
-void HELPCHOOSER::SetRectangle(long newRectNum)
+void HELPCHOOSER::SetRectangle(int32_t newRectNum)
 {
     if (newRectNum == m_nCurRect)
         return;
@@ -398,7 +398,7 @@ void HELPCHOOSER::SetRectangle(long newRectNum)
     rs->UnLockVertexBuffer(m_idVBuf);
 }
 
-long HELPCHOOSER::GetRectangleLeft() const
+int32_t HELPCHOOSER::GetRectangleLeft() const
 {
     if (m_nCurRect < 0 || m_nCurRect >= m_nRectQ || m_pRectList == nullptr)
         return 0;
@@ -440,7 +440,7 @@ long HELPCHOOSER::GetRectangleLeft() const
     return nRectNum;
 }
 
-long HELPCHOOSER::GetRectangleRight() const
+int32_t HELPCHOOSER::GetRectangleRight() const
 {
     if (m_nCurRect < 0 || m_nCurRect >= m_nRectQ || m_pRectList == nullptr)
         return 0;
@@ -482,7 +482,7 @@ long HELPCHOOSER::GetRectangleRight() const
     return nRectNum;
 }
 
-long HELPCHOOSER::GetRectangleUp() const
+int32_t HELPCHOOSER::GetRectangleUp() const
 {
     if (m_nCurRect < 0 || m_nCurRect >= m_nRectQ || m_pRectList == nullptr)
         return 0;
@@ -524,7 +524,7 @@ long HELPCHOOSER::GetRectangleUp() const
     return nRectNum;
 }
 
-long HELPCHOOSER::GetRectangleDown() const
+int32_t HELPCHOOSER::GetRectangleDown() const
 {
     if (m_nCurRect < 0 || m_nCurRect >= m_nRectQ || m_pRectList == nullptr)
         return 0;
@@ -595,13 +595,13 @@ bool HELPCHOOSER::MouseMove()
     return false;
 }
 
-long HELPCHOOSER::GetRectangleFromPos(float x, float y) const
+int32_t HELPCHOOSER::GetRectangleFromPos(float x, float y) const
 {
     if (m_pRectList == nullptr)
         return m_nCurRect;
     x /= m_fScreenWidth;
     y /= m_fScreenHeight;
-    for (long i = 0; i < m_nRectQ; i++)
+    for (int32_t i = 0; i < m_nRectQ; i++)
     {
         if (m_pRectList[i].left <= x && m_pRectList[i].right >= x && m_pRectList[i].top <= y &&
             m_pRectList[i].bottom >= y)

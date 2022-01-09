@@ -15,7 +15,7 @@ class CXI_IMGCOLLECTION : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -23,7 +23,7 @@ class CXI_IMGCOLLECTION : public CINODE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
     bool GetInternalNameList(std::vector<std::string> &aStr) override;
     void SetInternalName(std::string &sName) override;
 
@@ -39,16 +39,16 @@ class CXI_IMGCOLLECTION : public CINODE
   protected:
     bool m_bRelativeRect;
     char *sGroupName; // image list name
-    long texl;        // texture identificator
-    long vBuf;        // vertex buffer identificator
-    long iBuf;        // index buffer identificator
-    long nVert;       // vertex quantity
-    long nIndx;       // index quantity
+    int32_t texl;        // texture identificator
+    int32_t vBuf;        // vertex buffer identificator
+    int32_t iBuf;        // index buffer identificator
+    int32_t nVert;       // vertex quantity
+    int32_t nIndx;       // index quantity
 
     struct PicEditInfo
     {
         std::string sName;
-        long nLeft, nTop, nRight, nBottom;
+        int32_t nLeft, nTop, nRight, nBottom;
         uint32_t dwColor;
         bool bNative;
     };
@@ -58,12 +58,12 @@ class CXI_IMGCOLLECTION : public CINODE
     struct PicEditSection
     {
         std::string sName;
-        long nStartNum;
-        long nQuantity;
+        int32_t nStartNum;
+        int32_t nQuantity;
     };
 
     std::vector<PicEditSection> m_aSections;
-    long m_nCurSection;
+    int32_t m_nCurSection;
 
     XYPOINT m_xyCommonOffset;
 };

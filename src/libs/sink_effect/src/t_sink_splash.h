@@ -24,7 +24,7 @@ class TSinkSplash
 
     void Initialize(INIFILE *_ini, SEA_BASE *sea);
     void Release();
-    void Start(const CVECTOR &_pos, uint16_t *_indexes, SINK_VERTEX *_vertexes, long vOffset);
+    void Start(const CVECTOR &_pos, uint16_t *_indexes, SINK_VERTEX *_vertexes, int32_t vOffset);
     void Process(uint32_t dTime, uint16_t *_indexes, SINK_VERTEX *_vertexes);
     bool Enabled();
     void Reset(uint16_t *_indexes, SINK_VERTEX *_vertexes);

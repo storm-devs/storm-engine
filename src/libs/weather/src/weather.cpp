@@ -99,8 +99,8 @@ void WEATHER::Execute(uint32_t Delta_Time)
 
         UpdateSunMoonPos();
 
-        if (static_cast<long>(fFloats[whf_time_counter] * fUpdateFrequence) !=
-            static_cast<long>(fOldTimer * fUpdateFrequence))
+        if (static_cast<int32_t>(fFloats[whf_time_counter] * fUpdateFrequence) !=
+            static_cast<int32_t>(fOldTimer * fUpdateFrequence))
         {
             core.Event("WeatherTimeUpdate", "f", fFloats[whf_time_counter]);
         }
@@ -189,7 +189,7 @@ void WEATHER::CleanUP()
 /*void WEATHER::LoadWeatherIni()
 {
     char    section[256],param[256],str[256];
-    long    i;
+    int32_t    i;
     uint32_t    r,g,b;
 
     CleanUP();
@@ -205,7 +205,7 @@ void WEATHER::CleanUP()
     ini = fio->OpenIniFile(WHT_INI_FILE);
     if(!ini) throw std::runtime_error("weather.ini file not found!");
 
-    //iHour = ini->GetLong(0,"iCurHour",0);
+    //iHour = ini->GetInt(0,"iCurHour",0);
     iHour = AttributesPointer->GetAttributeAsuint32_t("Hour",0);
 
     sprintf_s(section,"%s%d:00",(iHour<10) ? "0" : "", iHour);
@@ -218,10 +218,10 @@ void WEATHER::CleanUP()
         fFloats[FloatNames[i].dwCode] = (float)ini->GetDouble(section,FloatNames[i].name,1000.0);
     }
 
-    // load long parameters
+    // load int32_t parameters
     for (i=0;i<iNumLongNames;i++)
     {
-        iLongs[LongNames[i].dwCode] = ini->GetLong(section,LongNames[i].name,0);
+        iLongs[LongNames[i].dwCode] = ini->GetInt(section,LongNames[i].name,0);
     }
 
     // load colors parameters
@@ -236,9 +236,9 @@ void WEATHER::CleanUP()
     // load vectors parameters
 
     // load harmonics
-    if (GetLong(whi_harmonics_num)>0)
+    if (GetInt(whi_harmonics_num)>0)
     {
-        pHarmonics = new sea_harmonic_t[GetLong(whi_harmonics_num)];
+        pHarmonics = new sea_harmonic_t[GetInt(whi_harmonics_num)];
         for (i=0;i<iLongs[whi_harmonics_num];i++)
         {
             str[0] = 0;
@@ -270,7 +270,7 @@ void WEATHER::CleanUP()
 
 void WEATHER::SetCommonStates()
 {
-    pRS->SetRenderState(D3DRS_FOGENABLE, GetLong(whi_fog_enable));
+    pRS->SetRenderState(D3DRS_FOGENABLE, GetInt(whi_fog_enable));
 
     auto fDensity = GetFloat(whf_fog_density);
     pRS->SetRenderState(D3DRS_FOGCOLOR, GetColor(whc_fog_color));
@@ -332,7 +332,7 @@ void WEATHER::SetCommonStates()
     pRS->SetRenderState(D3DRS_LIGHTING, false);
 }
 
-/*bool WEATHER::SetHour(long hour)
+/*bool WEATHER::SetHour(int32_t hour)
 {
     if (iHour == hour) return false;
     iHour = hour;
@@ -348,7 +348,7 @@ void WEATHER::SetCommonStates()
     return true;
 }*/
 
-long WEATHER::GetLong(uint32_t dwCode)
+int32_t WEATHER::GetInt(uint32_t dwCode)
 {
     return iLongs[dwCode];
 }

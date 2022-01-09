@@ -40,11 +40,11 @@ class CXI_FORMATEDTEXT : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
     void MouseThis(float fX, float fY) override;
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
     XYRECT GetCursorRect() override;
 
     bool IsGlowChanged() override
@@ -58,7 +58,7 @@ class CXI_FORMATEDTEXT : public CINODE
     float GetCurPos() const;
     void SetColor(uint32_t dwCol) const;
 
-    long GetAllHeight();
+    int32_t GetAllHeight();
 
   protected:
     bool GetLineNext(int fontNum, const char *&pInStr, char *buf, int bufSize) const;
@@ -67,30 +67,30 @@ class CXI_FORMATEDTEXT : public CINODE
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
     void ReleaseString(STRING_DESCRIBER *pCur);
     void ReleaseStringes();
-    long AddFormatedText(const char *str);
-    long FindUpGroup(long grNum);
-    long FindDownGroup(long grNum);
-    void SetVertexToNewGroup(bool bUpDirect, long upIdx, long downIdx);
+    int32_t AddFormatedText(const char *str);
+    int32_t FindUpGroup(int32_t grNum);
+    int32_t FindDownGroup(int32_t grNum);
+    void SetVertexToNewGroup(bool bUpDirect, int32_t upIdx, int32_t downIdx);
     void CheckScrollButtons();
     void SetSpecialStrings(ATTRIBUTES *pARoot);
     void ControlSyncronouseNodes();
-    long GetFirstGroupNum();
-    void SetCurrentGroupNum(long nFirstNum, long nSelectNum);
-    void ReplaceString(long nGrpNum, const char *pSrcStr);
-    void InsertStringBefore(STRING_DESCRIBER *pNextDescr, const char *pSrcStr, long nGrpNum, uint32_t dwColor);
+    int32_t GetFirstGroupNum();
+    void SetCurrentGroupNum(int32_t nFirstNum, int32_t nSelectNum);
+    void ReplaceString(int32_t nGrpNum, const char *pSrcStr);
+    void InsertStringBefore(STRING_DESCRIBER *pNextDescr, const char *pSrcStr, int32_t nGrpNum, uint32_t dwColor);
     void RecalculateStringNumber();
-    void VAlignment(long nAlign);
+    void VAlignment(int32_t nAlign);
 
   protected:
-    long m_idFont;
+    int32_t m_idFont;
     uint32_t m_dwColor;
     float m_fFontScale;
-    long m_nAlignment;
+    int32_t m_nAlignment;
 
     int m_allStrings;
     int m_vertOffset;
-    long m_leftOffset;
-    long m_nVAlignmentOffset;
+    int32_t m_leftOffset;
+    int32_t m_nVAlignmentOffset;
 
     STRING_DESCRIBER *m_listRoot;
     STRING_DESCRIBER *m_listCur;
@@ -99,16 +99,16 @@ class CXI_FORMATEDTEXT : public CINODE
 
     bool m_bSelectableCursor;
     CVideoTexture *m_pVidTex;
-    long m_idVBuf;
-    long m_nCurGroupNum;
+    int32_t m_idVBuf;
+    int32_t m_nCurGroupNum;
     float m_fHorzScale;
 
     bool m_bUpEnable;
     bool m_bDownEnable;
-    long m_idUpEnableTexture;
-    long m_idUpDisableTexture;
-    long m_idDownEnableTexture;
-    long m_idDownDisableTexture;
+    int32_t m_idUpEnableTexture;
+    int32_t m_idUpDisableTexture;
+    int32_t m_idDownEnableTexture;
+    int32_t m_idDownDisableTexture;
     XYRECT m_frUpPos;
     XYRECT m_frDownPos;
     FXYRECT m_frUpEnableUV;
@@ -118,13 +118,13 @@ class CXI_FORMATEDTEXT : public CINODE
 
     XYRECT m_rectCursorPosition;
 
-    long m_nCompareWidth;
-    long m_nPrintLeftOffset;
+    int32_t m_nCompareWidth;
+    int32_t m_nPrintLeftOffset;
 
     bool m_bBackRectangle;
     uint32_t m_dwBackColor;
     XYRECT m_rBorderOffset;
-    long m_nUpRectOffset;
+    int32_t m_nUpRectOffset;
 
     char *m_sScrollerName;
 
@@ -134,7 +134,7 @@ class CXI_FORMATEDTEXT : public CINODE
 
     bool m_bFrized;
 
-    // void    SetCurLine(long nNewCurLine);
+    // void    SetCurLine(int32_t nNewCurLine);
     void SetCurLine(STRING_DESCRIBER *pNewCurLine);
     void ScrollerUpdate();
 };

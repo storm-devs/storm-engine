@@ -82,7 +82,7 @@ int CXI_VIDEO::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_VIDEO::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_VIDEO::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }

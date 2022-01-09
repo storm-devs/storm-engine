@@ -18,9 +18,9 @@ struct tSeagull
     float deltaA;
     float a;
 
-    long circleTime;
-    long circleTimePassed;
-    long screamTime;
+    int32_t circleTime;
+    int32_t circleTimePassed;
+    int32_t screamTime;
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ class TSeagulls
     TSeagulls();
     virtual ~TSeagulls();
 
-    uint64_t ProcessMessage(long _code, MESSAGE &message);
+    uint64_t ProcessMessage(int32_t _code, MESSAGE &message);
     void Init();
     void Add(float _x, float _y, float _z);
     void Realize(uint32_t dTime);
@@ -52,18 +52,18 @@ class TSeagulls
     VDX9RENDER *renderService;
     VSoundService *soundService;
     bool enabled;
-    long count;
+    int32_t count;
     float maxDistance;
     float maxRadius;
     float maxAngleSpeed;
     float maxHeight;
-    long countAdd;
-    long maxCircleTime;
-    long farChoiceChance;
-    long relaxTime;
+    int32_t countAdd;
+    int32_t maxCircleTime;
+    int32_t farChoiceChance;
+    int32_t relaxTime;
     bool frightened;
-    long frightenTime;
-    long screamTime;
+    int32_t frightenTime;
+    int32_t screamTime;
     char screamFilename[256];
 
     CVECTOR cameraPos, cameraAng;

@@ -55,7 +55,7 @@ class STRING_CODEC : public VSTRING_CODEC
         }
     }
 
-    uint32_t Convert(const char *pString, long iLen)
+    uint32_t Convert(const char *pString, int32_t iLen)
     {
         if (pString == nullptr)
             return 0xffffffff;
@@ -142,8 +142,8 @@ class STRING_CODEC : public VSTRING_CODEC
             char v = *ps++;
             if ('A' <= v && v <= 'Z')
                 v += 'a' - 'A'; // case independent
-            hval = (hval << 4) + (unsigned long int)v;
-            uint32_t g = hval & ((unsigned long int)0xf << (32 - 4));
+            hval = (hval << 4) + (uint32_t)v;
+            uint32_t g = hval & ((uint32_t)0xf << (32 - 4));
             if (g != 0)
             {
                 hval ^= g >> (32 - 8);

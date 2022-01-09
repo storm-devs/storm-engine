@@ -46,7 +46,7 @@
 #define whf_time_counter 100
 #define whf_time_speed 101
 
-// define long parameters
+// define int32_t parameters
 
 #define whi_weather_update 0 // if weather.ini update this flag one cycle is 1
 #define whi_fog_enable 1
@@ -88,7 +88,7 @@ class WEATHER_BASE : public Entity
 
     ~WEATHER_BASE() override{};
 
-    virtual long GetLong(uint32_t dwCode) = 0;
+    virtual int32_t GetInt(uint32_t dwCode) = 0;
     virtual uint32_t GetColor(uint32_t, CVECTOR *) = 0;
     virtual uint32_t GetColor(uint32_t) = 0;
     virtual float GetFloat(uint32_t) = 0;

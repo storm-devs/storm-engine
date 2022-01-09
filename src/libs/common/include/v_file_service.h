@@ -71,8 +71,8 @@ class INIFILE
     virtual void AddString(const char *section_name, const char *key_name, const char *string) = 0;
     // write string to file, overwrite data if exist, throw EXS exception object if failed
     virtual void WriteString(const char *section_name, const char *key_name, const char *string) = 0;
-    // write long value of key in pointed section if section and key exist, throw EXS object otherwise
-    virtual void WriteLong(const char *section_name, const char *key_name, long value) = 0;
+    // write int32_t value of key in pointed section if section and key exist, throw EXS object otherwise
+    virtual void WriteLong(const char *section_name, const char *key_name, int32_t value) = 0;
     // write double value of key in pointed section if section and key exist, throw EXS object otherwise
     virtual void WriteDouble(const char *section_name, const char *key_name, double value) = 0;
 
@@ -87,13 +87,13 @@ class INIFILE
     // fill buffer with key value if section and key exist, otherwise return false
     virtual bool ReadStringNext(const char *section_name, const char *key_name, char *buffer, size_t buffer_size) = 0;
 
-    // return long value of key in pointed section if section and key exist, throw EXS object otherwise
-    virtual long GetLong(const char *section_name, const char *key_name) = 0;
-    // return long value of key in pointed section if section and key exist, if not - return def_value
-    virtual long GetLong(const char *section_name, const char *key_name, long def_val) = 0;
-    // continue scanning for key in section, fill val with long value of key if it found and return true
+    // return int32_t value of key in pointed section if section and key exist, throw EXS object otherwise
+    virtual int32_t GetInt(const char *section_name, const char *key_name) = 0;
+    // return int32_t value of key in pointed section if section and key exist, if not - return def_value
+    virtual int32_t GetInt(const char *section_name, const char *key_name, int32_t def_val) = 0;
+    // continue scanning for key in section, fill val with int32_t value of key if it found and return true
     // if not - return false
-    virtual bool GetLongNext(const char *section_name, const char *key_name, long *val) = 0;
+    virtual bool GetIntNext(const char *section_name, const char *key_name, int32_t *val) = 0;
 
     // return double value of key in pointed section if section and key exist, throw EXS object otherwise
     virtual double GetDouble(const char *section_name, const char *key_name) = 0;
@@ -117,8 +117,8 @@ class INIFILE
 
     virtual bool TestKey(const char *section_name, const char *key_name, const char *key_value) = 0;
 
-    virtual bool GetSectionName(char *section_name_buffer, long buffer_size) = 0;
-    virtual bool GetSectionNameNext(char *section_name_buffer, long buffer_size) = 0;
+    virtual bool GetSectionName(char *section_name_buffer, int32_t buffer_size) = 0;
+    virtual bool GetSectionNameNext(char *section_name_buffer, int32_t buffer_size) = 0;
 
     virtual void Flush() = 0;
     virtual bool Reload() = 0;

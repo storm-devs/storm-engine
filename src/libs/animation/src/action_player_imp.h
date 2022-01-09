@@ -27,7 +27,7 @@ class ActionPlayerImp : public ActionPlayer
     virtual ~ActionPlayerImp();
 
     // Set pointer to animation
-    void SetAnimation(AnimationImp *animation, long index);
+    void SetAnimation(AnimationImp *animation, int32_t index);
 
     //--------------------------------------------------------------------------------------------
     // ActionPlayer
@@ -56,7 +56,7 @@ class ActionPlayerImp : public ActionPlayer
     float GetSpeed() const override;
     float GetDefSpeed() const override;
     // Get duration of action in frames
-    long GetFrames() const override;
+    int32_t GetFrames() const override;
     // Set blending coefficient 0..1
     void SetBlend(float k) override;
     // Get a blending coefficient 0..1
@@ -69,7 +69,7 @@ class ActionPlayerImp : public ActionPlayer
     //--------------------------------------------------------------------------------------------
   public:
     // Take a step in time
-    void Execute(long dltTime);
+    void Execute(int32_t dltTime);
     // Set position to the very beginning
     void ResetPosition();
     // Get the current time
@@ -104,7 +104,7 @@ class ActionPlayerImp : public ActionPlayer
     // Animation for this action
     AnimationImp *ani;
     // Index of this player
-    long playerIndex;
+    int32_t playerIndex;
     // Information about the current action
     ActionInfo *action;
     // Animation playback type

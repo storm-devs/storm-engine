@@ -29,9 +29,9 @@ class WdmDateLabel : public WdmInterfaceObject
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    long txTextBar;
-    long txSkyClock;
-    long txSkyClockFrame;
-    long dateFont;
+    int32_t txTextBar;
+    int32_t txSkyClock;
+    int32_t txSkyClockFrame;
+    int32_t dateFont;
     char month[12][32];
 };

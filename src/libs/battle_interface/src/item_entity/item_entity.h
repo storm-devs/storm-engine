@@ -66,7 +66,7 @@ class ItemEntity : public Entity
     {
       public:
         // Accept event
-        void Event(Animation *animation, long playerIndex, const char *eventName) override;
+        void Event(Animation *animation, int32_t playerIndex, const char *eventName) override;
 
         ItemEntity *item;
         std::string m_sStartEvent;

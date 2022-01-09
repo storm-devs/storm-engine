@@ -15,7 +15,7 @@ WMShipCommandList::~WMShipCommandList()
 
 void WMShipCommandList::FillIcons()
 {
-    long nIconsQuantity = 0;
+    int32_t nIconsQuantity = 0;
 
     if (m_nCurrentCommandMode & BI_COMMODE_COMMAND_SELECT)
         nIconsQuantity += CommandAdding();
@@ -30,25 +30,25 @@ void WMShipCommandList::Release()
 {
 }
 
-long WMShipCommandList::CommandAdding()
+int32_t WMShipCommandList::CommandAdding()
 {
     core.Event("WM_SetPossibleCommands", "l", m_nCurrentCommandCharacterIndex);
-    long retVal = 0;
+    int32_t retVal = 0;
     auto *pAttr = m_pARoot->GetAttributeClass("Commands");
     if (!pAttr)
         return 0;
     const size_t attrQuant = pAttr->GetAttributesNum();
 
-    for (long i = 0; i < attrQuant; i++)
+    for (int32_t i = 0; i < attrQuant; i++)
     {
         auto *pA = pAttr->GetAttributeClass(i);
         if (pA == nullptr)
             continue; // no such attribute
         if (pA->GetAttributeAsDword("enable", 0) == 0)
             continue; // command not available
-        const long pictureNum = pA->GetAttributeAsDword("picNum", 0);
-        const long selPictureNum = pA->GetAttributeAsDword("selPicNum", 0);
-        const long texNum = pA->GetAttributeAsDword("texNum", -1);
+        const int32_t pictureNum = pA->GetAttributeAsDword("picNum", 0);
+        const int32_t selPictureNum = pA->GetAttributeAsDword("selPicNum", 0);
+        const int32_t texNum = pA->GetAttributeAsDword("texNum", -1);
         auto *const eventName = pA->GetAttribute("event");
         retVal +=
             AddToIconList(texNum, pictureNum, selPictureNum, -1, -1, eventName, -1, nullptr, pA->GetAttribute("note"));

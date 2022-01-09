@@ -60,7 +60,7 @@ class WdmStorm : public WdmRenderObject
     float speed;
     bool isBrn, isKl;
 
-    long num;
+    int32_t num;
     WdmCloud *cloud[8];  // Pointers to the clouds
     CVECTOR cloudPos[8]; // Positions
     float rotSpd[8];     // Rotational speeds around the center
@@ -68,7 +68,7 @@ class WdmStorm : public WdmRenderObject
     ATTRIBUTES *saveAttribute;
 
     // Rain
-    long rainTexture;
+    int32_t rainTexture;
     RS_RECT rainRect[48 * 8];
 
     static char cloudPosName[16];

@@ -63,7 +63,7 @@ bool S_EVENTTAB::GetEvent(EVENTINFO &ei, uint32_t event_code)
     return true;
 }
 
-uint32_t S_EVENTTAB::AddEventHandler(const char *event_name, uint32_t func_code, uint32_t func_segment_id, long flag,
+uint32_t S_EVENTTAB::AddEventHandler(const char *event_name, uint32_t func_code, uint32_t func_segment_id, int32_t flag,
                                      bool bStatic)
 {
     uint32_t i;
@@ -153,8 +153,8 @@ uint32_t S_EVENTTAB::MakeHashValue(const char *string)
         auto v = *string++;
         if ('A' <= v && v <= 'Z')
             v += 'a' - 'A'; // case independent
-        hval = (hval << 4) + static_cast<unsigned long>(v);
-        const uint32_t g = hval & (static_cast<unsigned long>(0xf) << (32 - 4));
+        hval = (hval << 4) + static_cast<uint32_t>(v);
+        const uint32_t g = hval & (static_cast<uint32_t>(0xf) << (32 - 4));
         if (g != 0)
         {
             hval ^= g >> (32 - 8);

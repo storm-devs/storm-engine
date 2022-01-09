@@ -54,7 +54,7 @@ class CXI_UTILS
     struct KeyDescribe
     {
         int nAsyncKeyCode;
-        long nPressedState;
+        int32_t nPressedState;
     };
 
   public:
@@ -71,17 +71,17 @@ class CXI_UTILS
 
     // string processing
     static void StringLeftClamp(char *&pcString);
-    static const char *StringGetTokenID(char *&pcString, char *pcBuffer, long nBufferSize);
-    static const char *StringGetTokenString(char *&pcString, char *pcBuffer, long nBufferSize);
-    static long StringGetTokenCode(const char *pcTokenID);
+    static const char *StringGetTokenID(char *&pcString, char *pcBuffer, int32_t nBufferSize);
+    static const char *StringGetTokenString(char *&pcString, char *pcBuffer, int32_t nBufferSize);
+    static int32_t StringGetTokenCode(const char *pcTokenID);
     static uint32_t StringGetColor(const char *pcARGBString);
     static void StringDoublicate(const char *pcSrc, char *&pcDst);
-    static void StringTwoLong(const char *pcString, long &nLong1, long &nLong2);
-    static long StringGetLong(const char *&pcString);
+    static void StringTwoLong(const char *pcString, int32_t &nLong1, int32_t &nLong2);
+    static int32_t StringGetInt(const char *&pcString);
     static float StringGetFloat(const char *&pcString);
     static void StringFourFloat(const char *pcString, float &f1, float &f2, float &f3, float &f4);
     static void StringFillStringArray(const char *pcString, std::vector<std::string> &asStringsArray);
-    static long SplitStringByWidth(const char *pcText, long nFontID, float fFontScale, long nWidth,
+    static int32_t SplitStringByWidth(const char *pcText, int32_t nFontID, float fFontScale, int32_t nWidth,
                                    std::vector<std::string> &asOutStr);
 
     static InterfaceStringCurTokenType GetCurrentTokenIntoString(const char *pcStr)
@@ -98,16 +98,16 @@ class CXI_UTILS
     }
 
     // attribute functions
-    static float GetByStrNumFromAttribute_Float(ATTRIBUTES *pA, const char *pStr, long num, float fDefValue);
+    static float GetByStrNumFromAttribute_Float(ATTRIBUTES *pA, const char *pStr, int32_t num, float fDefValue);
 
     // vertex processing
     static void WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, uint32_t color, FXYRECT &uv, XYRECT &rect);
-    static void WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, uint32_t color, FXYRECT &uv, long left, long top,
-                                          long right, long bottom);
+    static void WriteSquareToVertexBuffer(XI_ONETEX_VERTEX *pv, uint32_t color, FXYRECT &uv, int32_t left, int32_t top,
+                                          int32_t right, int32_t bottom);
 
-    static void PrintTextIntoWindow(VDX9RENDER *pRender, long nFont, uint32_t dwColor, long wAlignment, bool bShadow,
-                                    float fScale, long scrWidth, long scrHeight, long x, long y, const char *pcString,
-                                    long left, long top, long width, long height);
+    static void PrintTextIntoWindow(VDX9RENDER *pRender, int32_t nFont, uint32_t dwColor, int32_t wAlignment, bool bShadow,
+                                    float fScale, int32_t scrWidth, int32_t scrHeight, int32_t x, int32_t y, const char *pcString,
+                                    int32_t left, int32_t top, int32_t width, int32_t height);
 
   protected:
     static CXI_UTILS *pThis;

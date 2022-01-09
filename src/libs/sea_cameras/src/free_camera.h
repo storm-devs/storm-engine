@@ -10,7 +10,7 @@ class FREE_CAMERA : public COMMON_CAMERA
     VDX9RENDER *pRS;
     CVECTOR vPos, vAng;
     float fFov;
-    long iLockX, iLockY;
+    int32_t iLockX, iLockY;
 
     ISLAND_BASE *pIslandBase;
     BOOL bCameraOnEarth;

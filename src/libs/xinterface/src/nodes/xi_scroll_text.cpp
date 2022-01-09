@@ -91,10 +91,10 @@ void CXI_SCROLLTEXT::SetText(const char *newText)
         auto *pCh = m_pText;
         m_idFont = FONT_DEFAULT;
         m_dwFontColor = ARGB(255, 255, 255, 255);
-        long idx = 0;
-        long nBeg = 0;
-        long nEnd = 0;
-        long startWidth = 0;
+        int32_t idx = 0;
+        int32_t nBeg = 0;
+        int32_t nEnd = 0;
+        int32_t startWidth = 0;
         while (*pCh != 0)
         {
             if (*pCh == '^')
@@ -131,7 +131,7 @@ int CXI_SCROLLTEXT::CommandExecute(int wActCode)
     return -1;
 }
 
-bool CXI_SCROLLTEXT::IsClick(int buttonID, long xPos, long yPos)
+bool CXI_SCROLLTEXT::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 {
     return false;
 }
@@ -175,9 +175,9 @@ void CXI_SCROLLTEXT::TextUpShift()
 {
 }
 
-long CXI_SCROLLTEXT::FillPices(char *pt, size_t beg, size_t size, long &idx, STRING_PICE *spl, long wid)
+int32_t CXI_SCROLLTEXT::FillPices(char *pt, size_t beg, size_t size, int32_t &idx, STRING_PICE *spl, int32_t wid)
 {
-    long retVal = 0;
+    int32_t retVal = 0;
 
     char param[256];
     char resStr[512];
@@ -189,7 +189,7 @@ long CXI_SCROLLTEXT::FillPices(char *pt, size_t beg, size_t size, long &idx, STR
     while (true)
     {
         auto *const pstr = &pt[beg];
-        long chQuantity = 0;
+        int32_t chQuantity = 0;
         resStr[0] = 0;
         while (true)
         {
@@ -203,10 +203,10 @@ long CXI_SCROLLTEXT::FillPices(char *pt, size_t beg, size_t size, long &idx, STR
                 retVal = 0;
                 break;
             }
-            if (static_cast<unsigned long>(chQuantity + sw) > size)
+            if (static_cast<uint32_t>(chQuantity + sw) > size)
                 break;
         }
-        if (static_cast<unsigned long>(chQuantity) == size)
+        if (static_cast<uint32_t>(chQuantity) == size)
         {
         }
         else
@@ -219,9 +219,9 @@ long CXI_SCROLLTEXT::FillPices(char *pt, size_t beg, size_t size, long &idx, STR
     return 0;
 }
 
-long CXI_SCROLLTEXT::GetStringWord(char *pstr, char *buff, size_t size)
+int32_t CXI_SCROLLTEXT::GetStringWord(char *pstr, char *buff, size_t size)
 {
-    unsigned long retVal = 0;
+    uint32_t retVal = 0;
 
     auto bSpace = false;
     while (*pstr != 0)

@@ -55,7 +55,7 @@ BillBoardProcessor::BillBoardProcessor()
     auto *pTrgs = static_cast<uint16_t *>(pRS->LockIndexBuffer(pIBuffer));
     Assert(pTrgs != NULL);
 
-    for (long i = 0; i < MAX_BILLBOARDS; i++)
+    for (int32_t i = 0; i < MAX_BILLBOARDS; i++)
     {
         pTrgs[i * 6 + 0] = static_cast<uint16_t>(i * 4 + 0);
         pTrgs[i * 6 + 1] = static_cast<uint16_t>(i * 4 + 1);
@@ -332,7 +332,7 @@ void BillBoardProcessor::Draw()
     // RECT_VERTEX * pVerts = (RECT_VERTEX*)pVBuffer->Lock(0, 0, D3DLOCK_DISCARD);
     // RECT_VERTEX * pVerts = (RECT_VERTEX*)pVBuffer->Lock();
 
-    long Index = 0;
+    int32_t Index = 0;
     uint32_t ParticlesCount = 0;
     for (uint32_t j = 0; j < Particles.size(); j++)
     {

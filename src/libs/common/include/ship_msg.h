@@ -4,10 +4,10 @@
 
 using ship_t = struct
 {
-    long iClass;
+    int32_t iClass;
     float fSpeedRate, fTurnRate;
-    long iCrewMin, iCrewMax;
-    long iCapacity;
+    int32_t iCrewMin, iCrewMax;
+    int32_t iCapacity;
     float fLength, fWidth;
     float fWeight;
     char name[MAX_CANNON_NAME_LENGTH];

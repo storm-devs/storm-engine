@@ -19,7 +19,7 @@ LighterLights::LighterLights()
     maxLights = 256;
     numLights = 3;
     light.resize(maxLights);
-    for (long i = 0; i < maxLights; i++)
+    for (int32_t i = 0; i < maxLights; i++)
         SetDefLightParam(i);
     light[0].type = Light::t_amb;
     light[0].color = CVECTOR(0.2f, 0.2f, 0.2f);
@@ -38,7 +38,7 @@ LighterLights::LighterLights()
 
 LighterLights::~LighterLights()
 {
-    for (long i = 0; i < numLights; i++)
+    for (int32_t i = 0; i < numLights; i++)
         delete light[i].group;
 }
 
@@ -86,7 +86,7 @@ void LighterLights::AddPointLight(const CVECTOR &color, const CVECTOR &pos, floa
     numLights++;
 }
 
-void LighterLights::SetDefLightParam(long i)
+void LighterLights::SetDefLightParam(int32_t i)
 {
     light[i].cosine = 1.0f;
     light[i].shadow = 0.8f;
@@ -101,12 +101,12 @@ void LighterLights::PostInit()
 {
     // collect all existing groups
     auto *const grp = new char *[numLights + 1];
-    long numGrp = 0;
-    for (long i = 0; i < numLights; i++)
+    int32_t numGrp = 0;
+    for (int32_t i = 0; i < numLights; i++)
     {
         if (!light[i].group)
             continue;
-        long j;
+        int32_t j;
         for (j = 0; j < numGrp; j++)
             if (_stricmp(grp[j], light[i].group) == 0)
                 break;
@@ -120,7 +120,7 @@ void LighterLights::PostInit()
         light.resize(maxLights);
     }
     auto num = numLights;
-    for (long i = 0; i < numGrp; i++)
+    for (int32_t i = 0; i < numGrp; i++)
     {
         memset(&light[numLights], 0, sizeof(light[numLights]));
         const auto len = strlen(grp[i]) + 1;
@@ -131,7 +131,7 @@ void LighterLights::PostInit()
         light[numLights].isOn = true;
         // Collecting parameters
         auto nrm = 0.0f;
-        for (long j = 0; j < numLights; j++)
+        for (int32_t j = 0; j < numLights; j++)
         {
             if (light[j].group && _stricmp(light[j].group, grp[i]) == 0)
             {
@@ -171,9 +171,9 @@ void LighterLights::PostInit()
     delete[] grp;
 }
 
-void LighterLights::UpdateLights(long lit)
+void LighterLights::UpdateLights(int32_t lit)
 {
-    long i;
+    int32_t i;
     if (lit >= 0)
     {
         for (i = 0; i < numLights; i++)
@@ -188,7 +188,7 @@ void LighterLights::UpdateLights(long lit)
     {
         if (light[i].type == Light::t_group)
         {
-            for (long j = 0; j < numLights; j++)
+            for (int32_t j = 0; j < numLights; j++)
             {
                 if (light[j].type == Light::t_point && light[j].group)
                 {

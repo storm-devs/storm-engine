@@ -4,7 +4,7 @@
 #include "dx9render.h"
 #include "triangle.h"
 
-using ADD_POLYGON_FUNC = bool (*)(const CVECTOR *v, long nv);
+using ADD_POLYGON_FUNC = bool (*)(const CVECTOR *v, int32_t nv);
 
 class COLLISION_OBJECT : public Entity
 {
@@ -18,7 +18,7 @@ class COLLISION_OBJECT : public Entity
     CMatrix mtx;
 
     virtual float Trace(const CVECTOR &src, const CVECTOR &dst) = 0;
-    virtual bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
+    virtual bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius,
                       ADD_POLYGON_FUNC addpoly) = 0;
 
     virtual const char *GetCollideMaterialName() = 0;

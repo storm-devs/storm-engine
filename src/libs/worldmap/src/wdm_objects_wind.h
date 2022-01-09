@@ -40,7 +40,7 @@ class WindField
     struct Direction
     {
         float x, y;
-        long i, j;
+        int32_t i, j;
     };
 
   public:
@@ -151,7 +151,7 @@ class WindField
         dir[7].y = 0.0f;
         dir[7].i = 0;
         dir[7].j = -1;
-        for (long i = 0; i < 1000; i++)
+        for (int32_t i = 0; i < 1000; i++)
         {
             Step(1000.0f);
         }
@@ -185,9 +185,9 @@ class WindField
         x = (x - baseX) * kX + 1.0f;
         z = (z - baseZ) * kZ + 1.0f;
         // Parameters for sampling from a frame
-        auto fx1 = static_cast<long>(x);
+        auto fx1 = static_cast<int32_t>(x);
         auto fx2 = fx1 + 1;
-        auto fz1 = static_cast<long>(z);
+        auto fz1 = static_cast<int32_t>(z);
         auto fz2 = fz1 + 1;
         const auto kx = x - fx1;
         const auto kz = z - fz1;
@@ -235,7 +235,7 @@ class WindField
         if (steps >= WindFieldSteps)
         {
             steps = 0;
-            for (long i = 0; i < 4; i++)
+            for (int32_t i = 0; i < 4; i++)
             {
                 const auto ang = rand() * (3.14159265358979f * 2.0f / RAND_MAX);
                 const auto amp = rand() * (4.0f / RAND_MAX);
@@ -244,12 +244,12 @@ class WindField
             }
         }
         steps++;
-        for (long i = 0; i < 4; i++)
+        for (int32_t i = 0; i < 4; i++)
         {
             initors[i][0].x += initors[i][1].x;
             initors[i][0].y += initors[i][1].y;
         }
-        for (long i = 0; i < WindFieldSize; i++)
+        for (int32_t i = 0; i < WindFieldSize; i++)
         {
             const auto w2 = i * 1.0f / (WindFieldSize - 1);
             const auto w1 = 1.0f - w2;
@@ -277,7 +277,7 @@ class WindField
     {
         // The number of lines to be calculated
         auto needLines =
-            static_cast<long>(updateTime * (static_cast<float>(WindFieldSize) / WindFieldUpdateTime) + 0.99f - curLine);
+            static_cast<int32_t>(updateTime * (static_cast<float>(WindFieldSize) / WindFieldUpdateTime) + 0.99f - curLine);
         if (needLines < 1)
             needLines = 1;
         for (; needLines > 0; needLines--)
@@ -290,12 +290,12 @@ class WindField
                 step = cs_copy2;
                 return;
             }
-            for (long j = 1; j < WindFieldSize - 1; j++)
+            for (int32_t j = 1; j < WindFieldSize - 1; j++)
             {
                 auto &pnt = tmp[i][j];
                 auto x = tmp[i][j].x * 0.2f;
                 auto y = tmp[i][j].y * 0.2f;
-                for (long n = 0; n < 8; n++)
+                for (int32_t n = 0; n < 8; n++)
                 {
                     auto &d = dir[n];
                     auto &p = tmp[i + d.i][j + d.j];
@@ -346,8 +346,8 @@ class WindField
         const auto frame = (curWind + 1) % 3;
         auto *from = &field[0][0];
         auto *to = &wind[frame][0][0];
-        const long count = WindFieldSize * WindFieldSize;
-        for (long i = 0; i < count; i++, from++, to++)
+        const int32_t count = WindFieldSize * WindFieldSize;
+        for (int32_t i = 0; i < count; i++, from++, to++)
         {
             to->x = from->x;
             to->z = from->y;
@@ -360,9 +360,9 @@ class WindField
     Wind wind[3][WindFieldSize][WindFieldSize];
     Point initors[4][2];
     Direction dir[8];
-    long curWind;
-    long steps;
-    long curLine;
+    int32_t curWind;
+    int32_t steps;
+    int32_t curLine;
     float updateTime;
     CurrentStep step;
     float baseX, baseZ, kX, kZ;

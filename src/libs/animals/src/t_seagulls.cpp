@@ -43,11 +43,11 @@ void TSeagulls::LoadSettings()
     maxAngleSpeed = ini->GetFloat(ANIMALS_SEAGULLS_SECTION, "angle speed", SEAGULL_MAX_SPEED);
     maxDistance = ini->GetFloat(ANIMALS_SEAGULLS_SECTION, "distance", SEAGULL_DISTANCE);
     maxHeight = ini->GetFloat(ANIMALS_SEAGULLS_SECTION, "height", SEAGULL_MAX_HEIGHT);
-    maxCircleTime = ini->GetLong(ANIMALS_SEAGULLS_SECTION, "circle time", SEAGULL_MAX_CIRCLE_TIME);
-    farChoiceChance = ini->GetLong(ANIMALS_SEAGULLS_SECTION, "far choice", SEAGULL_LONG_DISTANCE_CHANCE);
-    relaxTime = ini->GetLong(ANIMALS_SEAGULLS_SECTION, "relax time", SEAGULL_RELAX_TIME);
-    screamTime = ini->GetLong(ANIMALS_SEAGULLS_SECTION, "scream time", SEAGULL_SCREAM_TIME);
-    countAdd = ini->GetLong(ANIMALS_SEAGULLS_SECTION, "add count", SEAGULL_ADD_COUNT);
+    maxCircleTime = ini->GetInt(ANIMALS_SEAGULLS_SECTION, "circle time", SEAGULL_MAX_CIRCLE_TIME);
+    farChoiceChance = ini->GetInt(ANIMALS_SEAGULLS_SECTION, "far choice", SEAGULL_LONG_DISTANCE_CHANCE);
+    relaxTime = ini->GetInt(ANIMALS_SEAGULLS_SECTION, "relax time", SEAGULL_RELAX_TIME);
+    screamTime = ini->GetInt(ANIMALS_SEAGULLS_SECTION, "scream time", SEAGULL_SCREAM_TIME);
+    countAdd = ini->GetInt(ANIMALS_SEAGULLS_SECTION, "add count", SEAGULL_ADD_COUNT);
     ini->ReadString(ANIMALS_SEAGULLS_SECTION, "scream file", screamFilename, 256, ANIMALS_SEAGULLS_SCREAM_FILENAME);
 }
 
@@ -70,7 +70,7 @@ void TSeagulls::Init()
 }
 
 //--------------------------------------------------------------------
-uint64_t TSeagulls::ProcessMessage(long _code, MESSAGE &message)
+uint64_t TSeagulls::ProcessMessage(int32_t _code, MESSAGE &message)
 {
     const uint32_t outValue = 0;
 
@@ -146,7 +146,7 @@ void TSeagulls::Execute(uint32_t _dTime)
             const auto oldR = seagulls[i].radius;
             seagulls[i].radius = SEAGULL_MIN_RADIUS + rand(maxRadius);
             seagulls[i].circleTimePassed = 0;
-            seagulls[i].circleTime = static_cast<long>(rand(static_cast<float>(maxCircleTime)));
+            seagulls[i].circleTime = static_cast<int32_t>(rand(static_cast<float>(maxCircleTime)));
             if ((seagulls[i].circleTime) < (maxCircleTime / 20))
                 seagulls[i].circleTime = maxCircleTime / 20;
             const auto sinA = sinf(seagulls[i].a);

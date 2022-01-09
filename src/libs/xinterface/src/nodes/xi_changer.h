@@ -14,7 +14,7 @@ class CXI_CHANGER : public CINODE
               XYPOINT &ScreenSize) override;
     void ReleaseAll() override;
     int CommandExecute(int wActCode) override;
-    bool IsClick(int buttonID, long xPos, long yPos) override;
+    bool IsClick(int buttonID, int32_t xPos, int32_t yPos) override;
 
     void MouseThis(float fX, float fY) override
     {
@@ -22,7 +22,7 @@ class CXI_CHANGER : public CINODE
 
     void ChangePosition(XYRECT &rNewPos) override;
     void SaveParametersToIni() override;
-    uint32_t MessageProc(long msgcode, MESSAGE &message) override;
+    uint32_t MessageProc(int32_t msgcode, MESSAGE &message) override;
     XYRECT GetCursorRect() override;
 
     bool IsGlowChanged() override
@@ -48,7 +48,7 @@ class CXI_CHANGER : public CINODE
     float m_fCurM_UpSpeed;
     float m_fCurM_DownSpeed;
 
-    long m_idBackTex;
+    int32_t m_idBackTex;
     CVideoTexture *m_pTex;
 
     int m_nCurrentPos;

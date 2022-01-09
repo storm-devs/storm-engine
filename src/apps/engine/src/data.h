@@ -34,7 +34,7 @@ class DATA : public VDATA
     // bool   bRef;
     bool bArray;
     // char * ArrayPointer;
-    long lValue;
+    int32_t lValue;
     uintptr_t pValue;
     float fValue;
     std::string sValue;
@@ -44,7 +44,7 @@ class DATA : public VDATA
     uint32_t Segment_id;
 
     DATA *pReference;
-    // long   ReferenceIndex;
+    // int32_t   ReferenceIndex;
 
     std::vector<DATA> ArrayPTR;
     uint32_t nGlobalVarTableIndex;
@@ -73,7 +73,7 @@ class DATA : public VDATA
     DATA(S_TOKEN_TYPE _element_type);
     DATA(uint32_t num_of_elements, S_TOKEN_TYPE _element_type);
     ~DATA() override;
-    void Set(long value) override;
+    void Set(int32_t value) override;
     void SetPtr(uintptr_t value) override;
     bool GetPtr(uintptr_t &value) override;
 
@@ -81,16 +81,16 @@ class DATA : public VDATA
     void Set(std::string value) override;
     void Set(const char* value) override;
     void Set(const char *attribute_name, const char *attribute_value) override;
-    bool Get(long &value) override;
+    bool Get(int32_t &value) override;
     bool Get(float &value) override;
     bool Get(const char *&value) override;
     bool Get(const char *attribute_name, const char *&value) override;
 
-    bool Set(long value, uint32_t index) override;
+    bool Set(int32_t value, uint32_t index) override;
     bool Set(float value, uint32_t index) override;
     bool Set(const char *value, uint32_t index) override;
 
-    bool Get(long &value, uint32_t index) override;
+    bool Get(int32_t &value, uint32_t index) override;
     bool Get(float &value, uint32_t index) override;
     bool Get(const char *&value, uint32_t index) override;
 
@@ -139,7 +139,7 @@ class DATA : public VDATA
     bool Copy(DATA *pV, uint32_t index) override;
     bool CopyOnElement(DATA *pV, uint32_t index) override;
     bool Inverse() override;
-    bool Power(long Deg) override;
+    bool Power(int32_t Deg) override;
     bool Power(DATA *pV) override;
     bool Multiply(DATA *pV) override;
     bool Divide(DATA *pV) override;
@@ -155,7 +155,7 @@ class DATA : public VDATA
 
     void BadIndex(uint32_t index, uint32_t array_size);
 
-    long GetLong() override;
+    int32_t GetInt() override;
     uintptr_t GetPtr() override;
     float GetFloat() override;
     const char *GetString() override;

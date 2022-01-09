@@ -14,21 +14,21 @@ class VDATA
     virtual DATA *GetReference() = 0;
     virtual void SetReference(DATA *pRef) = 0;
     virtual void SetAReference(ATTRIBUTES *pARef) = 0;
-    virtual void Set(long value) = 0;
+    virtual void Set(int32_t value) = 0;
     virtual void SetPtr(uintptr_t value) = 0;
     virtual bool GetPtr(uintptr_t &value) = 0;
     virtual void Set(float value) = 0;
     virtual void Set(std::string value) = 0;
     virtual void Set(const char *value) = 0;
     virtual void Set(const char *attribute_name, const char *attribute_value) = 0;
-    virtual bool Get(long &value) = 0;
+    virtual bool Get(int32_t &value) = 0;
     virtual bool Get(float &value) = 0;
     virtual bool Get(const char *&value) = 0;
     virtual bool Get(const char *attribute_name, const char *&value) = 0;
-    virtual bool Set(long value, uint32_t index) = 0;
+    virtual bool Set(int32_t value, uint32_t index) = 0;
     virtual bool Set(float value, uint32_t index) = 0;
     virtual bool Set(const char *value, uint32_t index) = 0;
-    virtual bool Get(long &value, uint32_t index) = 0;
+    virtual bool Get(int32_t &value, uint32_t index) = 0;
     virtual bool Get(float &value, uint32_t index) = 0;
     virtual bool Get(const char *&value, uint32_t index) = 0;
     virtual bool Set(const char *attribute_name, const char *attribute_value, uint32_t index) = 0;
@@ -54,7 +54,7 @@ class VDATA
     virtual bool Copy(DATA *pV, uint32_t index) = 0;
     virtual bool CopyOnElement(DATA *pV, uint32_t index) = 0;
     virtual bool Inverse() = 0;
-    virtual bool Power(long Deg) = 0;
+    virtual bool Power(int32_t Deg) = 0;
     virtual bool Power(DATA *pV) = 0;
     virtual bool Multiply(DATA *pV) = 0;
     virtual bool Divide(DATA *pV) = 0;
@@ -67,7 +67,7 @@ class VDATA
 
     virtual void SetElementsNum(uint32_t asize) = 0;
 
-    virtual long GetLong() = 0;
+    virtual int32_t GetInt() = 0;
     virtual uintptr_t GetPtr() = 0;
     virtual float GetFloat() = 0;
     virtual const char *GetString() = 0;

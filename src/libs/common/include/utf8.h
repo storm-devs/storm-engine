@@ -129,7 +129,7 @@ inline int Utf8ToCodepoint(const char *utf8)
 
 inline int Utf8StringLength(const char *s)
 {
-    long s_num = 0;
+    int32_t s_num = 0;
     while (*s)
         s_num += (*s++ & 0xC0) != 0x80;
 

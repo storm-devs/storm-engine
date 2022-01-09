@@ -12,6 +12,6 @@ class WATCHER_LIST : public TM_LIST
     WATCHER_LIST(HWND hwnd, HINSTANCE hinst);
     ~WATCHER_LIST();
     void ProcessMessage(uint64_t, uint64_t, uint64_t);
-    void ItemChanged(long Item_index, long Subitem_index);
+    void ItemChanged(int32_t Item_index, int32_t Subitem_index);
     void Refresh();
 };

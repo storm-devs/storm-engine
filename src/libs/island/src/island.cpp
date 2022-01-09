@@ -135,8 +135,8 @@ void ISLAND::Realize(uint32_t Delta_Time)
 
     pRS->GetRenderState(D3DRS_FOGDENSITY, (uint32_t *)&fOldFogDensity);
     pRS->SetRenderState(D3DRS_FOGDENSITY, F2DW(fIslandFogDensity));
-    long j;
-    for (j = static_cast<long>(fMaxDistance / fOldFar); j >= 0; j--)
+    int32_t j;
+    for (j = static_cast<int32_t>(fMaxDistance / fOldFar); j >= 0; j--)
     {
         if (j != 0)
             pRS->SetRenderState(D3DRS_ZWRITEENABLE, false);
@@ -275,7 +275,7 @@ uint64_t ISLAND::ProcessMessage(MESSAGE &message)
     return 1;
 }
 
-inline float ISLAND::GetShadowTemp(long iX, long iZ)
+inline float ISLAND::GetShadowTemp(int32_t iX, int32_t iZ)
 {
     if (iX >= 0 && iX < DMAP_SIZE && iZ >= 0 && iZ < DMAP_SIZE)
         return static_cast<float>(mzShadow.Get(iX, iZ)) / 255.0f;
@@ -379,10 +379,10 @@ bool ISLAND::GetDepth(float x, float z, float *fRes)
 bool ISLAND::ActivateCamomileTrace(CVECTOR &vSrc)
 {
     const float fRadius = 100.0f;
-    const long iNumPetal = 8;
-    long iNumInner = 0;
+    const int32_t iNumPetal = 8;
+    int32_t iNumInner = 0;
 
-    for (long i = 0; i < iNumPetal; i++)
+    for (int32_t i = 0; i < iNumPetal; i++)
     {
         TRIANGLE trg;
         CVECTOR vDst, vCross;
@@ -642,7 +642,7 @@ bool ISLAND::CreateHeightMap(const std::string_view &pDir, const std::string_vie
 
     core.Trace("WARN: FOAM: Can't find foam: %s", fileName.c_str());
 
-    long iTestSize = static_cast<long>(vBoxSize.x / 1.5f);
+    int32_t iTestSize = static_cast<int32_t>(vBoxSize.x / 1.5f);
     // fixed maximum depth map to 1024 size!!!!!!!
     iDMapSizeShift = 11;
     // for (iDMapSizeShift=0;iDMapSizeShift<10;iDMapSizeShift++) if ((1<<iDMapSizeShift) >= iTestSize) break;
@@ -661,11 +661,11 @@ bool ISLAND::CreateHeightMap(const std::string_view &pDir, const std::string_vie
 
     for (fZ = 0; fZ < static_cast<float>(iDMapSize); fZ += 1.0f)
     {
-        if ((static_cast<long>(fZ) & 127) == 127)
+        if ((static_cast<int32_t>(fZ) & 127) == 127)
             core.Trace("Z = %.0f", fZ);
         for (fX = 0; fX < static_cast<float>(iDMapSize); fX += 1.0f)
         {
-            long iIdx = static_cast<long>(fX) + static_cast<long>(fZ) * iDMapSize;
+            int32_t iIdx = static_cast<int32_t>(fX) + static_cast<int32_t>(fZ) * iDMapSize;
             pDepthMap[iIdx] = 255;
             float fXX = (fX - static_cast<float>(iDMapSize) / 2.0f) * fStepDX;
             float fZZ = (fZ - static_cast<float>(iDMapSize) / 2.0f) * fStepDZ;
@@ -828,7 +828,7 @@ bool ISLAND::Mount(const std::string_view &fname, const std::string_view &fdir, 
     return true;
 }
 
-float ISLAND::Cannon_Trace(long iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
+float ISLAND::Cannon_Trace(int32_t iBallOwner, const CVECTOR &vSrc, const CVECTOR &vDst)
 {
     const float fRes = Trace(vSrc, vDst);
     if (fRes <= 1.0f)

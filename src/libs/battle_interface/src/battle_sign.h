@@ -45,39 +45,39 @@ class BISignIcon
     void MakeControl();
     virtual void ExecuteCommand(CommandType command) = 0;
 
-    long GetLineY(long n) const
+    int32_t GetLineY(int32_t n) const
     {
-        return static_cast<long>(m_Sign[n].pntPos.x);
+        return static_cast<int32_t>(m_Sign[n].pntPos.x);
     }
 
   protected:
-    virtual long CalculateSignQuantity();
+    virtual int32_t CalculateSignQuantity();
     virtual void UpdateChildrens() = 0;
 
     void Release();
-    void UpdateBuffers(long nQ);
+    void UpdateBuffers(int32_t nQ);
     void FillIndexBuffer() const;
     void FillVertexBuffer();
-    long WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+    int32_t WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
                             const FPOINT &size);
-    long WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+    int32_t WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
                                         const FPOINT &size, float fClampUp, float fClampDown, float fClampLeft,
                                         float fClampRight);
 
     VDX9RENDER *m_pRS;
 
-    long m_nVBufID;
-    long m_nIBufID;
+    int32_t m_nVBufID;
+    int32_t m_nIBufID;
 
-    long m_nBackTextureID;
-    long m_nBackSquareQ;
+    int32_t m_nBackTextureID;
+    int32_t m_nBackSquareQ;
     uint32_t m_dwBackColor;
     FRECT m_rBackUV;
     BIFPOINT m_pntBackOffset;
     FPOINT m_pntBackIconSize;
 
-    long m_nSignStateTextureID;
-    long m_nSignStateSquareQ;
+    int32_t m_nSignStateTextureID;
+    int32_t m_nSignStateSquareQ;
     uint32_t m_dwSignStateColor;
     FRECT m_rSignStateLeftUV;
     BIFPOINT m_pntSignStateLeftOffset;
@@ -86,20 +86,20 @@ class BISignIcon
     BIFPOINT m_pntSignStateRightOffset;
     FPOINT m_pntSignStateRightIconSize;
 
-    long m_nSignStarTextureID;
-    long m_nSignStarSquareQ;
+    int32_t m_nSignStarTextureID;
+    int32_t m_nSignStarSquareQ;
     uint32_t m_dwSignStarColor;
     FRECT m_rSignStarUV;
     BIFPOINT m_pntSignStarOffset;
     FPOINT m_pntSignStarIconSize;
 
-    long m_nSignFaceTextureID;
-    long m_nSignFaceSquareQ;
+    int32_t m_nSignFaceTextureID;
+    int32_t m_nSignFaceSquareQ;
     uint32_t m_dwSignFaceColor;
     BIFPOINT m_pntSignFaceOffset;
     FPOINT m_pntSignFaceIconSize;
 
-    long m_idSignTextFont;
+    int32_t m_idSignTextFont;
     uint32_t m_dwSignTextFontColor;
     float m_fSignTextFontScale;
     POINT m_SignTextFontOffset;
@@ -122,6 +122,6 @@ class BISignIcon
         std::string sText;
     } m_Sign[MAX_SIGN_QUANTITY];
 
-    long m_nMaxSquareQ;
-    long m_nSignQ;
+    int32_t m_nMaxSquareQ;
+    int32_t m_nSignQ;
 };

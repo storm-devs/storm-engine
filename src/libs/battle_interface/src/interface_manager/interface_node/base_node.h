@@ -12,7 +12,7 @@ class BI_BaseNode : public BI_ManagerNodeBase
 
     void Update() override;
 
-    long Event(const char *pcEventName) override
+    int32_t Event(const char *pcEventName) override
     {
         return 0;
     }

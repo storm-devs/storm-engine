@@ -97,6 +97,6 @@ class S_DEBUG
 
     bool ProcessRegistry_Open();
     void Add2RecentFiles(const char *pFileName);
-    long GetRecentFileALine(const char *pFileName);
-    void SaveRecentFileALine(const char *pFileName, long nLine);
+    int32_t GetRecentFileALine(const char *pFileName);
+    void SaveRecentFileALine(const char *pFileName, int32_t nLine);
 };

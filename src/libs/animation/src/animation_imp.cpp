@@ -21,13 +21,13 @@ AnimationServiceImp *AnimationImp::aniService = nullptr;
 // Construction, destruction
 // ============================================================================================
 
-AnimationImp::AnimationImp(long id, AnimationInfo *animationInfo)
+AnimationImp::AnimationImp(int32_t id, AnimationInfo *animationInfo)
 {
     Assert(animationInfo);
     aniInfo = animationInfo;
     aniInfo->AddRef();
     thisID = id;
-    for (long i = 0; i < ANI_MAX_ACTIONS; i++)
+    for (int32_t i = 0; i < ANI_MAX_ACTIONS; i++)
     {
         action[i].SetAnimation(this, i);
         timer[i].SetAnimation(this);
@@ -61,14 +61,14 @@ AnimationImp::~AnimationImp()
 //--------------------------------------------------------------------------------------------
 
 // Access the action player
-ActionPlayer &AnimationImp::Player(long index)
+ActionPlayer &AnimationImp::Player(int32_t index)
 {
     Assert(index >= 0 && index < ANI_MAX_ACTIONS);
     return action[index];
 }
 
 // Access the animation timer
-AnimationTimer &AnimationImp::Timer(long index)
+AnimationTimer &AnimationImp::Timer(int32_t index)
 {
     Assert(index >= 0 && index < ANI_MAX_ACTIONS);
     return timer[index];
@@ -76,12 +76,12 @@ AnimationTimer &AnimationImp::Timer(long index)
 
 // Events
 // Set internal event
-long AnimationImp::SetEvent(AnimationEvent event, long index, AnimationEventListener *ael)
+int32_t AnimationImp::SetEvent(AnimationEvent event, int32_t index, AnimationEventListener *ael)
 {
     Assert(event < ae_numevents);
     if (!ael)
         return -1;
-    for (long i = 0; i < ANIIMP_MAXLISTENERS; i++)
+    for (int32_t i = 0; i < ANIIMP_MAXLISTENERS; i++)
         if (!ae_listeners[event][i])
         {
             ae_listeners[event][i] = ael;
@@ -91,7 +91,7 @@ long AnimationImp::SetEvent(AnimationEvent event, long index, AnimationEventList
 }
 
 // Delete internal event
-void AnimationImp::DelEvent(long eventID)
+void AnimationImp::DelEvent(int32_t eventID)
 {
     if (eventID < 0)
         return;
@@ -110,13 +110,13 @@ void AnimationImp::SetEventListener(AnimationEventListener *ael)
 }
 
 // Get the number of bones in a skeleton
-long AnimationImp::GetNumBones() const
+int32_t AnimationImp::GetNumBones() const
 {
     return aniInfo->NumBones();
 }
 
 // Get animation matrix for bone
-CMatrix &AnimationImp::GetAnimationMatrix(long iBone) const
+CMatrix &AnimationImp::GetAnimationMatrix(int32_t iBone) const
 {
     Assert(iBone >= 0 && iBone < aniInfo->NumBones());
     return matrix[iBone];
@@ -131,14 +131,14 @@ const char *AnimationImp::GetData(const char *dataName) const
 }
 
 // Copy the state of one player to another
-void AnimationImp::CopyPlayerState(long indexSrc, long indexDst, bool copyTimerState)
+void AnimationImp::CopyPlayerState(int32_t indexSrc, int32_t indexDst, bool copyTimerState)
 {
     Assert(indexSrc >= 0 && indexSrc < ANI_MAX_ACTIONS);
     Assert(indexDst >= 0 && indexDst < ANI_MAX_ACTIONS);
     if (indexSrc == indexDst)
         return;
     action[indexDst].CopyState(action[indexSrc]);
-    for (long i = 0; i < ANI_MAX_ACTIONS; i++)
+    for (int32_t i = 0; i < ANI_MAX_ACTIONS; i++)
     {
         auto isInv = false;
         if (timer[i].IsUsedPlayer(indexSrc, &isInv))
@@ -205,13 +205,13 @@ void AnimationImp::RotateHead(float x, float y)
 //--------------------------------------------------------------------------------------------
 
 // Take a step in time
-void AnimationImp::Execute(long dltTime)
+void AnimationImp::Execute(int32_t dltTime)
 {
     // execute animation
-    for (long i = 0; i < ANI_MAX_ACTIONS; i++)
+    for (int32_t i = 0; i < ANI_MAX_ACTIONS; i++)
         action[i].Execute(dltTime);
     // execute the timers
-    for (long i = 0; i < ANI_MAX_ACTIONS; i++)
+    for (int32_t i = 0; i < ANI_MAX_ACTIONS; i++)
         timer[i].Execute(dltTime);
     // Calculate animation matrices
     BuildAnimationMatrices();
@@ -223,9 +223,9 @@ void AnimationImp::BuildAnimationMatrices()
     auto nFrames = aniInfo->GetAniNumFrames();
     auto nbones = aniInfo->NumBones();
     // see how many players are playing, calculate the current blending coefficients
-    long plCnt = 0;
+    int32_t plCnt = 0;
     auto normBlend = 0.0f;
-    for (long i = 0; i < ANI_MAX_ACTIONS; i++)
+    for (int32_t i = 0; i < ANI_MAX_ACTIONS; i++)
         if (action[i].IsPlaying())
         {
             plCnt++;
@@ -244,7 +244,7 @@ void AnimationImp::BuildAnimationMatrices()
             normBlend = 1.0f / normBlend;
 
             auto frame0 = action[0].GetCurrentFrame();
-            auto f0 = static_cast<long>(frame0);
+            auto f0 = static_cast<int32_t>(frame0);
             auto ki0 = frame0 - static_cast<float>(f0);
             if (f0 >= nFrames)
             {
@@ -253,7 +253,7 @@ void AnimationImp::BuildAnimationMatrices()
             }
 
             auto frame1 = action[1].GetCurrentFrame();
-            auto f1 = static_cast<long>(frame1);
+            auto f1 = static_cast<int32_t>(frame1);
             auto ki1 = frame1 - static_cast<float>(f1);
             if (f1 >= nFrames)
             {
@@ -263,7 +263,7 @@ void AnimationImp::BuildAnimationMatrices()
 
             auto kBlend = 1.0f - action[0].kBlendCurrent * normBlend;
             //-------------------------------------------------------------------------
-            for (long j = 0; j < nbones; j++)
+            for (int32_t j = 0; j < nbones; j++)
             {
                 auto &bn = aniInfo->GetBone(j);
                 CMatrix inmtx;
@@ -296,7 +296,7 @@ void AnimationImp::BuildAnimationMatrices()
         else if (action[0].IsPlaying())
         {
             auto frame = action[0].GetCurrentFrame();
-            auto f = static_cast<long>(frame);
+            auto f = static_cast<int32_t>(frame);
             auto ki = frame - static_cast<float>(f);
             if (f >= nFrames)
             {
@@ -305,7 +305,7 @@ void AnimationImp::BuildAnimationMatrices()
             }
 
             //-------------------------------------------------------------------------
-            for (long j = 0; j < nbones; j++)
+            for (int32_t j = 0; j < nbones; j++)
             {
                 auto &bn = aniInfo->GetBone(j);
                 CMatrix inmtx;
@@ -332,7 +332,7 @@ void AnimationImp::BuildAnimationMatrices()
         else if (action[1].IsPlaying())
         {
             auto frame = action[1].GetCurrentFrame();
-            auto f = static_cast<long>(frame);
+            auto f = static_cast<int32_t>(frame);
             auto ki = frame - static_cast<float>(f);
             if (f >= nFrames)
             {
@@ -341,7 +341,7 @@ void AnimationImp::BuildAnimationMatrices()
             }
 
             //-------------------------------------------------------------------------
-            for (long j = 0; j < nbones; j++)
+            for (int32_t j = 0; j < nbones; j++)
             {
                 auto &bn = aniInfo->GetBone(j);
                 CMatrix inmtx;
@@ -371,10 +371,10 @@ void AnimationImp::BuildAnimationMatrices()
             __debugbreak();
             /*_asm int 3;*/
             //    float frame = 0.0f;
-            //    for(long j = 0; j < nbones; j++)
+            //    for(int32_t j = 0; j < nbones; j++)
             //        aniInfo->GetBone(j).BlendFrame(frame);
         }
-    for (long j = 0; j < nbones; j++)
+    for (int32_t j = 0; j < nbones; j++)
     {
         auto &bn = aniInfo->GetBone(j);
         matrix[j] = CMatrix(bn.start) * CMatrix(bn.matrix);
@@ -388,9 +388,9 @@ void AnimationImp::BuildAnimationMatrices()
 
 // Events
 // Send events
-void AnimationImp::SendEvent(AnimationEvent event, long index)
+void AnimationImp::SendEvent(AnimationEvent event, int32_t index)
 {
-    for (long i = 0; i < ANIIMP_MAXLISTENERS; i++)
+    for (int32_t i = 0; i < ANIIMP_MAXLISTENERS; i++)
     {
         if (ae_listeners[event][i])
         {

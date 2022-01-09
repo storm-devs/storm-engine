@@ -259,7 +259,7 @@ void LocationCamera::Realize(uint32_t delta_time)
                     // kMorph = 0.0f;
                     oldPos = camPos;
                     oldLookTo = lookTo;
-                    for (long i = 0; i < 10; i++)
+                    for (int32_t i = 0; i < 10; i++)
                         cf.Update(0.1f);
                 }
                 cf.Update(dltTime * character->CameraTurnSpeed());
@@ -515,7 +515,7 @@ void LocationCamera::ExecuteLook(float dltTime)
     if (!node || !node->geo)
         return;
     auto *ani = mdl->GetAnimation();
-    long strIndex = -1;
+    int32_t strIndex = -1;
     auto idCamera = node->geo->FindName("camera");
     if (ani && (strIndex = node->geo->FindLabelN(strIndex + 1, idCamera)) > -1)
     {
@@ -601,8 +601,8 @@ bool LocationCamera::GetCollideTriangle(TRIANGLE &trg) const
     return location->GetCollideTriangle(trg);
 }
 
-void LocationCamera::Clip(PLANE *p, long numPlanes, CVECTOR &cnt, float rad,
-                          bool (*fnc)(const CVECTOR *vtx, long num)) const
+void LocationCamera::Clip(PLANE *p, int32_t numPlanes, CVECTOR &cnt, float rad,
+                          bool (*fnc)(const CVECTOR *vtx, int32_t num)) const
 {
     if (location)
         location->Clip(p, numPlanes, cnt, rad, fnc);
@@ -819,7 +819,7 @@ float LocationCamera::TrackPauseProcess()
     auto fOldTime = m_fTrackCurTime;
     m_fTrackCurTime += core.GetDeltaTime() * 0.001f;
 
-    //    for( long nPause=m_nCurPauseIndex+1; nPause<m_aTrackPauses; nPause++ )
+    //    for( int32_t nPause=m_nCurPauseIndex+1; nPause<m_aTrackPauses; nPause++ )
     //        if( m_aTrackPauses[nPause].trackTime <= m_fTrackCurTime ) {
     //        }
 

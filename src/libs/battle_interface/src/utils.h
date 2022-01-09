@@ -21,7 +21,7 @@ class BITextInfo final
     std::string sText;
     POINT pos;
     float fScale;
-    long nFont;
+    int32_t nFont;
     uint32_t dwColor;
     bool bShadow;
 
@@ -68,8 +68,8 @@ class BIBorderInfo
     void Draw();
 
     VDX9RENDER *pRS;
-    long nVBuf;
-    long nTexID;
+    int32_t nVBuf;
+    int32_t nTexID;
     FRECT ext_pos;
     FRECT int_pos1;
     FRECT int_pos2;
@@ -85,17 +85,17 @@ class BIUtils
 {
     //---------------------------------------
   public: // functions
-    static long GetLongFromAttr(ATTRIBUTES *pA, const char *name, long defVal);
+    static int32_t GetIntFromAttr(ATTRIBUTES *pA, const char *name, int32_t defVal);
     static float GetFloatFromAttr(ATTRIBUTES *pA, const char *name, float defVal);
-    static bool ReadStringFromAttr(ATTRIBUTES *pA, const char *name, char *buf, long bufSize, const char *defVal);
+    static bool ReadStringFromAttr(ATTRIBUTES *pA, const char *name, char *buf, int32_t bufSize, const char *defVal);
     static char *GetStringFromAttr(ATTRIBUTES *pA, const char *name, const char *defVal);
-    static long GetTextureFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *sAttrName);
+    static int32_t GetTextureFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *sAttrName);
     static bool ReadRectFromAttr(ATTRIBUTES *pA, const char *name, FRECT &rOut, FRECT &rDefault);
     static bool ReadRectFromAttr(ATTRIBUTES *pA, const char *name, RECT &rOut, RECT &rDefault);
     static bool ReadPosFromAttr(ATTRIBUTES *pA, const char *name, float &fX, float &fY, float fXDef, float fYDef);
-    static bool ReadPosFromAttr(ATTRIBUTES *pA, const char *name, long &nX, long &nY, long nXDef, long nYDef);
-    static long GetAlignmentFromAttr(ATTRIBUTES *pA, const char *name, long nDefAlign);
-    static long GetFontIDFromAttr(ATTRIBUTES *pA, const char *name, VDX9RENDER *rs, const char *pcDefFontName);
+    static bool ReadPosFromAttr(ATTRIBUTES *pA, const char *name, int32_t &nX, int32_t &nY, int32_t nXDef, int32_t nYDef);
+    static int32_t GetAlignmentFromAttr(ATTRIBUTES *pA, const char *name, int32_t nDefAlign);
+    static int32_t GetFontIDFromAttr(ATTRIBUTES *pA, const char *name, VDX9RENDER *rs, const char *pcDefFontName);
     static bool ReadVectorFormAttr(ATTRIBUTES *pA, const char *name, CVECTOR &vOut, const CVECTOR &vDef);
 
     static bool ComparePoint(POINT &p1, POINT &p2);
@@ -105,7 +105,7 @@ class BIUtils
     static uint32_t GetIntervalColor(uint32_t minV, uint32_t maxV, float fpar);
     static bool GetIntervalRect(float fk, const FRECT &r1, const FRECT &r2, FRECT &rOut);
 
-    static long GetMaxFromFourLong(long n1, long n2, long n3, long n4);
+    static int32_t GetMaxFromFourLong(int32_t n1, int32_t n2, int32_t n3, int32_t n4);
 
     static float GetFromStr_Float(const char *&pcStr, float fDefault);
 

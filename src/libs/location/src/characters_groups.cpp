@@ -38,7 +38,7 @@ CharactersGroups::CharactersGroups()
 
 CharactersGroups::~CharactersGroups()
 {
-    for (long i = 0; i < maxGroups; i++)
+    for (int32_t i = 0; i < maxGroups; i++)
     {
         if (groups[i])
         {
@@ -95,7 +95,7 @@ void CharactersGroups::String::operator=(const char *str)
     }
 }
 
-bool CharactersGroups::String::Cmp(const char *str, long l, long h) const
+bool CharactersGroups::String::Cmp(const char *str, int32_t l, int32_t h) const
 {
     if (!name || !name[0])
     {
@@ -110,14 +110,14 @@ bool CharactersGroups::String::Cmp(const char *str, long l, long h) const
     return _stricmp(name, str) == 0;
 }
 
-long CharactersGroups::String::GetHash(const char *str)
+int32_t CharactersGroups::String::GetHash(const char *str)
 {
     if (!str)
         return 0;
     return LocatorArray::CalcHashString(str);
 }
 
-long CharactersGroups::String::GetLen(const char *str)
+int32_t CharactersGroups::String::GetLen(const char *str)
 {
     if (!str)
         return 0;
@@ -149,10 +149,10 @@ void CharactersGroups::Execute(uint32_t delta_time)
     auto playerAlarm = 0.0f;
     auto playerActive = false;
     auto isDeactivate = false;
-    for (long i = 0; i < numGroups; i++)
+    for (int32_t i = 0; i < numGroups; i++)
     {
         auto *const rel = groups[i]->relations;
-        for (long j = 0; j <= i; j++)
+        for (int32_t j = 0; j <= i; j++)
         {
             rel[j].alarm -= dltTime * rel[j].alarmdown;
             if (rel[j].alarm < 0.0f)
@@ -328,7 +328,7 @@ bool CharactersGroups::AddEnemyTarget(Character *chr, Character *enemy, float ma
     if (r.actState != rs_enemy)
         return false;
     // Looking among added
-    for (long i = 0; i < chr->numTargets; i++)
+    for (int32_t i = 0; i < chr->numTargets; i++)
     {
         if (enemy == EntityManager::GetEntityPointer(chr->grpTargets[i].chr))
         {
@@ -372,7 +372,7 @@ bool CharactersGroups::RemoveInvalidTargets(Character *chr, Character *check)
         return false;
     }
     auto isValidate = false;
-    for (long i = 0; i < chr->numTargets;)
+    for (int32_t i = 0; i < chr->numTargets;)
     {
         auto isDelete = true;
         auto &trg = chr->grpTargets[i];
@@ -563,7 +563,7 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
         return false;
     if (c->numTargets <= 0)
         return false;
-    long s = 0;
+    int32_t s = 0;
     if (c->numTargets > 1)
     {
         CVECTOR pos, p;
@@ -573,7 +573,7 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
         // choose the optimal goal
         float value;
         s = -1;
-        for (long i = 0; i < c->numTargets; i++)
+        for (int32_t i = 0; i < c->numTargets; i++)
         {
             // Character pointer
             auto *nc = static_cast<NPCharacter *>(EntityManager::GetEntityPointer(c->grpTargets[i].chr));
@@ -582,8 +582,8 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
             if (!nc->IsSetBlade())
                 continue;
             // collect the number of characters fighting with this guy
-            long n = 0;
-            for (long j = 0; j < numChr; j++)
+            int32_t n = 0;
+            for (int32_t j = 0; j < numChr; j++)
             {
                 if (cEx[j].c == nc || cEx[j].c == c)
                     continue;
@@ -619,11 +619,11 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
     // if(!c->IsSetBlade()) return false;
     if (c->AttributesPointer)
     {
-        vd->Set(static_cast<long>(c->AttributesPointer->GetAttributeAsDword("index", -1)));
+        vd->Set(static_cast<int32_t>(c->AttributesPointer->GetAttributeAsDword("index", -1)));
     }
     else
     {
-        vd->Set(static_cast<long>(-1));
+        vd->Set(-1);
     }
     return true;
 }
@@ -657,7 +657,7 @@ void CharactersGroups::MsgAttack(MESSAGE &message)
     if (r.isActive)
         r.curState = r.actState;
     // Establish a hostile relationship among all victim-friendly groups
-    for (long i = 0; i < numGroups; i++)
+    for (int32_t i = 0; i < numGroups; i++)
     {
         if (gHit == groups[i])
             continue;
@@ -741,7 +741,7 @@ void CharactersGroups::MsgReleaseGroup(MESSAGE &message)
 }
 
 // Register a group
-long CharactersGroups::RegistryGroup(const char *groupName)
+int32_t CharactersGroups::RegistryGroup(const char *groupName)
 {
     const auto idxgrp = FindGroupIndex(groupName);
     if (idxgrp >= 0)
@@ -768,7 +768,7 @@ long CharactersGroups::RegistryGroup(const char *groupName)
     {
         // Relationship table
         grp->relations = new Relation[numGroups];
-        for (long i = 0; i < numGroups - 1; i++)
+        for (int32_t i = 0; i < numGroups - 1; i++)
         {
             grp->relations[i].alarm = CGS_START_ALARM;
             grp->relations[i].alarmdown = CGS_ALARMDOWN;
@@ -810,7 +810,7 @@ void CharactersGroups::ReleaseGroup(const char *groupName)
         delete oldGroup->relations;
     delete oldGroup;
 
-    for (long othergrp = idxgrp + 1; othergrp < numGroups - 1;
+    for (int32_t othergrp = idxgrp + 1; othergrp < numGroups - 1;
          ++othergrp) // restore relations of other groups taking into account the shift
         groups[othergrp]->relations[idxgrp] = groups[idxgrp]->relations[othergrp];
 
@@ -1035,7 +1035,7 @@ void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
 {
     auto *const ch = chr ? static_cast<Character *>(EntityManager::GetEntityPointer(chr)) : nullptr;
     // Remove the character from the previous group
-    for (long i = 0; i < numGroups; i++)
+    for (int32_t i = 0; i < numGroups; i++)
     {
         auto *g = groups[i];
         auto &cid = g->c;
@@ -1056,7 +1056,7 @@ void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
 // Delete all empty groups
 void CharactersGroups::DeleteEmptyGroups()
 {
-    for (long i = 0; i < numGroups; i++)
+    for (int32_t i = 0; i < numGroups; i++)
     {
         Group *g = groups[i];
 
@@ -1099,7 +1099,7 @@ CharactersGroups::Group *CharactersGroups::FindGroup(const char *name)
 }
 
 // Find a group by name
-long CharactersGroups::FindGroupIndex(const char *name)
+int32_t CharactersGroups::FindGroupIndex(const char *name)
 {
     if (!name)
         return -1;
@@ -1107,7 +1107,7 @@ long CharactersGroups::FindGroupIndex(const char *name)
     const auto h = String::GetHash(name);
 
     // looking among registered
-    for (long i = 0; i < numGroups; i++)
+    for (int32_t i = 0; i < numGroups; i++)
     {
         if (groups[i]->name.Cmp(name, l, h))
             return i;
@@ -1144,7 +1144,7 @@ CharactersGroups::Relation &CharactersGroups::FindRelation(const char *name1, co
 }
 
 // Find group relationship
-CharactersGroups::Relation &CharactersGroups::FindRelation(long g1, long g2, bool *selfgroup)
+CharactersGroups::Relation &CharactersGroups::FindRelation(int32_t g1, int32_t g2, bool *selfgroup)
 {
     Assert(g1 >= 0 && g1 < numGroups);
     Assert(g2 >= 0 && g2 < numGroups);
@@ -1158,7 +1158,7 @@ CharactersGroups::Relation &CharactersGroups::FindRelation(long g1, long g2, boo
 }
 
 // Get character group index
-long CharactersGroups::GetCharacterGroup(Character *c)
+int32_t CharactersGroups::GetCharacterGroup(Character *c)
 {
     if (!c)
         return -1;
@@ -1197,9 +1197,9 @@ void CharactersGroups::SaveData()
         AttributesPointer->DeleteAttributeClassX(saveData);
     saveData = AttributesPointer->CreateSubAClass(AttributesPointer, "savedata");
     // Maintaining group relationships
-    for (long i = 0, cnt = 0; i < numGroups; i++)
+    for (int32_t i = 0, cnt = 0; i < numGroups; i++)
     {
-        for (long j = 0; j < i; j++)
+        for (int32_t j = 0; j < i; j++)
         {
             // Relationship section
             char buf[16];
@@ -1248,8 +1248,8 @@ void CharactersGroups::LoadDataRelations()
     auto *saveData = AttributesPointer->FindAClass(AttributesPointer, "savedata");
     if (!saveData)
         return;
-    const long numG = saveData->GetAttributesNum();
-    for (long i = 0; i < numG; i++)
+    const int32_t numG = saveData->GetAttributesNum();
+    for (int32_t i = 0; i < numG; i++)
     {
         auto *grp = saveData->GetAttributeClass(i);
         // Registering the first group
@@ -1280,9 +1280,9 @@ void CharactersGroups::LoadDataRelations()
         r.alarmmin = grp->GetAttributeAsFloat("alarmmin", r.alarmmin);
         r.alarmmax = grp->GetAttributeAsFloat("alarmmax", r.alarmmax);
         r.isActive = grp->GetAttributeAsDword("isactive", r.isActive) != 0;
-        long curState = grp->GetAttributeAsDword("curState", r.curState);
-        long actState = grp->GetAttributeAsDword("actState", r.actState);
-        long relState = grp->GetAttributeAsDword("relState", r.relState);
+        int32_t curState = grp->GetAttributeAsDword("curState", r.curState);
+        int32_t actState = grp->GetAttributeAsDword("actState", r.actState);
+        int32_t relState = grp->GetAttributeAsDword("relState", r.relState);
         if (curState <= rs_beginvalue || curState >= rs_endvalue)
         {
             core.Trace("CharactersGroups::LoadDataRelations -> invalide curState value, set this neitral");
@@ -1307,9 +1307,9 @@ void CharactersGroups::LoadDataRelations()
 // Establish relationships for active groups
 void CharactersGroups::RestoreStates()
 {
-    for (long i = 0, cnt = 0; i < numGroups; i++)
+    for (int32_t i = 0, cnt = 0; i < numGroups; i++)
     {
-        for (long j = 0; j < i; j++)
+        for (int32_t j = 0; j < i; j++)
         {
             auto &r = FindRelation(i, j);
             const auto oldState = r.isActive;
@@ -1335,9 +1335,9 @@ void CharactersGroups::RestoreStates()
 void CharactersGroups::DumpRelations()
 {
     // Maintaining group relationships
-    for (long i = 0; i < numGroups; i++)
+    for (int32_t i = 0; i < numGroups; i++)
     {
-        for (long j = 0; j < i; j++)
+        for (int32_t j = 0; j < i; j++)
         {
             core.Trace("\"%s\" <-> \"%s\"", groups[i]->name.name, groups[j]->name.name);
             // keep the relationship
@@ -1355,7 +1355,7 @@ void CharactersGroups::DumpRelations()
     }
     core.Trace("Groups info:");
     core.Trace("");
-    for (long i = 0; i < numGroups; i++)
+    for (int32_t i = 0; i < numGroups; i++)
     {
         core.Trace("name: \"%s\"", groups[i]->name.name);
         core.Trace("    look: %f", groups[i]->look);
