@@ -40,6 +40,11 @@ class WdmWindUI : public WdmInterfaceObject
     std::optional<int32_t> rum;
     char month[12][128];
     int32_t txCoord;
-    int32_t txNationFlag;
+
+    int32_t nationFlagTx;
+    uint32_t nationFlagCount{8U};
+    float nationFlagWidth{48.0f};
+    float nationFlagHeight{48.0f};
+
     float resizeRatio;
 };

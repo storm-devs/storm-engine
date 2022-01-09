@@ -43,7 +43,7 @@ WdmWindUI::WdmWindUI()
     txMoraleMask = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_mask.tga");
     txMoraleBar = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_bar.tga");
     txCoord = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\coord.tga");
-    txNationFlag = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\WorldMapEnsigns.tga");
+    nationFlagTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\WorldMapEnsigns.tga");
     dateFont = -1;
     morale = 0.0f;
     resizeRatio = 1.0f;
@@ -71,8 +71,8 @@ WdmWindUI::~WdmWindUI()
         wdmObjects->rs->TextureRelease(txMoraleBar);
     if (txCoord >= 0)
         wdmObjects->rs->TextureRelease(txCoord);
-    if (txNationFlag >= 0)
-        wdmObjects->rs->TextureRelease(txNationFlag);
+    if (nationFlagTx >= 0)
+        wdmObjects->rs->TextureRelease(nationFlagTx);
 }
 
 //============================================================================================
@@ -120,6 +120,25 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
                 }
             }
         }
+    }
+
+    ap = apnt->FindAClass(apnt, "nationFlag");
+    if (ap)
+    {
+        // Font
+        auto *texName = ap->GetAttribute("texName");
+        if (texName)
+        {
+            const auto newTxNationFlag = wdmObjects->rs->TextureCreate(texName);
+            if (newTxNationFlag >= 0)
+            {
+                wdmObjects->rs->TextureRelease(nationFlagTx);
+                nationFlagTx = newTxNationFlag;
+            }
+        }
+        nationFlagCount = ap->GetAttributeAsDword("count", nationFlagCount);
+        nationFlagWidth = ap->GetAttributeAsFloat("width", nationFlagWidth);
+        nationFlagHeight = ap->GetAttributeAsFloat("height", nationFlagHeight);
     }
 }
 
@@ -311,12 +330,12 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     if (wdmObjects->nationFlagIndex)
     {
         // National flag
-        float addtu = 0.125;
-        rs->TextureSet(0, txNationFlag);
+        rs->TextureSet(0, nationFlagTx);
+        FillRectCoord(buf, cx - nationFlagWidth/2.0f * resizeRatio, cy + 150.0f * resizeRatio,
+                      nationFlagWidth * resizeRatio,
+                      nationFlagHeight * resizeRatio);
 
-        FillRectCoord(buf, cx - 24.0f * resizeRatio, cy + 150.0f * resizeRatio, 48.0f * resizeRatio,
-                      48.0f * resizeRatio);
-
+        const float addtu = 1.0f / static_cast<float>(nationFlagCount);
         FillRectUV(buf, wdmObjects->nationFlagIndex.value() * addtu, 0.0f, addtu, 1.0f);
         FillRectColor(buf, 0xffffffff);
         DrawRects(buf, 1, "WdmDrawMapBlend");
