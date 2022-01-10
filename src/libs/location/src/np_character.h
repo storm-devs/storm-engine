@@ -158,6 +158,9 @@ class NPCharacter : public AICharacter
   protected:
     Task task;           // The task to be performed
     NPCTask lastSetTask; // Last task set
+
+    bool bShotOnlyEnemyTest{false};
+
   private:
     Task taskstack[16]; // Task stack
     int32_t stackPointer;  // Stack pointer

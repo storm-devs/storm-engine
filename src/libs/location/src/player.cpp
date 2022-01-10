@@ -292,7 +292,7 @@ void Player::Update(float dltTime)
             if (IsFireFindTarget())
             {
                 float kDist;
-                auto *c = FindGunTarget(kDist);
+                auto *c = FindGunTarget(kDist, bShotOnlyEnemyTest);
                 if (c)
                     c->Select();
             }

@@ -151,6 +151,9 @@ bool NPCharacter::PostInit()
         if (vd && vd->Get(tmpLong))
             stunChance = tmpLong;
     }
+    vd = core.Event("NPC_Event_ShotEnemyTest", "i", GetId());
+    if (vd && vd->Get(tmpBool))
+        bShotOnlyEnemyTest = tmpBool;
     // Parameter normalization
     if (attackCur < 0.0f)
         attackCur = 0.0f;
@@ -733,7 +736,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
                             const float _ay = ay;
                             ay = ang;
                             float kdst;
-                            Character *target = FindGunTarget(kdst, false, true);
+                            Character *target = FindGunTarget(kdst, bShotOnlyEnemyTest, true);
                             // Character * target = FindGunTarget(kdst, true);
                             ay = _ay;
                             // if((target == c) || (target && bTryAnyTarget))
