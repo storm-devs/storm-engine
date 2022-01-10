@@ -61,7 +61,6 @@ NPCharacter::NPCharacter() : taskstack{}
     defencePrbBlock = 0.9f;
     defencePrbParry = 0.1f;
     isRecoilEnable = true;
-    stunChance = 100;
     // Shooting
     fireCur = 0.0f;
     isFireEnable = true;
@@ -145,12 +144,9 @@ bool NPCharacter::PostInit()
     if (vd && vd->Get(tmpBool))
         isFireEnable = tmpBool != 0;
     vd = core.Event("NPC_Event_StunChance", "i", GetId());
-    if (core.GetTargetEngineVersion() >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN)
-    {
-        auto tmpLong = stunChance;
-        if (vd && vd->Get(tmpLong))
-            stunChance = tmpLong;
-    }
+    int32_t tmpInt;
+    if (vd && vd->Get(tmpInt))
+        stunChance = tmpInt;
     vd = core.Event("NPC_Event_ShotEnemyTest", "i", GetId());
     if (vd && vd->Get(tmpBool))
         bShotOnlyEnemyTest = tmpBool;

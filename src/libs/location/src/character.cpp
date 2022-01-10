@@ -539,8 +539,6 @@ Character::Character()
     fgtCurIndex = fgtSetIndex = -1;
     isParryState = false;
     isFeintState = false;
-    stunChance = 100;
-    //
     isMove = false;
     isBack = false;
     isRun = false;
@@ -4340,19 +4338,17 @@ void Character::UpdateAnimation()
                     isFired = false;
                     break;
                 case fgt_hit_attack: { // The reaction of hitting a character putting him into the stall
-                    const auto version = core.GetTargetEngineVersion();
-
-                    if (version == storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
+                    if (stunChance)
                     {
-                        if (IsPlayer() && rand() % 100 >= 50)
+                        if (rand() % 100 >= stunChance)
                         {
                             break;
                         }
                     }
-
-                    if (version >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN)
+                    else
                     {
-                        if (rand() % 100 >= stunChance)
+                        // COAS vanilla
+                        if (IsPlayer() && rand() % 100 >= 50)
                         {
                             break;
                         }
@@ -4399,19 +4395,17 @@ void Character::UpdateAnimation()
                     }
                     break;
                 case fgt_hit_fire: { // The reaction from the shot, putting him into stall
-                    const auto version = core.GetTargetEngineVersion();
-
-                    if (version == storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
+                    if (stunChance)
                     {
-                        if (IsPlayer() && rand() % 100 >= 50)
+                        if (rand() % 100 >= stunChance)
                         {
                             break;
                         }
                     }
-
-                    if (version >= storm::ENGINE_VERSION::TO_EACH_HIS_OWN)
+                    else
                     {
-                        if (rand() % 100 >= stunChance)
+                        // COAS vanilla
+                        if (IsPlayer() && rand() % 100 >= 50)
                         {
                             break;
                         }
