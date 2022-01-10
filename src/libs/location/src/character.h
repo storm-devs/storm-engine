@@ -688,6 +688,8 @@ class Character : public Entity
     float curHeadAX;
     float curHeadAY;
 
+    bool bShotOnlyEnemyTest{false};
+
   public:
     bool isPlayerEnemy;
     float enemyBarsAlpha;

@@ -2832,7 +2832,7 @@ if(_stricmp(eventName, "Blade to belt") == 0)
                     // PlaySound("pistol_shot");
                     isFired = true;
                     float kDist;
-                    Character *chr = FindGunTarget(kDist);
+                    Character *chr = FindGunTarget(kDist, bShotOnlyEnemyTest);
                     entid_t enemy{};
                     if (chr)
                     {
