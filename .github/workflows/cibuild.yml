@@ -1,16 +1,12 @@
-name: CI Build
+name: CI Windows
 
 on:
   push:
-    branches:
-      - develop
     paths-ignore:
       - 'docs/**'
       - 'tools/**'
       - '*.md'
   pull_request:
-    branches:
-      - develop
     paths-ignore:
       - 'docs/**'
       - 'tools/**'
