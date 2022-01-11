@@ -58,32 +58,6 @@ if (NOT WIN32)
     set(DXVK_NATIVE_D3D9_LIB ${BINARY_DIR}/src/d3d9/libdxvk_d3d9.so)
     include_directories("${DXVK_NATIVE_INCLUDE_DIRS}")
     ADD_CUSTOM_TARGET(dependencies ALL DEPENDS dxvk-native)
-
-#    message("Using safeclib for str*_s functions")
-
-#    include(ProcessorCount)
-#    ProcessorCount(N)
-#    if (N EQUAL 0)
-#        set(N 1)
-#    endif()
-
-#    ExternalProject_Add(safeclib
-#        GIT_REPOSITORY    https://github.com/rurban/safeclib
-#        GIT_TAG           v02092020
-#        GIT_SHALLOW       ON
-#        BUILD_ALWAYS      OFF
-#        CONFIGURE_HANDLED_BY_BUILD ON
-#        CONFIGURE_COMMAND ./build-aux/autogen.sh && ./configure --enable-strmax=0x8000 --enable-shared=no --disable-doc
-#        BUILD_COMMAND     make -j${N}
-#        BUILD_IN_SOURCE ON
-#        INSTALL_COMMAND   ""
-#    )
-#    ExternalProject_Get_property(safeclib SOURCE_DIR BINARY_DIR)
-#    set(SAFECLIB_INCLUDE_DIR "${SOURCE_DIR}/include")
-#    set(SAFECLIB_LIB ${SOURCE_DIR}/src/.libs/libsafec-3.6.0.a)
-#    include_directories("${SAFECLIB_INCLUDE_DIR}")
-
-#    ADD_CUSTOM_TARGET(dependencies ALL DEPENDS dxvk-native safeclib)
 endif()
 
 ### Define library ALIASes for use without CONAN_PKG:: prefix

@@ -1,10 +1,8 @@
 #ifndef _WIN32
 
 #include "safe_str_lib.h"
-
-// workaround for safeclib
-//#undef sprintf_s(dest, dmax, ...)
-//#define sprintf_s(dest, dmax, fmt, ...) _sprintf_s_chk(dest, dmax, BOS(dest), fmt, __VA_ARGS__)
+// use custom sprintf_s instead of safeclib
+#undef sprintf_s
 
 template <size_t size> inline int sprintf_s(char (&buffer)[size], const char *format, ...)
 {
@@ -15,13 +13,13 @@ template <size_t size> inline int sprintf_s(char (&buffer)[size], const char *fo
     return result;
 }
 
-/*
-template <size_t size>
-int sprintf_s(
-   char (&buffer)[size],
-   const char *format [,
-   argument] ... 
-);
-*/
+inline int sprintf_s(char *buffer, size_t size, const char *format, ...)
+{
+    va_list ap;
+    va_start(ap, format);
+    int result = vsnprintf(buffer, size, format, ap);
+    va_end(ap);
+    return result;
+}
 
 #endif
