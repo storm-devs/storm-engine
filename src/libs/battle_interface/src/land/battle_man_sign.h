@@ -52,7 +52,7 @@ class BIManSign
     float GetProgressManEnergy(int32_t nIdx) const;
     float GetProgressGunChargeMax(int32_t nIdx);
     float GetProgressGunCharge(int32_t nIdx);
-    float GetProgressGunChargingBar(int32_t nIdx);
+    float GetProgressGunReloadBar(int32_t nIdx);
     float GetGunProgressByIndex(int32_t nIdx);
 
     void CheckDataChange();
@@ -114,13 +114,13 @@ class BIManSign
     BIFPOINT m_pntGunChargeOffset;
     FPOINT m_pntGunChargeIconSize;
 
-    int32_t m_nGunChargingTextureID;
-    int32_t m_nGunChargingSquareQ;
-    uint32_t m_dwGunChargingColor;
-    uint32_t m_dwGunChargingBackColor;
-    FRECT m_rGunChargingUV;
-    BIFPOINT m_pntGunChargingOffset;
-    FPOINT m_pntGunChargingIconSize;
+    int32_t m_nGunReloadTextureID;
+    int32_t m_nGunReloadSquareQ;
+    uint32_t m_dwGunReloadColor;
+    uint32_t m_dwGunReloadBackColor;
+    FRECT m_rGunReloadUV;
+    BIFPOINT m_pntGunReloadOffset;
+    FPOINT m_pntGunReloadIconSize;
 
     std::vector<float> m_aChargeProgress;
 
