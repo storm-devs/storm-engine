@@ -6,6 +6,14 @@ else()
   set(MIMALLOC_DEP "$<IF:$<CONFIG:Release>,${CONAN_LIB_DIRS_MIMALLOC_RELEASE}/libmimalloc.so,${CONAN_LIB_DIRS_MIMALLOC_DEBUG}/libmimalloc-debug.so>")
 endif()
 
+if (WIN32)
+set(SYSTEM_DEPS
+    "comctl32"
+    "dbghelp"
+    "winhttp"
+)
+endif()
+
 STORM_SETUP(
     TARGET_NAME engine
     TYPE executable
@@ -27,7 +35,5 @@ STORM_SETUP(
     zlib
 
     # system
-    comctl32
-    dbghelp
-    winhttp
+    ${SYSTEM_DEPS}
 )

@@ -40,6 +40,7 @@ if (MSVC)
     add_link_options("$<$<CONFIG:Release>:/OPT:ICF>") # Perform identical COMDAT folding, needs to be explicitly specified with /DEBUG
     add_link_options("$<$<CONFIG:Release>:/LTCG>") # Enable link-time code generation
 else()
+    add_definitions(-D_GLIBCXX_USE_TBB_PAR_BACKEND=0) # Don't use tbb
     add_compile_options(-std=c++20)
 
     # Verbose output

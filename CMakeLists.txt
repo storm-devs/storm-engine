@@ -36,6 +36,30 @@ conan_cmake_run(CONANFILE conanfile.py
         steam=${STORM_ENABLE_STEAM}
 )
 
+if (NOT WIN32)
+    message("Using DXVK-native for D3D9 API")
+
+    include(ExternalProject)
+    ExternalProject_Add(dxvk-native
+        GIT_REPOSITORY    https://github.com/Joshua-Ashton/dxvk-native
+        GIT_TAG           a2dc99c407340432d4ba5bfa29efa685c27942ea
+        GIT_SHALLOW       ON
+        BUILD_ALWAYS      OFF
+        CONFIGURE_HANDLED_BY_BUILD ON
+        CONFIGURE_COMMAND meson ../dxvk-native
+        BUILD_COMMAND     ninja
+        INSTALL_COMMAND   ""
+    )
+    ExternalProject_Get_property(dxvk-native SOURCE_DIR BINARY_DIR)
+    set(DXVK_NATIVE_INCLUDE_DIRS
+        "${SOURCE_DIR}/include/native/directx"
+        "${SOURCE_DIR}/include/native/windows"
+    )
+    set(DXVK_NATIVE_D3D9_LIB ${BINARY_DIR}/src/d3d9/libdxvk_d3d9.so)
+    include_directories("${DXVK_NATIVE_INCLUDE_DIRS}")
+    ADD_CUSTOM_TARGET(dependencies ALL DEPENDS dxvk-native)
+endif()
+
 ### Define library ALIASes for use without CONAN_PKG:: prefix
 foreach (conan_target ${CONAN_TARGETS})
     string(REPLACE "CONAN_PKG::" "" unprefixed_target ${conan_target})
