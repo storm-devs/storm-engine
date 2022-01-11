@@ -96,7 +96,7 @@ bool SHIP::Init()
     Strength[STRENGTH_MAIN].vSpeed = 0.0f;
     Strength[STRENGTH_MAIN].vRotate = 0.0f;
 
-    srand(GetTickCount());
+    srand(std::time(nullptr));
 
     LoadServices();
 

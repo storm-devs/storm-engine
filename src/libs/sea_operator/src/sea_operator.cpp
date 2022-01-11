@@ -280,7 +280,7 @@ void SEA_OPERATOR::HandleShipFire(entid_t _shipID, const char *_bortName, const 
     auto shipDirectionPerp = CVECTOR(shipDirection.z, 0.0f, -1.0f * shipDirection.x);
     float chosenK;
 
-    srand(GetTickCount());
+    srand(std::time(nullptr));
     if (rand() & 0x1)
         chosenK = -1.0f;
     else

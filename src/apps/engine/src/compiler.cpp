@@ -46,7 +46,7 @@ COMPILER::COMPILER()
 
     SStack.SetVCompiler(this);
     VarTab.SetVCompiler(this);
-    srand(GetTickCount());
+    srand(std::time(nullptr));
 
     DebugTraceFileName[0] = 0;
 
@@ -606,7 +606,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
 
     bEventsBreak = false;
 
-    uint32_t nTimeOnEvent = GetTickCount();
+    auto nStartEventTime = std::chrono::system_clock::now();
     current_debug_mode = CDebug->GetTraceMode();
 
     pVD = nullptr;
@@ -674,9 +674,9 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
             break;
     }
 
-    nTimeOnEvent = GetTickCount() - nTimeOnEvent;
+    std::chrono::duration<double, std::milli> nTimeOnEvent = std::chrono::system_clock::now() - nStartEventTime;
 
-    nRuntimeTicks += nTimeOnEvent;
+    nRuntimeTicks += static_cast<uint32_t>(nTimeOnEvent.count());
 
     pRun_fi = nullptr;
 
@@ -4173,7 +4173,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     CDebug->SetTraceMode(TMODE_WAIT);
                     while (CDebug->GetTraceMode() == TMODE_WAIT)
                     {
-                        Sleep(40);
+                        std::this_thread::sleep_for(std::chrono::milliseconds(40));
                     }
                     if (CDebug->GetTraceMode() == TMODE_MAKESTEP_OVER)
                         bDebugWaitForThisFunc = true;
@@ -4195,7 +4195,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
 
                         while (CDebug->GetTraceMode() == TMODE_WAIT)
                         {
-                            Sleep(40);
+                            std::this_thread::sleep_for(std::chrono::milliseconds(40));
                         } // wait for debug thread decision
                         if (CDebug->GetTraceMode() == TMODE_MAKESTEP_OVER)
                             bDebugWaitForThisFunc = true;

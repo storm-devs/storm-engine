@@ -1,3 +1,5 @@
+#include <thread>
+
 #include "lifecycle_diagnostics_service.hpp"
 #include "logging.hpp"
 
@@ -177,7 +179,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     core_internal.InitBase();
 
     // Message loop
-    auto dwOldTime = GetTickCount();
+    auto dwOldTime = std::chrono::system_clock::now();
 
     isRunning = true;
     while (isRunning)
@@ -190,8 +192,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
             if (dwMaxFPS)
             {
                 const auto dwMS = 1000u / dwMaxFPS;
-                const auto dwNewTime = GetTickCount();
-                if (dwNewTime - dwOldTime < dwMS)
+                const auto dwNewTime = std::chrono::system_clock::now();
+                const std::chrono::duration<double, std::milli> passedTime = dwNewTime - dwOldTime;
+                if (static_cast<uint32_t>(passedTime.count()) < dwMS)
                     continue;
                 dwOldTime = dwNewTime;
             }
@@ -200,7 +203,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         }
         else
         {
-            Sleep(50);
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
     }
 

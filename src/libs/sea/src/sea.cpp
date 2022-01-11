@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <execution>
+#include <thread>
 
 #include "core.h"
 #include "sse.h"
@@ -1310,7 +1311,7 @@ void SEA::Realize(uint32_t dwDeltaTime)
             fLodScale = 0.5f;
         }
 
-        Sleep(100);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     if (bStop)

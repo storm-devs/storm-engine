@@ -54,7 +54,7 @@ class WindField
         kZ = (WindFieldSize - 2) / (maxZ - minZ);
         updateTime = 0.0f;
         step = cs_initors;
-        srand(GetTickCount());
+        srand(std::time(nullptr));
         steps = WindFieldSteps;
         curLine = -100000;
         curWind = 1;
@@ -111,7 +111,7 @@ class WindField
     {
         updateTime = 0.0f;
         step = cs_initors;
-        srand(GetTickCount());
+        srand(std::time(nullptr));
         steps = WindFieldSteps;
         curLine = -100000;
         curWind = 1;

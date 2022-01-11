@@ -41,7 +41,7 @@ Location::Location()
     sphereVertex = nullptr;
     sphereNumTrgs = 0;
     lastLoadStaticModel = -1;
-    srand(GetTickCount() | 1);
+    srand(std::time(nullptr) | 1);
     isPause = false;
     lights = nullptr;
     curMessage = 0;

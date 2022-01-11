@@ -31,7 +31,7 @@
 
 Pillar::Pillar()
 {
-    srand(time(nullptr));
+    srand(std::time(nullptr));
     // Sections
     int32_t i;
     for (i = 0; i < TRND_NUMSEC; i++)

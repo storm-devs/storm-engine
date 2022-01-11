@@ -867,7 +867,7 @@ void CoreImpl::DumpEntitiesInfo()
       }
     }
 
-    Sleep(200);*/
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));*/
 }
 
 void *CoreImpl::GetSaveData(const char *file_name, int32_t &data_size)

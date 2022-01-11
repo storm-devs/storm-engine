@@ -289,7 +289,7 @@ void ParticleManager::Execute(float DeltaTime)
     if (core.Controls->GetDebugAsyncKeyState(VK_F3) < 0 && core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
     {
         ShowStat = !ShowStat;
-        Sleep(100);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     for (uint32_t n = 0; n < DeleteQuery.size(); n++)

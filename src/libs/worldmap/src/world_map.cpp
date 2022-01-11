@@ -60,7 +60,7 @@ WorldMap::WorldMap() : rs{}, aDate{}
     object[WDMAP_MAXOBJECTS - 1].next = -1;
     wdmObjects->wm = this;
     camera = nullptr;
-    srand(GetTickCount());
+    srand(std::time(nullptr));
     encTime = 0.0f;
     aStorm = nullptr;
     aEncounter = nullptr;

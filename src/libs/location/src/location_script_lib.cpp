@@ -1,4 +1,7 @@
 #include "location_script_lib.h"
+
+#include <thread>
+
 #include "entity.h"
 #include "fader.h"
 #include "steam_api_impl.hpp"
@@ -263,7 +266,7 @@ uint32_t slNativeSleep(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     if (delay < 1)
         delay = 1;
-    Sleep(delay);
+    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
     return IFUNCRESULT_OK;
 }
 

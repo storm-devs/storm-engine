@@ -23,7 +23,7 @@ WdmObjects *wdmObjects = nullptr;
 WdmObjects::WdmObjects()
 {
     Assert(!wdmObjects);
-    srand(GetTickCount());
+    srand(std::time(nullptr));
     wdmObjects = this;
     wm = nullptr;
     rs = nullptr;
