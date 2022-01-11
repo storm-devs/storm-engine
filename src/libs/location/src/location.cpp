@@ -1021,7 +1021,7 @@ void Location::Print(const CVECTOR &pos3D, float rad, int32_t line, float alpha,
     static char buf[256];
     scale *= 2.0f;
     // print to the buffer
-    int32_t len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
+    int32_t len = vsnprintf(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
     // Find a position of a point on the screen
     static CMatrix mtx, view, prj;

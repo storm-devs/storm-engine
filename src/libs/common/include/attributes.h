@@ -249,11 +249,11 @@ class ATTRIBUTES
 
     auto SetAttributeUseDword(const char *name, uint32_t val)
     {
-        char buffer[128];
-        _ultoa_s(val, buffer, 10);
+        std::string buffer;
+        buffer = std::to_string(val);
         if (name)
-            return SetAttribute(name, buffer) != 0;
-        SetValue(buffer);
+            return SetAttribute(name, buffer.c_str()) != 0;
+        SetValue(buffer.c_str());
         return true;
     }
 

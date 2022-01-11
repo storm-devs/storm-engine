@@ -29,7 +29,7 @@ void GIFont::Print(float x, float y, const char *pcFormat, ...) const
     char param[4096];
     va_list args;
     va_start(args, pcFormat);
-    _vsnprintf_s(param, sizeof(param), pcFormat, args);
+    vsnprintf(param, sizeof(param), pcFormat, args);
     va_end(args);
     m_pEditor->m_pRS->ExtPrint(m_nFontID, m_dwColor, m_dwBackColor, PR_ALIGN_LEFT, false, m_fScale,
                                m_pEditor->m_pGIOwner->GetScreenWidth(), m_pEditor->m_pGIOwner->GetScreenHeight(),

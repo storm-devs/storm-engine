@@ -213,7 +213,7 @@ int32_t FONT::Printf(int32_t x, int32_t y, char *data_PTR, ...)
 {
     va_list args;
     va_start(args, data_PTR);
-    _vsnprintf_s(Buffer1024, sizeof(Buffer1024), data_PTR, args);
+    vsnprintf(Buffer1024, sizeof(Buffer1024), data_PTR, args);
     va_end(args);
     return Print(x, y, Buffer1024);
 }

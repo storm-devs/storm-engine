@@ -337,10 +337,10 @@ void CSteamStatsAchievements::OnUserStatsReceived(UserStatsReceived_t *pCallback
                 Achievement_t &ach = g_Achievements[iAch];
 
                 SteamUserStats()->GetAchievement(ach.m_pchAchievementID, &ach.m_bAchieved);
-                _snprintf(ach.m_rgchName, sizeof(ach.m_rgchName), "%s",
+                snprintf(ach.m_rgchName, sizeof(ach.m_rgchName), "%s",
                           SteamUserStats()->GetAchievementDisplayAttribute(ach.m_pchAchievementID, "name"));
 
-                _snprintf(ach.m_rgchDescription, sizeof(ach.m_rgchDescription), "%s",
+                snprintf(ach.m_rgchDescription, sizeof(ach.m_rgchDescription), "%s",
                           SteamUserStats()->GetAchievementDisplayAttribute(ach.m_pchAchievementID, "desc"));
 
                 Stat_t &stat = g_Stats[iAch];
@@ -389,13 +389,13 @@ void CSteamStatsAchievements::OnAchievementStored(UserAchievementStored_t *pCall
         if (pCallback->m_nMaxProgress == 0)
         {
             //            char buffer[128];
-            //            _snprintf( buffer, 128, "Achievement '%s' unlocked!", pCallback->m_rgchAchievementName );
+            //            snprintf( buffer, 128, "Achievement '%s' unlocked!", pCallback->m_rgchAchievementName );
             //            trace( buffer );
         }
         else
         {
             //            char buffer[128];
-            //            _snprintf( buffer, 128, "Achievement '%s' progress callback, (%d,%d)\n",
+            //            snprintf( buffer, 128, "Achievement '%s' progress callback, (%d,%d)\n",
             //            pCallback->m_rgchAchievementName, pCallback->m_nCurProgress, pCallback->m_nMaxProgress );
             //            trace( buffer );
         }

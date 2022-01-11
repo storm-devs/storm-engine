@@ -1053,7 +1053,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
             return true;
         case VAR_STRING:
             Data_type = type;
-            _ltoa_s(lValue, buffer, 10);
+            sprintf(buffer, "%d", lValue);
             Set(buffer);
             return true;
         default:
@@ -1072,7 +1072,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
             return true;
         case VAR_STRING:
             Data_type = type;
-            _gcvt(fValue, 10, buffer);
+            gcvt(fValue, 10, buffer);
             Set(buffer);
             return true;
         default:

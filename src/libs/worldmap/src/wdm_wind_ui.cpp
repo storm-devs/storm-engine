@@ -289,7 +289,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     // write the amount of rum
     if (rum)
     {
-        _snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum.value());
+        snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum.value());
         tbuf[sizeof(tbuf) - 1] = 0;
         fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
 
@@ -310,7 +310,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         DrawRects(buf, 1, "WdmDrawMapBlend");
 
         // display a line with coordinates
-        _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate.c_str());
+        snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate.c_str());
         tbuf[sizeof(tbuf) - 1] = 0;
         fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
         fh = rs->CharHeight(font);
@@ -318,7 +318,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
                      int32_t(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
 
-        _snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
+        snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
         tbuf[sizeof(tbuf) - 1] = 0;
         fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
         fh = rs->CharHeight(font);

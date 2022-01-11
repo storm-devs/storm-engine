@@ -211,7 +211,7 @@ void COMPILER::Trace(const char *data_PTR, ...)
     char LogBuffer[4096];
     va_list args;
     va_start(args, data_PTR);
-    _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
+    vsnprintf(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     va_end(args);
     logTrace_->trace(LogBuffer);
 }
@@ -227,7 +227,7 @@ void COMPILER::DTrace(const char *data_PTR, ...)
     char LogBuffer[4096];
     va_list args;
     va_start(args, data_PTR);
-    _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
+    vsnprintf(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     va_end(args);
     logTrace_->trace(LogBuffer);
 }
@@ -300,7 +300,7 @@ void COMPILER::SetError(const char *data_PTR, ...)
     char ErrorBuffer[MAX_PATH + BUFSIZ];
     va_list args;
     va_start(args, data_PTR);
-    _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
+    vsnprintf(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     uint32_t bytes;
     FindErrorSource();
 
@@ -337,7 +337,7 @@ void COMPILER::SetWarning(const char *data_PTR, ...)
         return;
     va_list args;
     va_start(args, data_PTR);
-    _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
+    vsnprintf(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     uint32_t bytes;
     FindErrorSource();
 
@@ -5796,7 +5796,7 @@ void COMPILER::SaveDataDebug(char *data_PTR, ...)
     }
     va_list args;
     va_start(args, data_PTR);
-    _vsnprintf_s(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
+    vsnprintf(LogBuffer, sizeof(LogBuffer) - 4, data_PTR, args);
     strcat_s(LogBuffer, "\x0d\x0a");
     va_end(args);
 }

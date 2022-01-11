@@ -169,7 +169,7 @@ void AIHelper::Print(float x, float y, float fScale, const char *pFormat, ...)
 
     va_list args;
     va_start(args, pFormat);
-    _vsnprintf_s(cBuffer, sizeof(cBuffer), pFormat, args);
+    vsnprintf(cBuffer, sizeof(cBuffer), pFormat, args);
     va_end(args);
 
     pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_CENTER, false, fScale, 0, 0, static_cast<int32_t>(x),
@@ -197,7 +197,7 @@ void AIHelper::Print3D(CVECTOR vPos, float dy, float fScale, const char *pFormat
 
     va_list args;
     va_start(args, pFormat);
-    _vsnprintf_s(Buff_4k, sizeof(Buff_4k), pFormat, args);
+    vsnprintf(Buff_4k, sizeof(Buff_4k), pFormat, args);
     va_end(args);
 
     pRS->ExtPrint(FONT_DEFAULT, 0xFFFFFFFF, 0x00000000, PR_ALIGN_CENTER, false, fScale, 0, 0, static_cast<int32_t>(vPos.x),

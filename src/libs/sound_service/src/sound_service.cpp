@@ -1340,7 +1340,7 @@ void SoundService::DebugPrint3D(const CVECTOR &pos3D, float rad, int32_t line, f
 {
     static char buf[256];
     // print to the buffer
-    int32_t len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
+    int32_t len = vsnprintf(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
     buf[sizeof(buf) - 1] = 0;
     // Looking for a point position on the screen
     static CMatrix mtx, view, prj;
