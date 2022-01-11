@@ -1318,10 +1318,4 @@ inline DColor &DColor::operator=(int32_t color)
     return *this;
 }
 
-// Get int32_t
-inline DColor::operator uint32_t() const
-{
-    return static_cast<int32_t>(c);
-}
-
 #pragma pack(pop)
