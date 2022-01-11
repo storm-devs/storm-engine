@@ -25,7 +25,7 @@
 
 struct SEGMENT_DESC
 {
-    const char *name;
+    std::string name;
     uint32_t offset;
     uint32_t size;
     uint32_t id;

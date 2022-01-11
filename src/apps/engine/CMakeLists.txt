@@ -1,8 +1,11 @@
 STORM_SETUP(
     TARGET_NAME engine
     TYPE executable
-    DEPENDENCIES     
-	
+    DEPENDENCIES
+    
+    # this is something I really don't like but it seems there's not better way to ensure mimalloc is linked before c-runtime
+    $<IF:$<CONFIG:Release>,${CONAN_LIB_DIRS_MIMALLOC_RELEASE}/mimalloc.lib,${CONAN_LIB_DIRS_MIMALLOC_DEBUG}/mimalloc-debug.lib>
+
     # internal
     common
     diagnostics
@@ -50,9 +53,10 @@ STORM_SETUP(
     weather
     worldmap
     xinterface
-	
+
     # external
     fast_float
+    mimalloc
     sentry-native
     sdl
     zlib
