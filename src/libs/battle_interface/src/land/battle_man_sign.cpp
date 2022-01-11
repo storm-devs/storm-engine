@@ -188,8 +188,6 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
     m_nCommandListVerticalOffset = -48;
 
     m_nGunReloadTextureID = -1;
-    m_dwGunReloadColor = ARGB(255, 0, 255, 64);
-    m_dwGunReloadBackColor = ARGB(255, 128, 64, 64);
     FULLRECT(m_rGunReloadUV);
     ZERROPOINT(m_pntGunReloadOffset);
     FILLPOINT(m_pntGunReloadIconSize, 20, 20);
