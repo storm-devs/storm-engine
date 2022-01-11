@@ -18,6 +18,7 @@ BIManSign::BIManSign(entid_t BIEntityID, VDX9RENDER *pRS)
     m_nBackTextureID = -1;
     m_nManStateTextureID = -1;
     m_nGunChargeTextureID = -1;
+    m_nGunChargingTextureID = -1;
     m_nBackSquareQ = 0;
     m_nManStateSquareQ = 0;
     m_nGunChargeSquareQ = 0;
@@ -123,7 +124,7 @@ void BIManSign::Draw()
 
         if (m_nGunChargingSquareQ > 0)
         {
-            m_pRS->TextureSet(0, -1);
+            m_pRS->TextureSet(0, m_nGunChargingTextureID);
             m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nGunChargingSquareQ * 4, nStartI,
                               m_nGunChargingSquareQ * 2, "battle_colorRectangle");
         }
@@ -186,6 +187,7 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
 
     m_nCommandListVerticalOffset = -48;
 
+    m_nGunChargingTextureID = -1;
     m_dwGunChargingColor = ARGB(255, 0, 255, 64);
     m_dwGunChargingBackColor = ARGB(255, 128, 64, 64);
     FULLRECT(m_rGunChargingUV);
@@ -282,6 +284,9 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
                 m_aChargeProgress.push_back(BIUtils::GetFromStr_Float(pcTmp, 0.f));
             } while (pcTmp[0]);
         }
+        pcTmp = pA->GetAttribute("gunchargingtexturename");
+        if (pcTmp)
+             m_nGunChargingTextureID = m_pRS->TextureCreate(pcTmp);
         m_dwGunChargingColor = pA->GetAttributeAsDword("gunchargingcolor", m_dwGunChargingColor);
         pcTmp = pA->GetAttribute("gunchargingUV");
         if (pcTmp)

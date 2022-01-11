@@ -114,6 +114,7 @@ class BIManSign
     BIFPOINT m_pntGunChargeOffset;
     FPOINT m_pntGunChargeIconSize;
 
+    int32_t m_nGunChargingTextureID;
     int32_t m_nGunChargingSquareQ;
     uint32_t m_dwGunChargingColor;
     uint32_t m_dwGunChargingBackColor;
