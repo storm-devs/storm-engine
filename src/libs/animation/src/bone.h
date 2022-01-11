@@ -13,9 +13,8 @@
 //============================================================================================
 
 #include "matrix.h"
+#include "math3d/quaternion.h"
 #include "defines.h"
-
-#include <d3dx9.h>
 //============================================================================================
 
 #define ANI_COMPRESS_ENABLE
@@ -47,7 +46,7 @@ class Bone
     // Set animation positions
     void SetPositions(const CVECTOR *pArray, int32_t numPos);
     // Set animation angles
-    void SetAngles(const D3DXQUATERNION *aArray, int32_t numAng);
+    void SetAngles(const Quaternion *aArray, int32_t numAng);
     // Initialize start matrix
     void BuildStartMatrix();
 
@@ -56,14 +55,14 @@ class Bone
     // --------------------------------------------------------------------------------------------
   public:
     // Add animation frames
-    void BlendFrame(int32_t frame, float kBlend, D3DXQUATERNION &res);
+    void BlendFrame(int32_t frame, float kBlend, Quaternion &res);
     // void BlendFrame(float frame);
     // Create a matrix for the resulting position
     void BuildMatrix();
     // Create matrix for frame 0
     // void BuildMatrixZero();
     // Get position matrix
-    CMatrix &Matrix();
+    CMatrix &GetMatrix();
     // Get the starting position matrix
     CMatrix &StartMatrix();
 
@@ -71,7 +70,7 @@ class Bone
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    void GetFrame(int32_t f, D3DXQUATERNION &qt);
+    void GetFrame(int32_t f, Quaternion &qt);
     float Clamp(float v, const char *str);
     // Linear position interpolation
     float LerpPos(float a, float b, float k);
@@ -84,7 +83,7 @@ class Bone
 #ifdef ANI_COMPRESS_ENABLE
     COMP_QUATERNION *ang; // Compressed angles of animation frames
 #else
-    D3DXQUATERNION *ang; // Animation frame angles
+    Quaternion *ang; // Animation frame angles
 #endif
 
     CVECTOR *pos;   // Animation frame positions
@@ -92,7 +91,7 @@ class Bone
     CVECTOR pos0;   // Bone position if there are no animation frame positions
 
     CVECTOR p;        // Bone position in local coordinates
-    D3DXQUATERNION a; // Bone rotation angles in local coordinates
+    Quaternion a;     // Bone rotation angles in local coordinates
     CMatrix matrix;   // Bone position matrix
     CMatrix start;    // Frame 0 matrix
 };
@@ -108,7 +107,7 @@ inline void Bone::SetParent(Bone *parentBone)
 }
 
 // Get position matrix
-inline CMatrix &Bone::Matrix()
+inline CMatrix &Bone::GetMatrix()
 {
     return matrix;
 }

@@ -90,7 +90,7 @@ void SHIPPOINTER::Realize(uint32_t delta_time) const
         return;
 
     CMatrix matw;
-    rs->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)&matw);
+    rs->SetTransform(D3DTS_WORLD, matw);
 
     if (m_bFriend)
         rs->TextureSet(0, m_idFriendTex);

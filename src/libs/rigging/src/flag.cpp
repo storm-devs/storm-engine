@@ -127,7 +127,7 @@ void FLAG::Realize(uint32_t Delta_Time)
         uint32_t ambient;
         RenderService->GetRenderState(D3DRS_AMBIENT, &ambient);
         RenderService->SetRenderState(D3DRS_TEXTUREFACTOR, ambient);
-        RenderService->SetTransform(D3DTS_WORLD, &rootMatrix);
+        RenderService->SetTransform(D3DTS_WORLD, rootMatrix);
 
         // draw nature flag
         if (nVert != 0 && nIndx != 0)
@@ -653,8 +653,7 @@ void FLAG::FirstRun()
     {
         SetAll();
 
-        ZERO(rootMatrix);
-        rootMatrix._11 = rootMatrix._22 = rootMatrix._33 = rootMatrix._44 = 1.f;
+        rootMatrix.SetIdentity();
     }
 
     if (nVert)

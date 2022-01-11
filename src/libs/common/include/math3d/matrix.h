@@ -8,10 +8,9 @@
 
 #include "plane.h"
 #include "vector4.h"
+#include <d3d9.h>
 
 //============================================================================================
-
-struct D3DXMATRIX;
 
 #pragma pack(push, 1)
 
@@ -238,7 +237,7 @@ class Matrix
     float &operator()(int32_t i, int32_t j);
 
     // Get a pointer to a D3D matrix
-    operator D3DXMATRIX *() const;
+    operator D3DMATRIX *() const;
 
     // Get a vector for calculating the X component
     Vector4 GetVectorX() const;
@@ -1479,9 +1478,9 @@ inline float &Matrix::operator()(int32_t i, int32_t j)
 }
 
 // Get a pointer to a D3D matrix
-inline Matrix::operator D3DXMATRIX *() const
+inline Matrix::operator D3DMATRIX *() const
 {
-    return ((D3DXMATRIX *)matrix);
+    return ((D3DMATRIX *)matrix);
 }
 
 // Get a vector for calculating the X component

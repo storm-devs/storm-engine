@@ -5,6 +5,7 @@
 #include "shared/messages.h"
 
 #include "shared/layers.h"
+#include "math3d/plane.h"
 
 void SEA::EnvMap_GetSideMatrix(D3DCUBEMAP_FACES Face, CMatrix &mView)
 {
@@ -53,35 +54,18 @@ bool SEA::SunRoad_Render2()
 
     auto PlaneHeight = 0.5f;
 
-    D3DXPLANE plane;
-    const D3DXVECTOR3 point(0, PlaneHeight, 0), normal(0, 1, 0);
-    D3DXPlaneFromPointNormal(&plane, &point, &normal);
-
-    D3DXMATRIX matReflect;
-    D3DXMatrixReflect(&matReflect, &plane);
-
-    auto mView = rs->GetView();
-
-    auto mViewNew = mView;
+    const Vector point(0, PlaneHeight, 0), normal(0, 1, 0);
+    auto mPlane = Plane(normal, point);
 
     CMatrix Invertor;
-    memcpy(Invertor.m, matReflect.m, sizeof(float) * 16);
+    Invertor.BuildMirrorMatrix(mPlane.N.x, mPlane.N.y, mPlane.N.z, mPlane.D);
+
+    auto mView = rs->GetView();
+    auto mViewNew = mView;
+
     mViewNew = Invertor * mViewNew;
 
     rs->SetView(mViewNew);
-
-    auto _mWorld = CMatrix();
-    auto _mView = rs->GetView();
-    auto _mProj = rs->GetProjection();
-    auto _mWorldView = _mWorld * _mView;
-    auto _mWorldViewProj = _mWorldView * _mProj;
-
-    D3DXMATRIX mInv;
-    memcpy(mInv.m, _mWorldViewProj.m, sizeof(float) * 16);
-    D3DXMatrixInverse(&mInv, nullptr, &mInv);
-    D3DXMatrixTranspose(&mInv, &mInv);
-    D3DXPlaneTransform(&plane, &plane, &mInv);
-    rs->SetClipPlane(0, (FLOAT *)&plane);
 
     uint32_t Colors[6] = {0xd934c8, 0x2FFF1F, 0x0000FF, 0xFF00, 0xb28e11, 0x0};
     // for (uint32_t i=0; i<6; i++)
@@ -147,35 +131,19 @@ bool SEA::EnvMap_Render2()
 
     auto PlaneHeight = 0.5f;
 
-    D3DXPLANE plane;
-    const D3DXVECTOR3 point(0, PlaneHeight, 0), normal(0, 1, 0);
-    D3DXPlaneFromPointNormal(&plane, &point, &normal);
-
-    D3DXMATRIX matReflect;
-    D3DXMatrixReflect(&matReflect, &plane);
-
-    auto mView = rs->GetView();
-
-    CMatrix mViewNew = mView;
+    const Vector point(0, PlaneHeight, 0), normal(0, 1, 0);
+    auto mPlane = Plane(normal, point);
 
     CMatrix Invertor;
-    memcpy(Invertor.m, matReflect.m, sizeof(float) * 16);
+    Invertor.BuildMirrorMatrix(mPlane.N.x, mPlane.N.y, mPlane.N.z, mPlane.D);
+
+    auto mView = rs->GetView();
+    CMatrix mViewNew = mView;
+
     mViewNew = Invertor * mViewNew;
 
     rs->SetView(mViewNew);
 
-    auto _mWorld = CMatrix();
-    CMatrix _mView = rs->GetView();
-    CMatrix _mProj = rs->GetProjection();
-    CMatrix _mWorldView = _mWorld * _mView;
-    CMatrix _mWorldViewProj = _mWorldView * _mProj;
-
-    D3DXMATRIX mInv;
-    memcpy(mInv.m, _mWorldViewProj.m, sizeof(float) * 16);
-    D3DXMatrixInverse(&mInv, nullptr, &mInv);
-    D3DXMatrixTranspose(&mInv, &mInv);
-    D3DXPlaneTransform(&plane, &plane, &mInv);
-    rs->SetClipPlane(0, (FLOAT *)&plane);
     // rs->SetEffect("FlatSeaReverseCull");
     // Event("SeaReflection");
 

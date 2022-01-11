@@ -538,8 +538,8 @@ void SAIL::Realize(uint32_t Delta_Time)
         RenderService->SetMaterial(mat);
         RenderService->TextureSet(2, texl);
         CMatrix matv, matp, matc;
-        RenderService->GetTransform(D3DTS_VIEW, (D3DXMATRIX *)&matv);
-        RenderService->GetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&matp);
+        RenderService->GetTransform(D3DTS_VIEW, matv);
+        RenderService->GetTransform(D3DTS_PROJECTION, matp);
         matc = matv * matp;
         if constexpr (false) // Delta_Time==0 )
         {
@@ -555,7 +555,7 @@ void SAIL::Realize(uint32_t Delta_Time)
                     if (slist[i]->bFreeSail)
                         continue;
                     // if(gdata[slist[i]->HostNum].bDeleted) continue;
-                    RenderService->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)slist[i]->pMatWorld);
+                    RenderService->SetTransform(D3DTS_WORLD, *slist[i]->pMatWorld);
                     RenderService->TextureSet(0, slist[i]->surfaceTex);
                     if (slist[i]->m_bIsGerald)
                     {
@@ -594,7 +594,7 @@ void SAIL::Realize(uint32_t Delta_Time)
                 {
                     i = gdata[j].sailIdx[idx];
                     // if(gdata[slist[i]->HostNum].bDeleted) continue;
-                    RenderService->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)slist[i]->pMatWorld);
+                    RenderService->SetTransform(D3DTS_WORLD, *slist[i]->pMatWorld);
                     RenderService->TextureSet(0, slist[i]->surfaceTex);
                     if (slist[i]->m_bIsGerald)
                     {

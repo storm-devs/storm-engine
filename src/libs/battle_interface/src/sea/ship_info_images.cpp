@@ -41,7 +41,7 @@ void ShipInfoImages::Draw()
         return;
 
     CMatrix matw;
-    pRS->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)&matw);
+    pRS->SetTransform(D3DTS_WORLD, matw);
 
     if (m_idRelationTexture != -1)
     {

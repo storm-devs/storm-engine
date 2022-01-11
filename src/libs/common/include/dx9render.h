@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <d3d9.h>
-#include <d3dx9.h>
 
 #include "entity.h"
 #include "matrix.h"

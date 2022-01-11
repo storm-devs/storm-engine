@@ -233,7 +233,7 @@ void ILogAndActions::Realize(uint32_t delta_time)
     if (m_bShowActiveCommand)
     {
         CMatrix matw;
-        rs->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)&matw);
+        rs->SetTransform(D3DTS_WORLD, matw);
         // show icon
         if ((m_idIconTexture != -1L) && m_bThatRealAction)
         {

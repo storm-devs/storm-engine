@@ -129,7 +129,7 @@ void VANT_BASE::Realize(uint32_t Delta_Time)
                 static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->SetLightAndFog(true);
                 static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->SetLights();
 
-                RenderService->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)gdata[gn].pMatWorld);
+                RenderService->SetTransform(D3DTS_WORLD, *gdata[gn].pMatWorld);
                 RenderService->DrawBuffer(vBuf, sizeof(VANTVERTEX), iBuf, 0, nVert, gdata[gn].sIndx, gdata[gn].nIndx);
 
                 static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[gn].shipEI))->UnSetLights();

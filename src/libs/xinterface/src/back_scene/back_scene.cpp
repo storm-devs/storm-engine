@@ -628,14 +628,14 @@ int32_t InterfaceBackScene::CheckMousePos(float fX, float fY)
     float fRelY = 2.f * fY / fH - 1.f;
 
     CMatrix mtxProj;
-    m_pRS->GetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&mtxProj);
+    m_pRS->GetTransform(D3DTS_PROJECTION, mtxProj);
     CVECTOR v;
     v.x = fRelX / mtxProj.m[0][0];
     v.y = -fRelY / mtxProj.m[1][1];
     v.z = 1.0f;
 
     CMatrix mtxView;
-    m_pRS->GetTransform(D3DTS_VIEW, (D3DXMATRIX *)&mtxView);
+    m_pRS->GetTransform(D3DTS_VIEW, mtxView);
     CVECTOR vDir;
     mtxView.MulToInvNorm(v, vDir);
     mtxView.Transposition();
