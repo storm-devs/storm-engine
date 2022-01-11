@@ -1925,7 +1925,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->Get(TempFloat1);
         pV2->Get(TempLong1);
         pV = SStack.Push();
-        _gcvt(TempFloat1, TempLong1, gs);
+        gcvt(TempFloat1, TempLong1, gs);
         pV->Set(gs);
         pVResult = pV;
         return pV;

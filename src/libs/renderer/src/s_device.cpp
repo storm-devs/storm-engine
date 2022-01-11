@@ -2833,7 +2833,7 @@ int32_t DX9RENDER::Print(int32_t x, int32_t y, const char *format, ...)
 
     va_list args;
     va_start(args, format);
-    vsnprintf_s(Buff_4k, sizeof(Buff_4k), format, args);
+    vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
     return FontList[idFontCurrent].font->Print(x, y, Buff_4k);
@@ -2850,7 +2850,7 @@ int32_t DX9RENDER::Print(int32_t nFontNum, uint32_t color, int32_t x, int32_t y,
 
     va_list args;
     va_start(args, format);
-    vsnprintf_s(Buff_4k, sizeof(Buff_4k), format, args);
+    vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
     FontList[nFontNum].font->StoreFontParameters();
@@ -2912,7 +2912,7 @@ int32_t DX9RENDER::ExtPrint(int32_t nFontNum, uint32_t foreColor, uint32_t backC
 
     va_list args;
     va_start(args, format);
-    vsnprintf_s(Buff_4k, sizeof(Buff_4k), format, args);
+    vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
     pFont->StoreFontParameters();

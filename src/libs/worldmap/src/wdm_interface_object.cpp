@@ -239,7 +239,7 @@ void WdmInterfaceObject::FillSRectColor(Vertex *vrt, uint32_t color)
 // Display text in a given strip horizontally and at a given height
 void WdmInterfaceObject::Print(int32_t font, int32_t color, float xleft, float xright, float y, const char *format, ...)
 {
-    _vsnprintf_s(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));
+    vsnprintf(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));
     const auto strw = wdmObjects->rs->StringWidth(stringBuffer, font);
     const auto x = (xright + xleft - strw) * 0.5f;
     wdmObjects->rs->Print(font, color, static_cast<int32_t>(x), static_cast<int32_t>(y), stringBuffer);
