@@ -9,6 +9,7 @@
 
 #include "storm_assert.h"
 #include "storm/string_compare.hpp"
+#include "storm_platform.h"
 
 class VSTRING_CODEC
 {
