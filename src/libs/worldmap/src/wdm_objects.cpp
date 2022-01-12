@@ -9,6 +9,9 @@
 //============================================================================================
 
 #include "wdm_objects.h"
+
+#include <chrono>
+
 #include "defines.h"
 #include "geometry.h"
 
@@ -22,8 +25,12 @@ WdmObjects *wdmObjects = nullptr;
 
 WdmObjects::WdmObjects()
 {
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    using std::chrono::system_clock;
+
     Assert(!wdmObjects);
-    srand(GetTickCount());
+    srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
     wdmObjects = this;
     wm = nullptr;
     rs = nullptr;

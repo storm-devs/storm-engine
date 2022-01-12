@@ -10,7 +10,7 @@
 
 #include "pillar.h"
 
-#include <ctime>
+#include <chrono>
 
 #include "c_vector.h"
 #include "storm_assert.h"
@@ -31,7 +31,11 @@
 
 Pillar::Pillar()
 {
-    srand(time(nullptr));
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    using std::chrono::system_clock;
+
+    srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
     // Sections
     int32_t i;
     for (i = 0; i < TRND_NUMSEC; i++)

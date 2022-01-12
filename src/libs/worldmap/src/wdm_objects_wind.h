@@ -1,8 +1,14 @@
 #pragma once
 
+#include <chrono>
+
 #define WindFieldSize 64
 #define WindFieldSteps 64
 #define WindFieldUpdateTime 0.1f
+
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::system_clock;
 
 class WindField
 {
@@ -54,7 +60,7 @@ class WindField
         kZ = (WindFieldSize - 2) / (maxZ - minZ);
         updateTime = 0.0f;
         step = cs_initors;
-        srand(GetTickCount());
+        srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
         steps = WindFieldSteps;
         curLine = -100000;
         curWind = 1;
@@ -111,7 +117,7 @@ class WindField
     {
         updateTime = 0.0f;
         step = cs_initors;
-        srand(GetTickCount());
+        srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
         steps = WindFieldSteps;
         curLine = -100000;
         curWind = 1;

@@ -9,8 +9,10 @@
 //============================================================================================
 
 #include "world_map.h"
-#include "shared/messages.h"
 
+#include <chrono>
+
+#include "shared/messages.h"
 #include "core.h"
 
 #include "wdm_camera_std_ctrl.h"
@@ -48,6 +50,10 @@ int32_t WorldMap::month[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 WorldMap::WorldMap() : rs{}, aDate{}
 {
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    using std::chrono::system_clock;
+
     Assert(!wdmObjects);
     new WdmObjects();
     firstFreeObject = 0;
@@ -60,7 +66,7 @@ WorldMap::WorldMap() : rs{}, aDate{}
     object[WDMAP_MAXOBJECTS - 1].next = -1;
     wdmObjects->wm = this;
     camera = nullptr;
-    srand(GetTickCount());
+    srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
     encTime = 0.0f;
     aStorm = nullptr;
     aEncounter = nullptr;

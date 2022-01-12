@@ -1,3 +1,5 @@
+#include <thread>
+
 #include "lifecycle_diagnostics_service.hpp"
 #include "logging.hpp"
 
@@ -200,7 +202,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         }
         else
         {
-            Sleep(50);
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
     }
 

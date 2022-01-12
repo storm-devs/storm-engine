@@ -1,6 +1,7 @@
 #include "compiler.h"
 
 #include <cstdio>
+#include <chrono>
 
 #include <zlib.h>
 
@@ -24,6 +25,10 @@ extern INTFUNCDESC IntFuncTable[];
 extern S_DEBUG * CDebug;
 extern uint32_t dwNumberScriptCommandsExecuted;
 
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::system_clock;
+
 COMPILER::COMPILER()
     : bBreakOnError(false), pRunCodeBase(nullptr), CompilerStage(CS_SYSTEM), pEventMessage(nullptr), SegmentsNum(0), InstructionPointer(0),
       pBuffer(nullptr), ProgramDirectory(nullptr), bCompleted(false), bEntityUpdate(true),
@@ -46,7 +51,7 @@ COMPILER::COMPILER()
 
     SStack.SetVCompiler(this);
     VarTab.SetVCompiler(this);
-    srand(GetTickCount());
+    srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
 
     DebugTraceFileName[0] = 0;
 
@@ -4173,7 +4178,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     CDebug->SetTraceMode(TMODE_WAIT);
                     while (CDebug->GetTraceMode() == TMODE_WAIT)
                     {
-                        Sleep(40);
+                        std::this_thread::sleep_for(std::chrono::milliseconds(40));
                     }
                     if (CDebug->GetTraceMode() == TMODE_MAKESTEP_OVER)
                         bDebugWaitForThisFunc = true;
@@ -4195,7 +4200,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
 
                         while (CDebug->GetTraceMode() == TMODE_WAIT)
                         {
-                            Sleep(40);
+                            std::this_thread::sleep_for(std::chrono::milliseconds(40));
                         } // wait for debug thread decision
                         if (CDebug->GetTraceMode() == TMODE_MAKESTEP_OVER)
                             bDebugWaitForThisFunc = true;

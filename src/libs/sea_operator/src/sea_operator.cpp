@@ -1,7 +1,8 @@
 #include "sea_operator.h"
 
-#include "core.h"
+#include <chrono>
 
+#include "core.h"
 #include "defines.h"
 #include "entity.h"
 #include "rands.h"
@@ -261,6 +262,10 @@ void SEA_OPERATOR::HandleShipIdle()
 void SEA_OPERATOR::HandleShipFire(entid_t _shipID, const char *_bortName, const CVECTOR &_destination,
                                   const CVECTOR &_direction)
 {
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    using std::chrono::system_clock;
+
     auto bort = BORT_FRONT;
     auto *ship = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(_shipID));
 
@@ -280,7 +285,7 @@ void SEA_OPERATOR::HandleShipFire(entid_t _shipID, const char *_bortName, const 
     auto shipDirectionPerp = CVECTOR(shipDirection.z, 0.0f, -1.0f * shipDirection.x);
     float chosenK;
 
-    srand(GetTickCount());
+    srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
     if (rand() & 0x1)
         chosenK = -1.0f;
     else
