@@ -455,7 +455,7 @@ DX9RENDER::DX9RENDER()
     back0Texture = -1;
     progressSafeCounter = 0;
     isInPViewProcess = false;
-    progressUpdateTime = std::chrono::system_clock::now();
+    progressUpdateTime = 0;
     progressFramesPosX = 0.85f;
     progressFramesPosY = 0.8f;
     progressFramesWidth = 64;
@@ -4192,7 +4192,7 @@ void DX9RENDER::StartProgressView()
         progressTipsTexture = TextureCreate(progressTipsImage);
         isInPViewProcess = false;
     }
-    progressUpdateTime = std::chrono::system_clock::now() - std::chrono::milliseconds(1000);
+    progressUpdateTime = GetTickCount() - 1000;
 }
 
 void DX9RENDER::ProgressView()
@@ -4203,9 +4203,8 @@ void DX9RENDER::ProgressView()
     if (isInPViewProcess)
         return;
     // Analyzing time
-    const auto time = std::chrono::system_clock::now();
-    const std::chrono::duration<double, std::milli> passedTime = progressUpdateTime - time;
-    if (abs(passedTime.count()) < 50)
+    const uint32_t time = GetTickCount();
+    if (abs(static_cast<int32_t>(progressUpdateTime - time)) < 50)
         return;
     progressUpdateTime = time;
     isInPViewProcess = true;

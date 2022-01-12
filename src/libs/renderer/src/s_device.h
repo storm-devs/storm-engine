@@ -12,7 +12,6 @@
 
 #include <stack>
 #include <vector>
-#include <chrono>
 
 #define MAX_STEXTURES 10240
 #define MAX_BUFFERS 10240
@@ -364,7 +363,7 @@ class DX9RENDER : public VDX9RENDER
     int32_t loadFrame;
     int32_t progressSafeCounter;
     bool isInPViewProcess;
-    std::chrono::time_point<std::chrono::system_clock> progressUpdateTime;
+    uint32_t progressUpdateTime;
     float progressFramesPosX;
     float progressFramesPosY;
     float progressFramesWidth;

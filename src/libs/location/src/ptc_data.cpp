@@ -9,6 +9,9 @@
 //============================================================================================
 
 #include "ptc_data.h"
+
+#include <chrono>
+
 #include "core.h"
 #include "dx9render.h"
 #include "storm_assert.h"
@@ -21,7 +24,11 @@
 PtcData::PtcData()
     : isSlide(false), slideDir(), isBearing(false), stepPos{}
 {
-    srand(std::time(nullptr));
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    using std::chrono::system_clock;
+
+    srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
     data = nullptr;
     triangle = nullptr;
     numTriangles = 0;

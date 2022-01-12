@@ -10,8 +10,9 @@
 
 #include "location.h"
 
-#include "core.h"
+#include <chrono>
 
+#include "core.h"
 #include "character.h"
 #include "grass.h"
 #include "lights.h"
@@ -33,6 +34,10 @@ float fCausticSpeed = 0.0f;
 
 Location::Location()
 {
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    using std::chrono::system_clock;
+
     numLocators = 0;
     maxLocators = 16;
     locators.resize(maxLocators);
@@ -41,7 +46,7 @@ Location::Location()
     sphereVertex = nullptr;
     sphereNumTrgs = 0;
     lastLoadStaticModel = -1;
-    srand(std::time(nullptr) | 1);
+    srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count() | 1);
     isPause = false;
     lights = nullptr;
     curMessage = 0;

@@ -179,7 +179,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     core_internal.InitBase();
 
     // Message loop
-    auto dwOldTime = std::chrono::system_clock::now();
+    auto dwOldTime = GetTickCount();
 
     isRunning = true;
     while (isRunning)
@@ -192,9 +192,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
             if (dwMaxFPS)
             {
                 const auto dwMS = 1000u / dwMaxFPS;
-                const auto dwNewTime = std::chrono::system_clock::now();
-                const std::chrono::duration<double, std::milli> passedTime = dwNewTime - dwOldTime;
-                if (static_cast<uint32_t>(passedTime.count()) < dwMS)
+                const auto dwNewTime = GetTickCount();
+                if (dwNewTime - dwOldTime < dwMS)
                     continue;
                 dwOldTime = dwNewTime;
             }

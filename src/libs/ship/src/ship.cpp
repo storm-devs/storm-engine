@@ -1,4 +1,7 @@
 #include "ship.h"
+
+#include <chrono>
+
 #include "ai_flow_graph.h"
 #include "track.h"
 #include "inlines.h"
@@ -88,6 +91,10 @@ SHIP::~SHIP()
 //##################################################################
 bool SHIP::Init()
 {
+    using std::chrono::duration_cast;
+    using std::chrono::milliseconds;
+    using std::chrono::system_clock;
+
     ZERO3(State, SP, vPos);
     ZERO3(vAng, ShipPoints, Strength);
     fXOffset = fZOffset = 0.f;
@@ -96,7 +103,7 @@ bool SHIP::Init()
     Strength[STRENGTH_MAIN].vSpeed = 0.0f;
     Strength[STRENGTH_MAIN].vRotate = 0.0f;
 
-    srand(std::time(nullptr));
+    srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
 
     LoadServices();
 

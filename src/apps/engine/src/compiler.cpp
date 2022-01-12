@@ -1,6 +1,7 @@
 #include "compiler.h"
 
 #include <cstdio>
+#include <chrono>
 
 #include <zlib.h>
 
@@ -24,6 +25,10 @@ extern INTFUNCDESC IntFuncTable[];
 extern S_DEBUG * CDebug;
 extern uint32_t dwNumberScriptCommandsExecuted;
 
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+using std::chrono::system_clock;
+
 COMPILER::COMPILER()
     : bBreakOnError(false), pRunCodeBase(nullptr), CompilerStage(CS_SYSTEM), pEventMessage(nullptr), SegmentsNum(0), InstructionPointer(0),
       pBuffer(nullptr), ProgramDirectory(nullptr), bCompleted(false), bEntityUpdate(true),
@@ -46,7 +51,7 @@ COMPILER::COMPILER()
 
     SStack.SetVCompiler(this);
     VarTab.SetVCompiler(this);
-    srand(std::time(nullptr));
+    srand(duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count());
 
     DebugTraceFileName[0] = 0;
 
@@ -606,7 +611,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
 
     bEventsBreak = false;
 
-    auto nStartEventTime = std::chrono::system_clock::now();
+    uint32_t nTimeOnEvent = GetTickCount();
     current_debug_mode = CDebug->GetTraceMode();
 
     pVD = nullptr;
@@ -674,9 +679,9 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
             break;
     }
 
-    std::chrono::duration<double, std::milli> nTimeOnEvent = std::chrono::system_clock::now() - nStartEventTime;
+    nTimeOnEvent = GetTickCount() - nTimeOnEvent;
 
-    nRuntimeTicks += static_cast<uint32_t>(nTimeOnEvent.count());
+    nRuntimeTicks += nTimeOnEvent;
 
     pRun_fi = nullptr;
 
