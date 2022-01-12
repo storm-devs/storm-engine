@@ -16,6 +16,7 @@ class IShipLights : public Entity
     virtual void SetLights(VAI_OBJBASE *pObject) = 0;
     virtual void UnSetLights(VAI_OBJBASE *pObject) = 0;
     virtual void SetLightsOff(VAI_OBJBASE *pObject, float fTime, bool bLights, bool bFlares, bool bNow) = 0;
+	virtual void ResetLights(VAI_OBJBASE *pObject, bool bLight) = 0;
 
     virtual void SetDead(VAI_OBJBASE *pObject) = 0;
 };

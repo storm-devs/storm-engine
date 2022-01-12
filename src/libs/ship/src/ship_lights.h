@@ -82,6 +82,7 @@ class ShipLights : public IShipLights
         bool bVisible;
         float fTotalBrokenTime, fBrokenTime;
         bool bOff, bBrokenTimeOff;
+		bool bTmpOff;
         bool bDead;
         LightType *pLT;
     };
@@ -116,7 +117,6 @@ class ShipLights : public IShipLights
     LightType *FindLightType(std::string sLightType);
     float GetAttributeAsFloat(ATTRIBUTES *pA, const char *pName, float fDefault);
     void AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, const GEOS::LABEL &label);
-    bool SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr);
 
   public:
     static VDX9RENDER *pRS;
@@ -133,6 +133,7 @@ class ShipLights : public IShipLights
     void AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos) override;
     void SetLights(VAI_OBJBASE *pObject) override;
     void UnSetLights(VAI_OBJBASE *pObject) override;
+	void ResetLights(VAI_OBJBASE *pObject, bool bLight) override;
 
     void SetDead(VAI_OBJBASE *pObject) override;
 

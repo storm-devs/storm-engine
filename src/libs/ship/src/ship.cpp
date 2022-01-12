@@ -1287,9 +1287,12 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
             core.Send_Message(flag_id, "lili", MSG_FLAG_INIT, GetModelEID(), GetNation(GetACharacter()), GetId());
         break;
         // boal 20.08.06 redrawing the flag <--
-    case MSG_SHIP_LIGHTSRESET:
-        UnSetLights();
+    case MSG_SHIP_LIGHTSRESET: {	
+		const auto bLight = message.Long() != 0;	
+		if (const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights)))
+            pShipsLights->ResetLights(this, bLight);
         break;
+	}	
     case MSG_SHIP_DO_FAKE_FIRE: {
         const std::string &cBort = message.String();
         float fRandTime = message.Float();
@@ -1348,7 +1351,7 @@ void SHIP::FakeFire(const char *sBort, float fRandTime)
                 CVECTOR vDirTemp = mRot * vDir;
                 float fDir = NormalizeAngle(atan2f(vDirTemp.x, vDirTemp.z));
 
-                core.Event("Ship_FakeFire", "ffff", vCurPos.x, vCurPos.y, vCurPos.z, fDir);
+				core.PostEvent("Ship_FakeFire", (uint32_t)(1000 * fRandTime * rand() / RAND_MAX), "ffff", vCurPos.x, vCurPos.y, vCurPos.z, fDir); 
             }
         }
         dwIdx++;
@@ -1537,6 +1540,12 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
 
     if (pFDay && pFNight)
         ((bLights) ? pFDay : pFNight)->flags &= (~NODE::VISIBLE);
+
+	if(bLights && bFlares) 
+	{
+		const auto pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(shipLights));	
+		pShipsLights->ResetLights(this, bLights);
+	}	
 
     // add fireplaces
     ScanShipForFirePlaces();
