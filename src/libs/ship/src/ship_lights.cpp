@@ -147,7 +147,7 @@ void ShipLights::AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos)
     light.pObject = pObject;
     light.vPos = vPos;
     light.bOff = false;
-	light.bTmpOff = false;
+    light.bLightOff = false;
     light.bBrokenTimeOff = false;
     light.fCurTime = 0.0;
     light.fTotalTime = pLT->fLifeTime;
@@ -229,17 +229,17 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
             }
         }
 
-		pL->pNode = pModel->FindNode(str2);
-		if (!pL->pNode)
+        pL->pNode = pModel->FindNode(str2);
+        if (!pL->pNode)
         {
             aLights.pop_back();
             return;
         }
-		// lights & flares position transform
-		pL->vPos = m.Pos();
-		CMatrix mNode = pL->pNode->glob_mtx;
-		mNode.Transposition();
-		pL->vPos = mNode * pL->vPos;	
+        // lights & flares position transform
+        pL->vPos = m.Pos();
+        CMatrix mNode = pL->pNode->glob_mtx;
+        mNode.Transposition();
+        pL->vPos = mNode * pL->vPos;	
     }
 
     LightType *pLT = FindLightType((bLight) ? "default" : "flare");
@@ -256,7 +256,7 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
     pL->fBrokenTime = 0.0f;
     pL->fTotalBrokenTime = 0.0f;
     pL->bOff = false;
-	pL->bTmpOff = true;
+    pL->bLightOff = true;
     pL->bBrokenTimeOff = false;
     pL->bDead = false;
 
@@ -379,13 +379,13 @@ void ShipLights::AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bo
         {
             pNode->geo->GetLabel(i, label);
 
-			if (sFlares == label.group_name)
+            if (sFlares == label.group_name)
             {
                 AddFlare(pObject, false, pModel, label);
                 continue;
             }
 
-			if (sLights == label.group_name)	
+            if (sLights == label.group_name)	
             {
                 AddFlare(pObject, true, pModel, label);
             }
@@ -396,14 +396,14 @@ void ShipLights::AddLights(VAI_OBJBASE *pObject, MODEL *pModel, bool bLights, bo
 
 void ShipLights::SetLights(VAI_OBJBASE *pObject)
 {
-	if(!bLoadLights) return;
-	
+    if(!bLoadLights) return;
+
     uint32_t i;
     aSelectedLights.clear();
 
     for (i = 0; i < aLights.size(); i++)
     {
-		if (aLights[i].bOff || aLights[i].bTmpOff )
+        if (aLights[i].bOff || aLights[i].bLightOff )
             continue;
         if (!aLights[i].bDynamicLight)
         {
@@ -431,7 +431,7 @@ void ShipLights::SetLights(VAI_OBJBASE *pObject)
     std::sort(aSelectedLights.begin(), aSelectedLights.end());
 
     for (i = 0; i < aLights.size(); i++)
-        if (!aLights[i].bOff && !aLights[i].bTmpOff && aLights[i].pObject == pObject && !aLights[i].bCoronaOnly)
+        if (!aLights[i].bOff && !aLights[i].bLightOff && aLights[i].pObject == pObject && !aLights[i].bCoronaOnly)
         {
             aSelectedLights.insert(aSelectedLights.begin(), SelectedLight{aLights[i].fCurDistance, i});
         }
@@ -464,7 +464,7 @@ void ShipLights::Execute(uint32_t dwDeltaTime)
     {
         ShipLight &L = aLights[i];
 
-        if (L.bOff || L.bTmpOff)
+        if (L.bOff || L.bLightOff)
             continue;
 
         if (!L.bDynamicLight)
@@ -510,7 +510,7 @@ void ShipLights::Execute(uint32_t dwDeltaTime)
             const float fLen = fDistance * sqrtf(~(vCamPos - L.vCurPos));
             L.bVisible = fDistance >= 1.0f || (fLen < 0.6f);
 
-            if (!L.bOff && !L.bTmpOff && L.bVisible)
+            if (!L.bOff && !L.bLightOff && L.bVisible)
             {
                 const float fDistance = pCollide->Trace(its, vCamPos, L.vCurPos, nullptr, 0);
                 const float fLen = (1.0f - fDistance) * sqrtf(~(vCamPos - L.vCurPos));
@@ -598,7 +598,7 @@ void ShipLights::Realize(uint32_t dwDeltaTime)
     {
         ShipLight &L = aLights[i];
 
-        if (L.bOff || L.bTmpOff)
+        if (L.bOff || L.bLightOff)
             continue;
 
         float fDistanceFade = 1.0f;
@@ -653,15 +653,14 @@ void ShipLights::UnSetLights(VAI_OBJBASE *pObject)
 
 void ShipLights::ResetLights(VAI_OBJBASE *pObject, bool bLight)
 {
-	for (uint32_t i = 0; i < aLights.size(); i++)
-	{
-		ShipLight &L = aLights[i];
-		if (L.bOff)
-            continue;
-		if(bLight) 	L.bTmpOff = false;
-		else		L.bTmpOff = true;
-	}		
-}	
+    for (auto &light : aLights)
+    {
+        if (!light.bOff)
+        {
+            light.bLightOff = !bLight;
+        }
+    }
+}
 
 uint64_t ShipLights::ProcessMessage(MESSAGE &message)
 {

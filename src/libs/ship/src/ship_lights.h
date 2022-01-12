@@ -82,7 +82,7 @@ class ShipLights : public IShipLights
         bool bVisible;
         float fTotalBrokenTime, fBrokenTime;
         bool bOff, bBrokenTimeOff;
-		bool bTmpOff;
+        bool bLightOff;
         bool bDead;
         LightType *pLT;
     };
