@@ -190,7 +190,7 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
     m_nGunReloadTextureID = -1;
     FULLRECT(m_rGunReloadUV);
     ZERROPOINT(m_pntGunReloadOffset);
-    FILLPOINT(m_pntGunReloadIconSize, 20, 20);
+    FILLPOINT(m_pntGunReloadIconSize, 0, 0);
 
     for (n = 0; n < MAX_MAN_QUANTITY; n++)
     {
