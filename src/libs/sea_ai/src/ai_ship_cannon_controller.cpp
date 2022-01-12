@@ -116,7 +116,7 @@ bool AIShipCannonController::Fire(AIShip *pEnemy)
     const float fDistance = GetAIShip()->GetDistance(*pEnemy);
     const float fSpeedZ = pEnemy->GetShipBasePointer()->GetCurrentSpeed();
     const float fAng = pEnemy->GetShipBasePointer()->GetAng().y;
-    CVECTOR vFirePos = (fSpeedZ * fDistance / GetSpeedV0()) * CVECTOR(sinf(fAng), 0.0f, cosf(fAng));
+    CVECTOR vFirePos = (fSpeedZ * fDistance / GetSpeedV0()/2.0f) * CVECTOR(sinf(fAng), 0.0f, cosf(fAng));
     vFirePos += pEnemy->GetPos();
 
     rs.vPos = vFirePos;
