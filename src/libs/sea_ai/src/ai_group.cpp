@@ -67,7 +67,7 @@ void AIGroup::AddShip(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pASh
         vTmpPos = ((iShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
                   CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
         vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos
-                    + CVECTOR(sinf(vInitGroupPos.z),0,cosf(vInitGroupPos.z)) * CVECTOR(0.0f,0.0f,250.0f) * fLine;
+                    + CVECTOR(cosf(vInitGroupPos.z),0,cosf(vInitGroupPos.x)) * CVECTOR(200.0f,0.0f,200.0f) * fLine;
     }
     else 
     {
