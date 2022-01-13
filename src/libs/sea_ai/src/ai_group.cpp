@@ -12,8 +12,7 @@ AIGroup::AIGroup(const char *pGroupName)
     bFirstExecute = true;
     pACommander = nullptr;
 
-    iWarShipsNum = 0;
-    iTradeShipsNum = 0;
+    iShipsNum = 0;
     sGroupName = pGroupName;
 
     dtCheckTask.Setup(FRAND(4.0f), 2.0f, 4.0f);
@@ -38,43 +37,44 @@ void AIGroup::AddShip(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pASh
         {
             pShip = new AIShipWar();
             isWarShip = true;
-            iWarShipsNum++;
+            iShipsNum++;
         }
         else if (std::string("trade") == pAMode->GetThisAttr())
         {
             pShip = new AIShipTrade();
             isWarShip = false;
-            iTradeShipsNum++;
+            iShipsNum++;
         }
         else if (std::string("boat") == pAMode->GetThisAttr())
         {
             pShip = new AIShipBoat();
             isWarShip = false;
-            iTradeShipsNum++;
+            iShipsNum++;
         }
     }
     if (!pShip)
     {
         pShip = new AIShipWar();
         isWarShip = true;
-        iWarShipsNum++;
+        iShipsNum++;
     }
     CVECTOR vShipPos, vTmpPos;
-
-    if (isWarShip)
+    float fLine = 1.0f;
+    if(iShipsNum % 2 == 0) fLine = 1.0f;
+    else fLine = -1.0f;
+    if(pACharacter != GetCommanderACharacter())
     {
-        // war
-        vTmpPos = ((iWarShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
+        vTmpPos = ((iShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
+                  CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
+        vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos
+                    + CVECTOR(sinf(vInitGroupPos.z),0,cosf(vInitGroupPos.z)) * CVECTOR(0.0f,0.0f,250.0f) * fLine;
+    }
+    else 
+    {
+        vTmpPos = ((iShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
                   CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
         vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos;
-    }
-    else
-    {
-        // trade
-        vTmpPos = ((iTradeShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
-                  CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
-        vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos -
-                   CVECTOR(0.0f, 0.0f, AIGroup::fDistanceBetweenGroupLines);
+
     }
 
     pShip->CreateShip(eidShip, pACharacter, pAShip, &vShipPos);

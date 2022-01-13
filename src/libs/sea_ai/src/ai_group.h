@@ -17,7 +17,7 @@ class AIGroup
     std::string sGroupType;
     CVECTOR vInitGroupPos, vMovePoint;
     bool bFirstExecute;
-    uint32_t iWarShipsNum, iTradeShipsNum;
+    uint32_t iShipsNum;
 
     ATTRIBUTES *pACommander;
 
