@@ -1,3 +1,4 @@
+#ifdef _WIN32 // FIX_LINUX s_debug.h
 #include "s_dbg_breaktable.h"
 #include "file_service.h"
 
@@ -195,3 +196,4 @@ bool BREAKPOINTS_TABLE::Find(const char *filename, uint32_t line)
     }
     return false;
 }
+#endif

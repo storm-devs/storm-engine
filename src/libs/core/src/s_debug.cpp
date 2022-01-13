@@ -1,3 +1,4 @@
+#ifdef _WIN32 // FIX_LINUX s_debug.h
 #include "s_debug.h"
 #include "compiler.h"
 #include "core_impl.h"
@@ -963,3 +964,4 @@ void S_DEBUG::OpenNewFile()
         CDebug->Add2RecentFiles(buffer);
     }
 }
+#endif

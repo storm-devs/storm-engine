@@ -1,3 +1,4 @@
+#ifdef _WIN32 // FIX_LINUX s_debug.h
 #include "s_dbg_watcherlist.h"
 #include "s_debug.h"
 
@@ -194,3 +195,4 @@ void WATCHER_LIST::ProcessMessage(uint64_t iMsg, uint64_t wParam, uint64_t lPara
       break;
     }*/
 }
+#endif
