@@ -3139,7 +3139,7 @@ char *AddAttributesStringsToBuffer(char *inBuffer, char *prevStr, ATTRIBUTES *pA
 {
     size_t prevLen = 0;
     if (prevStr != nullptr)
-        prevLen = strlen(prevStr) + _countof(".") - 1;
+        prevLen = strlen(prevStr) + std::size(".") - 1;
 
     const int q = pAttr->GetAttributesNum();
     for (int k = 0; k < q; k++)
@@ -3152,7 +3152,7 @@ char *AddAttributesStringsToBuffer(char *inBuffer, char *prevStr, ATTRIBUTES *pA
         const char *attrName = pA->GetThisName();
         if (attrName && attrVal && attrVal[0])
         {
-            int nadd = _countof("\n") - 1 + strlen(attrName) + _countof("=") - 1 + strlen(attrVal) + 1;
+            int nadd = std::size("\n") - 1 + strlen(attrName) + std::size("=") - 1 + strlen(attrVal) + 1;
             nadd += prevLen;
             if (inBuffer != nullptr)
                 nadd += strlen(inBuffer);

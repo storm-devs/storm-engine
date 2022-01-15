@@ -1396,7 +1396,7 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
             strcpy_s(_fname, fname);
         }
 
-        if (strlen(_fname) > _countof(".tx") - 1)
+        if (strlen(_fname) > std::size(".tx") - 1)
         {
             if (storm::iEquals(&_fname[strlen(_fname) - 3], ".tx"))
                 _fname[strlen(_fname) - 3] = 0;
