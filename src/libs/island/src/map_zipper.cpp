@@ -72,12 +72,14 @@ void MapZipper::DoZip(uint8_t *pSrc, uint32_t _dwSizeX)
     dwNumRealBlocks = dwRealIndex;
     pRealData = static_cast<uint8_t *>(realloc(pRealData, dwRealIndex * dwBlockSize * dwBlockSize));
 
+#ifdef _WIN32 // FIX_LINUX __debugbreak
     for (y = 0; y < _dwSizeX; y++)
         for (x = 0; x < _dwSizeX; x++)
         {
             if (Get(x, y) != pSrc[x + y * _dwSizeX])
                 __debugbreak();
         }
+#endif
 }
 
 uint8_t MapZipper::Get(uint32_t dwX, uint32_t dwY)

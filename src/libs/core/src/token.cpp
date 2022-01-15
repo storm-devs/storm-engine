@@ -503,7 +503,9 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
     const auto stt = ProcessToken(Program, bKeepData);
     if (stt == HOLD_COMPILATION)
     {
+#ifdef _WIN32 // FIX_LINUX __debugbreak
         __debugbreak();
+#endif
         // stt == HOLD_COMPILATION;
     }
     return stt;

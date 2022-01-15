@@ -3903,7 +3903,9 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
         switch (Token_type)
         {
         case ARGS_NUM:
+#ifdef _WIN32 // FIX_LINUX __debugbreak
             __debugbreak();
+#endif
             break;
         case STACK_COMPARE:
             pV = SStack.Read();
