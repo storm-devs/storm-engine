@@ -2045,7 +2045,10 @@ void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, int32_t line, co
 {
     static char buf[256];
     // print to the buffer
-    int32_t len = vsnprintf(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
+    va_list args;
+    va_start(args, format);
+    int32_t len = vsnprintf(buf, sizeof(buf) - 1, format, args);
+    va_end(args);
     buf[sizeof(buf) - 1] = 0;
     // Looking for a point position on the screen
     static CMatrix mtx, view, prj;

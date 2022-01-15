@@ -734,7 +734,10 @@ void Window::DrawLRect(float x1, float y1, float x2, float y2, uint32_t bkgColor
 
 void Window::Print(int32_t color, float xleft, float xright, float y, float scale, bool isAlign, const char *format, ...)
 {
-    vsnprintf(stringBuffer, sizeof(stringBuffer), format, ((char *)&format + sizeof(char *)));
+    va_list args;
+    va_start(args, format);
+    vsnprintf(stringBuffer, sizeof(stringBuffer), format, args);
+    va_end(args);
     auto x = xleft;
     if (isAlign)
     {
