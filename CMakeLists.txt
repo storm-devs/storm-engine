@@ -40,13 +40,15 @@ if (NOT WIN32)
     message("Using DXVK-native for D3D9 API")
 
     include(ExternalProject)
+    #PATCH_COMMAND for ubuntu: https://bugs.launchpad.net/ubuntu/+source/libsdl2-ttf/+bug/1872023
     ExternalProject_Add(dxvk-native
         GIT_REPOSITORY    https://github.com/Joshua-Ashton/dxvk-native
-        GIT_TAG           origin/master
+        GIT_TAG           a2dc99c407340432d4ba5bfa29efa685c27942ea
+        PATCH_COMMAND     sed -i "s+directx')+directx', '/usr/include/SDL2')+g" meson.build
         GIT_SHALLOW       ON
         BUILD_ALWAYS      OFF
         CONFIGURE_HANDLED_BY_BUILD ON
-        CONFIGURE_COMMAND CC=gcc-10 && CXX=g++-10 && meson ../dxvk-native
+        CONFIGURE_COMMAND meson ../dxvk-native
         BUILD_COMMAND     ninja
         INSTALL_COMMAND   ""
     )
