@@ -144,7 +144,7 @@ bool ParticleManager::OpenProject(const char *FileName)
     for (auto n = 0; n < 9999; n++)
     {
         char buf[64];
-        snprintf(buf, _countof(buf), "System_%04d", n);
+        snprintf(buf, std::size(buf), "System_%04d", n);
         // Section.Format("System_%04d", n);
         const auto ReadSuccess = IniFile->ReadString("Manager", buf, IniStringBuffer, 8192, "none");
         if (!ReadSuccess)

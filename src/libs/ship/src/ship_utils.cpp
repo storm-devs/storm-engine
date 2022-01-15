@@ -169,7 +169,7 @@ bool SHIP::BuildMasts()
         }
         const auto *const cNodeName = pNode->GetName();
 
-        if (_strnicmp(cNodeName, MAST_IDENTIFY, _countof(MAST_IDENTIFY) - 1) == 0)
+        if (_strnicmp(cNodeName, MAST_IDENTIFY, std::size(MAST_IDENTIFY) - 1) == 0)
         {
             CVECTOR vBSize, vBCenter, vUp, vDown, vTemp;
 
@@ -177,7 +177,7 @@ bool SHIP::BuildMasts()
             if (!pAMasts)
                 pAMasts = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Masts");
 
-            sscanf(static_cast<const char *>(&cNodeName[_countof(MAST_IDENTIFY) - 1]), "%d", &iNum);
+            sscanf(static_cast<const char *>(&cNodeName[std::size(MAST_IDENTIFY) - 1]), "%d", &iNum);
             pMasts.resize(iNumMasts + 1);
 
             auto *pM = &pMasts[iNumMasts];
@@ -245,7 +245,7 @@ bool SHIP::BuildHulls()
         if (!pNode)
             break;
         const auto *const cNodeName = pNode->GetName();
-        if (_strnicmp(cNodeName, HULL_IDENTIFY, _countof(HULL_IDENTIFY) - 1) == 0)
+        if (_strnicmp(cNodeName, HULL_IDENTIFY, std::size(HULL_IDENTIFY) - 1) == 0)
         {
             CVECTOR vBSize, vBCenter, vUp, vDown, vTemp;
 
@@ -253,7 +253,7 @@ bool SHIP::BuildHulls()
             if (!pAHulls)
                 pAHulls = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Hulls");
 
-            sscanf((const char *)&cNodeName[_countof(HULL_IDENTIFY) - 1], "%d", &iNum);
+            sscanf((const char *)&cNodeName[std::size(HULL_IDENTIFY) - 1], "%d", &iNum);
             pHulls.resize(iNumHulls + 1);
 
             hull_t *pM = &pHulls[iNumHulls];

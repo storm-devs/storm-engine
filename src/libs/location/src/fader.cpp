@@ -126,7 +126,7 @@ bool Fader::Init()
     drawbuf_base[5].u = 1.0f;
     drawbuf_base[5].v = 1.0f;
 
-    for (size_t i = 0; i < _countof(drawbuf_base); ++i )
+    for (size_t i = 0; i < std::size(drawbuf_base); ++i)
     {
         drawbuf_back[i] = {drawbuf_base[i].x, drawbuf_base[i].y, drawbuf_base[i].z, drawbuf_base[i].rhw, {},
                            drawbuf_base[i].u, drawbuf_base[i].v};

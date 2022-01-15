@@ -943,7 +943,7 @@ void SHIP::MastFall(mast_t *pM)
         int32_t iNum, iBase;
         char cMastNodeName[256];
         sprintf_s(cMastNodeName, "%s", pM->pNode->GetName());
-        sscanf((char *)&cMastNodeName[_countof(MAST_IDENTIFY) - 1], "%d", &iNum);
+        sscanf((char *)&cMastNodeName[std::size(MAST_IDENTIFY) - 1], "%d", &iNum);
         iBase = iNum / TOPMAST_BEGIN;
         //        core.Trace("SHIP::MastFall : nodeName %s  iNum = %d base = %d iNumMasts = %d", cMastNodeName, iNum,
         // iBase, iNumMasts );
@@ -955,7 +955,7 @@ void SHIP::MastFall(mast_t *pM)
             if (pMast && pMast->pNode && !pMasts[i].bBroken)
             {
                 sprintf_s(str, "%s", pMast->pNode->GetName());
-                sscanf((char *)&str[_countof(MAST_IDENTIFY) - 1], "%d", &iMastNum);
+                sscanf((char *)&str[std::size(MAST_IDENTIFY) - 1], "%d", &iMastNum);
                 bool bOk = false;
                 if (iNum < TOPMAST_BEGIN) // mast, bring down all the topmills
                 {

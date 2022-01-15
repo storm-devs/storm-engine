@@ -7218,7 +7218,7 @@ void COMPILER::FormatDialog(char *file_name)
                         // fio->_WriteFile(fhH,sFileName,strlen(sFileName),&dwR);
                         // fio->_WriteFile(fhH,sNewLine,strlen(sNewLine),&dwR);
 
-                        constexpr size_t newline_len = _countof(sNewLine) - 1;
+                        constexpr size_t newline_len = std::size(sNewLine) - 1;
                         do
                         {
                             Token_type = Token.FormatGet();
@@ -7251,7 +7251,7 @@ void COMPILER::FormatDialog(char *file_name)
                                 else
                                 {
                                     fio->_WriteFile(fileS2, Token.GetData(), strlen(Token.GetData()));
-                                    fio->_WriteFile(fileS2, ",", _countof(",") - 1);
+                                    fio->_WriteFile(fileS2, ",", std::size(",") - 1);
                                     fio->_WriteFile(fileS2, sNewLine, newline_len);
                                     sprintf_s(sFileName, "DLG_TEXT[%d]", nTxt);
                                     fio->_WriteFile(fileS, sFileName, strlen(sFileName));
@@ -7300,7 +7300,7 @@ void COMPILER::FormatDialog(char *file_name)
                             }
                             if (Token_type != DOT)
                             {
-                                constexpr size_t newline_len = _countof(sNewLine) - 1;
+                                constexpr size_t newline_len = std::size(sNewLine) - 1;
                                 do
                                 {
                                     Token_type = Token.FormatGet();
@@ -7333,7 +7333,7 @@ void COMPILER::FormatDialog(char *file_name)
                                         else
                                         {
                                             fio->_WriteFile(fileS2, Token.GetData(), strlen(Token.GetData()));
-                                            fio->_WriteFile(fileS2, ",", _countof(",") - 1);
+                                            fio->_WriteFile(fileS2, ",", std::size(",") - 1);
                                             fio->_WriteFile(fileS2, sNewLine, newline_len);
                                             sprintf_s(sFileName, "DLG_TEXT[%d]", nTxt);
                                             fio->_WriteFile(fileS, sFileName, strlen(sFileName));

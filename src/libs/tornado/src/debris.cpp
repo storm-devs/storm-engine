@@ -154,7 +154,7 @@ void Debris::Draw(VDX9RENDER *rs)
 
 void Debris::AddModel(const char *modelName, float prt, float spd)
 {
-    if (numModels > _countof(mdl))
+    if (numModels > std::size(mdl))
         return;
     // Create a model
     entid_t id;
