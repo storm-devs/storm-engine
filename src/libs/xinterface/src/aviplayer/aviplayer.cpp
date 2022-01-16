@@ -29,6 +29,7 @@ CAviPlayer::CAviPlayer()
     m_bContinue = true;
     m_bShowVideo = true;
 
+#ifdef _WIN32 // FIX_LINUX ddraw.h and amstream.h
     pDD = nullptr;
     pPrimarySurface = nullptr;
     pVideoSurface = nullptr;
@@ -36,6 +37,7 @@ CAviPlayer::CAviPlayer()
     pPrimaryVidStream = nullptr;
     pDDStream = nullptr;
     pSample = nullptr;
+#endif
 
     pTmpRenderTarget = nullptr;
     pTex = nullptr;
@@ -76,8 +78,10 @@ void CAviPlayer::Execute(uint32_t delta_time)
 {
     if (m_bContinue == false)
     {
+#ifdef _WIN32 // FIX_LINUX ddraw.h and amstream.h
         if (pAMStream != nullptr)
             pAMStream->SetState(STREAMSTATE_STOP);
+#endif
         CleanupInterfaces();
         core.Event("ievntEndVideo");
     }
@@ -87,6 +91,7 @@ void CAviPlayer::Realize(uint32_t delta_time)
 {
     //~!~
     // rs->BeginScene();
+#ifdef _WIN32 // FIX_LINUX ddraw.h and amstream.h
     int i;
     HRESULT hr;
     DDSURFACEDESC ddsd;
@@ -147,6 +152,9 @@ void CAviPlayer::Realize(uint32_t delta_time)
     {
         m_bContinue = false;
     }
+#else
+    m_bContinue = false;
+#endif
 }
 
 uint64_t CAviPlayer::ProcessMessage(MESSAGE &message)
@@ -176,6 +184,7 @@ uint64_t CAviPlayer::ProcessMessage(MESSAGE &message)
 
 bool CAviPlayer::PlayMedia(const char *fileName)
 {
+#ifdef _WIN32 // FIX_LINUX ddraw.h and amstream.h
     auto hr = S_OK;
     DDSURFACEDESC ddsd;
 
@@ -297,12 +306,16 @@ bool CAviPlayer::PlayMedia(const char *fileName)
     }
 
     return true;
+#else
+    return false;
+#endif
 }
 
 bool CAviPlayer::GetInterfaces()
 {
     HRESULT hr = S_OK;
 
+#ifdef _WIN32 // FIX_LINUX ddraw.h and amstream.h
     // Initialize COM
     if (FAILED(hr = CoInitialize(NULL)))
         return false;
@@ -348,10 +361,14 @@ bool CAviPlayer::GetInterfaces()
     }
 
     return true;
+#else
+    return false;
+#endif
 }
 
 void CAviPlayer::CleanupInterfaces()
 {
+#ifdef _WIN32 // FIX_LINUX ddraw.h and amstream.h
     IRELEASE(pSample);
     IRELEASE(pDDStream);
     IRELEASE(pPrimaryVidStream);
@@ -369,6 +386,7 @@ void CAviPlayer::CleanupInterfaces()
 
     if (m_bMakeUninitializeDD)
         CoUninitialize();
+#endif
     m_bMakeUninitializeDD = false;
 }
 
