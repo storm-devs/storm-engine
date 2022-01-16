@@ -509,9 +509,6 @@ void BIManSign::UpdateBuffers(int32_t nShipQ)
         m_nVBufID = m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, m_nSquareQ * 4 * sizeof(BI_COLOR_VERTEX),
                                               D3DUSAGE_WRITEONLY);
     }
-   // VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
-   // m_nVBufID = m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, m_nGunReloadSquareQ * 4 * sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY);                             
-    // FillVertexBuffer();
 }
 
 void BIManSign::FillIndexBuffer() const
