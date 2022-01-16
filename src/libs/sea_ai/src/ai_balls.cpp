@@ -3,22 +3,14 @@
 #include "inlines.h"
 #include "shared/messages.h"
 
-#include <algorithm>
 
 AIBalls *AIBalls::pAIBalls = nullptr;
 
 AIBalls::AIBalls()
+    : pSail(nullptr), pSea(nullptr), pFort(nullptr), pIsland(nullptr),
+      fDeltaTimeMultiplier(1.0f), fBallFlySoundDistance(1.0f), dwFireBallFromCameraTime(0)
 {
-    pSail = nullptr;
-    pSea = nullptr;
-    pFort = nullptr;
-    pIsland = nullptr;
     pAIBalls = this;
-
-    fBallFlySoundDistance = 1.0f;
-
-    fDeltaTimeMultiplyer = 1.0f;
-    dwFireBallFromCameraTime = 0;
 }
 
 AIBalls::~AIBalls()
@@ -203,7 +195,7 @@ void AIBalls::Execute(uint32_t Delta_Time)
             AttributesPointer->SetAttributeUseFloat("CurrentMaxBallDistance", pBall->fMaxFireDistance);
 
             // update ball time
-            pBall->fTime += fDeltaTime * fDeltaTimeMultiplyer * pBall->fTimeSpeedMultiply;
+            pBall->fTime += fDeltaTime * fDeltaTimeMultiplier * pBall->fTimeSpeedMultiply;
             // update positions
             float fsX = pBall->fSpeedV0 * pBall->fTime * pBall->fCosAngle;
             float fsY = pBall->fHeightMultiply * (pBall->fSpeedV0 * pBall->fTime * pBall->fSinAngle -
@@ -238,7 +230,7 @@ void AIBalls::Execute(uint32_t Delta_Time)
 
                 if (Sqr(x) + Sqr(y) <= Sqr(fBallFlySoundDistance))
                 {
-                    CVECTOR vRes, v = fBallFlySoundStereoMultiplyer * CVECTOR(x, y, 0.0f);
+                    CVECTOR vRes, v = fBallFlySoundStereoMultiplier * CVECTOR(x, y, 0.0f);
                     mView.MulToInv(v, vRes);
 
                     core.Event(BALL_FLY_NEAR_CAMERA, "fff", vRes.x, vRes.y, vRes.z);
@@ -370,8 +362,8 @@ uint32_t AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)
     {
         // load common parameters
         fBallFlySoundDistance = AttributesPointer->GetAttributeAsFloat("BallFlySoundDistance");
-        fBallFlySoundStereoMultiplyer = AttributesPointer->GetAttributeAsFloat("BallFlySoundStereoMultiplyer");
-        fDeltaTimeMultiplyer = AttributesPointer->GetAttributeAsFloat("SpeedMultiply");
+        fBallFlySoundStereoMultiplier = AttributesPointer->GetAttributeAsFloat("BallFlySoundStereoMultiplyer");
+        fDeltaTimeMultiplier = AttributesPointer->GetAttributeAsFloat("SpeedMultiply");
         sTextureName = AttributesPointer->GetAttribute("Texture");
         dwSubTexX = AttributesPointer->GetAttributeAsDword("SubTexX");
         dwSubTexY = AttributesPointer->GetAttributeAsDword("SubTexY");

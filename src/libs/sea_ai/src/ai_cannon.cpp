@@ -57,22 +57,19 @@ float AICannon::CalcHeightFireAngle(float _fSpeedV0, const CVECTOR &vOur, const 
     vTemp.y = 0.0f;
     const double fDistance = sqrtf(~vTemp);
     const auto g = static_cast<double>(AIHelper::fGravity);
-    double a, b, c, d;
     const double fHeight = (vEnemy.y - vOur.y);
-    a = SQR(g) / 4.0f;
-    b = (fHeight * g - SQR(_fSpeedV0));
-    c = SQR(fHeight) + SQR(fDistance);
-    d = b * b - 4 * a * c;
+    const double a = SQR(g) / 4.0f;
+    const double b = (fHeight * g - SQR(_fSpeedV0));
+    const double c = SQR(fHeight) + SQR(fDistance);
+    const double d = b * b - 4 * a * c;
     if (d < 0)
         return 0.0f;
 
-    double x1, x2, t1, t2;
+    const double x1 = (-b + sqrt(d)) / (2.0 * a);
+    const double x2 = (-b - sqrt(d)) / (2.0 * a);
 
-    x1 = (-b + sqrt(d)) / (2.0 * a);
-    x2 = (-b - sqrt(d)) / (2.0 * a);
-
-    t1 = sqrt(x1);
-    t2 = sqrt(x2);
+    const double t1 = sqrt(x1);
+    const double t2 = sqrt(x2);
 
     const auto T = (CannonType == CANNONTYPE_MORTAR) ? t1 : t2;
 

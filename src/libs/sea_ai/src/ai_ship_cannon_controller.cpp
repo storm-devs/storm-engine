@@ -1,3 +1,4 @@
+#include "ai_balls.h"
 #include "ai_ship.h"
 #include "inlines.h"
 
@@ -93,31 +94,56 @@ bool AIShipCannonController::Fire(const CVECTOR &vFirePos)
 bool AIShipCannonController::Fire(AIShip *pEnemy)
 {
     Assert(pEnemy);
+    Assert(AIBalls::pAIBalls);
 
-    VDATA *pVData = core.Event(CANNON_GET_FIRE_HEIGHT, "aa", pOurAIShip->GetACharacter(), pEnemy->GetACharacter());
+    VDATA *pVData = core.Event(CANNON_GET_FIRE_HEIGHT, "aa", GetAIShip()->GetACharacter(), pEnemy->GetACharacter());
     Assert(pVData);
-
     const float fFireHeight = pVData->GetFloat();
+
+    pVData = core.Event(CANNON_GET_FIRE_TIME, "a", GetAIShip()->GetACharacter());
+    Assert(pVData);
+    const float fFireTime = pVData->GetFloat();
+
     const float fDistance = GetAIShip()->GetDistance(*pEnemy);
+    const float fSpeedV0 = GetSpeedV0();
+    const float fRealSpeedV0 = fSpeedV0 * AIBalls::pAIBalls->GetMultiplier();
     const float fSpeedZ = pEnemy->GetShipBasePointer()->GetCurrentSpeed();
     const float fAng = pEnemy->GetShipBasePointer()->GetAng().y;
 
     const auto vEnemyPos = pEnemy->GetPos();
+    const auto vTargetEnemyPos = vEnemyPos + CVECTOR{0.0f, fFireHeight, 0.0f};
 
     // rough estimation
-    auto vFirePos = (fSpeedZ * fDistance / GetSpeedV0()) * CVECTOR(sinf(fAng), 0.0f, cosf(fAng)) + vEnemyPos;
+    auto vFirePos = fSpeedZ * (fDistance / fRealSpeedV0 + fFireTime) * CVECTOR(sinf(fAng), 0.0f, cosf(fAng)) + vEnemyPos;
 
     auto bortIt = GetFirstFireBort(vFirePos);
     while (IsValid(bortIt))
     {
-        if (debugDrawToggle)
+        const auto &cannons = bortIt->aCannons;
+        if (!cannons.empty())
         {
-            debugFirePositions.emplace_back(vEnemyPos, ARGB(0xFF, 0xFF, 0x00, 0x00), float{});
-            debugFirePositions.emplace_back(vFirePos, ARGB(0xFF, 0x00, 0xFF, 0x00), float{});    
-        }
+            const auto &midCannon = cannons[cannons.size() / 2];
 
-        Fire2Position(*bortIt, vFirePos, fFireHeight);
-        bortIt = GetNextFireBort(bortIt, vFirePos);
+            // calc average real speed
+            const float fRealAng = midCannon.CalcHeightFireAngle(fSpeedV0, !(vTargetEnemyPos - midCannon.GetPos()), vTargetEnemyPos);
+            const float fSpeedV = fRealSpeedV0 * cosf(fRealAng);
+
+            // calc precise pos
+            TOUCH_PARAMS touchParamsNew;
+            pEnemy->GetShipBasePointer()->TouchMove(static_cast<uint32_t>((fDistance / fSpeedV + fFireTime) * 1000.0f),
+                                                    nullptr, &touchParamsNew);
+            vFirePos = touchParamsNew.vPos;
+
+            if (debugDrawToggle)
+            {
+                debugFirePositions.emplace_back(vEnemyPos, ARGB(0xFF, 0xFF, 0x00, 0x00), float{});
+                debugFirePositions.emplace_back(vFirePos + CVECTOR{0.0f, fFireHeight, 0.0f},
+                                                ARGB(0xFF, 0x00, 0xFF, 0x00), float{});
+            }
+
+            Fire2Position(*bortIt, vFirePos, fFireHeight);
+            bortIt = GetNextFireBort(bortIt, vFirePos);
+        }
     }
     return true;
 }
@@ -645,7 +671,7 @@ void AIShipCannonController::Realize(float fDeltaTime)
                 RotateAroundY(v[2].x, v[2].z, vZ.z, vZ.x);
                 v[2] += v[0];
 
-                constexpr auto color = ARGB(0x0A, 0x00, 0x7F, 0x00);
+                constexpr auto color = ARGB(0x0F, 0x90, 0xEE, 0x90);
                 Verts.emplace_back(v[0], color);
                 Verts.emplace_back(v[1], color);
                 Verts.emplace_back(v[2], color);
