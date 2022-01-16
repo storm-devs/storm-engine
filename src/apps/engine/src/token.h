@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <cstdint>
+#include <cstddef>
 
 enum S_TOKEN_TYPE
 {
@@ -160,10 +161,10 @@ class TOKEN
 {
     THLINE KeywordsHash[TOKENHASHTABLE_SIZE];
     S_TOKEN_TYPE eTokenType;
-    ptrdiff_t TokenDataBufferSize;
+    std::ptrdiff_t TokenDataBufferSize;
     int32_t Lines_in_token;
     char *pTokenData;
-    ptrdiff_t ProgramSteps[PROGRAM_STEPS_CACHE];
+    std::ptrdiff_t ProgramSteps[PROGRAM_STEPS_CACHE];
     int32_t ProgramStepsNum;
     char *Program;
     char *ProgramBase;
@@ -182,7 +183,7 @@ class TOKEN
     {
         return ProgramBase;
     };
-    ptrdiff_t GetProgramOffset();
+    std::ptrdiff_t GetProgramOffset();
 
     S_TOKEN_TYPE Get(bool bKeepData = false);
     S_TOKEN_TYPE ProcessToken(char *&pointer, bool bKeepData = false);
@@ -190,7 +191,7 @@ class TOKEN
     void CacheToken(const char *pointer);
     bool StepBack();
     int32_t SetTokenData(const char *pointer, bool bKeepControlSymbols = false);
-    ptrdiff_t SetNTokenData(const char *pointer, ptrdiff_t Data_size);
+    std::ptrdiff_t SetNTokenData(const char *pointer, std::ptrdiff_t Data_size);
     int32_t StopArgument(const char *pointer, bool bKeepControlSymbols = false);
     void StartArgument(char *&pointer, bool bKeepControlSymbols = false);
     const char *GetTypeName(S_TOKEN_TYPE code);
