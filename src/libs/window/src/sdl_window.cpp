@@ -7,9 +7,12 @@ namespace storm
 {
 SDLWindow::SDLWindow(int width, int height, bool fullscreen) : fullscreen_(fullscreen)
 {
+    uint32_t flags = (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN;
+#ifndef _WIN32 // DXVK-Native
+    flags |= SDL_WINDOW_VULKAN;
+#endif
     window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>>(
-        SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
-                         (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN),
+        SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags),
         [](SDL_Window *w) { SDL_DestroyWindow(w); });
 
     sdlID_ = SDL_GetWindowID(window_.get());
@@ -99,10 +102,15 @@ void *SDLWindow::OSHandle()
     if (!window_)
         return nullptr;
 
+#ifdef _WIN32
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
     SDL_GetWindowWMInfo(window_.get(), &info);
     return info.info.win.window;
+#else
+    // dxvk-native uses HWND as SDL2 window handle, so this is allowed
+    return window_.get();
+#endif
 }
 
 SDL_Window *SDLWindow::SDLHandle()
