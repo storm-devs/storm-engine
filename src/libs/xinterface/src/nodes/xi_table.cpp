@@ -747,7 +747,7 @@ void CXI_TABLE::SetInternalName(std::string &sName)
     else
     {
         m_EditData.bAllEditable = false;
-        m_EditData.bColsEditable = (_strnicmp(sName.c_str(), "col", 3) == 0);
+        m_EditData.bColsEditable = (storm::iEquals(sName.c_str(), "col", 3));
         m_EditData.nEditableIndex = atoi(&sName.c_str()[3]) - 1;
     }
 }
