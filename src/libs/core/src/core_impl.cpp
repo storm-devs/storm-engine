@@ -8,6 +8,7 @@
 #include <fstream>
 
 #include "storm/string_compare.hpp"
+#include <SDL2/SDL.h>
 
 Core& core = core_internal;
 
@@ -291,8 +292,8 @@ void CoreImpl::ProcessEngineIniFile()
             {
 #ifdef _WIN32 // FIX_LINUX Cursor
                 ShowCursor(true);
-                MessageBoxA(nullptr, "Wrong script version", "Error", MB_OK);
 #endif
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Wrong script version", nullptr);
                 Compiler->ExitProgram();
             }
         }

@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
     if (false)
 #endif
     {
-        MessageBoxA(nullptr, "Another instance is already running!", "Error", MB_ICONERROR);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Another instance is already running!", nullptr);
         return EXIT_SUCCESS;
     }
     mi_register_output(mimalloc_fun, nullptr);
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 #endif
     if (!lifecycleDiagnosticsGuard)
     {
-        MessageBoxA(nullptr, "Unable to initialize lifecycle service!", "Warning", MB_ICONWARNING);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", "Unable to initialize lifecycle service!", nullptr);
     }
     else
     {
