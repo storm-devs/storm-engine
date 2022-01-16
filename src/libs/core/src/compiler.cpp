@@ -1913,7 +1913,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     uint32_t dwR;
     if (bWriteCodeFile)
     {
-        _splitpath(Segment.name.c_str(), nullptr, nullptr, file_name, nullptr);
+        auto fName = std::filesystem::path(Segment.name.c_str()).filename().string();
+        strcpy_s(file_name, fName.c_str());
         strcat_s(file_name, ".b");
         std::wstring FileNameW = utf8::ConvertUtf8ToWide(file_name);
         auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::out);
