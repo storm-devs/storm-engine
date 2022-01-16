@@ -6,6 +6,7 @@
 #include "defines.h"
 #include "dx9render.h"
 #include "v_module_api.h"
+#include "storm_platform.h"
 
 #include "d3d9types.h"
 #include "script_libriary.h"
@@ -583,7 +584,9 @@ private:
 
     std::stack<RenderTarget> stRenderTarget;
 
+#ifdef _WIN32 // FIX_LINUX Screenshot
     D3DXIMAGE_FILEFORMAT screenshotFormat;
+#endif
     std::string screenshotExt;
 
     bool TextureLoad(int32_t texid);
