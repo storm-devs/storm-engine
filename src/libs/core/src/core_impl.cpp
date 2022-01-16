@@ -139,19 +139,19 @@ bool CoreImpl::Run()
     if (pVCTime)
         pVCTime->Set(static_cast<int32_t>(GetRDeltaTime()));
 
-    SYSTEMTIME st;
-    GetLocalTime(&st);
+    auto tt = std::time(nullptr);
+    auto local_tm = *std::localtime(&tt);
 
     auto *pVYear = static_cast<VDATA *>(core_internal.GetScriptVariable("iRealYear"));
     auto *pVMonth = static_cast<VDATA *>(core_internal.GetScriptVariable("iRealMonth"));
     auto *pVDay = static_cast<VDATA *>(core_internal.GetScriptVariable("iRealDay"));
 
     if (pVYear)
-        pVYear->Set(static_cast<int32_t>(st.wYear));
+        pVYear->Set(local_tm.tm_year + 1900);
     if (pVMonth)
-        pVMonth->Set(static_cast<int32_t>(st.wMonth));
+        pVMonth->Set(local_tm.tm_mon + 1); // tm_mon belongs [0, 11]
     if (pVDay)
-        pVDay->Set(static_cast<int32_t>(st.wDay));
+        pVDay->Set(local_tm.tm_mday);
 
     if (Controls && Controls->GetDebugAsyncKeyState('R') < 0)
         Timer.Delta_Time *= 10;
