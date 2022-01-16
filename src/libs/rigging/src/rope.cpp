@@ -93,8 +93,6 @@ bool ROPE::LoadState(ENTITY_STATE *state)
     return true;
 }
 
-FILETIME ft_old;
-
 void ROPE::Execute(uint32_t Delta_Time)
 {
     uint64_t rtm;
