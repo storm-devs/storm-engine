@@ -1,7 +1,9 @@
 #include "effects.h"
 
 #include "core.h"
+#ifdef _WIN32 // FIX_LINUX DxErr.h
 #include <DxErr.h>
+#endif
 #include <iterator>
 
 #define CHECKD3DERR(expr) ErrorHandler(expr, __FILE__, __LINE__, __func__, #expr)
@@ -10,8 +12,13 @@ inline bool Effects::ErrorHandler(HRESULT hr, const char *file, unsigned line, c
 {
     if (hr != D3D_OK && hr != S_FALSE)
     {
+#ifdef _WIN32 // FIX_LINUX DxErr.h
         core.Trace("[%s:%s:%d] %s: %s (%s) (%.*s)", file, func, line, DXGetErrorString(hr), DXGetErrorDescription(hr),
                    expr, debugMsg_.size(), debugMsg_.data());
+#else
+        core.Trace("[%s:%s:%d] (%s) (%.*s)", file, func, line,
+                   expr, debugMsg_.size(), debugMsg_.data());
+#endif
         return true;
     }
 
