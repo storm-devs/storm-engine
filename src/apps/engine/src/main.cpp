@@ -116,7 +116,11 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
     }
 }
 
+#ifdef _WIN32 // FIX_LINUX HINSTANCE
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
+#else
+int main(int argc, char *argv[])
+#endif
 {
     // Prevent multiple instances
     if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
