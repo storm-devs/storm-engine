@@ -289,8 +289,10 @@ void CoreImpl::ProcessEngineIniFile()
 
             if (iScriptVersion != ENGINE_SCRIPT_VERSION)
             {
+#ifdef _WIN32 // FIX_LINUX Cursor
                 ShowCursor(true);
                 MessageBoxA(nullptr, "Wrong script version", "Error", MB_OK);
+#endif
                 Compiler->ExitProgram();
             }
         }

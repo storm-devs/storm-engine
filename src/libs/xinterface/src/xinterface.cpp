@@ -1132,9 +1132,11 @@ void XINTERFACE::LoadIni()
     m_idTex = pRenderService->TextureCreate(param2);
     //  RECT Screen_Rect;
     //  GetWindowRect(core.GetAppHWND(), &Screen_Rect);
+#ifdef _WIN32 // FIX_LINUX Cursor
     lock_x = Screen_Rect.left + (Screen_Rect.right - Screen_Rect.left) / 2;
     lock_y = Screen_Rect.top + (Screen_Rect.bottom - Screen_Rect.top) / 2;
     SetCursorPos(lock_x, lock_y);
+#endif
     fXMousePos = static_cast<float>(dwScreenWidth / 2);
     fYMousePos = static_cast<float>(dwScreenHeight / 2);
     for (int i = 0; i < 4; i++)
@@ -1143,7 +1145,9 @@ void XINTERFACE::LoadIni()
     vMouse[2].tu = vMouse[3].tu = 1.f;
     vMouse[0].tv = vMouse[2].tv = 0.f;
     vMouse[1].tv = vMouse[3].tv = 1.f;
+#ifdef _WIN32 // FIX_LINUX Cursor
     ShowCursor(false);
+#endif
 
     // set blind parameters
     m_fBlindSpeed = ini->GetFloat(section, "BlindTime", 1.f);
