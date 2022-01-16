@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <cstdint>
 
 /* TODO: REMOVE THIS.... */
 constexpr uint32_t MakeHashValue(const char *string)

@@ -1,3 +1,5 @@
+#include <thread>
+
 #include "ai_balls.h"
 #include "ai_ship.h"
 #include "inlines.h"

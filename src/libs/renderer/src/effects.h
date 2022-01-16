@@ -5,6 +5,7 @@
 #include <d3dx9.h>
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 class Effects final
 {

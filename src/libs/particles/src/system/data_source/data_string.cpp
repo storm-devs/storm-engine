@@ -1,5 +1,6 @@
 #include "data_string.h"
 #include "v_module_api.h"
+#include "storm_platform.h"
 
 // constructor / destructor
 DataString::DataString()
