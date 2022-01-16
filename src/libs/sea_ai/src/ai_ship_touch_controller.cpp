@@ -46,8 +46,8 @@ CVECTOR *AIShipTouchController::GetPentagonBox()
     vBox[2] = CVECTOR(vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
     vBox[3] = CVECTOR(0.0f, 0.0f, vBoxSize.z);
     vBox[4] = CVECTOR(-vBoxSize.x, 0.0f, vBoxSize.z / 1.5f);
-    for (uint32_t i = 0; i < 5; i++)
-        vBox[i] = vOurPos + m * vBox[i];
+    for (auto &i : vBox)
+        i = vOurPos + m * i;
     return &vBox[0];
 }
 
@@ -245,19 +245,19 @@ void AIShipTouchController::Realize(float fDeltaTime)
 void AIShipTouchController::Save(CSaveLoad *pSL)
 {
     pSL->SaveDword(aTouchRays.size());
-    for (uint32_t i = 0; i < aTouchRays.size(); i++)
+    for (auto &aTouchRay : aTouchRays)
     {
-        pSL->SaveFloat(aTouchRays[i].fMinDist);
-        pSL->SaveFloat(aTouchRays[i].fDist);
-        pSL->SaveFloat(aTouchRays[i].fEarthDist);
+        pSL->SaveFloat(aTouchRay.fMinDist);
+        pSL->SaveFloat(aTouchRay.fDist);
+        pSL->SaveFloat(aTouchRay.fEarthDist);
     }
     pSL->SaveFloat(fLeftRaysFree);
     pSL->SaveFloat(fRightRaysFree);
     pSL->SaveFloat(fRaySize);
     pSL->SaveFloat(fSpeedFactor);
     pSL->SaveFloat(fRotateFactor);
-    for (uint32_t i = 0; i < 5; i++)
-        pSL->SaveVector(vBox[i]);
+    for (auto i : vBox)
+        pSL->SaveVector(i);
 }
 
 void AIShipTouchController::Load(CSaveLoad *pSL)
@@ -270,6 +270,6 @@ void AIShipTouchController::Load(CSaveLoad *pSL)
     fRaySize = pSL->LoadFloat();
     fSpeedFactor = pSL->LoadFloat();
     fRotateFactor = pSL->LoadFloat();
-    for (uint32_t i = 0; i < 5; i++)
-        vBox[i] = pSL->LoadVector();
+    for (auto &i : vBox)
+        i = pSL->LoadVector();
 }

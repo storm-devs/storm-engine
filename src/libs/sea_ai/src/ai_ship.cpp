@@ -188,11 +188,11 @@ void AIShip::CheckSituation()
     // if (isMainCharacter()) return;
 
     auto fMinEnemyDist = 1e9f;
-    for (uint32_t i = 0; i < AIShips.size(); i++)
-        if (AIShips[i] != this)
+    for (auto &AIShip : AIShips)
+        if (AIShip != this)
         {
-            const auto fDist = GetDistance(*AIShips[i]);
-            if (Helper.isEnemy(GetACharacter(), AIShips[i]->GetACharacter()))
+            const auto fDist = GetDistance(*AIShip);
+            if (Helper.isEnemy(GetACharacter(), AIShip->GetACharacter()))
             {
                 if (fDist < fMinEnemyDist)
                 {
@@ -270,11 +270,11 @@ bool AIShip::isCanPlace(CVECTOR vNewPos) const
     auto vBoxSize = GetBoxsize();
     vBoxSize.x += 30.0f;
     vBoxSize.z += 30.0f;
-    for (uint32_t i = 0; i < AIShips.size(); i++)
-        if (this != AIShips[i])
+    for (auto &AIShip : AIShips)
+        if (this != AIShip)
         {
-            const auto fMinDist = (vBoxSize.z + AIShips[i]->GetBoxsize().z) / 2.0f;
-            if (AIShips[i]->GetDistance(vNewPos) < fMinDist)
+            const auto fMinDist = (vBoxSize.z + AIShip->GetBoxsize().z) / 2.0f;
+            if (AIShip->GetDistance(vNewPos) < fMinDist)
                 return false;
         }
     if (AIHelper::pIsland && AIHelper::pIsland->Check2DBoxDepth(vNewPos, vBoxSize, 0.0f, -14.0f))
@@ -548,14 +548,14 @@ float AIShip::GetDefendHP()
 float AIShip::GetAttackHP(float fAttackDistance)
 {
     auto fHP = 0.0f;
-    for (uint32_t i = 0; i < AIShips.size(); i++)
-        if (AIShips[i] != this)
+    for (auto &AIShip : AIShips)
+        if (AIShip != this)
         {
             auto fHP1 = 0.0f;
-            if (fAttackDistance <= 0.0f && AIShips[i]->isAttack(GetACharacter()))
-                fHP1 = AIShips[i]->GetShipHP();
-            if (isEnemy(*AIShips[i]) && AIShips[i]->GetDistance(*AIShips[i]) <= fAttackDistance)
-                fHP1 = AIShips[i]->GetShipHP();
+            if (fAttackDistance <= 0.0f && AIShip->isAttack(GetACharacter()))
+                fHP1 = AIShip->GetShipHP();
+            if (isEnemy(*AIShip) && AIShip->GetDistance(*AIShip) <= fAttackDistance)
+                fHP1 = AIShip->GetShipHP();
             fHP += fHP1;
         }
     return fHP;
@@ -611,9 +611,9 @@ void AIShip::SwapShips(AIShip *pOtherShip)
 // static members
 AIShip *AIShip::FindShip(ATTRIBUTES *pACharacter)
 {
-    for (uint32_t i = 0; i < AIShips.size(); i++)
-        if (*AIShips[i] == pACharacter)
-            return AIShips[i];
+    for (auto &AIShip : AIShips)
+        if (*AIShip == pACharacter)
+            return AIShip;
     return nullptr;
 }
 

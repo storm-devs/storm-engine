@@ -337,13 +337,13 @@ uint32_t AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)
 {
     if (*pAttributeChanged == "clear")
     {
-        for (uint32_t i = 0; i < aBallTypes.size(); i++)
+        for (auto &aBallType : aBallTypes)
         {
-            BALL_TYPE *pBallsType = &aBallTypes[i];
+            BALL_TYPE *pBallsType = &aBallType;
 
-            for (uint32_t j = 0; j < pBallsType->Balls.size(); j++)
+            for (auto &Ball : pBallsType->Balls)
             {
-                BALL_PARAMS *pBall = &pBallsType->Balls[j];
+                BALL_PARAMS *pBall = &Ball;
 
                 pBall->sBallEvent.clear();
 
@@ -413,10 +413,10 @@ uint64_t AIBalls::ProcessMessage(MESSAGE &message)
 {
     if (message.Long() == MSG_MODEL_RELEASE)
     {
-        for (uint32_t i = 0; i < aBallTypes.size(); i++)
-            for (uint32_t j = 0; j < aBallTypes[i].Balls.size(); j++)
+        for (auto &aBallType : aBallTypes)
+            for (uint32_t j = 0; j < aBallType.Balls.size(); j++)
             {
-                BALL_PARAMS *pBall = &aBallTypes[i].Balls[j];
+                BALL_PARAMS *pBall = &aBallType.Balls[j];
 
                 if (pBall->pParticle)
                 {
@@ -451,13 +451,13 @@ void BALL_PARAMS::Save(CSaveLoad *pSL)
 
 void AIBalls::Save(CSaveLoad *pSL)
 {
-    for (uint32_t i = 0; i < aBallTypes.size(); i++)
+    for (auto &aBallType : aBallTypes)
     {
-        pSL->SaveDword(aBallTypes[i].Balls.size());
+        pSL->SaveDword(aBallType.Balls.size());
 
-        for (uint32_t j = 0; j < aBallTypes[i].Balls.size(); j++)
+        for (uint32_t j = 0; j < aBallType.Balls.size(); j++)
         {
-            aBallTypes[i].Balls[j].Save(pSL);
+            aBallType.Balls[j].Save(pSL);
         }
     }
 }
@@ -485,16 +485,16 @@ void BALL_PARAMS::Load(CSaveLoad *pSL)
 
 void AIBalls::Load(CSaveLoad *pSL)
 {
-    for (uint32_t i = 0; i < aBallTypes.size(); i++)
+    for (auto &aBallType : aBallTypes)
     {
         const uint32_t dwNum = pSL->LoadDword();
 
-        auto balls_size = std::size(aBallTypes[i].Balls);
-        aBallTypes[i].Balls.resize(balls_size + dwNum);
+        auto balls_size = std::size(aBallType.Balls);
+        aBallType.Balls.resize(balls_size + dwNum);
         for (uint32_t j = 0; j < dwNum; j++)
         {
             // BALL_PARAMS * pB = &aBallTypes[i].Balls[aBallTypes[i].Balls.Add()];
-            BALL_PARAMS &pB = aBallTypes[i].Balls[balls_size + j];
+            BALL_PARAMS &pB = aBallType.Balls[balls_size + j];
             pB.Load(pSL);
             if (pB.pParticle)
             {
@@ -502,7 +502,7 @@ void AIBalls::Load(CSaveLoad *pSL)
                 if (auto eidParticle = EntityManager::GetEntityId("particles"))
                 {
                     pB.pParticle = (VPARTICLE_SYSTEM *)core.Send_Message(
-                        eidParticle, "lsffffffl", PS_CREATE_RIC, (char *)aBallTypes[i].sParticleName.c_str(), pB.vPos.x,
+                        eidParticle, "lsffffffl", PS_CREATE_RIC, (char *)aBallType.sParticleName.c_str(), pB.vPos.x,
                         pB.vPos.y, pB.vPos.z, 0.0f, 1.0f, 0.0f, 100000);
                 }
             }

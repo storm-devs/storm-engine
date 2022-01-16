@@ -213,12 +213,12 @@ void AIHelper::Save(CSaveLoad *pSL)
     pSL->SaveAPointer("seacameras", pASeaCameras);
 
     pSL->SaveDword(aCharacters.size());
-    for (uint32_t i = 0; i < aCharacters.size(); i++)
-        pSL->SaveAPointer("character", aCharacters[i]);
+    for (auto &aCharacter : aCharacters)
+        pSL->SaveAPointer("character", aCharacter);
 
     pSL->SaveDword(aMainCharacters.size());
-    for (uint32_t i = 0; i < aMainCharacters.size(); i++)
-        pSL->SaveAPointer("character", aMainCharacters[i]);
+    for (auto &aMainCharacter : aMainCharacters)
+        pSL->SaveAPointer("character", aMainCharacter);
 }
 
 void AIHelper::Load(CSaveLoad *pSL)

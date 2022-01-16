@@ -14,8 +14,8 @@ AIFort::AIFort()
 AIFort::~AIFort()
 {
     pAIFort = nullptr;
-    for (uint32_t i = 0; i < aForts.size(); i++)
-        STORM_DELETE(aForts[i]);
+    for (auto &aFort : aForts)
+        STORM_DELETE(aFort);
 }
 
 bool AIFort::Init()
@@ -90,17 +90,17 @@ void AIFort::Execute(uint32_t Delta_Time)
                 auto fMinDistance = 1e10f;
                 auto vCPos = pC->GetPos();
                 const auto fMaxFireDistance = AICannon::CalcMaxFireDistance(vCPos.y, fSpeedV0, 0.35f); // FIX-ME
-                for (uint32_t j = 0; j < AIShip::AIShips.size(); j++)
-                    if (!AIShip::AIShips[j]->isDead() &&
-                        Helper.isEnemy(pF->GetACharacter(), AIShip::AIShips[j]->GetACharacter()))
+                for (auto &j : AIShip::AIShips)
+                    if (!j->isDead() &&
+                        Helper.isEnemy(pF->GetACharacter(), j->GetACharacter()))
                     {
-                        const auto fDistance = AIShip::AIShips[j]->GetDistance(vCPos);
+                        const auto fDistance = j->GetDistance(vCPos);
                         if (fDistance > fMaxFireDistance)
                             continue;
                         if (fDistance < fMinDistance)
                         {
                             fMinDistance = fDistance;
-                            pFireAIShip = AIShip::AIShips[j];
+                            pFireAIShip = j;
                         }
                     }
                 if (pFireAIShip)
@@ -265,10 +265,10 @@ void AIFort::AddFortHit(int32_t iCharacterIndex, CVECTOR &vHitPos)
 
 AIFort::AI_FORT *AIFort::FindFort(entid_t eidModel)
 {
-    for (int32_t i = 0; i < aForts.size(); i++)
+    for (auto &aFort : aForts)
     {
-        if (EntityManager::GetEntityPointer(aForts[i]->GetModelEID()) == EntityManager::GetEntityPointer(eidModel))
-            return aForts[i];
+        if (EntityManager::GetEntityPointer(aFort->GetModelEID()) == EntityManager::GetEntityPointer(eidModel))
+            return aFort;
     }
     return nullptr;
 }
@@ -491,15 +491,15 @@ CVECTOR AIFort::AI_FORT::GetAttackPoint(VAI_INNEROBJ *pObj)
 void AIFort::Save(CSaveLoad *pSL)
 {
     pSL->SaveFloat(fMinCannonDamageDistance);
-    for (uint32_t i = 0; i < aForts.size(); i++)
-        aForts[i]->Save(pSL);
+    for (auto &aFort : aForts)
+        aFort->Save(pSL);
 }
 
 void AIFort::Load(CSaveLoad *pSL)
 {
     fMinCannonDamageDistance = pSL->LoadFloat();
-    for (uint32_t i = 0; i < aForts.size(); i++)
-        aForts[i]->Load(pSL, GetId());
+    for (auto &aFort : aForts)
+        aFort->Load(pSL, GetId());
 }
 
 void AIFort::AI_FORT::Save(CSaveLoad *pSL)
@@ -553,6 +553,6 @@ void AIFort::AI_FORT::Load(CSaveLoad *pSL, entid_t eid)
 
 void AIFort::Fire(const CVECTOR &vPos)
 {
-    for (int32_t i = 0; i < aForts.size(); i++)
-        pShipsLights->AddDynamicLights(&aForts[i]->tmpObject, vPos);
+    for (auto &aFort : aForts)
+        pShipsLights->AddDynamicLights(&aFort->tmpObject, vPos);
 }
