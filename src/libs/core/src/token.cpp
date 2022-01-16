@@ -366,7 +366,7 @@ void TOKEN::LowCase()
 {
     if (pTokenData[0] == 0)
         return;
-    _strlwr(pTokenData);
+    tolwr(pTokenData);
 }
 
 const char *TOKEN::GetData()

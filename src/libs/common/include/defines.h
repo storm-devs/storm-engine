@@ -4,6 +4,7 @@
 #include "math3d.h"
 #include <cstdint>
 #include <cstring>
+#include <cctype>
 
 namespace TOREMOVE
 {
@@ -74,6 +75,24 @@ constexpr float PI = 3.14159265358979323846f;
 constexpr float PIm2 = (PI * 2.0f);
 constexpr float PId2 = (PI / 2.0f);
 constexpr float PId4 = (PI / 4.0f);
+
+inline void toupr(char *str)
+{
+    while (*str != '\0')
+    {
+        *str = toupper(*str);
+        str++;
+    }
+}
+
+inline void tolwr(char *str)
+{
+    while (*str != '\0')
+    {
+        *str = tolower(*str);
+        str++;
+    }
+}
 
 #ifdef _WIN32 // FIX_LINUX RDTSC_*
 #define RDTSC_B(x)                                                                                                     \
