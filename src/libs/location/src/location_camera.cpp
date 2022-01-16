@@ -32,7 +32,7 @@
 #define LOCATIONCAMERA_DISTALPHA_MAX 1.6f // Distance from the character at which it is necessary to fade out alpha
 #define LOCATIONCAMERA_DISTALPHA_MIN 0.8f // Distance from the character at which it is necessary to fade out alpha
 
-#define LOCATIONCAMERA_PERSPECTIVE (1.57f + 1.0f) * 0.5f
+#define LOCATIONCAMERA_DEFAULT_PERSPECTIVE (1.57f + 1.0f) * 0.5f
 
 // ============================================================================================
 // Construction, destruction
@@ -71,6 +71,8 @@ LocationCamera::LocationCamera()
     dynamic_fog.isOn = false;
 
     m_bTrackMode = false;
+
+    cameraPerspective = LOCATIONCAMERA_DEFAULT_PERSPECTIVE;
 }
 
 LocationCamera::~LocationCamera()
@@ -100,7 +102,7 @@ bool LocationCamera::Init()
     // try to get the location
     loc = EntityManager::GetEntityId("location");
 
-    rs->SetPerspective(LOCATIONCAMERA_PERSPECTIVE);
+    rs->SetPerspective(cameraPerspective);
     // rs->SetPerspective(1.0f);
 
     StoreRestoreDynamicFov(false);
@@ -404,7 +406,9 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
     case MSG_CAMERA_SET_RADIUS:
         radius = message.Float();
         return 1;
-
+    case MSG_CAMERA_SET_PERSPECTIVE:
+        cameraPerspective = message.Float();
+        return 1;
     // internal
     case -1: {
         const auto fSpeed = message.Float();
@@ -611,17 +615,17 @@ void LocationCamera::Clip(PLANE *p, int32_t numPlanes, CVECTOR &cnt, float rad,
 void LocationCamera::TurnOnDynamicFov(float fSpeed, float fTime, float fRelationMin, float fRelationMax,
                                       float fAngSpeed, float fAngMax)
 {
-    dynamic_fog.fMinFov = LOCATIONCAMERA_PERSPECTIVE * fRelationMin;
-    dynamic_fog.fMaxFov = LOCATIONCAMERA_PERSPECTIVE * fRelationMax;
+    dynamic_fog.fMinFov = cameraPerspective * fRelationMin;
+    dynamic_fog.fMaxFov = cameraPerspective * fRelationMax;
     if (!dynamic_fog.isOn)
     {
-        dynamic_fog.fCurFov = LOCATIONCAMERA_PERSPECTIVE;
+        dynamic_fog.fCurFov = cameraPerspective;
         dynamic_fog.bFogUp = true;
         dynamic_fog.fCurAngle = 0.f;
         dynamic_fog.bAngleUp = true;
     }
     dynamic_fog.isOn = true;
-    dynamic_fog.fFogChangeSpeed = fSpeed * LOCATIONCAMERA_PERSPECTIVE;
+    dynamic_fog.fFogChangeSpeed = fSpeed * cameraPerspective;
     dynamic_fog.fFogTimeCur = 0;
     dynamic_fog.fFogTimeMax = fTime;
 
@@ -635,7 +639,7 @@ void LocationCamera::ProcessDynamicFov(float fDeltaTime, const CVECTOR &vFrom, c
         dynamic_fog.fFogTimeCur += fDeltaTime;
     if (dynamic_fog.fFogTimeMax > 0.f && dynamic_fog.fFogTimeCur >= dynamic_fog.fFogTimeMax)
     {
-        rs->SetPerspective(LOCATIONCAMERA_PERSPECTIVE);
+        rs->SetPerspective(cameraPerspective);
         dynamic_fog.isOn = false;
     }
     else
@@ -723,9 +727,9 @@ void LocationCamera::StoreRestoreDynamicFov(bool bStore)
         dynamic_fog.isOn = pA->GetAttributeAsDword("ison", false) != 0;
         if (dynamic_fog.isOn)
         {
-            dynamic_fog.fMinFov = pA->GetAttributeAsFloat("minfov", LOCATIONCAMERA_PERSPECTIVE);
-            dynamic_fog.fMaxFov = pA->GetAttributeAsFloat("maxfov", LOCATIONCAMERA_PERSPECTIVE);
-            dynamic_fog.fCurFov = pA->GetAttributeAsFloat("curfov", LOCATIONCAMERA_PERSPECTIVE);
+            dynamic_fog.fMinFov = pA->GetAttributeAsFloat("minfov", cameraPerspective);
+            dynamic_fog.fMaxFov = pA->GetAttributeAsFloat("maxfov", cameraPerspective);
+            dynamic_fog.fCurFov = pA->GetAttributeAsFloat("curfov", cameraPerspective);
             dynamic_fog.bFogUp = pA->GetAttributeAsDword("fogup", true) != 0;
             dynamic_fog.fFogChangeSpeed = pA->GetAttributeAsFloat("speed", 0.1f);
             dynamic_fog.fFogTimeCur = pA->GetAttributeAsFloat("timecur", 0.f);
@@ -764,7 +768,7 @@ bool LocationCamera::LoadCameraTrack(const char *pcTrackFile, float fTrackTime)
     view.Inverse();
     view.pos = view * -pos;
     rs->SetView(*(CMatrix *)&view);
-    rs->SetPerspective(LOCATIONCAMERA_PERSPECTIVE);
+    rs->SetPerspective(cameraPerspective);
 
     return true;
 }
@@ -811,7 +815,7 @@ void LocationCamera::ProcessTrackCamera()
     view.Inverse();
     view.pos = view * -pos;
     rs->SetView(*(CMatrix *)&view);
-    rs->SetPerspective(LOCATIONCAMERA_PERSPECTIVE);
+    rs->SetPerspective(cameraPerspective);
 }
 
 float LocationCamera::TrackPauseProcess()
