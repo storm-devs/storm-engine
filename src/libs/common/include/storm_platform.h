@@ -1,6 +1,31 @@
-#ifndef _WIN32
+#pragma once
+#ifdef _WIN32
+inline const char *convert_path_sep(const char *cPath)
+{
+    return cPath;
+}
+#else
+
+#include <limits.h>
 
 #include "safe_str_lib.h"
+#undef EXTERN // fix for token.h:72:5: error: expected identifier EXTERN,
+
+#define MAX_PATH PATH_MAX
+#define _MAX_FNAME NAME_MAX
+#define MAKELONG(low, high) ((int32_t)(((uint16_t)(low)) | (((uint32_t)((uint16_t)(high))) << 16)))
+
+inline char *convert_path_sep(const char *cPath)
+{
+    const auto len = strlen(cPath) + 1;
+    auto newPath = new char[len];
+    strcpy(newPath, cPath);
+
+    while (char *sep = strchr(newPath, '\\'))
+        *sep = '/';
+
+    return newPath;
+}
 
 // use inline wrapper for strcat_s from safeclib instead of #define strcat_s
 #undef strcat_s
