@@ -8,6 +8,7 @@ inline const char *convert_path_sep(const char *cPath)
 
 #include <limits.h>
 
+#include "linux/winuser.h"
 #include "safe_str_lib.h"
 #undef EXTERN // fix for token.h:72:5: error: expected identifier EXTERN,
 
