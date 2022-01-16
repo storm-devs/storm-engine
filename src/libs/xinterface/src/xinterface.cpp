@@ -1067,13 +1067,22 @@ void XINTERFACE::LoadIni()
     if (!ini)
         throw std::runtime_error("ini file not found!");
 
+#ifdef _WIN32 // FIX_LINUX GetWindowRect
     RECT Screen_Rect;
     GetWindowRect(static_cast<HWND>(core.GetAppHWND()), &Screen_Rect);
+#else
+    int sdlScreenWidth, sdlScreenHeight;
+    SDL_GetWindowSize(reinterpret_cast<SDL_Window *>(core.GetAppHWND()), &sdlScreenWidth, &sdlScreenHeight);
+#endif
 
     fScale = 1.0f;
     const auto screenSize = core.GetScreenSize();
     dwScreenHeight = screenSize.height;
+#ifdef _WIN32 // FIX_LINUX GetWindowRect
     dwScreenWidth = (Screen_Rect.right - Screen_Rect.left) * dwScreenHeight / (Screen_Rect.bottom - Screen_Rect.top);
+#else
+    dwScreenWidth = sdlScreenWidth * dwScreenHeight / sdlScreenHeight;
+#endif
     if (dwScreenWidth < screenSize.width)
         dwScreenWidth = screenSize.width;
     GlobalScreenRect.top = 0;
