@@ -1042,7 +1042,7 @@ void IFS::WriteString(const char *section_name, const char *key_name, const char
 void IFS::WriteLong(const char *section_name, const char *key_name, int32_t value)
 {
     char buffer[256];
-    _ltoa(value, buffer, 10);
+    sprintf(buffer, "%d", value);
     WriteString(section_name, key_name, buffer);
 }
 
