@@ -242,7 +242,7 @@ void Shadow::Realize(uint32_t Delta_Time)
     shading = std::max(0.2f, std::max(minVal, std::min(shading, 1.0f)));
     shading *= (blendValue >> 24) / 255.0f;
 
-    // if(GetAsyncKeyState(0xc0)<0)
+    // if(core.Controls->GetDebugAsyncKeyState(0xc0)<0)
     {
         float dist = sqrtf(~(cen - camPos));
         if (dist > farBlend) // too far

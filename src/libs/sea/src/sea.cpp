@@ -972,7 +972,7 @@ void SEA::PrepareIndicesForBlock(uint32_t dwBlockIndex)
         const bool bTestedUp = pB->iY1 == pB2->iY2;
         const bool bTestedDown = pB->iY2 == pB2->iY1;
 
-        // if (!(GetAsyncKeyState('5')<0))
+        // if (!(core.Controls->GetDebugAsyncKeyState('5')<0))
         if (bTestedUp || bTestedDown)
         {
             const int32_t iAddSrc = pB2->iIStart + ((bTestedUp) ? (pB2->iSize0 + 1) * pB2->iSize0 : 0);
@@ -1003,7 +1003,7 @@ void SEA::PrepareIndicesForBlock(uint32_t dwBlockIndex)
         // Test Left & Right
         const bool bTestedLeft = pB->iX1 == pB2->iX2;
         const bool bTestedRight = pB->iX2 == pB2->iX1;
-        // if ((GetAsyncKeyState('6')<0))
+        // if ((core.Controls->GetDebugAsyncKeyState('6')<0))
         if (bTestedLeft || bTestedRight)
         {
             const int32_t iAddSrc = pB2->iIStart + ((bTestedLeft) ? (pB2->iSize0) : 0);

@@ -510,8 +510,8 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
         // hierarchy test
         if (dist2ray2 > dlmn * root->radius * root->radius)
             return 2.0f;
-        // if(GetAsyncKeyState(0xC0)>=0)    return 2.0f;
-        // if(GetAsyncKeyState(VK_SHIFT)<0 && dist2ray2 > dlmn*root->radius*root->radius)    return 2.0f;
+        // if(core.Controls->GetDebugAsyncKeyState(0xC0)>=0)    return 2.0f;
+        // if(core.Controls->GetDebugAsyncKeyState(VK_SHIFT)<0 && dist2ray2 > dlmn*root->radius*root->radius)    return 2.0f;
 
         // get bones
         bones = &ani->GetAnimationMatrix(0);
