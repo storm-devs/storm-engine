@@ -92,7 +92,7 @@ void BIManSign::Draw()
         {
             m_pRS->TextureSet(0, m_nGunReloadTextureID);
             m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nGunReloadSquareQ * 4, nStartI,
-                              m_nGunReloadSquareQ * 2, "battle_colorRectangle");
+                              m_nGunReloadSquareQ * 2, "battle_tex_col_Rectangle");
         }
         nStartV += m_nGunReloadSquareQ * 4;
 
@@ -509,6 +509,9 @@ void BIManSign::UpdateBuffers(int32_t nShipQ)
         m_nVBufID = m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, m_nSquareQ * 4 * sizeof(BI_COLOR_VERTEX),
                                               D3DUSAGE_WRITEONLY);
     }
+   // VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
+   // m_nVBufID = m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, m_nGunReloadSquareQ * 4 * sizeof(BI_COLOR_VERTEX), D3DUSAGE_WRITEONLY);                             
+    // FillVertexBuffer();
 }
 
 void BIManSign::FillIndexBuffer() const
