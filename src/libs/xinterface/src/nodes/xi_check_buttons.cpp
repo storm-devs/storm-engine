@@ -373,9 +373,20 @@ void CXI_CHECKBUTTONS::AddButton(const char *pcText, bool bDisable, bool bSelect
     // pBD->aStr.Add();
     ButtonDescribe::StrDescribe strDescribe;
     if (pcText && pcText[0] == '#')
+    {
         strDescribe.str = &pcText[1];
+    }
     else
-        strDescribe.str = pStringService->GetString(pStringService->GetStringNum(pcText));
+    {
+        const auto strNum = pStringService->GetStringNum(pcText);
+        if (strNum < 0)
+        {
+            spdlog::error("CXI_CHECKBUTTONS: No string '{:}' found in language files", pcText);
+            delete pBD;
+            return;
+        }
+        strDescribe.str = pStringService->GetString(strNum);
+    }
     strDescribe.fX = 0;
     pBD->aStr.push_back(strDescribe);
     pBD->bDisable = bDisable;
