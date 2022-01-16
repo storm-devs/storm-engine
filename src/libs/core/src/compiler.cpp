@@ -822,7 +822,7 @@ bool COMPILER::BC_LoadSegment(const char *file_name)
     // const auto len = strlen(file_name) + 1;
     // SegmentTable[index].name = new char[len];
     // memcpy(SegmentTable[index].name, file_name, len);
-    SegmentTable[index].name = _strdup(file_name);
+    SegmentTable[index].name = strdup(file_name);
     SegmentTable[index].id = id;
     SegmentTable[index].bUnload = false;
     SegmentTable[index].pData = nullptr;
