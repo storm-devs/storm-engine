@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <vector>
 #include <set>
 
 #include "collide.h"
@@ -59,6 +58,12 @@ class Lights : public Entity
     {
         int32_t id;
         int32_t light;
+
+        MovingLight(int32_t id, int32_t light)
+        {
+            this->id = id;
+            this->light = light;
+        }
     };
 
     struct Vertex
