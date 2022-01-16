@@ -119,8 +119,12 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
 int main(int argc, char *argv[])
 {
     // Prevent multiple instances
+#ifdef _WIN32 // CreateEventA
     if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
         GetLastError() == ERROR_ALREADY_EXISTS)
+#else
+    if (false)
+#endif
     {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Another instance is already running!", nullptr);
         return EXIT_SUCCESS;
