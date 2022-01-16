@@ -13,10 +13,12 @@
 #include "watermark.hpp"
 
 #ifdef _UNICODE
+#ifdef _WIN32 // FIX_LINUX sentry_options
 #include <tchar.h>
 #define sentry_options_set_database_path sentry_options_set_database_pathw
 #define sentry_options_set_handler_path sentry_options_set_handler_pathw
 #define sentry_options_add_attachment sentry_options_add_attachmentw
+#endif
 #else
 #include <cstdlib>
 #define _T(x) x
@@ -161,6 +163,7 @@ LifecycleDiagnosticsService::Guard LifecycleDiagnosticsService::initialize(const
 
     if (!initialized_)
     {
+#ifdef _WIN32 // FIX_LINUX sentry_options
         // TODO: make this crossplatform
         auto *options = sentry_options_new();
         sentry_options_set_dsn(options, "https://1798a1bcfb654cbd8ce157b381964525@o572138.ingest.sentry.io/5721165");
@@ -172,6 +175,7 @@ LifecycleDiagnosticsService::Guard LifecycleDiagnosticsService::initialize(const
         sentry_options_set_system_crash_reporter_enabled(options, enableCrashReports);
 
         initialized_ = sentry_init(options) == 0;
+#endif
     }
 
     return Guard(*this);
@@ -183,7 +187,9 @@ void LifecycleDiagnosticsService::terminate() const
 
     if (initialized_)
     {
+#ifdef _WIN32 // FIX_LINUX sentry_options
         sentry_close();
+#endif
     }
 }
 
