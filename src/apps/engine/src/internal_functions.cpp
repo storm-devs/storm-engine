@@ -1158,7 +1158,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         n = TempLong1;
         while (n + static_cast<uint32_t>(slen2) <= static_cast<uint32_t>(slen))
         {
-            if (_strnicmp(pChar + n, pChar2, slen2) == 0)
+            if (storm::iEquals(pChar + n, pChar2, slen2))
             {
                 pV = SStack.Push();
                 pV->Set(static_cast<int32_t>(n));

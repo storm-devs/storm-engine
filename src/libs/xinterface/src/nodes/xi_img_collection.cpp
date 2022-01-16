@@ -108,7 +108,7 @@ void CXI_IMGCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
     if (ini1->ReadString(name1, "picture", param, sizeof(param) - 1, ""))
         do
         {
-            if (_strnicmp(param, "editsection:", 12) != 0)
+            if (!storm::iEquals(param, "editsection:", 12))
                 imgQuantity++;
         } while (ini1->ReadStringNext(name1, "picture", param, sizeof(param) - 1));
 
@@ -136,7 +136,7 @@ void CXI_IMGCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
             ini1->ReadString(name1, "picture", param, sizeof(param) - 1, "");
             for (auto i = 0; i < imgQuantity; i++)
             {
-                if (_strnicmp(param, "editsection:", 12) != 0)
+                if (!storm::iEquals(param, "editsection:", 12))
                 {
                     auto dwColor = ARGB(255, 128, 128, 128);
                     char param2[256];

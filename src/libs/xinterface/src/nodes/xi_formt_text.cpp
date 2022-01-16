@@ -679,13 +679,13 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, const char *&pInStr, char *buf, 
         {
             if (pStart[i] == '<')
             {
-                if (_strnicmp(&pStart[i], "<color", 6) == 0)
+                if (storm::iEquals(&pStart[i], "<color", 6))
                 {
                     while (i < lineSize && i < bufSize - 1 && pStart[i] != '>')
                         i++;
                     continue;
                 }
-                if (_strnicmp(&pStart[i], "</color>", 8) == 0)
+                if (storm::iEquals(&pStart[i], "</color>", 8))
                 {
                     i += 7;
                     continue;
@@ -710,13 +710,13 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, const char *&pInStr, char *buf, 
         {
             if (pStart[i] == '<')
             {
-                if (_strnicmp(&pStart[i], "<color", 6) == 0)
+                if (storm::iEquals(&pStart[i], "<color", 6))
                 {
                     while (i < lineSize && i < bufSize - 1 && pStart[i] != '>')
                         i++;
                     continue;
                 }
-                if (_strnicmp(&pStart[i], "</color>", 8) == 0)
+                if (storm::iEquals(&pStart[i], "</color>", 8))
                 {
                     i += 7;
                     continue;
@@ -962,7 +962,7 @@ void CXI_FORMATEDTEXT::MakeTagChecking(bool &tagState, uint32_t &tagColor, uint3
         {
             if (tagState)
             {
-                if (_strnicmp(str, "</color>", 8) == 0)
+                if (storm::iEquals(str, "</color>", 8))
                 {
                     tagState = false;
                     q = str - tagBegin;
@@ -971,7 +971,7 @@ void CXI_FORMATEDTEXT::MakeTagChecking(bool &tagState, uint32_t &tagColor, uint3
             }
             else
             {
-                if (_strnicmp(str, "<color=", 7) == 0)
+                if (storm::iEquals(str, "<color=", 7))
                 {
                     tagState = true;
                     int32_t a = 255, r = 255, g = 255, b = 255;

@@ -359,7 +359,7 @@ void CXI_CHECKBUTTONS::SetInternalName(std::string &sName)
     else
     {
         m_nEditableSectionIndex = -1;
-        if (_strnicmp(sName.c_str(), "btn", 3) == 0)
+        if (storm::iEquals(sName.c_str(), "btn", 3))
         {
             m_nEditableSectionIndex = atoi(&sName.c_str()[3]) - 1;
         }
