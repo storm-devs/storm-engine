@@ -457,7 +457,7 @@ int32_t BIManSign::CalculateManQuantity()
         m_Man[n].bAlarm = false;
         m_Man[n].nShootMax = 4;
         m_Man[n].nShootCurrent = 0;
-        m_Man[n].fGunProgress = 0.f;
+        m_Man[n].fGunProgress = 0.0f;
     }
 
     auto *pAttr = m_pARoot ? m_pARoot->GetAttributeClass("data") : nullptr;
@@ -484,7 +484,7 @@ void BIManSign::UpdateBuffers(int32_t nShipQ)
     m_nBackSquareQ = nShipQ;
     m_nManStateSquareQ = nShipQ * 2;
     m_nGunChargeSquareQ = nShipQ * 2;
-    m_nGunReloadSquareQ = nShipQ * 2;
+    m_nGunReloadSquareQ = nShipQ;
     const auto nManSquareQ = nShipQ;
     const int32_t nAlarmSquareQ = (m_bIsAlarmOn && (nShipQ > 0)) ? 1 : 0;
 
@@ -754,8 +754,8 @@ float BIManSign::GetProgressGunCharge(int32_t nIdx)
 float BIManSign::GetProgressGunReloadBar(int32_t nIdx)
 {
     if (nIdx < 0 || nIdx >= m_nManQuantity)
-        return 1.f;
-    return 1.f - m_Man[nIdx].fGunProgress;
+        return 1.0f;
+    return 1.0f - m_Man[nIdx].fGunProgress;
 }
 
 float BIManSign::GetGunProgressByIndex(int32_t nIdx)
