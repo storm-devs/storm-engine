@@ -815,7 +815,9 @@ void CoastFoam::Save()
             pI->WriteString(cSection, cKey, cTemp);
         }
     }
+#ifdef _WIN32 // FIX_LINUX _flushall
     _flushall();
+#endif
 }
 
 void CoastFoam::clear()
