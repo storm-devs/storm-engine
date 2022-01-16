@@ -1845,12 +1845,11 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
         _splitpath(Segment.name, nullptr, nullptr, file_name, nullptr);
         strcat_s(file_name, ".b");
         std::wstring FileNameW = utf8::ConvertUtf8ToWide(file_name);
-        fh = CreateFile(FileNameW.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS,
-                        FILE_ATTRIBUTE_NORMAL, nullptr);
-        if (fh != INVALID_HANDLE_VALUE)
+        auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::out);
+        if (fileS.is_open())
         {
-            WriteFile(fh, Segment.pCode, Segment.BCode_Program_size, (LPDWORD)&dwR, nullptr);
-            CloseHandle(fh);
+            fio->_WriteFile(fileS, Segment.pCode, Segment.BCode_Program_size);
+            fio->_CloseFile(fileS);
         }
     }
     return true;
