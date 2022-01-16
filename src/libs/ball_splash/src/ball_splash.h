@@ -22,7 +22,7 @@ class BALLSPLASH : public Entity
     virtual void Realize(uint32_t dTime);
     virtual void Execute(uint32_t dTime);
 
-    void BALLSPLASH::ProcessStage(Stage stage, uint32_t delta) override
+    void ProcessStage(Stage stage, uint32_t delta) override
     {
         switch (stage)
         {

@@ -10,13 +10,6 @@
 // DEFINES & TYPES
 ///////////////////////////////////////////////////////////////////
 
-using tSoundDriverDescriptor = struct
-{
-    LPGUID guid;
-    char description[COMMON_STRING_LENGTH];
-    char driverName[COMMON_STRING_LENGTH];
-};
-
 using TSD_ID = int32_t;
 
 using tSoundStatistics = struct
