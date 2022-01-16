@@ -123,8 +123,12 @@ int main(int argc, char *argv[])
 #endif
 {
     // Prevent multiple instances
+#ifdef _WIN32 // FIX_LINUX CreateEventA
     if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
         GetLastError() == ERROR_ALREADY_EXISTS)
+#else
+    if (false)
+#endif
     {
         MessageBoxA(nullptr, "Another instance is already running!", "Error", MB_ICONERROR);
         return EXIT_SUCCESS;
