@@ -250,7 +250,9 @@ int main(int argc, char *argv[])
     core_private->Event("ExitApplication");
     core_private->CleanUp();
     core_private->ReleaseBase();
+#ifdef _WIN32 // FIX_LINUX Cursor
     ClipCursor(nullptr);
+#endif
     SDL_Quit();
 
     return EXIT_SUCCESS;
