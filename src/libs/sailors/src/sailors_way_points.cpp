@@ -1,5 +1,4 @@
 #include "sailors_way_points.h"
-#include <d3dx9math.h>
 
 #include "core.h"
 

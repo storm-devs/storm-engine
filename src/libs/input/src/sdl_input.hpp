@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <map>
 
+#include "storm_platform.h"
+
 namespace storm
 {
 class SDLInput : public Input

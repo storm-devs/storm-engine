@@ -1,5 +1,7 @@
 #include "storm/xinterface/options_parser.hpp"
 
+#include <SDL2/SDL.h>
+
 #include "xinterface.h"
 #include "back_scene/back_scene.h"
 #include "help_chooser/help_chooser.h"
@@ -9,8 +11,6 @@
 #include "string_service/str_service.h"
 #include "xservice.h"
 #include <cstdio>
-
-#include <direct.h>
 
 #define CHECK_FILE_NAME "PiratesReadme.txt"
 

@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_system.h>
 #include <SDL2/SDL_video.h>
-#include <Windows.h>
+#include <windows.h>
 #include <map>
 
 namespace storm
