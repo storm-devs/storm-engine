@@ -43,12 +43,14 @@ auto &getLogsArchive()
     return logsArchive;
 }
 
+#ifdef _WIN32 // FIX_LINUX 7za.exe
 auto assembleArchiveCmd()
 {
     constexpr auto archiverBin = "7za.exe";
     return _T("call \"") + (getExecutableDir() / archiverBin).native() + _T("\" a \"\\\\?\\") +
            getLogsArchive().native() + _T("\" \"\\\\?\\") + fs::GetLogsPath().native() + _T("\"");
 }
+#endif
 
 }
 
@@ -236,8 +238,10 @@ sentry_value_t LifecycleDiagnosticsService::beforeCrash(const sentry_value_t eve
     // terminate logging
     self->loggingService_->terminate();
 
+#ifdef _WIN32 // FIX_LINUX 7za.exe
     // archive logs for sentry backend
     _tsystem(assembleArchiveCmd().c_str());
+#endif
 
     return event;
 }
