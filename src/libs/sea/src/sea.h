@@ -39,6 +39,26 @@ class SEA : public SEA_BASE
 
         bool bInProgress, bDone;
 
+        SeaBlock(int32_t iX1, int32_t iX2, int32_t iY1, int32_t iY2, int32_t iSize0, int32_t iTX, int32_t iTY,
+                 int32_t iSize, int32_t iLOD, int32_t iIStart, int32_t iIFirst, int32_t iILast, bool bInProgress,
+                 bool bDone)
+        {
+            this->iX1 = iX1;
+            this->iX2 = iX2;
+            this->iY1 = iY1;
+            this->iY2 = iY2;
+            this->iSize0 = iSize0;
+            this->iTX = iTX;
+            this->iTY = iTY;
+            this->iSize = iSize;
+            this->iLOD = iLOD;
+            this->iIStart = iIStart;
+            this->iIFirst = iIFirst;
+            this->iILast = iILast;
+            this->bInProgress = bInProgress;
+            this->bDone = bDone;
+        }
+
         static bool QSort(const SeaBlock &b1, const SeaBlock &b2)
         {
             return (b1.iLOD > b2.iLOD);
