@@ -72,9 +72,9 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
             char str[2];
             str[0] = pAS->GetThisName()[0];
             str[1] = 0;
-            _strupr(str);
+            toupr(str);
             Spectr[str[0]] = pAS->GetAttributeAsDword();
-            _strlwr(str);
+            tolwr(str);
             Spectr[str[0]] = pAS->GetAttributeAsDword();
         }
     }

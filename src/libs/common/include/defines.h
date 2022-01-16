@@ -4,6 +4,7 @@
 #include "math3d.h"
 #include <cstdint>
 #include <cstring>
+#include <cctype>
 
 namespace TOREMOVE
 {
@@ -103,6 +104,28 @@ constexpr float PId4 = (PI / 4.0f);
 #ifdef SQR
 #undef SQR
 #endif
+
+inline char *toupr(char *str)
+{
+    char *result = str;
+    while (*str != '\0')
+    {
+        *str = toupper(*str);
+        str++;
+    }
+    return result;
+}
+
+inline char *tolwr(char *str)
+{
+    char *result = str;
+    while (*str != '\0')
+    {
+        *str = tolower(*str);
+        str++;
+    }
+    return result;
+}
 
 inline uint32_t F2DW(float f)
 {

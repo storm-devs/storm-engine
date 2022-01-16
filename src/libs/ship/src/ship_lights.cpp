@@ -182,7 +182,7 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
     if (!label.name)
         return;
     strcpy_s(str, label.name);
-    _strlwr(str);
+    tolwr(str);
 
     aLights.push_back(ShipLight{});
     ShipLight *pL = &aLights.back();
