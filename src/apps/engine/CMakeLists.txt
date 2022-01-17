@@ -1,3 +1,5 @@
+include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
+
 STORM_SETUP(
     TARGET_NAME engine
     TYPE executable
