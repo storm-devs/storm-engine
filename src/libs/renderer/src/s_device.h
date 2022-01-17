@@ -364,7 +364,11 @@ class DX9RENDER : public VDX9RENDER
     int32_t loadFrame;
     int32_t progressSafeCounter;
     bool isInPViewProcess;
+#ifdef _WIN32 // FIX_LINUX GetTickCount
     uint32_t progressUpdateTime;
+#else
+    std::chrono::time_point<std::chrono::system_clock> progressUpdateTime;
+#endif
     float progressFramesPosX;
     float progressFramesPosY;
     float progressFramesWidth;

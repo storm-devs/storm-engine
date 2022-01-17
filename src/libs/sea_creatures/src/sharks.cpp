@@ -511,7 +511,11 @@ Sharks::Sharks() : sea(0), island(0), indeces{}, vrt{}
 {
     rs = nullptr;
     camPos = 0.0f;
+#ifdef _WIN32 // FIX_LINUX GetTickCount
     numShakes = 3 + (GetTickCount() & 3);
+#else
+    numShakes = 3 + (std::time(nullptr) & 3);
+#endif
     trackTx = -1;
     periscope.time = -1.0;
     waitPTime = -1.0f;
@@ -570,7 +574,11 @@ bool Sharks::Init()
                             const auto day = root->GetAttributeAsDword("day");
                             if (day == 7)
                             {
+#ifdef _WIN32 // FIX_LINUX GetTickCount
                                 if ((GetTickCount() & 7) == 5)
+#else
+                                if ((std::time(nullptr) & 7) == 5)
+#endif
                                 {
                                     waitPTime = 60.0f + rand() * 500.0f / RAND_MAX;
                                 }

@@ -633,7 +633,11 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
 
     bEventsBreak = false;
 
+#ifdef _WIN32 // FIX_LINUX GetTickCount
     uint32_t nTimeOnEvent = GetTickCount();
+#else
+    auto nStartEventTime = std::chrono::system_clock::now();
+#endif
 #ifdef _WIN32 // FIX_LINUX s_debug.h
     current_debug_mode = CDebug->GetTraceMode();
 #endif
@@ -703,9 +707,15 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
             break;
     }
 
+#ifdef _WIN32 // FIX_LINUX GetTickCount
     nTimeOnEvent = GetTickCount() - nTimeOnEvent;
 
     nRuntimeTicks += nTimeOnEvent;
+#else
+    std::chrono::duration<double, std::milli> nTimeOnEvent = std::chrono::system_clock::now() - nStartEventTime;
+
+    nRuntimeTicks += static_cast<uint32_t>(nTimeOnEvent.count());
+#endif
 
     pRun_fi = nullptr;
 
