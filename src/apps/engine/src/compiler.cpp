@@ -35,7 +35,7 @@ COMPILER::COMPILER()
       pDebExpBuffer(nullptr), nDebExpBufferSize(0), pRun_fi(nullptr), bRuntimeLog(false), nRuntimeLogEventsBufferSize(0),
       nRuntimeLogEventsNum(0), nRuntimeTicks(0), bFirstRun(true), bWriteCodeFile(false),
       bDebugInfo(false), DebugSourceLine(0), pCompileTokenTempBuffer(nullptr), bDebugExpressionRun(false),
-      bTraceMode(true), nDebugTraceLineCode(0), nIOBufferSize(0), pIOBuffer(nullptr), rAP(nullptr)
+      bTraceMode(true), nDebugTraceLineCode(0), nIOBufferSize(0), pIOBuffer(nullptr), rAP(nullptr), use_script_cache_(false)
     
 {
     LabelTable.SetStringDataSize(sizeof(uint32_t));
@@ -7112,6 +7112,11 @@ void COMPILER::PrintoutUsage()
             logTrace_->debug("  %d : %d", n, pRuntimeLogEvent[n]);
         }
     }
+}
+
+void COMPILER::SetUseScriptCache(bool use) noexcept
+{
+    use_script_cache_ = use;
 }
 
 void COMPILER::FormatAllDialog(const char *directory_name)

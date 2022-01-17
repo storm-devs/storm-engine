@@ -266,6 +266,8 @@ class COMPILER : public VIRTUAL_COMPILER
     // printout script functions usage
     void PrintoutUsage();
 
+    void SetUseScriptCache(bool use) noexcept;
+
 private:
     COMPILER_STAGE CompilerStage;
     STRINGS_LIST LabelTable;
@@ -343,4 +345,7 @@ private:
     // NB: pointers are safe as long as we pop elements before they expire
     static constexpr size_t CALLSTACK_SIZE = 64U;
     storm::ringbuffer_stack<std::tuple<const char *, size_t, const char *>, CALLSTACK_SIZE> callStack_;
+
+    // attempt to read/write script cache?
+    bool use_script_cache_;
 };

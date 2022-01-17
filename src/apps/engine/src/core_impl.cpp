@@ -252,6 +252,9 @@ void CoreImpl::ProcessEngineIniFile()
         Compiler->SetProgramDirectory(String);
     }
 
+    const auto use_cache = engine_ini->GetInt("script", "use_cache", false);
+    Compiler->SetUseScriptCache(use_cache);
+
     res = engine_ini->ReadString(nullptr, "controls", String, sizeof(String), "");
     if (res)
     {
