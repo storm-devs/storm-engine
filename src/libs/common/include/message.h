@@ -160,7 +160,7 @@ class MESSAGE final
         index = 0;
     }
 
-    void Reset(const char *_format, va_list args)
+    void Reset(const char *_format, va_list &args)
     {
         index = 0;
         format_ = _format;
