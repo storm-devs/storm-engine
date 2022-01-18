@@ -274,18 +274,18 @@ private:
     [[nodiscard]] std::filesystem::path GetSegmentCachePath(const SEGMENT_DESC &segment) const;
 
     bool LoadSegmentFromCache(SEGMENT_DESC &segment);
-    void LoadVariablesFromCache(storm::script_cache::Reader reader, SEGMENT_DESC &segment);
-    void LoadFunctionsFromCache(storm::script_cache::Reader reader, SEGMENT_DESC &segment);
-    void LoadScriptLibrariesFromCache(storm::script_cache::Reader reader);
-    void LoadEventHandlersFromCache(storm::script_cache::Reader reader);
-    void LoadByteCodeFromCache(storm::script_cache::Reader reader, SEGMENT_DESC &segment);
+    void LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
+    void LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
+    void LoadScriptLibrariesFromCache(storm::script_cache::Reader &reader);
+    void LoadEventHandlersFromCache(storm::script_cache::Reader &reader);
+    void LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
 
     void SaveSegmentToCache(const SEGMENT_DESC &segment);
-    void SaveVariablesToCache(storm::script_cache::Writer writer);
-    void WriteFunctionsToCache(storm::script_cache::Writer writer);
-    void WriteScriptLibrariesToCache(storm::script_cache::Writer writer);
-    void WriteEventHandlersToCache(storm::script_cache::Writer writer);
-    void WriteByteCodeToCache(storm::script_cache::Writer writer, const SEGMENT_DESC &segment);
+    void SaveVariablesToCache(storm::script_cache::Writer &writer);
+    void WriteFunctionsToCache(storm::script_cache::Writer &writer);
+    void WriteScriptLibrariesToCache(storm::script_cache::Writer &writer);
+    void WriteEventHandlersToCache(storm::script_cache::Writer &writer);
+    void WriteByteCodeToCache(storm::script_cache::Writer &writer, const SEGMENT_DESC &segment);
 
     COMPILER_STAGE CompilerStage;
     STRINGS_LIST LabelTable;

@@ -7266,7 +7266,7 @@ void COMPILER::SetUseScriptCache(bool use) noexcept
     use_script_cache_ = use;
 }
 
-void COMPILER::LoadVariablesFromCache(storm::script_cache::Reader reader, SEGMENT_DESC &segment)
+void COMPILER::LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
 {
     const auto size = reader.ReadData<size_t>();
     for (size_t i = 0; i < *size; ++i)
@@ -7295,7 +7295,7 @@ void COMPILER::LoadVariablesFromCache(storm::script_cache::Reader reader, SEGMEN
     }
 }
 
-void COMPILER::LoadFunctionsFromCache(storm::script_cache::Reader reader, SEGMENT_DESC &segment)
+void COMPILER::LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
 {
     const auto size = reader.ReadData<size_t>();
     for (size_t i = 0; i < *size; ++i)
@@ -7341,7 +7341,7 @@ void COMPILER::LoadFunctionsFromCache(storm::script_cache::Reader reader, SEGMEN
     }
 }
 
-void COMPILER::LoadScriptLibrariesFromCache(storm::script_cache::Reader reader)
+void COMPILER::LoadScriptLibrariesFromCache(storm::script_cache::Reader &reader)
 {
     const auto size = reader.ReadData<size_t>();
     for (size_t i = 0; i < *size; ++i)
@@ -7365,7 +7365,7 @@ void COMPILER::LoadScriptLibrariesFromCache(storm::script_cache::Reader reader)
     }
 }
 
-void COMPILER::LoadEventHandlersFromCache(storm::script_cache::Reader reader)
+void COMPILER::LoadEventHandlersFromCache(storm::script_cache::Reader &reader)
 {
     const auto size = reader.ReadData<size_t>();
     for (size_t i = 0; i < *size; ++i)
@@ -7377,7 +7377,7 @@ void COMPILER::LoadEventHandlersFromCache(storm::script_cache::Reader reader)
     }
 }
 
-void COMPILER::LoadByteCodeFromCache(storm::script_cache::Reader reader, SEGMENT_DESC &segment)
+void COMPILER::LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
 {
     const auto code = reader.ReadBytes();
     segment.BCode_Program_size = segment.BCode_Buffer_size = code.size();
@@ -7448,7 +7448,7 @@ std::filesystem::path COMPILER::GetSegmentCachePath(const SEGMENT_DESC &segment)
     return path;
 }
 
-void COMPILER::SaveVariablesToCache(storm::script_cache::Writer writer)
+void COMPILER::SaveVariablesToCache(storm::script_cache::Writer &writer)
 {
     writer.WriteData(script_cache_.variables.size());
     for (auto &vi : script_cache_.variables)
@@ -7471,7 +7471,7 @@ void COMPILER::SaveVariablesToCache(storm::script_cache::Writer writer)
     }
 }
 
-void COMPILER::WriteFunctionsToCache(storm::script_cache::Writer writer)
+void COMPILER::WriteFunctionsToCache(storm::script_cache::Writer &writer)
 {
     writer.WriteData(script_cache_.functions.size());
     for (auto &[fi, arguments, local_variables] : script_cache_.functions)
@@ -7501,7 +7501,7 @@ void COMPILER::WriteFunctionsToCache(storm::script_cache::Writer writer)
     }
 }
 
-void COMPILER::WriteScriptLibrariesToCache(storm::script_cache::Writer writer)
+void COMPILER::WriteScriptLibrariesToCache(storm::script_cache::Writer &writer)
 {
     writer.WriteData(script_cache_.script_libs.size());
     for (auto &lib_name : script_cache_.script_libs)
@@ -7510,7 +7510,7 @@ void COMPILER::WriteScriptLibrariesToCache(storm::script_cache::Writer writer)
     }
 }
 
-void COMPILER::WriteEventHandlersToCache(storm::script_cache::Writer writer)
+void COMPILER::WriteEventHandlersToCache(storm::script_cache::Writer &writer)
 {
     writer.WriteData(script_cache_.event_handlers.size());
     for (auto &[event, handler] : script_cache_.event_handlers)
@@ -7520,7 +7520,7 @@ void COMPILER::WriteEventHandlersToCache(storm::script_cache::Writer writer)
     }
 }
 
-void COMPILER::WriteByteCodeToCache(storm::script_cache::Writer writer, const SEGMENT_DESC &segment)
+void COMPILER::WriteByteCodeToCache(storm::script_cache::Writer &writer, const SEGMENT_DESC &segment)
 {
     auto code = std::string_view(segment.pCode, segment.pCode + segment.BCode_Program_size);
     writer.WriteBytes(code);
