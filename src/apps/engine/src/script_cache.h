@@ -27,6 +27,13 @@ struct EventHandler
     std::string function_name;
 };
 
+struct Define
+{
+    std::string name;
+    uint32_t type;
+    uintptr_t value;
+};
+
 class Reader final
 {
 public:
@@ -149,6 +156,7 @@ inline void WriteScriptData(Writer &writer, S_TOKEN_TYPE type, DATA *data)
 
 struct ScriptCache
 {
+    std::vector<script_cache::Define> defines;
     std::vector<std::string> script_libs;
     std::vector<std::string> files;
     std::vector<script_cache::Function> functions;

@@ -1420,6 +1420,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     SetError("define redefinition: %s", di.name);
                     return false;
                 }
+                if (use_script_cache_)
+                {
+                    script_cache_.defines.emplace_back(di.name, di.deftype, di.data4b);
+                }
             }
             break;
 
@@ -7471,7 +7475,7 @@ void COMPILER::SaveVariablesToCache(storm::script_cache::Writer &writer)
     }
 }
 
-void COMPILER::WriteFunctionsToCache(storm::script_cache::Writer &writer)
+void COMPILER::SaveFunctionsToCache(storm::script_cache::Writer &writer)
 {
     writer.WriteData(script_cache_.functions.size());
     for (auto &[fi, arguments, local_variables] : script_cache_.functions)
@@ -7501,7 +7505,7 @@ void COMPILER::WriteFunctionsToCache(storm::script_cache::Writer &writer)
     }
 }
 
-void COMPILER::WriteScriptLibrariesToCache(storm::script_cache::Writer &writer)
+void COMPILER::SaveScriptLibrariesToCache(storm::script_cache::Writer &writer)
 {
     writer.WriteData(script_cache_.script_libs.size());
     for (auto &lib_name : script_cache_.script_libs)
@@ -7510,7 +7514,7 @@ void COMPILER::WriteScriptLibrariesToCache(storm::script_cache::Writer &writer)
     }
 }
 
-void COMPILER::WriteEventHandlersToCache(storm::script_cache::Writer &writer)
+void COMPILER::SaveEventHandlersToCache(storm::script_cache::Writer &writer)
 {
     writer.WriteData(script_cache_.event_handlers.size());
     for (auto &[event, handler] : script_cache_.event_handlers)
@@ -7520,7 +7524,7 @@ void COMPILER::WriteEventHandlersToCache(storm::script_cache::Writer &writer)
     }
 }
 
-void COMPILER::WriteByteCodeToCache(storm::script_cache::Writer &writer, const SEGMENT_DESC &segment)
+void COMPILER::SaveByteCodeToCache(storm::script_cache::Writer &writer, const SEGMENT_DESC &segment)
 {
     auto code = std::string_view(segment.pCode, segment.pCode + segment.BCode_Program_size);
     writer.WriteBytes(code);
@@ -7590,23 +7594,50 @@ void COMPILER::SaveSegmentToCache(const SEGMENT_DESC &segment)
 
     auto writer = storm::script_cache::Writer();
 
+    // defines (in case of new compiled code depending on defines from cache)
+    SaveDefinesToCache(writer);
+
     // variables with values
     SaveVariablesToCache(writer);
 
     // functions
-    WriteFunctionsToCache(writer);
+    SaveFunctionsToCache(writer);
 
     // script libs
-    WriteScriptLibrariesToCache(writer);
+    SaveScriptLibrariesToCache(writer);
 
     // event handlers
-    WriteEventHandlersToCache(writer);
+    SaveEventHandlersToCache(writer);
 
     // bytecode
-    WriteByteCodeToCache(writer, segment);
+    SaveByteCodeToCache(writer, segment);
 
     auto &data = writer.GetData();
     stream.write(data.data(), data.size());
+}
+
+void COMPILER::SaveDefinesToCache(storm::script_cache::Writer &writer)
+{
+    writer.WriteData(script_cache_.defines.size());
+    for (auto &[name, type, value] : script_cache_.defines)
+    {
+        writer.WriteBytes(name);
+        writer.WriteData(type);
+        switch (type)
+        {
+        case VAR_INTEGER:
+            writer.WriteData(static_cast<int32_t>(value));
+            break;
+
+        case VAR_FLOAT:
+            writer.WriteData(static_cast<float>(value));
+            break;
+
+        case VAR_STRING:
+            writer.WriteBytes(reinterpret_cast<const char*>(value));
+            break;
+        }
+    }
 }
 
 bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
@@ -7629,6 +7660,9 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
     stream.read(data.data(), cache_size);
     auto reader = storm::script_cache::Reader(data);
 
+    // defines (in case of new compiled code depending on defines from cache)
+    LoadDefinesFromCache(reader, segment);
+
     // variables with values
     LoadVariablesFromCache(reader, segment);
 
@@ -7645,6 +7679,35 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
     LoadByteCodeFromCache(reader, segment);
 
     return true;
+}
+
+void COMPILER::LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+{
+    const auto size = reader.ReadData<size_t>();
+    for (size_t i = 0; i < *size; ++i)
+    {
+        auto di = DEFINFO();
+
+        di.segment_id = segment.id;
+        di.name = const_cast<char *>(reader.ReadBytes().data());
+        di.deftype = *reader.ReadData<uint32_t>();
+        switch (di.deftype)
+        {
+        case VAR_INTEGER: 
+            di.data4b = static_cast<uintptr_t>(*reader.ReadData<int32_t>());
+            break;
+
+        case VAR_FLOAT:
+            di.data4b = static_cast<uintptr_t>(*reader.ReadData<float>());
+            break;
+
+        case VAR_STRING:
+            di.data4b = reinterpret_cast<uintptr_t>(const_cast<char *>(reader.ReadBytes().data()));
+            break;
+        }
+
+        DefTab.AddDef(di);
+    }
 }
 
 void COMPILER::FormatAllDialog(const char *directory_name)
