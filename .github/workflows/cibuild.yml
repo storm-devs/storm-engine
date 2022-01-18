@@ -2,6 +2,9 @@ name: CI Windows
 
 on:
   push:
+    branches-ignore:
+      - 'fix/**'
+      - 'feature/**'
     paths-ignore:
       - 'docs/**'
       - 'tools/**'
