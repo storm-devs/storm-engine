@@ -7683,6 +7683,7 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
     // verify that script files were not modified
     if (!LoadFilesFromCache(reader, segment))
     {
+        segment.Files_list->Release();
         return false;
     }
 
