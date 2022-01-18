@@ -43,7 +43,7 @@ public:
     }
 
     template <typename T>
-    T *ReadData()
+    const T *ReadData()
     {
         const auto size = sizeof(T);
         if (offset_ + size > data_.size())
@@ -53,7 +53,7 @@ public:
 
         auto address = data_.data() + offset_;
         offset_ += size;
-        return address;
+        return reinterpret_cast<const T *>(address);
     }
 
     std::string_view ReadBytes()
@@ -107,7 +107,7 @@ inline void ReadScriptData(Reader &reader, S_TOKEN_TYPE type, DATA *data)
     switch (type)
     {
     case VAR_INTEGER: {
-        const auto value = reader.ReadData<long>();
+        const auto value = reader.ReadData<int32_t>();
         data->Set(*value);
         break;
     }

@@ -17,6 +17,7 @@
 #include "strings_list.h"
 #include "token.h"
 #include "logging.hpp"
+#include "script_cache.h"
 
 #include "storm/ringbuffer_stack.hpp"
 
@@ -266,9 +267,17 @@ class COMPILER : public VIRTUAL_COMPILER
     // printout script functions usage
     void PrintoutUsage();
 
+    // use script cache?
     void SetUseScriptCache(bool use) noexcept;
 
 private:
+    bool LoadSegmentFromCache(SEGMENT_DESC &segment);
+    void LoadVariablesFromCache(storm::script_cache::Reader reader, SEGMENT_DESC &segment);
+    void LoadFunctionsFromCache(storm::script_cache::Reader reader, SEGMENT_DESC &segment);
+    void LoadScriptLibrariesFromCache(storm::script_cache::Reader reader);
+    void LoadEventHandlersFromCache(storm::script_cache::Reader reader);
+    void LoadByteCodeFromCache(storm::script_cache::Reader reader, SEGMENT_DESC &segment);
+
     COMPILER_STAGE CompilerStage;
     STRINGS_LIST LabelTable;
     // STRINGS_LIST EventTable;
