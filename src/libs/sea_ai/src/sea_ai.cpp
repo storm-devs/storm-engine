@@ -99,6 +99,13 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
     case AI_MESSAGE_SET_CAMERAS_ATTRIBUTE:
         AIHelper::pASeaCameras = message.AttributePointer();
         break;
+    case AI_MESSAGE_ADD_SHIP_IN_LINES: {
+        auto eidShip = message.EntityID();
+        auto *pACharacter = message.AttributePointer();
+        auto *pAShip = message.AttributePointer();
+        auto *iLines = message.Float();
+        AddShipInLines(eidShip, pACharacter, pAShip, iLines);
+    }
     case AI_MESSAGE_ADD_SHIP: {
         auto eidShip = message.EntityID();
         auto *pACharacter = message.AttributePointer();
