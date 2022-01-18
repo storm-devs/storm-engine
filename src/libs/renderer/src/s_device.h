@@ -25,7 +25,7 @@ struct D3DERRORS
 
 struct texpaths_t
 {
-    char str[_MAX_PATH];
+    char str[MAX_PATH];
 };
 
 struct STEXTURE

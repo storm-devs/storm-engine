@@ -238,7 +238,7 @@ bool CoreImpl::Initialize()
 
 void CoreImpl::ProcessEngineIniFile()
 {
-    char String[_MAX_PATH];
+    char String[MAX_PATH];
 
     bEngineIniProcessed = true;
 
