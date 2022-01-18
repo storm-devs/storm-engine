@@ -1198,6 +1198,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
     RunningSegmentID = INVALID_SEGMENT_INDEX;
 
+    script_cache_ = storm::ScriptCache();
+
     //    bool bCDStop;
     bool bFunctionBlock;
     int32_t lvalue;
