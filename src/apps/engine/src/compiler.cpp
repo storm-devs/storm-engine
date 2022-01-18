@@ -7678,7 +7678,7 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
 
     auto data = std::vector<char>(cache_size);
     stream.read(data.data(), cache_size);
-    auto reader = storm::script_cache::Reader(data);
+    auto reader = storm::script_cache::Reader(std::string_view(data.data(), data.size()));
 
     // verify that script files were not modified
     if (!LoadFilesFromCache(reader, segment))
