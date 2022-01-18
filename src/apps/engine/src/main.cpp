@@ -66,24 +66,33 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
     if (event == storm::OSWindow::Closed)
     {
         isRunning = false;
-        core_internal.Event("DestroyWindow", nullptr);
+        if (core_internal.initialized())
+        {
+            core_internal.Event("DestroyWindow", nullptr);
+        }
     }
     else if (event == storm::OSWindow::FocusGained)
     {
         bActive = true;
-        core_internal.AppState(bActive);
-        if (const auto soundService = static_cast<VSoundService*>(core.GetService("SoundService")))
+        if (core_internal.initialized())
         {
-            soundService->SetActiveWithFade(true);
+            core_internal.AppState(bActive);
+            if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService")))
+            {
+                soundService->SetActiveWithFade(true);
+            }
         }
     }
     else if (event == storm::OSWindow::FocusLost)
     {
         bActive = false;
-        core_internal.AppState(bActive);
-        if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService")))
+        if (core_internal.initialized())
         {
-            soundService->SetActiveWithFade(false);
+            core_internal.AppState(bActive);
+            if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService")))
+            {
+                soundService->SetActiveWithFade(false);
+            }
         }
     }
 }

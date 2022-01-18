@@ -42,30 +42,8 @@ class CoreImpl : public Core
     void ReleaseServices();
     void ProcessEngineIniFile();
 
-    bool bAppActive{};
-    bool Memory_Leak_flag; // true if core detected memory leak
-    bool Root_flag;
-    bool Exit_flag;   // true if the program closing
-    bool Initialized; // initialized flag (false at startup or after Reset())
-    bool bEngineIniProcessed;
-    HWND App_Hwnd;             // application handle
-    char gstring[_MAX_PATH]{}; // general purpose string
-    bool State_loading;
-    bool bEnableTimeScale{};
-
-    SERVICES_LIST Services_List; // list for subsequent calls RunStart/RunEnd service functions
-
-    HINSTANCE hInstance{};
-
-    char *State_file_name;
-
-    TIMER Timer;
-
-    COMPILER *Compiler;
-
     void ProcessControls();
 
-    float fTimeScale;
 
     void DumpEntitiesInfo();
     void EraseEntities();
@@ -142,12 +120,41 @@ class CoreImpl : public Core
 
     void collectCrashInfo() const;
 
+    [[nodiscard]] bool initialized() const
+    {
+        return Initialized;
+    }
+
+    TIMER Timer;
+
+    COMPILER *Compiler;
+
+    bool Exit_flag; // true if the program closing
+
   private:
     void loadCompatibilitySettings(INIFILE &inifile);
 
     storm::ENGINE_VERSION targetVersion_ = storm::ENGINE_VERSION::LATEST;
 
     bool stopFrameProcessing_ = false;
+
+    bool bAppActive{};
+    bool Memory_Leak_flag; // true if core detected memory leak
+    bool Root_flag;
+    bool Initialized; // initialized flag (false at startup or after Reset())
+    bool bEngineIniProcessed;
+    HWND App_Hwnd;             // application handle
+    char gstring[_MAX_PATH]{}; // general purpose string
+    bool State_loading;
+    bool bEnableTimeScale{};
+
+    SERVICES_LIST Services_List; // list for subsequent calls RunStart/RunEnd service functions
+
+    HINSTANCE hInstance{};
+
+    char *State_file_name;
+
+    float fTimeScale;
 };
 
 inline CoreImpl core_internal;
