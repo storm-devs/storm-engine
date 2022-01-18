@@ -830,8 +830,19 @@ bool COMPILER::BC_LoadSegment(const char *file_name)
 
     SegmentTable[index].Files_list = new STRINGS_LIST;
     SegmentTable[index].Files_list->SetStringDataSize(sizeof(OFFSET_INFO));
-    const bool bRes = Compile(SegmentTable[index]);
-    if (!bRes)
+    auto result = false;
+    if (use_script_cache_)
+    {
+        // attempt to load from cache first
+        result = LoadSegmentFromCache(SegmentTable[index]);
+    }
+
+    if (!result)
+    {
+        result = Compile(SegmentTable[index]);
+    }
+
+    if (!result)
     {
         delete SegmentTable[index].Files_list;
         SegmentsNum--;
@@ -842,7 +853,7 @@ bool COMPILER::BC_LoadSegment(const char *file_name)
         EventTab.InvalidateBySegmentID(id);
         DefTab.InvalidateBySegmentID(id);
     }
-    return bRes;
+    return result;
 }
 
 bool COMPILER::ProcessDebugExpression(const char *pExpression, DATA &Result)
