@@ -7444,7 +7444,7 @@ void COMPILER::WriteByteCodeToCache(storm::script_cache::Writer writer, const SE
     }
 }
 
-void COMPILER::SaveSegmentCache(const SEGMENT_DESC &segment)
+void COMPILER::SaveSegmentToCache(const SEGMENT_DESC &segment)
 {
     const auto path = GetSegmentCachePath(segment);
     create_directories(path.parent_path());
