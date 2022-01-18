@@ -7308,10 +7308,177 @@ void COMPILER::LoadByteCodeFromCache(storm::script_cache::Reader reader, SEGMENT
     } while (token_type != END_OF_PROGRAMM);
 }
 
-bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
+std::filesystem::path COMPILER::GetSegmentCachePath(const SEGMENT_DESC &segment) const
 {
     auto path = std::filesystem::path(ProgramDirectory) / "__cache__" / segment.name;
     path.replace_extension(".b");
+    return path;
+}
+
+void COMPILER::SaveVariablesToCache(storm::script_cache::Writer writer)
+{
+    writer.WriteData(script_cache_.variables.size());
+    for (auto &vi : script_cache_.variables)
+    {
+        writer.WriteBytes(vi.name);
+        writer.WriteData(vi.type);
+        writer.WriteData(vi.elements);
+
+        if (vi.elements == 1)
+        {
+            WriteScriptData(writer, vi.type, vi.value.get());
+        }
+        else
+        {
+            for (size_t i = 0; i < vi.elements; ++i)
+            {
+                WriteScriptData(writer, vi.type, vi.value->GetArrayElement(i));
+            }
+        }
+    }
+}
+
+void COMPILER::WriteFunctionsToCache(storm::script_cache::Writer writer)
+{
+    writer.WriteData(script_cache_.functions.size());
+    for (auto &[fi, arguments, local_variables] : script_cache_.functions)
+    {
+        writer.WriteBytes(fi.name);
+        writer.WriteData(fi.offset);
+        writer.WriteData(fi.return_type);
+        writer.WriteBytes(fi.decl_file_name);
+        writer.WriteData(fi.decl_line);
+
+        writer.WriteData(arguments.size());
+        for (auto &[lvi, is_extern] : arguments)
+        {
+            writer.WriteBytes(lvi.name);
+            writer.WriteData(lvi.type);
+            writer.WriteData(lvi.elements);
+            writer.WriteData(is_extern);
+        }
+
+        writer.WriteData(local_variables.size());
+        for (auto &lvi : local_variables)
+        {
+            writer.WriteBytes(lvi.name);
+            writer.WriteData(lvi.type);
+            writer.WriteData(lvi.elements);
+        }
+    }
+}
+
+void COMPILER::WriteScriptLibrariesToCache(storm::script_cache::Writer writer)
+{
+    writer.WriteData(script_cache_.script_libs.size());
+    for (auto &lib_name : script_cache_.script_libs)
+    {
+        writer.WriteBytes(lib_name);
+    }
+}
+
+void COMPILER::WriteEventHandlersToCache(storm::script_cache::Writer writer)
+{
+    writer.WriteData(script_cache_.event_handlers.size());
+    for (auto &[event, handler] : script_cache_.event_handlers)
+    {
+        writer.WriteBytes(event);
+        writer.WriteBytes(handler);
+    }
+}
+
+void COMPILER::WriteByteCodeToCache(storm::script_cache::Writer writer, const SEGMENT_DESC &segment)
+{
+    auto code = std::string_view(segment.pCode, segment.pCode + segment.BCode_Program_size);
+    writer.WriteBytes(code);
+
+    // relocations
+    auto strings = std::map<uint32_t, std::string>();
+    auto variables = std::map<uint32_t, std::string>();
+    auto functions = std::map<uint32_t, std::string>();
+
+    pRunCodeBase = segment.pCode;
+    InstructionPointer = 0;
+    auto token_type = S_TOKEN_TYPE();
+    do
+    {
+        token_type = BC_TokenGet();
+        auto &relocated_data = *reinterpret_cast<const uint32_t *>(&pRunCodeBase[TLR_DataOffset]);
+
+        if (token_type == ACCESS_WORD_CODE)
+        {
+            strings.emplace(relocated_data, SCodec.Convert(relocated_data));
+        }
+        else if (token_type == VARIABLE)
+        {
+            auto vi = VarTab.GetVarX(relocated_data);
+            variables.emplace(relocated_data, vi->name);
+        }
+        else if (token_type == CALL_FUNCTION)
+        {
+            auto fi = FuncInfo();
+            FuncTab.GetFuncX(fi, relocated_data);
+            functions.emplace(relocated_data, fi.name);
+        }
+    } while (token_type != END_OF_PROGRAMM);
+
+    writer.WriteData(strings.size());
+    for (auto &[string_code, string] : strings)
+    {
+        writer.WriteData(string_code);
+        writer.WriteBytes(string);
+    }
+
+    writer.WriteData(variables.size());
+    for (auto &[variable_code, name] : variables)
+    {
+        writer.WriteData(variable_code);
+        writer.WriteBytes(name);
+    }
+
+    writer.WriteData(functions.size());
+    for (auto &[function_code, name] : functions)
+    {
+        writer.WriteData(function_code);
+        writer.WriteBytes(name);
+    }
+}
+
+void COMPILER::SaveSegmentCache(const SEGMENT_DESC &segment)
+{
+    const auto path = GetSegmentCachePath(segment);
+    create_directories(path.parent_path());
+    auto stream = std::ofstream(path, std::ios::binary);
+
+    if (!stream.is_open())
+    {
+        return;
+    }
+
+    auto writer = storm::script_cache::Writer();
+
+    // variables with values
+    SaveVariablesToCache(writer);
+
+    // functions
+    WriteFunctionsToCache(writer);
+
+    // script libs
+    WriteScriptLibrariesToCache(writer);
+
+    // event handlers
+    WriteEventHandlersToCache(writer);
+
+    // bytecode
+    WriteByteCodeToCache(writer, segment);
+
+    auto &data = writer.GetData();
+    stream.write(data.data(), data.size());
+}
+
+bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
+{
+    const auto path = GetSegmentCachePath(segment);
     if (!exists(path))
     {
         return false;

@@ -8,13 +8,6 @@ namespace storm
 {
 namespace script_cache
 {
-struct Define
-{
-    std::string name;
-    uint32_t type;
-    uintptr_t value;
-};
-
 struct FunctionLocalVariable
 {
     LocalVarInfo info;
@@ -98,6 +91,11 @@ public:
         std::memcpy(data_.data() + size, data.data(), data.size());
     }
 
+    auto &GetData() const noexcept
+    {
+        return data_;
+    }
+
 private:
     std::vector<char> data_;
 };
@@ -124,15 +122,37 @@ inline void ReadScriptData(Reader &reader, S_TOKEN_TYPE type, DATA *data)
     }
     }
 }
+
+inline void WriteScriptData(Writer &writer, S_TOKEN_TYPE type, DATA *data)
+{
+    switch (type)
+    {
+    case VAR_INTEGER: {
+        const auto value = data->GetInt();
+        writer.WriteData(value);
+        break;
+    }
+
+    case VAR_FLOAT: {
+        const auto value = data->GetFloat();
+        writer.WriteData(value);
+        break;
+    }
+    case VAR_STRING: {
+        const auto value = data->GetString();
+        writer.WriteBytes(value);
+        break;
+    }
+    }
+}
 }
 
 struct ScriptCache
 {
-    std::vector<script_cache::Define> defines;
+    std::vector<std::string> script_libs;
     std::vector<std::string> files;
     std::vector<script_cache::Function> functions;
     std::vector<VarInfo> variables;
     std::vector<script_cache::EventHandler> event_handlers;
-    std::vector<char> code;
 };
 }
