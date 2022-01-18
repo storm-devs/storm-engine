@@ -4,6 +4,8 @@
 #include <vector>
 #include "data.h"
 
+#include <zlib.h>
+
 namespace storm
 {
 namespace script_cache
@@ -152,6 +154,11 @@ inline void WriteScriptData(Writer &writer, S_TOKEN_TYPE type, DATA *data)
     }
     }
 }
+
+inline uint32_t ComputeCRC(uint32_t crc, std::string_view data)
+{
+    return crc32(crc, reinterpret_cast<const Bytef *>(data.data()), data.size());
+}
 }
 
 struct ScriptCache
@@ -162,5 +169,6 @@ struct ScriptCache
     std::vector<script_cache::Function> functions;
     std::vector<VarInfo> variables;
     std::vector<script_cache::EventHandler> event_handlers;
+    uint32_t crc;
 };
 }

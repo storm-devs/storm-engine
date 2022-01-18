@@ -274,6 +274,7 @@ private:
     [[nodiscard]] std::filesystem::path GetSegmentCachePath(const SEGMENT_DESC &segment) const;
 
     bool LoadSegmentFromCache(SEGMENT_DESC &segment);
+    bool LoadFilesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
     void LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
     void LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
     void LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
@@ -282,6 +283,7 @@ private:
     void LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
 
     void SaveSegmentToCache(const SEGMENT_DESC &segment);
+    void SaveFilesToCache(storm::script_cache::Writer &writer);
     void SaveDefinesToCache(storm::script_cache::Writer &writer);
     void SaveVariablesToCache(storm::script_cache::Writer &writer);
     void SaveFunctionsToCache(storm::script_cache::Writer &writer);

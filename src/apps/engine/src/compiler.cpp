@@ -1210,14 +1210,17 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
     if (pInternalCode == nullptr)
     {
-        if (Segment.Files_list->AddUnicalString(file_name) && use_script_cache_)
-        {
-            script_cache_.files.emplace_back(file_name);
-        }
+        auto is_new = Segment.Files_list->AddUnicalString(file_name);
         file_code = Segment.Files_list->GetStringCode(file_name);
         pProgram = nullptr;
         Program_size = 0;
         pSegmentSource = LoadFile(file_name, SegmentSize);
+        if (is_new && use_script_cache_)
+        {
+            script_cache_.files.emplace_back(file_name);
+            script_cache_.crc = storm::script_cache::ComputeCRC(0, {});
+            script_cache_.crc = storm::script_cache::ComputeCRC(script_cache_.crc, {pSegmentSource, SegmentSize});
+        }
         AppendProgram(pProgram, Program_size, pSegmentSource, SegmentSize, true);
         Segment.pData = pProgram;
         if (pProgram == nullptr)
@@ -1344,10 +1347,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
         case INCLIDE_FILE:
             if (Segment.Files_list->AddUnicalString(Token.GetData()))
             {
-                if (use_script_cache_)
-                {
-                    script_cache_.files.emplace_back(Token.GetData());
-                }
                 file_code = Segment.Files_list->GetStringCode(Token.GetData());
                 Control_offset = Token.GetProgramControl() - Token.GetProgramBase(); // store program scan point
                 pApend_file = LoadFile(Token.GetData(), Append_file_size);
@@ -1355,6 +1354,12 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 {
                     SetError("can't load file: %s", Token.GetData());
                     return false;
+                }
+                if (use_script_cache_)
+                {
+                    script_cache_.files.emplace_back(Token.GetData());
+                    script_cache_.crc =
+                        storm::script_cache::ComputeCRC(script_cache_.crc, {pApend_file, Append_file_size});
                 }
                 if (bDebugInfo)
                 {
@@ -7594,6 +7599,9 @@ void COMPILER::SaveSegmentToCache(const SEGMENT_DESC &segment)
 
     auto writer = storm::script_cache::Writer();
 
+    // save files lists and total crc
+    SaveFilesToCache(writer);
+
     // defines (in case of new compiled code depending on defines from cache)
     SaveDefinesToCache(writer);
 
@@ -7616,6 +7624,18 @@ void COMPILER::SaveSegmentToCache(const SEGMENT_DESC &segment)
     stream.write(data.data(), data.size());
 }
 
+void COMPILER::SaveFilesToCache(storm::script_cache::Writer &writer)
+{
+    // save crc for verification
+    writer.WriteData(script_cache_.crc);
+
+    writer.WriteData(script_cache_.files.size());
+    for (auto &file_name : script_cache_.files)
+    {
+        writer.WriteBytes(file_name);
+    }
+}
+
 void COMPILER::SaveDefinesToCache(storm::script_cache::Writer &writer)
 {
     writer.WriteData(script_cache_.defines.size());
@@ -7625,15 +7645,15 @@ void COMPILER::SaveDefinesToCache(storm::script_cache::Writer &writer)
         writer.WriteData(type);
         switch (type)
         {
-        case VAR_INTEGER:
+        case NUMBER:
             writer.WriteData(static_cast<int32_t>(value));
             break;
 
-        case VAR_FLOAT:
+        case FLOAT_NUMBER:
             writer.WriteData(static_cast<float>(value));
             break;
 
-        case VAR_STRING:
+        case STRING:
             writer.WriteBytes(reinterpret_cast<const char*>(value));
             break;
         }
@@ -7660,6 +7680,12 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
     stream.read(data.data(), cache_size);
     auto reader = storm::script_cache::Reader(data);
 
+    // verify that script files were not modified
+    if (!LoadFilesFromCache(reader, segment))
+    {
+        return false;
+    }
+
     // defines (in case of new compiled code depending on defines from cache)
     LoadDefinesFromCache(reader, segment);
 
@@ -7681,6 +7707,35 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
     return true;
 }
 
+bool COMPILER::LoadFilesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+{
+    const auto loaded_crc = reader.ReadData<uint32_t>();
+
+    if (!loaded_crc)
+    {
+        return false;
+    }
+
+    auto computed_crc = storm::script_cache::ComputeCRC(0, {});
+
+    const auto files_count = reader.ReadData<size_t>();
+    for (size_t i = 0; i < *files_count; ++i)
+    {
+        auto file_name = std::string(reader.ReadBytes());
+        if (!segment.Files_list->AddUnicalString(file_name.c_str()))
+        {
+            continue;
+        }
+
+        auto file_size = uint32_t();
+        auto file_data = LoadFile(file_name.c_str(), file_size);
+        computed_crc = storm::script_cache::ComputeCRC(computed_crc, {file_data, file_size});
+        delete[] file_data;
+    }
+
+    return computed_crc == *loaded_crc;
+}
+
 void COMPILER::LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
 {
     const auto size = reader.ReadData<size_t>();
@@ -7689,21 +7744,28 @@ void COMPILER::LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT
         auto di = DEFINFO();
 
         di.segment_id = segment.id;
-        di.name = const_cast<char *>(reader.ReadBytes().data());
+        auto name = std::string(reader.ReadBytes());
+        di.name = const_cast<char *>(name.c_str());
         di.deftype = *reader.ReadData<uint32_t>();
+
         switch (di.deftype)
         {
-        case VAR_INTEGER: 
+        case NUMBER:
             di.data4b = static_cast<uintptr_t>(*reader.ReadData<int32_t>());
             break;
 
-        case VAR_FLOAT:
+        case FLOAT_NUMBER:
             di.data4b = static_cast<uintptr_t>(*reader.ReadData<float>());
             break;
 
-        case VAR_STRING:
-            di.data4b = reinterpret_cast<uintptr_t>(const_cast<char *>(reader.ReadBytes().data()));
+        case STRING: {
+            auto value = reader.ReadBytes();
+            const auto new_ptr = new char[value.size() + 1];
+            std::memcpy(new_ptr, value.data(), value.size());
+            new_ptr[value.size()] = '\0';
+            di.data4b = reinterpret_cast<uintptr_t>(new_ptr);
             break;
+        }
         }
 
         DefTab.AddDef(di);
