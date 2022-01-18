@@ -212,6 +212,8 @@
 #define MSG_CAMERA_SLEEP 30520 // "ll" stop the camera (1) or resume (0)
 #define MSG_CAMERA_SET_RADIUS 30521 // "lf" set radius
 
+#define MSG_CAMERA_SET_PERSPECTIVE 30530 // "lf" set perspective
+
 // Blots on the ship
 #define MSG_BLOTS_SETMODEL 30600 // "li" set the model, model_id
 #define MSG_BLOTS_HIT 30601      // "lffffff" set point x, y, z, nx, ny, nz

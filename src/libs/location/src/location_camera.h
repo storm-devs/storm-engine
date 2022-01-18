@@ -205,6 +205,8 @@ class LocationCamera : public Entity
     PathTracks m_track;
 
     bool forcedPos = false;
+
+    float cameraPerspective;
 };
 
 inline void LocationCamera::LockFPMode(bool isLock)
