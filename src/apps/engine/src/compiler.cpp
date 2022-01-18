@@ -1208,7 +1208,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
     if (pInternalCode == nullptr)
     {
-        Segment.Files_list->AddUnicalString(file_name);
+        if (Segment.Files_list->AddUnicalString(file_name) && use_script_cache_)
+        {
+            script_cache_.files.emplace_back(file_name);
+        }
         file_code = Segment.Files_list->GetStringCode(file_name);
         pProgram = nullptr;
         Program_size = 0;
@@ -1329,12 +1332,20 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 pLib->Init();
 
             LibriaryFuncs.emplace_back(pLib, Token.GetData());
+            if (use_script_cache_)
+            {
+                script_cache_.script_libs.emplace_back(Token.GetData());
+            }
 
             break;
         }
         case INCLIDE_FILE:
             if (Segment.Files_list->AddUnicalString(Token.GetData()))
             {
+                if (use_script_cache_)
+                {
+                    script_cache_.files.emplace_back(Token.GetData());
+                }
                 file_code = Segment.Files_list->GetStringCode(Token.GetData());
                 Control_offset = Token.GetProgramControl() - Token.GetProgramBase(); // store program scan point
                 pApend_file = LoadFile(Token.GetData(), Append_file_size);
@@ -1490,6 +1501,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
                             return false;
                         }
+                        if (use_script_cache_)
+                        {
+                            script_cache_.functions.emplace_back(fi, std::vector<storm::script_cache::FunctionLocalVariable>{});
+                        }
                         break;
                     }
                     Token.StepBack();
@@ -1554,6 +1569,15 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                             return false;
                         }
 
+                        if (use_script_cache_)
+                        {
+                            script_cache_.variables.push_back(vi);
+                            script_cache_.variables.back().value = std::make_unique<DATA>();
+                            script_cache_.variables.back().value->SetVCompiler(this);
+                            script_cache_.variables.back().value->SetType(vi.type, vi.elements);
+                            script_cache_.variables.back().value->SetGlobalVarTableIndex(var_code);
+                        }
+
                         bool bNeg;
                         if (Token.GetType() == OP_EQUAL)
                         {
@@ -1594,6 +1618,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         real_var->value->Set(1);
+                                        if (use_script_cache_)
+                                        {
+                                            script_cache_.variables.back().value->Set(1);
+                                        }
                                         break;
                                     case FALSE_CONST:
                                         if (vi.type != VAR_INTEGER)
@@ -1602,6 +1630,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         real_var->value->Set(0);
+                                        if (use_script_cache_)
+                                        {
+                                            script_cache_.variables.back().value->Set(0);
+                                        }
                                         break;
 
                                     case NUMBER:
@@ -1611,9 +1643,23 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         if (bNeg)
+                                        {
                                             real_var->value->Set(-atoi(Token.GetData()), aindex);
+                                            if (use_script_cache_)
+                                            {
+                                                script_cache_.variables.back().value->Set(-atoi(Token.GetData()),
+                                                                                          aindex);
+                                            }
+                                        }
                                         else
+                                        {
                                             real_var->value->Set(static_cast<int32_t>(atoll(Token.GetData())), aindex);
+                                            if (use_script_cache_)
+                                            {
+                                                script_cache_.variables.back().value->Set(
+                                                    static_cast<int32_t>(atoll(Token.GetData())), aindex);
+                                            }
+                                        }
                                         aindex++;
                                         break;
                                     case FLOAT_NUMBER:
@@ -1623,9 +1669,23 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         if (bNeg)
+                                        {
                                             real_var->value->Set(-static_cast<float>(atof(Token.GetData())), aindex);
+                                            if (use_script_cache_)
+                                            {
+                                                script_cache_.variables.back().value->Set(
+                                                    -static_cast<float>(atof(Token.GetData())), aindex);
+                                            }
+                                        }
                                         else
+                                        {
                                             real_var->value->Set(static_cast<float>(atof(Token.GetData())), aindex);
+                                            if (use_script_cache_)
+                                            {
+                                                script_cache_.variables.back().value->Set(
+                                                    static_cast<float>(atof(Token.GetData())), aindex);
+                                            }
+                                        }
                                         aindex++;
                                         break;
                                     case STRING:
@@ -1635,6 +1695,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         real_var->value->Set(Token.GetData(), aindex);
+                                        if (use_script_cache_)
+                                        {
+                                            script_cache_.variables.back().value->Set(Token.GetData(), aindex);
+                                        }
                                         aindex++;
                                         break;
                                     case UNKNOWN:
@@ -1672,32 +1736,71 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                     if (vi.type != VAR_INTEGER)
                                         break;
                                     real_var->value->Set(1);
+                                    if (use_script_cache_)
+                                    {
+                                        script_cache_.variables.back().value->Set(1);
+                                    }
                                     break;
                                 case FALSE_CONST:
                                     if (vi.type != VAR_INTEGER)
                                         break;
                                     real_var->value->Set(0);
+                                    if (use_script_cache_)
+                                    {
+                                        script_cache_.variables.back().value->Set(0);
+                                    }
                                     break;
                                 case NUMBER:
                                     if (vi.type != VAR_INTEGER)
                                         break;
                                     if (bNeg)
+                                    {
                                         real_var->value->Set(-atoi(Token.GetData()));
+                                        if (use_script_cache_)
+                                        {
+                                            script_cache_.variables.back().value->Set(-atoi(Token.GetData()));
+                                        }
+                                    }
                                     else
+                                    {
                                         real_var->value->Set(static_cast<int32_t>(atoll(Token.GetData())));
+                                        if (use_script_cache_)
+                                        {
+                                            script_cache_.variables.back().value->Set(
+                                                static_cast<int32_t>(atoll(Token.GetData())));
+                                        }
+                                    }
                                     break;
                                 case FLOAT_NUMBER:
                                     if (vi.type != VAR_FLOAT)
                                         break;
                                     if (bNeg)
+                                    {
                                         real_var->value->Set(-static_cast<float>(atof(Token.GetData())));
+                                        if (use_script_cache_)
+                                        {
+                                            script_cache_.variables.back().value->Set(
+                                                -static_cast<float>(atof(Token.GetData())));
+                                        }
+                                    }
                                     else
+                                    {
                                         real_var->value->Set(static_cast<float>(atof(Token.GetData())));
+                                        if (use_script_cache_)
+                                        {
+                                            script_cache_.variables.back().value->Set(
+                                                static_cast<float>(atof(Token.GetData())));
+                                        }
+                                    }
                                     break;
                                 case STRING:
                                     if (vi.type != VAR_STRING)
                                         break;
                                     real_var->value->Set(Token.GetData());
+                                    if (use_script_cache_)
+                                    {
+                                        script_cache_.variables.back().value->Set(Token.GetData());
+                                    }
                                     break;
                                 case UNKNOWN:
 
@@ -1723,7 +1826,12 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         FuncTab.AddFuncArg(func_code, lvi, true);
                     else
                         FuncTab.AddFuncArg(func_code, lvi);
-                }
+
+                    if (use_script_cache_)
+                    {
+                        script_cache_.functions.back().arguments.emplace_back(lvi, bExtern);
+                    }
+                } 
             }
             else
             {
@@ -1782,6 +1890,11 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     {
                         SetError("Duplicate variable name: %s", lvi.name.c_str());
                         return false;
+                    }
+
+                    if (use_script_cache_)
+                    {
+                        script_cache_.functions.back().local_variables.emplace_back(lvi);
                     }
                 } while (Token.GetType() == COMMA);
                 Token.StepBack();
@@ -1863,6 +1976,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
             WriteFile(fh, Segment.pCode, Segment.BCode_Program_size, (LPDWORD)&dwR, nullptr);
             CloseHandle(fh);
         }
+    }
+    if (use_script_cache_)
+    {
+        SaveSegmentToCache(Segment);
     }
     return true;
 }
@@ -2097,6 +2214,10 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                 }
                 // SetEventHandler(gs,Token.GetData(),1,true);
                 SetEventHandler(gs, Token.GetData(), 0, true);
+                if (use_script_cache_)
+                {
+                    script_cache_.event_handlers.emplace_back(gs, Token.GetData());
+                }
             }
             else
             {
@@ -2881,11 +3002,21 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                 CurrentFuncCode = FuncTab.FindFunc(Token.GetData());
                 if (!bExtern)
                     if (!bImport)
+                    {
                         if (!FuncTab.SetFuncOffset(Token.GetData(), Segment.BCode_Program_size))
                         {
                             SetError("Invalid function name: %s", Token.GetData());
                             return false;
                         }
+
+                        auto func_name = Token.GetData();
+                        auto cmp = [&func_name](const auto &func) { return storm::iEquals(func.info.name, func_name); };
+                        auto it = std::ranges::find_if(script_cache_.functions, cmp);
+                        if (it != script_cache_.functions.end())
+                        {
+                            it->info.offset = Segment.BCode_Program_size;
+                        }
+                    }
                 bExtern = false;
                 bImport = false;
                 // skip function arguments list in function declaration
