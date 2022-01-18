@@ -1,10 +1,8 @@
 #pragma once
 #include "s_functab.h"
 
-#include <istream>
-#include <ostream>
 #include <vector>
-#include <zlib.h>
+#include "data.h"
 
 namespace storm
 {
@@ -103,6 +101,29 @@ public:
 private:
     std::vector<char> data_;
 };
+
+inline void ReadScriptData(Reader &reader, S_TOKEN_TYPE type, DATA *data)
+{
+    switch (type)
+    {
+    case VAR_INTEGER: {
+        const auto value = reader.ReadData<long>();
+        data->Set(*value);
+        break;
+    }
+
+    case VAR_FLOAT: {
+        const auto value = reader.ReadData<float>();
+        data->Set(*value);
+        break;
+    }
+    case VAR_STRING: {
+        const auto value = reader.ReadBytes();
+        data->Set(std::string(value));
+        break;
+    }
+    }
+}
 }
 
 struct ScriptCache
