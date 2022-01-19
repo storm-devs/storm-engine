@@ -1218,8 +1218,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
         if (is_new && use_script_cache_)
         {
             script_cache_.files.emplace_back(file_name);
-            script_cache_.crc = storm::script_cache::ComputeCRC(0, {});
-            script_cache_.crc = storm::script_cache::ComputeCRC(script_cache_.crc, {pSegmentSource, SegmentSize});
+            script_cache_.crc = storm::script_cache::ComputeCRC(0, {pSegmentSource, SegmentSize});
         }
         AppendProgram(pProgram, Program_size, pSegmentSource, SegmentSize, true);
         Segment.pData = pProgram;
@@ -7200,8 +7199,8 @@ void COMPILER::SetUseScriptCache(bool use) noexcept
 
 void COMPILER::LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
 {
-    const auto size = reader.ReadData<size_t>();
-    for (size_t i = 0; i < *size; ++i)
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
     {
         auto vi = VarInfo();
 
@@ -7229,8 +7228,8 @@ void COMPILER::LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGME
 
 void COMPILER::LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
 {
-    const auto size = reader.ReadData<size_t>();
-    for (size_t i = 0; i < *size; ++i)
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
     {
         auto fi = FuncInfo();
         fi.segment_id = segment.id;
@@ -7244,8 +7243,8 @@ void COMPILER::LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGME
         auto func_code = FuncTab.AddFunc(fi);
 
         // args
-        auto count = reader.ReadData<size_t>();
-        for (size_t j = 0; j < *count; ++j)
+        auto count = *reader.ReadData<size_t>();
+        for (size_t j = 0; j < count; ++j)
         {
             auto lvi = LocalVarInfo();
 
@@ -7259,8 +7258,8 @@ void COMPILER::LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGME
         }
 
         // local variables
-        count = reader.ReadData<size_t>();
-        for (size_t j = 0; j < *count; ++j)
+        count = *reader.ReadData<size_t>();
+        for (size_t j = 0; j < count; ++j)
         {
             auto lvi = LocalVarInfo();
 
@@ -7275,8 +7274,8 @@ void COMPILER::LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGME
 
 void COMPILER::LoadScriptLibrariesFromCache(storm::script_cache::Reader &reader)
 {
-    const auto size = reader.ReadData<size_t>();
-    for (size_t i = 0; i < *size; ++i)
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
     {
         auto name = std::string(reader.ReadBytes());
 
@@ -7299,8 +7298,8 @@ void COMPILER::LoadScriptLibrariesFromCache(storm::script_cache::Reader &reader)
 
 void COMPILER::LoadEventHandlersFromCache(storm::script_cache::Reader &reader)
 {
-    const auto size = reader.ReadData<size_t>();
-    for (size_t i = 0; i < *size; ++i)
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
     {
         auto event = std::string(reader.ReadBytes());
         auto name = std::string(reader.ReadBytes());
@@ -7547,6 +7546,11 @@ void COMPILER::SaveSegmentToCache(const SEGMENT_DESC &segment)
     SaveByteCodeToCache(writer, segment);
 
     auto &data = writer.GetData();
+
+    // save cache's crc first in case of file corruption
+    const auto cache_crc = storm::script_cache::ComputeCRC(0, {data.data(), data.size()});
+    stream.write(reinterpret_cast<const char *>(&cache_crc), sizeof(cache_crc));
+
     stream.write(data.data(), data.size());
 }
 
@@ -7595,6 +7599,11 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
     }
 
     const auto cache_size = file_size(path);
+    if (cache_size < sizeof(uint32_t))
+    {
+        return false;
+    }
+
     auto stream = std::ifstream(path, std::ios::binary);
 
     if (!stream.is_open())
@@ -7604,7 +7613,17 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
 
     auto data = std::vector<char>(cache_size);
     stream.read(data.data(), cache_size);
-    auto reader = storm::script_cache::Reader(std::string_view(data.data(), data.size()));
+
+    const auto &cache_crc = *reinterpret_cast<uint32_t*>(data.data());
+    const auto data_view = std::string_view(data.begin() + sizeof(cache_crc), data.end());
+
+    const auto computed_crc = storm::script_cache::ComputeCRC(0, data_view);
+    if (cache_crc != computed_crc)
+    {
+        return false;
+    }
+
+    auto reader = storm::script_cache::Reader(data_view);
 
     // verify that script files were not modified
     if (!LoadFilesFromCache(reader, segment))
@@ -7636,17 +7655,11 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
 
 bool COMPILER::LoadFilesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
 {
-    const auto loaded_crc = reader.ReadData<uint32_t>();
+    const auto loaded_crc = *reader.ReadData<uint32_t>();
+    auto computed_crc = uint32_t();
 
-    if (!loaded_crc)
-    {
-        return false;
-    }
-
-    auto computed_crc = storm::script_cache::ComputeCRC(0, {});
-
-    const auto files_count = reader.ReadData<size_t>();
-    for (size_t i = 0; i < *files_count; ++i)
+    const auto files_count = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < files_count; ++i)
     {
         auto file_name = std::string(reader.ReadBytes());
         if (!segment.Files_list->AddUnicalString(file_name.c_str()))
@@ -7660,13 +7673,13 @@ bool COMPILER::LoadFilesFromCache(storm::script_cache::Reader &reader, SEGMENT_D
         delete[] file_data;
     }
 
-    return computed_crc == *loaded_crc;
+    return computed_crc == loaded_crc;
 }
 
 void COMPILER::LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
 {
-    const auto size = reader.ReadData<size_t>();
-    for (size_t i = 0; i < *size; ++i)
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
     {
         auto di = DEFINFO();
 
