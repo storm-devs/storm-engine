@@ -1765,7 +1765,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     {
                         script_cache_.functions.back().arguments.emplace_back(lvi, bExtern);
                     }
-                } 
+                }
             }
             else
             {
