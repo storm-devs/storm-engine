@@ -77,7 +77,6 @@ void COMPILER::Release()
 {
     for (uint32_t n = 0; n < SegmentsNum; n++)
     {
-        delete SegmentTable[n].name;
         delete SegmentTable[n].pData;
         delete SegmentTable[n].pCode;
         if (SegmentTable[n].Files_list)
@@ -739,7 +738,7 @@ void COMPILER::UnloadSegment(const char *segment_name)
 
     for (uint32_t n = 0; n < SegmentsNum; n++)
     {
-        if (strcmp(SegmentTable[n].name, segment_name) == 0)
+        if (strcmp(SegmentTable[n].name.c_str(), segment_name) == 0)
         {
             const uint32_t segment_id = SegmentTable[n].id;
             SegmentTable[n].bUnload = true;
@@ -765,7 +764,7 @@ bool COMPILER::BC_SegmentIsLoaded(const char *file_name)
     }
     for (uint32_t n = 0; n < SegmentsNum; n++)
     {
-        if (strcmp(SegmentTable[n].name, file_name) == 0)
+        if (strcmp(SegmentTable[n].name.c_str(), file_name) == 0)
             return true;
     }
     return false;
@@ -788,7 +787,7 @@ bool COMPILER::BC_LoadSegment(const char *file_name)
     // check for already loaded
     for (n = 0; n < SegmentsNum; n++)
     {
-        if (strcmp(SegmentTable[n].name, file_name) == 0)
+        if (strcmp(SegmentTable[n].name.c_str(), file_name) == 0)
         {
             SetWarning("Segment already loaded: %s", file_name);
             return true;
@@ -831,7 +830,6 @@ bool COMPILER::BC_LoadSegment(const char *file_name)
     const bool bRes = Compile(SegmentTable[index]);
     if (!bRes)
     {
-        delete SegmentTable[index].name;
         delete SegmentTable[index].Files_list;
         SegmentsNum--;
         // SegmentTable = (SEGMENT_DESC *)RESIZE(SegmentTable,SegmentsNum*sizeof(SEGMENT_DESC));
@@ -986,7 +984,6 @@ void COMPILER::ProcessFrame(uint32_t DeltaTime)
         // unload segment of program
         delete SegmentTable[n].pData;
         delete SegmentTable[n].pCode;
-        delete SegmentTable[n].name;
         delete SegmentTable[n].Files_list;
         SegmentTable[n].Files_list = nullptr;
 
@@ -1193,7 +1190,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     float fvalue;
 
     Control_offset = 0;
-    strcpy_s(file_name, Segment.name);
+    strcpy_s(file_name, Segment.name.c_str());
 
     if (pInternalCode == nullptr)
     {
@@ -1229,7 +1226,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     Token.SetProgram(pProgram, pProgram);
     if (bDebugInfo)
     {
-        strcpy_s(DebugSourceFileName, Segment.name);
+        strcpy_s(DebugSourceFileName, Segment.name.c_str());
     }
     DebugSourceLine = DSL_INI_VALUE;
     bool bExtern;
@@ -1805,10 +1802,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
     if (bDebugInfo)
     {
-        strcpy_s(DebugSourceFileName, Segment.name);
-        fnsize = strlen(Segment.name);
+        strcpy_s(DebugSourceFileName, Segment.name.c_str());
+        fnsize = Segment.name.length();
         CompileToken(Segment, DEBUG_FILE_NAME, 3, (char *)&DebugSourceLine, sizeof(uint32_t), (char *)&fnsize,
-                     sizeof(uint32_t), Segment.name, strlen(Segment.name));
+                     sizeof(uint32_t), Segment.name.c_str(), fnsize);
         CompileToken(Segment, DEBUG_LINE_CODE, 1, (char *)&DebugSourceLine, sizeof(uint32_t));
         // DebugSourceLine++;
     }
@@ -1842,7 +1839,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
     uint32_t dwR;
     if (bWriteCodeFile)
     {
-        _splitpath(Segment.name, nullptr, nullptr, file_name, nullptr);
+        _splitpath(Segment.name.c_str(), nullptr, nullptr, file_name, nullptr);
         strcat_s(file_name, ".b");
         std::wstring FileNameW = utf8::ConvertUtf8ToWide(file_name);
         fh = CreateFile(FileNameW.c_str(), GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS,
@@ -3736,7 +3733,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
         }
         if (SegmentTable[segment_index].pCode == nullptr)
         {
-            SetError("Segment (%s) not loaded", SegmentTable[segment_index].name);
+            SetError("Segment (%s) not loaded", SegmentTable[segment_index].name.c_str());
             return false;
         }
 
@@ -6459,9 +6456,9 @@ bool COMPILER::SaveState(std::fstream &fileS)
     // 3. Segments names
     for (n = 0; n < nSegNum; n++)
     {
-        if (SegmentTable[n].name)
+        if (!SegmentTable[n].name.empty())
         {
-            SaveString(SegmentTable[n].name);
+            SaveString(SegmentTable[n].name.c_str());
         }
     }
 
