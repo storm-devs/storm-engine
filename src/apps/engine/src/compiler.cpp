@@ -385,6 +385,8 @@ void COMPILER::LoadPreprocess()
         else
             bRuntimeLog = true;
 
+        use_script_cache_ = engine_ini->GetInt("script", "use_cache", false);
+
         // if(engine_ini->GetInt("script","tracefiles",0) == 0) bScriptTrace = false;
         // else bScriptTrace = true;
     }
@@ -7190,11 +7192,6 @@ void COMPILER::PrintoutUsage()
             logTrace_->debug("  %d : %d", n, pRuntimeLogEvent[n]);
         }
     }
-}
-
-void COMPILER::SetUseScriptCache(bool use) noexcept
-{
-    use_script_cache_ = use;
 }
 
 void COMPILER::LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
