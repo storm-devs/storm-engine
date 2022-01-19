@@ -1580,15 +1580,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                             return false;
                         }
 
-                        if (use_script_cache_)
-                        {
-                            script_cache_.variables.push_back(vi);
-                            script_cache_.variables.back().value = std::make_unique<DATA>();
-                            script_cache_.variables.back().value->SetVCompiler(this);
-                            script_cache_.variables.back().value->SetType(vi.type, vi.elements);
-                            script_cache_.variables.back().value->SetGlobalVarTableIndex(var_code);
-                        }
-
                         bool bNeg;
                         if (Token.GetType() == OP_EQUAL)
                         {
@@ -1629,10 +1620,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         real_var->value->Set(1);
-                                        if (use_script_cache_)
-                                        {
-                                            script_cache_.variables.back().value->Set(1);
-                                        }
                                         break;
                                     case FALSE_CONST:
                                         if (vi.type != VAR_INTEGER)
@@ -1641,10 +1628,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         real_var->value->Set(0);
-                                        if (use_script_cache_)
-                                        {
-                                            script_cache_.variables.back().value->Set(0);
-                                        }
                                         break;
 
                                     case NUMBER:
@@ -1654,23 +1637,9 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         if (bNeg)
-                                        {
                                             real_var->value->Set(-atoi(Token.GetData()), aindex);
-                                            if (use_script_cache_)
-                                            {
-                                                script_cache_.variables.back().value->Set(-atoi(Token.GetData()),
-                                                                                          aindex);
-                                            }
-                                        }
                                         else
-                                        {
                                             real_var->value->Set(static_cast<int32_t>(atoll(Token.GetData())), aindex);
-                                            if (use_script_cache_)
-                                            {
-                                                script_cache_.variables.back().value->Set(
-                                                    static_cast<int32_t>(atoll(Token.GetData())), aindex);
-                                            }
-                                        }
                                         aindex++;
                                         break;
                                     case FLOAT_NUMBER:
@@ -1680,23 +1649,9 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         if (bNeg)
-                                        {
                                             real_var->value->Set(-static_cast<float>(atof(Token.GetData())), aindex);
-                                            if (use_script_cache_)
-                                            {
-                                                script_cache_.variables.back().value->Set(
-                                                    -static_cast<float>(atof(Token.GetData())), aindex);
-                                            }
-                                        }
                                         else
-                                        {
                                             real_var->value->Set(static_cast<float>(atof(Token.GetData())), aindex);
-                                            if (use_script_cache_)
-                                            {
-                                                script_cache_.variables.back().value->Set(
-                                                    static_cast<float>(atof(Token.GetData())), aindex);
-                                            }
-                                        }
                                         aindex++;
                                         break;
                                     case STRING:
@@ -1747,71 +1702,32 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                     if (vi.type != VAR_INTEGER)
                                         break;
                                     real_var->value->Set(1);
-                                    if (use_script_cache_)
-                                    {
-                                        script_cache_.variables.back().value->Set(1);
-                                    }
                                     break;
                                 case FALSE_CONST:
                                     if (vi.type != VAR_INTEGER)
                                         break;
                                     real_var->value->Set(0);
-                                    if (use_script_cache_)
-                                    {
-                                        script_cache_.variables.back().value->Set(0);
-                                    }
                                     break;
                                 case NUMBER:
                                     if (vi.type != VAR_INTEGER)
                                         break;
                                     if (bNeg)
-                                    {
                                         real_var->value->Set(-atoi(Token.GetData()));
-                                        if (use_script_cache_)
-                                        {
-                                            script_cache_.variables.back().value->Set(-atoi(Token.GetData()));
-                                        }
-                                    }
                                     else
-                                    {
                                         real_var->value->Set(static_cast<int32_t>(atoll(Token.GetData())));
-                                        if (use_script_cache_)
-                                        {
-                                            script_cache_.variables.back().value->Set(
-                                                static_cast<int32_t>(atoll(Token.GetData())));
-                                        }
-                                    }
                                     break;
                                 case FLOAT_NUMBER:
                                     if (vi.type != VAR_FLOAT)
                                         break;
                                     if (bNeg)
-                                    {
                                         real_var->value->Set(-static_cast<float>(atof(Token.GetData())));
-                                        if (use_script_cache_)
-                                        {
-                                            script_cache_.variables.back().value->Set(
-                                                -static_cast<float>(atof(Token.GetData())));
-                                        }
-                                    }
                                     else
-                                    {
                                         real_var->value->Set(static_cast<float>(atof(Token.GetData())));
-                                        if (use_script_cache_)
-                                        {
-                                            script_cache_.variables.back().value->Set(
-                                                static_cast<float>(atof(Token.GetData())));
-                                        }
-                                    }
                                     break;
                                 case STRING:
                                     if (vi.type != VAR_STRING)
                                         break;
                                     real_var->value->Set(Token.GetData());
-                                    if (use_script_cache_)
-                                    {
-                                        script_cache_.variables.back().value->Set(Token.GetData());
-                                    }
                                     break;
                                 case UNKNOWN:
 
@@ -1821,6 +1737,13 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 }
                                 Token.Get();
                             }
+                        }
+
+                        if (use_script_cache_)
+                        {
+                            auto &cached_var = script_cache_.variables.emplace_back(vi);
+                            cached_var.value = std::make_unique<DATA>();
+                            *cached_var.value = *real_var->value;
                         }
                     } while (Token.GetType() == COMMA);
                     Token.StepBack();
