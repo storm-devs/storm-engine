@@ -1086,11 +1086,13 @@ bool DATA::Convert(S_TOKEN_TYPE type)
         case NUMBER:
         case VAR_INTEGER:
             Data_type = VAR_INTEGER;
+            lValue = 0;
             std::from_chars(sValue.data(), sValue.data() + sValue.length(), lValue);
             return true;
         case FLOAT_NUMBER:
         case VAR_FLOAT:
             Data_type = VAR_FLOAT;
+            fValue = 0.0f;
             from_chars(sValue.data(), sValue.data() + sValue.length(), fValue, fast_float::fixed);
             return true;
         case STRING:
@@ -1132,6 +1134,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
             Set(AttributesClass->GetThisAttr());
             AttributesClass = nullptr;
             Data_type = VAR_INTEGER;
+            lValue = 0;
             std::from_chars(sValue.data(), sValue.data() + sValue.length(), lValue);
             return true;
         case FLOAT_NUMBER:
@@ -1143,6 +1146,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
             Set(AttributesClass->GetThisAttr());
             AttributesClass = nullptr;
             Data_type = VAR_FLOAT;
+            fValue = 0.0f;
             from_chars(sValue.data(), sValue.data() + sValue.length(), fValue, fast_float::fixed);
             return true;
         }
