@@ -7589,7 +7589,7 @@ void COMPILER::SaveDefinesToCache(storm::script_cache::Writer &writer)
 bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
 {
     const auto path = GetSegmentCachePath(segment);
-    if (!exists(path))
+    if (auto ec = std::error_code(); !exists(path, ec) || ec)
     {
         return false;
     }
