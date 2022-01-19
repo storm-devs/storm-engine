@@ -134,7 +134,6 @@ class COMPILER : public VIRTUAL_COMPILER
         return bCompleted;
     }
 
-    char *GetName();
     void ExitProgram();
     void ClearEvents();
 

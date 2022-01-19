@@ -719,12 +719,6 @@ VDATA *COMPILER::ProcessEvent(const char *event_name, MESSAGE message)
     return pVD;
 }
 
-char *COMPILER::GetName()
-{
-    return SegmentTable[0].Files_list->GetString(0);
-    // return Files_list.GetString(0);
-}
-
 uint32_t COMPILER::GetSegmentIndex(uint32_t segment_id)
 {
     for (uint32_t n = 0; n < SegmentsNum; n++)
@@ -7625,7 +7619,6 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
     // verify that script files were not modified
     if (!LoadFilesFromCache(reader, segment))
     {
-        segment.Files_list->Release();
         return false;
     }
 
@@ -7659,11 +7652,6 @@ bool COMPILER::LoadFilesFromCache(storm::script_cache::Reader &reader, SEGMENT_D
     for (size_t i = 0; i < files_count; ++i)
     {
         auto file_name = std::string(reader.ReadBytes());
-        if (!segment.Files_list->AddUnicalString(file_name.c_str()))
-        {
-            continue;
-        }
-
         auto file_size = uint32_t();
         auto file_data = LoadFile(file_name.c_str(), file_size);
         computed_crc = storm::script_cache::ComputeCRC(computed_crc, {file_data, file_size});
