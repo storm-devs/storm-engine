@@ -10,7 +10,7 @@
 #include "script_cache.h"
 #include "storm_assert.h"
 
-#include <map>
+#include <unordered_map>
 
 #define SKIP_COMMENT_TRACING
 #define TRACE_OFF
@@ -7394,32 +7394,35 @@ void COMPILER::LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMEN
     std::memcpy(segment.pCode, code.data(), code.size());
 
     // relocations data
-    auto strings = std::map<uint32_t, std::string>();
-    auto variables = std::map<uint32_t, std::string>();
-    auto functions = std::map<uint32_t, std::string>();
+    auto strings = std::unordered_map<uint32_t, std::string>();
+    auto variables = std::unordered_map<uint32_t, std::string>();
+    auto functions = std::unordered_map<uint32_t, std::string>();
 
-    auto size = reader.ReadData<size_t>();
-    for (size_t i = 0; i < *size; ++i)
+    auto size = *reader.ReadData<size_t>();
+    strings.reserve(size);
+    for (size_t i = 0; i < size; ++i)
     {
-        auto string_code = reader.ReadData<uint32_t>();
+        auto string_code = *reader.ReadData<uint32_t>();
         auto string = reader.ReadBytes();
-        strings.emplace(*string_code, string);
+        strings.emplace(string_code, string);
     }
 
-    size = reader.ReadData<size_t>();
-    for (size_t i = 0; i < *size; ++i)
+    size = *reader.ReadData<size_t>();
+    variables.reserve(size);
+    for (size_t i = 0; i < size; ++i)
     {
-        auto variable_code = reader.ReadData<uint32_t>();
+        auto variable_code = *reader.ReadData<uint32_t>();
         auto name = reader.ReadBytes();
-        variables.emplace(*variable_code, name);
+        variables.emplace(variable_code, name);
     }
 
-    size = reader.ReadData<size_t>();
-    for (size_t i = 0; i < *size; ++i)
+    size = *reader.ReadData<size_t>();
+    functions.reserve(size);
+    for (size_t i = 0; i < size; ++i)
     {
-        auto function_code = reader.ReadData<uint32_t>();
+        auto function_code = *reader.ReadData<uint32_t>();
         auto name = reader.ReadBytes();
-        functions.emplace(*function_code, name);
+        functions.emplace(function_code, name);
     }
 
     // apply relocations
@@ -7535,9 +7538,9 @@ void COMPILER::SaveByteCodeToCache(storm::script_cache::Writer &writer, const SE
     writer.WriteBytes(code);
 
     // relocations
-    auto strings = std::map<uint32_t, std::string>();
-    auto variables = std::map<uint32_t, std::string>();
-    auto functions = std::map<uint32_t, std::string>();
+    auto strings = std::unordered_map<uint32_t, std::string>();
+    auto variables = std::unordered_map<uint32_t, std::string>();
+    auto functions = std::unordered_map<uint32_t, std::string>();
 
     pRunCodeBase = segment.pCode;
     InstructionPointer = 0;
