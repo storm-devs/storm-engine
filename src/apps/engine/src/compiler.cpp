@@ -7314,7 +7314,7 @@ void COMPILER::LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMEN
     const auto code = reader.ReadBytes();
     segment.BCode_Program_size = segment.BCode_Buffer_size = code.size();
     segment.pCode = new char[segment.BCode_Buffer_size];
-    std::memcpy(segment.pCode, code.data(), code.size());
+    std::ranges::copy(code, segment.pCode);
 
     // relocations data
     auto strings = std::unordered_map<uint32_t, std::string>();
@@ -7688,7 +7688,7 @@ void COMPILER::LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT
         case STRING: {
             auto value = reader.ReadBytes();
             const auto new_ptr = new char[value.size() + 1];
-            std::memcpy(new_ptr, value.data(), value.size());
+            std::ranges::copy(value, new_ptr);
             new_ptr[value.size()] = '\0';
             di.data4b = reinterpret_cast<uintptr_t>(new_ptr);
             break;

@@ -87,17 +87,14 @@ public:
     template <typename T>
     void WriteData(const T &data)
     {
-        const auto size = data_.size();
-        data_.resize(size + sizeof data);
-        std::memcpy(data_.data() + size, &data, sizeof(T));
+        auto data_bytes = std::string_view(reinterpret_cast<const char *>(&data), sizeof(data));
+        std::ranges::copy(data_bytes, std::back_inserter(data_));
     }
 
     void WriteBytes(std::string_view data)
     {
         WriteData(data.size());
-        const auto size = data_.size();
-        data_.resize(size + data.size());
-        std::memcpy(data_.data() + size, data.data(), data.size());
+        std::ranges::copy(data, std::back_inserter(data_));
     }
 
     auto &GetData() const noexcept
