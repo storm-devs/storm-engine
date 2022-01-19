@@ -1805,7 +1805,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
         strcpy_s(DebugSourceFileName, Segment.name.c_str());
         fnsize = Segment.name.length();
         CompileToken(Segment, DEBUG_FILE_NAME, 3, (char *)&DebugSourceLine, sizeof(uint32_t), (char *)&fnsize,
-                     sizeof(uint32_t), Segment.name, fnsize);
+                     sizeof(uint32_t), Segment.name.c_str(), fnsize);
         CompileToken(Segment, DEBUG_LINE_CODE, 1, (char *)&DebugSourceLine, sizeof(uint32_t));
         // DebugSourceLine++;
     }
@@ -3733,7 +3733,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
         }
         if (SegmentTable[segment_index].pCode == nullptr)
         {
-            SetError("Segment (%s) not loaded", SegmentTable[segment_index].name);
+            SetError("Segment (%s) not loaded", SegmentTable[segment_index].name.c_str());
             return false;
         }
 
