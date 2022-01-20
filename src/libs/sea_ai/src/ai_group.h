@@ -17,7 +17,7 @@ class AIGroup
     std::string sGroupType;
     CVECTOR vInitGroupPos, vMovePoint;
     bool bFirstExecute;
-    uint32_t iShipsNum;
+    uint32_t iShipsNum, iTradeShipsNum, iWarShipsNum;
 
     ATTRIBUTES *pACommander;
 
@@ -76,7 +76,7 @@ class AIGroup
     ATTRIBUTES *GetCommanderACharacter() const;
     AIShip *GetMainShip();
     void AddShip(entid_t _eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip);
-    void AddShipInLines(entid_t _eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip, float iLines);
+    void AddShipInLines(entid_t _eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip, float fLines);
 
     void Unload(){};
 

@@ -9,6 +9,7 @@ class SEA_AI : public Entity
   private:
     bool bFirstInit;
 
+    void AddShipInLines(entid_t _eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip, float fLines);
     void AddShip(entid_t _eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip);
     void SetCompanionEnemy(ATTRIBUTES *pACharacter);
 

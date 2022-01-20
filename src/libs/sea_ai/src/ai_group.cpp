@@ -26,36 +26,31 @@ AIGroup::~AIGroup()
     aGroupShips.clear();
 }
 
-void AIGroup::AddShipInLines(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip, float iLines)
+void AIGroup::AddShipInLines(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip, float fLines)
 {
     auto *const pAMode = pACharacter->FindAClass(pACharacter, "Ship.Mode");
     AIShip *pShip = nullptr;
-    bool isWarShip = true;
     if (pAMode)
     {
         if (std::string("war") == pAMode->GetThisAttr())
         {
             pShip = new AIShipWar();
-            isWarShip = true;
             iShipsNum++;
         }
         else if (std::string("trade") == pAMode->GetThisAttr())
         {
             pShip = new AIShipTrade();
-            isWarShip = false;
             iShipsNum++;
         }
         else if (std::string("boat") == pAMode->GetThisAttr())
         {
             pShip = new AIShipBoat();
-            isWarShip = false;
             iShipsNum++;
         }
     }
     if (!pShip)
     {
         pShip = new AIShipWar();
-        isWarShip = true;
         iShipsNum++;
     }
     CVECTOR vShipPos, vTmpPos;

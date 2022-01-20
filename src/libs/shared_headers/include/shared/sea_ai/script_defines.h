@@ -169,6 +169,7 @@
 #define AI_MESSAGE_SEALOAD 51043
 #define AI_MESSAGE_FORT_SET_LIGHTS 51044
 #define AI_MESSAGE_FORT_UNSET_LIGHTS 51045
+#define AI_MESSAGE_ADD_SHIP_LINES 51046
 // the method of recounting the guns on the ship SendMessage(&AISea, "la", AI_MESSAGE_RESEARCH_CANNONS, aCharacter)
 #define AI_MESSAGE_RESEARCH_CANNONS 51050
 

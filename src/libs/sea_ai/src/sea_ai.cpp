@@ -99,12 +99,12 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
     case AI_MESSAGE_SET_CAMERAS_ATTRIBUTE:
         AIHelper::pASeaCameras = message.AttributePointer();
         break;
-    case AI_MESSAGE_ADD_SHIP_IN_LINES: {
+    case AI_MESSAGE_ADD_SHIP_LINES: {
         auto eidShip = message.EntityID();
         auto *pACharacter = message.AttributePointer();
         auto *pAShip = message.AttributePointer();
-        auto *iLines = message.Float();
-        AddShipInLines(eidShip, pACharacter, pAShip, iLines);
+        auto fLines = message.Float();
+        AddShipInLines(eidShip, pACharacter, pAShip, fLines);
     }
     case AI_MESSAGE_ADD_SHIP: {
         auto eidShip = message.EntityID();
@@ -422,6 +422,19 @@ uint32_t SEA_AI::AttributeChanged(ATTRIBUTES *pAttribute)
     }
 
     return 0;
+}
+
+void SEA_AI::AddShipInLines(entid_t eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip, float fLines)
+{
+    Assert(pCharacter && pAShip);
+    auto *pG = pCharacter->FindAClass(pCharacter, "SeaAI.Group");
+    Assert(pG);
+
+    // search group
+    auto *const pGName = pG->GetAttribute("Name");
+    Assert(pGName);
+
+    AIGroup::FindOrCreateGroup(pGName)->AddShipInLines(eidShip, pCharacter, pAShip, fLines);
 }
 
 void SEA_AI::AddShip(entid_t eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip)
