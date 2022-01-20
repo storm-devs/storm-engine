@@ -466,7 +466,7 @@ bool LGeometry::Save()
             if (dir[p] == '\\')
             {
                 dir[p] = 0;
-                if (_access(dir, 0) == -1)
+                if (!fio->_FileOrDirectoryExists(dir))
                 {
                     if (!fio->_CreateDirectory(dir))
                     {

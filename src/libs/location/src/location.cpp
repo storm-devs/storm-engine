@@ -530,7 +530,7 @@ int32_t Location::LoadStaticModel(const char *modelName, const char *tech, int32
         {
             auto &mtxx = *((CMatrix *)label.m);
             for (int32_t me = 0; me < 16; me++)
-                if (_isnan(mtxx.matrix[me]))
+                if (isnan(mtxx.matrix[me]))
                 {
                     core.Trace("Location: locator %s::%s in position have NaN value, reset it!", label.group_name,
                                label.name);

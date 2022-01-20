@@ -1292,19 +1292,6 @@ uint32_t _InterfaceCreateFolder(VS_STACK *pS)
     if (!pDat)
         return IFUNCRESULT_FAILED;
     const char *sFolderName = pDat->GetString();
-
-    // precreate directory
-    const char *pcCurPtr = sFolderName;
-    while ((pcCurPtr = strchr(pcCurPtr, '\\')) != nullptr)
-    {
-        const char tmpchr = pcCurPtr[0];
-        ((char *)pcCurPtr)[0] = 0;
-        std::wstring FolderNameW = utf8::ConvertUtf8ToWide(sFolderName);
-        CreateDirectory(FolderNameW.c_str(), nullptr);
-        ((char *)pcCurPtr)[0] = tmpchr;
-        pcCurPtr++;
-    }
-    // create self directory
     const int32_t nSuccess = fio->_CreateDirectory(sFolderName);
 
     pDat = (VDATA *)pS->Push();

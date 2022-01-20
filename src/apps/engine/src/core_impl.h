@@ -144,7 +144,7 @@ class CoreImpl : public Core
     bool Initialized; // initialized flag (false at startup or after Reset())
     bool bEngineIniProcessed;
     HWND App_Hwnd;             // application handle
-    char gstring[_MAX_PATH]{}; // general purpose string
+    char gstring[MAX_PATH]{}; // general purpose string
     bool State_loading;
     bool bEnableTimeScale{};
 

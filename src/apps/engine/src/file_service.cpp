@@ -95,7 +95,15 @@ bool FILE_SERVICE::_ReadFile(std::fstream &fileS, void *s, std::streamsize count
 bool FILE_SERVICE::_FileOrDirectoryExists(const char *p)
 {
     std::filesystem::path path = std::filesystem::u8path(p);
-    return std::filesystem::exists(path);
+    auto ec = std::error_code{};
+    bool result = std::filesystem::exists(path, ec);
+    if (ec)
+    {
+        spdlog::error("Failed to to check if {} exists: {}", p, ec.message());
+        return false;
+    }
+
+    return result;
 }
 
 std::vector<std::string> FILE_SERVICE::_GetPathsOrFilenamesByMask(const char *sourcePath, const char *mask,

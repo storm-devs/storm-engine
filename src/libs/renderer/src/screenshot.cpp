@@ -29,7 +29,7 @@ void DX9RENDER::SaveCaptureBuffers()
     for (fi = iCaptureFrameIndex; fi < iCaptureFrameIndex + 10000; fi++)
     {
         sprintf_s(cFileName, "k3cap_%04d.tga", fi);
-        if (_access(cFileName, 0) == -1)
+        if (!fio->_FileOrDirectoryExists(cFileName))
             break;
     }
 

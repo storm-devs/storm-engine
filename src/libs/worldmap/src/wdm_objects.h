@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include <optional>
 
 class WdmIslands;
 class WdmShip;
