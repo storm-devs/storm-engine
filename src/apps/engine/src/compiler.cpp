@@ -7,7 +7,10 @@
 
 #include "s_debug.h"
 #include "logging.hpp"
+#include "script_cache.h"
 #include "storm_assert.h"
+
+#include <unordered_map>
 
 #define SKIP_COMMENT_TRACING
 #define TRACE_OFF
@@ -35,7 +38,7 @@ COMPILER::COMPILER()
       pDebExpBuffer(nullptr), nDebExpBufferSize(0), pRun_fi(nullptr), bRuntimeLog(false), nRuntimeLogEventsBufferSize(0),
       nRuntimeLogEventsNum(0), nRuntimeTicks(0), bFirstRun(true), bWriteCodeFile(false),
       bDebugInfo(false), DebugSourceLine(0), pCompileTokenTempBuffer(nullptr), bDebugExpressionRun(false),
-      bTraceMode(true), nDebugTraceLineCode(0), nIOBufferSize(0), pIOBuffer(nullptr), rAP(nullptr)
+      bTraceMode(true), nDebugTraceLineCode(0), nIOBufferSize(0), pIOBuffer(nullptr), rAP(nullptr), use_script_cache_(false)
     
 {
     LabelTable.SetStringDataSize(sizeof(uint32_t));
@@ -382,6 +385,8 @@ void COMPILER::LoadPreprocess()
         else
             bRuntimeLog = true;
 
+        use_script_cache_ = engine_ini->GetInt("script", "use_cache", false);
+
         // if(engine_ini->GetInt("script","tracefiles",0) == 0) bScriptTrace = false;
         // else bScriptTrace = true;
     }
@@ -714,12 +719,6 @@ VDATA *COMPILER::ProcessEvent(const char *event_name, MESSAGE message)
     return pVD;
 }
 
-char *COMPILER::GetName()
-{
-    return SegmentTable[0].Files_list->GetString(0);
-    // return Files_list.GetString(0);
-}
-
 uint32_t COMPILER::GetSegmentIndex(uint32_t segment_id)
 {
     for (uint32_t n = 0; n < SegmentsNum; n++)
@@ -827,8 +826,19 @@ bool COMPILER::BC_LoadSegment(const char *file_name)
 
     SegmentTable[index].Files_list = new STRINGS_LIST;
     SegmentTable[index].Files_list->SetStringDataSize(sizeof(OFFSET_INFO));
-    const bool bRes = Compile(SegmentTable[index]);
-    if (!bRes)
+    auto result = false;
+    if (use_script_cache_)
+    {
+        // attempt to load from cache first
+        result = LoadSegmentFromCache(SegmentTable[index]);
+    }
+
+    if (!result)
+    {
+        result = Compile(SegmentTable[index]);
+    }
+
+    if (!result)
     {
         delete SegmentTable[index].Files_list;
         SegmentsNum--;
@@ -839,7 +849,7 @@ bool COMPILER::BC_LoadSegment(const char *file_name)
         EventTab.InvalidateBySegmentID(id);
         DefTab.InvalidateBySegmentID(id);
     }
-    return bRes;
+    return result;
 }
 
 bool COMPILER::ProcessDebugExpression(const char *pExpression, DATA &Result)
@@ -1184,6 +1194,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
     RunningSegmentID = INVALID_SEGMENT_INDEX;
 
+    script_cache_ = storm::ScriptCache();
+
     //    bool bCDStop;
     bool bFunctionBlock;
     int32_t lvalue;
@@ -1194,11 +1206,16 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
     if (pInternalCode == nullptr)
     {
-        Segment.Files_list->AddUnicalString(file_name);
+        auto is_new = Segment.Files_list->AddUnicalString(file_name);
         file_code = Segment.Files_list->GetStringCode(file_name);
         pProgram = nullptr;
         Program_size = 0;
         pSegmentSource = LoadFile(file_name, SegmentSize);
+        if (is_new && use_script_cache_)
+        {
+            script_cache_.files.emplace_back(file_name);
+            script_cache_.crc = storm::script_cache::ComputeCRC(0, {pSegmentSource, SegmentSize});
+        }
         AppendProgram(pProgram, Program_size, pSegmentSource, SegmentSize, true);
         Segment.pData = pProgram;
         if (pProgram == nullptr)
@@ -1315,6 +1332,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 pLib->Init();
 
             LibriaryFuncs.emplace_back(pLib, Token.GetData());
+            if (use_script_cache_)
+            {
+                script_cache_.script_libs.emplace_back(Token.GetData());
+            }
 
             break;
         }
@@ -1328,6 +1349,12 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 {
                     SetError("can't load file: %s", Token.GetData());
                     return false;
+                }
+                if (use_script_cache_)
+                {
+                    script_cache_.files.emplace_back(Token.GetData());
+                    script_cache_.crc =
+                        storm::script_cache::ComputeCRC(script_cache_.crc, {pApend_file, Append_file_size});
                 }
                 if (bDebugInfo)
                 {
@@ -1392,6 +1419,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 {
                     SetError("define redefinition: %s", di.name);
                     return false;
+                }
+                if (use_script_cache_)
+                {
+                    script_cache_.defines.emplace_back(di.name, di.deftype, di.data4b);
                 }
             }
             break;
@@ -1475,6 +1506,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                      fi.decl_file_name.c_str(), fi.decl_line);
 
                             return false;
+                        }
+                        if (use_script_cache_)
+                        {
+                            script_cache_.functions.emplace_back(fi, std::vector<storm::script_cache::FunctionLocalVariable>{});
                         }
                         break;
                     }
@@ -1621,6 +1656,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         real_var->value->Set(Token.GetData(), aindex);
+                                        if (use_script_cache_)
+                                        {
+                                            script_cache_.variables.back().value->Set(Token.GetData(), aindex);
+                                        }
                                         aindex++;
                                         break;
                                     case UNKNOWN:
@@ -1694,6 +1733,13 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                 Token.Get();
                             }
                         }
+
+                        if (use_script_cache_)
+                        {
+                            auto &cached_var = script_cache_.variables.emplace_back(vi);
+                            cached_var.value = std::make_unique<DATA>();
+                            *cached_var.value = *real_var->value;
+                        }
                     } while (Token.GetType() == COMMA);
                     Token.StepBack();
                     break;
@@ -1709,6 +1755,11 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         FuncTab.AddFuncArg(func_code, lvi, true);
                     else
                         FuncTab.AddFuncArg(func_code, lvi);
+
+                    if (use_script_cache_)
+                    {
+                        script_cache_.functions.back().arguments.emplace_back(lvi, bExtern);
+                    }
                 }
             }
             else
@@ -1768,6 +1819,11 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     {
                         SetError("Duplicate variable name: %s", lvi.name.c_str());
                         return false;
+                    }
+
+                    if (use_script_cache_)
+                    {
+                        script_cache_.functions.back().local_variables.emplace_back(lvi);
                     }
                 } while (Token.GetType() == COMMA);
                 Token.StepBack();
@@ -1849,6 +1905,10 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
             WriteFile(fh, Segment.pCode, Segment.BCode_Program_size, (LPDWORD)&dwR, nullptr);
             CloseHandle(fh);
         }
+    }
+    if (use_script_cache_)
+    {
+        SaveSegmentToCache(Segment);
     }
     return true;
 }
@@ -2083,6 +2143,10 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                 }
                 // SetEventHandler(gs,Token.GetData(),1,true);
                 SetEventHandler(gs, Token.GetData(), 0, true);
+                if (use_script_cache_)
+                {
+                    script_cache_.event_handlers.emplace_back(gs, Token.GetData());
+                }
             }
             else
             {
@@ -2867,11 +2931,21 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                 CurrentFuncCode = FuncTab.FindFunc(Token.GetData());
                 if (!bExtern)
                     if (!bImport)
+                    {
                         if (!FuncTab.SetFuncOffset(Token.GetData(), Segment.BCode_Program_size))
                         {
                             SetError("Invalid function name: %s", Token.GetData());
                             return false;
                         }
+
+                        auto func_name = Token.GetData();
+                        auto cmp = [&func_name](const auto &func) { return storm::iEquals(func.info.name, func_name); };
+                        auto it = std::ranges::find_if(script_cache_.functions, cmp);
+                        if (it != script_cache_.functions.end())
+                        {
+                            it->info.offset = Segment.BCode_Program_size;
+                        }
+                    }
                 bExtern = false;
                 bImport = false;
                 // skip function arguments list in function declaration
@@ -7111,6 +7185,515 @@ void COMPILER::PrintoutUsage()
         {
             logTrace_->debug("  %d : %d", n, pRuntimeLogEvent[n]);
         }
+    }
+}
+
+void COMPILER::LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+{
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
+    {
+        auto vi = VarInfo();
+
+        vi.segment_id = segment.id;
+        vi.name = reader.ReadBytes();
+        vi.type = *reader.ReadData<decltype(vi.type)>();
+        vi.elements = *reader.ReadData<decltype(vi.elements)>();
+
+        const auto var_code = VarTab.AddVar(vi);
+        const auto real_var = VarTab.GetVarX(var_code);
+
+        if (vi.elements == 1)
+        {
+            ReadScriptData(reader, vi.type, real_var->value.get());
+        }
+        else
+        {
+            for (size_t j = 0; j < vi.elements; ++j)
+            {
+                ReadScriptData(reader, vi.type, real_var->value->GetArrayElement(j));
+            }
+        }
+    }
+}
+
+void COMPILER::LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+{
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
+    {
+        auto fi = FuncInfo();
+        fi.segment_id = segment.id;
+
+        fi.name = reader.ReadBytes();
+        fi.offset = *reader.ReadData<decltype(fi.offset)>();
+        fi.return_type = *reader.ReadData<decltype(fi.return_type)>();
+        fi.decl_file_name = reader.ReadBytes();
+        fi.decl_line = *reader.ReadData<decltype(fi.decl_line)>();
+
+        auto func_code = FuncTab.AddFunc(fi);
+
+        // args
+        auto count = *reader.ReadData<size_t>();
+        for (size_t j = 0; j < count; ++j)
+        {
+            auto lvi = LocalVarInfo();
+
+            lvi.name = reader.ReadBytes();
+            lvi.type = *reader.ReadData<decltype(lvi.type)>();
+            lvi.elements = *reader.ReadData<decltype(lvi.elements)>();
+
+            auto is_extern = reader.ReadData<bool>();
+
+            FuncTab.AddFuncArg(func_code, lvi, *is_extern);
+        }
+
+        // local variables
+        count = *reader.ReadData<size_t>();
+        for (size_t j = 0; j < count; ++j)
+        {
+            auto lvi = LocalVarInfo();
+
+            lvi.name = reader.ReadBytes();
+            lvi.type = *reader.ReadData<decltype(lvi.type)>();
+            lvi.elements = *reader.ReadData<decltype(lvi.elements)>();
+
+            FuncTab.AddFuncVar(func_code, lvi);
+        }
+    }
+}
+
+void COMPILER::LoadScriptLibrariesFromCache(storm::script_cache::Reader &reader)
+{
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
+    {
+        auto name = std::string(reader.ReadBytes());
+
+        auto cls = core_internal.FindVMA(name.c_str());
+        if (!cls)
+        {
+            SetWarning("cant load library '%s'", name.c_str());
+            continue;
+        }
+
+        auto lib = static_cast<SCRIPT_LIBRIARY *>(cls->CreateClass());
+        if (lib)
+        {
+            lib->Init();
+        }
+
+        LibriaryFuncs.emplace_back(lib, name.c_str());
+    }
+}
+
+void COMPILER::LoadEventHandlersFromCache(storm::script_cache::Reader &reader)
+{
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
+    {
+        auto event = std::string(reader.ReadBytes());
+        auto name = std::string(reader.ReadBytes());
+
+        SetEventHandler(event.c_str(), name.c_str(), 0, true);
+    }
+}
+
+void COMPILER::LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+{
+    const auto code = reader.ReadBytes();
+    segment.BCode_Program_size = segment.BCode_Buffer_size = code.size();
+    segment.pCode = new char[segment.BCode_Buffer_size];
+    std::ranges::copy(code, segment.pCode);
+
+    // relocations data
+    auto strings = std::unordered_map<uint32_t, std::string>();
+    auto variables = std::unordered_map<uint32_t, std::string>();
+    auto functions = std::unordered_map<uint32_t, std::string>();
+
+    auto size = *reader.ReadData<size_t>();
+    strings.reserve(size);
+    for (size_t i = 0; i < size; ++i)
+    {
+        auto string_code = *reader.ReadData<uint32_t>();
+        auto string = reader.ReadBytes();
+        strings.emplace(string_code, string);
+    }
+
+    size = *reader.ReadData<size_t>();
+    variables.reserve(size);
+    for (size_t i = 0; i < size; ++i)
+    {
+        auto variable_code = *reader.ReadData<uint32_t>();
+        auto name = reader.ReadBytes();
+        variables.emplace(variable_code, name);
+    }
+
+    size = *reader.ReadData<size_t>();
+    functions.reserve(size);
+    for (size_t i = 0; i < size; ++i)
+    {
+        auto function_code = *reader.ReadData<uint32_t>();
+        auto name = reader.ReadBytes();
+        functions.emplace(function_code, name);
+    }
+
+    // apply relocations
+    pRunCodeBase = segment.pCode;
+    InstructionPointer = 0;
+    auto token_type = S_TOKEN_TYPE();
+
+    do
+    {
+        token_type = BC_TokenGet();
+        auto &relocated_data =
+            *const_cast<uint32_t *>(reinterpret_cast<const uint32_t *>(&pRunCodeBase[TLR_DataOffset]));
+        if (token_type == ACCESS_WORD_CODE)
+        {
+            auto string_code = relocated_data;
+            relocated_data = SCodec.Convert(strings[string_code].c_str());
+        }
+        else if (token_type == VARIABLE)
+        {
+            const auto real_var_code = VarTab.FindVar(variables[relocated_data]);
+            relocated_data = real_var_code;
+        }
+        else if (token_type == CALL_FUNCTION)
+        {
+            const auto real_function_code = FuncTab.FindFunc(functions[relocated_data]);
+            relocated_data = real_function_code;
+        }
+    } while (token_type != END_OF_PROGRAMM);
+}
+
+std::filesystem::path COMPILER::GetSegmentCachePath(const SEGMENT_DESC &segment) const
+{
+    auto path = std::filesystem::path(ProgramDirectory) / "__cache__" / segment.name;
+    path.replace_extension(".b");
+    return path;
+}
+
+void COMPILER::SaveVariablesToCache(storm::script_cache::Writer &writer)
+{
+    writer.WriteData(script_cache_.variables.size());
+    for (auto &vi : script_cache_.variables)
+    {
+        writer.WriteBytes(vi.name);
+        writer.WriteData(vi.type);
+        writer.WriteData(vi.elements);
+
+        if (vi.elements == 1)
+        {
+            WriteScriptData(writer, vi.type, vi.value.get());
+        }
+        else
+        {
+            for (size_t i = 0; i < vi.elements; ++i)
+            {
+                WriteScriptData(writer, vi.type, vi.value->GetArrayElement(i));
+            }
+        }
+    }
+}
+
+void COMPILER::SaveFunctionsToCache(storm::script_cache::Writer &writer)
+{
+    writer.WriteData(script_cache_.functions.size());
+    for (auto &[fi, arguments, local_variables] : script_cache_.functions)
+    {
+        writer.WriteBytes(fi.name);
+        writer.WriteData(fi.offset);
+        writer.WriteData(fi.return_type);
+        writer.WriteBytes(fi.decl_file_name);
+        writer.WriteData(fi.decl_line);
+
+        writer.WriteData(arguments.size());
+        for (auto &[lvi, is_extern] : arguments)
+        {
+            writer.WriteBytes(lvi.name);
+            writer.WriteData(lvi.type);
+            writer.WriteData(lvi.elements);
+            writer.WriteData(is_extern);
+        }
+
+        writer.WriteData(local_variables.size());
+        for (auto &lvi : local_variables)
+        {
+            writer.WriteBytes(lvi.name);
+            writer.WriteData(lvi.type);
+            writer.WriteData(lvi.elements);
+        }
+    }
+}
+
+void COMPILER::SaveScriptLibrariesToCache(storm::script_cache::Writer &writer)
+{
+    writer.WriteData(script_cache_.script_libs.size());
+    for (auto &lib_name : script_cache_.script_libs)
+    {
+        writer.WriteBytes(lib_name);
+    }
+}
+
+void COMPILER::SaveEventHandlersToCache(storm::script_cache::Writer &writer)
+{
+    writer.WriteData(script_cache_.event_handlers.size());
+    for (auto &[event, handler] : script_cache_.event_handlers)
+    {
+        writer.WriteBytes(event);
+        writer.WriteBytes(handler);
+    }
+}
+
+void COMPILER::SaveByteCodeToCache(storm::script_cache::Writer &writer, const SEGMENT_DESC &segment)
+{
+    auto code = std::string_view(segment.pCode, segment.pCode + segment.BCode_Program_size);
+    writer.WriteBytes(code);
+
+    // relocations
+    auto strings = std::unordered_map<uint32_t, std::string>();
+    auto variables = std::unordered_map<uint32_t, std::string>();
+    auto functions = std::unordered_map<uint32_t, std::string>();
+
+    pRunCodeBase = segment.pCode;
+    InstructionPointer = 0;
+    auto token_type = S_TOKEN_TYPE();
+    do
+    {
+        token_type = BC_TokenGet();
+        auto &relocated_data = *reinterpret_cast<const uint32_t *>(&pRunCodeBase[TLR_DataOffset]);
+
+        if (token_type == ACCESS_WORD_CODE)
+        {
+            strings.emplace(relocated_data, SCodec.Convert(relocated_data));
+        }
+        else if (token_type == VARIABLE)
+        {
+            auto vi = VarTab.GetVarX(relocated_data);
+            variables.emplace(relocated_data, vi->name);
+        }
+        else if (token_type == CALL_FUNCTION)
+        {
+            auto fi = FuncInfo();
+            FuncTab.GetFuncX(fi, relocated_data);
+            functions.emplace(relocated_data, fi.name);
+        }
+    } while (token_type != END_OF_PROGRAMM);
+
+    writer.WriteData(strings.size());
+    for (auto &[string_code, string] : strings)
+    {
+        writer.WriteData(string_code);
+        writer.WriteBytes(string);
+    }
+
+    writer.WriteData(variables.size());
+    for (auto &[variable_code, name] : variables)
+    {
+        writer.WriteData(variable_code);
+        writer.WriteBytes(name);
+    }
+
+    writer.WriteData(functions.size());
+    for (auto &[function_code, name] : functions)
+    {
+        writer.WriteData(function_code);
+        writer.WriteBytes(name);
+    }
+}
+
+void COMPILER::SaveSegmentToCache(const SEGMENT_DESC &segment)
+{
+    const auto path = GetSegmentCachePath(segment);
+    create_directories(path.parent_path());
+    auto stream = std::ofstream(path, std::ios::binary);
+
+    if (!stream.is_open())
+    {
+        return;
+    }
+
+    auto writer = storm::script_cache::Writer();
+
+    // save files lists and total crc
+    SaveFilesToCache(writer);
+
+    // defines (in case of new compiled code depending on defines from cache)
+    SaveDefinesToCache(writer);
+
+    // variables with values
+    SaveVariablesToCache(writer);
+
+    // functions
+    SaveFunctionsToCache(writer);
+
+    // script libs
+    SaveScriptLibrariesToCache(writer);
+
+    // event handlers
+    SaveEventHandlersToCache(writer);
+
+    // bytecode
+    SaveByteCodeToCache(writer, segment);
+
+    auto &data = writer.GetData();
+
+    // save cache's crc first in case of file corruption
+    const auto cache_crc = storm::script_cache::ComputeCRC(0, {data.data(), data.size()});
+    stream.write(reinterpret_cast<const char *>(&cache_crc), sizeof(cache_crc));
+
+    stream.write(data.data(), data.size());
+}
+
+void COMPILER::SaveFilesToCache(storm::script_cache::Writer &writer)
+{
+    // save crc for verification
+    writer.WriteData(script_cache_.crc);
+
+    writer.WriteData(script_cache_.files.size());
+    for (auto &file_name : script_cache_.files)
+    {
+        writer.WriteBytes(file_name);
+    }
+}
+
+void COMPILER::SaveDefinesToCache(storm::script_cache::Writer &writer)
+{
+    writer.WriteData(script_cache_.defines.size());
+    for (auto &[name, type, value] : script_cache_.defines)
+    {
+        writer.WriteBytes(name);
+        writer.WriteData(type);
+        switch (type)
+        {
+        case NUMBER:
+            writer.WriteData(static_cast<int32_t>(value));
+            break;
+
+        case FLOAT_NUMBER:
+            writer.WriteData(static_cast<float>(value));
+            break;
+
+        case STRING:
+            writer.WriteBytes(reinterpret_cast<const char*>(value));
+            break;
+        }
+    }
+}
+
+bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
+{
+    const auto path = GetSegmentCachePath(segment);
+    if (auto ec = std::error_code(); !exists(path, ec) || ec)
+    {
+        return false;
+    }
+
+    const auto cache_size = file_size(path);
+    if (cache_size < sizeof(uint32_t))
+    {
+        return false;
+    }
+
+    auto stream = std::ifstream(path, std::ios::binary);
+
+    if (!stream.is_open())
+    {
+        return false;
+    }
+
+    auto data = std::vector<char>(cache_size);
+    stream.read(data.data(), cache_size);
+
+    const auto &cache_crc = *reinterpret_cast<uint32_t*>(data.data());
+    const auto data_view = std::string_view(data.begin() + sizeof(cache_crc), data.end());
+
+    const auto computed_crc = storm::script_cache::ComputeCRC(0, data_view);
+    if (cache_crc != computed_crc)
+    {
+        return false;
+    }
+
+    auto reader = storm::script_cache::Reader(data_view);
+
+    // verify that script files were not modified
+    if (!LoadFilesFromCache(reader, segment))
+    {
+        return false;
+    }
+
+    // defines (in case of new compiled code depending on defines from cache)
+    LoadDefinesFromCache(reader, segment);
+
+    // variables with values
+    LoadVariablesFromCache(reader, segment);
+
+    // functions
+    LoadFunctionsFromCache(reader, segment);
+
+    // script libraries
+    LoadScriptLibrariesFromCache(reader);
+
+    // event handlers
+    LoadEventHandlersFromCache(reader);
+
+    // bytecode
+    LoadByteCodeFromCache(reader, segment);
+
+    return true;
+}
+
+bool COMPILER::LoadFilesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+{
+    const auto loaded_crc = *reader.ReadData<uint32_t>();
+    auto computed_crc = uint32_t();
+
+    const auto files_count = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < files_count; ++i)
+    {
+        auto file_name = std::string(reader.ReadBytes());
+        auto file_size = uint32_t();
+        auto file_data = LoadFile(file_name.c_str(), file_size);
+        computed_crc = storm::script_cache::ComputeCRC(computed_crc, {file_data, file_size});
+        delete[] file_data;
+    }
+
+    return computed_crc == loaded_crc;
+}
+
+void COMPILER::LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+{
+    const auto size = *reader.ReadData<size_t>();
+    for (size_t i = 0; i < size; ++i)
+    {
+        auto di = DEFINFO();
+
+        di.segment_id = segment.id;
+        auto name = std::string(reader.ReadBytes());
+        di.name = const_cast<char *>(name.c_str());
+        di.deftype = *reader.ReadData<uint32_t>();
+
+        switch (di.deftype)
+        {
+        case NUMBER:
+            di.data4b = static_cast<uintptr_t>(*reader.ReadData<int32_t>());
+            break;
+
+        case FLOAT_NUMBER:
+            di.data4b = static_cast<uintptr_t>(*reader.ReadData<float>());
+            break;
+
+        case STRING: {
+            auto value = reader.ReadBytes();
+            const auto new_ptr = new char[value.size() + 1];
+            std::ranges::copy(value, new_ptr);
+            new_ptr[value.size()] = '\0';
+            di.data4b = reinterpret_cast<uintptr_t>(new_ptr);
+            break;
+        }
+        }
+
+        DefTab.AddDef(di);
     }
 }
 

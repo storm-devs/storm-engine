@@ -17,6 +17,7 @@
 #include "strings_list.h"
 #include "token.h"
 #include "logging.hpp"
+#include "script_cache.h"
 
 #include "storm/ringbuffer_stack.hpp"
 
@@ -133,7 +134,6 @@ class COMPILER : public VIRTUAL_COMPILER
         return bCompleted;
     }
 
-    char *GetName();
     void ExitProgram();
     void ClearEvents();
 
@@ -267,6 +267,26 @@ class COMPILER : public VIRTUAL_COMPILER
     void PrintoutUsage();
 
 private:
+    [[nodiscard]] std::filesystem::path GetSegmentCachePath(const SEGMENT_DESC &segment) const;
+
+    bool LoadSegmentFromCache(SEGMENT_DESC &segment);
+    bool LoadFilesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
+    void LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
+    void LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
+    void LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
+    void LoadScriptLibrariesFromCache(storm::script_cache::Reader &reader);
+    void LoadEventHandlersFromCache(storm::script_cache::Reader &reader);
+    void LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
+
+    void SaveSegmentToCache(const SEGMENT_DESC &segment);
+    void SaveFilesToCache(storm::script_cache::Writer &writer);
+    void SaveDefinesToCache(storm::script_cache::Writer &writer);
+    void SaveVariablesToCache(storm::script_cache::Writer &writer);
+    void SaveFunctionsToCache(storm::script_cache::Writer &writer);
+    void SaveScriptLibrariesToCache(storm::script_cache::Writer &writer);
+    void SaveEventHandlersToCache(storm::script_cache::Writer &writer);
+    void SaveByteCodeToCache(storm::script_cache::Writer &writer, const SEGMENT_DESC &segment);
+
     COMPILER_STAGE CompilerStage;
     STRINGS_LIST LabelTable;
     // STRINGS_LIST EventTable;
@@ -343,4 +363,8 @@ private:
     // NB: pointers are safe as long as we pop elements before they expire
     static constexpr size_t CALLSTACK_SIZE = 64U;
     storm::ringbuffer_stack<std::tuple<const char *, size_t, const char *>, CALLSTACK_SIZE> callStack_;
+
+    // attempt to read/write script cache?
+    bool use_script_cache_;
+    storm::ScriptCache script_cache_;
 };
