@@ -59,6 +59,30 @@ void RunFrameWithOverflowCheck()
 #define RunFrameWithOverflowCheck RunFrame
 #endif
 
+
+void mimalloc_fun(const char *msg, void *arg)
+{
+    static std::filesystem::path mimalloc_log_path;
+    if (mimalloc_log_path.empty())
+    {
+        mimalloc_log_path = fs::GetLogsPath() / "mimalloc.log";
+        std::error_code ec;
+        remove(mimalloc_log_path, ec);
+    }
+
+    FILE *mimalloc_log =
+#ifdef _MSC_VER
+        _wfopen(mimalloc_log_path.c_str(), L"a+b");
+#else
+        fopen(mimalloc_log_path.c_str(), "a+b");
+#endif
+    if (mimalloc_log != nullptr)
+    {
+        fputs(msg, mimalloc_log);
+        fclose(mimalloc_log);
+    }
+}
+
 } // namespace
 
 void HandleWindowEvent(const storm::OSWindow::Event &event)
@@ -106,15 +130,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         MessageBoxA(nullptr, "Another instance is already running!", "Error", MB_ICONERROR);
         return EXIT_SUCCESS;
     }
-
-    const auto mimalloc_fun = [](const char *msg, void *arg) {
-        const auto mimalloc_log_path = fs::GetLogsPath() / "mimalloc.log";
-        std::ofstream mimalloc_log(mimalloc_log_path);
-        if (mimalloc_log)
-        {
-            mimalloc_log << msg << std::endl;
-        }
-    };
     mi_register_output(mimalloc_fun, nullptr);
     mi_option_set(mi_option_show_errors, 1);
     mi_option_set(mi_option_show_stats, 1);
