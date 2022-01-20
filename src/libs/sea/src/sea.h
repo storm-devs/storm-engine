@@ -42,21 +42,11 @@ class SEA : public SEA_BASE
         SeaBlock(int32_t iX1, int32_t iX2, int32_t iY1, int32_t iY2, int32_t iSize0, int32_t iTX, int32_t iTY,
                  int32_t iSize, int32_t iLOD, int32_t iIStart, int32_t iIFirst, int32_t iILast, bool bInProgress,
                  bool bDone)
+            : iX1(std::move(iX1)), iX2(std::move(iX2)), iY1(std::move(iY1)), iY2(std::move(iY2)),
+              iSize0(std::move(iSize0)), iTX(std::move(iTX)), iTY(std::move(iTY)), iSize(std::move(iSize)),
+              iLOD(std::move(iLOD)), iIStart(std::move(iIStart)), iIFirst(std::move(iIFirst)),
+              iILast(std::move(iILast)), bInProgress(std::move(bInProgress)), bDone(std::move(bDone))
         {
-            this->iX1 = iX1;
-            this->iX2 = iX2;
-            this->iY1 = iY1;
-            this->iY2 = iY2;
-            this->iSize0 = iSize0;
-            this->iTX = iTX;
-            this->iTY = iTY;
-            this->iSize = iSize;
-            this->iLOD = iLOD;
-            this->iIStart = iIStart;
-            this->iIFirst = iIFirst;
-            this->iILast = iILast;
-            this->bInProgress = bInProgress;
-            this->bDone = bDone;
         }
 
         static bool QSort(const SeaBlock &b1, const SeaBlock &b2)
