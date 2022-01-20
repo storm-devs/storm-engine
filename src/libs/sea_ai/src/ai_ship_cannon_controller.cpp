@@ -635,6 +635,12 @@ void AIShipCannonController::Realize(float fDeltaTime)
     {
         CVECTOR vPos;
         uint32_t dwColor;
+
+        tr_vertex(CVECTOR vPos, uint32_t dwColor)
+        {
+            this->vPos = vPos;
+            this->dwColor = dwColor;
+        }
     };
 
     static std::vector<tr_vertex> Verts;

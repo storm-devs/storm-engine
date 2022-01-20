@@ -46,6 +46,15 @@ struct RS_LINE
 {
     CVECTOR vPos;
     uint32_t dwColor;
+
+    RS_LINE()
+    {
+    }
+    RS_LINE(CVECTOR vPos, uint32_t dwColor)
+    {
+        this->vPos = vPos;
+        this->dwColor = dwColor;
+    }
 };
 
 struct RS_SPRITE
