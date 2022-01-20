@@ -14,6 +14,12 @@ struct FunctionLocalVariable
 {
     LocalVarInfo info;
     bool is_extern;
+
+    FunctionLocalVariable(LocalVarInfo info, bool is_extern)
+    {
+        this->info = info;
+        this->is_extern = is_extern;
+    }
 };
 
 struct Function
@@ -21,12 +27,24 @@ struct Function
     FuncInfo info;
     std::vector<FunctionLocalVariable> arguments;
     std::vector<LocalVarInfo> local_variables;
+
+    Function(FuncInfo info, std::vector<FunctionLocalVariable> arguments)
+    {
+        this->info = info;
+        this->arguments = arguments;
+    }
 };
 
 struct EventHandler
 {
     std::string event_name;
     std::string function_name;
+
+    EventHandler(std::string event_name, std::string function_name)
+    {
+        this->event_name = event_name;
+        this->function_name = function_name;
+    }
 };
 
 struct Define
@@ -34,6 +52,13 @@ struct Define
     std::string name;
     uint32_t type;
     uintptr_t value;
+
+    Define(std::string name, uint32_t type, uintptr_t value)
+    {
+        this->name = name;
+        this->type = type;
+        this->value = value;
+    }
 };
 
 class Reader final
