@@ -688,7 +688,7 @@ class Character : public Entity
     float curHeadAX;
     float curHeadAY;
 
-    bool bShotOnlyEnemyTest{false};
+    [[nodiscard]] bool CheckShotOnlyEnemyTest() const;
 
   public:
     bool isPlayerEnemy;

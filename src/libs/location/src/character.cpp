@@ -2832,7 +2832,7 @@ if(_stricmp(eventName, "Blade to belt") == 0)
                     // PlaySound("pistol_shot");
                     isFired = true;
                     float kDist;
-                    Character *chr = FindGunTarget(kDist, bShotOnlyEnemyTest);
+                    Character *chr = FindGunTarget(kDist, CheckShotOnlyEnemyTest());
                     entid_t enemy{};
                     if (chr)
                     {
@@ -5370,4 +5370,15 @@ Location *Character::GetLocation()
 
     loc_id = EntityManager::GetEntityId("location");
     return static_cast<Location *>(EntityManager::GetEntityPointer(loc_id));
+}
+
+bool Character::CheckShotOnlyEnemyTest() const
+{
+    auto * vd = core.Event("NPC_Event_ShotOnlyEnemyTest", "i", GetId());
+    int32_t tmpBool = 0;
+    if (vd)
+    {
+        vd->Get(tmpBool);
+    }
+    return tmpBool != 0;
 }
