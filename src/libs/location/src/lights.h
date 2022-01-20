@@ -59,10 +59,8 @@ class Lights : public Entity
         int32_t id;
         int32_t light;
 
-        MovingLight(int32_t id, int32_t light)
+        MovingLight(int32_t id, int32_t light) : id(std::move(id)), light(std::move(light))
         {
-            this->id = id;
-            this->light = light;
         }
     };
 
