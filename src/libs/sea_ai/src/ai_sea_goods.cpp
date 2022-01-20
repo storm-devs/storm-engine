@@ -16,13 +16,13 @@ AISeaGoods::AISeaGoods()
 
 AISeaGoods::~AISeaGoods()
 {
-    for (uint32_t i = 0; i < aGoods.size(); i++)
+    for (auto &aGood : aGoods)
     {
-        if (aGoods[i]->pGeo)
-            pGeoService->DeleteGeometry(aGoods[i]->pGeo);
-        aGoods[i]->sModel.clear();
-        aGoods[i]->aItems.clear();
-        STORM_DELETE(aGoods[i]);
+        if (aGood->pGeo)
+            pGeoService->DeleteGeometry(aGood->pGeo);
+        aGood->sModel.clear();
+        aGood->aItems.clear();
+        STORM_DELETE(aGood);
     }
     aGoods.clear();
 }
@@ -49,10 +49,10 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
     if (!pSea)
         return;
 
-    for (uint32_t i = 0; i < aGoods.size(); i++)
-        for (uint32_t j = 0; j < aGoods[i]->aItems.size(); j++)
+    for (auto &aGood : aGoods)
+        for (uint32_t j = 0; j < aGood->aItems.size(); j++)
         {
-            auto *pI = &aGoods[i]->aItems[j];
+            auto *pI = &aGood->aItems[j];
             pI->fTime -= fDeltaTime;
 
             pI->vPos.y = pSea->WaveXZ(pI->vPos.x, pI->vPos.z, &pI->vNormal);
@@ -63,8 +63,8 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                 if (pI->fTime < -20.0f)
                 {
                     // aGoods[i]->aItems.ExtractNoShift(j);
-                    aGoods[i]->aItems[j] = aGoods[i]->aItems.back();
-                    aGoods[i]->aItems.pop_back();
+                    aGood->aItems[j] = aGood->aItems.back();
+                    aGood->aItems.pop_back();
                     j--;
                     continue;
                 }
@@ -82,9 +82,8 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                 }
 
                 // check ships
-                for (uint32_t k = 0; k < aShips.size(); k++)
+                for (auto pS : aShips)
                 {
-                    auto pS = aShips[k];
                     auto *pACharacter = pS->GetACharacter();
                     const int iCharacterIndex = GetIndex(pS->GetACharacter());
                     const auto fDistance = sqrtf(~(pS->State.vPos - pI->vPos));
@@ -95,8 +94,8 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                         if (pVData->GetInt() || bDeleteGoodAnyway)
                         {
                             // aGoods[i]->aItems.ExtractNoShift(j);
-                            aGoods[i]->aItems[j] = aGoods[i]->aItems.back();
-                            aGoods[i]->aItems.pop_back();
+                            aGood->aItems[j] = aGood->aItems.back();
+                            aGood->aItems.pop_back();
                             j--;
                             break;
                         }
@@ -113,18 +112,18 @@ void AISeaGoods::Realize(uint32_t dwDeltaTime)
 
     AIHelper::pRS->SetRenderState(D3DRS_LIGHTING, true);
 
-    for (uint32_t i = 0; i < aGoods.size(); i++)
-        if (aGoods[i]->pGeo)
-            for (uint32_t j = 0; j < aGoods[i]->aItems.size(); j++)
+    for (auto &aGood : aGoods)
+        if (aGood->pGeo)
+            for (uint32_t j = 0; j < aGood->aItems.size(); j++)
             {
-                auto *const pI = &aGoods[i]->aItems[j];
+                auto *const pI = &aGood->aItems[j];
 
                 // set world matrix for item
                 CMatrix m;
                 m.BuildPosition(pI->vPos.x, pI->vPos.y, pI->vPos.z);
 
                 AIHelper::pRS->SetTransform(D3DTS_WORLD, m);
-                aGoods[i]->pGeo->Draw((GEOS::PLANE *)AIHelper::pRS->GetPlanes(), 0, nullptr);
+                aGood->pGeo->Draw((GEOS::PLANE *)AIHelper::pRS->GetPlanes(), 0, nullptr);
             }
 
     AIHelper::pRS->SetRenderState(D3DRS_LIGHTING, false);
@@ -136,10 +135,10 @@ uint32_t AISeaGoods::AttributeChanged(ATTRIBUTES *pAttribute)
 
     if (*pAttribute == "Add")
     {
-        for (uint32_t i = 0; i < aGoods.size(); i++)
-            if (aGoods[i]->sModel == sTmpModel)
+        for (auto &aGood : aGoods)
+            if (aGood->sModel == sTmpModel)
             {
-                aGoods[i]->aItems.push_back(TmpItem);
+                aGood->aItems.push_back(TmpItem);
                 return 0;
             }
         auto *pG = new goods_t;

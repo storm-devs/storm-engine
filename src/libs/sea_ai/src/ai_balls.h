@@ -55,19 +55,19 @@ class AIBalls : public Entity
   private:
     CANNON_TRACE_BASE *pSail, *pSea, *pFort, *pIsland;
 
-    float fDeltaTimeMultiplyer;
+    float fDeltaTimeMultiplier;
     float fBallFlySoundDistance;
-    float fBallFlySoundStereoMultiplyer;
+    float fBallFlySoundStereoMultiplier{};
 
-    std::string sTextureName;      // texture name
-    uint32_t dwTextureIndex;       // texture index
-    uint32_t dwSubTexX, dwSubTexY; // all balls must be in one texture
+    std::string sTextureName;          // texture name
+    uint32_t dwTextureIndex{};         // texture index
+    uint32_t dwSubTexX{}, dwSubTexY{}; // all balls must be in one texture
     uint32_t dwFireBallFromCameraTime;
 
     std::vector<BALL_TYPE> aBallTypes; // Balls types container
     std::vector<RS_RECT> aBallRects;   // Balls container for render
 
-    VDX9RENDER *rs;
+    VDX9RENDER *rs{};
 
     void AddBall(ATTRIBUTES *pABall);
 
@@ -106,6 +106,11 @@ class AIBalls : public Entity
 
     AIBalls();
     ~AIBalls() override;
+
+    float GetMultiplier() const
+    {
+        return fDeltaTimeMultiplier;
+    }
 
     void Save(CSaveLoad *pSL);
     void Load(CSaveLoad *pSL);

@@ -79,8 +79,8 @@ void AIGroup::AddShip(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pASh
 
 bool AIGroup::isMainGroup()
 {
-    for (uint32_t i = 0; i < aGroupShips.size(); i++)
-        if (aGroupShips[i]->isMainCharacter())
+    for (auto &aGroupShip : aGroupShips)
+        if (aGroupShip->isMainCharacter())
             return true;
 
     return false;
@@ -112,20 +112,20 @@ void AIGroup::Execute(float fDeltaTime)
                 auto vNewGroupPos =
                     pG->vInitGroupPos + ((100.0f + FRAND(200.0f)) * CVECTOR(sinf(fNewAng), 0.0f, cosf(fNewAng)));
 
-                for (uint32_t i = 0; i < aGroupShips.size(); i++)
+                for (auto &aGroupShip : aGroupShips)
                 {
-                    aGroupShips[i]->SetPos(vNewGroupPos);
-                    aGroupShips[i]->CheckStartPosition();
+                    aGroupShip->SetPos(vNewGroupPos);
+                    aGroupShip->CheckStartPosition();
                 }
             }
         }
 
         if (isMainGroup())
         {
-            for (uint32_t i = 0; i < aGroupShips.size(); i++)
-                if (!aGroupShips[i]->isMainCharacter())
-                    aGroupShips[i]->GetTaskController()->SetNewTask(PRIMARY_TASK, AITASK_DEFEND,
-                                                                    GetCommanderACharacter());
+            for (auto &aGroupShip : aGroupShips)
+                if (!aGroupShip->isMainCharacter())
+                    aGroupShip->GetTaskController()->SetNewTask(PRIMARY_TASK, AITASK_DEFEND,
+                                                                GetCommanderACharacter());
         }
 
         bFirstExecute = false;
@@ -153,21 +153,21 @@ void AIGroup::Execute(float fDeltaTime)
     if (!isMainGroup())
     {
         auto fMinimalSpeed = 1e+10f;
-        for (uint32_t i = 0; i < aGroupShips.size(); i++)
+        for (auto &aGroupShip : aGroupShips)
         {
-            const auto fCurSpeed = aGroupShips[i]->GetShipBasePointer()->GetCurrentSpeed();
+            const auto fCurSpeed = aGroupShip->GetShipBasePointer()->GetCurrentSpeed();
             if (fCurSpeed < fMinimalSpeed)
                 fMinimalSpeed = fCurSpeed;
         }
 
         const auto bSetFixedSpeed = sCommand == "move";
 
-        for (uint32_t i = 0; i < aGroupShips.size(); i++)
-            aGroupShips[i]->GetShipBasePointer()->SetFixedSpeed(bSetFixedSpeed, fMinimalSpeed);
+        for (auto &aGroupShip : aGroupShips)
+            aGroupShip->GetShipBasePointer()->SetFixedSpeed(bSetFixedSpeed, fMinimalSpeed);
     }
 
-    for (uint32_t i = 0; i < aGroupShips.size(); i++)
-        aGroupShips[i]->Execute(fDeltaTime);
+    for (auto &aGroupShip : aGroupShips)
+        aGroupShip->Execute(fDeltaTime);
 }
 
 void AIGroup::Realize(float fDeltaTime)
@@ -181,8 +181,8 @@ void AIGroup::Realize(float fDeltaTime)
 
 bool AIGroup::isDead()
 {
-    for (uint32_t i = 0; i < aGroupShips.size(); i++)
-        if (!aGroupShips[i]->isDead())
+    for (auto &aGroupShip : aGroupShips)
+        if (!aGroupShip->isDead())
             return false;
     return true;
 }
@@ -190,8 +190,8 @@ bool AIGroup::isDead()
 float AIGroup::GetPower()
 {
     auto fPower = 0.0f;
-    for (uint32_t i = 0; i < aGroupShips.size(); i++)
-        fPower += aGroupShips[i]->GetPower();
+    for (auto &aGroupShip : aGroupShips)
+        fPower += aGroupShip->GetPower();
     return fPower;
 }
 
@@ -208,9 +208,8 @@ AIGroup *AIGroup::FindGroup(ATTRIBUTES *pACharacter)
 {
     if (!pACharacter)
         return nullptr;
-    for (uint32_t i = 0; i < AIGroups.size(); i++)
+    for (auto pGroup : AIGroups)
     {
-        AIGroup *pGroup = AIGroups[i];
         for (uint32_t j = 0; j < pGroup->aGroupShips.size(); j++)
             if (*pGroup->aGroupShips[j] == pACharacter)
                 return pGroup;
@@ -220,17 +219,17 @@ AIGroup *AIGroup::FindGroup(ATTRIBUTES *pACharacter)
 
 AIGroup *AIGroup::FindGroup(const char *pGroupName)
 {
-    for (uint32_t i = 0; i < AIGroups.size(); i++)
-        if (AIGroups[i]->GetName() == pGroupName)
-            return AIGroups[i];
+    for (auto &AIGroup : AIGroups)
+        if (AIGroup->GetName() == pGroupName)
+            return AIGroup;
     return nullptr;
 }
 
 AIGroup *AIGroup::FindMainGroup()
 {
-    for (uint32_t i = 0; i < AIGroups.size(); i++)
-        if (AIGroups[i]->isMainGroup())
-            return AIGroups[i];
+    for (auto &AIGroup : AIGroups)
+        if (AIGroup->isMainGroup())
+            return AIGroup;
     return nullptr;
 }
 
@@ -242,10 +241,8 @@ void AIGroup::SailMainGroup(CVECTOR vPos, float fAngle, ATTRIBUTES *pACharacter)
 
     const auto eidSea = EntityManager::GetEntityId("sea");
 
-    for (uint32_t i = 0; i < pMG->aGroupShips.size(); i++)
+    for (auto pAIShip : pMG->aGroupShips)
     {
-        AIShip *pAIShip = pMG->aGroupShips[i];
-
         if (pAIShip->isDead())
             continue;
 
@@ -440,8 +437,8 @@ void AIGroup::Save(CSaveLoad *pSL)
     pSL->SaveDword(bFirstExecute);
 
     pSL->SaveDword(aGroupShips.size());
-    for (uint32_t i = 0; i < aGroupShips.size(); i++)
-        aGroupShips[i]->Save(pSL);
+    for (auto &aGroupShip : aGroupShips)
+        aGroupShip->Save(pSL);
 }
 
 void AIGroup::Load(CSaveLoad *pSL)

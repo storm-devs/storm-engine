@@ -50,11 +50,10 @@ void AIShipTaskController::DoAttackRotate()
 
     auto *pCC = GetAIShip()->GetCannonController();
 
-    const auto dwBort = pCC->GetBestFireBortOnlyDistance(vFirePos, 20.0f + FRAND(50.0f));
-
-    if (INVALID_BORT_INDEX != dwBort)
+    const auto bortIt = pCC->GetBestFireBortOnlyDistance(vFirePos, 20.0f + FRAND(50.0f));
+    if (pCC->IsValid(bortIt))
     {
-        const auto vBortDir = pCC->GetBortDirection(dwBort);
+        const auto vBortDir = pCC->GetBortDirection(*bortIt);
         const auto fRotate = ((vBortDir | vOurDir) > 0.0f) ? -1.2f : 1.2f;
         GetAIShip()->GetRotateController()->AddRotate(fRotate);
         GetAIShip()->GetSpeedController()->AddSpeed(0.5f);
@@ -71,16 +70,18 @@ void AIShipTaskController::FindRunAwayPoint()
     const auto fWindK = 10.0f; // impact factor for wind
 
     // check ships
-    for (uint32_t i = 0; i < AIShip::AIShips.size(); i++)
-        if (GetAIShip() != AIShip::AIShips[i])
+    for (auto &i : AIShip::AIShips)
+    {
+        if (GetAIShip() != i)
         {
-            if (!Helper.isEnemy(AIShip::AIShips[i]->GetACharacter(), GetAIShip()->GetACharacter()))
+            if (!Helper.isEnemy(i->GetACharacter(), GetAIShip()->GetACharacter()))
                 continue;
-            auto vDir = AIShip::AIShips[i]->GetPos() - GetAIShip()->GetPos();
+            auto vDir = i->GetPos() - GetAIShip()->GetPos();
             const auto fDistance = sqrtf(~vDir);
             vRAPoint += ((!vDir) * fShipK * Clamp(1.0f - fDistance / 1000.0f));
             iNumPoints++;
         }
+    }
 
     // check forts
     if (AIFort::pAIFort)

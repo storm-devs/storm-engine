@@ -121,9 +121,9 @@ class AIFlowGraph
         float GetDistance(uint32_t dwPnt)
         {
             float fDist = 0.0f;
-            for (uint32_t i = 0; i < aPoints.size(); i++)
+            for (auto &aPoint : aPoints)
             {
-                point_t *pP = &aPoints[i];
+                point_t *pP = &aPoint;
                 fDist += pP->fDistance;
                 if (dwPnt == pP->dwPnt)
                     return fDist;
@@ -462,8 +462,8 @@ inline AIFlowGraph::VectorPath *AIFlowGraph::GetVectorPath(size_t dwP1, size_t d
     Path *pPath = GetPath(dwP1, dwP2);
     if (pPath)
     {
-        for (uint32_t i = 0; i < pPath->aPoints.size(); i++)
-            pVPath->AddPoint(GetPointPos(pPath->aPoints[i].dwPnt));
+        for (auto &aPoint : pPath->aPoints)
+            pVPath->AddPoint(GetPointPos(aPoint.dwPnt));
     }
     STORM_DELETE(pPath);
     return pVPath;
