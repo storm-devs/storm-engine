@@ -773,7 +773,7 @@ void CXI_FORMATEDTEXT::GetOneLine(int fontNum, const char *pStr, char *buf, int 
     if (lineSize == 0)
         return;
     if (lineSize > bufSize - 1)
-        lineSize = bufSize - 1;
+        lineSize = bufSize - utf8::u8_dec(pStart + bufSize);
 
     strncpy_s(buf, bufSize, pStart, lineSize);
     buf[lineSize] = 0;
