@@ -45,7 +45,7 @@ void S_EVENTTAB::Release()
     {
         for (uint32_t n = 0; n < Event_num[i]; n++)
         {
-            delete pTable[i][n].name;
+            delete[] pTable[i][n].name;
         }
 
         Buffer_size[i] = 0;

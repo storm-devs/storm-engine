@@ -43,7 +43,7 @@ void BREAKPOINTS_TABLE::Release()
 
     for (n = 0; n < nPoints; n++)
     {
-        delete pTable[n].pFileName;
+        delete[] pTable[n].pFileName;
     }
 
     pTable.clear();
@@ -166,7 +166,7 @@ void BREAKPOINTS_TABLE::DelBreakPoint(const char *filename, uint32_t line)
         if (!storm::iEquals(pTable[n].pFileName, filename))
             continue;
 
-        delete pTable[n].pFileName;
+        delete[] pTable[n].pFileName;
 
         for (; n < (nPoints - 1); n++)
         {

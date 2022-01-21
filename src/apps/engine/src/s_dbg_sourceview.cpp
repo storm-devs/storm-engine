@@ -476,7 +476,7 @@ SOURCE_VIEW::SOURCE_VIEW(HWND _hMain, HINSTANCE _hInst)
 
 SOURCE_VIEW::~SOURCE_VIEW()
 {
-    delete pSourceFile;
+    delete[] pSourceFile;
 
     auto pI = fio->OpenIniFile(PROJECT_NAME);
     if (pI)
@@ -544,7 +544,7 @@ bool SOURCE_VIEW::OpenSourceFile(const char *_filename)
     const uint32_t nDataSize = fio->_GetFileSize(DirectoryName.c_str());
 
     nTopLine = 0;
-    delete pSourceFile;
+    delete[] pSourceFile;
     nSourceFileSize = 0;
     nLinesNum = 0;
     nActiveLine = 0xffffffff;
@@ -554,7 +554,7 @@ bool SOURCE_VIEW::OpenSourceFile(const char *_filename)
     fio->_CloseFile(fileS);
     if (!readSuccess)
     {
-        delete pSourceFile;
+        delete[] pSourceFile;
         pSourceFile = nullptr;
         return false;
     }

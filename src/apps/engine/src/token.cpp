@@ -345,7 +345,7 @@ ptrdiff_t TOKEN::GetProgramOffset()
 
 void TOKEN::Reset()
 {
-    delete pTokenData;
+    delete[] pTokenData;
     pTokenData = nullptr;
     eTokenType = UNKNOWN;
     TokenDataBufferSize = 0;
@@ -655,7 +655,7 @@ int32_t TOKEN::SetTokenData(const char *pointer, bool bKeepControlSymbols)
     }
     if (Data_size >= TokenDataBufferSize)
     {
-        delete pTokenData;
+        delete[] pTokenData;
 
         pTokenData = new char[Data_size + 1];
         TokenDataBufferSize = Data_size + 1;
@@ -675,7 +675,7 @@ ptrdiff_t TOKEN::SetNTokenData(const char *pointer, ptrdiff_t Data_size)
     }
     if (Data_size >= TokenDataBufferSize)
     {
-        delete pTokenData;
+        delete[] pTokenData;
 
         pTokenData = new char[Data_size + 1];
         TokenDataBufferSize = Data_size + 1;

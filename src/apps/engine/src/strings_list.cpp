@@ -78,7 +78,7 @@ void STRINGS_LIST::Release()
     if (Strings <= 0 || String_Table_PTR == nullptr)
         return;
     for (n = 0; n < Strings; n++)
-        delete String_Table_PTR[n];
+        delete[] String_Table_PTR[n];
     free(String_Table_PTR);
     List_size = 0;
     Strings = 0;
@@ -181,7 +181,7 @@ void STRINGS_LIST::DeleteString(uint32_t code)
     uint32_t n;
     if (code >= Strings || String_Table_PTR == nullptr)
         return;
-    delete String_Table_PTR[code];
+    delete[] String_Table_PTR[code];
     if (code == (Strings - 1))
     {
         Strings--;
