@@ -408,6 +408,7 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
         return 1;
     case MSG_CAMERA_SET_PERSPECTIVE:
         cameraPerspective = message.Float();
+        rs->SetPerspective(cameraPerspective);
         return 1;
     // internal
     case -1: {
