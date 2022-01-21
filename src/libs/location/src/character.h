@@ -587,7 +587,7 @@ class Character : public Entity
     ActionCharacter recoil;      // Bounce back
     ActionCharacter strafe_l;    // Bounce to the left
     ActionCharacter strafe_r;    // Bounce to the right
-    int32_t stunChance;             // Is the stun allowed after the enemy's blow
+    std::optional<int32_t> stunChance;             // Is the stun allowed after the enemy's blow
     // Logical state
     FightAction fgtCurType;   // Current action type
     int32_t fgtCurIndex;         // Current Activity Index
@@ -687,6 +687,8 @@ class Character : public Entity
     CVECTOR headLookPointTarget;
     float curHeadAX;
     float curHeadAY;
+
+    [[nodiscard]] bool CheckShotOnlyEnemyTest() const;
 
   public:
     bool isPlayerEnemy;
