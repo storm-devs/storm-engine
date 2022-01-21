@@ -1808,6 +1808,11 @@ uint32_t SHIP::AttributeChanged(ATTRIBUTES *pAttribute)
 CVECTOR SHIP::GetBoxsize() const
 {
     return State.vBoxSize;
+}
+
+CVECTOR SHIP::GetRealBoxsize() const
+{
+    return State.vRealBoxSize;
 };
 
 entid_t SHIP::GetModelEID() const

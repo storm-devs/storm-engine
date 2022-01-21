@@ -141,8 +141,9 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     // Current distance
     auto boxSize =
         GetAIObj()->GetBoxsize() * CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
-    boxSize.x += boxSize.y;
-    boxSize.z += boxSize.y;
+    const auto realBoxSize = GetAIObj()->GetRealBoxsize();
+    boxSize.x += realBoxSize.y;
+    boxSize.z += realBoxSize.y;
     const auto maxRad = boxSize.z * 2.0f;
     // Semi-axes of the ellipsoid along which the camera moves
     const auto a = boxSize.x * 1.2f + fDistance * (maxRad - boxSize.x * 1.2f); // x
