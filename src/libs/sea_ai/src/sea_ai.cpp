@@ -106,6 +106,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         auto fLines = message.Float();
         AddShipInLines(eidShip, pACharacter, pAShip, fLines);
     }
+    break;
     case AI_MESSAGE_ADD_SHIP: {
         auto eidShip = message.EntityID();
         auto *pACharacter = message.AttributePointer();
