@@ -80,8 +80,8 @@ void COMPILER::Release()
 {
     for (uint32_t n = 0; n < SegmentsNum; n++)
     {
-        delete SegmentTable[n].pData;
-        delete SegmentTable[n].pCode;
+        delete[] SegmentTable[n].pData;
+        delete[] SegmentTable[n].pCode;
         if (SegmentTable[n].Files_list)
         {
             SegmentTable[n].Files_list->Release();
@@ -94,10 +94,10 @@ void COMPILER::Release()
     LabelTable.Release();
     LabelUpdateTable.Release();
     Token.Reset();
-    delete ProgramDirectory;
+    delete[] ProgramDirectory;
     ProgramDirectory = nullptr;
     RunningSegmentID = INVALID_SEGMENT_INDEX;
-    delete pCompileTokenTempBuffer;
+    delete[] pCompileTokenTempBuffer;
     pCompileTokenTempBuffer = nullptr;
 
     FuncTab.Release();
@@ -109,7 +109,7 @@ void COMPILER::Release()
     SCodec.Release();
     LibriaryFuncs.clear();
 
-    delete pDebExpBuffer;
+    delete[] pDebExpBuffer;
     pDebExpBuffer = nullptr;
     nDebExpBufferSize = 0;
 
@@ -124,7 +124,7 @@ void COMPILER::Release()
 
 void COMPILER::SetProgramDirectory(const char *dir_name)
 {
-    delete ProgramDirectory;
+    delete[] ProgramDirectory;
     ProgramDirectory = nullptr;
     if (dir_name)
     {
@@ -863,7 +863,7 @@ bool COMPILER::ProcessDebugExpression(const char *pExpression, DATA &Result)
         //    pDebExpBuffer = (char *)RESIZE(pDebExpBuffer,nDataSize);
         auto *const newPtr = new char[nDataSize];
         memcpy(newPtr, pDebExpBuffer, nDebExpBufferSize);
-        delete pDebExpBuffer;
+        delete[] pDebExpBuffer;
         pDebExpBuffer = newPtr;
         nDebExpBufferSize = nDataSize;
     }
@@ -882,7 +882,7 @@ bool COMPILER::SetOnDebugExpression(const char *pLValue, const char *pRValue, DA
         // pDebExpBuffer = (char *)RESIZE(pDebExpBuffer,nDataSize);
         auto *const newPtr = new char[nDataSize];
         memcpy(newPtr, pDebExpBuffer, nDebExpBufferSize);
-        delete pDebExpBuffer;
+        delete[] pDebExpBuffer;
         pDebExpBuffer = newPtr;
         nDebExpBufferSize = nDataSize;
     }
@@ -930,7 +930,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
 
     if (!bRes)
     {
-        delete Segment.pCode;
+        delete[] Segment.pCode;
         bDebugExpressionRun = false;
         return false;
     }
@@ -969,7 +969,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
     // RunningSegmentID = pRun_fi->segment_id;
     pRunCodeBase = mem_codebase;
 
-    delete Segment.pCode;
+    delete[] Segment.pCode;
 
     if (pResult)
     {
@@ -992,8 +992,8 @@ void COMPILER::ProcessFrame(uint32_t DeltaTime)
         if (!SegmentTable[n].bUnload)
             continue;
         // unload segment of program
-        delete SegmentTable[n].pData;
-        delete SegmentTable[n].pCode;
+        delete[] SegmentTable[n].pData;
+        delete[] SegmentTable[n].pCode;
         delete SegmentTable[n].Files_list;
         SegmentTable[n].Files_list = nullptr;
 
@@ -1080,7 +1080,7 @@ void COMPILER::CompileToken(SEGMENT_DESC &Segment, S_TOKEN_TYPE Token_type, uint
     // pCompileTokenTempBuffer = (char *)RESIZE(pCompileTokenTempBuffer,data_blocks_num * (sizeof(char *) +
     // sizeof(uint32_t)));
     auto *const newPtr = new char[data_blocks_num * (sizeof(char *) + sizeof(uint32_t))];
-    delete pCompileTokenTempBuffer;
+    delete[] pCompileTokenTempBuffer;
     pCompileTokenTempBuffer = newPtr;
 
     // gather data blocks information and count total data size ----------------
@@ -1888,7 +1888,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
     if (pInternalCode == nullptr)
     {
-        delete Segment.pData;
+        delete[] Segment.pData;
         Segment.pData = nullptr;
     }
     HANDLE fh;
@@ -6318,7 +6318,7 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
         pString = ReadString();
         if (bSkipVariable)
         {
-            delete pString;
+            delete[] pString;
             break;
         }
 
@@ -6487,7 +6487,7 @@ bool COMPILER::OnLoad()
 bool COMPILER::SaveState(std::fstream &fileS)
 {
     uint32_t n;
-    delete pBuffer;
+    delete[] pBuffer;
     pBuffer = nullptr;
 
     dwCurPointer = 0;
@@ -6583,7 +6583,7 @@ bool COMPILER::LoadState(std::fstream &fileS)
     uint32_t n;
     char *pString;
 
-    delete pBuffer;
+    delete[] pBuffer;
     pBuffer = nullptr;
 
     EXTDATA_HEADER exdh;
@@ -6663,7 +6663,7 @@ bool COMPILER::LoadState(std::fstream &fileS)
     // call to script function "OnLoad()"
     OnLoad();
 
-    delete pBuffer;
+    delete[] pBuffer;
     pBuffer = nullptr;
 
     return true;

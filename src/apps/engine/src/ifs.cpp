@@ -23,8 +23,8 @@ KEY_NODE::KEY_NODE()
 
 KEY_NODE::~KEY_NODE()
 {
-    delete key_name;
-    delete key_val;
+    delete[] key_name;
+    delete[] key_val;
     // if(l_PTR) delete l_PTR;
     // if(r_PTR) delete r_PTR;
 }
@@ -33,7 +33,7 @@ void KEY_NODE::SetName(const char *name)
 {
     if (name == nullptr)
         return;
-    delete key_name;
+    delete[] key_name;
     key_name = nullptr;
     name_size = strlen(name) + 1;
 
@@ -47,7 +47,7 @@ void KEY_NODE::SetValue(const char *value)
 {
     if (value == nullptr)
         return;
-    delete key_val;
+    delete[] key_val;
     key_val = nullptr;
     val_size = strlen(value) + 1;
 
@@ -161,12 +161,12 @@ SECTION::~SECTION()
         Root->Deattach(&Root, &Top);
         delete old_root;
     }
-    delete Name;
+    delete[] Name;
 }
 
 void SECTION::SetName(const char *name)
 {
-    delete Name;
+    delete[] Name;
     if (name == nullptr)
     {
         Name = nullptr;

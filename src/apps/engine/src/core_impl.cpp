@@ -75,7 +75,7 @@ void CoreImpl::CleanUp()
     Compiler->Release();
     Services_List.Release();
     Services_List.Release();
-    delete State_file_name;
+    delete[] State_file_name;
 }
 
 void CoreImpl::Init()
@@ -589,7 +589,7 @@ bool CoreImpl::InitiateStateLoading(const char *file_name)
         return false;
     }
     fio->_CloseFile(fileS);
-    delete State_file_name;
+    delete[] State_file_name;
 
     const auto len = strlen(file_name) + 1;
     State_file_name = static_cast<char *>(new char[len]);
@@ -615,7 +615,7 @@ void CoreImpl::ProcessStateLoading()
     Compiler->LoadState(fileS);
     fio->_CloseFile(fileS);
 
-    delete State_file_name;
+    delete[] State_file_name;
     State_file_name = nullptr;
     State_loading = false;
 }

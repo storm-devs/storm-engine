@@ -329,7 +329,7 @@ void S_DEBUG::Release()
     WatcherList = nullptr;
     delete SourceView;
     SourceView = nullptr;
-    delete pExpResBuffer;
+    delete[] pExpResBuffer;
     pExpResBuffer = nullptr;
 }
 
@@ -531,7 +531,7 @@ const char *S_DEBUG::ProcessExpression(const char *pExpression)
         if (Result.Get(pC))
         {
             const auto len = strlen(pC) + 1;
-            delete pExpResBuffer;
+            delete[] pExpResBuffer;
             pExpResBuffer = new char[len];
             memcpy(pExpResBuffer, pC, len);
             return pExpResBuffer;
