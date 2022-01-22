@@ -130,7 +130,7 @@ class ShipWalk
     void CreateNewMan(SailorsPoints &sailorsPoints);
     void DeleteMan(int Index);
 
-    void Init(entid_t _shipID, int editorMode, const char *shipType);
+    bool Init(entid_t _shipID, int editorMode, const char *shipType);
     void CheckPosition(uint32_t &dltTime);
     void SetMastBroken(int iMastIndex);
     void OnHullHit(const CVECTOR &v);
