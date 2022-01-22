@@ -779,10 +779,8 @@ void ShipWalk::DeleteMan(int Index)
     // UN//GUARD_SAILORS
 };
 //------------------------------------------------------------------------------------
-void ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType)
+bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType)
 {
-    // GUARD_SAILORS(ShipWalk::Init())
-
     crewCount = 0;
     bHide = false;
     shipID = _shipID;
@@ -807,11 +805,17 @@ void ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType)
         // UN//GUARD_SAILORS
 
         if (sailorsPoints.points.count <= 0 || sailorsPoints.links.count <= 0)
-            return;
+            return false;
 
         // Find broken masts
         auto *attr = ship->GetACharacter();
         auto *mastsAttr = attr->FindAClass(attr, "Ship.Masts");
+
+        if (mastsAttr == nullptr)
+        {
+            spdlog::error("Cannot initialize ShipWalk: Ship.Masts is empty");
+            return false;
+        }
 
         const int iNumMasts = mastsAttr->GetAttributesNum();
 
@@ -845,7 +849,7 @@ void ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType)
         ship = nullptr;
     }
 
-    // UN//GUARD_SAILORS
+    return true;
 };
 // ----- Turn off points of broken mast ----------------------------------------- ------
 void ShipWalk::SetMastBroken(int iMastIndex)
@@ -1167,18 +1171,24 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
         shipID = message.EntityID();
         const std::string &c = message.String();
 
-        shipWalk.push_back(ShipWalk{});
-        shipWalk[shipsCount].Init(shipID, editorMode, c.c_str());
-        shipsCount++;
+        shipWalk.emplace_back();
+        if (shipWalk[shipsCount].Init(shipID, editorMode, c.c_str()))
+        {
+            shipsCount++;
 
-        if (!editorMode)
-            if (!shipWalk[shipsCount - 1].sailorsPoints.points.count ||
-                !shipWalk[shipsCount - 1].sailorsPoints.links.count)
-            {
-                DeleteShip(shipsCount - 1);
-                core.Trace("Sailors: sailors ship %s deleted", &c[0]);
-                return 0;
-            }
+            if (!editorMode)
+                if (!shipWalk[shipsCount - 1].sailorsPoints.points.count ||
+                    !shipWalk[shipsCount - 1].sailorsPoints.links.count)
+                {
+                    DeleteShip(shipsCount - 1);
+                    core.Trace("Sailors: sailors ship %s deleted", &c[0]);
+                    return 0;
+                }
+        }
+        else
+        {
+            shipWalk.pop_back();   
+        }
         break;
     }
 
