@@ -73,6 +73,9 @@ void FREE_CAMERA::Execute(uint32_t Delta_Time)
         return;
 
     SetPerspective(AttributesPointer->GetAttributeAsFloat("Perspective"));
+    
+    float persp;
+    pRS->GetCamera(vPos, vAng, persp);
 
     if (!pIslandBase)
         pIslandBase = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("island")));
