@@ -26,7 +26,7 @@ AIGroup::~AIGroup()
     aGroupShips.clear();
 }
 
-void AIGroup::AddShipInLines(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip, float fLines)
+void AIGroup::AddShipInLines(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip, uint32_t iLines)
 {
     auto *const pAMode = pACharacter->FindAClass(pACharacter, "Ship.Mode");
     AIShip *pShip = nullptr;
@@ -53,27 +53,23 @@ void AIGroup::AddShipInLines(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTE
         pShip = new AIShipWar();
         iShipsNum++;
     }
-    CVECTOR vShipPos, vTmpPos, vLineDespersion;
-    float fLine = 1.0f;
-    if(iShipsNum % 2 == 0) fLine = 1.0f;
-    else fLine = -1.0f;
+    CVECTOR vShipPos, vTmpPos1, vTmpPos2;
     if(pACharacter != GetCommanderACharacter())
     {
-        auto *matrix = new CMatrix();
-        matrix->BuildRotateY(vInitGroupPos.y);
-        vLineDespersion = CVECTOR(200.0f,0.0f,200.0f) * fLine;
-        vTmpPos = ((iShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) * 
-                   CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
-        vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos;
-        vLineDespersion = matrix->operator*(vLineDespersion);
-
-        vShipPos +=vLineDespersion;
+        vTmpPos1 = static_cast<float>(iShipsNum - (iShipsNum % 2 - 1)) * AIGroup::fDistanceBetweenGroupShips / 4.0f *
+                                    CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
+        vTmpPos2 = AIGroup::fDistanceBetweenGroupLines / 2  *
+                                    CVECTOR(cosf(vInitGroupPos.y), 0.0f, -sinf(vInitGroupPos.y));
+        if (iShipsNum % 2)
+        {
+            vTmpPos2 = -vTmpPos2;
+        }
+            
+        vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos1 - vTmpPos2;
     }
     else 
     {
-        vTmpPos = ((iShipsNum - 1) * AIGroup::fDistanceBetweenGroupShips) *
-                  CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
-        vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos;
+        vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z);
     }
 
     pShip->CreateShip(eidShip, pACharacter, pAShip, &vShipPos);

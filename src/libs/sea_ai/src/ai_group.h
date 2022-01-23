@@ -76,7 +76,7 @@ class AIGroup
     ATTRIBUTES *GetCommanderACharacter() const;
     AIShip *GetMainShip();
     void AddShip(entid_t _eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip);
-    void AddShipInLines(entid_t _eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip, float fLines);
+    void AddShipInLines(entid_t _eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pAShip, uint32_t fLines);
 
     void Unload(){};
 

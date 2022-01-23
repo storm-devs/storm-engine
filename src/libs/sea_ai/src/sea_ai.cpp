@@ -103,8 +103,8 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         auto eidShip = message.EntityID();
         auto *pACharacter = message.AttributePointer();
         auto *pAShip = message.AttributePointer();
-        auto fLines = message.Float();
-        AddShipInLines(eidShip, pACharacter, pAShip, fLines);
+        uint32_t iLines = message.Long();
+        AddShipInLines(eidShip, pACharacter, pAShip, iLines);
     }
     break;
     case AI_MESSAGE_ADD_SHIP: {
@@ -425,7 +425,7 @@ uint32_t SEA_AI::AttributeChanged(ATTRIBUTES *pAttribute)
     return 0;
 }
 
-void SEA_AI::AddShipInLines(entid_t eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip, float fLines)
+void SEA_AI::AddShipInLines(entid_t eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip, uint32_t iLines)
 {
     Assert(pCharacter && pAShip);
     auto *pG = pCharacter->FindAClass(pCharacter, "SeaAI.Group");
@@ -435,7 +435,7 @@ void SEA_AI::AddShipInLines(entid_t eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES 
     auto *const pGName = pG->GetAttribute("Name");
     Assert(pGName);
 
-    AIGroup::FindOrCreateGroup(pGName)->AddShipInLines(eidShip, pCharacter, pAShip, fLines);
+    AIGroup::FindOrCreateGroup(pGName)->AddShipInLines(eidShip, pCharacter, pAShip, iLines);
 }
 
 void SEA_AI::AddShip(entid_t eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip)
