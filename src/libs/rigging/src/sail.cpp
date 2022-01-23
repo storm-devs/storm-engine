@@ -252,10 +252,7 @@ bool SAIL::LoadState(ENTITY_STATE *state)
 
 void SAIL::Execute(uint32_t Delta_Time)
 {
-    uint64_t rtime;
-    int i;
-
-    // test slaughter of masts
+    // debug mast destruction
     if (gdata && core.Controls->GetDebugAsyncKeyState(VK_MENU) < 0 &&
         core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 && core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
     {
@@ -283,12 +280,13 @@ void SAIL::Execute(uint32_t Delta_Time)
             {
                 char pcTmpMastName[256];
                 sprintf_s(pcTmpMastName, "mast%d", nTmpMastNum);
-                auto *nod = pTmpMdl->FindNode(pcTmpMastName);
-                if (nod)
+                if (auto *nod = pTmpMdl->FindNode(pcTmpMastName))
                 {
                     entid_t eiMastTmp;
                     if (eiMastTmp = EntityManager::CreateEntity("MAST"))
                     {
+                        EntityManager::AddToLayer(SEA_EXECUTE, eiMastTmp, 2 + 1);
+                        EntityManager::AddToLayer(SEA_REALIZE, eiMastTmp, 31 + 1);
                         core.Send_Message(eiMastTmp, "lpii", MSG_MAST_SETGEOMETRY, nod, gdata[0].shipEI,
                                           gdata[0].modelEI);
                     }
@@ -320,6 +318,7 @@ void SAIL::Execute(uint32_t Delta_Time)
 
     if (bUse)
     {
+        int i;
         // ====================================================
         // If the ini-file has been changed, read the info from it
         if (fio->_FileOrDirectoryExists(RIGGING_INI_FILE))
@@ -391,6 +390,7 @@ void SAIL::Execute(uint32_t Delta_Time)
 
         CVECTOR pos, ang;
         float perspect;
+        uint64_t rtime;
         RDTSC_B(rtime);
         RenderService->GetCamera(pos, ang, perspect);
         CMatrix tmpMtx;
