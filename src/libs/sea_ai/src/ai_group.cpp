@@ -56,19 +56,28 @@ void AIGroup::AddShipInLines(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTE
     CVECTOR vShipPos, vTmpPos1, vTmpPos2;
     if(pACharacter != GetCommanderACharacter())
     {
-        vTmpPos1 = static_cast<float>(iShipsNum - (iShipsNum % 2 - 1)) * AIGroup::fDistanceBetweenGroupShips / 4.0f *
+        if(iLines == 2) vTmpPos1 = round((iShipsNum / 2) - 0.5f) * AIGroup::fDistanceBetweenGroupShips / 2.0f *
                                     CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
-        vTmpPos2 = AIGroup::fDistanceBetweenGroupLines / 2  *
+        else vTmpPos1 = (round((iShipsNum - iLines + ((iLines - (iLines % 2 != 0)) / 2)) / iLines) + 1.0f) * AIGroup::fDistanceBetweenGroupShips / 2.0f *
+                                    CVECTOR(sinf(vInitGroupPos.y), 0.0f, cosf(vInitGroupPos.y));
+        vTmpPos2 = AIGroup::fDistanceBetweenGroupLines / 2.0f  *
                                     CVECTOR(cosf(vInitGroupPos.y), 0.0f, -sinf(vInitGroupPos.y));
-        if (iShipsNum % 2)
-        {
-            vTmpPos2 = -vTmpPos2;
-        }
-            
+        vTmpPos2 = vTmpPos2 * fPosMult;
         vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z) - vTmpPos1 - vTmpPos2;
+
+        if((iShipsNum - 1)  % iLines) fPosMult = fPosMult - 1.0f - ((fPosMult - 1.0f) == 0.0f && !(iLines % 2));
+        else fPosMult = (iLines - (iLines % 2 != 0)) / 2.0f;
     }
     else 
     {
+        if(iLines % 2)
+        {
+           fPosMult = (iLines - 1) / 2.0f;
+        }
+        else
+        {
+            fPosMult = iLines / 2.0f;
+        }    
         vShipPos = CVECTOR(vInitGroupPos.x, vInitGroupPos.y, vInitGroupPos.z);
     }
 

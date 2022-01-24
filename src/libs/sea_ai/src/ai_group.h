@@ -18,6 +18,7 @@ class AIGroup
     CVECTOR vInitGroupPos, vMovePoint;
     bool bFirstExecute;
     uint32_t iShipsNum, iTradeShipsNum, iWarShipsNum;
+    float fPosMult;
 
     ATTRIBUTES *pACommander;
 
