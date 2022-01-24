@@ -771,8 +771,10 @@ void BIShipIcon::GetShipUVFromPictureIndex(int32_t nPicIndex, FRECT &rUV)
     const float pictureWidth = m_dwShipNCols ? 1.0f / m_dwShipNCols : 1.0f / pictureCount;
     const float pictureHeight = m_dwShipNRows ? 1.0f / m_dwShipNRows : 1.0f / pictureCount;
 
-    const float ny = std::floor(static_cast<float>(nPicIndex) / pictureCount);
-    const float nx = static_cast<float>(nPicIndex) - ny * pictureCount;
+    const float ny = m_dwShipNCols ? std::floor(static_cast<float>(nPicIndex) / m_dwShipNCols)
+                                   : std::floor(static_cast<float>(nPicIndex) / pictureCount);
+    const float nx = m_dwShipNRows ? static_cast<float>(nPicIndex) - ny * m_dwShipNRows
+                                   : static_cast<float>(nPicIndex) - ny * pictureCount;
     rUV.left = nx * pictureWidth;
     rUV.top = ny * pictureHeight; // boal
     rUV.right = rUV.left + pictureWidth;
