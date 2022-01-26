@@ -1093,7 +1093,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
         case VAR_FLOAT:
             Data_type = VAR_FLOAT;
             fValue = 0.0f;
-            from_chars(sValue.data(), sValue.data() + sValue.length(), fValue, fast_float::fixed);
+            fast_float::from_chars(sValue.data(), sValue.data() + sValue.length(), fValue);
             return true;
         case STRING:
         case VAR_STRING:
@@ -1147,7 +1147,7 @@ bool DATA::Convert(S_TOKEN_TYPE type)
             AttributesClass = nullptr;
             Data_type = VAR_FLOAT;
             fValue = 0.0f;
-            from_chars(sValue.data(), sValue.data() + sValue.length(), fValue, fast_float::fixed);
+            fast_float::from_chars(sValue.data(), sValue.data() + sValue.length(), fValue);
             return true;
         }
         break;
