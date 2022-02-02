@@ -351,13 +351,7 @@ void CXI_FORMATEDTEXT::ChangePosition(XYRECT &rNewPos)
 {
     m_rect = rNewPos;
 
-    m_nCompareWidth = m_rect.right - m_rect.left - m_leftOffset;
-    if (m_nAlignment == PR_ALIGN_CENTER)
-        m_nPrintLeftOffset = m_leftOffset + static_cast<int32_t>((m_rect.left + m_rect.right - m_leftOffset) * .5f);
-    else if (m_nAlignment == PR_ALIGN_RIGHT)
-        m_nPrintLeftOffset = m_rect.right - m_leftOffset;
-    else
-        m_nPrintLeftOffset = m_rect.left + m_leftOffset;
+    RefreshAlignment();
 
     m_rectCursorPosition.left = m_rect.left;
     m_rectCursorPosition.right = m_rect.right;
@@ -439,6 +433,17 @@ void CXI_FORMATEDTEXT::SaveParametersToIni()
     pIni->WriteString(m_nodeName, "position", pcWriteParam);
 }
 
+void CXI_FORMATEDTEXT::RefreshAlignment()
+{
+    m_nCompareWidth = m_rect.right - m_rect.left - m_leftOffset;
+    if (m_nAlignment == PR_ALIGN_CENTER)
+        m_nPrintLeftOffset = m_leftOffset + static_cast<int32_t>((m_rect.left + m_rect.right - m_leftOffset) * .5f);
+    else if (m_nAlignment == PR_ALIGN_RIGHT)
+        m_nPrintLeftOffset = m_rect.right - m_leftOffset;
+    else
+        m_nPrintLeftOffset = m_rect.left + m_leftOffset;
+}
+
 void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2)
 {
     char param[2048];
@@ -470,13 +475,7 @@ void CXI_FORMATEDTEXT::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         m_nAlignment = PR_ALIGN_LEFT;
 
     m_leftOffset = GetIniLong(ini1, name1, ini2, name2, "leftoffset");
-    m_nCompareWidth = m_rect.right - m_rect.left - m_leftOffset;
-    if (m_nAlignment == PR_ALIGN_CENTER)
-        m_nPrintLeftOffset = m_leftOffset + static_cast<int32_t>((m_rect.left + m_rect.right - m_leftOffset) * .5f);
-    else if (m_nAlignment == PR_ALIGN_RIGHT)
-        m_nPrintLeftOffset = m_rect.right - m_leftOffset;
-    else
-        m_nPrintLeftOffset = m_rect.left + m_leftOffset;
+    RefreshAlignment();
 
     m_nUpRectOffset = GetIniLong(ini1, name1, ini2, name2, "upOffset");
 
@@ -1185,6 +1184,17 @@ uint32_t CXI_FORMATEDTEXT::MessageProc(int32_t msgcode, MESSAGE &message)
     case 13: // set frized
         m_bFrized = message.Long() != 0;
         break;
+
+    case 14: { // set alignment from scripts
+        const auto new_alignment = message.Long(); 
+        if (new_alignment < PR_ALIGN_LEFT || new_alignment > PR_ALIGN_CENTER)
+        {
+            return -1;
+        }
+        m_nAlignment = new_alignment;
+        RefreshAlignment();
+        break;
+    }
     }
 
     return 0;

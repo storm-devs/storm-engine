@@ -80,6 +80,7 @@ class CXI_FORMATEDTEXT : public CINODE
     void InsertStringBefore(STRING_DESCRIBER *pNextDescr, const char *pSrcStr, int32_t nGrpNum, uint32_t dwColor);
     void RecalculateStringNumber();
     void VAlignment(int32_t nAlign);
+    void RefreshAlignment();
 
   protected:
     int32_t m_idFont;
