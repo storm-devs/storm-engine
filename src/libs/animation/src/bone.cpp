@@ -49,7 +49,7 @@ void Bone::SetNumFrames(int32_t num, CVECTOR &sPos, bool isRoot)
     ang = new COMP_QUATERNION[num];
     memset(ang, 0, numFrames * sizeof(ang[0]));
 #else
-    ang = new D3DXQUATERNION[num];
+    ang = new Quaternion[num];
     memset(ang, 0, numFrames * sizeof(ang[0]));
 #endif
 
@@ -79,7 +79,7 @@ void Bone::SetPositions(const CVECTOR *pArray, int32_t numPos)
 //-------------------------------------
 
 // Set animation angles
-void Bone::SetAngles(const D3DXQUATERNION *aArray, int32_t numAng)
+void Bone::SetAngles(const Quaternion *aArray, int32_t numAng)
 {
     Assert(numAng == numFrames);
     Assert(aArray);
@@ -101,7 +101,7 @@ void Bone::SetAngles(const D3DXQUATERNION *aArray, int32_t numAng)
     }
 }
 
-inline void Bone::GetFrame(int32_t f, D3DXQUATERNION &qt)
+inline void Bone::GetFrame(int32_t f, Quaternion &qt)
 {
     qt.x = sinf((ang[f].x * (1.0f / 32767.0f)) * PI * 0.5f);
     qt.y = sinf((ang[f].y * (1.0f / 32767.0f)) * PI * 0.5f);
@@ -116,7 +116,7 @@ inline void Bone::GetFrame(int32_t f, D3DXQUATERNION &qt)
 //-------------------------------------
 
 // Set animation angles
-void Bone::SetAngles(const D3DXQUATERNION *aArray, int32_t numAng)
+void Bone::SetAngles(const Quaternion *aArray, int32_t numAng)
 {
     Assert(numAng == numFrames);
     Assert(aArray);
@@ -124,7 +124,7 @@ void Bone::SetAngles(const D3DXQUATERNION *aArray, int32_t numAng)
     memcpy(ang, aArray, numFrames * sizeof(*ang));
 }
 
-inline void Bone::GetFrame(int32_t f, D3DXQUATERNION &qt)
+inline void Bone::GetFrame(int32_t f, Quaternion &qt)
 {
     qt = ang[f];
 }
@@ -156,10 +156,12 @@ void Bone::BuildStartMatrix()
 {
     if (numFrames == 0 || !ang)
         return;
-    const CMatrix inmtx;
-    D3DXQUATERNION a;
+    Matrix tmpInmtx;
+    CMatrix inmtx;
+    Quaternion a;
     GetFrame(0, a);
-    D3DXMatrixRotationQuaternion(inmtx, &a);
+    a.GetMatrix(tmpInmtx);
+    inmtx = tmpInmtx;
     inmtx.Pos() = pos0;
     if (parent)
         start.EqMultiply(inmtx, parent->start);
@@ -172,7 +174,7 @@ void Bone::BuildStartMatrix()
 // --------------------------------------------------------------------------------------------
 
 // Add animation frames
-void Bone::BlendFrame(int32_t frame, float kBlend, D3DXQUATERNION &res)
+void Bone::BlendFrame(int32_t frame, float kBlend, Quaternion &res)
 {
     if (numFrames <= 0)
         return;
@@ -183,14 +185,14 @@ void Bone::BlendFrame(int32_t frame, float kBlend, D3DXQUATERNION &res)
         GetFrame(numFrames - 1, res);
         return;
     }
-    D3DXQUATERNION q0, q1;
+    Quaternion q0, q1;
     GetFrame(f0, q0);
     GetFrame(f1, q1);
     if (kBlend < 0.0f)
         kBlend = 0.0f;
     if (kBlend > 1.0f)
         kBlend = 1.0f;
-    D3DXQuaternionSlerp(&res, &q0, &q1, kBlend);
+    res.SLerp(q0, q1, kBlend);
 }
 
 // Create a matrix for the resulting position
@@ -198,7 +200,9 @@ void Bone::BuildMatrix()
 {
     // Turns
     // matrix = a.BuildMatrix();
-    D3DXMatrixRotationQuaternion(matrix, &a);
+    Matrix tmpMtx;
+    a.GetMatrix(tmpMtx);
+    matrix = tmpMtx;
     matrix.Pos() = p;
     // Multiply by the parent matrix
     if (parent)

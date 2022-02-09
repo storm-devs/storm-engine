@@ -2147,7 +2147,7 @@ bool DX9RENDER::SetPerspective(float perspective, float fAspectRatio)
     const float h = 1.0f / tanf(fov_vert * 0.5f);
     const float Q = far_plane / (far_plane - near_plane);
 
-    D3DXMATRIX mtx;
+    D3DMATRIX mtx;
     PZERO(&mtx, sizeof(mtx));
 
     mtx._11 = w;

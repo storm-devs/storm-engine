@@ -162,7 +162,7 @@ void ROPE::Realize(uint32_t Delta_Time)
                         {
                             static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))
                                 ->SetLightAndFog(true);
-                            RenderService->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)gdata[i].pMatWorld);
+                            RenderService->SetTransform(D3DTS_WORLD, *gdata[i].pMatWorld);
 
                             RenderService->TextureSet(0, texl);
                             RenderService->SetMaterial(mat);

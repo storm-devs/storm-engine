@@ -150,7 +150,7 @@ void MAST::Realize(uint32_t Delta_Time)
 
                 CMatrix mtx;
                 mtx.SetIdentity();
-                RenderService->SetTransform(D3DTS_WORLD,(D3DXMATRIX*)&mtx);
+                RenderService->SetTransform(D3DTS_WORLD, mtx);
 
                 struct LINEVERTEX
                 {

@@ -223,7 +223,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
     static auto dwShipName = MakeHashValue("SHIP");
 
     CMatrix mView;
-    rs->GetTransform(D3DTS_VIEW, (D3DXMATRIX *)&mView);
+    rs->GetTransform(D3DTS_VIEW, mView);
     mView.Transposition();
 
     float fFov;

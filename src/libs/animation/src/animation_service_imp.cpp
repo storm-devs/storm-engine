@@ -571,7 +571,7 @@ bool AnimationServiceImp::LoadAN(const char *fname, AnimationInfo *info)
         delete[] vrt;
 
         // Angles
-        auto *ang = new D3DXQUATERNION[header.nFrames];
+        auto *ang = new Quaternion[header.nFrames];
         for (int32_t i = 0; i < header.nJoints; i++)
         {
             if (!fio->_ReadFile(fileS, ang, header.nFrames * sizeof(*ang)))
