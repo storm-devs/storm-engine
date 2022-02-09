@@ -553,7 +553,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                     sStringName = pListEntity->GetAttribute("str1");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        m_Image[i].string1 = sStringName;
+                        m_Image[i].string1 = std::string_view(sStringName).substr(1);
                     }
                     else
                         m_Image[i].str1 = pStringService->GetStringNum(sStringName);
@@ -565,7 +565,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                     sStringName = pListEntity->GetAttribute("str2");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        m_Image[i].string2 = sStringName;
+                        m_Image[i].string2 = std::string_view(sStringName).substr(1);
                     }
                     else
                         m_Image[i].str2 = pStringService->GetStringNum(sStringName);
@@ -1038,7 +1038,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                     sStringName = pAttribute->GetAttribute("str1");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        m_Image[i].string1 = sStringName;
+                        m_Image[i].string1 = std::string_view(sStringName).substr(1);
                     }
                     else
                         m_Image[i].str1 = pStringService->GetStringNum(sStringName);
@@ -1050,7 +1050,7 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                     sStringName = pAttribute->GetAttribute("str2");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        m_Image[i].string2 = sStringName;
+                        m_Image[i].string2 = std::string_view(sStringName).substr(1);
                     }
                     else
                         m_Image[i].str2 = pStringService->GetStringNum(sStringName);
@@ -1273,7 +1273,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                     sStringName = pListEntity->GetAttribute("str1");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        m_Image[i].string1 = sStringName;
+                        m_Image[i].string1 = std::string_view(sStringName).substr(1);
                     }
                     else
                         m_Image[i].str1 = pStringService->GetStringNum(sStringName);
@@ -1285,7 +1285,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                     sStringName = pListEntity->GetAttribute("str2");
                     if (sStringName != nullptr && sStringName[0] == '#')
                     {
-                        m_Image[i].string2 = sStringName;
+                        m_Image[i].string2 = std::string_view(sStringName).substr(1);
                     }
                     else
                         m_Image[i].str2 = pStringService->GetStringNum(sStringName);
