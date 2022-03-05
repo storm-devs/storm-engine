@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vxservice.h"
+#include "vx_service.h"
 #include "xdefines.h"
 
 class XSERVICE : public VXSERVICE
@@ -9,13 +9,13 @@ class XSERVICE : public VXSERVICE
     {
         char *sImageListName;
         char *sTextureName;
-        long textureID;
+        int32_t textureID;
         int textureQuantity;
 
-        long textureWidth;
-        long textureHeight;
-        long pictureQuantity;
-        long pictureStart;
+        int32_t textureWidth;
+        int32_t textureHeight;
+        int32_t pictureQuantity;
+        int32_t pictureStart;
     };
 
     struct PICTUREDESCR
@@ -29,26 +29,26 @@ class XSERVICE : public VXSERVICE
     ~XSERVICE() override;
 
     // initialization of service
-    void Init(VDX9RENDER *pRS, long lWidth, long lHight) override;
+    void Init(VDX9RENDER *pRS, int32_t lWidth, int32_t lHight) override;
 
     // get texture identificator for image group
-    long GetTextureID(const char *sImageListName) override;
-    long FindGroup(const char *sImageListName) const;
+    int32_t GetTextureID(const char *sImageListName) override;
+    int32_t FindGroup(const char *sImageListName) const;
     bool ReleaseTextureID(const char *sImageListName) override;
 
     // get texture positon for select picture
-    bool GetTexturePos(long pictureNum, FXYRECT &texRect) override;
-    bool GetTexturePos(long pictureNum, XYRECT &texRect) override;
+    bool GetTexturePos(int32_t pictureNum, FXYRECT &texRect) override;
+    bool GetTexturePos(int32_t pictureNum, XYRECT &texRect) override;
     bool GetTexturePos(const char *sImageListName, const char *sImageName, FXYRECT &texRect) override;
     bool GetTexturePos(const char *sImageListName, const char *sImageName, XYRECT &texRect) override;
-    bool GetTexturePos(int nTextureModify, long pictureNum, FXYRECT &texRect) override;
+    bool GetTexturePos(int nTextureModify, int32_t pictureNum, FXYRECT &texRect) override;
     bool GetTexturePos(int nTextureModify, const char *sImageListName, const char *sImageName,
                        FXYRECT &texRect) override;
 
     void GetTextureCutForSize(const char *pcImageListName, const FXYPOINT &pntLeftTopUV, const XYPOINT &pntSize,
-                              long nSrcWidth, long nSrcHeight, FXYRECT &outUV) override;
+                              int32_t nSrcWidth, int32_t nSrcHeight, FXYRECT &outUV) override;
 
-    long GetImageNum(const char *sImageListName, const char *sImageName) override;
+    int32_t GetImageNum(const char *sImageListName, const char *sImageName) override;
 
     void ReleaseAll() override;
 
@@ -58,8 +58,8 @@ class XSERVICE : public VXSERVICE
   protected:
     VDX9RENDER *m_pRS;
 
-    long m_dwListQuantity;
-    long m_dwImageQuantity;
+    int32_t m_dwListQuantity;
+    int32_t m_dwImageQuantity;
     IMAGELISTDESCR *m_pList;
     PICTUREDESCR *m_pImage;
 

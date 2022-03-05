@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../bi_defines.h"
-#include "Sd2_h/VAI_ObjBase.h"
+#include "sd2_h/vai_objbase.h"
 
 class SHIP_DESCRIBE_LIST
 {
@@ -10,15 +10,15 @@ class SHIP_DESCRIBE_LIST
     {
         bool isMyShip;
         bool isDead;
-        long relation;
-        long characterIndex;
+        int32_t relation;
+        int32_t characterIndex;
         ATTRIBUTES *pAttr; // ship attributes
-        long maxHP;
-        long maxSP;
-        long maxCrew;
-        long pictureNum;
-        long selectPictureNum;
-        long textureNum;
+        int32_t maxHP;
+        int32_t maxSP;
+        int32_t maxCrew;
+        int32_t pictureNum;
+        int32_t selectPictureNum;
+        int32_t textureNum;
         VAI_OBJBASE *pShip;
         uint32_t dwShipColor;
 
@@ -29,7 +29,7 @@ class SHIP_DESCRIBE_LIST
     SHIP_DESCRIBE_LIST();
     ~SHIP_DESCRIBE_LIST();
 
-    void Add(long mainChrIndex, long chIdx, ATTRIBUTES *pChAttr, ATTRIBUTES *pShipAttr, bool bMyShip, long relation,
+    void Add(int32_t mainChrIndex, int32_t chIdx, ATTRIBUTES *pChAttr, ATTRIBUTES *pShipAttr, bool bMyShip, int32_t relation,
              uint32_t dwShipColor);
 
     SHIP_DESCR *GetMainCharacterShip() const
@@ -42,10 +42,10 @@ class SHIP_DESCRIBE_LIST
         return pMainShipAttr;
     }
 
-    void Release(long charIdx);
-    void ShipSink(long charIdx);
+    void Release(int32_t charIdx);
+    void ShipSink(int32_t charIdx);
     void ReleaseAll();
-    SHIP_DESCR *FindShip(long idxCharacter) const;
+    SHIP_DESCR *FindShip(int32_t idxCharacter) const;
 
     SHIP_DESCR *GetShipRoot() const
     {

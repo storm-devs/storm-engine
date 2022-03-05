@@ -9,7 +9,7 @@ Import library class
 ******************************************************************************/
 #pragma once
 
-#include "Rdf.h"
+#include "rdf.h"
 #include "geos.h"
 
 #define EPSILON 4e-7
@@ -33,69 +33,69 @@ class GEOM : public GEOS
 
     struct VERTEX_BUFFER
     {
-        long type;
-        long size;
-        long stride;
-        long nverts;
-        long dev_buff;
+        int32_t type;
+        int32_t size;
+        int32_t stride;
+        int32_t nverts;
+        int32_t dev_buff;
     };
 
     GEOM_SERVICE &srv;
 
     RDF_HEAD rhead;
     char *globname;
-    long *names;
-    long *tname;
-    long *tlookup;
+    int32_t *names;
+    int32_t *tname;
+    int32_t *tlookup;
     MATERIAL *material;
     LIGHT *light;
     LABEL *label;
     OBJECT *object;
-    long idx_buff;
+    int32_t idx_buff;
     VERTEX_BUFFER *vbuff;
 
-    long *atriangles;
-    long traceid;
+    int32_t *atriangles;
+    int32_t traceid;
     DVECTOR src, dst;
 
   public:
-    GEOM(const char *fname, const char *lightname, GEOM_SERVICE &srv, long flags);
+    GEOM(const char *fname, const char *lightname, GEOM_SERVICE &srv, int32_t flags);
     virtual ~GEOM();
 
-    virtual long FindName(const char *name) const;
+    virtual int32_t FindName(const char *name) const;
 
-    virtual long FindLabelN(long start_index, long name_id);
-    virtual long FindLabelG(long start_index, long group_name_id);
-    virtual void GetLabel(long l, LABEL &lb) const;
-    virtual void SetLabel(long l, const LABEL &lb);
+    virtual int32_t FindLabelN(int32_t start_index, int32_t name_id);
+    virtual int32_t FindLabelG(int32_t start_index, int32_t group_name_id);
+    virtual void GetLabel(int32_t l, LABEL &lb) const;
+    virtual void SetLabel(int32_t l, const LABEL &lb);
 
-    virtual long FindObjN(long start_index, long name_id);
-    virtual long FindObjG(long start_index, long group_name_id);
-    virtual void GetObj(long o, OBJECT &ob) const;
-    virtual void SetObj(long o, const OBJECT &ob);
+    virtual int32_t FindObjN(int32_t start_index, int32_t name_id);
+    virtual int32_t FindObjG(int32_t start_index, int32_t group_name_id);
+    virtual void GetObj(int32_t o, OBJECT &ob) const;
+    virtual void SetObj(int32_t o, const OBJECT &ob);
 
-    virtual long FindMaterialN(long start_index, long name_id);
-    virtual long FindMaterialG(long start_index, long group_name_id);
-    virtual void GetMaterial(long m, MATERIAL &mt) const;
-    virtual void SetMaterial(long m, const MATERIAL &mt);
+    virtual int32_t FindMaterialN(int32_t start_index, int32_t name_id);
+    virtual int32_t FindMaterialG(int32_t start_index, int32_t group_name_id);
+    virtual void GetMaterial(int32_t m, MATERIAL &mt) const;
+    virtual void SetMaterial(int32_t m, const MATERIAL &mt);
 
-    virtual long FindLightN(long start_index, long name_id);
-    virtual long FindLightG(long start_index, long group_name_id);
-    virtual void GetLight(long l, LIGHT &lt) const;
-    virtual void SetLight(long l, const LIGHT &lt);
+    virtual int32_t FindLightN(int32_t start_index, int32_t name_id);
+    virtual int32_t FindLightG(int32_t start_index, int32_t group_name_id);
+    virtual void GetLight(int32_t l, LIGHT &lt) const;
+    virtual void SetLight(int32_t l, const LIGHT &lt);
 
     virtual void GetInfo(INFO &i) const;
-    virtual void Draw(const PLANE *pl, long np, MATERIAL_FUNC mtf) const;
+    virtual void Draw(const PLANE *pl, int32_t np, MATERIAL_FUNC mtf) const;
 
     virtual float Trace(VERTEX &src, VERTEX &dst);
-    virtual bool Clip(const PLANE *planes, long nplanes, const VERTEX &center, float radius, ADD_POLYGON_FUNC addpoly);
+    virtual bool Clip(const PLANE *planes, int32_t nplanes, const VERTEX &center, float radius, ADD_POLYGON_FUNC addpoly);
     virtual bool GetCollisionDetails(TRACE_INFO &ti) const;
 
-    virtual long FindTexture(long start_index, long name_id);
-    virtual long GetTexture(long tx) const;
-    virtual const char *GetTextureName(long tx) const;
+    virtual int32_t FindTexture(int32_t start_index, int32_t name_id);
+    virtual int32_t GetTexture(int32_t tx) const;
+    virtual const char *GetTextureName(int32_t tx) const;
 
-    virtual long GetVertexBuffer(long vb) const;
+    virtual int32_t GetVertexBuffer(int32_t vb) const;
 
-    virtual long GetIndexBuffer() const;
+    virtual int32_t GetIndexBuffer() const;
 };

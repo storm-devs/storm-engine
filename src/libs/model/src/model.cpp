@@ -18,7 +18,7 @@ MODELR::MODELR()
     ani = nullptr;
     memset(aniVerts, 0, sizeof(aniVerts));
     d3dDestVB = nullptr;
-    for (long i = 0; i < ANI_MAX_ACTIONS; i++)
+    for (int32_t i = 0; i < ANI_MAX_ACTIONS; i++)
         aniPos[i] = -1.0f;
     root = nullptr;
     useBlend = false;
@@ -42,11 +42,11 @@ MODELR::~MODELR()
 
 bool MODELR::Init()
 {
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
 
-    GeometyService = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    GeometyService = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (!GeometyService)
         throw std::runtime_error("No service: geometry");
 
@@ -55,7 +55,7 @@ bool MODELR::Init()
 
 bool alreadyTransformed;
 
-void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
+void *VBTransform(void *vb, int32_t startVrt, int32_t nVerts, int32_t totVerts)
 {
     if (alreadyTransformed)
         return dest_vb;
@@ -68,7 +68,7 @@ void *VBTransform(void *vb, long startVrt, long nVerts, long totVerts)
     GEOS::VERTEX0 *dst;
     dest_vb->Lock(0, 0, (VOID **)&dst, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
 
-    for (long v = 0; v < totVerts; v++)
+    for (int32_t v = 0; v < totVerts; v++)
     {
         // Vertex
         auto &vrt = src[v];
@@ -205,21 +205,21 @@ void MODELR::Realize(uint32_t Delta_Time)
             GEOS::INFO gi;
             root->geo->GetInfo(gi);
             nAniVerts = 0;
-            for (long vb = 0; vb < gi.nvrtbuffs; vb++)
+            for (int32_t vb = 0; vb < gi.nvrtbuffs; vb++)
             {
-                long avb = root->geo->GetVertexBuffer(vb);
+                int32_t avb = root->geo->GetVertexBuffer(vb);
                 VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
                 nAniVerts += gavb.nvertices;
             }
 
-            long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1;
+            int32_t fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1;
             rs->CreateVertexBuffer(sizeof(GEOS::VERTEX0) * nAniVerts, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, fvf,
                                    D3DPOOL_DEFAULT, &d3dDestVB);
         }
         dest_vb = d3dDestVB;
 
         alreadyTransformed = true;
-        for (long i = 0; i < 2; i++)
+        for (int32_t i = 0; i < 2; i++)
         {
             if (ani->Player(i).IsPlaying())
             {
@@ -274,7 +274,7 @@ void MODELR::AniRender()
 uint64_t MODELR::ProcessMessage(MESSAGE &message)
 {
     std::string str;
-    const long code = message.Long();
+    const int32_t code = message.Long();
     CVECTOR tmp;
     switch (code)
     {
@@ -344,7 +344,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
     case MSG_MODEL_LOAD_ANI: // set animation
     {
         str = message.String();
-        auto asr = static_cast<AnimationService *>(core.CreateService("AnimationServiceImp"));
+        auto asr = static_cast<AnimationService *>(core.GetService("AnimationServiceImp"));
         ani = asr->CreateAnimation(str.c_str());
         if (ani)
             return 1;
@@ -405,12 +405,25 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         {
             spdlog::trace("MODELR: Cannot substitute geometry node {}", geometry_node);
         }
+        break;
+    }
+
+    case MSG_MODEL_PLAY_ACTION: {
+        if (!ani)
+        {
+            return 0;
+        }
+
+        auto &player = ani->Player(message.Long());
+        player.SetAction(message.String().c_str());
+        player.Play();
+        break;
     }
     }
     return 1;
 }
 
-NODE *MODELR::GetNode(long n)
+NODE *MODELR::GetNode(int32_t n)
 {
     return root->GetNode(n);
 }
@@ -434,11 +447,11 @@ const CVECTOR *clip_c;
 float clip_r;
 ADD_POLYGON_FUNC clip_ap;
 GEOS::ADD_POLYGON_FUNC clip_geosap;
-long clip_nps;
+int32_t clip_nps;
 
-bool AddPolygon(const GEOS::VERTEX *vr, long nv);
+bool AddPolygon(const GEOS::VERTEX *vr, int32_t nv);
 //-------------------------------------------------------------------
-bool MODELR::Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+bool MODELR::Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
 {
     clip_p = planes;
     clip_nps = nplanes;
@@ -516,18 +529,18 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
 
             int nt = 0;
             root->geo->GetInfo(gi);
-            for (long vb = 0; vb < gi.nvrtbuffs; vb++)
+            for (int32_t vb = 0; vb < gi.nvrtbuffs; vb++)
             {
-                long avb = root->geo->GetVertexBuffer(vb);
+                int32_t avb = root->geo->GetVertexBuffer(vb);
                 VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
                 auto *gsrc = static_cast<GEOS::AVERTEX0 *>(gavb.buff);
 
                 // for all objects that refers to this vertexBuffer
-                for (long o = 0; o < gi.nobjects; o++)
+                for (int32_t o = 0; o < gi.nobjects; o++)
                 {
                     GEOS::OBJECT go;
                     root->geo->GetObj(o, go);
-                    if (go.vertex_buff != static_cast<unsigned long>(avb))
+                    if (go.vertex_buff != static_cast<uint32_t>(avb))
                         continue;
 
                     nt += go.ntriangles;
@@ -535,24 +548,24 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
             }
 
             idxBuff = new unsigned short[nt * 3];
-            for (long vb = 0; vb < gi.nvrtbuffs; vb++)
+            for (int32_t vb = 0; vb < gi.nvrtbuffs; vb++)
             {
-                long avb = root->geo->GetVertexBuffer(vb);
+                int32_t avb = root->geo->GetVertexBuffer(vb);
                 VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
                 auto *gsrc = static_cast<GEOS::AVERTEX0 *>(gavb.buff);
 
                 // for all objects that refers to this vertexBuffer
-                for (long o = 0; o < gi.nobjects; o++)
+                for (int32_t o = 0; o < gi.nobjects; o++)
                 {
                     GEOS::OBJECT go;
                     root->geo->GetObj(o, go);
-                    if (go.vertex_buff != static_cast<unsigned long>(avb))
+                    if (go.vertex_buff != static_cast<uint32_t>(avb))
                         continue;
 
                     // for all triangles in object
-                    for (long gt = 0; gt < go.ntriangles; gt++)
+                    for (int32_t gt = 0; gt < go.ntriangles; gt++)
                     {
-                        long t = gt * 3 + go.striangle;
+                        int32_t t = gt * 3 + go.striangle;
                         // Tomas Moller and Ben Trumbore algorithm
                         idxBuff[t + 0] = idx[t + 0];
                         idxBuff[t + 1] = idx[t + 1];
@@ -564,14 +577,14 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
         }
 
         root->geo->GetInfo(gi);
-        for (long vb = 0; vb < gi.nvrtbuffs; vb++)
+        for (int32_t vb = 0; vb < gi.nvrtbuffs; vb++)
         {
-            long avb = root->geo->GetVertexBuffer(vb);
+            int32_t avb = root->geo->GetVertexBuffer(vb);
             VGEOMETRY::ANIMATION_VB gavb = GeometyService->GetAnimationVBDesc(avb);
             auto *gsrc = static_cast<GEOS::AVERTEX0 *>(gavb.buff);
 
             // transform vertices and trace
-            for (long v = 0; v < gavb.nvertices; v++)
+            for (int32_t v = 0; v < gavb.nvertices; v++)
             {
                 cold[v] = *(CVECTOR *)(&gsrc->pos);
                 CMatrix &m1 = bones[gsrc->boneid & 0xff];
@@ -587,17 +600,17 @@ float MODELR::Trace(const CVECTOR &src, const CVECTOR &dst)
             }
 
             // for all objects that refers to this vertexBuffer
-            for (long o = 0; o < gi.nobjects; o++)
+            for (int32_t o = 0; o < gi.nobjects; o++)
             {
                 GEOS::OBJECT go;
                 root->geo->GetObj(o, go);
-                if (go.vertex_buff != static_cast<unsigned long>(avb))
+                if (go.vertex_buff != static_cast<uint32_t>(avb))
                     continue;
 
                 // for all triangles in object
-                for (long gt = 0; gt < go.ntriangles; gt++)
+                for (int32_t gt = 0; gt < go.ntriangles; gt++)
                 {
-                    long t = gt * 3 + go.striangle;
+                    int32_t t = gt * 3 + go.striangle;
                     // Tomas Moller and Ben Trumbore algorithm
                     CVECTOR a = cold[idxBuff[t + 1] + go.start_vertex] - cold[idxBuff[t + 0] + go.start_vertex];
                     CVECTOR b = cold[idxBuff[t + 2] + go.start_vertex] - cold[idxBuff[t + 0] + go.start_vertex];
@@ -711,7 +724,7 @@ void MODELR::LostRender()
 void MODELR::RestoreRender()
 {
     root->RestoreGeometry();
-    const long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1;
+    const int32_t fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2 | D3DFVF_TEX1;
     if (nAniVerts)
         rs->CreateVertexBuffer(sizeof(GEOS::VERTEX0) * nAniVerts, D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC, fvf,
                                D3DPOOL_DEFAULT, &d3dDestVB);

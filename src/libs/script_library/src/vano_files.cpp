@@ -5,7 +5,7 @@
 #include "defines.h"
 #include "s_import_func.h"
 #include "v_s_stack.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 uint32_t _RDTSC_B(VS_STACK *pS)
 {
@@ -14,7 +14,7 @@ uint32_t _RDTSC_B(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     uint64_t dwRDTSC;
     RDTSC_B(dwRDTSC);
-    pVR->Set(static_cast<long>(dwRDTSC));
+    pVR->Set(static_cast<int32_t>(dwRDTSC));
     return IFUNCRESULT_OK;
 }
 
@@ -24,9 +24,9 @@ uint32_t _RDTSC_E(VS_STACK *pS)
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
         return IFUNCRESULT_FAILED;
-    uint64_t dwRDTSC = static_cast<uint32_t>(pValue->GetLong());
+    uint64_t dwRDTSC = static_cast<uint32_t>(pValue->GetInt());
     RDTSC_E(dwRDTSC);
-    pVR->Set(static_cast<long>(dwRDTSC));
+    pVR->Set(static_cast<int32_t>(dwRDTSC));
     return IFUNCRESULT_OK;
 }
 

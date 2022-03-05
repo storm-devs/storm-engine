@@ -29,20 +29,20 @@ class ISPYGLASS : public Entity
         }
 
         void Release();
-        void LoadFromAttr(BIImageRender *pImgRender, ATTRIBUTES *pA, const char *pcDefName, long nDefLeftPos,
-                          long nDefTopPos, long nDefRightPos, long nDefBottomPos, long nPrior);
+        void LoadFromAttr(BIImageRender *pImgRender, ATTRIBUTES *pA, const char *pcDefName, int32_t nDefLeftPos,
+                          int32_t nDefTopPos, int32_t nDefRightPos, int32_t nDefBottomPos, int32_t nPrior);
         void ChangeIcon(BIImageRender *pImgRender, const char *pcTextureName, FRECT &frUV);
     };
 
     struct TextParam
     {
         VDX9RENDER *rs;
-        long nFontID;
-        POINT pos;
+        int32_t nFontID;
+        IPOINT pos;
         float fScale;
         uint32_t dwColor;
         std::string sText;
-        long nAlign;
+        int32_t nAlign;
 
         TextParam(TextParam &&) = delete;
         TextParam(const TextParam &) = delete;
@@ -65,7 +65,7 @@ class ISPYGLASS : public Entity
             nFontID = -1;
         }
 
-        void LoadFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *pcDefText, long nDefXPos, long nDefYPos);
+        void LoadFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *pcDefText, int32_t nDefXPos, int32_t nDefYPos);
         void Print() const;
     };
 
@@ -160,7 +160,7 @@ class ISPYGLASS : public Entity
 
     bool m_bIsOn;
     bool m_bIsPresentShipInfo;
-    long m_nInfoCharacterIndex;
+    int32_t m_nInfoCharacterIndex;
 
     SpyGlassCameraParameters m_Camera{};
     std::vector<FRECT> m_aNationUV;
@@ -176,16 +176,16 @@ class ISPYGLASS : public Entity
     void Release();
     ATTRIBUTES *GetAttr(const char *pcAttrName) const;
     void TurnOnTelescope(bool bTurnOn);
-    void SetShipInfo(long nCharIndex);
+    void SetShipInfo(int32_t nCharIndex);
     void FindNewTargetShip();
     void TurnOnSpyGlassCamera();
     void ChangeTelescopeType(const char *pcTextureName, float fZoomScale, float fActivateTime, float fUpdateTime);
     void UpdateCamera();
     void ChangeTargetData(const char *pcShipName, const char *pcShipType, float fRelativeHP, float fRelativeSP,
-                          long nShipCrew, float fShipSpeed, float fSailTo, long nCurCannons, long nMaxCannons,
-                          long nCharge, long nNation, long nSailState, long nFace, long nFencing, long nCannon,
-                          long nAccuracy, long nNavigation, long nBoarding, const char *pcCaptainName,
-                          const char *pcFaceTexture, long nShipClass);
+                          int32_t nShipCrew, float fShipSpeed, float fSailTo, int32_t nCurCannons, int32_t nMaxCannons,
+                          int32_t nCharge, int32_t nNation, int32_t nSailState, int32_t nFace, int32_t nFencing, int32_t nCannon,
+                          int32_t nAccuracy, int32_t nNavigation, int32_t nBoarding, const char *pcCaptainName,
+                          const char *pcFaceTexture, int32_t nShipClass);
     void FillUVArrayFromAttributes(std::vector<FRECT> &m_aUV, ATTRIBUTES *pA) const;
     VAI_OBJBASE *GetFort();
 };

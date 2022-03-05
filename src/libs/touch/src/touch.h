@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Island_Base.h"
+#include "island_base.h"
 #include "dx9render.h"
 #include "ship_base.h"
 #include <vector>
@@ -24,7 +24,7 @@ struct TOUCH_SHIP
     CVECTOR vKickAngle;           // temp
     CVECTOR vContour[128];        // initial contour // must be dynamic
     CVECTOR vContourRect[4];      // rect contour
-    long iNumVContour;            // num points in contour
+    int32_t iNumVContour;            // num points in contour
 };
 
 class TOUCH : public Entity
@@ -39,25 +39,25 @@ class TOUCH : public Entity
     float fCollisionDepth;
 
     uint32_t dwDeltaTime;
-    long iDeltaTime;
+    int32_t iDeltaTime;
 
     TOUCH_SHIP *pShips[256];
-    long iNumShips;
+    int32_t iNumShips;
 
-    BOOL BuildContour(long ship_idx);
-    BOOL IsPointInContour(CVECTOR *vP, CVECTOR *vContour, long numvcontour);
+    BOOL BuildContour(int32_t ship_idx);
+    BOOL IsPointInContour(CVECTOR *vP, CVECTOR *vContour, int32_t numvcontour);
 
-    bool IsSinked(long iIndex);
+    bool IsSinked(int32_t iIndex);
 
-    float Touch(long idx, long skip_idx, CVECTOR *vPos, CVECTOR *vAng, float fPower, float fSlide);
+    float Touch(int32_t idx, int32_t skip_idx, CVECTOR *vPos, CVECTOR *vAng, float fPower, float fSlide);
     BOOL FakeTouch();
-    BOOL IsIntersectShipsRects(long idx1, long idx2);
-    BOOL IsIntersectShipsReal(long idx1, long cidx, CVECTOR *vPos, CVECTOR *vAng, CVECTOR *vRecoil, float *fPower,
+    BOOL IsIntersectShipsRects(int32_t idx1, int32_t idx2);
+    BOOL IsIntersectShipsReal(int32_t idx1, int32_t cidx, CVECTOR *vPos, CVECTOR *vAng, CVECTOR *vRecoil, float *fPower,
                               float *fSlide);
     void GetLineABC(CVECTOR &v1, CVECTOR &v2, float &A, float &B, float &C);
     CVECTOR GetLineIntersectPoint(CVECTOR &v1, CVECTOR &v2, CVECTOR &o1, CVECTOR &o2);
-    long ProcessImpulse(long iOurIdx, CVECTOR vPos, CVECTOR vDir, float fPowerApplied);
-    long GetTouchPoint(long iIdx, const CVECTOR &vPos);
+    int32_t ProcessImpulse(int32_t iOurIdx, CVECTOR vPos, CVECTOR vDir, float fPowerApplied);
+    int32_t GetTouchPoint(int32_t iIdx, const CVECTOR &vPos);
 
     void DrawLine(std::vector<RS_LINE2D> &aLines, float x1, float y1, float x2, float y2, uint32_t color);
     void DrawShips();

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dx9render.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 class TMPTELEPORT : public Entity
 {
@@ -45,16 +45,16 @@ class TMPTELEPORT : public Entity
     void XChange(TELEPORT_DESCR &d1, TELEPORT_DESCR &d2);
 
   protected:
-    long m_leftPos;
-    long m_topPos;
-    long m_deltaPos;
-    long m_showStrQuantity;
+    int32_t m_leftPos;
+    int32_t m_topPos;
+    int32_t m_deltaPos;
+    int32_t m_showStrQuantity;
 
-    long m_nStrQuantity;
-    long m_nCurStr;
-    long m_nCurShowPos;
+    int32_t m_nStrQuantity;
+    int32_t m_nCurStr;
+    int32_t m_nCurShowPos;
 
-    long m_nShowType;
+    int32_t m_nShowType;
 };
 
 class FINDFILESINTODIRECTORY : public Entity

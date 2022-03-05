@@ -31,7 +31,7 @@ class ISLAND_DESCRIBER
         int picIdx;
         int selPicIdx;
         int texIdx;
-        long characterIndex;
+        int32_t characterIndex;
         bool bDiseased;
     };
 

@@ -1,6 +1,6 @@
 #include "core.h"
 
-#include "geometry_R.h"
+#include "geometry_r.h"
 
 CREATE_SERVICE(GEOMETRY)
 
@@ -11,7 +11,7 @@ char RenderServiceName[] = "dx9render";
 GEOM_SERVICE_R GSR;
 char texturePath[256];
 
-const long SHIFT_VALUE = 999999999;
+const int32_t SHIFT_VALUE = 999999999;
 #define AVB_MAX 1024
 VGEOMETRY::ANIMATION_VB avb[AVB_MAX]; //!!! temporary
 
@@ -38,7 +38,7 @@ void GEOMETRY::SetTechnique(const char *name)
     strcpy_s(technique, name);
 }
 
-GEOMETRY::ANIMATION_VB GEOMETRY::GetAnimationVBDesc(long vb)
+GEOMETRY::ANIMATION_VB GEOMETRY::GetAnimationVBDesc(int32_t vb)
 {
     return avb[vb - SHIFT_VALUE];
 }
@@ -54,7 +54,7 @@ static bool geoLog = false;
 
 bool GEOMETRY::Init()
 {
-    RenderService = static_cast<VDX9RENDER *>(core.CreateService(RenderServiceName));
+    RenderService = static_cast<VDX9RENDER *>(core.GetService(RenderServiceName));
     if (!RenderService)
     {
         core.Trace("No service: %s", RenderServiceName);
@@ -64,7 +64,7 @@ bool GEOMETRY::Init()
     auto ini = fio->OpenIniFile(core.EngineIniFileName());
     if (ini)
     {
-        geoLog = ini->GetLong(nullptr, "geometry_log", 0) == 1;
+        geoLog = ini->GetInt(nullptr, "geometry_log", 0) == 1;
     }
 
     return true;
@@ -83,7 +83,7 @@ bool GEOMETRY::LoadState(ENTITY_STATE *state)
 char lightPath[256];
 int vrtSize;
 
-GEOS *GEOMETRY::CreateGeometry(const char *file_name, const char *light_file_name, long flags, const char *lmPath)
+GEOS *GEOMETRY::CreateGeometry(const char *file_name, const char *light_file_name, int32_t flags, const char *lmPath)
 {
     char fnt[256], lfn[256];
     if (light_file_name != nullptr)
@@ -194,7 +194,7 @@ std::fstream GEOM_SERVICE_R::OpenFile(const char *fname)
     auto fileS = fio->_CreateFile(fname, std::ios::binary | std::ios::in);
     if (!fileS.is_open())
     {
-        if (_strcmpi(&fname[strlen(fname) - 4], ".col") == 0)
+        if (storm::iEquals(&fname[strlen(fname) - 4], ".col"))
         {
             //    core.Trace("geometry::can't open file %s", fname);
         }
@@ -212,7 +212,7 @@ int GEOM_SERVICE_R::FileSize(const char *fname)
     return fio->_GetFileSize(fname);
 }
 
-bool GEOM_SERVICE_R::ReadFile(std::fstream &fileS, void *data, long bytes)
+bool GEOM_SERVICE_R::ReadFile(std::fstream &fileS, void *data, int32_t bytes)
 {
     return fio->_ReadFile(fileS, data, bytes);
 }
@@ -222,7 +222,7 @@ void GEOM_SERVICE_R::CloseFile(std::fstream &fileS)
     fio->_CloseFile(fileS);
 }
 
-void *GEOM_SERVICE_R::malloc(long bytes)
+void *GEOM_SERVICE_R::malloc(int32_t bytes)
 {
     return new char[bytes];
 }
@@ -235,7 +235,7 @@ void GEOM_SERVICE_R::free(void *ptr)
 GEOS::ID GEOM_SERVICE_R::CreateTexture(const char *fname)
 {
     char tex[256];
-    if (_strcmpi(fname, "shadow.tga") == 0)
+    if (storm::iEquals(fname, "shadow.tga"))
     {
         sprintf_s(tex, "lighting\\%s\\%s", lightPath, fname);
     }
@@ -385,21 +385,21 @@ void GEOM_SERVICE_R::ReleaseTexture(GEOS::ID tex)
         RenderService->TextureRelease(tex);
 }
 
-GEOS::ID GEOM_SERVICE_R::CreateVertexBuffer(long type, long size)
+GEOS::ID GEOM_SERVICE_R::CreateVertexBuffer(int32_t type, int32_t size)
 {
     if (size == 0)
         return INVALID_BUFFER_ID;
     if (!RenderService)
         return INVALID_BUFFER_ID;
 
-    long texset[4] = {D3DFVF_TEX1, D3DFVF_TEX2, D3DFVF_TEX3, D3DFVF_TEX4};
-    const long fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2;
+    int32_t texset[4] = {D3DFVF_TEX1, D3DFVF_TEX2, D3DFVF_TEX3, D3DFVF_TEX4};
+    const int32_t fvf = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2;
     const auto FVF = fvf | texset[type & 3];
 
     // animated vertices
     if (type & 4)
     {
-        long a;
+        int32_t a;
         for (a = 0; a < AVB_MAX; a++)
             if (avb[a].nvertices == 0)
                 break;
@@ -447,7 +447,7 @@ void GEOM_SERVICE_R::ReleaseVertexBuffer(GEOS::ID vb)
             RenderService->ReleaseVertexBuffer(vb);
 }
 
-GEOS::ID GEOM_SERVICE_R::CreateIndexBuffer(long size)
+GEOS::ID GEOM_SERVICE_R::CreateIndexBuffer(int32_t size)
 {
     if (RenderService)
         RenderService->ProgressView();
@@ -488,13 +488,13 @@ void GEOM_SERVICE_R::SetIndexBuffer(GEOS::ID ibuff)
     CurentIndexBuffer = ibuff;
 }
 
-void GEOM_SERVICE_R::SetVertexBuffer(long vsize, GEOS::ID vbuff)
+void GEOM_SERVICE_R::SetVertexBuffer(int32_t vsize, GEOS::ID vbuff)
 {
     CurentVertexBuffer = vbuff;
     CurentVertexBufferSize = vsize;
 }
 
-void GEOM_SERVICE_R::DrawIndexedPrimitive(long minv, long numv, long vrtsize, long startidx, long numtrg)
+void GEOM_SERVICE_R::DrawIndexedPrimitive(int32_t minv, int32_t numv, int32_t vrtsize, int32_t startidx, int32_t numtrg)
 {
     if (!RenderService)
         return;

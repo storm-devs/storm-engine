@@ -1,5 +1,5 @@
 #include "seps.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "object.h"
 
@@ -122,7 +122,7 @@ void SEPS_PS::Reset()
 
 SEPS_PS::~SEPS_PS()
 {
-    long n;
+    int32_t n;
     RenderService->Release(VBuffer);
     for (n = 0; n < TexturesNum; n++)
         RenderService->TextureRelease(TextureID[n]);
@@ -216,15 +216,15 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     // GUARD(SEPS_PS::Init)
     if (!ini)
         return false;
-    long n;
+    int32_t n;
     bool bRes;
 
     // load render service -----------------------------------------------------
-    RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    RenderService = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!RenderService)
         throw std::runtime_error("No service: dx9render");
 
-    gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     // if(!gs) return false;
 
     // read textures ------------------------------------------------------------
@@ -259,13 +259,13 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     memcpy(TechniqueName, string, len);
 
     // configure particles
-    ParticlesNum = ini->GetLong(psname, PSKEY_PNUM, 32);
+    ParticlesNum = ini->GetInt(psname, PSKEY_PNUM, 32);
     EmissionTime = ini->GetFloat(psname, PSKEY_EMISSIONTIME, 0);
-    DeltaTimeSLE = static_cast<long>(EmissionTime);
+    DeltaTimeSLE = static_cast<int32_t>(EmissionTime);
     EmissionTimeRand = ini->GetFloat(psname, PSKEY_EMISSIONTIMERAND, 0);
     CurrentEmissionTimeRand = static_cast<float>(EmissionTimeRand) * rand() / RAND_MAX;
     fSurfaceOffset = ini->GetFloat(psname, PSKEY_SURFACEOFFSET, 0);
-    ParticleColor = ini->GetLong(psname, "color", 0xffffffff);
+    ParticleColor = ini->GetInt(psname, "color", 0xffffffff);
 
     fWindEffect = ini->GetFloat(psname, PSKEY_WINDEFFECT, 0.0f);
 
@@ -273,13 +273,13 @@ bool SEPS_PS::Init(INIFILE *ini, char *psname)
     Gravity = ini->GetFloat(psname, PSKEY_GRAVITY, 0.0f);
     Inispeed = ini->GetFloat(psname, PSKEY_INISPEED, 0.0f);
     SpeedDeviation = ini->GetFloat(psname, PSKEY_SDEVIATION, 0.0f);
-    Lifetime = ini->GetLong(psname, PSKEY_LIFETIME, 1000);
+    Lifetime = ini->GetInt(psname, PSKEY_LIFETIME, 1000);
     Spin = ini->GetFloat(psname, PSKEY_SPIN, 0.0f);
     SpinDeviation = ini->GetFloat(psname, PSKEY_SPINDEV, 0.0f);
-    EmitterIniTime = ini->GetLong(psname, PSKEY_EMITTERINITIME, 0);
+    EmitterIniTime = ini->GetInt(psname, PSKEY_EMITTERINITIME, 0);
     Weight = ini->GetFloat(psname, PSKEY_WEIGHT, 0.0f);
     WeightDeviation = ini->GetFloat(psname, PSKEY_WEIGHTDEVIATION, 0.0f);
-    Emitdelta = ini->GetLong(psname, PSKEY_EMITDELTA, 0);
+    Emitdelta = ini->GetInt(psname, PSKEY_EMITDELTA, 0);
     ESpace = ini->GetFloat(psname, PSKEY_EMITRADIUS, 0);
     fTrackPointRadius = ini->GetFloat(psname, PSKEY_TRACKPOINTRADIUS, 1.0f);
 
@@ -392,8 +392,8 @@ void SEPS_PS::UpdateVertexBuffer()
     CVECTOR pos;
     CVECTOR local_pos;
     sink_effect::PARTICLE_VERTEX *pVertex;
-    long n, i;
-    long index;
+    int32_t n, i;
+    int32_t index;
     float halfsize;
     CMatrix RMatrix;
 
@@ -596,7 +596,7 @@ void SEPS_PS::Realize(uint32_t DeltaTime)
 
 bool SEPS_PS::EmitParticle()
 {
-    long n;
+    int32_t n;
     for (n = 0; n < ParticlesNum; n++)
     {
         if (Particle[n].live)
@@ -641,7 +641,7 @@ bool SEPS_PS::EmitParticle()
 
 void SEPS_PS::ProcessParticles(uint32_t DeltaTime)
 {
-    long n;
+    int32_t n;
 
     if (nSystemLifeTime > 0)
     {
@@ -740,9 +740,9 @@ void SEPS_PS::ProcessParticles(uint32_t DeltaTime)
     }
 }
 
-void SEPS_PS::SetDelay(long _delay)
+void SEPS_PS::SetDelay(int32_t _delay)
 {
-    long n;
+    int32_t n;
     Delay = _delay;
     if (Delay > 0)
     {
@@ -758,7 +758,7 @@ void SEPS_PS::SetParticlesTracks(uint32_t DeltaTime)
     uint32_t color;
     uint32_t alpha;
     float val;
-    long n;
+    int32_t n;
 
     for (n = 0; n < ParticlesNum; n++)
     {
@@ -797,11 +797,11 @@ void SEPS_PS::SetParticlesTracks(uint32_t DeltaTime)
     }
 }
 
-float SEPS_PS::GetTrackValue(sink_effect::TRACK_EVENT *Track, long Time)
+float SEPS_PS::GetTrackValue(sink_effect::TRACK_EVENT *Track, int32_t Time)
 {
-    long n;
+    int32_t n;
     float v1, v2;
-    long t1, t2;
+    int32_t t1, t2;
 
     if (Time < 0)
         return 0;
@@ -849,7 +849,7 @@ float SEPS_PS::GetTrackValue(sink_effect::TRACK_EVENT *Track, long Time)
 
 bool SEPS_PS::BuildTrack(INIFILE *ini, sink_effect::TRACK_EVENT *Track, const char *psname, const char *key_name)
 {
-    long n, i;
+    int32_t n, i;
     char buffer[MAX_PATH];
     bool bRes;
     bool bFound;
@@ -907,7 +907,7 @@ void SEPS_PS::SetEmitter(CVECTOR p, CVECTOR a)
 
 void SEPS_PS::LinkToObject(entid_t id, CVECTOR _LinkPos)
 {
-    long n;
+    int32_t n;
     bLinkEmitter = true;
     LinkObject = id;
     LinkPos = _LinkPos;

@@ -1,5 +1,5 @@
 #include "battle_land.h"
-#include "battle_mansign.h"
+#include "battle_man_sign.h"
 #include "core.h"
 #include "message.h"
 #include "shared/battle_interface/msg_control.h"
@@ -17,7 +17,7 @@ BATTLE_LAND_INTERFACE::~BATTLE_LAND_INTERFACE()
 
 bool BATTLE_LAND_INTERFACE::Init()
 {
-    m_pRS = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    m_pRS = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!m_pRS)
     {
         throw std::runtime_error("Can`t create render service");
@@ -104,7 +104,7 @@ uint64_t BATTLE_LAND_INTERFACE::ProcessMessage(MESSAGE &message)
 
     case MSG_BATTLE_LAND_MAKE_COMMAND: {
         const std::string &param = message.String();
-        if (_stricmp(param.c_str(), "cancel") == 0)
+        if (storm::iEquals(param, "cancel"))
         {
             if (m_pManSign)
                 m_pManSign->ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
@@ -140,7 +140,7 @@ void BATTLE_LAND_INTERFACE::EndShow()
 void BATTLE_LAND_INTERFACE::SetShowParameters()
 {
     auto *const pA = AttributesPointer ? AttributesPointer->GetAttributeClass("Parameters") : nullptr;
-    m_bShowCommandos = 0 != BIUtils::GetLongFromAttr(pA, "DoShowCommandos", true);
+    m_bShowCommandos = 0 != BIUtils::GetIntFromAttr(pA, "DoShowCommandos", true);
 
     m_pManSign = new BIManSign(GetId(), m_pRS);
     Assert(m_pManSign);

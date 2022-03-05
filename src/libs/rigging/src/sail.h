@@ -1,11 +1,11 @@
 #pragma once
 
-#include "SAILONE.h"
+#include "sailone.h"
 #include "dx9render.h"
 #include "geos.h"
 #include "model.h"
 #include "sail_base.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 #include <filesystem>
 
@@ -14,7 +14,7 @@ class VDATA;
 struct SAILGROUP
 {
     uint32_t nVert, nIndx;
-    long vertBuf, indxBuf;
+    int32_t vertBuf, indxBuf;
 };
 
 class SAIL : public SAIL_BASE
@@ -63,7 +63,7 @@ class SAIL : public SAIL_BASE
     float FALL_TSAIL_ADD_MIN;
     float FALL_TSAIL_ADD_RAND;
 
-    long GROUP_UPDATE_TIME;
+    int32_t GROUP_UPDATE_TIME;
 
     uint16_t SailQuantity;
     uint16_t SailCurNum;
@@ -80,8 +80,8 @@ class SAIL : public SAIL_BASE
     VDX9RENDER *RenderService;
     D3DMATERIAL9 mat;
     std::filesystem::file_time_type ft_old;
-    long texl;
-    long m_nEmptyGerbTex;
+    int32_t texl;
+    int32_t m_nEmptyGerbTex;
 
   public:
     SAIL();
@@ -99,9 +99,9 @@ class SAIL : public SAIL_BASE
     float Trace(const CVECTOR &src, const CVECTOR &dst) override;
     const char *GetCollideMaterialName() override;
     bool GetCollideTriangle(TRIANGLE &triangle) override;
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
+    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius,
               ADD_POLYGON_FUNC addpoly) override;
-    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
+    float Cannon_Trace(int32_t iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
 
     entid_t GetShipID() override
     {
@@ -188,7 +188,7 @@ class SAIL : public SAIL_BASE
     int FindGroupForCharacter(int chrIdx) const;
     int GetCharacterForGroup(int grNum) const;
     SAILONE *FindSailFromData(int gn, const char *nodeName, const char *grName) const;
-    void SetSailTextures(long grNum, VDATA *pvd) const;
+    void SetSailTextures(int32_t grNum, VDATA *pvd) const;
     void DoRandomsSailsDmg(int chrIdx, int gn, float fDmg);
     void GetSailStatus(int chrIdx, int gn);
 
@@ -200,8 +200,8 @@ class SAIL : public SAIL_BASE
     bool bDeleteState;
     bool bCannonTrace;
 
-    long m_nMastCreatedCharacter;
+    int32_t m_nMastCreatedCharacter;
     char *m_sMastName;
 
-    long m_nLastUpdate;
+    int32_t m_nLastUpdate;
 };

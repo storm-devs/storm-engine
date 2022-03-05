@@ -1,7 +1,7 @@
 #include "battle_command.h"
-#include "Utils.h"
+#include "utils.h"
 #include "core.h"
-#include "image/imgrender.h"
+#include "image/img_render.h"
 #include "sea/ships_list.h"
 #include "shared/battle_interface/msg_control.h"
 
@@ -39,7 +39,7 @@ void BICommandList::Draw()
     if (m_aCooldownUpdate.size() > 0)
     {
         const auto fDT = core.GetDeltaTime() * .001f;
-        for (long n = 0; n < m_aCooldownUpdate.size(); n++)
+        for (int32_t n = 0; n < m_aCooldownUpdate.size(); n++)
         {
             m_aCooldownUpdate[n].fTime -= fDT;
             if (m_aCooldownUpdate[n].fTime < 0)
@@ -61,9 +61,9 @@ void BICommandList::Draw()
                         m_NotePos.y, "%s", m_NoteText.c_str());
 }
 
-void BICommandList::Update(long nTopLine, long nCharacterIndex, long nCommandMode)
+void BICommandList::Update(int32_t nTopLine, int32_t nCharacterIndex, int32_t nCommandMode)
 {
-    long nOldSelIndex = 0;
+    int32_t nOldSelIndex = 0;
     if (nTopLine == m_LeftTopPoint.y && nCharacterIndex == m_nCurrentCommandCharacterIndex &&
         m_nCurrentCommandMode == nCommandMode)
         nOldSelIndex = m_nSelectedCommandIndex;
@@ -95,13 +95,13 @@ size_t BICommandList::AddTexture(const char *pcTextureName, uint32_t nCols, uint
     return m_aTexture.size() - 1;
 }
 
-long BICommandList::ExecuteConfirm()
+int32_t BICommandList::ExecuteConfirm()
 {
     if (m_nSelectedCommandIndex >= m_aUsedCommand.size())
         return 0; // error!
 
-    long endCode = 0;
-    long nTargIndex = 0;
+    int32_t endCode = 0;
+    int32_t nTargIndex = 0;
     std::string sLocName;
 
     if (m_aUsedCommand[m_nSelectedCommandIndex].nCooldownPictureIndex >= 0 &&
@@ -137,7 +137,7 @@ long BICommandList::ExecuteConfirm()
     return endCode;
 }
 
-long BICommandList::ExecuteLeft()
+int32_t BICommandList::ExecuteLeft()
 {
     if (m_nSelectedCommandIndex > 0)
     {
@@ -152,9 +152,9 @@ long BICommandList::ExecuteLeft()
     return 0;
 }
 
-long BICommandList::ExecuteRight()
+int32_t BICommandList::ExecuteRight()
 {
-    if (m_nSelectedCommandIndex < static_cast<long>(m_aUsedCommand.size()) - 1)
+    if (m_nSelectedCommandIndex < static_cast<int32_t>(m_aUsedCommand.size()) - 1)
     {
         m_nSelectedCommandIndex++;
         if (m_nSelectedCommandIndex >= m_nStartUsedCommandIndex + m_nIconShowMaxQuantity)
@@ -167,7 +167,7 @@ long BICommandList::ExecuteRight()
     return 0;
 }
 
-long BICommandList::ExecuteCancel()
+int32_t BICommandList::ExecuteCancel()
 {
     m_nSelectedCommandIndex = 0;
     m_nStartUsedCommandIndex = 0;
@@ -314,11 +314,11 @@ void BICommandList::Init()
     m_nIconShowMaxQuantity = 5;
 }
 
-long BICommandList::AddToIconList(long nTextureNum, long nNormPictureNum, long nSelPictureNum, long nCooldownPictureNum,
-                                  long nCharacterIndex, const char *pcCommandName, long nTargetIndex,
+int32_t BICommandList::AddToIconList(int32_t nTextureNum, int32_t nNormPictureNum, int32_t nSelPictureNum, int32_t nCooldownPictureNum,
+                                  int32_t nCharacterIndex, const char *pcCommandName, int32_t nTargetIndex,
                                   const char *pcLocName, const char *pcNoteName)
 {
-    long n;
+    int32_t n;
     // filtering out already used objects
     for (n = 0; n < m_aUsedCommand.size(); n++)
     {
@@ -361,7 +361,7 @@ long BICommandList::AddToIconList(long nTextureNum, long nNormPictureNum, long n
     return 1;
 }
 
-void BICommandList::AddAdditiveToIconList(long nTextureNum, long nPictureNum, float fDist, float fWidth, float fHeight)
+void BICommandList::AddAdditiveToIconList(int32_t nTextureNum, int32_t nPictureNum, float fDist, float fWidth, float fHeight)
 {
     if (m_aUsedCommand.empty())
         return;
@@ -382,7 +382,7 @@ void BICommandList::Release()
     FONT_RELEASE(m_pRS, m_NoteFontID);
 }
 
-long BICommandList::IconAdd(long nPictureNum, long nTextureNum, RECT &rpos)
+int32_t BICommandList::IconAdd(int32_t nPictureNum, int32_t nTextureNum, RECT &rpos)
 {
     if (nTextureNum < 0 || nTextureNum >= m_aTexture.size() || nPictureNum < 0 ||
         nPictureNum >= m_aTexture[nTextureNum].nCols * m_aTexture[nTextureNum].nRows)
@@ -394,7 +394,7 @@ long BICommandList::IconAdd(long nPictureNum, long nTextureNum, RECT &rpos)
     return 1;
 }
 
-long BICommandList::ClockIconAdd(long nForePictureNum, long nBackPictureNum, long nTextureNum, RECT &rpos,
+int32_t BICommandList::ClockIconAdd(int32_t nForePictureNum, int32_t nBackPictureNum, int32_t nTextureNum, RECT &rpos,
                                  float fFactor)
 {
     if (nTextureNum < 0 || nTextureNum >= m_aTexture.size() || nForePictureNum < 0 ||
@@ -416,12 +416,12 @@ void BICommandList::AdditiveIconAdd(float fX, float fY, std::vector<UsedCommand:
     if (aList.size() <= 0)
         return;
     RECT rCur;
-    for (long n = 0; n < aList.size(); n++)
+    for (int32_t n = 0; n < aList.size(); n++)
     {
-        rCur.top = static_cast<long>(fY + aList[n].fDelta);
-        rCur.bottom = rCur.top + static_cast<long>(aList[n].fpSize.y);
-        rCur.left = static_cast<long>(fX - .5f * aList[n].fpSize.x);
-        rCur.right = rCur.left + static_cast<long>(aList[n].fpSize.x);
+        rCur.top = static_cast<int32_t>(fY + aList[n].fDelta);
+        rCur.bottom = rCur.top + static_cast<int32_t>(aList[n].fpSize.y);
+        rCur.left = static_cast<int32_t>(fX - .5f * aList[n].fpSize.x);
+        rCur.right = rCur.left + static_cast<int32_t>(aList[n].fpSize.x);
         if (IconAdd(aList[n].nPic, aList[n].nTex, rCur) > 0)
         {
             fY = static_cast<float>(rCur.bottom);
@@ -429,7 +429,7 @@ void BICommandList::AdditiveIconAdd(float fX, float fY, std::vector<UsedCommand:
     }
 }
 
-FRECT &BICommandList::GetPictureUV(long nTextureNum, long nPictureNum, FRECT &uv)
+FRECT &BICommandList::GetPictureUV(int32_t nTextureNum, int32_t nPictureNum, FRECT &uv)
 {
     if (nTextureNum < 0 || nTextureNum >= m_aTexture.size() || nPictureNum < 0 ||
         nPictureNum >= m_aTexture[nTextureNum].nCols * m_aTexture[nTextureNum].nRows)
@@ -451,7 +451,7 @@ FRECT &BICommandList::GetPictureUV(long nTextureNum, long nPictureNum, FRECT &uv
     return uv;
 }
 
-RECT &BICommandList::GetCurrentPos(long num, RECT &rpos) const
+RECT &BICommandList::GetCurrentPos(int32_t num, RECT &rpos) const
 {
     rpos.left = m_LeftTopPoint.x + num * (m_IconSize.x + m_nIconSpace);
     rpos.right = rpos.left + m_IconSize.x;
@@ -485,7 +485,7 @@ void BICommandList::UpdateShowIcon()
     m_bLeftArrow = m_nStartUsedCommandIndex > 0;
     m_bRightArrow = false;
 
-    long i = 0;
+    int32_t i = 0;
     for (auto n = m_nStartUsedCommandIndex; n < m_aUsedCommand.size() && i < m_nIconShowMaxQuantity; n++)
     {
         GetCurrentPos(i, rPos);
@@ -535,7 +535,7 @@ void BICommandList::UpdateShowIcon()
     }
 }
 
-void BICommandList::SetNote(const char *pcNote, long nX, long nY)
+void BICommandList::SetNote(const char *pcNote, int32_t nX, int32_t nY)
 {
     m_NoteText = pcNote;
     m_NotePos.x = nX + m_NoteOffset.x;
@@ -556,7 +556,7 @@ ATTRIBUTES *BICommandList::GetCurrentCommandAttribute() const
         return nullptr;
 
     const size_t q = pAR->GetAttributesNum();
-    for (long n = 0; n < q; n++)
+    for (int32_t n = 0; n < q; n++)
     {
         auto *pA = pAR->GetAttributeClass(n);
         if (!pA)

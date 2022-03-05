@@ -55,11 +55,11 @@ enum TX_FORMAT
 // File header
 struct TX_FILE_HEADER
 {
-    long flags;         // info flags
-    long width, height; // texture size
-    long nmips;         // number mip levels
+    int32_t flags;         // info flags
+    int32_t width, height; // texture size
+    int32_t nmips;         // number mip levels
     TX_FORMAT format;   // texture format
-    long mip_size;      // size of mip 0 (width*height*pixel_size)
+    int32_t mip_size;      // size of mip 0 (width*height*pixel_size)
 };
 
 // Pallette color

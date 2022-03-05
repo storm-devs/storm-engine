@@ -2,9 +2,9 @@
 
 #include "core.h"
 
-#include "vfile_service.h"
+#include "v_file_service.h"
 
-#include <Input.hpp>
+#include <input.hpp>
 
 CREATE_SERVICE(PCS_CONTROLS)
 
@@ -32,7 +32,7 @@ PCS_CONTROLS::PCS_CONTROLS()
     auto pIni = fio->OpenIniFile(core.EngineIniFileName());
     if (pIni)
     {
-        m_bIsOffDebugKeys = pIni->GetLong("controls", "ondebugkeys", 0) == 0;
+        m_bIsOffDebugKeys = pIni->GetInt("controls", "ondebugkeys", 0) == 0;
     }
 
     input_ = Input::Create();
@@ -66,7 +66,7 @@ void PCS_CONTROLS::AppState(bool state)
 
 void PCS_CONTROLS::Release()
 {
-    long n;
+    int32_t n;
     for (n = 0; n < nControlsNum; n++)
     {
         delete pUserControls[n].name;
@@ -77,12 +77,12 @@ void PCS_CONTROLS::Release()
     nSystemControlsNum = 0;
 }
 
-long PCS_CONTROLS::GetSystemControlsNum()
+int32_t PCS_CONTROLS::GetSystemControlsNum()
 {
     return nSystemControlsNum;
 }
 
-bool PCS_CONTROLS::GetSystemControlDesc(long code, SYSTEM_CONTROL_DESC &_control_desc_struct)
+bool PCS_CONTROLS::GetSystemControlDesc(int32_t code, SYSTEM_CONTROL_DESC &_control_desc_struct)
 {
     if (code >= CONTROL_ELEMENTS_NUM)
     {
@@ -120,14 +120,14 @@ bool PCS_CONTROLS::GetSystemControlDesc(long code, SYSTEM_CONTROL_DESC &_control
     return true;
 }
 
-long PCS_CONTROLS::CreateControl(const char *control_name)
+int32_t PCS_CONTROLS::CreateControl(const char *control_name)
 {
-    long n;
+    int32_t n;
     if (control_name == nullptr)
         return INVALID_CONTROL_CODE;
     for (n = 0; n < nControlsNum; n++)
     {
-        if (_stricmp(control_name, pUserControls[n].name) == 0)
+        if (storm::iEquals(control_name, pUserControls[n].name))
             return n;
     }
     n = nControlsNum;
@@ -146,12 +146,12 @@ long PCS_CONTROLS::CreateControl(const char *control_name)
     return n;
 }
 
-long PCS_CONTROLS::GetControlsNum()
+int32_t PCS_CONTROLS::GetControlsNum()
 {
     return nControlsNum;
 }
 
-bool PCS_CONTROLS::GetControlDesc(long code, USER_CONTROL &_user_desc_struct)
+bool PCS_CONTROLS::GetControlDesc(int32_t code, USER_CONTROL &_user_desc_struct)
 {
     if (code < 0 || code >= nControlsNum)
         return false;
@@ -162,18 +162,18 @@ bool PCS_CONTROLS::GetControlDesc(long code, USER_CONTROL &_user_desc_struct)
     return true;
 }
 
-long PCS_CONTROLS::GetDevicesNum()
+int32_t PCS_CONTROLS::GetDevicesNum()
 {
     return 1;
 }
 
-bool PCS_CONTROLS::GetDeviceDesc(long code, DEVICE_DESC &_device_desc)
+bool PCS_CONTROLS::GetDeviceDesc(int32_t code, DEVICE_DESC &_device_desc)
 {
     _device_desc.name = "Keyboard and Mouse";
     return true;
 }
 
-long PCS_CONTROLS::AddControlTreeNode(long nParent, const char *pcBaseControl, const char *pcOutControl, float fTimeOut)
+int32_t PCS_CONTROLS::AddControlTreeNode(int32_t nParent, const char *pcBaseControl, const char *pcOutControl, float fTimeOut)
 {
     const auto ntree = m_ControlTree.AddControlChild(nParent, pcBaseControl, pcOutControl, fTimeOut);
     if (ntree >= 0 && pcOutControl)
@@ -188,7 +188,7 @@ long PCS_CONTROLS::AddControlTreeNode(long nParent, const char *pcBaseControl, c
     return ntree;
 }
 
-void PCS_CONTROLS::MapControl(long control_code, long system_control_code)
+void PCS_CONTROLS::MapControl(int32_t control_code, int32_t system_control_code)
 {
     if (control_code < 0 || control_code >= nControlsNum)
     {
@@ -201,7 +201,7 @@ void PCS_CONTROLS::MapControl(long control_code, long system_control_code)
 bool PCS_CONTROLS::GetControlState(const char *control_name, CONTROL_STATE &_state_struct)
 {
     /*
-      long n;
+      int32_t n;
       _state_struct.state = CST_INACTIVE;
       _state_struct.lValue = 0;
       _state_struct.fValue = 0.0f;
@@ -209,12 +209,12 @@ bool PCS_CONTROLS::GetControlState(const char *control_name, CONTROL_STATE &_sta
       if(control_name == 0) return false;
       for(n=0;n<nControlsNum;n++)
       {
-        if(_stricmp(control_name,pUserControls[n].name)==0) return GetControlState(n,_state_struct);
+        if(storm::iEquals(control_name,pUserControls[n].name)) return GetControlState(n,_state_struct);
       }
       return false;
       //*/
 
-    long n;
+    int32_t n;
     const auto bControlFound = false;
 
     _state_struct.state = CST_INACTIVE;
@@ -227,7 +227,7 @@ bool PCS_CONTROLS::GetControlState(const char *control_name, CONTROL_STATE &_sta
         return false;
     for (n = 0; n < nControlsNum; n++)
     {
-        if (_stricmp(control_name, pUserControls[n].name) == 0)
+        if (storm::iEquals(control_name, pUserControls[n].name))
         {
             if (pUserControls[n].bLocked)
             {
@@ -262,10 +262,10 @@ bool PCS_CONTROLS::GetControlState(const char *control_name, CONTROL_STATE &_sta
     return bControlFound;
 }
 
-bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_struct)
+bool PCS_CONTROLS::GetControlState(int32_t control_code, CONTROL_STATE &_state_struct)
 {
     uint32_t system_code;
-    long lRes;
+    int32_t lRes;
 
     if (control_code >= nControlsNum)
     {
@@ -424,6 +424,21 @@ bool PCS_CONTROLS::GetControlState(long control_code, CONTROL_STATE &_state_stru
 
 void PCS_CONTROLS::Update(uint32_t DeltaTime)
 {
+#ifdef _WIN32
+    static int nMouseXPrev, nMouseYPrev;
+    POINT point;
+    GetCursorPos(&point);
+
+    nMouseDx = point.x - nMouseXPrev;
+    nMouseDy = point.y - nMouseYPrev;
+
+    RECT r;
+    GetWindowRect(static_cast<HWND>(core.GetAppHWND()), &r);
+    nMouseXPrev = r.left + (r.right - r.left) / 2;
+    nMouseYPrev = r.top + (r.bottom - r.top) / 2;
+    SetCursorPos(nMouseXPrev, nMouseYPrev);
+#endif
+
     m_ControlTree.Process();
     m_KeyBuffer.Reset();
 
@@ -492,7 +507,7 @@ void PCS_CONTROLS::Update(uint32_t DeltaTime)
     nLastControlTime += DeltaTime;
 }
 
-bool PCS_CONTROLS::SetControlFlags(long code, uint32_t _flags)
+bool PCS_CONTROLS::SetControlFlags(int32_t code, uint32_t _flags)
 {
     if (code < 0 || code >= nControlsNum)
         return false;
@@ -502,18 +517,18 @@ bool PCS_CONTROLS::SetControlFlags(long code, uint32_t _flags)
 
 bool PCS_CONTROLS::SetControlState(const char *control_name, CONTROL_STATE &_state_struct)
 {
-    long n;
+    int32_t n;
     if (control_name == nullptr)
         return false;
     for (n = 0; n < nControlsNum; n++)
     {
-        if (_stricmp(control_name, pUserControls[n].name) == 0)
+        if (storm::iEquals(control_name, pUserControls[n].name))
             return SetControlState(n, _state_struct);
     }
     return false;
 }
 
-bool PCS_CONTROLS::SetControlState(long control_code, CONTROL_STATE &_state_struct)
+bool PCS_CONTROLS::SetControlState(int32_t control_code, CONTROL_STATE &_state_struct)
 {
     if (control_code < 0 || control_code >= nControlsNum)
         return false;
@@ -521,19 +536,19 @@ bool PCS_CONTROLS::SetControlState(long control_code, CONTROL_STATE &_state_stru
     return true;
 }
 
-long PCS_CONTROLS::LastControlTime()
+int32_t PCS_CONTROLS::LastControlTime()
 {
     return nLastControlTime;
 }
 
-void PCS_CONTROLS::SetControlTreshold(long control_code, float thval)
+void PCS_CONTROLS::SetControlTreshold(int32_t control_code, float thval)
 {
     // ~!~
 }
 
 void PCS_CONTROLS::LockControl(const char *control_name, bool mode)
 {
-    long n;
+    int32_t n;
     if (control_name == nullptr || control_name[0] == 0)
     {
         m_bLockAll = mode;
@@ -541,7 +556,7 @@ void PCS_CONTROLS::LockControl(const char *control_name, bool mode)
     }
     for (n = 0; n < nControlsNum; n++)
     {
-        if (_stricmp(control_name, pUserControls[n].name) == 0)
+        if (storm::iEquals(control_name, pUserControls[n].name))
         {
             pUserControls[n].bLocked = mode;
             pUserControls[n].state = FORCE_DWORD;
@@ -560,7 +575,7 @@ void PCS_CONTROLS::SetMouseSensivityY(float _s)
     fMouseSensivityY = _s;
 }
 
-long PCS_CONTROLS::GetKeyBufferLength()
+int32_t PCS_CONTROLS::GetKeyBufferLength()
 {
     return m_KeyBuffer.GetBufferLength();
 }
@@ -630,18 +645,18 @@ void PCS_CONTROLS::HandleEvent(const InputEvent &evt)
     }
     else if (evt.type == InputEvent::KeyboardText)
     {
-        auto text = std::get<std::string>(evt.data);
+        const auto &text = std::get<std::string>(evt.data);
         m_KeyBuffer.AddKey((char *)text.c_str(), text.length(), false);
     }
     else if (evt.type == InputEvent::MouseMove)
     {
-        auto dxdy = std::get<MousePos>(evt.data);
+        const auto &dxdy = std::get<MousePos>(evt.data);
         nMouseDx += dxdy.x;
         nMouseDy += dxdy.y;
     }
     else if (evt.type == InputEvent::MouseWheel)
     {
-        auto dxdy = std::get<MousePos>(evt.data);
+        const auto &dxdy = std::get<MousePos>(evt.data);
         nMouseWheel += dxdy.y * input_->GetWheelFactor();
         core.Event("evMouseWeel", "l", static_cast<short>(dxdy.y));
     }

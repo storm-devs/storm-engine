@@ -1,5 +1,5 @@
 #include "script_func.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "s_import_func.h"
 #include "sail.h"
@@ -13,7 +13,7 @@ uint32_t _ShipSailState(VS_STACK *pS)
     auto *pChrIdx = (VDATA *)pS->Pop();
     if (!pChrIdx)
         return IFUNCRESULT_FAILED;
-    const auto nChrIdx = pChrIdx->GetLong();
+    const auto nChrIdx = pChrIdx->GetInt();
 
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
@@ -22,11 +22,11 @@ uint32_t _ShipSailState(VS_STACK *pS)
     // find sail class
     if (const auto eid = EntityManager::GetEntityId("SAIL"))
     {
-        const long n = static_cast<SAIL *>(EntityManager::GetEntityPointer(eid))->GetSailStateForCharacter(nChrIdx);
+        const int32_t n = static_cast<SAIL *>(EntityManager::GetEntityPointer(eid))->GetSailStateForCharacter(nChrIdx);
         pVR->Set(n);
     }
     else
-        pVR->Set(static_cast<long>(0));
+        pVR->Set(0);
 
     return IFUNCRESULT_OK;
 }
@@ -132,10 +132,10 @@ uint32_t _funcGetSailSpeed(VS_STACK *pS)
     const float fSailPow = pSailPow->GetFloat();
 
     auto *pHoleMax = (VDATA *)pS->Pop();
-    const long nHoleMax = pHoleMax->GetLong();
+    const int32_t nHoleMax = pHoleMax->GetInt();
 
     auto *pHoleQ = (VDATA *)pS->Pop();
-    const long nHoleQ = pHoleQ->GetLong();
+    const int32_t nHoleQ = pHoleQ->GetInt();
 
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
@@ -151,22 +151,22 @@ uint32_t _RandomHole2Sail(VS_STACK *pS)
 
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    int _addHoleQ = pData->GetLong();
+    int _addHoleQ = pData->GetInt();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    const uint32_t _holeData = pData->GetLong();
+    const uint32_t _holeData = pData->GetInt();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    int _maxHole = pData->GetLong();
+    int _maxHole = pData->GetInt();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    const int _groupNum = pData->GetLong();
+    const int _groupNum = pData->GetInt();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
     const char *_reyName = pData->GetString();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    const int _chrIdx = pData->GetLong();
+    const int _chrIdx = pData->GetInt();
 
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
@@ -202,7 +202,7 @@ uint32_t _RandomHole2Sail(VS_STACK *pS)
         pSail->CalculateMirrorSailIndex();
     }
 
-    pVR->Set(static_cast<long>(holeMask));
+    pVR->Set(static_cast<int32_t>(holeMask));
 
     return IFUNCRESULT_OK;
 }
@@ -213,10 +213,10 @@ uint32_t _DeleteOneSailHole(VS_STACK *pS)
 
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    int _delHoleQ = pData->GetLong();
+    int _delHoleQ = pData->GetInt();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    const uint32_t _holeData = pData->GetLong();
+    const uint32_t _holeData = pData->GetInt();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
     const char *_reyName = pData->GetString();
@@ -225,7 +225,7 @@ uint32_t _DeleteOneSailHole(VS_STACK *pS)
     const char *_groupName = pData->GetString();
     if (!(pData = (VDATA *)pS->Pop()))
         return IFUNCRESULT_FAILED;
-    const int _chrIdx = pData->GetLong();
+    const int _chrIdx = pData->GetInt();
 
     auto *pVR = (VDATA *)pS->Push();
     if (!pVR)
@@ -264,7 +264,7 @@ uint32_t _DeleteOneSailHole(VS_STACK *pS)
         pSail->CalculateMirrorSailIndex();
     }
 
-    pVR->Set(static_cast<long>(holeMask));
+    pVR->Set(static_cast<int32_t>(holeMask));
 
     return IFUNCRESULT_OK;
 }

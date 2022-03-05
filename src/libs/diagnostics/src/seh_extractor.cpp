@@ -115,14 +115,14 @@ void seh_extractor::sink(const sink_func f, EXCEPTION_RECORD *next) const
     // sink error code message
     if (record->ExceptionCode) {
         const auto error_message = FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_FROM_HMODULE,
-                                                  LoadLibrary(L"ntdll"), code_, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, _countof(buf), nullptr);
+                                                  LoadLibrary(L"ntdll"), code_, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, std::size(buf), nullptr);
         if (error_message > 0) {
             f(buf);
         }
     }
 
     // sink exc magic
-    const auto [_,size] = std::format_to_n(buf, _countof(buf), "magic={:#x} (classified {})", magic, check_magic(magic));
+    const auto [_,size] = std::format_to_n(buf, std::size(buf), "magic={:#x} (classified {})", magic, check_magic(magic));
     buf[size] = '\0';
     f(buf);
 

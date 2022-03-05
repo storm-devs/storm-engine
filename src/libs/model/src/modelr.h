@@ -15,7 +15,7 @@ class NODER : public NODE
     std::string sys_lmPath;
     bool isReleased;
 
-    static long depth, node;
+    static int32_t depth, node;
     uintptr_t idGeoGroup; // id of "geometry" string
     char technique[256], name[256];
 
@@ -40,7 +40,7 @@ class NODER : public NODE
     ~NODER() override;
     void Draw();
     float Trace(const CVECTOR &src, const CVECTOR &dst) override;
-    NODER *GetNode(long n);
+    NODER *GetNode(int32_t n);
     NODER *FindNode(const char *cNodeName);
     float Update(CMatrix &mtx, CVECTOR &cnt);
     const char *GetName() override;
@@ -77,8 +77,8 @@ class MODELR : public MODEL
     struct ANIBUFFER
     {
         FVF_VERTEX *v;
-        long num;
-        long vb;
+        int32_t num;
+        int32_t vb;
     };
 
     VDX9RENDER *rs;
@@ -90,7 +90,7 @@ class MODELR : public MODEL
     bool bFogEnable;
     float fFogDensity;
 
-    long nAniVerts;
+    int32_t nAniVerts;
 
     ANIBUFFER aniVerts[MODEL_ANI_MAXBUFFERS];
     void AniRender();
@@ -129,7 +129,7 @@ class MODELR : public MODEL
         }
     }
 
-    NODE *GetNode(long n) override;
+    NODE *GetNode(int32_t n) override;
     NODE *FindNode(const char *cNodeName) override;
     void Update() override;
     Animation *GetAnimation() override;
@@ -137,7 +137,7 @@ class MODELR : public MODEL
     float Trace(const CVECTOR &src, const CVECTOR &dst) override;
     const char *GetCollideMaterialName() override;
     bool GetCollideTriangle(TRIANGLE &triangle) override;
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius,
+    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius,
               ADD_POLYGON_FUNC addpoly) override;
 
     NODE *GetCollideNode() override;

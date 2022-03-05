@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Matrix.h"
-#include "Sd2_h/CannonTrace.h"
+#include "matrix.h"
+#include "sd2_h/cannon_trace.h"
 #include "blast.h"
 #include "dx9render.h"
 #include "geometry.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 using GEOPARTICLE = struct
 {
@@ -40,7 +40,7 @@ class BLAST : public Entity
     void Realize(uint32_t Delta_Time);
     void ProcessTime(uint32_t Delta_Time);
     void SetBlastCenter(CVECTOR pos, CVECTOR ang);
-    void AddGeometry(char *name, long num);
+    void AddGeometry(char *name, int32_t num);
 
     void ProcessStage(Stage stage, uint32_t delta) override
     {

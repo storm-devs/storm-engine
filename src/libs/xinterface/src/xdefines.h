@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Cvector.h"
-#include "QuestFileReader//QuestFileReader.h"
+#include "c_vector.h"
+#include "quest_file_reader/quest_file_reader.h"
 #include "dx9render.h"
 #include "shared/interface/messages.h"
-#include "stringService.h"
-#include "vxservice.h"
-#include <EntityManager.h>
+#include "string_service.h"
+#include "vx_service.h"
+#include <entity_manager.h>
 
 #define ALPHA(x) ((x) >> 24)
 #define RED(x) (((x) >> 16) & 0xFF)
@@ -26,20 +26,20 @@ extern int FindCommand(int comID);
 
 struct SAVE_DATA_HANDLE
 {
-    long StringDataSize;
-    long SurfaceDataSize;
+    int32_t StringDataSize;
+    int32_t SurfaceDataSize;
 };
 
 struct XYPOINT
 {
-    long x, y;
+    int32_t x, y;
 
     XYPOINT()
     {
         x = y = 0;
     }
 
-    XYPOINT(long ix, long iy)
+    XYPOINT(int32_t ix, int32_t iy)
     {
         x = ix;
         y = iy;
@@ -54,14 +54,14 @@ struct XYPOINT
 
 struct XYRECT
 {
-    long left, top, right, bottom;
+    int32_t left, top, right, bottom;
 
     XYRECT()
     {
         left = top = right = bottom = 0;
     }
 
-    XYRECT(long ileft, long itop, long iright, long ibottom)
+    XYRECT(int32_t ileft, int32_t itop, int32_t iright, int32_t ibottom)
     {
         left = ileft;
         top = itop;
@@ -252,7 +252,7 @@ struct XI_THREETEX_VERTEX
     float tu3, tv3;
 };
 
-inline void PICTURE_TEXTURE_RELEASE(VXSERVICE *ps, const char *gn, long &tex)
+inline void PICTURE_TEXTURE_RELEASE(VXSERVICE *ps, const char *gn, int32_t &tex)
 {
     if (tex != -1 && ps != nullptr)
     {

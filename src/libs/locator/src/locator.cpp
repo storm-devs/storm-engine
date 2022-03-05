@@ -24,8 +24,8 @@ LOCATOR::~LOCATOR()
 
 bool LOCATOR::Init()
 {
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
-    gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
+    gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (!gs)
         return false;
 
@@ -55,8 +55,8 @@ void LOCATOR::LocateForI_L2(ATTRIBUTES *pA, GEOS *g, GEOS::LABEL &label)
 
     pA = pA->CreateSubAClass(pA, "ships");
 
-    long n = 0;
-    for (long stringIndex = 0; (stringIndex = g->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
+    int32_t n = 0;
+    for (int32_t stringIndex = 0; (stringIndex = g->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
     {
         g->GetLabel(stringIndex, label2);
         sprintf_s(name, "l%d", n);
@@ -75,7 +75,7 @@ void LOCATOR::LocateForI(VDATA *pData)
     ATTRIBUTES *pAA;
     GEOS *g;
     GEOS::LABEL label;
-    long i, n;
+    int32_t i, n;
 
     if (pData == nullptr)
     {
@@ -108,12 +108,12 @@ void LOCATOR::LocateForI(VDATA *pData)
     auto groupID = g->FindName("reload");
     if (groupID >= 0)
     {
-        for (long i = 0; (i = g->FindLabelG(i, groupID)) >= 0; i++)
+        for (int32_t i = 0; (i = g->FindLabelG(i, groupID)) >= 0; i++)
         {
             g->GetLabel(i, label);
             pAA = pA->FindAClass(pA, "reload");
             if (pAA)
-                for (n = 0; n < static_cast<long>(pAA->GetAttributesNum()); n++)
+                for (n = 0; n < static_cast<int32_t>(pAA->GetAttributesNum()); n++)
                 {
                     if (pAA->GetAttributeClass(n))
                     {
@@ -122,7 +122,7 @@ void LOCATOR::LocateForI(VDATA *pData)
                             core.Trace("LOCATOR: no name");
                             continue;
                         }
-                        if (_stricmp(pAA->GetAttributeClass(n)->GetAttribute("name"), label.name) == 0)
+                        if (storm::iEquals(pAA->GetAttributeClass(n)->GetAttribute("name"), label.name))
                         {
                             pAA->GetAttributeClass(n)->SetAttributeUseFloat("x", label.m[3][0]);
                             pAA->GetAttributeClass(n)->SetAttributeUseFloat("y", label.m[3][1]);
@@ -138,7 +138,7 @@ void LOCATOR::LocateForI(VDATA *pData)
     // check for unfind reloads
     pAA = pA->FindAClass(pA, "reload");
     if (pAA)
-        for (n = 0; n < static_cast<long>(pAA->GetAttributesNum()); n++)
+        for (n = 0; n < static_cast<int32_t>(pAA->GetAttributesNum()); n++)
         {
             auto *pARC = pAA->GetAttributeClass(n);
             if (!pARC->FindAClass(pARC, "x"))
@@ -202,7 +202,7 @@ void LOCATOR::LocateForI(VDATA *pData)
 
     auto *pGA = pA->FindAClass(pA, "LoadGroup");
     if (pGA)
-        for (n = 0; n < static_cast<long>(pGA->GetAttributesNum()); n++)
+        for (n = 0; n < static_cast<int32_t>(pGA->GetAttributesNum()); n++)
         {
             auto *const pARC = pGA->GetAttributeClass(n);
             const char *pLoadGroupName = pARC->GetThisAttr();
@@ -223,9 +223,9 @@ void LOCATOR::LocateForI(VDATA *pData)
     delete g;
 }
 
-void LOCATOR::LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, uint32_t dwFlags)
+void LOCATOR::LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, int32_t iGroupID, uint32_t dwFlags)
 {
-    long i;
+    int32_t i;
     GEOS::LABEL label;
     ATTRIBUTES *pAA;
 
@@ -246,7 +246,7 @@ void LOCATOR::LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, uint
 
 uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
 {
-    long message_code;
+    int32_t message_code;
     GEOS::LABEL label;
     ATTRIBUTES *pA;
 

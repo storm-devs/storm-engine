@@ -8,7 +8,7 @@ model binded to an animated locator
 ******************************************************************************/
 #pragma once
 
-#include "EntityManager.h"
+#include "entity_manager.h"
 #include "collide.h"
 #include "dx9render.h"
 #include "model.h"
@@ -23,7 +23,7 @@ class BLADE : public Entity
     struct VERTEX
     {
         CVECTOR pos;
-        unsigned long diffuse;
+        uint32_t diffuse;
     };
 
 #define WAY_LENGTH 64
@@ -31,7 +31,7 @@ class BLADE : public Entity
     struct BLADE_INFO
     {
         entid_t eid;
-        long color[2];               //    color of the blade
+        int32_t color[2];               //    color of the blade
         float defLifeTime, lifeTime; //
         float time;                  // current time
 
@@ -47,7 +47,7 @@ class BLADE : public Entity
 
     struct TIEITEM_INFO
     {
-        long nItemIndex;
+        int32_t nItemIndex;
         entid_t eid;
         char *locatorName;
 
@@ -87,7 +87,7 @@ class BLADE : public Entity
     void AddTieItem(MESSAGE &message);
     void DelTieItem(MESSAGE &message);
     void DelAllTieItem();
-    long FindTieItemByIndex(long n);
+    int32_t FindTieItemByIndex(int32_t n);
 
   public:
     BLADE();

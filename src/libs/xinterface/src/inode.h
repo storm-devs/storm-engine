@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Nodes/xi_tooltips.h"
-#include "VideoTexture.h"
+#include "nodes/xi_tooltips.h"
+#include "video_texture.h"
 #include "core.h"
 #include "defines.h"
 #include "dx9render.h"
-#include "vfile_service.h"
-#include "vmodule_api.h"
-#include "vxservice.h"
+#include "v_file_service.h"
+#include "v_module_api.h"
+#include "vx_service.h"
 
 class CXI_ToolTip;
 
@@ -87,8 +87,8 @@ class XINTERFACE_BASE : public Entity
     virtual VDX9RENDER *RenderService() = 0;
     virtual void *GetCurrentNode() = 0;
     virtual FXYPOINT GetMousePoint() = 0;
-    virtual long PrintIntoWindow(long wl, long wr, long idFont, uint32_t dwFCol, uint32_t dwBCol, long align,
-                                 bool shadow, float scale, long sxs, long sys, long left, long top, const char *str,
+    virtual int32_t PrintIntoWindow(int32_t wl, int32_t wr, int32_t idFont, uint32_t dwFCol, uint32_t dwBCol, int32_t align,
+                                 bool shadow, float scale, int32_t sxs, int32_t sys, int32_t left, int32_t top, const char *str,
                                  int nWidthForScaleCorrecting = -1, int nSplit = 0) = 0;
 
     virtual CINODE *FindNode(const char *sNodeName, CINODE *findRoot) = 0;
@@ -106,7 +106,7 @@ class XINTERFACE_BASE : public Entity
 
 class CINODE
 {
-    long m_nPriority;
+    int32_t m_nPriority;
     bool m_bShowGlowCursor;
     bool m_bGlowCursorBack;
     bool m_bMouseWeelReaction;
@@ -144,7 +144,7 @@ class CINODE
         // CINODE *         pRetControl;
         COMMAND_REDIRECT *pNextControl;
         char *sEventName;
-        long nActionDelay;
+        int32_t nActionDelay;
 
         COMMAND_ACTION()
             : nSound(0), nActionDelay(0)
@@ -201,21 +201,21 @@ class CINODE
         m_bUse = bUsing;
     }
 
-    virtual bool IsClick(int buttonID, long xPos, long yPos) = 0;
+    virtual bool IsClick(int buttonID, int32_t xPos, int32_t yPos) = 0;
     virtual void FrameProcess(uint32_t DeltaTime);
     virtual void MouseThis(float fX, float fY) = 0;
 
-    virtual long GetClickState()
+    virtual int32_t GetClickState()
     {
         return 0;
     }
 
-    void SetPriority(long prior)
+    void SetPriority(int32_t prior)
     {
         m_nPriority = prior;
     }
 
-    long GetPriority() const
+    int32_t GetPriority() const
     {
         return m_nPriority;
     }
@@ -276,7 +276,7 @@ class CINODE
     {
     }
 
-    virtual uint32_t MessageProc(long msgcode, MESSAGE &message);
+    virtual uint32_t MessageProc(int32_t msgcode, MESSAGE &message);
 
     void SetGlowCursor(bool bShowFlag)
     {
@@ -299,8 +299,8 @@ class CINODE
 
     static float GetIniFloat(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
                              float fDefault = 0.f);
-    static long GetIniLong(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
-                           long iDefault = 0);
+    static int32_t GetIniLong(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
+                           int32_t iDefault = 0);
     static bool ReadIniString(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
                               char *buf, size_t bufSize, const char *strDef = nullptr);
     static bool GetIniBool(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
@@ -339,7 +339,7 @@ class CINODE
     XYRECT m_rect;
     XYRECT m_hostRect;
 
-    long m_nAbsoluteRectVal;
+    int32_t m_nAbsoluteRectVal;
 
     bool m_bUse;
     bool m_bClickable;
@@ -349,7 +349,7 @@ class CINODE
     bool m_bLockedNode;
     bool m_bMouseSelect;
 
-    long m_nDoDelay;
+    int32_t m_nDoDelay;
     int m_nCurrentCommandNumber;
 
     int m_nNodeType;

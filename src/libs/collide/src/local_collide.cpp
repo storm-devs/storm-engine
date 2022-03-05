@@ -3,7 +3,7 @@
 LCOLL::LCOLL(EntityManager::layer_index_t idx) : boxRadius(0)
 {
     layerIndex_ = idx;
-    col = static_cast<COLLIDE *>(core.CreateService("coll"));
+    col = static_cast<COLLIDE *>(core.GetService("coll"));
     if (!col)
         throw std::runtime_error("No service: collide");
 }
@@ -14,15 +14,15 @@ LCOLL::~LCOLL()
 
 #define REALLOC_QUANT 1024 // mast be power of to due to AND
 
-long addedFaces;
-long *sVrt = nullptr;
+int32_t addedFaces;
+int32_t *sVrt = nullptr;
 CVECTOR *addVerts = nullptr;
 
-bool AddPolyColl(const CVECTOR *vr, long nverts)
+bool AddPolyColl(const CVECTOR *vr, int32_t nverts)
 {
     // start vertex of face, max faces is REALLOC_QUANT
     if ((addedFaces & (REALLOC_QUANT - 1)) == 0)
-        sVrt = static_cast<long *>(realloc(sVrt, sizeof(long) * (addedFaces + REALLOC_QUANT)));
+        sVrt = static_cast<int32_t *>(realloc(sVrt, sizeof(int32_t) * (addedFaces + REALLOC_QUANT)));
 
     if (addedFaces == 0)
         sVrt[addedFaces] = nverts;
@@ -32,9 +32,9 @@ bool AddPolyColl(const CVECTOR *vr, long nverts)
     // F0(v0,v1,v2), F1(v0,v1,v2,v3)...
     if (addedFaces == 0 || (sVrt[addedFaces - 1] & (REALLOC_QUANT - 1)) + nverts > REALLOC_QUANT)
         addVerts = static_cast<CVECTOR *>(
-            realloc(addVerts, sizeof(long) * (sVrt[addedFaces] / REALLOC_QUANT + REALLOC_QUANT)));
+            realloc(addVerts, sizeof(int32_t) * (sVrt[addedFaces] / REALLOC_QUANT + REALLOC_QUANT)));
 
-    for (long v = 0; v < nverts; v++)
+    for (int32_t v = 0; v < nverts; v++)
     {
         addVerts[sVrt[addedFaces] - nverts + v].x = vr[v].x;
         addVerts[sVrt[addedFaces] - nverts + v].y = vr[v].x;
@@ -45,7 +45,7 @@ bool AddPolyColl(const CVECTOR *vr, long nverts)
     return true;
 }
 
-long LCOLL::SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOnly)
+int32_t LCOLL::SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOnly)
 {
     // create box
     PLANE clip_p[6];
@@ -60,7 +60,7 @@ long LCOLL::SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOn
     clip_p[5].D = -boxSize.z;
 
     // transform planes
-    for (long p = 0; p < 6; p++)
+    for (int32_t p = 0; p < 6; p++)
     {
         const auto x = clip_p[p].D * clip_p[p].Nx - transform.m[3][0];
         const auto y = clip_p[p].D * clip_p[p].Ny - transform.m[3][1];
@@ -95,7 +95,7 @@ long LCOLL::SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool testOn
     return 0;
 }
 
-const CVECTOR *LCOLL::GetFace(long &numVertices)
+const CVECTOR *LCOLL::GetFace(int32_t &numVertices)
 {
     numVertices = 0;
     return nullptr;

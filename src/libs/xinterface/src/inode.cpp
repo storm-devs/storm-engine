@@ -167,7 +167,7 @@ CINODE *CINODE::FindNode(CINODE *pNod, const char *sNodName)
         return nullptr;
     while (pNod)
     {
-        if (pNod->m_nodeName && _stricmp(sNodName, pNod->m_nodeName) == 0)
+        if (pNod->m_nodeName && storm::iEquals(sNodName, pNod->m_nodeName))
             break;
         if (pNod->m_list)
         {
@@ -217,7 +217,7 @@ CINODE *CINODE::FindNode(CINODE *pNod, float x, float y)
 
 /*CINODE*    CINODE::FindNode(const char* sNodName)
 {
-    if( sNodName!=null && _stricmp(sNodName,m_nodeName)==0 )
+    if( sNodName!=null && storm::iEquals(sNodName,m_nodeName))
         return this;
     CINODE* retVal;
     if( m_list!=null )
@@ -335,7 +335,7 @@ bool CINODE::GetMidStr(const char *inStr, char *buf, size_t bufSize, const char 
     int i;
     auto fcn = -1, lcn = -1;
     for (i = 0; i <= lenIn - lenBeg; i++)
-        if (_strnicmp(&inStr[i], begStr, lenBeg) == 0)
+        if (storm::iEquals(&inStr[i], begStr, lenBeg))
         {
             fcn = i;
             break;
@@ -348,7 +348,7 @@ bool CINODE::GetMidStr(const char *inStr, char *buf, size_t bufSize, const char 
     fcn += lenBeg;
 
     for (i = fcn; i <= lenIn - lenEnd; i++)
-        if (_strnicmp(&inStr[i], endStr, lenEnd) == 0)
+        if (storm::iEquals(&inStr[i], endStr, lenEnd))
         {
             lcn = i;
             break;
@@ -384,7 +384,7 @@ bool CINODE::CheckByToolTip(float fX, float fY)
 {
     if (m_pToolTip)
     {
-        m_pToolTip->MousePos(core.GetDeltaTime() * .001f, static_cast<long>(fX), static_cast<long>(fY));
+        m_pToolTip->MousePos(core.GetDeltaTime() * .001f, static_cast<int32_t>(fX), static_cast<int32_t>(fY));
         return true;
     }
     return false;
@@ -414,14 +414,14 @@ const char *CINODE::GetDataStr(const char *inStr, const char *strOrder, ...)
             break;
         case 'l':
         case 'L':
-            *va_arg(vl, long *) = atol(param);
+            *va_arg(vl, int32_t *) = atol(param);
             break;
         }
     }
     return inStr;
 }
 
-uint32_t CINODE::MessageProc(long msgcode, MESSAGE &message)
+uint32_t CINODE::MessageProc(int32_t msgcode, MESSAGE &message)
 {
     switch (msgcode)
     {
@@ -558,8 +558,8 @@ float CINODE::GetIniFloat(INIFILE *ini1, const char *name1, INIFILE *ini2, const
     return fDefault;
 }
 
-long CINODE::GetIniLong(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
-                        long iDefault)
+int32_t CINODE::GetIniLong(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2, const char *keyName,
+                        int32_t iDefault)
 {
     char param[256];
     auto bYes = false;
@@ -661,10 +661,10 @@ uint32_t CINODE::GetIniARGB(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     char param[256];
     if (ReadIniString(ini1, name1, ini2, name2, keyName, param, sizeof(param)))
     {
-        long a = ALPHA(dwDefColor);
-        long r = RED(dwDefColor);
-        long g = GREEN(dwDefColor);
-        long b = BLUE(dwDefColor);
+        int32_t a = ALPHA(dwDefColor);
+        int32_t r = RED(dwDefColor);
+        int32_t g = GREEN(dwDefColor);
+        int32_t b = BLUE(dwDefColor);
         GetDataStr(param, "llll", &a, &r, &g, &b);
         dwDefColor = ARGB(a, r, g, b);
     }

@@ -23,6 +23,7 @@
 #define MSG_MODEL_SET_MAX_VIEW_DIST 20512
 
 #define MSG_MODEL_SUBSTITUTE_GEOMETRY_NODE 20600 // "ss", geometry, new model name
+#define MSG_MODEL_PLAY_ACTION 20601 // "lls", player, action name
 
 //============================================================================================
 // blade messages
@@ -187,6 +188,12 @@
 #define MSG_CHARACTER_VIEWDAMAGE 30372
 #define MSG_CHARACTER_EX_MSG 30373
 
+// Procedural head look
+#define MSG_CHARACTER_HEADLOOK_DEFAULT 30380    // "l" default (ani)
+#define MSG_CHARACTER_HEADLOOK_CAMERA 30381     // "l" follow the camera
+#define MSG_CHARACTER_HEADLOOK_CHARACTER 30382  // "li" follow another character
+#define MSG_CHARACTER_HEADLOOK_POINT 30383      // "lfff" follow a point
+
 // Setting tasks for the character
 #define MSG_NPCHARACTER_SETTASK 30400
 #define MSG_NPCHARACTER_PUSHTASK 30401
@@ -204,6 +211,8 @@
 
 #define MSG_CAMERA_SLEEP 30520 // "ll" stop the camera (1) or resume (0)
 #define MSG_CAMERA_SET_RADIUS 30521 // "lf" set radius
+
+#define MSG_CAMERA_SET_PERSPECTIVE 30530 // "lf" set perspective
 
 // Blots on the ship
 #define MSG_BLOTS_SETMODEL 30600 // "li" set the model, model_id
@@ -289,6 +298,8 @@
 #define MSG_SOUND_SET_CAMERA_ORIENTATION 77002
 #define MSG_SOUND_SET_MASTER_VOLUME 77021 //"fff"       FX, music, speech volumes
 #define MSG_SOUND_GET_MASTER_VOLUME 77022 //"eee"       FX, music, speech volumes
+#define MSG_SOUND_SET_PITCH 77031 // "lf" set pitch
+#define MSG_SOUND_GET_PITCH 77032 // "le" get pitch
 
 // Sound management routines
 //"sl[llllfff]" file_name, type, simple_cache?, looped?, cached?, fade_in_time, start_x, start_y, start_y

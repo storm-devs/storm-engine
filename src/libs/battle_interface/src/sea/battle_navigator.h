@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../bi_defines.h"
-#include "Weather_Base.h"
+#include "weather_base.h"
 
 #define RADIAL_QUANTITY 36
 #define BI_DEFAULT_COLOR 0xFF0010C0
@@ -49,16 +49,16 @@ class BATTLE_NAVIGATOR
     void RestoreRender();
 
   protected:
-    void CalculateTextureRect(FRECT &texRect, long num, long hq, long vq);
-    long SetCircleVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float rad, float angle = 0) const;
-    long SetCircleVertexTex(BI_ONETEXTURE_VERTEX *v, float x = .5f, float y = .5f, float rad = .5f, float angle = 0);
-    long SetRectangleVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float width, float height,
+    void CalculateTextureRect(FRECT &texRect, int32_t num, int32_t hq, int32_t vq);
+    int32_t SetCircleVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float rad, float angle = 0) const;
+    int32_t SetCircleVertexTex(BI_ONETEXTURE_VERTEX *v, float x = .5f, float y = .5f, float rad = .5f, float angle = 0);
+    int32_t SetRectangleVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float width, float height,
                                float angle = 0) const;
-    long SetRectangleVertexTex(BI_ONETEXTURE_VERTEX *v, float x = .5f, float y = .5f, float width = 1.f,
+    int32_t SetRectangleVertexTex(BI_ONETEXTURE_VERTEX *v, float x = .5f, float y = .5f, float width = 1.f,
                                float height = 1.f, float angle = 0);
-    long SetRectangleSegVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float width, float height, float begAngle,
+    int32_t SetRectangleSegVertexPos(BI_ONETEXTURE_VERTEX *v, float x, float y, float width, float height, float begAngle,
                                   float endAngle);
-    long SetRectangleSegVertexTex(BI_ONETEXTURE_VERTEX *v, float x, float y, float width, float height, float begAngle,
+    int32_t SetRectangleSegVertexTex(BI_ONETEXTURE_VERTEX *v, float x, float y, float width, float height, float begAngle,
                                   float endAngle);
     float CalculateCrossX(int side, float w, float h, float angl);
     float CalculateCrossY(int side, float w, float h, float angl);
@@ -88,10 +88,10 @@ class BATTLE_NAVIGATOR
     float m_fShipShowRad;  // radius of the displayed ship
 
     // navigation window options
-    long m_NavigationWidth;
-    long m_NavigationHeight;
-    long m_XNavigator;
-    long m_YNavigator;
+    int32_t m_NavigationWidth;
+    int32_t m_NavigationHeight;
+    int32_t m_XNavigator;
+    int32_t m_YNavigator;
 
     // coordinates of our ship
     float m_fXPos;
@@ -114,8 +114,8 @@ class BATTLE_NAVIGATOR
     float m_fWindAngle;
     float m_fWindStrength;
     float m_fWindMaxStrength;
-    long m_windWidth;
-    long m_windHeight;
+    int32_t m_windWidth;
+    int32_t m_windHeight;
 
     // cannon charge parameters
     uint32_t m_dwChargeCannon;
@@ -151,17 +151,17 @@ class BATTLE_NAVIGATOR
     float m_fCurAnglWindSpeed;
 
     // textures
-    long m_idCompasTex;     // compass
-    long m_idSpeedTex;      // ship speed and wind
-    long m_idCannonTex;     // cannon charge
-    long m_idEmptyTex;      // empty space for speed and charge
-    long m_idIslandTexture; // Isle
-    long m_idWindTex;       // wind
-    long m_idBestCourseTex; // best direction pointers
-    long m_idChargeTexture; // current cannon charge type
-    long m_idPowderTexture; // current gunpowder
-    long m_idWindTexture;   // wind speed
-    long m_idSailTexture;   // sail position / ship speed
+    int32_t m_idCompasTex;     // compass
+    int32_t m_idSpeedTex;      // ship speed and wind
+    int32_t m_idCannonTex;     // cannon charge
+    int32_t m_idEmptyTex;      // empty space for speed and charge
+    int32_t m_idIslandTexture; // Isle
+    int32_t m_idWindTex;       // wind
+    int32_t m_idBestCourseTex; // best direction pointers
+    int32_t m_idChargeTexture; // current cannon charge type
+    int32_t m_idPowderTexture; // current gunpowder
+    int32_t m_idWindTexture;   // wind speed
+    int32_t m_idSailTexture;   // sail position / ship speed
     IDirect3DTexture9 *m_pIslandTexture;
 
     uint32_t m_dwSeaColor;         // color of the sea on the minimap
@@ -172,32 +172,32 @@ class BATTLE_NAVIGATOR
     uint32_t m_dwDeadShipColor;    // color of a sinking ship
 
     // buffers
-    long m_idEmptyVBuf;
-    long m_idCourseVBuf;
-    long m_idMapVBuf;
+    int32_t m_idEmptyVBuf;
+    int32_t m_idCourseVBuf;
+    int32_t m_idMapVBuf;
     // --------------------
-    long m_idFireZoneVBuf; // cannons fire zone
+    int32_t m_idFireZoneVBuf; // cannons fire zone
     // --------------------
-    long m_idCannonVBuf;
-    long m_nvCannonCharge;
-    long m_nvCannonReady;
-    long m_nvCannonDamage;
+    int32_t m_idCannonVBuf;
+    int32_t m_nvCannonCharge;
+    int32_t m_nvCannonReady;
+    int32_t m_nvCannonDamage;
     //--------------------
-    long m_idSpeedVBuf;
-    long m_nvSpeed;
+    int32_t m_idSpeedVBuf;
+    int32_t m_nvSpeed;
     //--------------------
-    long m_idShipsVBuf;
-    long m_nvShips;
+    int32_t m_idShipsVBuf;
+    int32_t m_nvShips;
     //--------------------
-    long m_idGradBackVBuf;
+    int32_t m_idGradBackVBuf;
     //--------------------
-    long m_idCurChargeVBuf;
+    int32_t m_idCurChargeVBuf;
 
     // fonts and labels
-    long m_speedFont;
-    long m_ySpeedShow;
-    long m_xShipSpeed;
-    long m_xWindSpeed;
+    int32_t m_speedFont;
+    int32_t m_ySpeedShow;
+    int32_t m_xShipSpeed;
+    int32_t m_xWindSpeed;
 
     WEATHER_BASE *m_wb;
     ATTRIBUTES *m_pAWeather;
@@ -206,20 +206,20 @@ class BATTLE_NAVIGATOR
     POINT m_ChargeGreed;
     POINT m_ChargePos;
     POINT m_ChargeSize;
-    long m_curCharge;
+    int32_t m_curCharge;
     // gunpowder icon
     POINT m_PowderGreed;
     POINT m_PowderPos;
     POINT m_PowderSize;
-    long m_curPowder;
+    int32_t m_curPowder;
     bool m_bPowderRunOut; // for blinking
     // wind icon
-    long m_curWindPic;
+    int32_t m_curWindPic;
     POINT m_WindGreed;
     POINT m_WindPos;
     POINT m_WindSize;
     // sail position icon
-    long m_curSailState;
+    int32_t m_curSailState;
     POINT m_SailGreed;
     POINT m_SailPos;
     POINT m_SailSize;

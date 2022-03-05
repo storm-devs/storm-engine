@@ -1,5 +1,5 @@
 #include "image.h"
-#include "imgrender.h"
+#include "img_render.h"
 
 BIImage::BIImage(VDX9RENDER *rs, BIImageMaterial *pMaterial)
     : m_BasePos(), m_BaseUV(), m_dwColor(0), m_eType()
@@ -18,7 +18,7 @@ BIImage::~BIImage()
 
 void BIImage::FillBuffers(BI_IMAGE_VERTEX *pV, uint16_t *pT, size_t &nV, size_t &nT)
 {
-    long n;
+    int32_t n;
     auto ni = nT * 3;
     auto nv = nV;
 
@@ -68,7 +68,7 @@ void BIImage::SetColor(uint32_t color)
     m_pMaterial->UpdateFlagOn();
 }
 
-void BIImage::SetPosition(long nLeft, long nTop, long nRight, long nBottom)
+void BIImage::SetPosition(int32_t nLeft, int32_t nTop, int32_t nRight, int32_t nBottom)
 {
     m_pMaterial->GetImgRender()->TranslateBasePosToRealPos(static_cast<float>(nLeft), static_cast<float>(nTop),
                                                            m_BasePos.left, m_BasePos.top);

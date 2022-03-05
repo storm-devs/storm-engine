@@ -1,6 +1,6 @@
 #include "string.h"
 #include "../bi_defines.h"
-#include "imgrender.h"
+#include "img_render.h"
 
 BIString::BIString(BIImageRender *pImgRender, VDX9RENDER *rs)
 {
@@ -39,12 +39,12 @@ void BIString::SetFont(const char *pcFontName)
     m_bUpdateString = true;
 }
 
-void BIString::SetAlign(long nHorzAlign, long nVertAlign)
+void BIString::SetAlign(int32_t nHorzAlign, int32_t nVertAlign)
 {
     m_bUpdateString = true;
 }
 
-void BIString::SetPosition(long nLeft, long nTop, long nRight, long nBottom)
+void BIString::SetPosition(int32_t nLeft, int32_t nTop, int32_t nRight, int32_t nBottom)
 {
     m_pImgRender->TranslateBasePosToRealPos(static_cast<float>(nLeft), static_cast<float>(nTop), m_BasePos.left,
                                             m_BasePos.top);

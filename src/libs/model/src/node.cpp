@@ -1,14 +1,14 @@
 //#define SHOW_SPHERES 'Q'
 
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "modelr.h"
 
 VGEOMETRY *NODER::gs = nullptr;
 VDX9RENDER *NODER::rs = nullptr;
-long NODER::depth = -1;
-long NODER::node;
-extern long clip_nps;
+int32_t NODER::depth = -1;
+int32_t NODER::node;
+extern int32_t clip_nps;
 extern const PLANE *clip_p;
 extern const CVECTOR *clip_c;
 extern float clip_r;
@@ -28,10 +28,10 @@ GEOS *sphere = 0;
 CMatrix *backtrans;
 CVECTOR clip_v[256];
 
-bool AddPolygon(const GEOS::VERTEX *vr, long nv)
+bool AddPolygon(const GEOS::VERTEX *vr, int32_t nv)
 {
     //!!! must be transformed
-    for (long p = 0; p < nv; p++)
+    for (int32_t p = 0; p < nv; p++)
         clip_v[p] = *backtrans * CVECTOR(vr[p].x, vr[p].y, vr[p].z);
     return clip_ap(clip_v, nv);
 }
@@ -54,7 +54,7 @@ bool NODER::Clip()
     if (flags & CLIP_ENABLE && sph_dist <= (geo_radius + clip_r) * (geo_radius + clip_r))
     {
         backtrans = &glob_mtx;
-        for (long p = 0; p < clip_nps; p++)
+        for (int32_t p = 0; p < clip_nps; p++)
         {
             const auto x = clip_p[p].D * clip_p[p].Nx - glob_mtx.m[3][0];
             const auto y = clip_p[p].D * clip_p[p].Ny - glob_mtx.m[3][1];
@@ -85,7 +85,7 @@ bool NODER::Clip()
     }
 
     if (flags & CLIP_ENABLE_TREE)
-        for (long l = 0; l < nnext; l++)
+        for (int32_t l = 0; l < nnext; l++)
             if (next[l] != nullptr && static_cast<NODER *>(next[l])->Clip() == true)
                 retval = true;
     return retval;
@@ -101,7 +101,7 @@ float NODER::Update(CMatrix &mtx, CVECTOR &cnt)
     center = geo_center;
     radius = geo_radius;
 
-    for (long l = 0; l < nnext; l++)
+    for (int32_t l = 0; l < nnext; l++)
         if (next[l] != nullptr)
         {
             CVECTOR cnt; // TODO: huh? ~!~
@@ -133,7 +133,7 @@ float NODER::Trace(const CVECTOR &src, const CVECTOR &dst)
     auto best_dist = 2.0f;
 
     if (flags & TRACE_ENABLE_TREE)
-        for (long n = 0; n < nnext; n++)
+        for (int32_t n = 0; n < nnext; n++)
         {
             if (next[n] == nullptr)
                 continue;
@@ -225,17 +225,17 @@ bool NODER::Init(const char *lightPath, const char *pname, const char *oname, co
     // calculate number of labels
     const auto idGeo = geo->FindName("geometry");
     nnext = 0;
-    long sti = -1;
+    int32_t sti = -1;
     while ((sti = geo->FindLabelG(sti + 1, idGeo)) > -1)
         nnext++;
 
     if (nnext > 0)
     {
         next = static_cast<NODE **>(malloc(sizeof(NODE *) * nnext));
-        for (long ii = 0; ii < nnext; ii++)
+        for (int32_t ii = 0; ii < nnext; ii++)
             next[ii] = nullptr;
-        long sti = -1;
-        long l = 0;
+        int32_t sti = -1;
+        int32_t l = 0;
         while ((sti = geo->FindLabelG(sti + 1, idGeo)) > -1)
         {
             GEOS::LABEL lb;
@@ -279,7 +279,7 @@ NODER::~NODER()
 #endif
 
     delete geo;
-    for (long l = 0; l < nnext; l++)
+    for (int32_t l = 0; l < nnext; l++)
         if (next[l] != nullptr)
             delete next[l];
     if (nnext > 0)
@@ -293,7 +293,7 @@ void NODER::ReleaseGeometry()
     delete geo;
     geo = nullptr;
     isReleased = true;
-    for (long i = 0; i < nnext; i++)
+    for (int32_t i = 0; i < nnext; i++)
     {
         if (!next[i])
             continue;
@@ -318,7 +318,7 @@ void NODER::RestoreGeometry()
         throw std::runtime_error(fmt::format("Cannot restore geometry {}", sys_modelName_full));
 
     isReleased = false;
-    for (long i = 0; i < nnext; i++)
+    for (int32_t i = 0; i < nnext; i++)
     {
         if (!next[i])
             continue;
@@ -340,7 +340,7 @@ void NODER::Draw()
     const auto cnt = glob_mtx * center;
 
     // visibility check
-    long p;
+    int32_t p;
     for (p = 0; p < 4; p++)
     {
         const auto dist =
@@ -390,7 +390,7 @@ void NODER::Draw()
     if (flags & VISIBLE)
     {
         // visibility check for geometry
-        long p;
+        int32_t p;
         for (p = 0; p < 4; p++)
         {
             const float dist =
@@ -437,7 +437,7 @@ void NODER::Draw()
 
     // draw all children
     if (flags & VISIBLE_TREE)
-        for (long l = 0; l < nnext; l++)
+        for (int32_t l = 0; l < nnext; l++)
             if (next[l] != nullptr)
                 static_cast<NODER *>(next[l])->Draw();
 }
@@ -447,9 +447,9 @@ void NODER::Draw()
 //----------------------------------------------------------
 NODER *NODER::FindNode(const char *cNodeName)
 {
-    if (_stricmp(cNodeName, name) == 0)
+    if (storm::iEquals(cNodeName, name))
         return this;
-    for (long i = 0; i < nnext; i++)
+    for (int32_t i = 0; i < nnext; i++)
     {
         if (!next[i])
             continue;
@@ -463,7 +463,7 @@ NODER *NODER::FindNode(const char *cNodeName)
 //----------------------------------------------------------
 // NODE get node by number
 //----------------------------------------------------------
-NODER *NODER::GetNode(long n)
+NODER *NODER::GetNode(int32_t n)
 {
     depth++;
     if (depth == 0)
@@ -474,7 +474,7 @@ NODER *NODER::GetNode(long n)
         return this;
     }
     node++;
-    for (long l = 0; l < nnext; l++)
+    for (int32_t l = 0; l < nnext; l++)
     {
         if (next[l] == nullptr)
             continue;
@@ -529,7 +529,7 @@ entid_t NODER::Unlink2Model()
         // get parent matrix
         mdl->mtx = parent->glob_mtx;
 
-        for (long l = 0; l < parent->nnext; l++)
+        for (int32_t l = 0; l < parent->nnext; l++)
             if (parent->next[l] == this)
             {
                 parent->next[l] = nullptr;
@@ -588,7 +588,7 @@ const char *NODER::GetTechnique()
 void NODER::SetMaxViewDist(float fDist)
 {
     max_view_dist = fDist;
-    for (long n = 0; n < nnext; n++)
+    for (int32_t n = 0; n < nnext; n++)
         if (next[n])
             static_cast<NODER *>(next[n])->SetMaxViewDist(fDist);
 }

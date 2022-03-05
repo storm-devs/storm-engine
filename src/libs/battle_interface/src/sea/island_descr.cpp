@@ -62,7 +62,7 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES *pAIsland)
         auto *pvdat = core.Event("evntGetLandData", "a", pATmp);
         if (pvdat)
         {
-            long lTmp;
+            int32_t lTmp;
             if (pvdat->Get(lTmp, 0))
                 if (lTmp == 0)
                     m_pLocators[i].locatorType = ISLAND_LOCATOR_LAND;
@@ -225,7 +225,7 @@ ISLAND_DESCRIBER::LOCATOR_DESCR *ISLAND_DESCRIBER::FindLocatorByName(char *name)
         if (m_pLocators[i].pA == nullptr)
             continue;
         auto *const curName = m_pLocators[i].pA->GetAttribute("name");
-        if (curName != nullptr && _stricmp(name, curName) == 0)
+        if (curName != nullptr && storm::iEquals(name, curName))
             return &m_pLocators[i];
     }
     return nullptr;

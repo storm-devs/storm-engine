@@ -7,6 +7,8 @@
 animation = <файл с анимацией>.an
 ;Указать общую скорость поворота радиан/секунда
 data = "Turn speed", "скорость"
+;(optional)Change head bone index of a procedural head look controller
+data = "Head bone index", "index"
 
 
 [Название действия]

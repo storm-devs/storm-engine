@@ -2,23 +2,23 @@
 
 #include "core.h"
 
-#include "Weather_Base.h"
+#include "weather_base.h"
 #include "defines.h"
 #include "entity.h"
 #include "shared/battle_interface/msg_control.h"
 #include "shared/mast_msg.h"
 #include "shared/sail_msg.h"
-#include "shared/sea_ai/Script_defines.h"
+#include "shared/sea_ai/script_defines.h"
 #include "ship_base.h"
-#include "vfile_service.h"
+#include "v_file_service.h"
 
 #define WIND_SPEED_MAX 12.f
 
 static const char *RIGGING_INI_FILE = "resource\\ini\\rigging.ini";
 
-void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...);
+void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, int32_t line, const char *format, ...);
 int traceSail = -1;
-long g_iBallOwnerIdx = -1;
+int32_t g_iBallOwnerIdx = -1;
 
 float g_fSailHoleDepend = 1.0f;
 
@@ -218,7 +218,7 @@ void SAIL::SetDevice()
     mtx.SetIdentity();
 
     // get render service
-    RenderService = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    RenderService = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!RenderService)
     {
         throw std::runtime_error("No service: dx9render");
@@ -252,14 +252,11 @@ bool SAIL::LoadState(ENTITY_STATE *state)
 
 void SAIL::Execute(uint32_t Delta_Time)
 {
-    uint64_t rtime;
-    int i;
-
-    // test slaughter of masts
+    // debug mast destruction
     if (gdata && core.Controls->GetDebugAsyncKeyState(VK_MENU) < 0 &&
         core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 && core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
     {
-        long nTmpMastNum = -1;
+        int32_t nTmpMastNum = -1;
         if (core.Controls->GetDebugAsyncKeyState('1') < 0)
             nTmpMastNum = 1;
         else if (core.Controls->GetDebugAsyncKeyState('2') < 0)
@@ -283,12 +280,13 @@ void SAIL::Execute(uint32_t Delta_Time)
             {
                 char pcTmpMastName[256];
                 sprintf_s(pcTmpMastName, "mast%d", nTmpMastNum);
-                auto *nod = pTmpMdl->FindNode(pcTmpMastName);
-                if (nod)
+                if (auto *nod = pTmpMdl->FindNode(pcTmpMastName))
                 {
                     entid_t eiMastTmp;
                     if (eiMastTmp = EntityManager::CreateEntity("MAST"))
                     {
+                        EntityManager::AddToLayer(SEA_EXECUTE, eiMastTmp, 2 + 1);
+                        EntityManager::AddToLayer(SEA_REALIZE, eiMastTmp, 31 + 1);
                         core.Send_Message(eiMastTmp, "lpii", MSG_MAST_SETGEOMETRY, nod, gdata[0].shipEI,
                                           gdata[0].modelEI);
                     }
@@ -320,6 +318,7 @@ void SAIL::Execute(uint32_t Delta_Time)
 
     if (bUse)
     {
+        int i;
         // ====================================================
         // If the ini-file has been changed, read the info from it
         if (fio->_FileOrDirectoryExists(RIGGING_INI_FILE))
@@ -391,6 +390,7 @@ void SAIL::Execute(uint32_t Delta_Time)
 
         CVECTOR pos, ang;
         float perspect;
+        uint64_t rtime;
         RDTSC_B(rtime);
         RenderService->GetCamera(pos, ang, perspect);
         CMatrix tmpMtx;
@@ -467,7 +467,7 @@ void SAIL::Execute(uint32_t Delta_Time)
                 {
                     ATTRIBUTES *pA =
                         static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))->GetACharacter();
-                    core.Event("Ship_SailsMoveSound", "al", pA, static_cast<long>(gdata[i].bFinalSailDo));
+                    core.Event("Ship_SailsMoveSound", "al", pA, static_cast<int32_t>(gdata[i].bFinalSailDo));
                 }
             }
 
@@ -515,7 +515,7 @@ void SAIL::Execute(uint32_t Delta_Time)
                     ATTRIBUTES *pA = pVai->GetACharacter()->GetAttributeClass("Ship");
                     if (pA != nullptr)
                         pA->SetAttributeUseDword("SP", fftoi(curSP));
-                    // pA->SetAttributeUseDword("SP", (long)fSP);
+                    // pA->SetAttributeUseDword("SP", (int32_t)fSP);
                 }
             }
         }
@@ -538,8 +538,8 @@ void SAIL::Realize(uint32_t Delta_Time)
         RenderService->SetMaterial(mat);
         RenderService->TextureSet(2, texl);
         CMatrix matv, matp, matc;
-        RenderService->GetTransform(D3DTS_VIEW, (D3DXMATRIX *)&matv);
-        RenderService->GetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&matp);
+        RenderService->GetTransform(D3DTS_VIEW, matv);
+        RenderService->GetTransform(D3DTS_PROJECTION, matp);
         matc = matv * matp;
         if constexpr (false) // Delta_Time==0 )
         {
@@ -555,7 +555,7 @@ void SAIL::Realize(uint32_t Delta_Time)
                     if (slist[i]->bFreeSail)
                         continue;
                     // if(gdata[slist[i]->HostNum].bDeleted) continue;
-                    RenderService->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)slist[i]->pMatWorld);
+                    RenderService->SetTransform(D3DTS_WORLD, *slist[i]->pMatWorld);
                     RenderService->TextureSet(0, slist[i]->surfaceTex);
                     if (slist[i]->m_bIsGerald)
                     {
@@ -594,7 +594,7 @@ void SAIL::Realize(uint32_t Delta_Time)
                 {
                     i = gdata[j].sailIdx[idx];
                     // if(gdata[slist[i]->HostNum].bDeleted) continue;
-                    RenderService->SetTransform(D3DTS_WORLD, (D3DXMATRIX *)slist[i]->pMatWorld);
+                    RenderService->SetTransform(D3DTS_WORLD, *slist[i]->pMatWorld);
                     RenderService->TextureSet(0, slist[i]->surfaceTex);
                     if (slist[i]->m_bIsGerald)
                     {
@@ -945,7 +945,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
     case MSG_SAIL_TO_NEWHOST: {
         entid_t oldModelEI = message.EntityID();
         auto nod = (NODE *)message.Pointer();
-        long groupNum = message.Long();
+        int32_t groupNum = message.Long();
         entid_t newHostEI = message.EntityID();
         entid_t newModelEI = message.EntityID();
         DoSailToNewHost(newModelEI, newHostEI, groupNum, nod, oldModelEI);
@@ -1353,14 +1353,14 @@ void SAIL::LoadSailIni()
     sprintf(section, "SAILS");
 
     // load texture names
-    texQuantity = static_cast<int>(ini->GetLong(section, "TextureCount", 1));
+    texQuantity = static_cast<int>(ini->GetInt(section, "TextureCount", 1));
     if (texQuantity == 0)
     {
         texQuantity = 1;
     }
-    texNumCommon = static_cast<float>(ini->GetLong(section, "TexNumCommon", 0)) / static_cast<float>(texQuantity);
-    texNumEnglish = static_cast<float>(ini->GetLong(section, "TexNumEnglish", 0)) / static_cast<float>(texQuantity);
-    texNumTreangle = static_cast<float>(ini->GetLong(section, "TexNumTreangle", 0)) / static_cast<float>(texQuantity);
+    texNumCommon = static_cast<float>(ini->GetInt(section, "TexNumCommon", 0)) / static_cast<float>(texQuantity);
+    texNumEnglish = static_cast<float>(ini->GetInt(section, "TexNumEnglish", 0)) / static_cast<float>(texQuantity);
+    texNumTreangle = static_cast<float>(ini->GetInt(section, "TexNumTreangle", 0)) / static_cast<float>(texQuantity);
 
     // load speed calculate parameters:
     g_fSailHoleDepend = ini->GetFloat(section, "fHoleDepend", 1.0f);
@@ -1377,11 +1377,11 @@ void SAIL::LoadSailIni()
     fWindAdding = ini->GetFloat(section, "fWindAdding", .3f);
     FLEXSPEED = ini->GetFloat(section, "FLEXSPEED", .001f);
     MAXSUMWIND = ini->GetFloat(section, "MAXSUMWIND", .02f);
-    WINDVECTOR_QUANTITY = static_cast<int>(ini->GetLong(section, "WINDVECTOR_QNT", 60));
-    WINDVECTOR_TINCR = static_cast<int>(ini->GetLong(section, "WINDVECTOR_TINCR", 3));
-    WINDVECTOR_TADD = static_cast<int>(ini->GetLong(section, "WINDVECTOR_TADD", 3));
-    WINDVECTOR_SINCR = static_cast<int>(ini->GetLong(section, "WINDVECTOR_SINCR", 6));
-    WINDVECTOR_SADD = static_cast<int>(ini->GetLong(section, "WINDVECTOR_SADD", 3));
+    WINDVECTOR_QUANTITY = static_cast<int>(ini->GetInt(section, "WINDVECTOR_QNT", 60));
+    WINDVECTOR_TINCR = static_cast<int>(ini->GetInt(section, "WINDVECTOR_TINCR", 3));
+    WINDVECTOR_TADD = static_cast<int>(ini->GetInt(section, "WINDVECTOR_TADD", 3));
+    WINDVECTOR_SINCR = static_cast<int>(ini->GetInt(section, "WINDVECTOR_SINCR", 6));
+    WINDVECTOR_SADD = static_cast<int>(ini->GetInt(section, "WINDVECTOR_SADD", 3));
 
     // load rolling sail parameters
     ROLL_Z_VAL = ini->GetFloat(section, "ROLL_Z_VAL", .01f);
@@ -1435,7 +1435,7 @@ void SAIL::LoadSailIni()
     FALL_TSAIL_ADD_MIN = ini->GetFloat(section, "fFallTSailAddMin", 0.2f);
     FALL_TSAIL_ADD_RAND = ini->GetFloat(section, "fFallTSailAddRand", 0.2f);
 
-    GROUP_UPDATE_TIME = ini->GetLong(section, "msecSailUpdateTime", GROUP_UPDATE_TIME);
+    GROUP_UPDATE_TIME = ini->GetInt(section, "msecSailUpdateTime", GROUP_UPDATE_TIME);
 
     // UNGUARD
 }
@@ -1552,7 +1552,7 @@ bool SAIL::GetCollideTriangle(struct TRIANGLE &trg)
     return false;
 }
 
-bool SAIL::Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+bool SAIL::Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
 {
     return false;
 }
@@ -1631,7 +1631,7 @@ void SAIL::FirstRun()
     bUse = sailQuantity > 0;
 }
 
-float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst)
+float SAIL::Cannon_Trace(int32_t iBallOwner, const CVECTOR &src, const CVECTOR &dst)
 {
     bCannonTrace = true;
     g_iBallOwnerIdx = iBallOwner;
@@ -1651,7 +1651,7 @@ float SAIL::Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst
             ATTRIBUTES *pA = nullptr;
             if (pvai != nullptr)
                 pA = pvai->GetACharacter();
-            long charIdx = -1;
+            int32_t charIdx = -1;
             if (pA != nullptr)
                 charIdx = pA->GetAttributeAsDword("index", -1);
             core.Event(SHIP_SAIL_DAMAGE, "lfffl", charIdx, damagePoint.x, damagePoint.y, damagePoint.z, iBallOwner);
@@ -1882,7 +1882,7 @@ void SAIL::DeleteSailGroup()
     STORM_DELETE(oldslist);
 
     // calculation of new parameters for vertex and index buffers
-    long vIndx = 0; // index of a vertex buffer
+    int32_t vIndx = 0; // index of a vertex buffer
     // passing through all groups and setting new links to buffers
     for (gn = 0; gn < groupQuantity; gn++)
     {
@@ -2010,7 +2010,7 @@ void SAIL::DoNoRopeSailToNewHost(entid_t newModel, entid_t newHost, entid_t oldH
                 if (atoi(&gl.group_name[5]) == slist[sn]->groupNum)                  // with the correct group number
                     if (!strncmp(gl.name, "rope", 4) || !strncmp(gl.name, "fal", 3)) // and the sail is tied with a rope
                     {
-                        long nRopeNum;
+                        int32_t nRopeNum;
                         if (gl.name[0] == 'r')
                             nRopeNum = atoi(&gl.name[5]);
                         else
@@ -2041,11 +2041,14 @@ void SAIL::DoNoRopeSailToNewHost(entid_t newModel, entid_t newHost, entid_t oldH
     }
 }
 
-void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const char *format, ...)
+void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, int32_t line, const char *format, ...)
 {
     static char buf[256];
     // print to the buffer
-    long len = _vsnprintf_s(buf, sizeof(buf) - 1, format, (char *)(&format + 1));
+    va_list args;
+    va_start(args, format);
+    int32_t len = vsnprintf(buf, sizeof(buf) - 1, format, args);
+    va_end(args);
     buf[sizeof(buf) - 1] = 0;
     // Looking for a point position on the screen
     static CMatrix mtx, view, prj;
@@ -2065,18 +2068,18 @@ void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, long line, const
     mtx.Projection((CVECTOR *)&pos3D, &vrt, 1, vp.Width * 0.5f, vp.Height * 0.5f, sizeof(CVECTOR),
                    sizeof(MTX_PRJ_VECTOR));
     // Looking for a position
-    const long fh = rs->CharHeight(FONT_DEFAULT) / 2;
+    const int32_t fh = rs->CharHeight(FONT_DEFAULT) / 2;
     vrt.y -= (line + 0.5f) * fh;
     // Transparency
-    long color = 0xffffffff;
+    int32_t color = 0xffffffff;
     const float kDist = 0.75f;
     if (dist > kDist * kDist * rad * rad)
     {
         dist = 1.0f - (sqrtf(dist) - kDist * rad) / (rad - kDist * rad);
         color = (static_cast<uint32_t>(dist * 255.0f) << 24) | 0xffffff;
     }
-    rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, 1.0f, 0, 0, static_cast<long>(vrt.x),
-                 static_cast<long>(vrt.y), buf);
+    rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, 1.0f, 0, 0, static_cast<int32_t>(vrt.x),
+                 static_cast<int32_t>(vrt.y), buf);
 }
 
 SAILONE *SAIL::FindSailFromData(int gn, const char *nodeName, const char *grName) const
@@ -2095,7 +2098,7 @@ SAILONE *SAIL::FindSailFromData(int gn, const char *nodeName, const char *grName
     return nullptr;
 }
 
-void SAIL::SetSailTextures(long grNum, VDATA *pvd) const
+void SAIL::SetSailTextures(int32_t grNum, VDATA *pvd) const
 {
     if (grNum < 0 || grNum >= groupQuantity || pvd == nullptr)
         return;
@@ -2266,27 +2269,27 @@ uint32_t SAIL::ScriptProcessing(const char *name, MESSAGE &message)
     if (name == nullptr)
         return 0;
 
-    if (_stricmp(name, "RandomSailsDmg") == 0)
+    if (storm::iEquals(name, "RandomSailsDmg"))
     {
-        const long chrIdx = message.Long();
+        const int32_t chrIdx = message.Long();
         const float fDmg = message.Float();
         const int gn = FindGroupForCharacter(chrIdx);
         if (gn >= 0 && gn < groupQuantity)
             DoRandomsSailsDmg(chrIdx, gn, fDmg);
     }
 
-    if (_stricmp(name, "SailRollSpeed") == 0)
+    if (storm::iEquals(name, "SailRollSpeed"))
     {
-        const long chrIdx = message.Long();
+        const int32_t chrIdx = message.Long();
         const float fSpeed = message.Float();
         const int gn = FindGroupForCharacter(chrIdx);
         if (gn >= 0 && gn < groupQuantity)
             gdata[gn].fRollingSpeed = fSpeed * ROLLINGSPEED;
     }
 
-    if (_stricmp(name, "GetSailStatus") == 0)
+    if (storm::iEquals(name, "GetSailStatus"))
     {
-        long chrIdx = message.Long();
+        int32_t chrIdx = message.Long();
         int gn = FindGroupForCharacter(chrIdx);
         if (gn >= 0 && gn < groupQuantity)
             GetSailStatus(chrIdx, gn);

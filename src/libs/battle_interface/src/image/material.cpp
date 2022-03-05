@@ -1,7 +1,7 @@
 #include "material.h"
 #include "../bi_defines.h"
 #include "image.h"
-#include "imgrender.h"
+#include "img_render.h"
 
 BIImageMaterial::BIImageMaterial(VDX9RENDER *pRS, BIImageRender *pImgRender)
 {
@@ -27,7 +27,7 @@ BIImageMaterial::~BIImageMaterial()
     Release();
 }
 
-void BIImageMaterial::Render(long nBegPrior, long nEndPrior)
+void BIImageMaterial::Render(int32_t nBegPrior, int32_t nEndPrior)
 {
     if (m_bMakeBufferUpdate)
         RemakeBuffers();
@@ -45,8 +45,8 @@ void BIImageMaterial::Render(long nBegPrior, long nEndPrior)
     }
 }
 
-const BIImage *BIImageMaterial::CreateImage(BIImageType type, uint32_t color, const FRECT &uv, long nLeft, long nTop,
-                                            long nRight, long nBottom, long nPrior)
+const BIImage *BIImageMaterial::CreateImage(BIImageType type, uint32_t color, const FRECT &uv, int32_t nLeft, int32_t nTop,
+                                            int32_t nRight, int32_t nBottom, int32_t nPrior)
 {
     auto *pImg = new BIImage(m_pRS, this);
     Assert(pImg);
@@ -66,7 +66,7 @@ void BIImageMaterial::DeleteImage(const BIImage *pImg)
 {
     if (m_bDeleteEverything)
         return;
-    for (long n = 0; n < m_apImage.size(); n++)
+    for (int32_t n = 0; n < m_apImage.size(); n++)
         if (m_apImage[n] == pImg)
         {
             m_apImage.erase(m_apImage.begin() + n);
@@ -111,14 +111,14 @@ void BIImageMaterial::Release()
     m_nTriangleQuantity = 0;
 }
 
-void BIImageMaterial::UpdateImageBuffers(long nStartIdx, size_t nEndIdx)
+void BIImageMaterial::UpdateImageBuffers(int32_t nStartIdx, size_t nEndIdx)
 {
     // fool check
     if (m_nIBufID < 0 || m_nVBufID < 0)
         return;
-    if (nStartIdx >= static_cast<long>(m_apImage.size()))
+    if (nStartIdx >= static_cast<int32_t>(m_apImage.size()))
         return;
-    if (nEndIdx >= static_cast<long>(m_apImage.size()))
+    if (nEndIdx >= static_cast<int32_t>(m_apImage.size()))
         nEndIdx = m_apImage.size() - 1;
 
     auto *pT = static_cast<uint16_t *>(m_pRS->LockIndexBuffer(m_nIBufID));
@@ -127,7 +127,7 @@ void BIImageMaterial::UpdateImageBuffers(long nStartIdx, size_t nEndIdx)
     // get before
     size_t nV = 0;
     size_t nT = 0;
-    long n;
+    int32_t n;
     for (n = 0; n < nStartIdx; n++)
     {
         nV += m_apImage[n]->GetVertexQuantity();
@@ -147,7 +147,7 @@ void BIImageMaterial::RemakeBuffers()
 {
     size_t nVQ = 0;
     size_t nTQ = 0;
-    for (long n = 0; n < m_apImage.size(); n++)
+    for (int32_t n = 0; n < m_apImage.size(); n++)
     {
         nVQ += m_apImage[n]->GetVertexQuantity();
         nTQ += m_apImage[n]->GetTriangleQuantity();
@@ -173,7 +173,7 @@ void BIImageMaterial::RemakeBuffers()
     m_bMakeBufferUpdate = false;
 }
 
-bool BIImageMaterial::GetOutputRangeByPriority(long nBegPrior, long nEndPrior, size_t &nStartIndex,
+bool BIImageMaterial::GetOutputRangeByPriority(int32_t nBegPrior, int32_t nEndPrior, size_t &nStartIndex,
                                                size_t &nTriangleQuantity)
 {
     if (m_apImage.size() == 0)
@@ -182,7 +182,7 @@ bool BIImageMaterial::GetOutputRangeByPriority(long nBegPrior, long nEndPrior, s
         return false;
 
     nStartIndex = 0;
-    long n;
+    int32_t n;
     for (n = 0; n < m_apImage.size(); n++)
     {
         if (m_apImage[n]->GetPrioritet() >= nBegPrior)
@@ -208,7 +208,7 @@ void BIImageMaterial::RecalculatePriorityRange()
     const auto oldMin = m_nMinPriority;
     const auto oldMax = m_nMaxPriority;
     m_nMinPriority = m_nMaxPriority = m_apImage[0]->GetPrioritet();
-    for (long n = 1; n < m_apImage.size(); n++)
+    for (int32_t n = 1; n < m_apImage.size(); n++)
     {
         const auto p = m_apImage[n]->GetPrioritet();
         if (p < m_nMinPriority)
@@ -224,7 +224,7 @@ void BIImageMaterial::InsertImageToList(BIImage *pImg)
 {
     Assert(pImg);
     const auto nPrior = pImg->GetPrioritet();
-    long n;
+    int32_t n;
     for (n = 0; n < m_apImage.size(); n++)
         if (m_apImage[n]->GetPrioritet() > nPrior)
             break;

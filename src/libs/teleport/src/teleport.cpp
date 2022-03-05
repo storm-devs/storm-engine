@@ -4,7 +4,7 @@
 
 #include "defines.h"
 #include "pcs_controls.h"
-#include "vfile_service.h"
+#include "v_file_service.h"
 
 CREATE_CLASS(TMPTELEPORT)
 
@@ -17,7 +17,7 @@ CREATE_CLASS(FINDDIALOGNODES)
         delete x;                                                                                                      \
     x = 0;
 
-bool GetStringLine(char *&pStr, char *bufer, long bufSize)
+bool GetStringLine(char *&pStr, char *bufer, int32_t bufSize)
 {
     if (pStr == nullptr || bufer == nullptr || bufSize == 0)
         return false;
@@ -35,7 +35,7 @@ bool GetStringLine(char *&pStr, char *bufer, long bufSize)
 
     if (pEnd == pStart && *ps == 0)
         return false;
-    if (static_cast<long>(pEnd - pStart) > bufSize - 1)
+    if (static_cast<int32_t>(pEnd - pStart) > bufSize - 1)
         pEnd = pStart + bufSize - 1;
     else
         bufSize = pEnd - pStart;
@@ -48,7 +48,7 @@ bool GetStringLine(char *&pStr, char *bufer, long bufSize)
     return true;
 }
 
-void GetQuotedString(char *inBuf, char *outBuf, long bufSize)
+void GetQuotedString(char *inBuf, char *outBuf, int32_t bufSize)
 {
     if (outBuf == nullptr || bufSize <= 0)
         return;
@@ -87,7 +87,7 @@ TMPTELEPORT::~TMPTELEPORT()
 
 bool TMPTELEPORT::Init()
 {
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
 
@@ -120,7 +120,7 @@ void TMPTELEPORT::Execute(uint32_t Delta_Time)
             m_nShowType = 0;
         }
     }
-    long csVal;
+    int32_t csVal;
     if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
         csVal = CST_ACTIVE;
     else
@@ -153,7 +153,7 @@ void TMPTELEPORT::Execute(uint32_t Delta_Time)
     {
         if (m_nStrQuantity > 0)
         {
-            const long n = m_descrArray[m_nCurStr + m_nCurShowPos].num;
+            const int32_t n = m_descrArray[m_nCurStr + m_nCurShowPos].num;
             ReleaseAll();
             core.Event("TeleportChoose", "l", n);
         }
@@ -328,7 +328,7 @@ bool FINDDIALOGNODES::Init()
                 return false;
             }
 
-            const long filesize = fio->_GetFileSize(fileName);
+            const int32_t filesize = fio->_GetFileSize(fileName);
             if (filesize == 0)
             {
                 core.Trace("Empty dialog file %s", fileName);
@@ -361,7 +361,7 @@ bool FINDDIALOGNODES::Init()
             auto nodIdx = 0;
             while (GetStringLine(pStr, param, sizeof(param) - 1))
             {
-                if (strlen(param) < 5 || _strnicmp(param, "case", 4))
+                if (strlen(param) < 5 || !storm::iEquals(param, "case", 4))
                     continue;
                 char param2[512];
                 GetQuotedString(param, param2, sizeof(param2) - 1);

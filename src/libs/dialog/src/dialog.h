@@ -2,7 +2,7 @@
 
 #include "dx9render.h"
 #include "matrix.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 #include "defines.h"
 #include <string>
@@ -63,9 +63,9 @@ class DIALOG final : public Entity
         }
     }
 
-    static void AddToStringArrayLimitedByWidth(const char *pcSrcText, long nFontID, float fScale, long nLimitWidth,
+    static void AddToStringArrayLimitedByWidth(const char *pcSrcText, int32_t nFontID, float fScale, int32_t nLimitWidth,
                                                std::vector<std::string> &asOutTextList,
-                                               std::vector<long> *panPageIndices, long nPageSize);
+                                               std::vector<int32_t> *panPageIndices, int32_t nPageSize);
 
   private:
     void EmergencyExit();
@@ -77,16 +77,16 @@ class DIALOG final : public Entity
     {
         VDX9RENDER *rs;
         POINT offset;
-        long nWindowWidth;
-        long nFontID;
+        int32_t nWindowWidth;
+        int32_t nFontID;
         uint32_t dwColor;
         uint32_t dwSelColor;
         float fScale;
-        long nLineInterval;
+        int32_t nLineInterval;
         std::vector<std::string> asText;
-        long nStartIndex;
-        long nShowQuantity;
-        long nSelectLine;
+        int32_t nStartIndex;
+        int32_t nShowQuantity;
+        int32_t nSelectLine;
 
         TextDescribe()
         {
@@ -115,7 +115,7 @@ class DIALOG final : public Entity
     struct DlgTextDescribe : public TextDescribe
     {
         float fScrollTime;
-        std::vector<long> anPageEndIndex;
+        std::vector<int32_t> anPageEndIndex;
 
         DlgTextDescribe() : TextDescribe(), fScrollTime(0)
         {
@@ -133,8 +133,8 @@ class DIALOG final : public Entity
 
         void ChangeText(const char *pcText);
         void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
-        long GetShowHeight();
-        void Show(long nY);
+        int32_t GetShowHeight();
+        void Show(int32_t nY);
         bool IsLastPage();
         void PrevPage();
         void NextPage();
@@ -144,11 +144,11 @@ class DIALOG final : public Entity
 
     struct DlgLinkDescribe : public TextDescribe
     {
-        std::vector<long> anLineEndIndex;
+        std::vector<int32_t> anLineEndIndex;
 
-        long nEditLine;
-        long nEditVarIndex;
-        long nEditCharIndex;
+        int32_t nEditLine;
+        int32_t nEditVarIndex;
+        int32_t nEditCharIndex;
         float fCursorCurrentTime, fCursorVisibleTime, fCursorInvisibleTime;
         DIALOG *pDlg;
 
@@ -169,9 +169,9 @@ class DIALOG final : public Entity
 
         void ChangeText(ATTRIBUTES *pALinks);
         void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
-        long GetShowHeight();
-        void Show(long nY);
-        void ShowEditMode(long nX, long nY, long nTextIdx);
+        int32_t GetShowHeight();
+        void Show(int32_t nY);
+        void ShowEditMode(int32_t nX, int32_t nY, int32_t nTextIdx);
 
         void SetDlg(DIALOG *_pDlg)
         {
@@ -183,7 +183,7 @@ class DIALOG final : public Entity
 
     struct BackParameters
     {
-        long m_idBackTex;
+        int32_t m_idBackTex;
 
         FRECT m_frLeftTopUV;
         FRECT m_frRightTopUV;
@@ -212,18 +212,18 @@ class DIALOG final : public Entity
         bool bShowDivider;
         float nDividerHeight;
         float nDividerOffsetX;
-        long nDividerOffsetY;
+        int32_t nDividerOffsetY;
     };
 
     BackParameters m_BackParams;
-    long m_idVBufBack;
-    long m_idIBufBack;
-    long m_nVQntBack;
-    long m_nIQntBack;
+    int32_t m_idVBufBack;
+    int32_t m_idIBufBack;
+    int32_t m_nVQntBack;
+    int32_t m_nIQntBack;
 
     struct ButtonParameters
     {
-        long m_idTexture;
+        int32_t m_idTexture;
 
         FRECT frUpNormalButtonUV;
         FRECT frDownNormalButtonUV;
@@ -238,19 +238,19 @@ class DIALOG final : public Entity
     };
 
     ButtonParameters m_ButtonParams;
-    long m_idVBufButton;
-    long m_idIBufButton;
-    long m_nVQntButton;
-    long m_nIQntButton;
+    int32_t m_idVBufButton;
+    int32_t m_idIBufButton;
+    int32_t m_nVQntButton;
+    int32_t m_nIQntButton;
     uint32_t m_dwButtonState;
 
-    long m_nCharNameTextFont;
+    int32_t m_nCharNameTextFont;
     uint32_t m_dwCharNameTextColor;
     float m_fCharNameTextScale;
     FPOINT m_fpCharNameTextOffset;
 
-    long m_nScrBaseWidth;
-    long m_nScrBaseHeight;
+    int32_t m_nScrBaseWidth;
+    int32_t m_nScrBaseHeight;
     static FRECT m_frScreenData;
 
     static float GetScrX(float fX)
@@ -292,7 +292,7 @@ class DIALOG final : public Entity
     entid_t charMdl, persMdl;
     D3DVIEWPORT9 textViewport;
 
-    long curSnd;
+    int32_t curSnd;
     char soundName[256];
     char charDefSnd[256];
 
@@ -301,7 +301,7 @@ class DIALOG final : public Entity
 
     int unfadeTime;
 
-    long play;
+    int32_t play;
     bool start;
 
     bool bEditMode;

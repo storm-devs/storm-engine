@@ -1,7 +1,7 @@
 #pragma once
 
 // ANIMATION_HEADER
-// long parentIndex[nJoints]
+// int32_t parentIndex[nJoints]
 // CVECTOR jointPos[nJoints]
 
 // Frames:
@@ -14,8 +14,8 @@ namespace ANFILE
 {
 struct HEADER
 {
-    long nFrames;
-    long nJoints;
+    int32_t nFrames;
+    int32_t nJoints;
     float framesPerSec;
 };
 }; // namespace ANFILE

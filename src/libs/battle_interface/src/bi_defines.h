@@ -3,7 +3,7 @@
 #include "defines.h"
 #include "dx9render.h"
 #include "storm_assert.h"
-#include "vdata.h"
+#include "v_data.h"
 
 #define INI_FILE_NAME "resource\\ini\\interfaces\\battle_interface.ini"
 
@@ -232,15 +232,15 @@ inline void SetRectangleTexture(BI_COLOR_VERTEX *pv, float fl, float ft, float f
 
 inline bool GetVDATABool(VDATA *pvd, bool defVal)
 {
-    long tmp = defVal;
+    int32_t tmp = defVal;
     if (pvd != nullptr)
         pvd->Get(tmp);
     return (tmp != 0);
 }
 
-inline long GetVDATALong(VDATA *pvd, long defVal)
+inline int32_t GetVDATALong(VDATA *pvd, int32_t defVal)
 {
-    long tmp = defVal;
+    int32_t tmp = defVal;
     if (pvd != nullptr)
         pvd->Get(tmp);
     return tmp;

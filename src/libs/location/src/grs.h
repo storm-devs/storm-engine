@@ -35,17 +35,17 @@
 
 struct GRSHeader
 {
-    unsigned long id;     // Identifier
-    unsigned long ver;    // Version
-    long miniX, miniZ;    // Minimap sizes
+    uint32_t id;     // Identifier
+    uint32_t ver;    // Version
+    int32_t miniX, miniZ;    // Minimap sizes
     float startX, startZ; // Map position
-    long numElements;     // Number of elements (blades of grass)
+    int32_t numElements;     // Number of elements (blades of grass)
 };
 
 struct GRSMiniMapElement
 {
-    long start;      // Block start
-    long num[4];     // The amount of grass in the block
+    int32_t start;      // Block start
+    int32_t num[4];     // The amount of grass in the block
     float minHeight; // Minimum height in block
     float maxHeight; // Maximum height in block
 };

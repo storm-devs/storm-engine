@@ -12,13 +12,13 @@ dynamic shadow cpp file
 
 CREATE_CLASS(Shadow)
 
-static unsigned long HEAD_DENSITY = 0xFF606060;
-static unsigned long DENSITY = 0xFF606040;
+static uint32_t HEAD_DENSITY = 0xFF606060;
+static uint32_t DENSITY = 0xFF606040;
 static const float nearBlend = 8.0f;
 static const float farBlend = 16.0f;
 
-static const long vbuff_size = 1024;
-static long refcount = 0;
+static const int32_t vbuff_size = 1024;
+static int32_t refcount = 0;
 #define TEXTURE_SIZE 128
 IDirect3DTexture9 *shTex = nullptr, *blurTex = nullptr;
 IDirect3DVertexBuffer9 *vbuff;
@@ -44,13 +44,13 @@ bool Shadow::Init()
 {
     // GUARD(Shadow::SHADOW())
 
-    col = static_cast<COLLIDE *>(core.CreateService("coll"));
+    col = static_cast<COLLIDE *>(core.GetService("coll"));
     if (col == nullptr)
         throw std::runtime_error("No service: COLLIDE");
 
     EntityManager::AddToLayer(REALIZE, GetId(), 900);
 
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
 
@@ -79,11 +79,11 @@ bool Shadow::Init()
 CMatrix trans;
 float perspective, atten_start, atten_end;
 Shadow::SHADOW_VERTEX *shadvert;
-long tot_verts;
+int32_t tot_verts;
 CVECTOR lightPos, ObjPos, objPos;
 CVECTOR camPos;
 
-bool AddPoly(const CVECTOR *vr, long nverts)
+bool AddPoly(const CVECTOR *vr, int32_t nverts)
 {
     const auto norm = !((vr[1] - vr[0]) ^ (vr[2] - vr[0]));
 
@@ -99,7 +99,7 @@ bool AddPoly(const CVECTOR *vr, long nverts)
 
     if (tot_verts + (nverts - 2) * 3 > vbuff_size)
         return false;
-    long v;
+    int32_t v;
     for (v = 0; v < 3; v++)
     {
         shadvert[tot_verts].pos = vr[v];
@@ -139,8 +139,8 @@ void Shadow::Realize(uint32_t Delta_Time)
         return;
 
     auto *pV = core.Event("EWhr_GetShadowDensity");
-    HEAD_DENSITY = ((VDATA *)pV->GetArrayElement(0))->GetLong();
-    DENSITY = ((VDATA *)pV->GetArrayElement(1))->GetLong();
+    HEAD_DENSITY = ((VDATA *)pV->GetArrayElement(0))->GetInt();
+    DENSITY = ((VDATA *)pV->GetArrayElement(1))->GetInt();
 
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
@@ -212,7 +212,7 @@ void Shadow::Realize(uint32_t Delta_Time)
         radius = 8.0f;
     }
 
-    long p;
+    int32_t p;
     for (p = 0; p < 4; p++)
     {
         float dist = cen.x * planes[p].Nx + cen.y * planes[p].Ny + cen.z * planes[p].Nz - planes[p].D;
@@ -225,7 +225,7 @@ void Shadow::Realize(uint32_t Delta_Time)
     }
 
     float minVal = 0.0f;
-    for (long it = 0; it < 10; it++)
+    for (int32_t it = 0; it < 10; it++)
     {
         CVECTOR ps = ObjPos;
         ps.y += gi.radius * 0.111f * static_cast<float>(it);
@@ -341,7 +341,7 @@ void Shadow::Realize(uint32_t Delta_Time)
     float dist = 3.0f * sqrtf(~(cen - camPos));
     shading *= powf(2.71f, -fogDensity * dist);
 
-    long shade = static_cast<long>(fabsf(shading * 255.0f));
+    int32_t shade = static_cast<int32_t>(fabsf(shading * 255.0f));
 
     rs->SetRenderState(D3DRS_TEXTUREFACTOR, (shade << 16) | (shade << 8) | (shade << 0));
     rs->SetFVF(SHADOW_FVF);
@@ -432,7 +432,7 @@ void Shadow::Smooth()
     struct SMOOTHVRT
     {
         float sx, sy, sz, rhw;
-        long diffuse;
+        int32_t diffuse;
         float tu, tv;
     };
 
@@ -478,10 +478,10 @@ void Shadow::Smooth()
     if (rs->TechniqueExecuteStart("shadow_smooth"))
         do
         {
-            static const long nIterations = 3;
+            static const int32_t nIterations = 3;
 
-            for (long u = 0; u < nIterations; u++)
-                for (long v = 0; v < nIterations; v++)
+            for (int32_t u = 0; u < nIterations; u++)
+                for (int32_t v = 0; v < nIterations; v++)
                 {
                     const float ud = 1.5f * (u / (nIterations - 1.0f) - 0.5f) / (TEXTURE_SIZE - 1.0f) * 2.0f;
                     const float vd = 1.5f * (v / (nIterations - 1.0f) - 0.5f) / (TEXTURE_SIZE - 1.0f) * 2.0f;
@@ -493,7 +493,7 @@ void Shadow::Smooth()
                     vrt[2].tv = 1.0f + vd;
                     vrt[3].tu = 1.0f + ud;
                     vrt[3].tv = 0.0f + vd;
-                    const long col = static_cast<long>(1.0f / (nIterations * nIterations) * 255.0f);
+                    const int32_t col = static_cast<int32_t>(1.0f / (nIterations * nIterations) * 255.0f);
                     rs->SetRenderState(D3DRS_TEXTUREFACTOR, 0xFF000000 | (col << 16) | (col << 8) | (col << 0));
                     rs->DrawPrimitiveUP(D3DPT_TRIANGLEFAN,
                                         D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_TEXTUREFORMAT2, 2, &vrt,
@@ -506,7 +506,7 @@ void Shadow::Smooth()
 
 uint64_t Shadow::ProcessMessage(MESSAGE &message)
 {
-    const long code = message.Long();
+    const int32_t code = message.Long();
     switch (code)
     {
     case 0:

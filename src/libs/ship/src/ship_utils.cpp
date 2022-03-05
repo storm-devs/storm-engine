@@ -4,7 +4,7 @@
 #define MAST_IDENTIFY "mast"
 #define MAST_FIRST 1
 
-BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
+BOOL SHIP::BuildContour(CVECTOR *vContour, int32_t &iNumVContour)
 {
     iNumVContour = 0;
 
@@ -68,11 +68,11 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
         fZMax = vP1.z;
         fZMin = vP2.z;
         fZMinStep = 2.0f;
-        fZStep = (fZMax - fZMin) / static_cast<float>(static_cast<long>((fZMax - fZMin) / fZMinStep));
-        auto iNumSteps = static_cast<long>((fZMax - fZMin) / fZStep);
+        fZStep = (fZMax - fZMin) / static_cast<float>(static_cast<int32_t>((fZMax - fZMin) / fZMinStep));
+        auto iNumSteps = static_cast<int32_t>((fZMax - fZMin) / fZStep);
 
         // trace left and right sides of ship
-        for (long i = 1; i < iNumSteps - 1; i++)
+        for (int32_t i = 1; i < iNumSteps - 1; i++)
         {
             // left trace
             auto fZ = fZMax - static_cast<float>(i) * fZStep;
@@ -108,7 +108,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     }
 
     // mirror copy
-    for (long i = 0; i < iNumVContour; i++)
+    for (int32_t i = 0; i < iNumVContour; i++)
     {
         vContour[1 + i + iNumVContour] = vContour[1 + (iNumVContour - 1) - i];
         vContour[1 + i + iNumVContour].x = -vContour[1 + i + iNumVContour].x;
@@ -118,9 +118,9 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, long &iNumVContour)
     if (!bDefaultContour)
     {
         // build keel contour
-        long iDZ = MAX_KEEL_POINTS / 2;
+        int32_t iDZ = MAX_KEEL_POINTS / 2;
         auto fDZ = iDZ + 1.0f;
-        for (long i = 0; i < MAX_KEEL_POINTS; i++)
+        for (int32_t i = 0; i < MAX_KEEL_POINTS; i++)
         {
             float fZ;
             if (i == iDZ)
@@ -151,7 +151,7 @@ bool SHIP::BuildMasts()
     Assert(pEnt);
 
     // build mast list
-    long iNum, iIdx = 0;
+    int32_t iNum, iIdx = 0;
     while (true)
     {
         auto *pNode = static_cast<NODE *>(pEnt->GetNode(iIdx));
@@ -169,7 +169,7 @@ bool SHIP::BuildMasts()
         }
         const auto *const cNodeName = pNode->GetName();
 
-        if (_strnicmp(cNodeName, MAST_IDENTIFY, _countof(MAST_IDENTIFY) - 1) == 0)
+        if (storm::iEquals(cNodeName, MAST_IDENTIFY, std::size(MAST_IDENTIFY) - 1))
         {
             CVECTOR vBSize, vBCenter, vUp, vDown, vTemp;
 
@@ -177,7 +177,7 @@ bool SHIP::BuildMasts()
             if (!pAMasts)
                 pAMasts = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Masts");
 
-            sscanf(static_cast<const char *>(&cNodeName[_countof(MAST_IDENTIFY) - 1]), "%d", &iNum);
+            sscanf(static_cast<const char *>(&cNodeName[std::size(MAST_IDENTIFY) - 1]), "%d", &iNum);
             pMasts.resize(iNumMasts + 1);
 
             auto *pM = &pMasts[iNumMasts];
@@ -238,14 +238,14 @@ bool SHIP::BuildHulls()
     Assert(pEnt);
 
     // build hull list
-    long iNum, iIdx = 0;
+    int32_t iNum, iIdx = 0;
     while (true)
     {
         auto *pNode = (NODE *)pEnt->GetNode(iIdx);
         if (!pNode)
             break;
         const auto *const cNodeName = pNode->GetName();
-        if (_strnicmp(cNodeName, HULL_IDENTIFY, _countof(HULL_IDENTIFY) - 1) == 0)
+        if (storm::iEquals(cNodeName, HULL_IDENTIFY, std::size(HULL_IDENTIFY) - 1))
         {
             CVECTOR vBSize, vBCenter, vUp, vDown, vTemp;
 
@@ -253,7 +253,7 @@ bool SHIP::BuildHulls()
             if (!pAHulls)
                 pAHulls = GetACharacter()->CreateSubAClass(GetACharacter(), "Ship.Hulls");
 
-            sscanf((const char *)&cNodeName[_countof(HULL_IDENTIFY) - 1], "%d", &iNum);
+            sscanf((const char *)&cNodeName[std::size(HULL_IDENTIFY) - 1], "%d", &iNum);
             pHulls.resize(iNumHulls + 1);
 
             hull_t *pM = &pHulls[iNumHulls];

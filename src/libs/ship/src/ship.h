@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Character.h"
-#include "Island_Base.h"
+#include "character.h"
+#include "island_base.h"
 #include "collide.h"
 #include "dx9render.h"
 #include "geometry.h"
@@ -9,11 +9,11 @@
 #include "sea_base.h"
 #include "ship_base.h"
 
-#include "FirePlace.h"
-#include "ShipLights.h"
+#include "fire_place.h"
+#include "ship_lights.h"
 
-#include "Sd2_h/SaveLoad.h"
-#include "dtimer.h"
+#include "sd2_h/save_load.h"
+#include "d_timer.h"
 #include "ship_msg.h"
 #include <vector>
 
@@ -39,7 +39,7 @@ class SHIP : public SHIP_BASE
     {
         NODE *pNode;        // node pointer in model
         CVECTOR vSrc, vDst; // src and dest vectors
-        long iMastNum;      // mast number
+        int32_t iMastNum;      // mast number
         bool bBroken;       // if mast is broken then pNode = 0
         float fDamage;
     };
@@ -48,7 +48,7 @@ class SHIP : public SHIP_BASE
     {
         NODE *pNode;        // node pointer in model
         CVECTOR vSrc, vDst; // src and dest vectors
-        long iHullNum;      // hull detail number
+        int32_t iHullNum;      // hull detail number
         bool bBroken;       // if hull detail is broken then pNode = 0
         float fDamage;
     };
@@ -68,7 +68,7 @@ class SHIP : public SHIP_BASE
     // init parameters
     inline static EntityManager::layer_index_t RealizeLayer, ExecuteLayer;
     char cShipIniName[256];
-    long iShipPriorityExecute, iShipPriorityRealize;
+    int32_t iShipPriorityExecute, iShipPriorityRealize;
     float fGravity;
 
     float fRockingY, fRockingAZ;
@@ -102,7 +102,7 @@ class SHIP : public SHIP_BASE
 
     // temporary used
     bool bMassaShow;
-    long uniIDX;
+    int32_t uniIDX;
     bool bUse;
     ship_point_t ShipPoints[16][16];
 
@@ -115,8 +115,8 @@ class SHIP : public SHIP_BASE
     bool bDead, bVisible;
     CVECTOR vDeadDir, vCurDeadDir;
     CVECTOR vKeelContour[MAX_KEEL_POINTS];
-    long iNumMasts;
-    long iNumHulls;
+    int32_t iNumMasts;
+    int32_t iNumHulls;
     std::vector<mast_t> pMasts;
     std::vector<hull_t> pHulls;
     bool bShip2Strand;
@@ -172,10 +172,10 @@ class SHIP : public SHIP_BASE
     float GetMaxSpeedZ() override;
     float GetMaxSpeedY() override;
     float GetWindAgainst() override;
-    long AddStrength(STRENGTH *strength) override;
-    bool DelStrength(long iIdx) override;
+    int32_t AddStrength(STRENGTH *strength) override;
+    bool DelStrength(int32_t iIdx) override;
 
-    BOOL BuildContour(CVECTOR *vContour, long &iNumVContour) override;
+    BOOL BuildContour(CVECTOR *vContour, int32_t &iNumVContour) override;
     bool BuildMasts();
     bool BuildHulls();
     BOOL Move(uint32_t DeltaTime, BOOL bCollision);
@@ -211,7 +211,7 @@ class SHIP : public SHIP_BASE
     // inherit functions COLLISION_OBJECT
     float Trace(const CVECTOR &src, const CVECTOR &dst) override;
 
-    bool Clip(const PLANE *planes, long nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
+    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
     {
         return false;
     };
@@ -227,7 +227,7 @@ class SHIP : public SHIP_BASE
     };
 
     // inherit functions CANNON_TRACE_BASE
-    float Cannon_Trace(long iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
+    float Cannon_Trace(int32_t iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
 
     // inherit functions VAI_OBJBASE
     void SetACharacter(ATTRIBUTES *pAP) override;
@@ -239,6 +239,7 @@ class SHIP : public SHIP_BASE
     CVECTOR GetPos() const override;
     CVECTOR GetAng() const override;
     CVECTOR GetBoxsize() const override;
+    CVECTOR GetRealBoxsize() const override;
 
     void SetPos(const CVECTOR &vNewPos) override;
 

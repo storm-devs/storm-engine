@@ -45,6 +45,22 @@ TEST_CASE("Case-insensitive string comparison", "[utils]")
         {
             CHECK_FALSE(iEquals(str_lowercase, str_long));
         }
+
+        SECTION("Compare with raw char string literal")
+        {
+            CHECK(iEquals(str_lowercase, "myString"));
+
+            const char string_array[] = "myString";
+            CHECK(iEquals(string_array, str_lowercase));
+
+        }
+
+        SECTION("Compare only count number of character at most")
+        {
+            CHECK(iEquals(str_lowercase, str_long, 8));
+            CHECK(iEquals(str_long, str_lowercase, 8));
+            CHECK_FALSE(iEquals(".txt1", ".txt2", 5));
+        }
     }
 
     SECTION("iLess")

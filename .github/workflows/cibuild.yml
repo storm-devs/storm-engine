@@ -1,23 +1,34 @@
-name: CI Build
+name: CI Windows
 
 on:
   push:
-    branches:
-      - develop
     paths-ignore:
       - 'docs/**'
       - 'tools/**'
       - '*.md'
   pull_request:
-    branches:
-      - develop
     paths-ignore:
       - 'docs/**'
       - 'tools/**'
       - '*.md'
 
 jobs:
+  pre_job:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v3.4.1
+        with:
+          # skip concurrent jobs if they are on the same thing
+          concurrent_skipping: 'same_content'
+          # never skip PR, release or manual/scheduled runs
+          do_not_skip: '["pull_request", "release", "workflow_dispatch", "schedule"]'
+
   build-windows:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: windows-2019
     strategy:
       fail-fast: false

@@ -16,7 +16,7 @@ GIEditorEventHandler::~GIEditorEventHandler()
 
 bool GIEditorEventHandler::Execute()
 {
-    for (long n = 0; n < m_aEventFuncs.size(); n++)
+    for (int32_t n = 0; n < m_aEventFuncs.size(); n++)
     {
         (m_aEventFuncs[n].pObj->*m_aEventFuncs[n].func)();
     }

@@ -13,19 +13,19 @@ class BIString : public IBIString
     BIString(BIImageRender *pImgRender, VDX9RENDER *rs);
     ~BIString() override;
 
-    long GetPrioritet() const
+    int32_t GetPrioritet() const
     {
         return m_nPrioritet;
     }
 
-    void SetPrioritet(long nPrior)
+    void SetPrioritet(int32_t nPrior)
     {
         m_nPrioritet = nPrior;
     }
 
     void Render();
 
-    void RenderPrioritetRange(long nBegPrior, long nEndPrior)
+    void RenderPrioritetRange(int32_t nBegPrior, int32_t nEndPrior)
     {
         if (m_nPrioritet >= nBegPrior && m_nPrioritet <= nEndPrior)
             Render();
@@ -42,8 +42,8 @@ class BIString : public IBIString
     }
 
     void SetFont(const char *pcFontName) override;
-    void SetAlign(long nHorzAlign, long nVertAlign) override;
-    void SetPosition(long nLeft, long nTop, long nRight, long nBottom) override;
+    void SetAlign(int32_t nHorzAlign, int32_t nVertAlign) override;
+    void SetPosition(int32_t nLeft, int32_t nTop, int32_t nRight, int32_t nBottom) override;
     void SetString(const char *pcStr) override;
 
   protected:
@@ -53,12 +53,12 @@ class BIString : public IBIString
     BIImageRender *m_pImgRender;
     VDX9RENDER *m_pRS;
     FRECT m_BasePos;
-    long m_nPrioritet;
+    int32_t m_nPrioritet;
     std::string m_sText;
 
     uint32_t m_dwColor;
     float m_fScale;
-    long m_nFontID;
+    int32_t m_nFontID;
 
     POINT m_pntOutPos;
 

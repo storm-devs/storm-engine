@@ -2,7 +2,7 @@
 
 #include "blast.h"
 #include "geometry.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 class VDATA;
 
@@ -22,13 +22,13 @@ class LOCATOR : public Entity
     VGEOMETRY *gs;
     VDX9RENDER *rs;
     GEOS *geo;
-    long groupID;
-    long stringIndex;
+    int32_t groupID;
+    int32_t stringIndex;
     entid_t ParticlesID;
 
     void LocateForI(VDATA *pData);
     void LocateForI_L2(ATTRIBUTES *pA, GEOS *g, GEOS::LABEL &label);
-    void LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, long iGroupID, uint32_t dwFlags);
+    void LocateForI_Locators(ATTRIBUTES *pA, GEOS *geo, int32_t iGroupID, uint32_t dwFlags);
 
   public:
     ~LOCATOR() override;

@@ -3,7 +3,7 @@
 
 #include "core.h"
 
-#include "Entity.h"
+#include "entity.h"
 #include "shared/battle_interface/msg_control.h"
 //#include "battle_command.h"
 
@@ -12,11 +12,11 @@
 
 class TMP_LONG_STACK
 {
-    long sizeIncr;
-    long *ldat;
-    long datsize;
-    long curidx;
-    long defReturn;
+    int32_t sizeIncr;
+    int32_t *ldat;
+    int32_t datsize;
+    int32_t curidx;
+    int32_t defReturn;
 
   public:
     TMP_LONG_STACK()
@@ -34,22 +34,22 @@ class TMP_LONG_STACK
         ldat = nullptr;
     }
 
-    void Push(long data);
-    long Pop();
-    long GetFore();
+    void Push(int32_t data);
+    int32_t Pop();
+    int32_t GetFore();
 
-    void SetSizeIncrement(long sizeinc)
+    void SetSizeIncrement(int32_t sizeinc)
     {
         sizeIncr = sizeinc;
     }
 
-    void SetDefReturn(long defRet)
+    void SetDefReturn(int32_t defRet)
     {
         defReturn = defRet;
     }
 };
 
-void TMP_LONG_STACK::Push(long data)
+void TMP_LONG_STACK::Push(int32_t data)
 {
     if (curidx >= datsize)
     {
@@ -59,14 +59,14 @@ void TMP_LONG_STACK::Push(long data)
             return;
         }
         auto *const pold = ldat;
-        ldat = new long[datsize + sizeIncr];
+        ldat = new int32_t[datsize + sizeIncr];
         if (ldat == nullptr)
         {
             throw std::runtime_error("allocate memory error");
         }
         if (pold != nullptr)
         {
-            memcpy(ldat, pold, sizeof(long) * datsize);
+            memcpy(ldat, pold, sizeof(int32_t) * datsize);
             delete pold;
         }
         datsize += sizeIncr;
@@ -74,7 +74,7 @@ void TMP_LONG_STACK::Push(long data)
     ldat[curidx++] = data;
 }
 
-long TMP_LONG_STACK::GetFore()
+int32_t TMP_LONG_STACK::GetFore()
 {
     if (ldat == nullptr || curidx <= 0)
     {
@@ -95,7 +95,7 @@ long TMP_LONG_STACK::GetFore()
     return retVal;
 }
 
-long TMP_LONG_STACK::Pop()
+int32_t TMP_LONG_STACK::Pop()
 {
     if (ldat == nullptr || curidx <= 0)
     {
@@ -119,10 +119,10 @@ void SetNLongData(VDATA *pvd, int n, ...)
 
     for (auto i = 0; i < n; i++)
     {
-        auto *const pIVal = va_arg(args, long *);
+        auto *const pIVal = va_arg(args, int32_t *);
         if (!pIVal)
             break;
-        const auto nDefVal = va_arg(args, long);
+        const auto nDefVal = va_arg(args, int32_t);
         if (pvd)
             pvd->Get(*pIVal, i);
         else
@@ -144,7 +144,7 @@ SHIP_DESCRIBE_LIST::~SHIP_DESCRIBE_LIST()
     ReleaseAll();
 }
 
-void SHIP_DESCRIBE_LIST::ShipSink(long charIdx)
+void SHIP_DESCRIBE_LIST::ShipSink(int32_t charIdx)
 {
     auto *const sd = FindShip(charIdx);
     if (sd == nullptr)
@@ -152,7 +152,7 @@ void SHIP_DESCRIBE_LIST::ShipSink(long charIdx)
     sd->isDead = true;
 }
 
-void SHIP_DESCRIBE_LIST::Release(long charIdx)
+void SHIP_DESCRIBE_LIST::Release(int32_t charIdx)
 {
     if (charIdx == -1L)
         return;
@@ -184,8 +184,8 @@ void SHIP_DESCRIBE_LIST::Release(long charIdx)
     pMainShipAttr = nullptr;
 }
 
-void SHIP_DESCRIBE_LIST::Add(long mainChrIndex, long chIdx, ATTRIBUTES *pChAttr, ATTRIBUTES *pShipAttr, bool bMyShip,
-                             long relation, uint32_t dwShipColor)
+void SHIP_DESCRIBE_LIST::Add(int32_t mainChrIndex, int32_t chIdx, ATTRIBUTES *pChAttr, ATTRIBUTES *pShipAttr, bool bMyShip,
+                             int32_t relation, uint32_t dwShipColor)
 {
     assert(pChAttr != NULL);
     assert(pShipAttr != NULL);
@@ -207,7 +207,7 @@ void SHIP_DESCRIBE_LIST::Add(long mainChrIndex, long chIdx, ATTRIBUTES *pChAttr,
     auto *const pAttr = pChAttr->GetAttributeClass("Ship");
     assert(pAttr != NULL);
     pr->pAttr = pAttr;
-    long lTmp;
+    int32_t lTmp;
     SetNLongData(core.Event(BI_EVENT_GET_DATA, "ll", BIDT_SHIPPICTURE, chIdx), 4, &pr->pictureNum, 0,
                  &pr->selectPictureNum, 0, &pr->textureNum, -1, &lTmp, 0); //&pr->isDead,false );
     pr->isDead = lTmp != 0;
@@ -222,7 +222,7 @@ void SHIP_DESCRIBE_LIST::Add(long mainChrIndex, long chIdx, ATTRIBUTES *pChAttr,
         if (vob == nullptr)
             continue;
         auto *pA = vob->GetACharacter();
-        if (static_cast<long>(pA->GetAttributeAsDword("index")) == chIdx)
+        if (static_cast<int32_t>(pA->GetAttributeAsDword("index")) == chIdx)
         {
             pr->pShip = vob;
             break;
@@ -233,7 +233,7 @@ void SHIP_DESCRIBE_LIST::Add(long mainChrIndex, long chIdx, ATTRIBUTES *pChAttr,
       VAI_OBJBASE * vob = (VAI_OBJBASE*)EntityManager::GetEntityPointer(ei);
       if(vob== nullptr) continue;
       ATTRIBUTES *pA = vob->GetACharacter();
-      if((long)pA->GetAttributeAsDword("id")==chIdx)
+      if((int32_t)pA->GetAttributeAsDword("id")==chIdx)
       {
         pr->pShip = vob;
         break;
@@ -271,7 +271,7 @@ void SHIP_DESCRIBE_LIST::ReleaseAll()
     pMainShipAttr = nullptr;
 }
 
-SHIP_DESCRIBE_LIST::SHIP_DESCR *SHIP_DESCRIBE_LIST::FindShip(long idxCharacter) const
+SHIP_DESCRIBE_LIST::SHIP_DESCR *SHIP_DESCRIBE_LIST::FindShip(int32_t idxCharacter) const
 {
     for (auto *ptmp = root; ptmp != nullptr; ptmp = ptmp->next)
         if (ptmp->characterIndex == idxCharacter)
@@ -294,7 +294,7 @@ void SHIP_DESCRIBE_LIST::Refresh()
         auto *pA = vob->GetACharacter();
         if (pA == nullptr)
             continue;
-        tls.Push(static_cast<long>(pA->GetAttributeAsDword("index")));
+        tls.Push(static_cast<int32_t>(pA->GetAttributeAsDword("index")));
     }
 
     /*if( NetFindClass(false,&ei,"NetShip") ) do
@@ -303,7 +303,7 @@ void SHIP_DESCRIBE_LIST::Refresh()
       if(vob== nullptr) continue;
       ATTRIBUTES * pA= vob->GetACharacter();
       if(pA== nullptr) continue;
-      tls.Push((long)pA->GetAttributeAsDword("id"));
+      tls.Push((int32_t)pA->GetAttributeAsDword("id"));
     } while( NetFindClassNext(false,&ei) );*/
     tls.Push(-1);
 

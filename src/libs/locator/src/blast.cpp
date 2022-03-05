@@ -1,5 +1,5 @@
 #include "blast.h"
-#include "Entity.h"
+#include "entity.h"
 #include "core.h"
 #include "shared/messages.h"
 
@@ -24,14 +24,14 @@ BLAST::~BLAST()
 
 bool BLAST::Init()
 {
-    gs = static_cast<VGEOMETRY *>(core.CreateService("geometry"));
+    gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (!gs)
         return false;
-    rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"));
+    rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         return false;
 
-    //    long n;
+    //    int32_t n;
     auto ini = fio->OpenIniFile("resource\\ini\\particles\\particles.ini");
     if (!ini)
     {
@@ -39,7 +39,7 @@ bool BLAST::Init()
         return false;
     }
 
-    const auto RandomNum = ini->GetLong("geo", "randomnum", 0);
+    const auto RandomNum = ini->GetInt("geo", "randomnum", 0);
 
     char name[MAX_PATH];
     if (ini->ReadString("geo", "file", name, sizeof(name), ""))
@@ -56,7 +56,7 @@ bool BLAST::Init()
     return true;
 }
 
-void BLAST::AddGeometry(char *name, long num)
+void BLAST::AddGeometry(char *name, int32_t num)
 {
     // n = ItemsNum;
     // ItemsNum++;
@@ -66,7 +66,7 @@ void BLAST::AddGeometry(char *name, long num)
 
     Item.resize(ItemsNum + num); //~!~
     auto *const gp = gs->CreateGeometry(name, nullptr, 0);
-    for (long n = 0; n < num; n++)
+    for (int32_t n = 0; n < num; n++)
     {
         if (n == 0)
             Item[n + ItemsNum].bDouble = false;
@@ -173,7 +173,7 @@ void BLAST::ProcessTime(uint32_t DT)
 
 uint64_t BLAST::ProcessMessage(MESSAGE &message)
 {
-    long code;
+    int32_t code;
     CVECTOR ang;
     CVECTOR pos;
     code = message.Long();

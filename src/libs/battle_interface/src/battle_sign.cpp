@@ -1,8 +1,8 @@
 #include "battle_sign.h"
-#include "Utils.h"
+#include "utils.h"
 #include "controls.h"
 #include "core.h"
-#include "vmodule_api.h"
+#include "v_module_api.h"
 
 BISignIcon::BISignIcon(entid_t BIEntityID, VDX9RENDER *pRS)
 {
@@ -54,8 +54,8 @@ void BISignIcon::Draw()
 
     if (m_nVBufID != -1 && m_nIBufID != -1)
     {
-        long nStartV = 0;
-        const long nStartI = 0;
+        int32_t nStartV = 0;
+        const int32_t nStartI = 0;
 
         // sign face
         if (m_nSignFaceSquareQ > 0)
@@ -94,13 +94,13 @@ void BISignIcon::Draw()
         nStartV += m_nSignStarSquareQ * 4;
     }
 
-    for (long n = 0; n < m_nSignQ; n++)
+    for (int32_t n = 0; n < m_nSignQ; n++)
     {
         if (m_Sign[n].sText.length() > 0)
         {
             m_pRS->ExtPrint(m_idSignTextFont, m_dwSignTextFontColor, 0, PR_ALIGN_CENTER, false, m_fSignTextFontScale, 0,
-                            0, static_cast<long>(m_Sign[n].pntPos.x) + m_SignTextFontOffset.x,
-                            static_cast<long>(m_Sign[n].pntPos.y) + m_SignTextFontOffset.y, "%s",
+                            0, static_cast<int32_t>(m_Sign[n].pntPos.x) + m_SignTextFontOffset.x,
+                            static_cast<int32_t>(m_Sign[n].pntPos.y) + m_SignTextFontOffset.y, "%s",
                             m_Sign[n].sText.c_str());
         }
     }
@@ -108,7 +108,7 @@ void BISignIcon::Draw()
 
 void BISignIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
 {
-    long n;
+    int32_t n;
     char *pcTmp;
     char param[256];
 
@@ -315,10 +315,10 @@ void BISignIcon::Release()
     m_nSignStarSquareQ = 0;
 }
 
-long BISignIcon::CalculateSignQuantity()
+int32_t BISignIcon::CalculateSignQuantity()
 {
     m_nSignQ = 0;
-    for (long n = 0; n < MAX_SIGN_QUANTITY; n++)
+    for (int32_t n = 0; n < MAX_SIGN_QUANTITY; n++)
     {
         if (!m_Sign[n].bUse)
             break;
@@ -327,7 +327,7 @@ long BISignIcon::CalculateSignQuantity()
     return m_nSignQ;
 }
 
-void BISignIcon::UpdateBuffers(long nQ)
+void BISignIcon::UpdateBuffers(int32_t nQ)
 {
     const auto nBackSquareQ = nQ;
     const auto nSignStateSquareQ = nQ * 2;
@@ -368,7 +368,7 @@ void BISignIcon::FillIndexBuffer() const
     auto *pI = static_cast<uint16_t *>(m_pRS->LockIndexBuffer(m_nIBufID));
     if (pI)
     {
-        for (long n = 0; n < m_nMaxSquareQ; n++)
+        for (int32_t n = 0; n < m_nMaxSquareQ; n++)
         {
             pI[n * 6 + 0] = static_cast<uint16_t>(n * 4 + 0);
             pI[n * 6 + 1] = static_cast<uint16_t>(n * 4 + 1);
@@ -384,13 +384,13 @@ void BISignIcon::FillIndexBuffer() const
 
 void BISignIcon::FillVertexBuffer()
 {
-    long n;
+    int32_t n;
     if (m_nVBufID < 0)
         return;
     auto *pV = static_cast<BI_COLOR_VERTEX *>(m_pRS->LockVertexBuffer(m_nVBufID));
     if (pV)
     {
-        long vn = 0;
+        int32_t vn = 0;
 
         for (n = 0; n < m_nSignFaceSquareQ; n++)
         {
@@ -421,7 +421,7 @@ void BISignIcon::FillVertexBuffer()
     }
 }
 
-long BISignIcon::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
+int32_t BISignIcon::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color, const BIFPOINT &center,
                                     const FPOINT &size)
 {
     if (!pv)
@@ -467,7 +467,7 @@ long BISignIcon::WriteSquareToVBuff(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32
     return 4;
 }
 
-long BISignIcon::WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color,
+int32_t BISignIcon::WriteSquareToVBuffWithProgress(BI_COLOR_VERTEX *pv, const FRECT &uv, uint32_t color,
                                                 const BIFPOINT &center, const FPOINT &size, float fClampUp,
                                                 float fClampDown, float fClampLeft, float fClampRight)
 {

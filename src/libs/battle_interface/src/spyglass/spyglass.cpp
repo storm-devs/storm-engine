@@ -1,12 +1,12 @@
 #include "spyglass.h"
-#include "../Utils.h"
+#include "../utils.h"
 #include "../image/image.h"
-#include "../image/imgrender.h"
+#include "../image/img_render.h"
 #include "../sea/ships_list.h"
 #include "controls.h"
 #include "core.h"
 #include "entity.h"
-#include "math3d/Sphere.h"
+#include "math3d/sphere.h"
 #include "message.h"
 #include "shared/battle_interface/msg_control.h"
 #include "shared/events.h"
@@ -18,11 +18,11 @@ void ISPYGLASS::ImageParam::Release()
 }
 
 void ISPYGLASS::ImageParam::LoadFromAttr(BIImageRender *pImgRender, ATTRIBUTES *pA, const char *pcDefName,
-                                         long nDefLeftPos, long nDefTopPos, long nDefRightPos, long nDefBottomPos,
-                                         long nPrior)
+                                         int32_t nDefLeftPos, int32_t nDefTopPos, int32_t nDefRightPos, int32_t nDefBottomPos,
+                                         int32_t nPrior)
 {
     sTextureName = BIUtils::GetStringFromAttr(pA, "texture", pcDefName);
-    dwColor = BIUtils::GetLongFromAttr(pA, "color", 0xFF808080);
+    dwColor = BIUtils::GetIntFromAttr(pA, "color", 0xFF808080);
     FULLRECT(rUV);
     BIUtils::ReadRectFromAttr(pA, "uv", rUV, rUV);
     rPos.left = nDefLeftPos;
@@ -52,14 +52,14 @@ void ISPYGLASS::ImageParam::ChangeIcon(BIImageRender *pImgRender, const char *pc
     }
 }
 
-void ISPYGLASS::TextParam::LoadFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *pcDefText, long nDefXPos,
-                                        long nDefYPos)
+void ISPYGLASS::TextParam::LoadFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *pcDefText, int32_t nDefXPos,
+                                        int32_t nDefYPos)
 {
     this->rs = rs;
     nFontID = BIUtils::GetFontIDFromAttr(pA, "font", rs, "interface_normal");
     BIUtils::ReadPosFromAttr(pA, "pos", pos.x, pos.y, nDefXPos, nDefYPos);
     fScale = BIUtils::GetFloatFromAttr(pA, "scale", 1.f);
-    dwColor = BIUtils::GetLongFromAttr(pA, "color", 0xFFFFFFFF);
+    dwColor = BIUtils::GetIntFromAttr(pA, "color", 0xFFFFFFFF);
     nAlign = BIUtils::GetAlignmentFromAttr(pA, "align", PR_ALIGN_LEFT);
     sText = BIUtils::GetStringFromAttr(pA, "text", pcDefText);
 }
@@ -91,7 +91,7 @@ ISPYGLASS::~ISPYGLASS()
 
 bool ISPYGLASS::Init()
 {
-    if ((rs = static_cast<VDX9RENDER *>(core.CreateService("dx9render"))) == nullptr)
+    if ((rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"))) == nullptr)
     {
         throw std::runtime_error("Can`t create render service");
     }
@@ -374,7 +374,7 @@ void ISPYGLASS::TurnOnTelescope(bool bTurnOn)
     }
 }
 
-void ISPYGLASS::SetShipInfo(long nCharIndex)
+void ISPYGLASS::SetShipInfo(int32_t nCharIndex)
 {
     // if( m_nInfoCharacterIndex == nCharIndex ) return;
     m_nInfoCharacterIndex = nCharIndex;
@@ -439,7 +439,7 @@ void ISPYGLASS::FindNewTargetShip()
     mtxv.MulToInv(CVECTOR(0.0f, 0.0f, 10000.f), dst);
 
     // find ships
-    long nFindedCharIndex = -1;
+    int32_t nFindedCharIndex = -1;
     auto fFindedDistance = 2.f;
     auto *pMainSD = g_ShipList.GetMainCharacterShip();
     for (auto *pSD = g_ShipList.GetShipRoot(); pSD; pSD = pSD->next)
@@ -562,10 +562,10 @@ void ISPYGLASS::UpdateCamera()
 }
 
 void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType, float fRelativeHP, float fRelativeSP,
-                                 long nShipCrew, float fShipSpeed, float fSailTo, long nCurCannons, long nMaxCannons,
-                                 long nCharge, long nNation, long nSailState, long nFace, long nFencing, long nCannon,
-                                 long nAccuracy, long nNavigation, long nBoarding, const char *pcCaptainName,
-                                 const char *pcFaceTexture, long nShipClass)
+                                 int32_t nShipCrew, float fShipSpeed, float fSailTo, int32_t nCurCannons, int32_t nMaxCannons,
+                                 int32_t nCharge, int32_t nNation, int32_t nSailState, int32_t nFace, int32_t nFencing, int32_t nCannon,
+                                 int32_t nAccuracy, int32_t nNavigation, int32_t nBoarding, const char *pcCaptainName,
+                                 const char *pcFaceTexture, int32_t nShipClass)
 {
     char param[256];
 
@@ -779,7 +779,7 @@ void ISPYGLASS::FillUVArrayFromAttributes(std::vector<FRECT> &m_aUV, ATTRIBUTES 
     m_aUV.clear();
     if (!pA)
         return;
-    for (long n = 0; n < static_cast<long>(pA->GetAttributesNum()); n++)
+    for (int32_t n = 0; n < static_cast<int32_t>(pA->GetAttributesNum()); n++)
     {
         FRECT rUV;
         rUV.left = rUV.top = 0.f;
