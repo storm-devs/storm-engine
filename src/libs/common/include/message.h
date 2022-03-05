@@ -28,6 +28,13 @@ inline MessageParam convertMessageParam(const bool value)
     return {value ? 1 : 0};
 }
 
+// Convert uint32_t to int32_t to prevent conversion issues
+template<>
+inline MessageParam convertMessageParam(const uint32_t value)
+{
+    return MessageParam(static_cast<int32_t>(value));
+}
+
 } // namespace detail
 
 } // namespace storm
