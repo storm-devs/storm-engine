@@ -48,7 +48,7 @@ bool ILogAndActions::Init()
     }
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
-    core.Event("SetWindowSize", "lll", vp.Width, vp.Height, false);
+    core.Event("SetWindowSize", "lll", static_cast<int32_t>(vp.Width), static_cast<int32_t>(vp.Height), false);
     g_ILogAndActions = GetId();
     return true;
 }

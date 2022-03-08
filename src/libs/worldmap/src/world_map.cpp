@@ -566,7 +566,7 @@ void WorldMap::Realize(uint32_t delta_time)
         const char *upd = AttributesPointer->GetAttribute("addQuestEncounters");
         if (upd && upd[0] != 0)
         {
-            core.Event("WorldMap_AddQuestEncounters", nullptr);
+            core.Event("WorldMap_AddQuestEncounters");
         }
     }
 }

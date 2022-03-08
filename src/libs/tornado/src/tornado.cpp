@@ -113,7 +113,7 @@ void Tornado::Execute(uint32_t delta_time)
         if (galhpa < 0.0f)
         {
             galhpa = 0.0f;
-            core.Event("TornadoDelete", nullptr);
+            core.Event("TornadoDelete");
             EntityManager::EraseEntity(GetId());
         }
     }

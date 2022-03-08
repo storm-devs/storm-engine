@@ -98,8 +98,9 @@ class CoreImpl : public Core
     void SetDeltaTime(int32_t delta_time) override;
     uint32_t GetDeltaTime() override;
     uint32_t GetRDeltaTime() override;
-    //
-    VDATA *Event(const char *Event_name, const char *Format = nullptr, ...) override;
+    //    
+    VDATA *Event(const std::string_view &event_name) override;
+    VDATA *Event(const std::string_view &event_name, MESSAGE& message) override;
     uint32_t PostEvent(const char *Event_name, uint32_t post_time, const char *Format, ...) override;
 
     void *GetSaveData(const char *file_name, int32_t &data_size) override;

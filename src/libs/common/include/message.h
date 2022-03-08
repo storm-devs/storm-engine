@@ -13,6 +13,30 @@ namespace storm
 {
 using MessageParam = std::variant<uint8_t, uint16_t, uint32_t, int32_t, float, double, ATTRIBUTES *, entid_t, VDATA *,
                                   CVECTOR, std::string>;
+
+namespace detail {
+
+template<typename T>
+MessageParam convertMessageParam(T value)
+{
+    return MessageParam(value);
+}
+
+template<>
+inline MessageParam convertMessageParam(const bool value)
+{
+    return {value ? 1 : 0};
+}
+
+// Convert uint32_t to int32_t to prevent conversion issues
+template<>
+inline MessageParam convertMessageParam(const uint32_t value)
+{
+    return MessageParam(static_cast<int32_t>(value));
+}
+
+} // namespace detail
+
 } // namespace storm
 
 class MESSAGE final
@@ -153,17 +177,26 @@ class MESSAGE final
         index++;
     }
 
-    void Reset(const char *_format)
+    void Reset(const std::string_view &format)
     {
-        format_ = _format;
+        format_ = format;
         params_.resize(format_.size());
         index = 0;
     }
 
-    void Reset(const char *_format, va_list &args)
+    template<typename... Args>
+    void Reset(const std::string_view &format, Args... args)
+    {
+        assert(format.size() == sizeof...(args));
+        index = 0;
+        format_ = format;
+        params_ = {storm::detail::convertMessageParam(args)... };
+    }
+
+    void ResetVA(const std::string_view &format, va_list args)
     {
         index = 0;
-        format_ = _format;
+        format_ = format;
         params_.resize(format_.size());
         std::transform(format_.begin(), format_.end(), params_.begin(),
                        [&](const char c) { return GetParamValue(c, args); });

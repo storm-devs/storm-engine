@@ -214,12 +214,12 @@ void CoreImpl::ProcessControls()
         if (cs.state == CST_ACTIVATED)
         {
             Controls->GetControlDesc(n, uc);
-            Event("Control Activation", "s", uc.name);
+            Core::Event("Control Activation", "s", uc.name);
         }
         else if (cs.state == CST_INACTIVATED)
         {
             Controls->GetControlDesc(n, uc);
-            Event("Control Deactivation", "s", uc.name);
+            Core::Event("Control Deactivation", "s", uc.name);
         }
     }
 }
@@ -346,7 +346,7 @@ uint64_t CoreImpl::Send_Message(entid_t Destination, const char *Format, ...)
 
     va_list args;
     va_start(args, Format);
-    message.Reset(Format, args);
+    message.ResetVA(Format, args);
     const auto rc = static_cast<Entity *>(ptr)->ProcessMessage(message); // transfer control
     va_end(args);
     return rc;
@@ -364,7 +364,7 @@ uint32_t CoreImpl::PostEvent(const char *Event_name, uint32_t post_time, const c
         pMS = new MESSAGE();
         va_list args;
         va_start(args, Format);
-        message.Reset(Format, args);
+        message.ResetVA(Format, args);
         pMS->Reset(Format);
 
         auto bAction = true;
@@ -420,23 +420,15 @@ uint32_t CoreImpl::PostEvent(const char *Event_name, uint32_t post_time, const c
     return 0;
 }
 
-VDATA *CoreImpl::Event(const char *Event_name, const char *Format, ...)
+VDATA *CoreImpl::Event(const std::string_view &event_name)
 {
-    VDATA *pVD = nullptr;
-    if (Format == nullptr)
-    {
-        pVD = Compiler->ProcessEvent(Event_name);
-        return pVD;
-    }
-    va_list args;
-    va_start(args, Format);
     MESSAGE message;
-    message.Reset(Format, args);
-    // ....
-    pVD = Compiler->ProcessEvent(Event_name, message);
+    return Compiler->ProcessEvent(event_name.data(), message);
+}
 
-    va_end(args);
-    return pVD;
+VDATA *CoreImpl::Event(const std::string_view &event_name, MESSAGE& message)
+{
+    return Compiler->ProcessEvent(event_name.data(), message);
 }
 
 void *CoreImpl::MakeClass(const char *class_name)

@@ -79,7 +79,7 @@ void Player::Move(float dltTime)
 
     const auto oldSGMode = shootgunMode;
     shootgunMode = false;
-    auto *vd = core.Event("EventSGMode", nullptr);
+    auto *vd = core.Event("EventSGMode");
     if (vd)
     {
         int32_t data = 0;

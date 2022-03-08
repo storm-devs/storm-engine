@@ -56,7 +56,15 @@ class Core
     virtual uint32_t GetDeltaTime() = 0;
     virtual uint32_t GetRDeltaTime() = 0;
     //
-    virtual VDATA *Event(const char *Event_name, const char *Format = nullptr, ...) = 0;
+    virtual VDATA *Event(const std::string_view &event_name) = 0;
+    template<typename... Args>
+    VDATA *Event(const std::string_view &event_name, const std::string_view &format, Args... args)
+    {
+        MESSAGE message;
+        message.Reset(format, args...);
+        return Event(event_name, message);
+    }
+    virtual VDATA *Event(const std::string_view &event_name, MESSAGE& message) = 0;
     virtual uint32_t PostEvent(const char *Event_name, uint32_t post_time, const char *Format, ...) = 0;
 
     virtual void *GetSaveData(const char *file_name, int32_t &data_size) = 0;

@@ -92,7 +92,7 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
         isRunning = false;
         if (core_internal.initialized())
         {
-            core_internal.Event("DestroyWindow", nullptr);
+            core_internal.Event("DestroyWindow");
         }
     }
     else if (event == storm::OSWindow::FocusGained)
@@ -260,7 +260,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     }
 
     // Release
-    core_internal.Event("ExitApplication", nullptr);
+    core_internal.Event("ExitApplication");
     core_internal.CleanUp();
     core_internal.ReleaseBase();
     ClipCursor(nullptr);
