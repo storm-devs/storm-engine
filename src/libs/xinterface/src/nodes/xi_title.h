@@ -25,7 +25,7 @@ class CXI_TITLE : public CINODE
 
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
-    void FillVertexBuffer() const;
+    void FillVertexBuffer();
 
   protected:
     char *m_sGroupName;
@@ -38,10 +38,8 @@ class CXI_TITLE : public CINODE
     float m_fontScale;
     int32_t m_fontID;
 
-    int32_t m_idVBuf; // vertex buffer identificator
-    int32_t m_idIBuf; // index buffer identificator
     int32_t m_nVert;  // vertex quantity
-    int32_t m_nIndx;  // index quantity
+    XI_ONETEX_VERTEX *pVert;
 
     int32_t m_nStringWidth;
     XYRECT m_mRect, m_tRect;

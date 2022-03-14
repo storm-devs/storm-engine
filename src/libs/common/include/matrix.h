@@ -7,6 +7,10 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
+#include "matrix.hpp"
+
 //============================================================================================
 
 /*
@@ -96,6 +100,9 @@ class CMatrix
     // Calculate scaling matrix
     CMatrix &BuildScale(const CVECTOR &scale);
 
+    // Check equality
+    bool operator==(const CMatrix &other);
+    
     // Equal
     void operator=(const CMatrix &matrix);
     void operator=(const Matrix &matrix);
@@ -116,6 +123,7 @@ class CMatrix
     // Transposition
     void Transposition();
     void Transposition3X3();
+    CMatrix Transpose();
     CMatrix &Transposition4x4();
 
     // Rotate
@@ -373,6 +381,26 @@ inline void CMatrix::BuildPosition(float x, float y, float z)
     matrix[14] = z;
 }
 
+inline bool CMatrix::operator==(const CMatrix &matrix)
+{
+    return this->matrix[0] == matrix.matrix[0] &&
+    this->matrix[1] == matrix.matrix[1] &&
+    this->matrix[2] == matrix.matrix[2] &&
+    this->matrix[3] == matrix.matrix[3] &&
+    this->matrix[4] == matrix.matrix[4] &&
+    this->matrix[5] == matrix.matrix[5] &&
+    this->matrix[6] == matrix.matrix[6] &&
+    this->matrix[7] == matrix.matrix[7] &&
+    this->matrix[8] == matrix.matrix[8] &&
+    this->matrix[9] == matrix.matrix[9] &&
+    this->matrix[10] == matrix.matrix[10] &&
+    this->matrix[11] == matrix.matrix[11] &&
+    this->matrix[12] == matrix.matrix[12] &&
+    this->matrix[13] == matrix.matrix[13] &&
+    this->matrix[14] == matrix.matrix[14] &&
+    this->matrix[15] == matrix.matrix[15];
+}
+
 // Equal
 inline void CMatrix::operator=(const CMatrix &matrix)
 {
@@ -564,6 +592,20 @@ inline void CMatrix::Transposition3X3()
       mov        [eax + 6*4], esi
       mov        [eax + 9*4], ebx
     }*/
+}
+
+inline CMatrix CMatrix::Transpose()
+{
+    CMatrix ret;
+
+    for (int n = 0; n < 4 * 4; n++)
+    {
+        int i = n / 4;
+        int j = n % 4;
+        ret.matrix[n] = matrix[4 * j + i];
+    }
+
+    return ret;
 }
 
 inline CMatrix &CMatrix::Transposition4x4()

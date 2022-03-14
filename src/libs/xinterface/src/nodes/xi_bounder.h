@@ -31,11 +31,9 @@ class CXI_BOUNDER : public CINODE
     int32_t m_idTex;
     uint32_t m_dwColor;
 
-    // picture index & vertex buffers
-    int32_t m_idVBuf; // identificator of the vertex buffer
-    int32_t m_idIBuf; // identificator of the index buffer
+    // picture vertices
     int32_t m_nVert;  // vertex quantity
-    int32_t m_nIndx;  // index quantity
+    std::vector<XI_ONETEX_VERTEX> pVert;
 
     float m_fAngleWidth;
     float m_fAngleHeight;

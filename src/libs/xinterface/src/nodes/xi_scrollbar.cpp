@@ -1,5 +1,7 @@
 #include "xi_scrollbar.h"
 
+#include "primitive_renderer.h"
+
 #define CLICK_TYPE_CENTER 0
 #define CLICK_TYPE_LEFT 1
 #define CLICK_TYPE_RIGHT 2
@@ -18,10 +20,7 @@ CXI_SCROLLBAR::CXI_SCROLLBAR()
 
     m_nFontID = -1;
 
-    m_idVBuf = -1L;
-    m_idIBuf = -1L;
     m_nVert = 0;
-    m_nIndx = 0;
 
     m_bClickable = true;
     m_nNodeType = NODETYPE_SCROLLBAR;
@@ -64,7 +63,7 @@ void CXI_SCROLLBAR::Draw(bool bSelected, uint32_t Delta_Time)
     {
         if (bSelected ^ m_bPrevSelectStatus)
         {
-            auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+            auto *pVert = m_vertices.data();
             if (pVert != nullptr)
             {
                 m_bPrevSelectStatus = bSelected;
@@ -92,29 +91,137 @@ void CXI_SCROLLBAR::Draw(bool bSelected, uint32_t Delta_Time)
                         pVert[idx + 7].tu = m_rectCenterTex.right;
                         pVert[idx + 7].tv = m_rectCenterTex.bottom;
                     }
-
-                m_rs->UnLockVertexBuffer(m_idVBuf);
             }
         }
 
-        m_rs->TextureSet(0, m_idTex);
+        //m_rs->TextureSet(0, m_idTex);
+        auto texture = m_rs->GetBGFXTextureFromID(m_idTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
         // show shadow
         if (m_nPressedDelay > 0)
             if (m_bRightPress)
-                m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 60, 12, 0, m_nIndx, "iShadow");
+            {
+                //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 60, 12, 0, m_nIndx, "iShadow");
+                for (int i = 60; i < 60 + 12; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                     pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                     pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                     pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                     pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+            }
             else
-                m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 36, 12, 0, m_nIndx, "iShadow");
+            {
+                //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 36, 12, 0, m_nIndx, "iShadow");
+                for (int i = 36; i < 36 + 12; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                     pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                     pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                     pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                     pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+            }
         else
-            m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 12, 12, 0, m_nIndx, "iShadow");
+        {
+            //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 12, 12, 0, m_nIndx, "iShadow");
+            for (int i = 12; i < 12 + 12; i += 4)
+            {
+                std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                auto pV = m_vertices;
+
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                 pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                 pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                 pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                 pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+            }
+        }
 
         // show button
         if (m_nPressedDelay > 0)
             if (m_bRightPress)
-                m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 48, 12, 0, m_nIndx, "iButton");
+            {
+                //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 48, 12, 0, m_nIndx, "iButton");
+                for (int i = 48; i < 48 + 12; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                     pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                     pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                     pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                     pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+            }
             else
-                m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 24, 12, 0, m_nIndx, "iButton");
+            {
+                //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 24, 12, 0, m_nIndx, "iButton");
+                for (int i = 24; i < 24 + 12; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                     pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                     pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                     pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                     pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+            }
         else
-            m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 0, 12, 0, m_nIndx, "iButton");
+        {
+            //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 0, 12, 0, m_nIndx, "iButton");
+            for (int i = 0; i < 0 + 12; i += 4)
+            {
+                std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                auto pV = m_vertices;
+
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                 pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                 pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                 pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                 pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+            }
+        }
     }
 
     if (m_bShowString)
@@ -178,7 +285,7 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
         if (m_sGroupName == nullptr)
             throw std::runtime_error("allocate memory error");
         memcpy(m_sGroupName, param, len);
-        m_idTex = pPictureService->GetTextureID(param);
+        m_idTex = pPictureService->BGFXGetTextureID(param);
     }
 
     // get offset button image in case pressed button
@@ -200,30 +307,14 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     m_nMaxDelay = GetIniLong(ini1, name1, ini2, name2, "pressDelay", 20);
 
     m_nVert = 12 * 6;    //
-    m_nIndx = 3 * 2 * 3; // 3 rectangle * 2 treangle into rectangle * 3 vertex into triangle
-    m_idIBuf = m_rs->CreateIndexBuffer(m_nIndx * 2);
-    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF, m_nVert * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
+    m_vertices.reserve(m_nVert);
+    m_vertices.resize(m_nVert);
 
     // Lock buffers for write
-    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
-    auto *pIndx = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
-    if (pVert == nullptr || pIndx == nullptr)
-        throw std::runtime_error("can not create the index&vertex buffers");
-
-    // fill triangles buffer
-    auto i = 0;
-    for (auto tidx = 0; tidx < 3; tidx++)
-    {
-        pIndx[i + 0] = tidx * 4;
-        pIndx[i + 1] = tidx * 4 + 1;
-        pIndx[i + 2] = tidx * 4 + 2;
-        pIndx[i + 3] = tidx * 4 + 2;
-        pIndx[i + 4] = tidx * 4 + 1;
-        pIndx[i + 5] = tidx * 4 + 3;
-        i += 6;
-    }
+    auto *pVert = m_vertices.data();
 
     // fill vertex buffer
+    auto i = 0;
     for (i = 0; i < m_nVert; i++)
         pVert[i].pos.z = 1.f;
     for (i = 0; i < 12; i++)
@@ -239,17 +330,14 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     for (; i < 12 * 6; i++)
         pVert[i].color = m_dwShadowColor;
 
-    m_rs->UnLockVertexBuffer(m_idVBuf);
-    m_rs->UnLockIndexBuffer(m_idIBuf);
-
     if (ReadIniString(ini1, name1, ini2, name2, "leftPicture", param, sizeof(param), ""))
-        pPictureService->GetTexturePos(m_sGroupName, param, m_frLeftTex);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_frLeftTex);
     if (ReadIniString(ini1, name1, ini2, name2, "rightPicture", param, sizeof(param), ""))
-        pPictureService->GetTexturePos(m_sGroupName, param, m_frRightTex);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_frRightTex);
     if (ReadIniString(ini1, name1, ini2, name2, "centerPicture", param, sizeof(param), ""))
-        pPictureService->GetTexturePos(m_sGroupName, param, m_rectCenterTex);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_rectCenterTex);
     if (ReadIniString(ini1, name1, ini2, name2, "selectCenterPicture", param, sizeof(param), ""))
-        pPictureService->GetTexturePos(m_sGroupName, param, m_rectSelectCenterTex);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_rectSelectCenterTex);
     m_bPrevSelectStatus = false;
     m_nBarWidth = GetIniLong(ini1, name1, ini2, name2, "barWidth", -1);
     m_nSideWidth = GetIniLong(ini1, name1, ini2, name2, "sideWidth", -1);
@@ -258,7 +346,6 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
     if (m_nBarWidth < 0 && m_nSideWidth < 0)
         m_nSideWidth = (m_rect.bottom - m_rect.top);
 
-    m_nIndx /= 3;
     UpdatePosition();
 
     m_bShowString = GetIniBool(ini1, name1, ini2, name2, "valueShow", false);
@@ -278,10 +365,8 @@ void CXI_SCROLLBAR::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
 
 void CXI_SCROLLBAR::ReleaseAll()
 {
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
+    BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
     STORM_DELETE(m_sGroupName);
-    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
-    INDEX_BUFFER_RELEASE(m_rs, m_idIBuf);
     FONT_RELEASE(m_rs, m_nFontID);
 }
 
@@ -406,9 +491,9 @@ uint32_t CXI_SCROLLBAR::MessageProc(int32_t msgcode, MESSAGE &message)
     return 0;
 }
 
-void CXI_SCROLLBAR::UpdatePosition() const
+void CXI_SCROLLBAR::UpdatePosition()
 {
-    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto *pVert = m_vertices.data();
 
     auto idx = 0;
     int sideWidth = m_nSideWidth;
@@ -581,8 +666,6 @@ void CXI_SCROLLBAR::UpdatePosition() const
     pVert[idx + 10].pos.y = pVert[idx + 11].pos.y =
         static_cast<float>(m_rect.bottom) + m_fYDeltaPress + m_fYShadowPress;
     idx += 12;
-
-    m_rs->UnLockVertexBuffer(m_idVBuf);
 }
 
 void CXI_SCROLLBAR::WriteDataToAttribute() const

@@ -77,10 +77,8 @@ class CXI_TEXTBUTTON : public CINODE
     char *m_sString;
 
     // picture index & vertex buffers
-    int32_t m_idVBuf; // identificator of the vertex buffer
-    int32_t m_idIBuf; // identificator of the index buffer
     int32_t m_nVert;  // vertex quantity
-    int32_t m_nIndx;  // index quantity
+    std::vector<XI_ONETEX_VERTEX> m_vertices;
 
     bool m_bVideoToBack;
     uint32_t m_dwBackColor;

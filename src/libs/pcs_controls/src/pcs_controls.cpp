@@ -24,6 +24,9 @@ PCS_CONTROLS::PCS_CONTROLS()
 
     nControlsNum = 0;
 
+    POINT p;
+    GetCursorPos(&p);
+
     nLastControlTime = 0;
 
     nMouseWheel = 0;

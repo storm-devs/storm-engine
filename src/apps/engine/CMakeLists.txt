@@ -73,3 +73,7 @@ STORM_SETUP(
     dbghelp
     winhttp
 )
+
+#if( MSVC )
+#    set_target_properties( engine PROPERTIES LINK_FLAGS "/ENTRY:\"mainCRTStartup\"" )
+#endif()

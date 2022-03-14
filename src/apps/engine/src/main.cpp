@@ -17,9 +17,17 @@
 #include "storm/fs.h"
 #include "watermark.hpp"
 
+#include "bx/bx.h"
+#include "bgfx/bgfx.h"
+#include "bgfx/platform.h"
+#include "sprite_renderer.h"
+#include "common.h"
+#include "dx9render.h"
+
 VFILE_SERVICE *fio = nullptr;
 S_DEBUG *CDebug = nullptr;
 Core &core = core_internal;
+VDX9RENDER *renderService;
 
 namespace
 {
@@ -121,6 +129,7 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
     }
 }
 
+//int main(int argc, char **argv)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
     // Prevent multiple instances
@@ -216,11 +225,61 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
         return EXIT_FAILURE;
     }
 
+    // Collect information about the window from SDL
     std::shared_ptr<storm::OSWindow> window = storm::OSWindow::Create(width, height, fullscreen);
     window->SetTitle("Sea Dogs");
     core_internal.Set_Hwnd(static_cast<HWND>(window->OSHandle()));
     window->Subscribe(HandleWindowEvent);
     window->Show();
+
+    // and give the pointer to the window to pd
+    bgfx::PlatformData pd;
+    // TODO for platforms this goes inside OSWindow->OSHandle()
+#if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+    pd.ndt = wmi.info.x11.display;
+    pd.nwh = (void *)(uintptr_t)wmi.info.x11.window;
+#elif BX_PLATFORM_OSX
+    pd.ndt = NULL;
+    pd.nwh = wmi.info.cocoa.window;
+#elif BX_PLATFORM_WINDOWS
+    pd.ndt = NULL;
+    pd.nwh = static_cast<HWND>(window->OSHandle());
+#elif BX_PLATFORM_STEAMLINK
+    pd.ndt = wmi.info.vivante.display;
+    pd.nwh = wmi.info.vivante.window;
+#endif // BX_PLATFORM_
+    pd.context = NULL;
+    pd.backBuffer = NULL;
+    pd.backBufferDS = NULL;
+
+    // Tell bgfx about the platform and window
+    bgfx::setPlatformData(pd);
+
+    // Render an empty frame
+    bgfx::renderFrame();
+
+    // Init bgfx
+    bgfx::Init init;
+    init.type = bgfx::RendererType::Direct3D11;
+    init.vendorId = BGFX_PCI_ID_NONE;
+    init.resolution.width = width;
+    init.resolution.height = height;
+    init.resolution.reset = BGFX_RESET_NONE;
+
+    bgfx::init(init);
+
+    const bgfx::Caps *caps = bgfx::getCaps();
+    // bool swapChainSupported = 0 != (caps->supported & BGFX_CAPS_SWAP_CHAIN);
+
+    // Enable m_debug text.
+    bgfx::setDebug(BGFX_DEBUG_TEXT);
+
+    // Set view 0 clear state.
+    // bgfx::setViewClear(0, BGFX_CLEAR_NONE, 0x303030ff, 1.0f, 0);
+
+    bgfx::setViewRect(0, 0, 0, uint16_t(width), uint16_t(height));
+    bgfx::setViewRect(1, 0, 0, uint16_t(width), uint16_t(height));
+    // bgfx::setViewRect(2, 0, 0, uint16_t(width), uint16_t(height));
 
     // Init core
     core_internal.InitBase();

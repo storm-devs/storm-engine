@@ -1,5 +1,7 @@
 #include "xi_text_button.h"
 
+#include "primitive_renderer.h"
+
 CXI_TEXTBUTTON::CXI_TEXTBUTTON()
 {
     m_rs = nullptr;
@@ -7,9 +9,6 @@ CXI_TEXTBUTTON::CXI_TEXTBUTTON()
     m_sGroupName = nullptr;
     m_idTex = -1;
     m_idShadowTex = -1;
-
-    m_idVBuf = -1;
-    m_idIBuf = -1;
 
     m_fXShadow = 0.f;
     m_fYShadow = 0.f;
@@ -46,18 +45,18 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
     {
         if (bSelected ^ m_bCurrentSelected)
         {
-            auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
-            if (pVert != nullptr)
+            if (m_vertices.data() != nullptr)
             {
+                auto pVert = m_vertices.data();
                 FXYRECT texRect;
                 m_bCurrentSelected = bSelected;
 
                 if (m_idSelectMiddle != -1)
                 {
                     if (bSelected)
-                        pPictureService->GetTexturePos(m_idSelectMiddle, texRect);
+                        pPictureService->BGFXGetTexturePos(m_idSelectMiddle, texRect);
                     else
-                        pPictureService->GetTexturePos(m_idUnSelectMiddle, texRect);
+                        pPictureService->BGFXGetTexturePos(m_idUnSelectMiddle, texRect);
 
                     pVert[4].tu = pVert[16].tu = pVert[28].tu = pVert[40].tu = texRect.left;
                     pVert[4].tv = pVert[16].tv = pVert[28].tv = pVert[40].tv = texRect.top;
@@ -72,9 +71,9 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
                 if (m_idSelectLeft != -1)
                 {
                     if (bSelected)
-                        pPictureService->GetTexturePos(m_idSelectLeft, texRect);
+                        pPictureService->BGFXGetTexturePos(m_idSelectLeft, texRect);
                     else
-                        pPictureService->GetTexturePos(m_idUnSelectLeft, texRect);
+                        pPictureService->BGFXGetTexturePos(m_idUnSelectLeft, texRect);
 
                     pVert[0].tu = pVert[12].tu = pVert[24].tu = pVert[36].tu = texRect.left;
                     pVert[0].tv = pVert[12].tv = pVert[24].tv = pVert[36].tv = texRect.top;
@@ -91,16 +90,16 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
                     if (bSelected)
                     {
                         if (m_idSelectRight != -1)
-                            pPictureService->GetTexturePos(m_idSelectRight, texRect);
+                            pPictureService->BGFXGetTexturePos(m_idSelectRight, texRect);
                         else
-                            pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idSelectLeft, texRect);
+                            pPictureService->BGFXGetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idSelectLeft, texRect);
                     }
                     else
                     {
                         if (m_idUnSelectRight != -1)
-                            pPictureService->GetTexturePos(m_idUnSelectRight, texRect);
+                            pPictureService->BGFXGetTexturePos(m_idUnSelectRight, texRect);
                         else
-                            pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idUnSelectLeft, texRect);
+                            pPictureService->BGFXGetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idUnSelectLeft, texRect);
                     }
 
                     pVert[8].tu = pVert[20].tu = pVert[32].tu = pVert[44].tu = texRect.left;
@@ -112,27 +111,105 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
                     pVert[11].tu = pVert[23].tu = pVert[35].tu = pVert[47].tu = texRect.right;
                     pVert[11].tv = pVert[23].tv = pVert[35].tv = pVert[47].tv = texRect.bottom;
                 }
-
-                m_rs->UnLockVertexBuffer(m_idVBuf);
             }
         }
 
         // show shadow
         if (m_idShadowTex >= 0)
         {
-            m_rs->TextureSet(0, m_idShadowTex);
+            //m_rs->TextureSet(0, m_idShadowTex);
+
+            auto texture = m_rs->GetBGFXTextureFromID(m_idShadowTex);
+            m_rs->GetPrimitiveRenderer()->Texture = texture;
+
             if (m_nPressedDelay > 0)
-                m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONETEX_VERTEX), 4 * 3 * 4, 2, "iIcon");
+            {
+                //m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONETEX_VERTEX), 4 * 3 * 4, 2, "iIcon");
+                for (int i = 0; i < 4 * 3 * 4; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                     pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                     pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                     pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                     pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+            }
             else
-                m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONETEX_VERTEX), 4 * 3 * 4 + 4, 2, "iIcon");
+            {
+                //m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONETEX_VERTEX), 4 * 3 * 4 + 4, 2, "iIcon");
+                for (int i = 0; i < 4 * 3 * 4 + 4; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                     pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                     pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                     pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                     pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+            }
         }
         else
         {
-            m_rs->TextureSet(0, m_idTex);
+            //m_rs->TextureSet(0, m_idTex);
+
+            auto texture = m_rs->GetBGFXTextureFromID(m_idTex);
+            m_rs->GetPrimitiveRenderer()->Texture = texture;
+
             if (m_nPressedDelay > 0)
-                m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 4 * 3 * 3, 4 * 3, 0, m_nIndx, "iShadow");
+            {
+                //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 4 * 3 * 3, 4 * 3, 0, m_nIndx, "iShadow");
+                for (int i = 4 * 3 * 3; i < 4 * 3 * 3 + 4 * 3; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                     pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                     pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                     pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                     pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+            }
             else
-                m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 4 * 3, 4 * 3, 0, m_nIndx, "iShadow");
+            {
+                //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 4 * 3, 4 * 3, 0, m_nIndx, "iShadow");
+                for (int i = 4 * 3; i < 4 * 3 + 4 * 3; i += 4)
+                {
+                    std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                    auto pV = m_vertices;
+
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                     pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                     pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                     pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                    vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                     pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                    m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                }
+            }
         }
 
         if (m_bVideoToBack)
@@ -140,6 +217,7 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
             // show midle video fragment
             if (bSelected && m_pTex != nullptr)
             {
+                /*
                 m_rs->SetTexture(0, m_pTex->m_pTexture);
                 if (m_nPressedDelay > 0)
                     m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, &m_v[4], sizeof(XI_ONETEX_VERTEX),
@@ -147,31 +225,113 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
                 else
                     m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX),
                                           "iVideo");
+                */
             }
             else if (m_dwBackColor != 0)
             {
-                m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwBackColor);
+                //m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwBackColor);
                 if (m_nPressedDelay > 0)
-                    m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, &m_v[4], sizeof(XI_ONETEX_VERTEX),
-                                          "iTFRectangle");
+                {
+                    //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, &m_v[4], sizeof(XI_ONETEX_VERTEX),
+                    //                      "iTFRectangle");
+                    for (int i = 4; i < 8; i += 4)
+                    {
+                        std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                        auto pV = m_v;
+
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y,
+                                                                         pV[i + 0].pos.z, pV[i + 0].tu, pV[i + 0].tv,
+                                                                         pV[i + 0].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y,
+                                                                         pV[i + 2].pos.z, pV[i + 2].tu, pV[i + 2].tv,
+                                                                         pV[i + 2].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y,
+                                                                         pV[i + 1].pos.z, pV[i + 1].tu, pV[i + 1].tv,
+                                                                         pV[i + 1].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y,
+                                                                         pV[i + 3].pos.z, pV[i + 3].tu, pV[i + 3].tv,
+                                                                         pV[i + 3].color});
+                        m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                    }
+                }
                 else
-                    m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX),
-                                          "iTFRectangle");
+                {
+                    //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX),
+                    //                      "iTFRectangle");
+                    for (int i = 0; i < 8; i += 4)
+                    {
+                        std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                        auto pV = m_v;
+
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y,
+                                                                         pV[i + 0].pos.z, pV[i + 0].tu, pV[i + 0].tv,
+                                                                         pV[i + 0].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y,
+                                                                         pV[i + 2].pos.z, pV[i + 2].tu, pV[i + 2].tv,
+                                                                         pV[i + 2].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y,
+                                                                         pV[i + 1].pos.z, pV[i + 1].tu, pV[i + 1].tv,
+                                                                         pV[i + 1].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y,
+                                                                         pV[i + 3].pos.z, pV[i + 3].tu, pV[i + 3].tv,
+                                                                         pV[i + 3].color});
+                        m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                    }
+                }
             }
         }
 
         // show button
-        m_rs->TextureSet(0, m_idTex);
+        //m_rs->TextureSet(0, m_idTex);
         if (m_nPressedDelay > 0)
-            m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 4 * 3 * 2, 4 * 3, 0, m_nIndx, "iTextButton");
+        {
+            //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 4 * 3 * 2, 4 * 3, 0, m_nIndx, "iTextButton");
+            for (int i = 4 * 3; i < 4 * 3 * 2 + 4 * 3; i += 4)
+            {
+                std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                auto pV = m_vertices;
+
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                 pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                 pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                 pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                 pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+            }
+        }
         else
-            m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 0, 4 * 3, 0, m_nIndx, "iTextButton");
+        {
+            //m_rs->DrawBuffer(m_idVBuf, sizeof(XI_ONETEX_VERTEX), m_idIBuf, 0, 4 * 3, 0, m_nIndx, "iTextButton");
+            for (int i = 0; i < 4 * 3; i += 4)
+            {
+                std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                auto pV = m_vertices;
+
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                                 pV[i + 0].tu, pV[i + 0].tv, pV[i + 0].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                                 pV[i + 2].tu, pV[i + 2].tv, pV[i + 2].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                                 pV[i + 1].tu, pV[i + 1].tv, pV[i + 1].color});
+                vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                                 pV[i + 3].tu, pV[i + 3].tv, pV[i + 3].color});
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+            }
+        }
 
         if (!m_bVideoToBack)
         {
             // show midle video fragment
             if (bSelected && m_pTex != nullptr)
             {
+                /*
                 m_rs->SetTexture(0, m_pTex->m_pTexture);
                 if (m_nPressedDelay > 0)
                     m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, &m_v[4], sizeof(XI_ONETEX_VERTEX),
@@ -179,6 +339,7 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
                 else
                     m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX),
                                           "iVideo");
+                */
             }
         }
 
@@ -246,7 +407,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     m_idTex = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "group", param, sizeof(param), ""))
     {
-        m_idTex = pPictureService->GetTextureID(param);
+        m_idTex = pPictureService->BGFXGetTextureID(param);
         const auto len = strlen(param) + 1;
         m_sGroupName = new char[len];
         if (m_sGroupName == nullptr)
@@ -256,7 +417,7 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
 
     m_idShadowTex = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "ShadowTexture", param, sizeof(param), ""))
-        m_idShadowTex = m_rs->TextureCreate(param);
+        m_idShadowTex = m_rs->BGFXTextureCreate(param);
 
     FXYRECT frectShadowUV;
     if (m_idShadowTex >= 0)
@@ -298,33 +459,16 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
         m_pTex = m_rs->GetVideoTexture(param);
 
     // do vertex and index buffer
-    m_nIndx = 3 * 2 * 3;     // 3 rectangle * 2 triangle to rectangle * 3 vertex to triangle
     m_nVert = 4 * 3 * 2 * 2; // 4 vertex * 3 rectangle * (2=face&shadow) * (2=press&notpress)
     if (m_idShadowTex >= 0)
         m_nVert += 8;
-    m_idIBuf = m_rs->CreateIndexBuffer(m_nIndx * 2);
-    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONETEX_FVF, m_nVert * sizeof(XI_ONETEX_VERTEX), D3DUSAGE_WRITEONLY);
 
-    // Lock buffers for write
-    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
-    auto *pIndx = static_cast<uint16_t *>(m_rs->LockIndexBuffer(m_idIBuf));
-    if (pVert == nullptr || pIndx == nullptr)
-        throw std::runtime_error("can not create the index&vertex buffers");
-
-    // fill triangles buffer
-    auto i = 0;
-    for (auto tidx = 0; tidx < 3; tidx++)
-    {
-        pIndx[i + 0] = tidx * 4;
-        pIndx[i + 1] = tidx * 4 + 1;
-        pIndx[i + 2] = tidx * 4 + 2;
-        pIndx[i + 3] = tidx * 4 + 2;
-        pIndx[i + 4] = tidx * 4 + 1;
-        pIndx[i + 5] = tidx * 4 + 3;
-        i += 6;
-    }
+    m_vertices.reserve(m_nVert);
+    m_vertices.resize(m_nVert);
 
     // fill vertex buffer
+    auto pVert = m_vertices.data();
+    auto i = 0;
     for (i = 0; i < m_nVert; i++)
         pVert[i].pos.z = 1.f;
     for (i = 0; i < 4 * 3; i++)
@@ -380,11 +524,11 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     // fill left side of button
     m_idUnSelectLeft = m_idSelectLeft = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "selectButtonLeft", param, sizeof(param), ""))
-        m_idSelectLeft = pPictureService->GetImageNum(m_sGroupName, param);
+        m_idSelectLeft = pPictureService->BGFXGetImageNum(m_sGroupName, param);
     if (ReadIniString(ini1, name1, ini2, name2, "buttonLeft", param, sizeof(param), ""))
-        m_idUnSelectLeft = pPictureService->GetImageNum(m_sGroupName, param);
-    pPictureService->GetTexturePos(m_idUnSelectLeft, texRect);
-    pPictureService->GetTexturePos(m_idUnSelectLeft, natureRect);
+        m_idUnSelectLeft = pPictureService->BGFXGetImageNum(m_sGroupName, param);
+    pPictureService->BGFXGetTexturePos(m_idUnSelectLeft, texRect);
+    pPictureService->BGFXGetTexturePos(m_idUnSelectLeft, natureRect);
     auto fLeftMiddle = static_cast<float>(m_rect.left + natureRect.right - natureRect.left);
     pVert[0].tu = pVert[12].tu = pVert[24].tu = pVert[36].tu = texRect.left;
     pVert[0].tv = pVert[12].tv = pVert[24].tv = pVert[36].tv = texRect.top;
@@ -414,19 +558,19 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     auto fRightMiddle = m_rect.right - (fLeftMiddle - m_rect.left);
     m_idUnSelectRight = m_idSelectRight = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "buttonRight", param, sizeof(param), ""))
-        m_idUnSelectRight = pPictureService->GetImageNum(m_sGroupName, param);
+        m_idUnSelectRight = pPictureService->BGFXGetImageNum(m_sGroupName, param);
     if (ReadIniString(ini1, name1, ini2, name2, "selectButtonRight", param, sizeof(param), ""))
-        m_idSelectRight = pPictureService->GetImageNum(m_sGroupName, param);
+        m_idSelectRight = pPictureService->BGFXGetImageNum(m_sGroupName, param);
 
     if (m_idUnSelectRight != -1)
     {
-        pPictureService->GetTexturePos(m_idUnSelectRight, texRect);
-        pPictureService->GetTexturePos(m_idUnSelectRight, natureRect);
+        pPictureService->BGFXGetTexturePos(m_idUnSelectRight, texRect);
+        pPictureService->BGFXGetTexturePos(m_idUnSelectRight, natureRect);
     }
     else
     {
-        pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idUnSelectLeft, texRect);
-        pPictureService->GetTexturePos(m_idUnSelectLeft, natureRect);
+        pPictureService->BGFXGetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idUnSelectLeft, texRect);
+        pPictureService->BGFXGetTexturePos(m_idUnSelectLeft, natureRect);
     }
     fRightMiddle = m_rect.right - static_cast<float>(natureRect.right - natureRect.left);
     pVert[8].tu = pVert[20].tu = pVert[32].tu = pVert[44].tu = texRect.left;
@@ -455,10 +599,10 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     pVert[46].pos.y = pVert[47].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
     // fill middle of button
     if (ReadIniString(ini1, name1, ini2, name2, "buttonMiddle", param, sizeof(param), ""))
-        m_idUnSelectMiddle = pPictureService->GetImageNum(m_sGroupName, param);
+        m_idUnSelectMiddle = pPictureService->BGFXGetImageNum(m_sGroupName, param);
     if (ReadIniString(ini1, name1, ini2, name2, "selectButtonMiddle", param, sizeof(param), ""))
-        m_idSelectMiddle = pPictureService->GetImageNum(m_sGroupName, param);
-    pPictureService->GetTexturePos(m_idUnSelectMiddle, texRect);
+        m_idSelectMiddle = pPictureService->BGFXGetImageNum(m_sGroupName, param);
+    pPictureService->BGFXGetTexturePos(m_idUnSelectMiddle, texRect);
     m_bCurrentSelected = false;
     pVert[4].tu = pVert[16].tu = pVert[28].tu = pVert[40].tu = texRect.left;
     pVert[4].tv = pVert[16].tv = pVert[28].tv = pVert[40].tv = texRect.top;
@@ -484,11 +628,6 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     pVert[18].pos.y = pVert[19].pos.y = m_rect.bottom + m_fYShadow;
     pVert[30].pos.y = pVert[31].pos.y = m_rect.bottom + m_fYDeltaPress;
     pVert[42].pos.y = pVert[43].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
-
-    m_nIndx /= 3;
-
-    m_rs->UnLockVertexBuffer(m_idVBuf);
-    m_rs->UnLockIndexBuffer(m_idIBuf);
 
     // fill video fragment
     for (i = 0; i < 8; i++)
@@ -526,12 +665,10 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
 
 void CXI_TEXTBUTTON::ReleaseAll()
 {
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
-    TEXTURE_RELEASE(m_rs, m_idShadowTex);
+    BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idShadowTex);
     STORM_DELETE(m_sGroupName);
     STORM_DELETE(m_sString);
-    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
-    INDEX_BUFFER_RELEASE(m_rs, m_idIBuf);
     VIDEOTEXTURE_RELEASE(m_rs, m_pTex);
     FONT_RELEASE(m_rs, m_nFontNum);
 }
@@ -656,7 +793,7 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     FXYRECT texRect;
     XYRECT natureRect;
 
-    auto *pVert = static_cast<XI_ONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto pVert = m_vertices.data();
 
     if (m_idShadowTex >= 0)
     {
@@ -684,8 +821,8 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     }
 
     // fill left side of button
-    pPictureService->GetTexturePos(m_idUnSelectLeft, texRect);
-    pPictureService->GetTexturePos(m_idUnSelectLeft, natureRect);
+    pPictureService->BGFXGetTexturePos(m_idUnSelectLeft, texRect);
+    pPictureService->BGFXGetTexturePos(m_idUnSelectLeft, natureRect);
     float fLeftMiddle = static_cast<float>(m_rect.left + natureRect.right - natureRect.left);
     pVert[0].pos.x = pVert[2].pos.x = static_cast<float>(m_rect.left);
     pVert[12].pos.x = pVert[14].pos.x = m_rect.left + m_fXShadow;
@@ -707,13 +844,13 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     // fill right side of button
     if (m_idUnSelectRight != -1)
     {
-        pPictureService->GetTexturePos(m_idUnSelectRight, texRect);
-        pPictureService->GetTexturePos(m_idUnSelectRight, natureRect);
+        pPictureService->BGFXGetTexturePos(m_idUnSelectRight, texRect);
+        pPictureService->BGFXGetTexturePos(m_idUnSelectRight, natureRect);
     }
     else
     {
-        pPictureService->GetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idUnSelectLeft, texRect);
-        pPictureService->GetTexturePos(m_idUnSelectLeft, natureRect);
+        pPictureService->BGFXGetTexturePos(TEXTURE_MODIFY_HORZFLIP, m_idUnSelectLeft, texRect);
+        pPictureService->BGFXGetTexturePos(m_idUnSelectLeft, natureRect);
     }
     float fRightMiddle = m_rect.right - static_cast<float>(natureRect.right - natureRect.left);
     pVert[8].pos.x = pVert[10].pos.x = fRightMiddle; // left top X
@@ -734,7 +871,7 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     pVert[46].pos.y = pVert[47].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
 
     // fill middle of button
-    pPictureService->GetTexturePos(m_idUnSelectMiddle, texRect);
+    pPictureService->BGFXGetTexturePos(m_idUnSelectMiddle, texRect);
     pVert[4].pos.x = pVert[6].pos.x = fLeftMiddle; // left
     pVert[16].pos.x = pVert[18].pos.x = fLeftMiddle + m_fXShadow;
     pVert[28].pos.x = pVert[30].pos.x = fLeftMiddle + m_fXDeltaPress;
@@ -751,8 +888,6 @@ void CXI_TEXTBUTTON::FillPositionIntoVertices()
     pVert[18].pos.y = pVert[19].pos.y = m_rect.bottom + m_fYShadow;
     pVert[30].pos.y = pVert[31].pos.y = m_rect.bottom + m_fYDeltaPress;
     pVert[42].pos.y = pVert[43].pos.y = m_rect.bottom + m_fYDeltaPress + m_fYShadowPress;
-
-    m_rs->UnLockVertexBuffer(m_idVBuf);
 
     if (m_bVideoToBack)
     {

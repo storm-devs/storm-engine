@@ -4,6 +4,8 @@
 
 #include "v_file_service.h"
 
+#include "primitive_renderer.h"
+
 void SetRectanglePos(XI_ONETEX_VERTEX v[4], const FXYPOINT &center, const FXYPOINT &size)
 {
     v[0].pos.x = v[1].pos.x = center.x - size.x / 2;
@@ -44,10 +46,39 @@ void CXI_TWOPICTURE::Draw(bool bSelected, uint32_t Delta_Time)
 {
     if (m_bUse)
     {
+        /*
         m_rs->TextureSet(0, m_idOneTex);
         m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vOne, sizeof(XI_ONETEX_VERTEX), "iIcon");
         m_rs->TextureSet(0, m_idTwoTex);
         m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vTwo, sizeof(XI_ONETEX_VERTEX), "iIcon");
+        */
+        auto texture = m_rs->GetBGFXTextureFromID(m_idOneTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+        std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{m_vOne[0].pos.x, m_vOne[0].pos.y, m_vOne[0].pos.z,
+                                                         m_vOne[0].tu, m_vOne[0].tv, m_vOne[0].color});
+        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{m_vOne[2].pos.x, m_vOne[2].pos.y, m_vOne[2].pos.z,
+                                                         m_vOne[2].tu, m_vOne[2].tv, m_vOne[2].color});
+        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{m_vOne[1].pos.x, m_vOne[1].pos.y, m_vOne[1].pos.z,
+                                                         m_vOne[1].tu, m_vOne[1].tv, m_vOne[1].color});
+        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{m_vOne[3].pos.x, m_vOne[3].pos.y, m_vOne[3].pos.z,
+                                                         m_vOne[3].tu, m_vOne[3].tv, m_vOne[3].color});
+        m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+
+        texture = m_rs->GetBGFXTextureFromID(m_idTwoTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+        vertices.clear();
+        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{m_vTwo[0].pos.x, m_vTwo[0].pos.y, m_vTwo[0].pos.z,
+                                                         m_vTwo[0].tu, m_vTwo[0].tv, m_vTwo[0].color});
+        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{m_vTwo[2].pos.x, m_vTwo[2].pos.y, m_vTwo[2].pos.z,
+                                                         m_vTwo[2].tu, m_vTwo[2].tv, m_vTwo[2].color});
+        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{m_vTwo[1].pos.x, m_vTwo[1].pos.y, m_vTwo[1].pos.z,
+                                                         m_vTwo[1].tu, m_vTwo[1].tv, m_vTwo[1].color});
+        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{m_vTwo[3].pos.x, m_vTwo[3].pos.y, m_vTwo[3].pos.z,
+                                                         m_vTwo[3].tu, m_vTwo[3].tv, m_vTwo[3].color});
+        m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
     }
 }
 
@@ -80,12 +111,12 @@ void CXI_TWOPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
 
     // textures
     if (ReadIniString(ini1, name1, ini2, name2, "oneTexName", param, sizeof(param), ""))
-        m_idOneTex = m_rs->TextureCreate(param);
+        m_idOneTex = m_rs->BGFXTextureCreate(param);
     else
         m_idOneTex = -1;
 
     if (ReadIniString(ini1, name1, ini2, name2, "twoTexName", param, sizeof(param), ""))
-        m_idTwoTex = m_rs->TextureCreate(param);
+        m_idTwoTex = m_rs->BGFXTextureCreate(param);
     else
         m_idTwoTex = -1;
 
@@ -118,8 +149,8 @@ void CXI_TWOPICTURE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
 
 void CXI_TWOPICTURE::ReleaseAll()
 {
-    TEXTURE_RELEASE(m_rs, m_idOneTex);
-    TEXTURE_RELEASE(m_rs, m_idTwoTex);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idOneTex);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idTwoTex);
 }
 
 int CXI_TWOPICTURE::CommandExecute(int wActCode)

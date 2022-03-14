@@ -29,7 +29,7 @@ class CXI_SCROLLBAR : public CINODE
 
   protected:
     void LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const char *name2) override;
-    void UpdatePosition() const;
+    void UpdatePosition();
 
     void WriteDataToAttribute() const;
     void ChangeValue(bool bGrowing, bool bMultiply);
@@ -61,10 +61,8 @@ class CXI_SCROLLBAR : public CINODE
     int m_clickType;
 
     // picture index & vertex buffers
-    int32_t m_idVBuf; // identificator of the vertex buffer
-    int32_t m_idIBuf; // identificator of the index buffer
-    int32_t m_nVert;  // vertex quantity
-    int32_t m_nIndx;  // index quantity
+    std::vector<XI_ONETEX_VERTEX> m_vertices;
+    int32_t m_nVert; // vertex quantity
 
     FXYRECT m_frLeftTex;
     FXYRECT m_frRightTex;

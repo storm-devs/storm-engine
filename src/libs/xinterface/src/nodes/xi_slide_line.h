@@ -29,7 +29,7 @@ class CXI_SLIDELINE : public CINODE
     int32_t m_idTexLine;
     int32_t m_idTexSelLine;
     int32_t m_idTexPointer;
-    int32_t m_idVBuf;
+    std::vector<XI_ONLYONETEX_VERTEX> m_vertices;
 
     uint32_t m_dwDisableColor;
 

@@ -22,9 +22,7 @@ class CXI_ToolTip
   protected:
     void ReleaseAll();
 
-    void CreateIndexBuffer();
     void CreateVertexBuffer();
-    void UpdateIndexBuffer() const;
     void UpdateVertexBuffer();
 
     void ReplaceRectangle(int32_t x, int32_t y);

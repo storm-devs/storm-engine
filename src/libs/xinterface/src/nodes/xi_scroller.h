@@ -46,7 +46,7 @@ class CXI_SCROLLER : public CINODE
     int32_t m_idBaseTex;   // border texture identificator
     int32_t m_idRollerTex; // roller texture identificator
 
-    int32_t m_idVBuf;
+    std::vector<XI_ONLYONETEX_VERTEX> m_vertices;
 
     FXYRECT m_rollerPlace;
     FXYRECT m_rollerCur;

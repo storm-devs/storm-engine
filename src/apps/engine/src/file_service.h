@@ -95,6 +95,8 @@ class FILE_SERVICE : public VFILE_SERVICE
     bool _DeleteFile(const char *filename) override;
     bool _WriteFile(std::fstream &fileS, const void *s, std::streamsize count) override;
     bool _ReadFile(std::fstream &fileS, void *s, std::streamsize count) override;
+    bool _OldReadFile(std::filesystem::path path, void *buffer, uint32_t bytes_to_read, uint32_t *bytes_read,
+                      uint32_t seek_to = 0) override;
     bool _FileOrDirectoryExists(const char *p) override;
     std::vector<std::string> _GetPathsOrFilenamesByMask(const char *sourcePath, const char *mask, bool getPaths,
                                                         bool onlyDirs = false, bool onlyFiles = true) override;

@@ -252,6 +252,15 @@ struct XI_THREETEX_VERTEX
     float tu3, tv3;
 };
 
+inline void BGFX_PICTURE_TEXTURE_RELEASE(VXSERVICE *ps, const char *gn, int32_t &tex)
+{
+    if (tex != -1 && ps != nullptr)
+    {
+        ps->BGFXReleaseTextureID(gn);
+        tex = -1;
+    }
+}
+
 inline void PICTURE_TEXTURE_RELEASE(VXSERVICE *ps, const char *gn, int32_t &tex)
 {
     if (tex != -1 && ps != nullptr)

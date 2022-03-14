@@ -1,5 +1,9 @@
 #pragma once
 
+#include "bgfx/bgfx.h"
+#include "bgfx_utils.h"
+#include "bx/timer.h"
+
 #include "dx9render.h"
 #include "matrix.h"
 #include "v_module_api.h"

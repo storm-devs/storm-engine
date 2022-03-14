@@ -16,7 +16,7 @@ class WdmSea : public WdmRenderObject
 {
 #pragma pack(push, 1)
 
-    struct Triangle
+    struct StormTriangle
     {
         uint16_t index[3];
     };

@@ -1,5 +1,12 @@
 #include "s_device.h"
 
+#include "bgfx_utils.h"
+#include "glm.hpp"
+#include "gtx/matrix_transform_2d.hpp"
+#include "gtc/matrix_transform.hpp"
+#include "gtc/type_ptr.hpp"
+#include "matrix.hpp"
+
 #include "core.h"
 
 #include "entity.h"
@@ -13,6 +20,10 @@
 
 #include <DxErr.h>
 #include <corecrt_io.h>
+
+#include <deque>
+#include <bitset>
+#include <algorithm>
 
 CREATE_SERVICE(DX9RENDER)
 
@@ -97,6 +108,8 @@ namespace
         }
     }
 }
+
+static bool s_isDXEndScene = false;
 
 DX9RENDER *DX9RENDER::pRS = nullptr;
 
@@ -386,7 +399,7 @@ inline bool ErrorHandler(HRESULT hr, const char *file, unsigned line, const char
 const uint32_t DX9RENDER::rectsVBuffer_SizeInRects = 512;
 
 //################################################################################
-DX9RENDER::DX9RENDER()
+DX9RENDER::DX9RENDER() : m_spriteRenderer(nullptr), m_primitiveRenderer(nullptr)
 {
     rectsVBuffer = nullptr;
 
@@ -469,6 +482,8 @@ DX9RENDER::DX9RENDER()
 
     vViewRelationPos = CVECTOR(0.f, 0.f, 0.f);
     vWordRelationPos = -vViewRelationPos;
+    bgfxvViewRelationPos = CVECTOR(0.f, 0.f, 0.f);
+    bgfxvWordRelationPos = -vViewRelationPos;
     bUseLargeBackBuffer = false;
 }
 
@@ -560,6 +575,9 @@ bool DX9RENDER::Init()
 
         videoAdapterIndex = ini->GetInt(nullptr, "adapter", std::numeric_limits<int32_t>::max());
 
+        m_spriteRenderer = std::make_shared<SpriteRenderer>(screen_size.x, screen_size.y);
+        m_primitiveRenderer = std::make_shared<PrimitiveRenderer>(screen_size.x, screen_size.y);
+
         // stencil_format = D3DFMT_D24S8;
         if (!InitDevice(bWindow, static_cast<HWND>(core.GetAppHWND()), screen_size.x, screen_size.y))
             return false;
@@ -631,7 +649,7 @@ bool DX9RENDER::Init()
     rectsVBuffer = nullptr;
     d3d9->CreateVertexBuffer(2 * sizeof(CVECTOR), D3DUSAGE_WRITEONLY, D3DFVF_XYZ, D3DPOOL_MANAGED,
                              &pDropConveyorVBuffer, nullptr);
-    d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(RECT_VERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
+    d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(PosColorTexVertex), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
                              RS_RECT_VERTEX_FORMAT, D3DPOOL_DEFAULT, &rectsVBuffer, nullptr); // D3DPOOL_MANAGED
     if (!pDropConveyorVBuffer || !rectsVBuffer)
     {
@@ -969,6 +987,7 @@ bool DX9RENDER::ReleaseDevice()
 
     bool res = true;
     for (int32_t t = 0; t < MAX_STEXTURES; t++)
+    {
         if (Textures[t].ref && Textures[t].loaded && Textures[t].d3dtex)
         {
             if (CHECKD3DERR(Textures[t].d3dtex->Release()) == false)
@@ -976,6 +995,17 @@ bool DX9RENDER::ReleaseDevice()
             Textures[t].ref = NULL;
             delete Textures[t].name;
         }
+    }
+
+    for (int32_t t = 0; t < BGFXTextures.size(); t++)
+    {
+        if (BGFXTextures[t].ref && BGFXTextures[t].loaded && BGFXTextures[t].textureHandle->idx)
+        {
+            bgfx::destroy(*BGFXTextures[t].textureHandle);
+            BGFXTextures[t].ref = NULL;
+            delete BGFXTextures[t].name;
+        }
+    }
 
     if (d3d9)
         d3d9->SetGammaRamp(0, D3DSGR_NO_CALIBRATION, &DefaultRamp);
@@ -1287,14 +1317,22 @@ bool DX9RENDER::DX9EndScene()
         DrawPrimitive(D3DPT_LINELIST, 0, 1);
     }
 
+    s_isDXEndScene = true;
     if (CHECKD3DERR(EndScene()))
         return false;
+
+    s_isDXEndScene = false;
 
     if (bMakeShoot)
         MakeScreenShot();
 
     if (bVideoCapture)
         MakeCapture();
+
+    BGFXRenderToBackBuffer();
+
+    GetSpriteRenderer()->Submit();
+    bgfx::frame();
 
     const HRESULT hRes = d3d9->Present(nullptr, nullptr, nullptr, nullptr);
 
@@ -1435,6 +1473,648 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
         STORM_DELETE(Textures[t].name);
     }
     return -1;
+}
+
+bool find_file(const std::filesystem::path &dir_path, // in this directory,
+               const std::wstring &file_name,         // search for this name,
+               std::filesystem::path &path_found)     // placing path here if found
+{
+    if (!exists(dir_path))
+        return false;
+    std::filesystem::directory_iterator end_itr; // default construction yields past-the-end
+    for (std::filesystem::directory_iterator itr(dir_path); itr != end_itr; ++itr)
+    {
+        if (std::filesystem::is_directory(itr->status()))
+        {
+            if (find_file(itr->path(), file_name, path_found))
+                return true;
+        }
+        else // see below
+        {
+            auto comparing_path = itr->path().filename();
+            auto comparing_path_string = comparing_path.wstring();
+            std::transform(comparing_path_string.begin(), comparing_path_string.end(), comparing_path_string.begin(),
+                           ::toupper);
+
+            if (comparing_path_string.compare(file_name) == 0)
+            {
+                path_found = itr->path();
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+int32_t DX9RENDER::BGFXTextureCreate(const char *fname)
+{
+    // start add texture path
+    if ((uintptr_t)fname == -1)
+    {
+        iSetupPath = 1;
+        return -1;
+    }
+
+    // continue add texture path process
+    if (iSetupPath)
+    {
+        if (iSetupPath == 1)
+        {
+            dwSetupNumber = (uintptr_t)(fname);
+            iSetupPath = 2;
+            return -1;
+        }
+
+        TexPaths[dwSetupNumber].str[0] = 0;
+        if (fname && fname[0])
+            strcpy_s(TexPaths[dwSetupNumber].str, fname);
+        iSetupPath = 0;
+        return -1;
+    }
+
+    // delete relative path "resource\textures\"
+    // std::string sTexName = fname;
+    // sTexName.GetRelativePath("resource\\textures\\");
+    // sTexName = sTexName - std::string(".tx");
+    // ~!~
+    //__debugbreak();
+    // fs::path path = fs::path() / "resource" / "textures" / fname;
+
+    if (fname == nullptr)
+    {
+        core.Trace("Can't create texture with null name");
+        return -1;
+    }
+
+    fs::path path = fname;
+    std::string pathStr = path.extension().string();
+    if (_stricmp(pathStr.c_str(), ".tx") == 0)
+        path.replace_extension();
+    pathStr = path.string();
+    fname = pathStr.c_str(); //~!~ msvc still doesn't have working c_str for path
+
+    if (!bLoadTextureEnabled)
+        return -1;
+
+    size_t fname_len = strlen(fname);
+
+    for (int32_t i = 3; i >= -1; i--)
+    {
+        char _fname[256];
+
+        if (i >= 0 && TexPaths[i].str[0] == 0)
+            continue;
+        if (i >= 0)
+        {
+            const uint32_t dwLen = strlen(fname);
+
+            int32_t j;
+            for (j = dwLen - 1; j >= 0; j--)
+                if (fname[j] == '\\')
+                    break;
+
+            _fname[0] = 0;
+            strncpy_s(_fname, fname, j + 1);
+            _fname[j + 1] = 0;
+            strcat_s(_fname, TexPaths[i].str);
+            strcat_s(_fname, &fname[j + 1]);
+            bTrace = false;
+        }
+        else
+        {
+            bTrace = true;
+            strcpy_s(_fname, fname);
+        }
+
+        if (strlen(_fname) > _countof(".tx") - 1)
+        {
+            if (_stricmp(&_fname[strlen(_fname) - 3], ".tx") == 0)
+                _fname[strlen(_fname) - 3] = 0;
+        }
+
+        _strupr(_fname);
+
+        const uint32_t hf = hash_string(_fname);
+
+        int32_t t;
+        for (t = 0; t < BGFXTextures.size(); t++)
+            if (BGFXTextures[t].ref != 0)
+                if (BGFXTextures[t].name)
+                    if (BGFXTextures[t].hash == hf && _stricmp(BGFXTextures[t].name, _fname) == 0)
+                    {
+                        BGFXTextures[t].ref++;
+                        return t;
+                    }
+
+        int textureIndex = -1;
+
+        for (int i = 0; i < BGFXTextures.size(); ++i)
+        {
+            auto texture = BGFXTextures[i];
+
+            if (texture.loaded == false)
+            {
+                textureIndex = i;
+                break;
+            }
+        }
+
+        if (textureIndex != -1)
+        {
+            t = textureIndex;
+        }
+        else
+        {
+            BGFXTextures.push_back(TextureResource(nullptr, nullptr, 0, 0, 0, false, false, RenderSize({0, 0})));
+            t = BGFXTextures.size() - 1;
+        }
+
+        BGFXTextures[t].hash = hf;
+
+        const auto len = strlen(_fname) + 1;
+        if ((BGFXTextures[t].name = new char[len]) == nullptr)
+            throw std::exception("allocate memory error");
+        strcpy_s(BGFXTextures[t].name, len, _fname);
+        BGFXTextures[t].isCubeMap = false;
+        BGFXTextures[t].loaded = false;
+        BGFXTextures[t].ref++;
+
+        char fn[_MAX_FNAME];
+        BGFXTextures[t].dwSize = 0;
+        sprintf_s(fn, TEXTURESDIR, BGFXTextures[t].name);
+
+        std::filesystem::path origPath = std::filesystem::path(fn);
+        std::filesystem::path filePath;
+
+        std::wstring upper_path = origPath.filename().wstring();
+
+        std::transform(upper_path.begin(), upper_path.end(), upper_path.begin(), ::toupper);
+
+        if (find_file("resource/Textures", upper_path, filePath))
+        {
+            /*auto textureHandle = loadTexture(filePath.string().c_str());
+            if (isValid(textureHandle))
+            {
+                return textureHandle;
+            }*/
+
+            if (BGFXTextureLoad(t))
+            {
+                return t;
+            }
+        }
+        BGFXTextures[t].ref--;
+        STORM_DELETE(BGFXTextures[t].name);
+        BGFXTextures.erase(BGFXTextures.begin() + t);
+    }
+
+    return -1;
+}
+
+bool DX9RENDER::BGFXTextureLoad(int32_t t)
+{
+    ProgressView();
+
+    char fn[_MAX_FNAME];
+    BGFXTextures[t].dwSize = 0;
+    sprintf_s(fn, TEXTURESDIR, BGFXTextures[t].name);
+
+    std::filesystem::path origPath = std::filesystem::path(fn);
+
+    // Reading the header
+    TX_FILE_HEADER head;
+    uint32_t readingBytes = 0;
+
+    if (!fio->_OldReadFile(origPath.wstring(), &head, sizeof(head), &readingBytes) || readingBytes != sizeof(head))
+    {
+        if (bTrace)
+        {
+            core.Trace("Can't load texture %s", fn);
+        }
+        delete BGFXTextures[t].name;
+        BGFXTextures[t].name = nullptr;
+        return false;
+    }
+    // Analyzing the format
+    D3DFORMAT d3dFormat = D3DFMT_UNKNOWN;
+    int32_t textureFI;
+    for (textureFI = 0; textureFI < sizeof(textureFormats) / sizeof(SD_TEXTURE_FORMAT); textureFI++)
+        if (textureFormats[textureFI].txFormat == head.format)
+            break;
+    if (textureFI == sizeof(textureFormats) / sizeof(SD_TEXTURE_FORMAT) || head.flags & TX_FLAGS_PALLETTE)
+    {
+        if (bTrace)
+            core.Trace("Invalidate texture format %s, not loading it.", fn);
+        delete Textures[t].name;
+        Textures[t].name = nullptr;
+        return false;
+    }
+
+    d3dFormat = textureFormats[textureFI].d3dFormat;
+    bool isSwizzled = textureFormats[textureFI].isSwizzled;
+    const char *formatTxt = textureFormats[textureFI].format;
+    // Skipping mips
+    uint32_t seekposition = 0;
+    for (int32_t nTD = nTextureDegradation; nTD > 0; nTD--)
+    {
+        if (head.nmips <= 1 || head.width <= 32 || head.height <= 32)
+            break; // degradation limit
+        seekposition += head.mip_size;
+        head.nmips--;
+        head.width /= 2;
+        head.height /= 2;
+        head.mip_size /= 4;
+    }
+
+    seekposition += readingBytes;
+
+    // Loading the texture
+    if (!(head.flags & TX_FLAGS_CUBEMAP))
+    {
+        // Loading a regular texture
+        // Position in file
+        //
+        // create the texture
+
+        auto bgfxFormat = bgfx::TextureFormat::Enum::Unknown;
+
+        // TXF_A8R8G8B8 = 21, TXF_X8R8G8B8 = 22, TXF_R5G6B5 = 23, TXF_A1R5G5B5 = 25, TXF_A4R4G4B4 = 26 // reference, //
+        // basic texture formats
+
+        switch (textureFormats[textureFI].txFormat)
+        {
+        case TXF_A8R8G8B8:
+            bgfxFormat = bgfx::TextureFormat::Enum::RGBA8;
+            break;
+        case TXF_R5G6B5:
+            bgfxFormat = bgfx::TextureFormat::Enum::R5G6B5;
+            break;
+        case TXF_A1R5G5B5:
+            bgfxFormat = bgfx::TextureFormat::Enum::RGB5A1;
+            break;
+        case TXF_A4R4G4B4:
+            bgfxFormat = bgfx::TextureFormat::Enum::RGBA4;
+            break;
+
+        case TXF_X8R8G8B8:
+        default:
+            throw std::exception("Not implemented yet");
+        }
+        // Filling the levels
+        for (int32_t m = 0; m < head.nmips; m++)
+        {
+            // take into account the size of the mip
+            BGFXTextures[t].dwSize += head.mip_size;
+            // Getting the mip surface
+            bool isError = false;
+            {
+                std::vector<unsigned char> byteOutput;
+
+                byteOutput.resize(head.mip_size);
+
+                isError = !fio->_OldReadFile(origPath.wstring(), byteOutput.data(), head.mip_size, &readingBytes,
+                                             seekposition);
+
+                switch (textureFormats[textureFI].txFormat)
+                {
+                case TXF_A8R8G8B8: {
+
+                    unsigned char *data = byteOutput.data();
+
+                    for (int i = 0; i < head.mip_size; i += 4)
+                    {
+                        unsigned char a = data[i + 0];
+                        unsigned char r = data[i + 1];
+                        unsigned char g = data[i + 2];
+                        unsigned char b = data[i + 3];
+
+                        data[i + 0] = b;
+                        data[i + 1] = g;
+                        data[i + 2] = r;
+                        data[i + 3] = a;
+                    }
+                }
+                break;
+                case TXF_A1R5G5B5: {
+
+                    /*auto bitvalue = [](int8_t num, int bit)
+                    {
+                        if (bit > 0 && bit <= 8)
+                            return ((num >> (bit - 1)) & 1);
+                        else
+                            return 0;
+                    };
+
+                    unsigned char *data = byteOutput.data();
+
+                    for (int i = 0; i < head.mip_size; i += 2)
+                    {
+
+                        std::deque<unsigned char> bits;
+
+                        unsigned char low = data[i + 0];
+                        unsigned char high = data[i + 1];
+
+                        bits.push_back(bitvalue(low, 1));
+                        bits.push_back(bitvalue(low, 2));
+                        bits.push_back(bitvalue(low, 3));
+                        bits.push_back(bitvalue(low, 4));
+                        bits.push_back(bitvalue(low, 5));
+                        bits.push_back(bitvalue(low, 6));
+                        bits.push_back(bitvalue(low, 7));
+                        bits.push_back(bitvalue(low, 8));
+
+                        bits.push_back(bitvalue(high, 1));
+                        bits.push_back(bitvalue(high, 2));
+                        bits.push_back(bitvalue(high, 3));
+                        bits.push_back(bitvalue(high, 4));
+                        bits.push_back(bitvalue(high, 5));
+                        bits.push_back(bitvalue(high, 6));
+                        bits.push_back(bitvalue(high, 7));
+                        bits.push_back(bitvalue(high, 8));
+
+                        unsigned char a = bits.front();
+
+                        bits.pop_front();
+
+                        bits.push_back(a);
+
+                        std::vector<unsigned char> new_bits;
+
+                        for (auto& bit : bits)
+                        {
+                            new_bits.push_back(bit);
+                        }
+
+                        memcpy(data + i, new_bits.data(), 2);
+                    }*/
+                }
+                break;
+                case TXF_A4R4G4B4: {
+                    /*unsigned char *data = byteOutput.data();
+
+                    for (int i = 0; i < head.mip_size; i += 2)
+                    {
+
+                        std::deque<unsigned char> bits;
+
+                        unsigned char low = data[i + 0];
+                        unsigned char high = data[i + 1];
+
+                        std::bitset<8> bitLow(low);
+                        std::bitset<8> bitHigh(high);
+
+                        std::bitset<8> bitLowBackup(low);
+                        std::bitset<8> bitHighBackup(high);
+
+
+                        bitLow[0] = bitLowBackup[1];
+                        bitLow[1] = bitLowBackup[2];
+                        bitLow[2] = bitLowBackup[3];
+                        bitLow[3] = bitLowBackup[4];
+
+                        bitLow[4] = bitLowBackup[5];
+                        bitLow[5] = bitLowBackup[6];
+                        bitLow[6] = bitLowBackup[7];
+                        bitLow[7] = bitHighBackup[0];
+
+                        bitHigh[0] = bitHighBackup[1];
+                        bitHigh[1] = bitHighBackup[2];
+                        bitHigh[2] = bitHighBackup[3];
+                        bitHigh[3] = bitHighBackup[4];
+
+                        bitHigh[4] = bitHighBackup[5];
+                        bitHigh[5] = bitHighBackup[6];
+                        bitHigh[6] = bitHighBackup[7];
+                        bitHigh[7] = bitLowBackup[0];
+
+                        unsigned long bitLowLong= bitLow.to_ulong();
+                        unsigned long bitHighLong = bitHigh.to_ulong();
+
+                        data[i + 0] = static_cast<unsigned char>(bitLowLong);
+
+
+                        data[i + 1] = static_cast<unsigned char>(bitHighLong);
+
+                    }*/
+                }
+
+                break;
+
+                case TXF_R5G6B5: {
+                    /*unsigned char *data = byteOutput.data();
+
+                    for (int i = 0; i < head.mip_size; i += 2)
+                    {
+
+                        std::deque<unsigned char> bits;
+
+                        unsigned char low = data[i + 0];
+                        unsigned char high = data[i + 1];
+
+                        std::bitset<8> bitLow(low);
+                        std::bitset<8> bitHigh(high);
+
+                        std::bitset<8> bitLowBackup(low);
+                        std::bitset<8> bitHighBackup(high);
+
+
+                        bitLow[0] = bitHighBackup[3];
+                        bitLow[1] = bitHighBackup[4];
+                        bitLow[2] = bitHighBackup[5];
+                        bitLow[3] = bitHighBackup[6];
+                        bitLow[4] = bitHighBackup[7];
+
+                        bitHigh[3] = bitLowBackup[0];
+                        bitHigh[4] = bitLowBackup[1];
+                        bitHigh[5] = bitLowBackup[2];
+                        bitHigh[6] = bitLowBackup[3];
+                        bitHigh[7] = bitLowBackup[4];
+
+                        unsigned long bitLowLong= bitLow.to_ulong();
+                        unsigned long bitHighLong = bitHigh.to_ulong();
+
+                        data[i + 0] = static_cast<unsigned char>(bitLowLong);
+                        data[i + 1] = static_cast<unsigned char>(bitHighLong);
+
+                    }*/
+                }
+
+                break;
+
+                case TXF_X8R8G8B8:
+                default:
+                    throw std::exception("Not implemented yet");
+                }
+
+                auto textureResource = loadMemoryTexture(origPath.string(), bgfxFormat, head.width, head.height, 1,
+                                                         false, false, 0, byteOutput.data());
+
+                auto textureHandle = textureResource->textureHandle;
+                BGFXTextures[t].textureHandle = textureHandle;
+                BGFXTextures[t].size.width = head.width;
+                BGFXTextures[t].size.height = head.height;
+            }
+            // If there was an error, then interrupt the download
+            if (isError)
+            {
+                if (bTrace)
+                    core.Trace("Can't loading mip %i, texture %s is not created (width: %i, height: %i, num mips: %i, "
+                               "format: %s), not loading it.",
+                               m, fn, head.width, head.height, head.nmips, formatTxt);
+                delete BGFXTextures[t].name;
+                BGFXTextures[t].name = nullptr;
+                return false;
+            }
+            // recalculate the dimensions for the next mip
+            head.width /= 2;
+            head.height /= 2;
+            head.mip_size /= 4;
+        }
+        BGFXTextures[t].isCubeMap = false;
+    }
+    else
+    {
+        /*
+        // Download cubemap
+        if (head.width != head.height)
+        {
+            if (bTrace)
+                core.Trace("Cube map texture can't has not squared sides %s, not loading it.", fn);
+            delete Textures[t].name;
+            Textures[t].name = nullptr;
+            return false;
+        }
+        // Number of mips
+        D3DCAPS9 devcaps;
+        if (CHECKD3DERR(d3d9->GetDeviceCaps(&devcaps)))
+        {
+            if (bTrace)
+                core.Trace("Cube map texture %s is not created (size: %i, num mips: %i, format: %s), not loading it.",
+                           fn, head.width, head.nmips, formatTxt);
+            delete Textures[t].name;
+            Textures[t].name = nullptr;
+            return false;
+        }
+        if (!(devcaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP))
+            head.nmips = 1;
+        // create the texture
+        IDirect3DCubeTexture9 *tex = nullptr;
+        if (CHECKD3DERR(d3d9->CreateCubeTexture(head.width, head.nmips, 0, d3dFormat, D3DPOOL_MANAGED, &tex, NULL)) ==
+                true ||
+            !tex)
+        {
+            if (bTrace)
+                core.Trace("Cube map texture %s is not created (size: %i, num mips: %i, format: %s), not loading it.",
+                           fn, head.width, head.nmips, formatTxt);
+            delete Textures[t].name;
+            Textures[t].name = nullptr;
+            return false;
+        }
+        // Loading the sides
+        bool isError = false;
+        if (seekposition)
+            seekposition += seekposition;
+
+        uint32_t sz =
+            BGFXLoadCubmapSide(origPath.wstring(), tex, D3DCUBEMAP_FACE_POSITIVE_Z, head.nmips, head.mip_size,
+        head.width, isSwizzled, seekposition); if (sz)
+        {
+            Textures[t].dwSize += sz;
+            if (seekposition)
+                seekposition += seekposition;
+            sz = BGFXLoadCubmapSide(origPath.wstring(), tex, D3DCUBEMAP_FACE_POSITIVE_X, head.nmips, head.mip_size,
+                                    head.width, isSwizzled, seekposition);
+            if (sz)
+            {
+                Textures[t].dwSize += sz;
+                if (seekposition)
+                    seekposition += seekposition;
+                sz = BGFXLoadCubmapSide(origPath.wstring(), tex, D3DCUBEMAP_FACE_NEGATIVE_Z, head.nmips, head.mip_size,
+                                    head.width,
+                                    isSwizzled, seekposition);
+                if (sz)
+                {
+                    Textures[t].dwSize += sz;
+                    if (seekposition)
+                        seekposition += seekposition;
+                    sz = BGFXLoadCubmapSide(origPath.wstring(), tex, D3DCUBEMAP_FACE_NEGATIVE_X, head.nmips,
+                                            head.mip_size,
+                                            head.width,
+                                        isSwizzled, seekposition);
+                    if (sz)
+                    {
+                        Textures[t].dwSize += sz;
+                        if (seekposition)
+                            seekposition += seekposition;
+                        sz = BGFXLoadCubmapSide(origPath.wstring(), tex, D3DCUBEMAP_FACE_POSITIVE_Y, head.nmips,
+                                                head.mip_size,
+                                            head.width, isSwizzled, seekposition);
+                        if (sz)
+                        {
+                            Textures[t].dwSize += sz;
+                            if (seekposition)
+                                seekposition += seekposition;
+                            sz = BGFXLoadCubmapSide(origPath.wstring(), tex, D3DCUBEMAP_FACE_NEGATIVE_Y, head.nmips,
+                                                    head.mip_size,
+                                                head.width, isSwizzled, seekposition);
+                            if (!sz)
+                                isError = true;
+                            Textures[t].dwSize += sz;
+                        }
+                        else
+                            isError = true;
+                    }
+                    else
+                        isError = true;
+                }
+                else
+                    isError = true;
+            }
+            else
+                isError = true;
+        }
+        else
+            isError = true;
+        if (isError)
+        {
+            if (bTrace)
+                core.Trace("Cube map texture %s can't loading (size: %i, num mips: %i, format: %s), not loading it.",
+                           fn, head.width, head.nmips, formatTxt);
+            delete Textures[t].name;
+            Textures[t].name = nullptr;
+            tex->Release();
+            return false;
+        }
+        Textures[t].d3dtex = tex;
+        Textures[t].isCubeMap = true;*/
+
+        throw std::exception("Not implemented yet");
+    }
+
+    //---------------------------------------------------------------
+    // print statistics
+    //---------------------------------------------------------------
+    if (texLog)
+    {
+        char s[256];
+        if (totSize == 0)
+        {
+            fio->_DeleteFile("texLoad.txt");
+        }
+        auto fileS2 = fio->_CreateFile("texLoad.txt", std::ios::binary | std::ios::out | std::ios::app);
+        totSize += Textures[t].dwSize;
+        sprintf_s(s, "%.2f, size: %d, %d * %d, %s\n", totSize / 1024.0f / 1024.0f, Textures[t].dwSize, head.width,
+                  head.height, Textures[t].name);
+        fio->_WriteFile(fileS2, s, strlen(s));
+        fio->_FlushFileBuffers(fileS2);
+        fio->_CloseFile(fileS2);
+    }
+    dwTotalSize += BGFXTextures[t].dwSize;
+    //---------------------------------------------------------------
+    BGFXTextures[t].loaded = true;
+    // Close the file
+    return true;
 }
 
 int32_t DX9RENDER::TextureCreate(UINT width, UINT height, UINT levels, uint32_t usage, D3DFORMAT format, D3DPOOL pool)
@@ -1838,6 +2518,45 @@ IDirect3DBaseTexture9 *DX9RENDER::GetBaseTexture(int32_t iTexture)
     return (iTexture >= 0) ? Textures[iTexture].d3dtex : nullptr;
 }
 
+uint32_t DX9RENDER::BGFXLoadCubmapSide(std::wstring file, IDirect3DCubeTexture9 *tex, D3DCUBEMAP_FACES face,
+                                       uint32_t numMips, uint32_t mipSize, uint32_t size, bool isSwizzled,
+                                       uint32_t seek_to)
+{
+    uint32_t texsize = 0;
+    // Filling the levels
+    for (uint32_t m = 0; m < numMips; m++)
+    {
+        // take into account the size of the mip
+        texsize += mipSize;
+        // Getting the mip surface
+        bool isError = false;
+        IDirect3DSurface9 *surface = nullptr;
+        if (CHECKD3DERR(tex->GetCubeMapSurface(face, m, &surface)) == true || !surface)
+        {
+            isError = true;
+        }
+        else
+        {
+            // read the mip
+            isError = !BGFXLoadTextureSurface(file, surface, mipSize, size, size, isSwizzled, seek_to);
+        }
+        // Freeing the surface
+        if (surface)
+            surface->Release();
+        // If there was an error, then interrupt the download
+        if (isError)
+        {
+            if (bTrace)
+                core.Trace("Can't loading cubemap mip %i (side: %i), not loading it.", m, face);
+            return 0;
+        }
+        // recalculate the dimensions for the next mip
+        size /= 2;
+        mipSize /= 4;
+    }
+    return texsize;
+}
+
 uint32_t DX9RENDER::LoadCubmapSide(std::fstream &fileS, IDirect3DCubeTexture9 *tex, D3DCUBEMAP_FACES face,
                                    uint32_t numMips, uint32_t mipSize, uint32_t size, bool isSwizzled)
 {
@@ -1878,6 +2597,31 @@ uint32_t DX9RENDER::LoadCubmapSide(std::fstream &fileS, IDirect3DCubeTexture9 *t
         mipSize /= 4;
     }
     return texsize;
+}
+
+bool DX9RENDER::BGFXLoadTextureSurface(std::filesystem::path file, IDirect3DSurface9 *suface, uint32_t mipSize,
+                                       uint32_t width, uint32_t height, bool isSwizzled, uint32_t seek_to)
+{
+    //------------------------------------------------------------------------------------------
+    // PC version
+    // ------------------------------------------------------------------------------------------
+    // Surface pointer
+    D3DLOCKED_RECT lock;
+    if (CHECKD3DERR(suface->LockRect(&lock, NULL, 0L)) == true)
+        return false;
+    // Reading out
+    uint32_t readingBytes = 0;
+    if (!fio->_OldReadFile(file.wstring(), lock.pBits, mipSize, &readingBytes, seek_to) || readingBytes != mipSize)
+    {
+        if (CHECKD3DERR(suface->UnlockRect()) == true)
+            return false;
+        return false;
+    }
+    // Surface release
+    if (CHECKD3DERR(suface->UnlockRect()) == true)
+        return false;
+    return true;
+    //------------------------------------------------------------------------------------------
 }
 
 bool DX9RENDER::LoadTextureSurface(std::fstream &fileS, IDirect3DSurface9 *suface, uint32_t mipSize, uint32_t width,
@@ -2030,6 +2774,54 @@ bool DX9RENDER::TextureRelease(int32_t texid)
     return true;
 }
 
+bool DX9RENDER::BGFXTextureRelease(int32_t texid)
+{
+    if (texid == -1)
+        return true;
+
+    BGFXTextures[texid].ref--;
+    if (BGFXTextures[texid].ref != 0)
+        return false;
+
+    if (BGFXTextures[texid].name != nullptr)
+    {
+        if (texLog)
+        {
+            auto fh = fio->_CreateFile("texLoad.txt", std::ios::binary | std::ios::in | std::ios::out);
+
+            totSize -= BGFXTextures[texid].dwSize;
+            const int bytes = fio->_GetFileSize("texLoad.txt");
+            char *buf = new char[bytes + 1];
+            fio->_ReadFile(fh, buf, bytes);
+            buf[bytes] = 0;
+
+            char *str = strstr(buf, BGFXTextures[texid].name);
+            if (str != nullptr)
+            {
+                fio->_SetFilePointer(fh, str - buf, std::ios::beg);
+                const char *s = "*";
+                fio->_WriteFile(fh, s, 1);
+            }
+            delete[] buf;
+            fio->_FlushFileBuffers(fh);
+        }
+
+        delete BGFXTextures[texid].name;
+        BGFXTextures[texid].name = nullptr;
+    }
+
+    if (BGFXTextures[texid].loaded == false)
+        return false;
+
+    bgfx::destroy(*BGFXTextures[texid].textureHandle);
+
+    dwTotalSize -= BGFXTextures[texid].dwSize;
+
+    BGFXTextures[texid].loaded = false;
+
+    return true;
+}
+
 //################################################################################
 bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang, float fov)
 {
@@ -2075,11 +2867,13 @@ bool DX9RENDER::SetCamera(const CVECTOR &pos, const CVECTOR &ang)
         Pos = pos;
         Ang = ang;
         vWordRelationPos = -Pos;
+        bgfxvWordRelationPos = -Pos;
     }
     // if(CHECKD3DERR(SetTransform(D3DTS_VIEW, mtx))==true)    return false;
 
     d3d9->SetTransform(D3DTS_VIEW, mtx);
     vViewRelationPos = -(mtx * vWordRelationPos);
+    bgfxvViewRelationPos = -(mtx * bgfxvWordRelationPos);
     d3d9->GetTransform(D3DTS_WORLD, mtx);
     mtx.Pos() += vWordRelationPos - vOldWordRelationPos;
     d3d9->SetTransform(D3DTS_WORLD, mtx);
@@ -2147,17 +2941,29 @@ bool DX9RENDER::SetPerspective(float perspective, float fAspectRatio)
     const float h = 1.0f / tanf(fov_vert * 0.5f);
     const float Q = far_plane / (far_plane - near_plane);
 
-    D3DMATRIX mtx;
+    CMatrix mtx;
     PZERO(&mtx, sizeof(mtx));
 
-    mtx._11 = w;
-    mtx._22 = h;
-    mtx._33 = Q;
-    mtx._43 = -Q * near_plane;
-    mtx._34 = 1.0f;
+    mtx.m[0][0] = w;
+    mtx.m[1][1] = h;
+    mtx.m[2][2] = Q;
+    mtx.m[3][2] = -Q * near_plane;
+    mtx.m[2][3] = 1.0f;
 
-    if (CHECKD3DERR(d3d9->SetTransform(D3DTS_PROJECTION, &mtx)) == true)
+    if (CHECKD3DERR(d3d9->SetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&mtx)) == true)
         return false;
+
+    CMatrix viewMtx;
+    d3d9->GetTransform(D3DTS_VIEW, (D3DXMATRIX *)&viewMtx);
+
+    CMatrix transposedView = viewMtx;
+    transposedView.Transposition();
+
+    CMatrix transposedProj = mtx;
+    transposedProj.Transposition();
+
+    bgfx::setViewTransform(1, transposedView.matrix, transposedProj.matrix);
+
     Fov = perspective;
     FindPlanes(d3d9);
     return true;
@@ -2539,6 +3345,144 @@ void DX9RENDER::GetTransform(int32_t type, D3DMATRIX *mtx)
     }
 }
 
+void DX9RENDER::BGFXSetTransform(int32_t type, D3DMATRIX *mtx)
+{
+    CMatrix m = *(CMatrix *)mtx;
+    if (type == D3DTS_VIEW)
+    {
+        // m = m.Transpose();
+
+        bgfxvViewRelationPos.x = -((D3DMATRIX *)&m)->_41;
+        bgfxvViewRelationPos.y = -((D3DMATRIX *)&m)->_42;
+        bgfxvViewRelationPos.z = -((D3DMATRIX *)&m)->_43;
+
+        m.Pos() += bgfxvViewRelationPos;
+    }
+    else if (type == D3DTS_WORLD)
+    {
+        m.Pos() += bgfxvWordRelationPos;
+    }
+
+    switch (type)
+    {
+    case D3DTS_VIEW: {
+        CMatrix mv = m;
+        mv = mv.Transpose();
+
+        bgfxView = mv;
+    }
+    break;
+
+    case D3DTS_PROJECTION: {
+        CMatrix mp = m;
+
+        mp = mp.Transpose();
+
+        bgfxProjection = mp;
+    }
+    break;
+
+    case D3DTS_WORLD:
+        CMatrix wMat = m;
+        wMat = wMat.Transpose();
+        bgfxWorld = wMat;
+        break;
+    }
+}
+
+void DX9RENDER::BGFXSetTransformUpdateViews(int32_t type, D3DMATRIX *mtx)
+{
+    CMatrix m = *(CMatrix *)mtx;
+    if (type == D3DTS_VIEW)
+    {
+        // m = m.Transpose();
+        bgfxvViewRelationPos.x = -((D3DMATRIX *)&m)->_41;
+        bgfxvViewRelationPos.y = -((D3DMATRIX *)&m)->_42;
+        bgfxvViewRelationPos.z = -((D3DMATRIX *)&m)->_43;
+
+        m.Pos() += bgfxvViewRelationPos;
+    }
+    else if (type == D3DTS_WORLD)
+    {
+        m.Pos() += bgfxvWordRelationPos;
+    }
+
+    switch (type)
+    {
+    case D3DTS_VIEW: {
+        CMatrix mv = m;
+
+        mv = mv.Transpose();
+
+        bgfxView = mv;
+
+        bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
+    }
+    break;
+
+    case D3DTS_PROJECTION: {
+        CMatrix mp = m;
+
+        mp = mp.Transpose();
+
+        bgfxProjection = mp;
+
+        bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
+
+        // bgfx::setViewTransform(1, bgfxView.matrix, bgfxProjection.matrix);
+    }
+    break;
+
+    case D3DTS_WORLD:
+        CMatrix wMat = m;
+        wMat = wMat.Transpose();
+        bgfxWorld = wMat;
+        bgfx::setTransform(bgfxWorld.matrix);
+        break;
+    }
+}
+
+void DX9RENDER::BGFXGetTransform(int32_t type, D3DMATRIX *mtx)
+{
+    switch (type)
+    {
+    case D3DTS_VIEW: {
+        CMatrix mv = bgfxView;
+        mv.Transposition();
+        *((CMatrix *)mtx) = mv;
+    }
+    break;
+
+    case D3DTS_PROJECTION: {
+        CMatrix mp = bgfxProjection;
+        mp.Transposition();
+        *((CMatrix *)mtx) = mp;
+    }
+    break;
+
+    case D3DTS_WORLD: {
+        CMatrix wMat = bgfxWorld;
+        wMat.Transposition();
+        *((CMatrix *)mtx) = wMat;
+    }
+
+    break;
+    }
+
+    if (type == D3DTS_VIEW)
+    {
+        mtx->_41 -= bgfxvViewRelationPos.x;
+        mtx->_42 -= bgfxvViewRelationPos.y;
+        mtx->_43 -= bgfxvViewRelationPos.z;
+    }
+    else if (type == D3DTS_WORLD)
+    {
+        mtx->_41 -= bgfxvWordRelationPos.x;
+        mtx->_42 -= bgfxvWordRelationPos.y;
+        mtx->_43 -= bgfxvWordRelationPos.z;
+    }
+}
+
 bool DX9RENDER::CreateState(ENTITY_STATE_GEN *state_gen)
 {
     // state_gen->SetState("vm",sizeof(screen_size),screen_size,sizeof(bool),&window);
@@ -2627,7 +3571,7 @@ void DX9RENDER::RestoreRender()
         ClearPostProcessSurface(pSmallPostProcessSurface2);
     }
     ClearPostProcessSurface(pOriginalScreenSurface);
-    d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(RECT_VERTEX), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
+    d3d9->CreateVertexBuffer(rectsVBuffer_SizeInRects * 6 * sizeof(PosColorTexVertex), D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
                              RS_RECT_VERTEX_FORMAT, D3DPOOL_DEFAULT, &rectsVBuffer, nullptr);
     for (int32_t b = 0; b < MAX_BUFFERS; b++)
     {
@@ -3274,6 +4218,90 @@ void DX9RENDER::SaveShoot()
     bMakeShoot = true;
 }
 
+void DX9RENDER::BGFXRenderToBackBuffer()
+{
+
+    uint32_t *Surface;
+    RECT r;
+    D3DLOCKED_RECT lr;
+    IDirect3DSurface9 *renderTarget, *surface;
+
+    bMakeShoot = false;
+
+    if (!(screen_bpp == D3DFMT_X8R8G8B8 || screen_bpp == D3DFMT_A8R8G8B8))
+    {
+        core.Trace("Can't make screenshots in non 32bit video modes");
+        return;
+    }
+
+    r.left = 0;
+    r.right = screen_size.x;
+    r.top = 0;
+    r.bottom = screen_size.y;
+    renderTarget = nullptr;
+    surface = nullptr;
+
+    // get the picture
+    if (FAILED(GetRenderTarget(&renderTarget)))
+    {
+        core.Trace("Falure get render target for make screenshot");
+        return;
+    }
+    if (FAILED(CreateOffscreenPlainSurface(screen_size.x, screen_size.y, D3DFMT_A8R8G8B8, &surface)))
+    {
+        renderTarget->Release();
+        core.Trace("Falure create buffer for make screenshot");
+        return;
+    }
+
+    // if (FAILED(d3d9->UpdateSurface(renderTarget, null, surface, null)) ||
+    if (FAILED(D3DXLoadSurfaceFromSurface(surface, NULL, NULL, renderTarget, NULL, NULL, D3DX_DEFAULT, 0)) ||
+        FAILED(surface->LockRect(&lr, &r, 0)))
+    {
+        surface->Release();
+        renderTarget->Release();
+        core.Trace("Falure make screenshot");
+        return;
+    }
+    renderTarget->Release();
+    renderTarget = nullptr;
+
+    int32_t windowWidth = screen_size.x;
+    int32_t windowHeight = screen_size.y;
+
+    std::vector<unsigned char> v;
+
+    v.resize(screen_size.x * screen_size.y * 4);
+
+    memcpy(v.data(), reinterpret_cast<unsigned char *>(lr.pBits), v.size());
+
+    /*unsigned char *bits = reinterpret_cast<unsigned char *>(lr.pBits);
+
+    for (int i = 0; i < v.size(); ++i)
+    {
+        v[i] = bits[i];
+    }*/
+
+    size_t imgdata_size = screen_size.x * screen_size.y * 4;
+
+    /* for (int i = 0; i < v.size(); i += 4)
+    {
+        v[i + 0] = 255;
+        v[i + 1] = 0;
+        v[i + 2] = 0;
+        v[i + 3] = 255;
+    }*/
+
+    auto backgroundTexture = m_spriteRenderer->GetBackBufferTexture();
+
+    m_spriteRenderer->BlitBackBuffer(v.data());
+
+    DrawSprite(backgroundTexture, 0, glm::vec2(0, 0), -2.0f);
+
+    surface->UnlockRect();
+    surface->Release();
+}
+
 void DX9RENDER::MakeScreenShot()
 {
     bMakeShoot = false;
@@ -3434,8 +4462,8 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
         if (drawCount > rectsVBuffer_SizeInRects)
             drawCount = rectsVBuffer_SizeInRects;
         // Buffer
-        RECT_VERTEX *data = nullptr;
-        if (rectsVBuffer->Lock(0, drawCount * 6 * sizeof(RECT_VERTEX), (VOID **)&data, D3DLOCK_DISCARD) != D3D_OK)
+        PosColorTexVertex *data = nullptr;
+        if (rectsVBuffer->Lock(0, drawCount * 6 * sizeof(PosColorTexVertex), (VOID **)&data, D3DLOCK_DISCARD) != D3D_OK)
             return;
         if (!data)
             return;
@@ -3443,7 +4471,7 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
         for (uint32_t i = 0; i < drawCount && cnt < dwRectsNum; i++)
         {
             // Local array of a particle
-            RECT_VERTEX *buffer = &data[i * 6];
+            PosColorTexVertex *buffer = &data[i * 6];
             RS_RECT &rect = pRSR[cnt++];
             CVECTOR pos = camMtx * (rect.vPos + vWordRelationPos);
             const float sizex = rect.fSize * fScaleX;
@@ -3498,12 +4526,113 @@ void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlock
         if (bDraw)
             do
             {
-                CHECKD3DERR(SetStreamSource(0, rectsVBuffer, sizeof(RECT_VERTEX)));
+                CHECKD3DERR(SetStreamSource(0, rectsVBuffer, sizeof(PosColorTexVertex)));
                 CHECKD3DERR(DrawPrimitive(D3DPT_TRIANGLELIST, 0, drawCount * 2));
             } while (cBlockName && TechniqueExecuteNext());
     }
 
     d3d9->SetTransform(D3DTS_VIEW, camMtx);
+}
+
+std::shared_ptr<SpriteRenderer> DX9RENDER::GetSpriteRenderer()
+{
+    return m_spriteRenderer;
+}
+
+std::shared_ptr<PrimitiveRenderer> DX9RENDER::GetPrimitiveRenderer()
+{
+    return m_primitiveRenderer;
+}
+
+void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, uint32_t color, const glm::vec2 &position,
+                           float depth)
+{
+    DrawSprite(texture, glm::vec4(0, 0, texture->size.width, texture->size.height), color, position, glm::vec2(0, 0),
+               glm::vec2(1, 1), 0.f, depth, false, false);
+}
+
+void DX9RENDER::DrawSprite(std::shared_ptr<TextureResource> texture, const glm::vec4 &src, uint32_t color,
+                           const glm::vec2 &position, const glm::vec2 &origin, const glm::vec2 &scale, float angle,
+                           float depth, bool flip_x, bool flip_y)
+{
+    float minu, maxu, minv, maxv;
+    float width, height;
+
+    width = src.z;
+    height = src.w;
+    // x
+    minu = src.x / (float)texture->size.width;           // left
+    maxu = (src.x + width) / (float)texture->size.width; // right
+
+    // y
+    // TODO OPENGL HOWTO
+    minv = src.y / (float)texture->size.height;            // top
+    maxv = (src.y + height) / (float)texture->size.height; // bottom
+
+    if (flip_y)
+    {
+        // bottom right = max
+        // top left = min
+        float temp = maxv;
+        // bottom right y = top left y
+        maxv = minv;
+        minv = temp;
+    }
+
+    if (flip_x)
+    {
+        float temp = maxu;
+        maxu = minu;
+        minu = temp;
+    }
+
+    glm::vec2 pos(position + origin);
+    glm::mat3 transform = glm::translate(glm::mat3(1.f), pos) * glm::rotate(glm::mat3(1.f), angle) *
+                          glm::scale(glm::mat3(1.f), scale) * glm::translate(glm::mat3(1.f), -pos);
+
+    std::vector<glm::vec3> points{
+        transform * glm::vec3(position, 1.f),
+        transform * glm::vec3(position.x + width, position.y, 1.f),
+        transform * glm::vec3(position.x, position.y + height, 1.f),
+        transform * glm::vec3(position.x + width, position.y + height, 1.f),
+    };
+
+    /*sprite->abgr = color;
+    sprite->tl = glm::vec2(points[0].x, points[0].y);
+    sprite->tr = glm::vec2(points[1].x, points[1].y);
+    sprite->bl = glm::vec2(points[2].x, points[2].y);
+    sprite->br = glm::vec2(points[3].x, points[3].y);
+    sprite->u = glm::vec2(minu, maxu);
+    sprite->v = glm::vec2(minv, maxv);
+    sprite->depth = depth;*/
+
+    auto u = glm::vec2(minu, maxu);
+    auto v = glm::vec2(minv, maxv);
+
+    auto colors = color;
+
+    std::vector<SPRITE_VERTEX> vertices;
+
+    vertices.resize(4);
+
+    vertices[0] = SPRITE_VERTEX{points[0].x, points[0].y, u.x, v.x /*, color*/}; // top left
+    vertices[1] = SPRITE_VERTEX{points[1].x, points[1].y, u.y, v.x /*, color*/}; // top right
+    vertices[2] = SPRITE_VERTEX{points[2].x, points[2].y, u.x, v.y /*, color*/}; // bottom left
+    vertices[3] = SPRITE_VERTEX{points[3].x, points[3].y, u.y, v.y /*, color*/}; // bottom right
+
+    m_spriteRenderer->Texture = texture;
+
+    m_spriteRenderer->SetViewProjection();
+    m_spriteRenderer->PushVertices(vertices, depth);
+}
+
+void DX9RENDER::DrawSprites(std::shared_ptr<TextureResource> texture, std::vector<glm::vec3> &vertices, glm::vec2 &u,
+                            glm::vec2 &v, uint32_t &color)
+{
+    /*m_spriteRenderer->Texture = texture;
+    m_spriteRenderer->SetViewProjection();
+    m_spriteRenderer->UpdateVertexBuffer(vertices, u, v, color);
+    m_spriteRenderer->Submit();*/
 }
 
 void DX9RENDER::DrawSprites(RS_SPRITE *pRSS, uint32_t dwSpritesNum, const char *cBlockName)
@@ -3671,7 +4800,8 @@ HRESULT DX9RENDER::BeginScene()
     if (!isInScene)
     {
         isInScene = true;
-        return CHECKD3DERR(d3d9->BeginScene());
+        HRESULT res = CHECKD3DERR(d3d9->BeginScene());
+        return res;
     }
 
     return D3D_OK;
@@ -3682,7 +4812,8 @@ HRESULT DX9RENDER::EndScene()
     if (isInScene)
     {
         isInScene = false;
-        return CHECKD3DERR(d3d9->EndScene());
+        HRESULT res = CHECKD3DERR(d3d9->EndScene());
+        return res;
     }
 
     return D3D_OK;
@@ -4340,6 +5471,11 @@ void DX9RENDER::ProgressView()
     DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1, 2, v, sizeof(v[0]),
                     "ProgressTech");
     EndScene();
+    
+    BGFXRenderToBackBuffer();
+    GetSpriteRenderer()->Submit();
+    bgfx::frame();
+    
     d3d9->Present(nullptr, nullptr, nullptr, nullptr);
     BeginScene();
     // Next frame
@@ -4568,4 +5704,17 @@ IDirect3DBaseTexture9 *DX9RENDER::GetTextureFromID(int32_t nTextureID)
     if (nTextureID < 0)
         return nullptr;
     return Textures[nTextureID].d3dtex;
+}
+
+std::shared_ptr<TextureResource> DX9RENDER::GetBGFXTextureFromID(int32_t nTextureID)
+{
+    if (nTextureID < 0)
+        return nullptr;
+
+    auto texture = std::make_shared<TextureResource>(TextureResource(
+        BGFXTextures[nTextureID].textureHandle, BGFXTextures[nTextureID].name, BGFXTextures[nTextureID].hash,
+        BGFXTextures[nTextureID].ref, BGFXTextures[nTextureID].dwSize, BGFXTextures[nTextureID].isCubeMap,
+        BGFXTextures[nTextureID].loaded, BGFXTextures[nTextureID].size));
+
+    return texture;
 }

@@ -1,5 +1,7 @@
 #include "xi_lr_changer.h"
 
+#include "primitive_renderer.h"
+
 void SetOneTextureCoordinate(XI_ONETEX_VERTEX v[4], const FXYRECT &tr)
 {
     v[0].tu = tr.left;
@@ -85,7 +87,8 @@ void CXI_LRCHANGER::Draw(bool bSelected, uint32_t Delta_Time)
             vShadow[i].pos.z = 1.f;
         }
 
-        m_rs->TextureSet(0, m_idTex);
+        auto texture = m_rs->GetBGFXTextureFromID(m_idTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
 
         // show left button
         SetOneTextureCoordinate(vFace, m_tLRect);
@@ -100,8 +103,39 @@ void CXI_LRCHANGER::Draw(bool bSelected, uint32_t Delta_Time)
             SetRectanglePosition(vFace, m_posLRect);
             SetRectanglePosition(vShadow, m_posLRect + m_ShadowShift);
         }
-        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vShadow, sizeof(XI_ONETEX_VERTEX), "iShadow");
-        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vFace, sizeof(XI_ONETEX_VERTEX), "iIcon");
+        
+        //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vShadow, sizeof(XI_ONETEX_VERTEX), "iShadow");
+        {
+            auto pVertices = vShadow;
+            std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[0].pos.x, pVertices[0].pos.y, pVertices[0].pos.z,
+                                                             pVertices[0].tu, pVertices[0].tv, pVertices[0].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[2].pos.x, pVertices[2].pos.y, pVertices[2].pos.z,
+                                                             pVertices[2].tu, pVertices[2].tv, pVertices[1].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[1].pos.x, pVertices[1].pos.y, pVertices[1].pos.z,
+                                                             pVertices[1].tu, pVertices[1].tv, pVertices[2].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[3].pos.x, pVertices[3].pos.y, pVertices[3].pos.z,
+                                                             pVertices[3].tu, pVertices[3].tv, pVertices[3].color});
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+        
+        //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vFace, sizeof(XI_ONETEX_VERTEX), "iIcon");
+        {
+            auto pVertices = vFace;
+            std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[0].pos.x, pVertices[0].pos.y, pVertices[0].pos.z,
+                                                             pVertices[0].tu, pVertices[0].tv, pVertices[0].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[2].pos.x, pVertices[2].pos.y, pVertices[2].pos.z,
+                                                             pVertices[2].tu, pVertices[2].tv, pVertices[1].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[1].pos.x, pVertices[1].pos.y, pVertices[1].pos.z,
+                                                             pVertices[1].tu, pVertices[1].tv, pVertices[2].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[3].pos.x, pVertices[3].pos.y, pVertices[3].pos.z,
+                                                             pVertices[3].tu, pVertices[3].tv, pVertices[3].color});
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+        
         // show right button
         SetOneTextureCoordinate(vFace, m_tRRect);
         SetOneTextureCoordinate(vShadow, m_tRRect);
@@ -115,8 +149,38 @@ void CXI_LRCHANGER::Draw(bool bSelected, uint32_t Delta_Time)
             SetRectanglePosition(vFace, m_posRRect);
             SetRectanglePosition(vShadow, m_posRRect + m_ShadowShift);
         }
-        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vShadow, sizeof(XI_ONETEX_VERTEX), "iShadow");
-        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vFace, sizeof(XI_ONETEX_VERTEX), "iIcon");
+        
+        //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vShadow, sizeof(XI_ONETEX_VERTEX), "iShadow");
+        {
+            auto pVertices = vShadow;
+            std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[0].pos.x, pVertices[0].pos.y, pVertices[0].pos.z,
+                                                             pVertices[0].tu, pVertices[0].tv, pVertices[0].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[2].pos.x, pVertices[2].pos.y, pVertices[2].pos.z,
+                                                             pVertices[2].tu, pVertices[2].tv, pVertices[1].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[1].pos.x, pVertices[1].pos.y, pVertices[1].pos.z,
+                                                             pVertices[1].tu, pVertices[1].tv, pVertices[2].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[3].pos.x, pVertices[3].pos.y, pVertices[3].pos.z,
+                                                             pVertices[3].tu, pVertices[3].tv, pVertices[3].color});
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+        
+        //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, vFace, sizeof(XI_ONETEX_VERTEX), "iIcon");
+        {
+            auto pVertices = vFace;
+            std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[0].pos.x, pVertices[0].pos.y, pVertices[0].pos.z,
+                                                             pVertices[0].tu, pVertices[0].tv, pVertices[0].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[2].pos.x, pVertices[2].pos.y, pVertices[2].pos.z,
+                                                             pVertices[2].tu, pVertices[2].tv, pVertices[2].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[1].pos.x, pVertices[1].pos.y, pVertices[1].pos.z,
+                                                             pVertices[1].tu, pVertices[1].tv, pVertices[1].color});
+            vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[3].pos.x, pVertices[3].pos.y, pVertices[3].pos.z,
+                                                             pVertices[3].tu, pVertices[3].tv, pVertices[3].color});
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
     }
 }
 
@@ -168,14 +232,14 @@ void CXI_LRCHANGER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
         if (m_sGroupName == nullptr)
             throw std::runtime_error("allocate memory error");
         memcpy(m_sGroupName, param, len);
-        m_idTex = pPictureService->GetTextureID(param);
+        m_idTex = pPictureService->BGFXGetTextureID(param);
     }
 
     // get buttons picture name
     if (ReadIniString(ini1, name1, ini2, name2, "lpicture", param, sizeof(param), ""))
-        pPictureService->GetTexturePos(m_sGroupName, param, m_tLRect);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_tLRect);
     if (ReadIniString(ini1, name1, ini2, name2, "rpicture", param, sizeof(param), ""))
-        pPictureService->GetTexturePos(m_sGroupName, param, m_tRRect);
+        pPictureService->BGFXGetTexturePos(m_sGroupName, param, m_tRRect);
 
     // get offset button image in case pressed button
     m_PressShift = GetIniFloatPoint(ini1, name1, ini2, name2, "pressPictureOffset", FXYPOINT(0.f, 0.f));
@@ -192,7 +256,7 @@ void CXI_LRCHANGER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
 
 void CXI_LRCHANGER::ReleaseAll()
 {
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
+    BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName, m_idTex);
     STORM_DELETE(m_sGroupName);
 }
 

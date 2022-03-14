@@ -50,6 +50,23 @@ class XSERVICE : public VXSERVICE
 
     int32_t GetImageNum(const char *sImageListName, const char *sImageName) override;
 
+    int32_t BGFXGetTextureID(const char *sImageListName) override;
+    int32_t BGFXFindGroup(const char *sImageListName) const;
+    bool BGFXReleaseTextureID(const char *sImageListName) override;
+
+    bool BGFXGetTexturePos(int32_t pictureNum, FXYRECT &texRect) override;
+    bool BGFXGetTexturePos(int32_t pictureNum, XYRECT &texRect) override;
+    bool BGFXGetTexturePos(const char *sImageListName, const char *sImageName, FXYRECT &texRect) override;
+    bool BGFXGetTexturePos(const char *sImageListName, const char *sImageName, XYRECT &texRect) override;
+    bool BGFXGetTexturePos(int nTextureModify, int32_t pictureNum, FXYRECT &texRect) override;
+    bool BGFXGetTexturePos(int nTextureModify, const char *sImageListName, const char *sImageName,
+                           FXYRECT &texRect) override;
+
+    void BGFXGetTextureCutForSize(const char *pcImageListName, const FXYPOINT &pntLeftTopUV, const XYPOINT &pntSize,
+                                  int32_t nSrcWidth, int32_t nSrcHeight, FXYRECT &outUV) override;
+
+    int32_t BGFXGetImageNum(const char *sImageListName, const char *sImageName) override;
+    
     void ReleaseAll() override;
 
   protected:
@@ -62,6 +79,11 @@ class XSERVICE : public VXSERVICE
     int32_t m_dwImageQuantity;
     IMAGELISTDESCR *m_pList;
     PICTUREDESCR *m_pImage;
+
+    int32_t m_BGFXdwListQuantity;
+    int32_t m_BGFXdwImageQuantity;
+    IMAGELISTDESCR *m_BGFXpList;
+    PICTUREDESCR *m_BGFXpImage;
 
     // Scale factors
     float m_fWScale;

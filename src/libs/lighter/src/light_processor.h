@@ -44,7 +44,7 @@ class LightProcessor
     // Calculate lighting
     void CalcLights(int32_t lit = -1, bool isCos = true, bool isAtt = true, bool isSdw = true);
     // Distribute shading from triangle to vertices
-    void ApplyTriangleShadows(Triangle &t);
+    void ApplyTriangleShadows(StormTriangle &t);
 
   private:
     LGeometry *geometry;

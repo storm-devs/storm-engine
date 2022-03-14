@@ -7,6 +7,8 @@
 #include "xi_table.h"
 #include <stdio.h>
 
+#include "primitive_renderer.h"
+
 void SetVertexRectangleTex(XI_ONLYONETEX_VERTEX *pv, FXYRECT &texRect)
 {
     pv[0].tu = texRect.left;
@@ -39,7 +41,6 @@ CXI_SCROLLER::CXI_SCROLLER()
 
     m_idBaseTex = -1;
     m_idRollerTex = -1;
-    m_idVBuf = -1;
     m_bSelected = true;
 
     m_bDragRoll = false;
@@ -64,12 +65,99 @@ void CXI_SCROLLER::Draw(bool bSelected, uint32_t Delta_Time)
                 MouseMove();
         }
 
+        /*
         m_rs->TextureSet(0, m_idBaseTex);
         m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONLYONETEX_VERTEX), 0, 2, "iStatusLine");
         m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONLYONETEX_VERTEX), 4, 2, "iStatusLine");
         m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONLYONETEX_VERTEX), 8, 2, "iStatusLine");
         m_rs->TextureSet(0, m_idRollerTex);
         m_rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(XI_ONLYONETEX_VERTEX), 12, 2, "iStatusLine");
+        */
+        auto texture = m_rs->GetBGFXTextureFromID(m_idBaseTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+        for (int n = 0; n < 4; n += 4)
+        {
+            auto &pVertices = m_vertices;
+            std::vector<VERTEX_POSITION_TEXTURE> vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 0].pos.x, pVertices[n + 0].pos.y,
+                                                       pVertices[n + 0].pos.z, pVertices[n + 0].tu,
+                                                       pVertices[n + 0].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 2].pos.x, pVertices[n + 2].pos.y,
+                                                       pVertices[n + 2].pos.z, pVertices[n + 2].tu,
+                                                       pVertices[n + 2].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 1].pos.x, pVertices[n + 1].pos.y,
+                                                       pVertices[n + 1].pos.z, pVertices[n + 1].tu,
+                                                       pVertices[n + 1].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 3].pos.x, pVertices[n + 3].pos.y,
+                                                       pVertices[n + 3].pos.z, pVertices[n + 3].tu,
+                                                       pVertices[n + 3].tv});
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+
+        for (int n = 4; n < 8; n += 4)
+        {
+            auto &pVertices = m_vertices;
+            std::vector<VERTEX_POSITION_TEXTURE> vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 0].pos.x, pVertices[n + 0].pos.y,
+                                                       pVertices[n + 0].pos.z, pVertices[n + 0].tu,
+                                                       pVertices[n + 0].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 2].pos.x, pVertices[n + 2].pos.y,
+                                                       pVertices[n + 2].pos.z, pVertices[n + 2].tu,
+                                                       pVertices[n + 2].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 1].pos.x, pVertices[n + 1].pos.y,
+                                                       pVertices[n + 1].pos.z, pVertices[n + 1].tu,
+                                                       pVertices[n + 1].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 3].pos.x, pVertices[n + 3].pos.y,
+                                                       pVertices[n + 3].pos.z, pVertices[n + 3].tu,
+                                                       pVertices[n + 3].tv});
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+
+        for (int n = 8; n < 12; n += 4)
+        {
+            auto &pVertices = m_vertices;
+            std::vector<VERTEX_POSITION_TEXTURE> vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 0].pos.x, pVertices[n + 0].pos.y,
+                                                       pVertices[n + 0].pos.z, pVertices[n + 0].tu,
+                                                       pVertices[n + 0].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 2].pos.x, pVertices[n + 2].pos.y,
+                                                       pVertices[n + 2].pos.z, pVertices[n + 2].tu,
+                                                       pVertices[n + 2].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 1].pos.x, pVertices[n + 1].pos.y,
+                                                       pVertices[n + 1].pos.z, pVertices[n + 1].tu,
+                                                       pVertices[n + 1].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 3].pos.x, pVertices[n + 3].pos.y,
+                                                       pVertices[n + 3].pos.z, pVertices[n + 3].tu,
+                                                       pVertices[n + 3].tv});
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
+
+        texture = m_rs->GetBGFXTextureFromID(m_idRollerTex);
+        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+        for (int n = 12; n < 16; n += 4)
+        {
+            auto &pVertices = m_vertices;
+            std::vector<VERTEX_POSITION_TEXTURE> vertices;
+
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 0].pos.x, pVertices[n + 0].pos.y,
+                                                       pVertices[n + 0].pos.z, pVertices[n + 0].tu,
+                                                       pVertices[n + 0].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 2].pos.x, pVertices[n + 2].pos.y,
+                                                       pVertices[n + 2].pos.z, pVertices[n + 2].tu,
+                                                       pVertices[n + 2].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 1].pos.x, pVertices[n + 1].pos.y,
+                                                       pVertices[n + 1].pos.z, pVertices[n + 1].tu,
+                                                       pVertices[n + 1].tv});
+            vertices.push_back(VERTEX_POSITION_TEXTURE{pVertices[n + 3].pos.x, pVertices[n + 3].pos.y,
+                                                       pVertices[n + 3].pos.z, pVertices[n + 3].tu,
+                                                       pVertices[n + 3].tv});
+            m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+        }
     }
 }
 
@@ -87,9 +175,8 @@ bool CXI_SCROLLER::Init(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
 void CXI_SCROLLER::ReleaseAll()
 {
     m_bUse = false;
-    TEXTURE_RELEASE(m_rs, m_idBaseTex);
-    TEXTURE_RELEASE(m_rs, m_idRollerTex);
-    VERTEX_BUFFER_RELEASE(m_rs, m_idVBuf);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idBaseTex);
+    BGFX_TEXTURE_RELEASE(m_rs, m_idRollerTex);
     m_asOwnedNodes.clear();
 }
 
@@ -140,11 +227,11 @@ void CXI_SCROLLER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, cons
     // Get texture name and load that texture
     m_idBaseTex = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "baseTexture", param, sizeof(param), ""))
-        m_idBaseTex = m_rs->TextureCreate(param);
+        m_idBaseTex = m_rs->BGFXTextureCreate(param);
 
     m_idRollerTex = -1;
     if (ReadIniString(ini1, name1, ini2, name2, "rollerTexture", param, sizeof(param), ""))
-        m_idRollerTex = m_rs->TextureCreate(param);
+        m_idRollerTex = m_rs->BGFXTextureCreate(param);
 
     // Set buffers
     m_fOffTexHeight = GetIniFloat(ini1, name1, ini2, name2, "begEndTexSize", 0.f);
@@ -159,7 +246,8 @@ void CXI_SCROLLER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, cons
     m_ScrollTexRect = GetIniFloatRect(ini1, name1, ini2, name2, "scrollTexPos", FXYRECT(0.f, 0.f, 1.f, 1.f));
     m_RollTexRect = GetIniFloatRect(ini1, name1, ini2, name2, "rollTexPos", FXYRECT(0.f, 0.f, 1.f, 1.f));
 
-    m_idVBuf = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF, 16 * sizeof(XI_ONLYONETEX_VERTEX), D3DUSAGE_WRITEONLY);
+    //m_idVBuf = m_rs->CreateVertexBuffer(XI_ONLYONETEX_FVF, 16 * sizeof(XI_ONLYONETEX_VERTEX), D3DUSAGE_WRITEONLY);
+    m_vertices.resize(16);
     FillVertexBuffer();
 }
 
@@ -300,11 +388,10 @@ void CXI_SCROLLER::SetRollerPos(float pos)
     m_rollerCur.top = m_rollerPlace.top + m_fPos * (m_rollerPlace.bottom - m_rollerPlace.top - m_rollerHeight);
     m_rollerCur.bottom = m_rollerCur.top + m_rollerHeight;
 
-    auto *pV = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto *pV = m_vertices.data();
     if (pV != nullptr)
     {
         SetVertexRectanglePos(&pV[12], m_rollerCur);
-        m_rs->UnLockVertexBuffer(m_idVBuf);
     }
 }
 
@@ -318,7 +405,7 @@ void CXI_SCROLLER::LinkNodeChanged(float fPos)
 
 void CXI_SCROLLER::FillVertexBuffer()
 {
-    auto *pV = static_cast<XI_ONLYONETEX_VERTEX *>(m_rs->LockVertexBuffer(m_idVBuf));
+    auto *pV = m_vertices.data();
     if (pV != nullptr)
     {
         for (auto i = 0; i < 16; i++)
@@ -373,8 +460,6 @@ void CXI_SCROLLER::FillVertexBuffer()
         m_rollerCur.right = m_rollerPlace.right;
         m_rollerCur.bottom = m_rollerPlace.top + m_rollerHeight;
         SetVertexRectanglePos(&pV[12], m_rollerCur);
-
-        m_rs->UnLockVertexBuffer(m_idVBuf);
     }
 }
 

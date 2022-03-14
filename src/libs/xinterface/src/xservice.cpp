@@ -15,6 +15,11 @@ XSERVICE::XSERVICE()
     m_pList = nullptr;
     m_pImage = nullptr;
 
+    m_BGFXdwListQuantity = 0;
+    m_BGFXdwImageQuantity = 0;
+    m_BGFXpList = nullptr;
+    m_BGFXpImage = nullptr;
+
     m_pRS = nullptr;
 }
 
@@ -49,6 +54,29 @@ void XSERVICE::Init(VDX9RENDER *pRS, int32_t lWidth, int32_t lHeight)
     LoadAllPicturesInfo();
 }
 
+int32_t XSERVICE::BGFXGetTextureID(const char *sImageListName)
+{
+    if (sImageListName != nullptr)
+    {
+        for (auto i = 0; i < m_BGFXdwListQuantity; i++)
+            if (!_stricmp(m_BGFXpList[i].sImageListName, sImageListName))
+            {
+                if (m_BGFXpList[i].textureQuantity <= 0)
+                {
+                    char sTexName[256];
+                    sprintf_s(sTexName, "INTERFACES\\%s", m_BGFXpList[i].sTextureName);
+                    m_BGFXpList[i].textureID = m_pRS->BGFXTextureCreate(sTexName);
+                    m_BGFXpList[i].textureQuantity = 1;
+                }
+                else
+                    m_BGFXpList[i].textureQuantity++;
+                return m_BGFXpList[i].textureID;
+            }
+    }
+
+    return -1;
+}
+
 int32_t XSERVICE::GetTextureID(const char *sImageListName)
 {
     if (sImageListName != nullptr)
@@ -72,6 +100,16 @@ int32_t XSERVICE::GetTextureID(const char *sImageListName)
     return -1;
 }
 
+int32_t XSERVICE::BGFXFindGroup(const char *sImageListName) const
+{
+    if (!sImageListName)
+        return -1;
+    for (auto n = 0; n < m_BGFXdwListQuantity; n++)
+        if (!_stricmp(m_BGFXpList[n].sImageListName, sImageListName))
+            return n;
+    return -1;
+}
+
 int32_t XSERVICE::FindGroup(const char *sImageListName) const
 {
     if (!sImageListName)
@@ -80,6 +118,22 @@ int32_t XSERVICE::FindGroup(const char *sImageListName) const
         if (storm::iEquals(m_pList[n].sImageListName, sImageListName))
             return n;
     return -1;
+}
+
+bool XSERVICE::BGFXReleaseTextureID(const char *sImageListName)
+{
+    if (sImageListName == nullptr)
+        return false;
+
+    for (auto i = 0; i < m_BGFXdwListQuantity; i++)
+        if (!_stricmp(m_BGFXpList[i].sImageListName, sImageListName))
+            if (--m_BGFXpList[i].textureQuantity == 0)
+            {
+                m_pRS->BGFXTextureRelease(m_BGFXpList[i].textureID);
+                return true;
+            }
+
+    return false;
 }
 
 bool XSERVICE::ReleaseTextureID(const char *sImageListName)
@@ -95,6 +149,34 @@ bool XSERVICE::ReleaseTextureID(const char *sImageListName)
                 return true;
             }
 
+    return false;
+}
+
+bool XSERVICE::BGFXGetTexturePos(int32_t pictureNum, FXYRECT &texRect)
+{
+    if (pictureNum >= 0 && pictureNum < m_BGFXdwImageQuantity)
+    {
+        // find picture group
+        int gn;
+        for (gn = 0; gn < m_BGFXdwListQuantity; gn++)
+            if (pictureNum >= m_BGFXpList[gn].pictureStart &&
+                pictureNum < m_BGFXpList[gn].pictureStart + m_BGFXpList[gn].pictureQuantity)
+                break;
+        if (gn < m_BGFXdwListQuantity)
+        {
+            texRect.left =
+                static_cast<float>(m_BGFXpImage[pictureNum].pTextureRect.left + m_fWAdd) / m_BGFXpList[gn].textureWidth;
+            texRect.right = static_cast<float>(m_BGFXpImage[pictureNum].pTextureRect.right - m_fWAdd) /
+                            m_BGFXpList[gn].textureWidth;
+            texRect.top =
+                static_cast<float>(m_BGFXpImage[pictureNum].pTextureRect.top + m_fHAdd) / m_BGFXpList[gn].textureHeight;
+            texRect.bottom = static_cast<float>(m_BGFXpImage[pictureNum].pTextureRect.bottom - m_fHAdd) /
+                             m_BGFXpList[gn].textureHeight;
+            return true;
+        }
+    }
+
+    PZERO(&texRect, sizeof(texRect));
     return false;
 }
 
@@ -126,6 +208,18 @@ bool XSERVICE::GetTexturePos(int32_t pictureNum, FXYRECT &texRect)
     return false;
 }
 
+bool XSERVICE::BGFXGetTexturePos(int32_t pictureNum, XYRECT &texRect)
+{
+    if (pictureNum >= 0 && pictureNum < m_BGFXdwImageQuantity)
+    {
+        memcpy(&texRect, &m_BGFXpImage[pictureNum].pTextureRect, sizeof(XYRECT));
+        return true;
+    }
+
+    PZERO(&texRect, sizeof(texRect));
+    return false;
+}
+
 bool XSERVICE::GetTexturePos(int32_t pictureNum, XYRECT &texRect)
 {
     if (pictureNum >= 0 && pictureNum < m_dwImageQuantity)
@@ -138,7 +232,17 @@ bool XSERVICE::GetTexturePos(int32_t pictureNum, XYRECT &texRect)
     return false;
 }
 
+bool XSERVICE::BGFXGetTexturePos(const char *sImageListName, const char *sImageName, FXYRECT &texRect)
+{
+    return GetTexturePos(GetImageNum(sImageListName, sImageName), texRect);
+}
+
 bool XSERVICE::GetTexturePos(const char *sImageListName, const char *sImageName, FXYRECT &texRect)
+{
+    return GetTexturePos(GetImageNum(sImageListName, sImageName), texRect);
+}
+
+bool XSERVICE::BGFXGetTexturePos(const char *sImageListName, const char *sImageName, XYRECT &texRect)
 {
     return GetTexturePos(GetImageNum(sImageListName, sImageName), texRect);
 }
@@ -146,6 +250,48 @@ bool XSERVICE::GetTexturePos(const char *sImageListName, const char *sImageName,
 bool XSERVICE::GetTexturePos(const char *sImageListName, const char *sImageName, XYRECT &texRect)
 {
     return GetTexturePos(GetImageNum(sImageListName, sImageName), texRect);
+}
+
+bool XSERVICE::BGFXGetTexturePos(int nTextureModify, int32_t pictureNum, FXYRECT &texRect)
+{
+    FXYRECT rectTmp;
+
+    if (pictureNum >= 0 && pictureNum < m_BGFXdwImageQuantity)
+    {
+        // find picture group
+        int gn;
+        for (gn = 0; gn < m_BGFXdwListQuantity; gn++)
+            if ((pictureNum >= m_BGFXpList[gn].pictureStart) &&
+                (pictureNum < m_BGFXpList[gn].pictureStart + m_BGFXpList[gn].pictureQuantity))
+                break;
+        if (gn < m_BGFXdwListQuantity)
+        {
+            rectTmp.left = static_cast<float>(m_BGFXpImage[pictureNum].pTextureRect.left);
+            rectTmp.top = static_cast<float>(m_BGFXpImage[pictureNum].pTextureRect.top);
+            rectTmp.right = static_cast<float>(m_BGFXpImage[pictureNum].pTextureRect.right);
+            rectTmp.bottom = static_cast<float>(m_BGFXpImage[pictureNum].pTextureRect.bottom);
+            if (nTextureModify & TEXTURE_MODIFY_HORZFLIP)
+            {
+                const auto tmp = rectTmp.left + m_fWAdd * 2.f;
+                rectTmp.left = rectTmp.right - m_fWAdd * 2.f;
+                rectTmp.right = tmp;
+            }
+            if (nTextureModify & TEXTURE_MODIFY_VERTFLIP)
+            {
+                const auto tmp = rectTmp.top + m_fHAdd * 2.f;
+                rectTmp.top = rectTmp.bottom - m_fHAdd * 2.f;
+                rectTmp.bottom = tmp;
+            }
+            texRect.left = (rectTmp.left + m_fWAdd) / m_BGFXpList[gn].textureWidth;
+            texRect.right = static_cast<float>(rectTmp.right - m_fWAdd) / m_BGFXpList[gn].textureWidth;
+            texRect.top = (rectTmp.top + m_fHAdd) / m_BGFXpList[gn].textureHeight;
+            texRect.bottom = static_cast<float>(rectTmp.bottom - m_fHAdd) / m_BGFXpList[gn].textureHeight;
+            return true;
+        }
+    }
+
+    PZERO(&texRect, sizeof(texRect));
+    return false;
 }
 
 bool XSERVICE::GetTexturePos(int nTextureModify, int32_t pictureNum, FXYRECT &texRect)
@@ -190,9 +336,41 @@ bool XSERVICE::GetTexturePos(int nTextureModify, int32_t pictureNum, FXYRECT &te
     return false;
 }
 
+bool XSERVICE::BGFXGetTexturePos(int nTextureModify, const char *sImageListName, const char *sImageName, FXYRECT &texRect)
+{
+    return GetTexturePos(nTextureModify, GetImageNum(sImageListName, sImageName), texRect);
+}
+
 bool XSERVICE::GetTexturePos(int nTextureModify, const char *sImageListName, const char *sImageName, FXYRECT &texRect)
 {
     return GetTexturePos(nTextureModify, GetImageNum(sImageListName, sImageName), texRect);
+}
+
+void XSERVICE::BGFXGetTextureCutForSize(const char *pcImageListName, const FXYPOINT &pntLeftTopUV,
+                                        const XYPOINT &pntSize, int32_t nSrcWidth, int32_t nSrcHeight, FXYRECT &outUV)
+{
+    const auto n = BGFXFindGroup(pcImageListName);
+    if (n >= 0)
+    {
+        if (nSrcWidth < m_BGFXpList[n].textureWidth)
+            nSrcWidth = m_BGFXpList[n].textureWidth;
+        if (nSrcHeight < m_BGFXpList[n].textureHeight)
+            nSrcHeight = m_BGFXpList[n].textureHeight;
+    }
+    auto fW = 1.f;
+    if (nSrcWidth > 0)
+        fW = static_cast<float>(pntSize.x) / nSrcWidth + pntLeftTopUV.x;
+    auto fH = 1.f;
+    if (nSrcHeight > 0)
+        fH = static_cast<float>(pntSize.y) / nSrcHeight + pntLeftTopUV.y;
+    if (fW > 1.f)
+        fW = 1.f;
+    if (fH > 1.f)
+        fH = 1.f;
+    outUV.left = pntLeftTopUV.x;
+    outUV.top = pntLeftTopUV.y;
+    outUV.right = fW;
+    outUV.bottom = fH;
 }
 
 void XSERVICE::GetTextureCutForSize(const char *pcImageListName, const FXYPOINT &pntLeftTopUV, const XYPOINT &pntSize,
@@ -320,6 +498,99 @@ void XSERVICE::LoadAllPicturesInfo()
             if (!ini->GetSectionNameNext(section, sizeof(section) - 1))
                 break;
         }
+
+        ini.reset();
+
+        // BGFX
+        memset(section, 0, sizeof(section));
+        memset(param, 0, sizeof(param));
+
+        ini = fio->OpenIniFile((char *)LISTS_INIFILE);
+        if (!ini)
+            throw std::exception("ini file not found!");
+
+        m_BGFXdwListQuantity = 0;
+        m_BGFXdwImageQuantity = 0;
+
+        // calculate lists quantity
+        if (ini->GetSectionName(section, sizeof(section) - 1))
+            do
+                m_BGFXdwListQuantity++;
+            while (ini->GetSectionNameNext(section, sizeof(section) - 1));
+        // create list pointers array
+        if (m_BGFXdwListQuantity > 0)
+        {
+            m_BGFXpList = new IMAGELISTDESCR[m_BGFXdwListQuantity];
+            if (m_BGFXpList == nullptr)
+                throw std::exception("memory allocate error");
+        }
+
+        // fill lists
+        if (ini->GetSectionName(section, sizeof(section) - 1))
+        {
+            for (auto i = 0; true; i++)
+            {
+                m_BGFXpList[i].textureQuantity = 0;
+                m_BGFXpList[i].textureID = -1L;
+
+                // get list name
+                m_BGFXpList[i].sImageListName = new char[sizeof section];
+                strcpy_s(m_BGFXpList[i].sImageListName, sizeof section, section);
+                // get texture name
+                ini->ReadString(section, "sTextureName", param, sizeof(param) - 1, "");
+                m_BGFXpList[i].sTextureName = new char[sizeof param];
+                strcpy_s(m_BGFXpList[i].sTextureName, sizeof param, param);
+
+                // get texture width & height
+                m_BGFXpList[i].textureWidth = ini->GetInt(section, "wTextureWidth", 1024);
+                m_BGFXpList[i].textureHeight = ini->GetInt(section, "wTextureHeight", 1024);
+
+                m_BGFXpList[i].pictureStart = m_BGFXdwImageQuantity;
+                // get pictures quantity
+                m_BGFXpList[i].pictureQuantity = 0;
+                if (ini->ReadString(section, "picture", param, sizeof(param) - 1, ""))
+                    do
+                        m_BGFXpList[i].pictureQuantity++;
+                    while (ini->ReadStringNext(section, "picture", param, sizeof(param) - 1));
+
+                // resize image list
+                auto *const oldpImage = m_BGFXpImage;
+                m_BGFXpImage = new PICTUREDESCR[m_BGFXdwImageQuantity + m_BGFXpList[i].pictureQuantity];
+                if (m_BGFXpImage == nullptr)
+                    throw std::exception("allocate memory error");
+                if (oldpImage != nullptr)
+                {
+                    memcpy(m_BGFXpImage, oldpImage, m_BGFXdwImageQuantity * sizeof(PICTUREDESCR));
+                    delete oldpImage;
+                }
+                m_BGFXdwImageQuantity += m_BGFXpList[i].pictureQuantity;
+
+                // set pictures
+                char picName[sizeof(param)];
+                ini->ReadString(section, "picture", param, sizeof(param) - 1, "");
+                for (int j = m_BGFXpList[i].pictureStart; j < m_BGFXdwImageQuantity; j++)
+                {
+                    // get texture coordinates
+                    int nLeft, nTop, nRight, nBottom;
+
+                    sscanf(param, "%[^,],%d,%d,%d,%d", picName, &nLeft, &nTop, &nRight, &nBottom);
+                    m_BGFXpImage[j].pTextureRect.left = nLeft;
+                    m_BGFXpImage[j].pTextureRect.top = nTop;
+                    m_BGFXpImage[j].pTextureRect.right = nRight;
+                    m_BGFXpImage[j].pTextureRect.bottom = nBottom;
+
+                    const auto len = strlen(picName) + 1;
+                    m_BGFXpImage[j].sPictureName = new char[len];
+                    memcpy(m_BGFXpImage[j].sPictureName, picName, len);
+
+                    ini->ReadStringNext(section, "picture", param, sizeof(param) - 1);
+                }
+
+                if (!ini->GetSectionNameNext(section, sizeof(section) - 1))
+                    break;
+            }
+        }
+        ini.reset();
     }
 }
 
@@ -352,6 +623,69 @@ void XSERVICE::ReleaseAll()
 
     m_dwListQuantity = 0;
     m_dwImageQuantity = 0;
+
+    if (m_BGFXpList != nullptr)
+    {
+        for (auto i = 0; i < m_BGFXdwListQuantity; i++)
+        {
+            if (m_BGFXpList[i].textureQuantity != 0)
+                m_pRS->BGFXTextureRelease(m_BGFXpList[i].textureID);
+
+            delete m_BGFXpList[i].sImageListName;
+
+            delete m_BGFXpList[i].sTextureName;
+        }
+
+        delete m_BGFXpList;
+    }
+
+    // BGFX
+
+    if (m_BGFXpImage != nullptr)
+    {
+        for (auto i = 0; i < m_BGFXdwImageQuantity; i++)
+        {
+            delete m_BGFXpImage[i].sPictureName;
+        }
+
+        delete m_BGFXpImage;
+    }
+
+    m_BGFXdwListQuantity = 0;
+    m_BGFXdwImageQuantity = 0;
+}
+
+int32_t XSERVICE::BGFXGetImageNum(const char *sImageListName, const char *sImageName)
+{
+    int32_t retVal = -1;
+
+    if (sImageName != nullptr)
+        if (sImageListName != nullptr)
+        {
+            for (int i = 0; i < m_BGFXdwListQuantity; i++)
+                if (!_stricmp(m_BGFXpList[i].sImageListName, sImageListName))
+                {
+                    for (int j = m_BGFXpList[i].pictureStart;
+                         j < m_BGFXpList[i].pictureStart + m_BGFXpList[i].pictureQuantity; j++)
+                        if (!_stricmp(m_BGFXpImage[j].sPictureName, sImageName))
+                        {
+                            retVal = j;
+                            break;
+                        }
+                    break;
+                }
+        }
+        else
+        {
+            for (int i = 0; i < m_BGFXdwImageQuantity; i++)
+                if (!_stricmp(m_BGFXpImage[i].sPictureName, sImageName))
+                {
+                    retVal = i;
+                    break;
+                }
+        }
+
+    return retVal;
 }
 
 int32_t XSERVICE::GetImageNum(const char *sImageListName, const char *sImageName)

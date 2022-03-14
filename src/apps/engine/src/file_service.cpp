@@ -92,6 +92,24 @@ bool FILE_SERVICE::_ReadFile(std::fstream &fileS, void *s, std::streamsize count
     }
 }
 
+bool FILE_SERVICE::_OldReadFile(std::filesystem::path path, void *buffer, uint32_t bytes_to_read, uint32_t *bytes_read,
+                                uint32_t seek_to)
+{
+    std::basic_ifstream<unsigned char> fh;
+
+    fh.open(path.wstring(), std::fstream::in | std::fstream::binary);
+
+    if (!fh.is_open())
+    {
+        return false;
+    }
+    fh.seekg(seek_to);
+    fh.read((unsigned char *)buffer, bytes_to_read);
+    *bytes_read = fh.gcount();
+
+    return *bytes_read == bytes_to_read;
+}
+
 bool FILE_SERVICE::_FileOrDirectoryExists(const char *p)
 {
     std::filesystem::path path = std::filesystem::u8path(p);

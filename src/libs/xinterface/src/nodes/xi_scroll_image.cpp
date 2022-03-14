@@ -1,5 +1,7 @@
 #include "xi_scroll_image.h"
 
+#include "primitive_renderer.h"
+
 #define MAXIMAGEQUANTITY 100
 
 int32_t GetTexFromEvent(VDATA *vdat)
@@ -127,7 +129,7 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
         FXYRECT textureRect;
         for (auto i = 0; i < 4; i++)
             pV[i].pos.z = 1.f;
-        pPictureService->GetTexturePos(m_nBorderPicture, textureRect);
+        pPictureService->BGFXGetTexturePos(m_nBorderPicture, textureRect);
         pV[0].tu = textureRect.left;
         pV[0].tv = textureRect.top;
         pV[1].tu = textureRect.left;
@@ -148,9 +150,25 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
         // show select border
         if (m_bShowBorder /*&& !m_bLockStatus*/ && m_nShowOrder < 0)
         {
-            m_rs->TextureSet(0, m_texBorder);
-            m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONLYONETEX_FVF, 2, pV, sizeof(XI_ONLYONETEX_VERTEX),
-                                  "iScrollImages_border");
+            //m_rs->TextureSet(0, m_texBorder);
+            auto texture = m_rs->GetBGFXTextureFromID(m_texBorder);
+            m_rs->GetPrimitiveRenderer()->Texture = texture;
+            //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONLYONETEX_FVF, 2, pV, sizeof(XI_ONLYONETEX_VERTEX),
+            //                      "iScrollImages_border");
+            for (int i = 0; i < 4; i += 4)
+            {
+                std::vector<VERTEX_POSITION_TEXTURE> vertices;
+
+                vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 0].pos.x, pV[i + 0].pos.y, pV[i + 0].pos.z,
+                                                           pV[i + 0].tu, pV[i + 0].tv});
+                vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 2].pos.x, pV[i + 2].pos.y, pV[i + 2].pos.z,
+                                                           pV[i + 2].tu, pV[i + 2].tv});
+                vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 1].pos.x, pV[i + 1].pos.y, pV[i + 1].pos.z,
+                                                           pV[i + 1].tu, pV[i + 1].tv});
+                vertices.push_back(VERTEX_POSITION_TEXTURE{pV[i + 3].pos.x, pV[i + 3].pos.y, pV[i + 3].pos.z,
+                                                           pV[i + 3].tu, pV[i + 3].tv});
+                m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+            }
         }
 
         XI_ONETEX_VERTEX v[4];
@@ -182,16 +200,20 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                 else if (m_Image[pScroll->imageNum].slots[n].img != -1)
                 {
                     // get texture rectangle
-                    pPictureService->GetTexturePos(m_Image[pScroll->imageNum].slots[n].img, rectTex);
-                    m_rs->TextureSet(0, m_nGroupTex[m_Image[pScroll->imageNum].slots[n].tex]);
+                    pPictureService->BGFXGetTexturePos(m_Image[pScroll->imageNum].slots[n].img, rectTex);
+
+                    auto texture = m_rs->GetBGFXTextureFromID(m_nGroupTex[m_Image[pScroll->imageNum].slots[n].tex]);
+                    m_rs->GetPrimitiveRenderer()->Texture = texture;
                 }
                 else
                 {
                     if (m_idBadPic[n] != -1 && m_idBadTexture[n] != -1)
                     // partial use of texture for a "bad" picture
                     {
-                        m_rs->TextureSet(0, m_nGroupTex[m_idBadTexture[n]]);
-                        pPictureService->GetTexturePos(m_idBadPic[n], rectTex);
+                        auto texture = m_rs->GetBGFXTextureFromID(m_nGroupTex[m_idBadTexture[n]]);
+                        m_rs->GetPrimitiveRenderer()->Texture = texture;
+
+                        pPictureService->BGFXGetTexturePos(m_idBadPic[n], rectTex);
                     }
                     else // "bad" picture for the whole texture
                     {
@@ -249,13 +271,55 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                     v[0].color = v[1].color = v[2].color = v[3].color = m_dwNormalColor[n];
                 if (m_Image[pScroll->imageNum].slots[n].useSpecTechnique)
                 {
-                    m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwSpecTechniqueARGB);
-                    m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, v, sizeof(XI_ONETEX_VERTEX),
-                                          m_sSpecTechniqueName);
+                    //m_rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwSpecTechniqueARGB);
+                    //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, v, sizeof(XI_ONETEX_VERTEX),
+                    //                      m_sSpecTechniqueName);
+                    for (int i = 0; i < 4; i += 4)
+                    {
+                        std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                        auto pVertices = v;
+
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[i + 0].pos.x, pVertices[i + 0].pos.y,
+                                                                         pVertices[i + 0].pos.z, pVertices[i + 0].tu,
+                                                                         pVertices[i + 0].tv, pVertices[i + 0].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[i + 2].pos.x, pVertices[i + 2].pos.y,
+                                                                         pVertices[i + 2].pos.z, pVertices[i + 2].tu,
+                                                                         pVertices[i + 2].tv, pVertices[i + 1].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[i + 1].pos.x, pVertices[i + 1].pos.y,
+                                                                         pVertices[i + 1].pos.z, pVertices[i + 1].tu,
+                                                                         pVertices[i + 1].tv, pVertices[i + 1].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[i + 3].pos.x, pVertices[i + 3].pos.y,
+                                                                         pVertices[i + 3].pos.z, pVertices[i + 3].tu,
+                                                                         pVertices[i + 3].tv, pVertices[i + 3].color});
+                        m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                    }
                 }
                 else
-                    m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, v, sizeof(XI_ONETEX_VERTEX),
-                                          "iScrollImages_main");
+                {
+                    //m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, v, sizeof(XI_ONETEX_VERTEX),
+                    //                      "iScrollImages_main");
+                    for (int i = 0; i < 4; i += 4)
+                    {
+                        std::vector<VERTEX_POSITION_TEXTURE_COLOR> vertices;
+
+                        auto pVertices = v;
+
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[i + 0].pos.x, pVertices[i + 0].pos.y,
+                                                                         pVertices[i + 0].pos.z, pVertices[i + 0].tu,
+                                                                         pVertices[i + 0].tv, pVertices[i + 0].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[i + 2].pos.x, pVertices[i + 2].pos.y,
+                                                                         pVertices[i + 2].pos.z, pVertices[i + 2].tu,
+                                                                         pVertices[i + 2].tv, pVertices[i + 1].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[i + 1].pos.x, pVertices[i + 1].pos.y,
+                                                                         pVertices[i + 1].pos.z, pVertices[i + 1].tu,
+                                                                         pVertices[i + 1].tv, pVertices[i + 1].color});
+                        vertices.push_back(VERTEX_POSITION_TEXTURE_COLOR{pVertices[i + 3].pos.x, pVertices[i + 3].pos.y,
+                                                                         pVertices[i + 3].pos.z, pVertices[i + 3].tu,
+                                                                         pVertices[i + 3].tv, pVertices[i + 3].color});
+                        m_rs->GetPrimitiveRenderer()->PushVertices(vertices);
+                    }
+                }
 
                 pScroll = pScroll->next;
             }
@@ -493,7 +557,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                         throw std::runtime_error("allocate memory error");
                     }
                     memcpy(m_sGroupName[i], stmp, len);
-                    m_nGroupTex[i] = pPictureService->GetTextureID(m_sGroupName[i]);
+                    m_nGroupTex[i] = pPictureService->BGFXGetTextureID(m_sGroupName[i]);
                 }
             }
         }
@@ -515,8 +579,8 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                 if (m_idBadTexture[n] >= 0)
                 {
                     sprintf_s(param, "BadPic%d", n + 1);
-                    m_idBadPic[n] =
-                        pPictureService->GetImageNum(m_sGroupName[m_idBadTexture[n]], pAttribute->GetAttribute(param));
+                    m_idBadPic[n] = pPictureService->BGFXGetImageNum(m_sGroupName[m_idBadTexture[n]],
+                                                                     pAttribute->GetAttribute(param));
                 }
                 else
                     m_idBadPic[n] = -1;
@@ -609,8 +673,8 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
         if ((m_sBorderGroupName = new char[len]) == nullptr)
             throw std::runtime_error("allocate memory error");
         memcpy(m_sBorderGroupName, param1, len);
-        m_texBorder = pPictureService->GetTextureID(m_sBorderGroupName);
-        m_nBorderPicture = pPictureService->GetImageNum(m_sBorderGroupName, tmpstr);
+        m_texBorder = pPictureService->BGFXGetTextureID(m_sBorderGroupName);
+        m_nBorderPicture = pPictureService->BGFXGetImageNum(m_sBorderGroupName, tmpstr);
         m_bShowBorder = m_texBorder != -1;
     }
     else
@@ -837,7 +901,7 @@ void CXI_SCROLLIMAGE::ReleaseAll()
         {
             if (m_idBadPic[i] == -1)
             {
-                TEXTURE_RELEASE(m_rs, m_idBadTexture[i]);
+                BGFX_TEXTURE_RELEASE(m_rs, m_idBadTexture[i]);
             }
             else
                 m_idBadTexture[i] = -1;
@@ -861,13 +925,13 @@ void CXI_SCROLLIMAGE::ReleaseAll()
 
     for (i = 0; i < m_nGroupQuantity; i++)
     {
-        PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName[i], m_nGroupTex[i]);
+        BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName[i], m_nGroupTex[i]);
         STORM_DELETE(m_sGroupName[i]);
     }
     STORM_DELETE(m_sGroupName);
     STORM_DELETE(m_nGroupTex);
 
-    PICTURE_TEXTURE_RELEASE(pPictureService, m_sBorderGroupName, m_texBorder);
+    BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sBorderGroupName, m_texBorder);
     STORM_DELETE(m_sBorderGroupName);
 
     FONT_RELEASE(m_rs, m_nOneStrFont);
@@ -1071,8 +1135,8 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                     sprintf_s(param, "img%d", n + 1);
                     if (m_Image[i].slots[n].tex != -1)
                     {
-                        m_Image[i].slots[n].img = pPictureService->GetImageNum(m_sGroupName[m_Image[i].slots[n].tex],
-                                                                               pAttribute->GetAttribute(param));
+                        m_Image[i].slots[n].img = pPictureService->BGFXGetImageNum(
+                            m_sGroupName[m_Image[i].slots[n].tex], pAttribute->GetAttribute(param));
                     }
                     else
                     {
@@ -1130,7 +1194,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
     {
         if (m_idBadPic[i] == -1)
         {
-            TEXTURE_RELEASE(m_rs, m_idBadTexture[i]);
+            BGFX_TEXTURE_RELEASE(m_rs, m_idBadTexture[i]);
         }
         else
             m_idBadTexture[i] = -1;
@@ -1152,7 +1216,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
     // release old groups
     for (i = 0; i < m_nGroupQuantity; i++)
     {
-        PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName[i], m_nGroupTex[i]);
+        BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, m_sGroupName[i], m_nGroupTex[i]);
         STORM_DELETE(m_sGroupName[i]);
     }
     STORM_DELETE(m_sGroupName);
@@ -1213,7 +1277,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                         throw std::runtime_error("allocate memory error");
                     }
                     memcpy(m_sGroupName[i], stmp, len);
-                    m_nGroupTex[i] = pPictureService->GetTextureID(m_sGroupName[i]);
+                    m_nGroupTex[i] = pPictureService->BGFXGetTextureID(m_sGroupName[i]);
                 }
             }
         }
@@ -1225,7 +1289,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
             sprintf_s(param, "BadPicture%d", n + 1);
             if ((sBadPict = pAttribute->GetAttribute(param)) != nullptr)
             {
-                m_idBadTexture[n] = m_rs->TextureCreate(sBadPict);
+                m_idBadTexture[n] = m_rs->BGFXTextureCreate(sBadPict);
                 m_idBadPic[n] = -1;
             }
             else
@@ -1235,8 +1299,8 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                 if (m_idBadTexture[n] >= 0)
                 {
                     sprintf_s(param, "BadPic%d", n + 1);
-                    m_idBadPic[n] =
-                        pPictureService->GetImageNum(m_sGroupName[m_idBadTexture[n]], pAttribute->GetAttribute(param));
+                    m_idBadPic[n] = pPictureService->BGFXGetImageNum(m_sGroupName[m_idBadTexture[n]],
+                                                                     pAttribute->GetAttribute(param));
                 }
                 else
                     m_idBadPic[n] = -1;
@@ -1306,8 +1370,8 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                     sprintf_s(param, "img%d", n + 1);
                     if (m_Image[i].slots[n].tex != -1)
                     {
-                        m_Image[i].slots[n].img = pPictureService->GetImageNum(m_sGroupName[m_Image[i].slots[n].tex],
-                                                                               pListEntity->GetAttribute(param));
+                        m_Image[i].slots[n].img = pPictureService->BGFXGetImageNum(
+                            m_sGroupName[m_Image[i].slots[n].tex], pListEntity->GetAttribute(param));
                     }
                     else
                     {
@@ -1543,14 +1607,14 @@ void CXI_SCROLLIMAGE::UpdateTexturesGroup()
                         throw std::runtime_error("allocate memory error");
                     }
                     memcpy(m_sGroupName[i], stmp, len);
-                    m_nGroupTex[i] = pPictureService->GetTextureID(m_sGroupName[i]);
+                    m_nGroupTex[i] = pPictureService->BGFXGetTextureID(m_sGroupName[i]);
                 }
             }
 
             // delete old groups
             for (i = 0; i < nPrevQ; i++)
             {
-                PICTURE_TEXTURE_RELEASE(pPictureService, pPrevGroup[i], prevTex[i]);
+                BGFX_PICTURE_TEXTURE_RELEASE(pPictureService, pPrevGroup[i], prevTex[i]);
                 STORM_DELETE(pPrevGroup[i]);
             }
             STORM_DELETE(pPrevGroup);

@@ -65,7 +65,7 @@ class LGeometry
     int32_t numVrt;
     int32_t maxVrt;
 
-    std::vector<Triangle> trg;
+    std::vector<StormTriangle> trg;
     int32_t numTrg;
     int32_t maxTrg;
 

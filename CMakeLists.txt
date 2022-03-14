@@ -8,6 +8,13 @@ include(StormSetup)
 option(STORM_ENABLE_CRASH_REPORTS "Enable automatic crash reports" OFF)
 option(STORM_ENABLE_STEAM "Enable Steam integration" OFF)
 
+set(BGFX_BUILD_EXAMPLES OFF)
+set(BGFX_INSTALL_EXAMPLES OFF)
+set(BGFX_BUILD_TOOLS OFF)
+
+set(STORM_EXTERN_RENDERING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern/rendering")
+set(STORM_EXTERN_MATH_DIR "${CMAKE_CURRENT_SOURCE_DIR}/extern/math")
+
 ### Set up output paths
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
@@ -53,5 +60,45 @@ set(SOURCE_FILE_EXTENSIONS "*.cpp" CACHE STRING "File extensions for source file
 set(HEADER_FILE_EXTENSIONS "*.h" "*.hpp" CACHE STRING "File extensions for header files" FORCE)
 ###
 
+include_directories(${STORM_EXTERN_RENDERING_DIR}/bgfx/examples/common
+						${STORM_EXTERN_RENDERING_DIR}/bgfx/3rdparty 
+						${STORM_EXTERN_RENDERING_DIR}/bgfx/3rdparty/dxsdk/include 
+						${STORM_EXTERN_RENDERING_DIR}/bgfx/3rdparty/khronos
+						$<BUILD_INTERFACE:${STORM_EXTERN_RENDERING_DIR}/bgfx/include>
+						$<BUILD_INTERFACE:${STORM_EXTERN_RENDERING_DIR}/bgfx/examples/common>
+						$<BUILD_INTERFACE:${STORM_EXTERN_RENDERING_DIR}/bgfx/tools/brtshaderc>
+						$<BUILD_INTERFACE:${STORM_EXTERN_RENDERING_DIR}/bimg/include>
+						$<BUILD_INTERFACE:${STORM_EXTERN_RENDERING_DIR}/bx/include>
+						$<BUILD_INTERFACE:${STORM_EXTERN_RENDERING_DIR}/bx/3rdparty>
+						${STORM_EXTERN_MATH_DIR}/glm/glm
+						${GLSL-OPTIMIZER_INCLUDES}
+						${GLSLLANG_INCLUDES}
+						${SPIRV_CROSS_INCLUDES}
+						${SPIRV_TOOLS_INCLUDES}
+						${WEBGPU_INCLUDES})
+
+# Build system specific configurations
+if( MINGW )
+	include_directories(
+			$<BUILD_INTERFACE:${STORM_EXTERN_RENDERING_DIR}/bx/include/compat/mingw>
+			$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/compat/mingw> )
+elseif( WIN32 )
+	include_directories(
+			$<BUILD_INTERFACE:${STORM_EXTERN_RENDERING_DIR}/bx/include/compat/msvc>
+			$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/compat/msvc> )
+elseif( APPLE )
+	include_directories(
+			$<BUILD_INTERFACE:${STORM_EXTERN_RENDERING_DIR}/bx/include/compat/osx>
+			$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/compat/osx> )
+endif()
+
+include_directories()
+add_definitions("-D_CRT_SECURE_NO_WARNINGS" "-D__STDC_FORMAT_MACROS")
+
 add_subdirectory(src)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT engine)
+
+target_link_libraries(engine PRIVATE bgfx dear-imgui meshoptimizer brtshaderc fcpp bx bimg bgfx-vertexlayout bgfx-shader-spirv fcpp glsl-optimizer glslang spirv-cross spirv-tools webgpu example-common)
+
+add_subdirectory(${STORM_EXTERN_RENDERING_DIR})
+add_subdirectory(${STORM_EXTERN_MATH_DIR}/glm)

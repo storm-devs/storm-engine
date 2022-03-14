@@ -63,7 +63,7 @@ WdmSea::WdmSea()
                                             (WDM_SEA_NV + 4) * sizeof(Vertex), D3DUSAGE_WRITEONLY);
     Assert(ib >= 0 && vb >= 0);
     // Indexes
-    auto *triangle = static_cast<Triangle *>(wdmObjects->rs->LockIndexBuffer(ib));
+    auto *triangle = static_cast<StormTriangle *>(wdmObjects->rs->LockIndexBuffer(ib));
     Assert(triangle);
     for (int32_t j = 0, p = 0; j < WDM_SEA_SECTIONS_Z; j++)
     {
