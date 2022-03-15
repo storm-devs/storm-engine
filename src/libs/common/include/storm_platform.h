@@ -1,10 +1,14 @@
 #pragma once
 #ifdef _WIN32
+
+#define PATH_SEP '\\'
+#define WRONG_PATH_SEP '/'
 inline const char *convert_path_sep(const char *cPath)
 {
     return cPath;
 }
-#else
+
+#else // NOT _WIN32
 
 #include <limits.h>
 
@@ -17,6 +21,8 @@ inline const char *convert_path_sep(const char *cPath)
 #define _MAX_FNAME NAME_MAX
 #define MAKELONG(low, high) ((int32_t)(((uint16_t)(low)) | (((uint32_t)((uint16_t)(high))) << 16)))
 
+#define PATH_SEP '/'
+#define WRONG_PATH_SEP '\\'
 inline char *convert_path_sep(const char *cPath)
 {
     const auto len = strlen(cPath) + 1;
