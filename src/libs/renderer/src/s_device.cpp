@@ -3286,11 +3286,7 @@ void DX9RENDER::MakeScreenShot()
         return;
     }
 
-#ifdef _WIN32 // FIX_LINUX D3DXLoadSurfaceFromSurface
     if (CHECKD3DERR(D3DXLoadSurfaceFromSurface(surface, NULL, NULL, renderTarget, NULL, NULL, D3DX_DEFAULT, 0)))
-#else
-    if (FAILED(d3d9->UpdateSurface(renderTarget, nullptr, surface, nullptr)))
-#endif
     {
         surface->Release();
         renderTarget->Release();
@@ -3792,12 +3788,9 @@ HRESULT DX9RENDER::GetSurfaceLevel(IDirect3DTexture9 *ppTexture, UINT Level, IDi
 HRESULT DX9RENDER::UpdateSurface(IDirect3DSurface9 *pSourceSurface, CONST RECT *pSourceRectsArray, UINT cRects,
                                  IDirect3DSurface9 *pDestinationSurface, CONST POINT *pDestPointsArray)
 {
-#ifdef _WIN32 // FIX_LINUX D3DXLoadSurfaceFromSurface
     return CHECKD3DERR(D3DXLoadSurfaceFromSurface(pDestinationSurface, nullptr, nullptr, pSourceSurface, nullptr,
                                                   nullptr, D3DX_DEFAULT, 0));
-#else
-    return CHECKD3DERR(d3d9->UpdateSurface(pSourceSurface, pSourceRectsArray, pDestinationSurface, pDestPointsArray));
-#endif
+    //return CHECKD3DERR(d3d9->UpdateSurface(pSourceSurface, pSourceRectsArray, pDestinationSurface, pDestPointsArray));
 }
 
 HRESULT DX9RENDER::StretchRect(IDirect3DSurface9 *pSourceSurface, const RECT *pSourceRect,
