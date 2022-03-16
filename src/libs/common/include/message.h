@@ -193,7 +193,7 @@ class MESSAGE final
         params_ = {storm::detail::convertMessageParam(args)... };
     }
 
-    void ResetVA(const std::string_view &format, va_list args)
+    void ResetVA(const std::string_view &format, va_list &args)
     {
         index = 0;
         format_ = format;
