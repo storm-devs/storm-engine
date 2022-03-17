@@ -373,7 +373,7 @@ def parse_gm(file_path="", report_func=None):
         header_radius = struct.unpack("<f", file.read(4))[0]
 
         globname = file.read(header_name_size)
-        
+
         try:
             globname = globname.decode("utf-8")
         except UnicodeDecodeError as error:
@@ -727,7 +727,7 @@ def get_armature_obj(file_path, collection, type='', fix_coas_man_head=False):
     header = data.get('header')
     frames_quantity = header.get('nFrames')
     joints_quantity = header.get('nJoints')
-    fps = header.get('framesPerSec')
+    fps = int(header.get('framesPerSec'))
 
     parent_indices = data.get('parentIndices')
     start_joints_positions = data.get('startJointsPositions')
