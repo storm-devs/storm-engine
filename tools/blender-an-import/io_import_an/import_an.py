@@ -99,7 +99,7 @@ def import_an(context, file_path=""):
     header = data.get('header')
     frames_quantity = header.get('nFrames')
     joints_quantity = header.get('nJoints')
-    fps = header.get('framesPerSec')
+    fps = int(header.get('framesPerSec'))
 
     parent_indices = data.get('parentIndices')
     start_joints_positions = data.get('startJointsPositions')
