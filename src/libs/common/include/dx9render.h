@@ -298,8 +298,6 @@ class VDX9RENDER : public SERVICE
     virtual void SetLoadTextureEnable(bool bEnable = true) = 0;
     virtual IDirect3DBaseTexture9 *GetBaseTexture(int32_t iTexture) = 0;
 
-    virtual IDirect3DBaseTexture9 *CreateTextureFromFileInMemory(const char *pFile, uint32_t dwSize) = 0;
-
     virtual bool PushRenderTarget() = 0;
     virtual bool PopRenderTarget() = 0;
     virtual bool SetRenderTarget(IDirect3DCubeTexture9 *pCubeTex, uint32_t dwFaceType, uint32_t dwLevel,

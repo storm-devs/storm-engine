@@ -4470,21 +4470,6 @@ void DX9RENDER::SetLoadTextureEnable(bool bEnable)
     bLoadTextureEnabled = bEnable;
 }
 
-IDirect3DBaseTexture9 *DX9RENDER::CreateTextureFromFileInMemory(const char *pFile, uint32_t dwSize)
-{
-    if (!pFile || !dwSize)
-        return nullptr;
-
-    IDirect3DTexture9 *pTexture = nullptr;
-    auto *pTga = (TGA_H *)pFile;
-    const D3DFORMAT d3dFormat = (pTga->bpp == 16) ? D3DFMT_DXT1 : D3DFMT_DXT3;
-    D3DXCreateTextureFromFileInMemoryEx(static_cast<LPDIRECT3DDEVICE9>(GetD3DDevice()), pFile, dwSize, D3DX_DEFAULT,
-                                        D3DX_DEFAULT, 1, 0, d3dFormat, D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, 0,
-                                        nullptr, nullptr, &pTexture);
-
-    return pTexture;
-}
-
 IDirect3DVolumeTexture9 *DX9RENDER::CreateVolumeTexture(uint32_t Width, uint32_t Height, uint32_t Depth,
                                                         uint32_t Levels, uint32_t Usage, D3DFORMAT Format, D3DPOOL Pool)
 {

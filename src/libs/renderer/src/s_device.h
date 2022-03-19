@@ -409,8 +409,6 @@ class DX9RENDER : public VDX9RENDER
                     const char *pTechniqueName = "DXVector") override;
     IDirect3DBaseTexture9 *GetBaseTexture(int32_t iTexture) override;
 
-    IDirect3DBaseTexture9 *CreateTextureFromFileInMemory(const char *pFile, uint32_t dwSize) override;
-
     bool PushRenderTarget() override;
     bool PopRenderTarget() override;
     bool SetRenderTarget(IDirect3DCubeTexture9 *pCubeTex, uint32_t dwFaceType, uint32_t dwLevel,
