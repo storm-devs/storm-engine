@@ -483,17 +483,6 @@ private:
     bool MakeAvi;
     IDirect3DSurface9 *ImageBuffer;
 
-    // VideoCapture section
-    HDC hDesktopDC, hCaptureDC;
-    HBITMAP hCaptureBitmap;
-    LPBITMAPINFO lpbi;
-    int32_t iCaptureFrameIndex;
-    bool bPreparedCapture;
-    bool bVideoCapture;
-    float fFixedFPS;
-    std::vector<char *> aCaptureBuffers;
-    uint32_t dwCaptureBuffersReady;
-
     //-------- post process
 
     struct QuadVertex
@@ -596,8 +585,4 @@ private:
 
     bool TextureLoad(int32_t texid);
     bool TextureLoadUsingD3DX(const char *path, int32_t texid);
-
-    bool MakeCapture();
-    void SaveCaptureBuffers();
-    void PrepareCapture();
 };

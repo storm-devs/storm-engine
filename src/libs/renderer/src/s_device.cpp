@@ -463,10 +463,6 @@ DX9RENDER::DX9RENDER()
     progressFramesCountX = 8;
     progressFramesCountY = 8;
 
-    bVideoCapture = false;
-    bPreparedCapture = false;
-    iCaptureFrameIndex = 0;
-
     vViewRelationPos = CVECTOR(0.f, 0.f, 0.f);
     vWordRelationPos = -vViewRelationPos;
     bUseLargeBackBuffer = false;
@@ -610,14 +606,6 @@ bool DX9RENDER::Init()
         if (progressFramesCountY > 64)
             progressFramesCountY = 64;
 
-        // videocapture section
-        fFixedFPS = ini->GetFloat("VideoCapture", "FPS", 25);
-        if (fFixedFPS == 0.0f)
-            fFixedFPS = 25.0f;
-        const int32_t iCapBuffers = ini->GetInt("VideoCapture", "Buffers", 0);
-        for (int32_t i = 0; i < iCapBuffers; i++)
-            aCaptureBuffers.push_back(new char[sizeof(uint32_t) * screen_size.x * screen_size.y]);
-
         CreateSphere();
         auto *pScriptRender = static_cast<VDATA *>(core.GetScriptVariable("Render"));
         ATTRIBUTES *pARender = pScriptRender->GetAClass();
@@ -637,8 +625,6 @@ bool DX9RENDER::Init()
     {
         return false;
     }
-
-    dwCaptureBuffersReady = 0;
 
     uint16_t *pI = &qi[0];
     // setup ibuffer
@@ -699,18 +685,6 @@ DX9RENDER::~DX9RENDER()
 
     STORM_DELETE(DX9sphereVertex);
     ReleaseDevice();
-
-    if (bPreparedCapture)
-    {
-        STORM_DELETE(lpbi);
-        ReleaseDC(static_cast<HWND>(core.GetAppHWND()), hDesktopDC);
-        DeleteDC(hCaptureDC);
-        DeleteObject(hCaptureBitmap);
-    }
-    for (const auto &buffer : aCaptureBuffers)
-        delete buffer;
-
-    // aCaptureBuffers.DelAllWithPointers();
 }
 
 bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, int32_t width, int32_t height)
@@ -1292,9 +1266,6 @@ bool DX9RENDER::DX9EndScene()
 
     if (bMakeShoot)
         MakeScreenShot();
-
-    if (bVideoCapture)
-        MakeCapture();
 
     const HRESULT hRes = d3d9->Present(nullptr, nullptr, nullptr, nullptr);
 
