@@ -409,8 +409,6 @@ class DX9RENDER : public VDX9RENDER
                     const char *pTechniqueName = "DXVector") override;
     IDirect3DBaseTexture9 *GetBaseTexture(int32_t iTexture) override;
 
-    IDirect3DBaseTexture9 *CreateTextureFromFileInMemory(const char *pFile, uint32_t dwSize) override;
-
     bool PushRenderTarget() override;
     bool PopRenderTarget() override;
     bool SetRenderTarget(IDirect3DCubeTexture9 *pCubeTex, uint32_t dwFaceType, uint32_t dwLevel,
@@ -484,17 +482,6 @@ private:
 
     bool MakeAvi;
     IDirect3DSurface9 *ImageBuffer;
-
-    // VideoCapture section
-    HDC hDesktopDC, hCaptureDC;
-    HBITMAP hCaptureBitmap;
-    LPBITMAPINFO lpbi;
-    int32_t iCaptureFrameIndex;
-    bool bPreparedCapture;
-    bool bVideoCapture;
-    float fFixedFPS;
-    std::vector<char *> aCaptureBuffers;
-    uint32_t dwCaptureBuffersReady;
 
     //-------- post process
 
@@ -598,8 +585,4 @@ private:
 
     bool TextureLoad(int32_t texid);
     bool TextureLoadUsingD3DX(const char *path, int32_t texid);
-
-    bool MakeCapture();
-    void SaveCaptureBuffers();
-    void PrepareCapture();
 };
