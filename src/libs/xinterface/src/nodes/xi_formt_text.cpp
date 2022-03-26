@@ -3,8 +3,23 @@
 #include "entity.h"
 #include "utf8.h"
 #include "xi_scroller.h"
+#include <stdio.h>
 
-#include <cstdio>
+static void SubRightWord(char *buf, int fontNum, int width, VDX9RENDER *rs)
+{
+    if (buf == nullptr)
+        return;
+    const int32_t bufSize = strlen(buf);
+    for (auto *pEnd = buf + bufSize; pEnd > buf; pEnd--)
+    {
+        if (*pEnd == ' ')
+        {
+            *pEnd = 0;
+            if (rs->StringWidth(buf, fontNum) <= width)
+                return;
+        }
+    }
+}
 
 CXI_FORMATEDTEXT::STRING_DESCRIBER::STRING_DESCRIBER(char *ls) : color(0)
 {
@@ -683,16 +698,10 @@ bool CXI_FORMATEDTEXT::GetLineNext(int fontNum, const char *&pInStr, char *buf, 
         buf[j] = 0; // zero denotes the end of the line
 
         // if the string is large, then cut it
-        while (m_rs->StringWidth(buf, fontNum, m_fFontScale) > m_nCompareWidth)
+        const int32_t strWidth = m_rs->StringWidth(buf, fontNum);
+        if (strWidth > m_nCompareWidth)
         {
-            if (auto *rspace = strrchr(buf, ' '); rspace != nullptr)
-            {
-                *rspace = '\0';
-            }
-            else
-            {
-                break;
-            }
+            SubRightWord(buf, fontNum, m_nCompareWidth, m_rs);
         }
 
         const int32_t q = strlen(buf); // this is the length of the line without tags
@@ -767,13 +776,13 @@ void CXI_FORMATEDTEXT::GetOneLine(int fontNum, const char *pStr, char *buf, int 
 
     strncpy_s(buf, bufSize, pStart, lineSize);
     buf[lineSize] = 0;
-    int32_t strWidth = m_rs->StringWidth(buf, fontNum, m_fFontScale);
+    int32_t strWidth = m_rs->StringWidth(buf, fontNum);
 
     while (lineSize > 0 && strWidth > m_nCompareWidth)
     {
         lineSize -= utf8::u8_dec(buf + lineSize);
         buf[lineSize] = 0;
-        strWidth = m_rs->StringWidth(buf, fontNum, m_fFontScale);
+        strWidth = m_rs->StringWidth(buf, fontNum);
     }
 }
 
