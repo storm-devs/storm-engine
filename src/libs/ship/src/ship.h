@@ -239,7 +239,6 @@ class SHIP : public SHIP_BASE
     CVECTOR GetPos() const override;
     CVECTOR GetAng() const override;
     CVECTOR GetBoxsize() const override;
-    CVECTOR GetRealBoxsize() const override;
 
     void SetPos(const CVECTOR &vNewPos) override;
 
