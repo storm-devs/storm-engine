@@ -385,7 +385,7 @@ void COMPILER::LoadPreprocess()
         else
             bRuntimeLog = true;
 
-        use_script_cache_ = engine_ini->GetInt("script", "use_cache", false);
+        use_script_cache_ = engine_ini->GetInt("script", "use_cache", true);
 
         // if(engine_ini->GetInt("script","tracefiles",0) == 0) bScriptTrace = false;
         // else bScriptTrace = true;
