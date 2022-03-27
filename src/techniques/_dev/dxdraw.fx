@@ -38,3 +38,24 @@ technique DXSphere
         ColorOp[1] = disable;
     }
 }
+
+technique DXEllipsoid
+{
+    pass p0
+    {
+        ZWriteEnable = false;
+        Lighting = false;
+        AlphaTestEnable = false;
+        AlphaBlendEnable = true;
+        SrcBlend = srcalpha;
+        DestBlend = invsrcalpha;
+        
+        ColorOp[0] = selectarg1;
+        ColorArg1[0] = tfactor;
+
+        AlphaOp[0] = selectarg1;
+        AlphaArg1[0] = tfactor;
+
+        ColorOp[1] = disable;
+    }
+}

@@ -396,6 +396,7 @@ class DX9RENDER : public VDX9RENDER
 
     void SetColorParameters(float fGamma, float fBrightness, float fContrast) override;
     void DrawSphere(const CVECTOR &vPos, float fRadius, uint32_t dwColor) override;
+    void DrawEllipsoid(const CVECTOR &vPos, float a, float b, float c, float ay, uint32_t dwColor) override;
 
     void GetNearFarPlane(float &fNear, float &fFar) override;
     void SetNearFarPlane(float fNear, float fFar) override;

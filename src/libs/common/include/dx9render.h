@@ -291,6 +291,7 @@ class VDX9RENDER : public SERVICE
     virtual void SetColorParameters(float fGamma, float fBrightness, float fContrast) = 0;
 
     virtual void DrawSphere(const CVECTOR &vPos, float fRadius, uint32_t dwColor) = 0;
+    virtual void DrawEllipsoid(const CVECTOR &vPos, float a, float b, float c, float ay, uint32_t dwColor) = 0;
 
     virtual void GetNearFarPlane(float &fNear, float &fFar) = 0;
     virtual void SetNearFarPlane(float fNear, float fFar) = 0;

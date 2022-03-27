@@ -1,6 +1,6 @@
-#include "ship_camera.h"
-#include "sd2_h/save_load.h"
 #include "core.h"
+#include "sd2_h/save_load.h"
+#include "ship_camera.h"
 
 #define SCMR_BOXSCALE_X 1.6f
 #define SCMR_BOXSCALE_Y 1.3f
@@ -72,6 +72,12 @@ void SHIP_CAMERA::Execute(uint32_t dwDeltaTime)
     Move(fDeltaTime);
 }
 
+void SHIP_CAMERA::Realize(uint32_t dwDeltaTime)
+{
+    pRS->DrawEllipsoid(GetAIObj()->GetPos(), a, b, c, fModelAy, 0x900C0C0C);
+    pRS->DrawSphere(vCenter, 5.0f, 0xFFFFFFFF);
+}
+
 void SHIP_CAMERA::Move(float fDeltaTime)
 {
     if (!pSea)
@@ -80,7 +86,6 @@ void SHIP_CAMERA::Move(float fDeltaTime)
         return;
 
     const auto fSpeed = fDeltaTime;
-    auto fTempHeight = 0.0f;
 
     CONTROL_STATE cs;
 
@@ -98,7 +103,6 @@ void SHIP_CAMERA::Move(float fDeltaTime)
         fKInert = 0.0f;
     if (fKInert > 1.0f)
         fKInert = 1.0f;
-    fSensivityDistance = 1.0f;
     fDistanceDlt += (fSensivityDistanceDlt - fDistanceDlt) * fKInert;
     fDistance += fSpeed * fDistanceDlt;
     if (fDistance > 1.0f)
@@ -141,14 +145,13 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     // Current distance
     auto boxSize =
         GetAIObj()->GetBoxsize() * CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
-    const auto realBoxSize = GetAIObj()->GetRealBoxsize();
-    boxSize.x += realBoxSize.y;
-    boxSize.z += realBoxSize.y;
+    boxSize.x += boxSize.y;
+    boxSize.z += boxSize.y;
     const auto maxRad = boxSize.z * 2.0f;
     // Semi-axes of the ellipsoid along which the camera moves
-    const auto a = boxSize.x * 1.2f + fDistance * (maxRad - boxSize.x * 1.2f); // x
-    const auto b = boxSize.y * 1.5f + fDistance * (70.0f - boxSize.y * 1.5f);  // y
-    const auto c = boxSize.z * 1.2f + fDistance * (maxRad - boxSize.z * 1.2f); // z
+    a = boxSize.x * 1.2f + fDistance * (maxRad - boxSize.x * 1.2f);     // x
+    b = boxSize.y * 1.5f + fDistance * (70.0f - boxSize.y * 1.5f);  // y
+    c = boxSize.z * 1.2f + fDistance * (maxRad - boxSize.z * 1.2f); // z
     // Find the position of the camera on the ellipsoid
     vCenter.y += 0.5f * boxSize.y;
     CVECTOR vPos;
@@ -188,10 +191,6 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     vCenter.y += fDistance * 2.0f * boxSize.y;
     pRS->SetCamera(vPos, vCenter, CVECTOR(0.0f, 1.0f, 0.0f));
     pRS->SetPerspective(GetPerspective());
-}
-
-void SHIP_CAMERA::Realize(uint32_t dwDeltaTime)
-{
 }
 
 void SHIP_CAMERA::SetCharacter(ATTRIBUTES *_pACharacter)

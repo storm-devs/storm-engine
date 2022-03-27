@@ -30,6 +30,8 @@ class SHIP_CAMERA : public COMMON_CAMERA
     CVECTOR vCenter, vAng;
     float fModelAy;
 
+    float a, b, c; // camera ellipsoid parameters
+
     // int32_t minHeightOnSea,maxHeightOnSea;
 
   private:
