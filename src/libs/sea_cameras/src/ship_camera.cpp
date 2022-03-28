@@ -142,11 +142,16 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     if (vAng.x > fMaxAngleX)
         vAng.x = fMaxAngleX;
 
-    // Current distance
-    auto boxSize =
-        GetAIObj()->GetBoxsize() * CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
-    boxSize.x += boxSize.y;
-    boxSize.z += boxSize.y;
+    auto *modelMtx = GetAIObj()->GetMatrix();
+    auto boxSize = GetAIObj()->GetBoxsize();
+    // Recalculate box size: (box size + immersion) * hand-fitted scale
+    boxSize.y += modelMtx->pos.y;
+    boxSize *= CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
+    // Project real height (with masts)
+    const auto realBoxSize = GetAIObj()->GetRealBoxsize();
+    boxSize.x += realBoxSize.y;
+    boxSize.z += realBoxSize.y;
+
     const auto maxRad = boxSize.z * 2.0f;
     // Semi-axes of the ellipsoid along which the camera moves
     a = boxSize.x * 1.2f + fDistance * (maxRad - boxSize.x * 1.2f);     // x
@@ -170,8 +175,10 @@ void SHIP_CAMERA::Move(float fDeltaTime)
         vPos.z = c * cosf(vAng.y);
     }
     vPos = CMatrix(CVECTOR(0.0f, fModelAy, 0.0f), vCenter) * vPos;
+    vCenter.y += fDistance * 2.0f * boxSize.y;
+    vCenter.y = std::min(vCenter.y, boxSize.y);
     if (vAng.x > 0.0f)
-        vCenter.y += boxSize.z * vAng.x * 6.0f;
+        vCenter.y += realBoxSize.y * vAng.x * 6.0f;
     // Limit the height from the bottom
     const auto fWaveY = pSea->WaveXZ(vPos.x, vPos.z);
     if (vPos.y - fWaveY < fMinHeightOnSea)
@@ -188,7 +195,6 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     if (vPos.y > oldPosY)
         vCenter.y += vPos.y - oldPosY;
     // Set new camera
-    vCenter.y += fDistance * 2.0f * boxSize.y;
     pRS->SetCamera(vPos, vCenter, CVECTOR(0.0f, 1.0f, 0.0f));
     pRS->SetPerspective(GetPerspective());
 }
