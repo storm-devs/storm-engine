@@ -1656,10 +1656,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                                             return false;
                                         }
                                         real_var->value->Set(Token.GetData(), aindex);
-                                        if (use_script_cache_)
-                                        {
-                                            script_cache_.variables.back().value->Set(Token.GetData(), aindex);
-                                        }
                                         aindex++;
                                         break;
                                     case UNKNOWN:
