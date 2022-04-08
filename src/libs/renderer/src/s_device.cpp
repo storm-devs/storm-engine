@@ -2319,7 +2319,7 @@ void DX9RENDER::DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_
 }
 
 void DX9RENDER::DrawPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwVertexBufferFormat, uint32_t dwNumPT,
-                                void *pVerts, uint32_t dwStride, const char *cBlockName)
+                                const void *pVerts, uint32_t dwStride, const char *cBlockName)
 {
     bool bDraw = true;
 
@@ -3591,16 +3591,9 @@ HRESULT DX9RENDER::Release(IUnknown *pObject)
 {
     if (pObject)
     {
-        if (*(void **)pObject == nullptr)
-        {
-            __debugbreak();
-        }
-        else
-        {
-            const auto result = pObject->Release();
-            pObject = nullptr;
-            return result;
-        }
+        const auto result = pObject->Release();
+        pObject = nullptr;
+        return result;
     }
 
     return D3D_OK;
@@ -4525,3 +4518,31 @@ IDirect3DBaseTexture9 *DX9RENDER::GetTextureFromID(int32_t nTextureID)
         return nullptr;
     return Textures[nTextureID].d3dtex;
 }
+
+bool DX9RENDER::GetRenderTargetAsTexture(IDirect3DTexture9 **tex)
+{
+    Release(*tex);
+    IDirect3DSurface9 *renderTarget;
+    D3DSURFACE_DESC desc;
+
+    auto success = false;
+
+    if (GetRenderTarget(&renderTarget) == D3D_OK && renderTarget->GetDesc(&desc) == D3D_OK)
+    {
+        if (CreateTexture(desc.Width, desc.Height, 0, 0, desc.Format, D3DPOOL_DEFAULT, tex) == D3D_OK)
+        {
+            IDirect3DSurface9 *pTexSurface;
+            if ((*tex)->GetSurfaceLevel(0, &pTexSurface) == D3D_OK)
+            {
+                if (GetRenderTargetData(renderTarget, pTexSurface) == D3D_OK)
+                {
+                    success = true;
+                }
+                pTexSurface->Release();
+            }
+        }
+    }
+
+    return success;
+}
+

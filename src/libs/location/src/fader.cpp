@@ -28,8 +28,7 @@ Fader::Fader()
     haveFrame = false;
     endFade = false;
     alpha = 0.0f;
-    textureBase = nullptr;
-    renderTarget = nullptr;
+    tex = nullptr;
     textureID = -1;
     textureBackID = -1;
     tipsID = -1;
@@ -40,12 +39,9 @@ Fader::Fader()
 
 Fader::~Fader()
 {
-    if (textureBase)
-        rs->Release(textureBase);
-    if (renderTarget)
-        renderTarget->Release();
-    textureBase = nullptr;
-    renderTarget = nullptr;
+    if (tex)
+        rs->Release(tex);
+    tex = nullptr;
     if (textureID >= 0)
         rs->TextureRelease(textureID);
     if (textureBackID >= 0)
@@ -151,9 +147,7 @@ bool Fader::Init()
         drawbuf_front[5].x = w - dx;
         drawbuf_front[5].y = h - dy;
     }
-
-    if (rs->GetRenderTarget(&renderTarget) != D3D_OK)
-        return false;
+    
     // read the number of tips, if necessary
     if (!numberOfTips)
     {
@@ -206,9 +200,9 @@ uint64_t Fader::ProcessMessage(MESSAGE &message)
         endFade = false;
         isAutodelete = message.Long() != 0;
         haveFrame = false;
-        if (textureBase)
-            textureBase->Release();
-        textureBase = nullptr;
+        if (tex)
+            tex->Release();
+        tex = nullptr;
         eventStart = false;
         eventEnd = false;
         break;
@@ -316,29 +310,13 @@ void Fader::Realize(uint32_t delta_time)
         {
             if (isStart)
             {
-                // need to take a shot
-                auto isOk = false;
-                D3DSURFACE_DESC desc;
-                if (renderTarget->GetDesc(&desc) == D3D_OK)
+                if (!rs->GetRenderTargetAsTexture(&tex))
                 {
-                    if (rs->CreateTexture(desc.Width, desc.Height, 0, 0, desc.Format, D3DPOOL_DEFAULT,
-                                          &textureBase) == D3D_OK)
-                    {
-                        IDirect3DSurface9 * pTexSurface;
-                        if (textureBase->GetSurfaceLevel(0, &pTexSurface) == D3D_OK)
-                        {
-                            if (rs->GetRenderTargetData(renderTarget, pTexSurface) == D3D_OK)
-                            {
-                                isOk = true;
-                            }
-                        }
-                    }
+                    core.Trace("Fader: GetRenderTargetAsTexture failed");
                 }
-                if (!isOk)
-                    core.Trace("Screen shot for fader not created!");
             }
             else {
-                rs->SetTexture(0, textureBase);
+                rs->SetTexture(0, tex);
                 rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
                                     D3DFVF_XYZRHW  | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2, drawbuf_base, sizeof(drawbuf_base[0]), "Fader");
             }
