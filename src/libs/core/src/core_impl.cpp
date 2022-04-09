@@ -1,13 +1,15 @@
 #include "core_impl.h"
 
-#include "steam_api_impl.hpp"
 #include "compiler.h"
 #include "controls.h"
 #include "storm/fs.h"
+#include "steam_api.hpp"
 
 #include <fstream>
 
 #include "storm/string_compare.hpp"
+
+Core& core = core_internal;
 
 namespace storm
 {

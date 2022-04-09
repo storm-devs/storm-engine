@@ -14,6 +14,7 @@ STORM_SETUP(
     ${MIMALLOC_DEP}
 
     # internal
+    core
     common
     diagnostics
     util
@@ -52,7 +53,6 @@ STORM_SETUP(
     sink_effect
     sound
     sound_service
-    steam_api
     teleport
     tornado
     touch
@@ -62,7 +62,6 @@ STORM_SETUP(
     xinterface
 
     # external
-    fast_float
     mimalloc
     sentry-native
     sdl
