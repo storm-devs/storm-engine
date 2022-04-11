@@ -2261,7 +2261,8 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             SetError("AClass ERROR n1");
             break;
         }
-        pRoot->Copy(pA);
+        Assert(&pRoot->GetStringCodec() == &pA->GetStringCodec());
+        *pRoot = pA->Copy();
         break;
     case FUNC_DELETE_ATTRIBUTE:
         pV2 = SStack.Pop();

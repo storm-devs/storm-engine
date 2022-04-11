@@ -10,9 +10,9 @@
 class VSTRING_CODEC
 {
   public:
-    VSTRING_CODEC(){};
+    VSTRING_CODEC() = default;
 
-    virtual ~VSTRING_CODEC(){};
+    virtual ~VSTRING_CODEC() noexcept = default;
     virtual uint32_t GetNum() = 0;
     virtual uint32_t Convert(const char *pString) = 0;
     virtual uint32_t Convert(const char *pString, int32_t iLen) = 0;
@@ -37,163 +37,154 @@ constexpr size_t TSE_MAX_EVENT_LENGTH = 64;
 // SetAttributeUseDword(attribute_name, DWORD val) - create or modify attribute, converted from uint32_t to string
 // SetAttributeUseFloat(attribute_name, FLOAT val) - create or modify attribute, converted from float to string
 
-class ATTRIBUTES
+class ATTRIBUTES final
 {
-    VSTRING_CODEC *pVStringCodec;
-    uint32_t nNameCode;
-    char *Attribute;
-    std::vector<ATTRIBUTES *> pAttributes;
-    ATTRIBUTES *pParent;
-    bool bBreak;
-
-    void SetParent(ATTRIBUTES *pP)
-    {
-        pParent = pP;
-    }
+    VSTRING_CODEC &stringCodec_;
+    uint32_t nameCode_{};
+    char *value_ = nullptr;
+    std::vector<std::unique_ptr<ATTRIBUTES>> attributes_;
+    ATTRIBUTES *parent_ = nullptr;
+    bool break_ = false;
 
     ATTRIBUTES *CreateNewAttribute(uint32_t name_code)
     {
-        auto *attr = pAttributes.emplace_back(new ATTRIBUTES(pVStringCodec));
-
-        attr->SetParent(this);
-        attr->nNameCode = name_code;
-
-        return attr;
+        std::unique_ptr<ATTRIBUTES> &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name_code));
+        return attr.get();
     }
 
   public:
-    ATTRIBUTES(VSTRING_CODEC *p)
+    [[deprecated("Pass StringCodec by reference instead")]] explicit ATTRIBUTES(VSTRING_CODEC *p) : ATTRIBUTES(*p)
     {
-        pVStringCodec = p;
-        Attribute = nullptr;
-        pParent = nullptr;
-        bBreak = false;
-        nNameCode = pVStringCodec->Convert("root");
     }
 
+    explicit ATTRIBUTES(VSTRING_CODEC &p);
+
     ATTRIBUTES(const ATTRIBUTES &) = delete;
-    ATTRIBUTES(ATTRIBUTES &&) = delete;
     ATTRIBUTES &operator=(const ATTRIBUTES &) = delete;
 
-    ~ATTRIBUTES()
+    ATTRIBUTES(ATTRIBUTES &&other)
+    noexcept
+        : stringCodec_(other.stringCodec_), nameCode_(other.nameCode_), value_(other.value_),
+          attributes_(std::move(other.attributes_)), parent_(nullptr), break_(other.break_)
+    {
+        other.value_ = nullptr;
+    }
+
+    ATTRIBUTES &operator=(ATTRIBUTES &&other) noexcept
+    {
+        stringCodec_ = other.stringCodec_;
+        nameCode_ = other.nameCode_;
+        value_ = other.value_;
+        other.value_ = nullptr;
+        attributes_ = std::move(other.attributes_);
+        // Do not update parent
+        // parent_ = other.parent_;
+        break_ = other.break_;
+        return *this;
+    }
+
+    ~ATTRIBUTES() noexcept
     {
         Release();
     }
 
-    void SetBreak(bool bBreak)
+    void SetBreak(bool set_break)
     {
-        this->bBreak = bBreak;
+        this->break_ = set_break;
     }
 
-    auto GetParent() const
+    [[nodiscard]] auto GetParent() const
     {
-        return pParent;
+        return parent_;
     }
 
     bool operator==(const char *str) const
     {
         if (!str || !str[0])
             return false;
-        return storm::iEquals(pVStringCodec->Convert(nNameCode), str);
+        return storm::iEquals(stringCodec_.Convert(nameCode_), str);
     }
 
-    auto GetThisName() const
+    [[nodiscard]] auto GetThisName() const
     {
-        Assert(pVStringCodec != nullptr);
-        return pVStringCodec->Convert(nNameCode);
+        return stringCodec_.Convert(nameCode_);
     }
 
-    auto GetThisAttr() const
+    [[nodiscard]] auto GetThisAttr() const
     {
-        return Attribute;
+        return value_;
     }
 
     void SetName(const char *_name)
     {
         if (_name)
-            nNameCode = pVStringCodec->Convert(_name);
+            nameCode_ = stringCodec_.Convert(_name);
     }
 
     void SetValue(const char *_val)
     {
         if (_val == nullptr)
         {
-            delete Attribute;
-            Attribute = nullptr;
+            delete[] value_;
+            value_ = nullptr;
             return;
         }
 
         const auto len = GetLen(strlen(_val) + 1);
-        auto *const oldPtr = Attribute;
-        Attribute = new char[len];
-        strcpy_s(Attribute, len, _val);
+        auto *const oldPtr = value_;
+        value_ = new char[len];
+        strcpy_s(value_, len, _val);
         delete[] oldPtr;
 
-        if (bBreak)
-            pVStringCodec->VariableChanged();
+        if (break_)
+            stringCodec_.VariableChanged();
     }
 
-    void Release()
+    [[nodiscard]] auto GetAttributesNum() const
     {
-        if (bBreak)
-            pVStringCodec->VariableChanged();
-        ReleaseLeafs();
-        delete Attribute;
-        Attribute = nullptr;
+        return attributes_.size();
     }
 
-    void ReleaseLeafs()
+    [[nodiscard]] ATTRIBUTES *GetAttributeClass(const char *name)
     {
-        for (const auto &attribute : pAttributes)
-            delete attribute;
-        pAttributes.clear();
-    }
-
-    auto GetAttributesNum() const
-    {
-        return pAttributes.size();
-    }
-
-    ATTRIBUTES *GetAttributeClass(const char *name)
-    {
-        for (const auto &attribute : pAttributes)
+        for (const auto &attribute : attributes_)
             if (storm::iEquals(name, attribute->GetThisName()))
-                return attribute;
+                return attribute.get();
         return nullptr;
     }
 
-    ATTRIBUTES *GetAttributeClass(uint32_t n)
+    [[nodiscard]] ATTRIBUTES *GetAttributeClass(uint32_t n)
     {
-        return n >= pAttributes.size() ? nullptr : pAttributes[n];
+        return n >= attributes_.size() ? nullptr : attributes_[n].get();
     }
 
-    auto VerifyAttributeClass(const char *name)
+    [[nodiscard]] auto VerifyAttributeClass(const char *name)
     {
         auto *const pTemp = GetAttributeClass(name);
         return (pTemp) ? pTemp : CreateAttribute(name, "");
     }
 
-    char *GetAttribute(size_t n)
+    [[nodiscard]] char *GetAttribute(size_t n)
     {
-        return n >= pAttributes.size() ? nullptr : pAttributes[n]->Attribute;
+        return n >= attributes_.size() ? nullptr : attributes_[n]->value_;
     }
 
-    const char *GetAttributeName(size_t n)
+    [[nodiscard]] const char *GetAttributeName(size_t n)
     {
-        return n >= pAttributes.size() ? nullptr : pAttributes[n]->GetThisName();
+        return n >= attributes_.size() ? nullptr : attributes_[n]->GetThisName();
     }
 
-    char *GetAttribute(const char *name)
+    [[nodiscard]] char *GetAttribute(const char *name)
     {
         if (name == nullptr)
             return nullptr;
-        for (const auto &attribute : pAttributes)
+        for (const auto &attribute : attributes_)
             if (storm::iEquals(name, attribute->GetThisName()))
-                return attribute->Attribute;
+                return attribute->value_;
         return nullptr;
     }
 
-    auto GetAttributeAsDword(const char *name = nullptr, uint32_t def = 0)
+    [[nodiscard]] auto GetAttributeAsDword(const char *name = nullptr, uint32_t def = 0)
     {
         uint32_t vDword;
         char *pAttribute;
@@ -206,12 +197,12 @@ class ATTRIBUTES
         }
         else
         {
-            vDword = atol(Attribute);
+            vDword = atol(value_);
         }
         return vDword;
     }
 
-    auto GetAttributeAsPointer(const char *name = nullptr, uintptr_t def = 0)
+    [[nodiscard]] auto GetAttributeAsPointer(const char *name = nullptr, uintptr_t def = 0)
     {
         uintptr_t ptr;
         char *pAttribute;
@@ -224,12 +215,12 @@ class ATTRIBUTES
         }
         else
         {
-            ptr = atoll(Attribute);
+            ptr = atoll(value_);
         }
         return ptr;
     }
 
-    auto GetAttributeAsFloat(const char *name = nullptr, float def = 0)
+    [[nodiscard]] auto GetAttributeAsFloat(const char *name = nullptr, float def = 0)
     {
         float vFloat;
         char *pAttribute;
@@ -242,7 +233,7 @@ class ATTRIBUTES
         }
         else
         {
-            vFloat = static_cast<float>(atof(Attribute));
+            vFloat = static_cast<float>(atof(value_));
         }
         return vFloat;
     }
@@ -272,37 +263,24 @@ class ATTRIBUTES
     {
         if (name == nullptr)
             return nullptr;
-        auto *attr = pAttributes.emplace_back(new ATTRIBUTES(pVStringCodec));
-
-        attr->SetParent(this);
-        attr->SetName(name);
+        auto &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name));
 
         if (attribute)
         {
             const auto len = GetLen(strlen(attribute) + 1);
-            attr->Attribute = new char[len];
-            strcpy_s(attr->Attribute, len, attribute);
+            attr->value_ = new char[len];
+            strcpy_s(attr->value_, len, attribute);
         }
 
-        return attr;
+        return attr.get();
     }
 
     size_t SetAttribute(const char *name, const char *attribute)
     {
-        return SetAttribute(pVStringCodec->Convert(name), attribute);
+        return SetAttribute(stringCodec_.Convert(name), attribute);
     }
 
-    void Copy(ATTRIBUTES *pASource)
-    {
-        if (pASource == nullptr)
-            return;
-        ReleaseLeafs();
-        for (const auto &attribute : pASource->pAttributes)
-        {
-            const auto i = SetAttribute(attribute->GetThisName(), attribute->Attribute);
-            pAttributes[i]->Copy(attribute);
-        }
-    }
+    [[nodiscard]] ATTRIBUTES Copy() const;
 
     bool DeleteAttributeClassX(ATTRIBUTES *pA)
     {
@@ -310,24 +288,26 @@ class ATTRIBUTES
             return false;
         if (pA == this)
         {
-            for (const auto &attribute : pAttributes)
-                delete attribute;
-            pAttributes.clear();
+            attributes_.clear();
         }
         else
         {
-            for (uint32_t n = 0; n < pAttributes.size(); n++)
+            //            auto removed_it = std::remove_if(pAttributes.begin(), pAttributes.end(), [&](const auto&
+            //            item){
+            //                return item.get() == pA;
+            //            });
+            //            return removed_it != pAttributes.end();
+            for (uint32_t n = 0; n < attributes_.size(); n++)
             {
-                if (pAttributes[n] == pA)
+                if (attributes_[n].get() == pA)
                 {
-                    delete pA;
-                    for (auto i = n; i < pAttributes.size() - 1; i++)
-                        pAttributes[i] = pAttributes[i + 1];
+                    for (auto i = n; i < attributes_.size() - 1; i++)
+                        attributes_[i] = std::move(attributes_[i + 1]);
 
-                    pAttributes.pop_back();
+                    attributes_.pop_back();
                     return true;
                 }
-                if (pAttributes[n]->DeleteAttributeClassX(pA))
+                if (attributes_[n]->DeleteAttributeClassX(pA))
                     return true;
             }
         }
@@ -350,7 +330,7 @@ class ATTRIBUTES
             switch (access_string[n])
             {
             case '.':
-                dwNameCode = pVStringCodec->Convert(access_string, n);
+                dwNameCode = stringCodec_.Convert(access_string, n);
                 pTemp = pRoot->GetAttributeClassByCode(dwNameCode);
                 if (!pTemp)
                     pTemp = pRoot->CreateNewAttribute(dwNameCode);
@@ -358,7 +338,7 @@ class ATTRIBUTES
                 return pResult;
 
             case 0:
-                dwNameCode = pVStringCodec->Convert(access_string);
+                dwNameCode = stringCodec_.Convert(access_string);
                 pResult = pRoot->GetAttributeClassByCode(dwNameCode);
                 return (pResult) ? pResult : pRoot->CreateNewAttribute(dwNameCode);
             }
@@ -367,7 +347,7 @@ class ATTRIBUTES
         return nullptr;
     }
 
-    ATTRIBUTES *FindAClass(ATTRIBUTES *pRoot, const char *access_string)
+    [[nodiscard]] ATTRIBUTES *FindAClass(ATTRIBUTES *pRoot, const char *access_string)
     {
         uint32_t n = 0;
         ATTRIBUTES *pResult = nullptr;
@@ -383,13 +363,13 @@ class ATTRIBUTES
             switch (access_string[n])
             {
             case '.':
-                pTemp = pRoot->GetAttributeClassByCode(pVStringCodec->Convert(access_string, n));
+                pTemp = pRoot->GetAttributeClassByCode(stringCodec_.Convert(access_string, n));
                 if (!pTemp)
                     return nullptr;
                 pResult = FindAClass(pTemp, &access_string[n + 1]);
                 return pResult;
             case 0:
-                pResult = pRoot->GetAttributeClassByCode(pVStringCodec->Convert(access_string));
+                pResult = pRoot->GetAttributeClassByCode(stringCodec_.Convert(access_string));
                 return pResult;
             }
             n++;
@@ -397,15 +377,15 @@ class ATTRIBUTES
         return nullptr;
     }
 
-    ATTRIBUTES *GetAttributeClassByCode(uint32_t name_code)
+    [[nodiscard]] ATTRIBUTES *GetAttributeClassByCode(uint32_t name_code)
     {
-        for (const auto &attribute : pAttributes)
-            if (name_code == attribute->nNameCode)
-                return attribute;
+        for (const auto &attribute : attributes_)
+            if (name_code == attribute->nameCode_)
+                return attribute.get();
         return nullptr;
     }
 
-    ATTRIBUTES *VerifyAttributeClassByCode(uint32_t name_code)
+    [[nodiscard]] ATTRIBUTES *VerifyAttributeClassByCode(uint32_t name_code)
     {
         ATTRIBUTES *pTemp;
         pTemp = GetAttributeClassByCode(name_code);
@@ -416,26 +396,24 @@ class ATTRIBUTES
 
     ATTRIBUTES *CreateAttribute(uint32_t name_code, const char *attribute)
     {
-        auto *attr = pAttributes.emplace_back(new ATTRIBUTES(pVStringCodec));
+        auto &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name_code));
 
-        attr->SetParent(this);
-        attr->nNameCode = name_code;
         if (attribute)
         {
             const auto len = GetLen(strlen(attribute) + 1);
-            attr->Attribute = new char[len];
-            strcpy_s(attr->Attribute, len, attribute);
+            attr->value_ = new char[len];
+            strcpy_s(attr->value_, len, attribute);
         }
 
-        return attr;
+        return attr.get();
     }
 
-    size_t GetALen(size_t dwLen)
+    [[nodiscard]] size_t GetALen(size_t dwLen)
     {
-        return (pParent) ? (1 + dwLen / 2) * 2 : (1 + dwLen / 8) * 8;
+        return (parent_) ? (1 + dwLen / 2) * 2 : (1 + dwLen / 8) * 8;
     }
 
-    size_t GetLen(size_t dwLen, uint8_t dwAlign = 8)
+    [[nodiscard]] size_t GetLen(size_t dwLen, uint8_t dwAlign = 8)
     {
         return (1 + dwLen / dwAlign) * dwAlign;
     }
@@ -447,48 +425,46 @@ class ATTRIBUTES
             len = GetLen(strlen(attribute) + 1);
 
         size_t n;
-        for (n = 0; n < pAttributes.size(); n++)
+        for (n = 0; n < attributes_.size(); n++)
         {
-            if (pAttributes[n]->nNameCode == name_code)
+            if (attributes_[n]->nameCode_ == name_code)
             {
                 if (attribute)
                 {
-                    auto *const oldPtr = pAttributes[n]->Attribute;
-                    pAttributes[n]->Attribute = new char[len];
-                    strcpy_s(pAttributes[n]->Attribute, len, attribute);
+                    auto *const oldPtr = attributes_[n]->value_;
+                    attributes_[n]->value_ = new char[len];
+                    strcpy_s(attributes_[n]->value_, len, attribute);
                     delete[] oldPtr;
                 }
                 else
                 {
-                    delete[] pAttributes[n]->Attribute;
+                    delete[] attributes_[n]->value_;
 
-                    pAttributes[n]->Attribute = nullptr;
+                    attributes_[n]->value_ = nullptr;
                 }
                 return n;
             }
         }
 
-        auto *attr = pAttributes.emplace_back(new ATTRIBUTES(pVStringCodec));
+        auto &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name_code));
 
-        attr->SetParent(this);
-        attr->nNameCode = name_code;
         if (attribute)
         {
-            pAttributes[n]->Attribute = new char[len];
-            strcpy_s(pAttributes[n]->Attribute, len, attribute);
+            attributes_[n]->value_ = new char[len];
+            strcpy_s(attributes_[n]->value_, len, attribute);
         }
 
-        return pAttributes.size() - 1;
+        return attributes_.size() - 1;
     }
 
-    uint32_t GetThisNameCode()
+    [[nodiscard]] uint32_t GetThisNameCode() const noexcept
     {
-        return nNameCode;
+        return nameCode_;
     }
 
-    void SetNameCode(uint32_t n)
+    void SetNameCode(uint32_t n) noexcept
     {
-        nNameCode = n;
+        nameCode_ = n;
     }
 
     /*void Dump(ATTRIBUTES *pA, int32_t level)
@@ -510,4 +486,17 @@ class ATTRIBUTES
             Dump(pA->GetAttributeClass(pA->GetAttributeName(n)), level + 2);
         }
     }*/
+
+    [[nodiscard]] auto GetStringCodec() const noexcept -> VSTRING_CODEC &
+    {
+        return stringCodec_;
+    }
+
+  private:
+    ATTRIBUTES(VSTRING_CODEC &string_codec, ATTRIBUTES *parent, const std::string_view &name);
+    ATTRIBUTES(VSTRING_CODEC &string_codec, ATTRIBUTES *parent, uint32_t name_code);
+
+    void Release() noexcept;
+
+    void ReleaseLeafs();
 };
