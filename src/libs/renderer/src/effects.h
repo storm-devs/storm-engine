@@ -1,3 +1,4 @@
+#ifdef _WIN32 // Effects
 #pragma once
 
 #include <cstdint>
@@ -54,3 +55,4 @@ class Effects final
     // Get effect pointer by technique name
     ID3DXEffect *getEffectPointer(const std::string &techniqueName);
 };
+#endif // _WIN32

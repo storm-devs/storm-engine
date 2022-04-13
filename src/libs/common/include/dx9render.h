@@ -255,9 +255,8 @@ class VDX9RENDER : public SERVICE
     virtual HRESULT SetVertexDeclaration(IDirect3DVertexDeclaration9 *pDecl) = 0;
     virtual HRESULT CreatePixelShader(CONST uint32_t *pFunction, IDirect3DPixelShader9 **ppShader) = 0;
     virtual HRESULT CreateVertexShader(CONST uint32_t *pFunction, IDirect3DVertexShader9 **ppShader) = 0;
-    /*virtual HRESULT DeletePixelShader( DWORD Handle ) = 0;
-    virtual HRESULT DeleteVertexShader( DWORD Handle ) =
-     * 0;*/
+    virtual HRESULT DeletePixelShader(IDirect3DPixelShader9 *pShader) = 0;
+    virtual HRESULT DeleteVertexShader(IDirect3DVertexShader9 *pShader) = 0;
     virtual HRESULT SetVertexShader(IDirect3DVertexShader9 *pShader) = 0;
     virtual HRESULT SetPixelShader(IDirect3DPixelShader9 *pShader) = 0;
     /*virtual HRESULT SetFVFConstant(DWORD Register, CONST void * pConstantData, DWORD  ConstantCount ) = 0;*/

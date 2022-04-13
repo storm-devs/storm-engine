@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef _WIN32 // Effects
 #include "effects.h"
+#else
+#include "technique.h"
+#endif
 #include "font.h"
 #include "video_texture.h"
 #include "defines.h"
@@ -294,8 +298,8 @@ class DX9RENDER : public VDX9RENDER
     HRESULT SetVertexDeclaration(IDirect3DVertexDeclaration9 *pDecl) override;
     HRESULT CreatePixelShader(CONST uint32_t *pFunction, IDirect3DPixelShader9 **ppShader) override;
     HRESULT CreateVertexShader(CONST uint32_t *pFunction, IDirect3DVertexShader9 **ppShader) override;
-    /*virtual HRESULT DeletePixelShader( DWORD Handle );
-    virtual HRESULT DeleteVertexShader( DWORD Handle );*/
+    HRESULT DeletePixelShader(IDirect3DPixelShader9 *pShader) override;
+    HRESULT DeleteVertexShader(IDirect3DVertexShader9 *pShader) override;
     HRESULT SetVertexShader(IDirect3DVertexShader9 *pShader) override;
     HRESULT SetPixelShader(IDirect3DPixelShader9 *pShader) override;
     /*virtual HRESULT SetFVFConstant(DWORD Register, CONST void* pConstantData, DWORD  ConstantCount );*/
@@ -460,7 +464,11 @@ private:
 
     float FovMultiplier{ 1.0f };
 
+#ifdef _WIN32 // Effects
     Effects effects_;
+#else
+    CTechnique *pTechnique;
+#endif
 
     char *fontIniFileName;
     int32_t nFontQuantity;
