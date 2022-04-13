@@ -1798,9 +1798,6 @@ uint32_t SEA::AttributeChanged(ATTRIBUTES *pAttribute)
     ATTRIBUTES *pParent = pAttribute->GetParent();
     ATTRIBUTES *pParent2 = (pParent) ? pParent->GetParent() : nullptr;
 
-    const char *sName = pAttribute->GetThisName();
-    const char *sValue = pAttribute->GetThisAttr();
-
     if (*pParent == "isDone")
     {
         Realize(0);

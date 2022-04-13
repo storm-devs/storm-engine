@@ -32,8 +32,8 @@ class InfoHandler : public Entity
     }
 
   protected:
-    void StringToBufer(char *outStr, int sizeBuf, char *inStr, int copySize) const;
-    char *GetCutString(char *pstr, int nOutWidth, float fScale) const;
+    void StringToBufer(char *outStr, int sizeBuf, const char *inStr, int copySize) const;
+    const char *GetCutString(const char *pstr, int nOutWidth, float fScale) const;
     bool DoPreOut();
 
     IDirect3DSurface9 *m_pSurface;

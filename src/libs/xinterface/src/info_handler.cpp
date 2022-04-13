@@ -108,7 +108,7 @@ bool InfoHandler::DoPreOut()
 
     auto isOK = false;
     uint32_t dwBCol, dwFCol;
-    char *inStrStart;
+    const char *inStrStart;
     char outStr[1048];
     D3DSURFACE_DESC desc;
     float fScale;
@@ -148,7 +148,7 @@ bool InfoHandler::DoPreOut()
         return false;
 
     auto ntmp = 0;
-    char *ps = nullptr;
+    const char *ps = nullptr;
     if (inStrStart)
     {
         ntmp = m_rs->StringWidth(inStrStart, 0, fScale);
@@ -311,7 +311,7 @@ bool InfoHandler::DoPreOut()
     return isOK;
 }
 
-char *InfoHandler::GetCutString(char *pstr, int nOutWidth, float fScale) const
+const char *InfoHandler::GetCutString(const char *pstr, int nOutWidth, float fScale) const
 {
     auto spaceWait = false;
     char param[1024];
@@ -320,8 +320,8 @@ char *InfoHandler::GetCutString(char *pstr, int nOutWidth, float fScale) const
     while (pstr && (*pstr == '\n' || *pstr == '\r' || *pstr == 32))
         pstr++;
 
-    char *oldps = nullptr;
-    char *ps;
+    const char *oldps = nullptr;
+    const char *ps;
     for (ps = pstr; ps && *ps; ps++)
     {
         if (*ps == '\n' || *ps == '\r')
@@ -375,7 +375,7 @@ char *InfoHandler::GetCutString(char *pstr, int nOutWidth, float fScale) const
     return ps;
 }
 
-void InfoHandler::StringToBufer(char *outStr, int sizeBuf, char *inStr, int copySize) const
+void InfoHandler::StringToBufer(char *outStr, int sizeBuf, const char *inStr, int copySize) const
 {
     if (outStr == nullptr || sizeBuf <= 0)
         return;

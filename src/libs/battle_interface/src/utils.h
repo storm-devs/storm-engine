@@ -88,7 +88,7 @@ class BIUtils
     static int32_t GetIntFromAttr(ATTRIBUTES *pA, const char *name, int32_t defVal);
     static float GetFloatFromAttr(ATTRIBUTES *pA, const char *name, float defVal);
     static bool ReadStringFromAttr(ATTRIBUTES *pA, const char *name, char *buf, int32_t bufSize, const char *defVal);
-    static char *GetStringFromAttr(ATTRIBUTES *pA, const char *name, const char *defVal);
+    static const char *GetStringFromAttr(ATTRIBUTES *pA, const char *name, const char *defVal);
     static int32_t GetTextureFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *sAttrName);
     static bool ReadRectFromAttr(ATTRIBUTES *pA, const char *name, FRECT &rOut, FRECT &rDefault);
     static bool ReadRectFromAttr(ATTRIBUTES *pA, const char *name, RECT &rOut, RECT &rDefault);

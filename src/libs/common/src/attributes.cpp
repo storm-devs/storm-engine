@@ -17,12 +17,12 @@ ATTRIBUTES::ATTRIBUTES(VSTRING_CODEC &string_codec, ATTRIBUTES *parent, const ui
 ATTRIBUTES ATTRIBUTES::Copy() const
 {
     ATTRIBUTES result(stringCodec_, nullptr, nameCode_);
-    result.SetValue(value_);
+    result.value_ = value_;
 
     for (const auto &attribute : attributes_)
     {
-        const auto i = result.SetAttribute(attribute->GetThisName(), attribute->value_);
-        result.attributes_[i] = std::make_unique<ATTRIBUTES>(attribute->Copy());
+        auto &new_child = result.CreateAttribute(attribute->GetThisName());
+        new_child = attribute->Copy();
     }
 
     return result;
@@ -32,11 +32,4 @@ void ATTRIBUTES::Release() noexcept
 {
     if (break_)
         stringCodec_.VariableChanged();
-    delete[] value_;
-    value_ = nullptr;
-}
-
-void ATTRIBUTES::ReleaseLeafs()
-{
-    attributes_.clear();
 }

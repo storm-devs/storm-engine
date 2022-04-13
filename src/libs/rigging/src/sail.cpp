@@ -2110,10 +2110,10 @@ void SAIL::SetSailTextures(int32_t grNum, VDATA *pvd) const
     gdata[grNum].maxSP = pA->GetAttributeAsDword("MaxSP", gdata[grNum].maxSP);
 
     // main texture
-    char *pcNormalName = pA->GetAttribute("normalTex");
+    const char *pcNormalName = pA->GetAttribute("normalTex");
     // coat of arms of a texture
     auto *pGeraldTexture = (IDirect3DTexture9 *)pA->GetAttributeAsPointer("geraldTexPointer", 0);
-    char *pcGeraldName = pA->GetAttribute("geraldTex");
+    const char *pcGeraldName = pA->GetAttribute("geraldTex");
     //
     gdata[grNum].dwSailsColor = pA->GetAttributeAsDword("sailscolor", 0xFFFFFFFF);
 

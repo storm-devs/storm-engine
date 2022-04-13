@@ -2,6 +2,9 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "storm_assert.h"
@@ -41,7 +44,7 @@ class ATTRIBUTES final
 {
     VSTRING_CODEC &stringCodec_;
     uint32_t nameCode_{};
-    char *value_ = nullptr;
+    std::optional<std::string> value_;
     std::vector<std::unique_ptr<ATTRIBUTES>> attributes_;
     ATTRIBUTES *parent_ = nullptr;
     bool break_ = false;
@@ -64,18 +67,16 @@ class ATTRIBUTES final
 
     ATTRIBUTES(ATTRIBUTES &&other)
     noexcept
-        : stringCodec_(other.stringCodec_), nameCode_(other.nameCode_), value_(other.value_),
+        : stringCodec_(other.stringCodec_), nameCode_(other.nameCode_), value_(std::move(other.value_)),
           attributes_(std::move(other.attributes_)), parent_(nullptr), break_(other.break_)
     {
-        other.value_ = nullptr;
     }
 
     ATTRIBUTES &operator=(ATTRIBUTES &&other) noexcept
     {
         stringCodec_ = other.stringCodec_;
         nameCode_ = other.nameCode_;
-        value_ = other.value_;
-        other.value_ = nullptr;
+        value_ = std::move(other.value_);
         attributes_ = std::move(other.attributes_);
         // Do not update parent
         // parent_ = other.parent_;
@@ -110,31 +111,43 @@ class ATTRIBUTES final
         return stringCodec_.Convert(nameCode_);
     }
 
-    [[nodiscard]] auto GetThisAttr() const
-    {
-        return value_;
+    [[nodiscard]] bool HasValue() const noexcept {
+        return value_.has_value();
     }
 
-    void SetName(const char *_name)
+    [[nodiscard]] const std::string &GetValue() const
     {
-        if (_name)
-            nameCode_ = stringCodec_.Convert(_name);
+        return *value_;
     }
 
-    void SetValue(const char *_val)
+    [[nodiscard]] const char *GetThisAttr() const
     {
-        if (_val == nullptr)
+        return value_ ? value_->c_str() : nullptr;
+    }
+
+    void SetName(const std::string_view &new_name)
+    {
+        nameCode_ = stringCodec_.Convert(new_name.data());
+    }
+
+    [[deprecated("Pass attribute value by string_view instead")]]
+    void SetValue(const char *new_value)
+    {
+        if (new_value == nullptr)
         {
-            delete[] value_;
-            value_ = nullptr;
-            return;
+            value_.reset();
+        }
+        else {
+            value_ = new_value;
         }
 
-        const auto len = GetLen(strlen(_val) + 1);
-        auto *const oldPtr = value_;
-        value_ = new char[len];
-        strcpy_s(value_, len, _val);
-        delete[] oldPtr;
+        if (break_)
+            stringCodec_.VariableChanged();
+    }
+
+    void SetValue(const std::string_view &new_value)
+    {
+        value_ = new_value;
 
         if (break_)
             stringCodec_.VariableChanged();
@@ -145,7 +158,7 @@ class ATTRIBUTES final
         return attributes_.size();
     }
 
-    [[nodiscard]] ATTRIBUTES *GetAttributeClass(const char *name)
+    [[nodiscard]] ATTRIBUTES *GetAttributeClass(const std::string_view &name)
     {
         for (const auto &attribute : attributes_)
             if (storm::iEquals(name, attribute->GetThisName()))
@@ -158,36 +171,50 @@ class ATTRIBUTES final
         return n >= attributes_.size() ? nullptr : attributes_[n].get();
     }
 
-    [[nodiscard]] auto VerifyAttributeClass(const char *name)
+    [[nodiscard]] auto VerifyAttributeClass(const std::string_view &name)
     {
         auto *const pTemp = GetAttributeClass(name);
         return (pTemp) ? pTemp : CreateAttribute(name, "");
     }
 
-    [[nodiscard]] char *GetAttribute(size_t n)
+    [[nodiscard]] const char *GetAttribute(size_t n)
     {
-        return n >= attributes_.size() ? nullptr : attributes_[n]->value_;
+        if (n < attributes_.size() && attributes_[n]->value_) {
+            return attributes_[n]->value_->c_str();
+        }
+        else {
+            return nullptr;
+        }
     }
 
     [[nodiscard]] const char *GetAttributeName(size_t n)
     {
-        return n >= attributes_.size() ? nullptr : attributes_[n]->GetThisName();
+        if (n < attributes_.size()) {
+            return attributes_[n]->GetThisName();
+        }
+        else {
+            return nullptr;
+        }
     }
 
-    [[nodiscard]] char *GetAttribute(const char *name)
+    [[nodiscard]] const char *GetAttribute(const std::string_view &name)
     {
-        if (name == nullptr)
-            return nullptr;
         for (const auto &attribute : attributes_)
-            if (storm::iEquals(name, attribute->GetThisName()))
-                return attribute->value_;
+            if (storm::iEquals(name, attribute->GetThisName())) {
+                if (attribute->value_) {
+                    return attribute->value_->c_str();
+                }
+                else {
+                    return nullptr;
+                }
+            }
         return nullptr;
     }
 
     [[nodiscard]] auto GetAttributeAsDword(const char *name = nullptr, uint32_t def = 0)
     {
         uint32_t vDword;
-        char *pAttribute;
+        const char *pAttribute;
         vDword = def;
         if (name)
         {
@@ -197,7 +224,7 @@ class ATTRIBUTES final
         }
         else
         {
-            vDword = atol(value_);
+            vDword = atol( value_->c_str());
         }
         return vDword;
     }
@@ -205,7 +232,7 @@ class ATTRIBUTES final
     [[nodiscard]] auto GetAttributeAsPointer(const char *name = nullptr, uintptr_t def = 0)
     {
         uintptr_t ptr;
-        char *pAttribute;
+        const char *pAttribute;
         ptr = def;
         if (name)
         {
@@ -215,7 +242,7 @@ class ATTRIBUTES final
         }
         else
         {
-            ptr = atoll(value_);
+            ptr = atoll(value_->c_str());
         }
         return ptr;
     }
@@ -223,7 +250,7 @@ class ATTRIBUTES final
     [[nodiscard]] auto GetAttributeAsFloat(const char *name = nullptr, float def = 0)
     {
         float vFloat;
-        char *pAttribute;
+        const char *pAttribute;
         vFloat = def;
         if (name)
         {
@@ -233,7 +260,7 @@ class ATTRIBUTES final
         }
         else
         {
-            vFloat = static_cast<float>(atof(value_));
+            vFloat = static_cast<float>(atof(value_->c_str()));
         }
         return vFloat;
     }
@@ -259,25 +286,33 @@ class ATTRIBUTES final
         return true;
     }
 
-    ATTRIBUTES *CreateAttribute(const char *name, const char *attribute)
+    ATTRIBUTES &CreateAttribute(const std::string_view &name)
     {
-        if (name == nullptr)
-            return nullptr;
+        auto &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name));
+        return *attr;
+    }
+
+    ATTRIBUTES *CreateAttribute(const std::string_view &name, const char *attribute)
+    {
         auto &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name));
 
         if (attribute)
         {
-            const auto len = GetLen(strlen(attribute) + 1);
-            attr->value_ = new char[len];
-            strcpy_s(attr->value_, len, attribute);
+            attr->value_ = attribute;
         }
 
         return attr.get();
     }
 
-    size_t SetAttribute(const char *name, const char *attribute)
+    [[deprecated("Pass attribute value by string_view instead")]]
+    size_t SetAttribute(const std::string_view &name, const char *attribute)
     {
-        return SetAttribute(stringCodec_.Convert(name), attribute);
+        return SetAttribute(stringCodec_.Convert(name.data()), attribute);
+    }
+
+    size_t SetAttribute(const std::string_view &name, const std::string_view &attribute)
+    {
+        return SetAttribute(stringCodec_.Convert(name.data()), attribute);
     }
 
     [[nodiscard]] ATTRIBUTES Copy() const;
@@ -400,30 +435,15 @@ class ATTRIBUTES final
 
         if (attribute)
         {
-            const auto len = GetLen(strlen(attribute) + 1);
-            attr->value_ = new char[len];
-            strcpy_s(attr->value_, len, attribute);
+            attr->value_ = attribute;
         }
 
         return attr.get();
     }
 
-    [[nodiscard]] size_t GetALen(size_t dwLen)
-    {
-        return (parent_) ? (1 + dwLen / 2) * 2 : (1 + dwLen / 8) * 8;
-    }
-
-    [[nodiscard]] size_t GetLen(size_t dwLen, uint8_t dwAlign = 8)
-    {
-        return (1 + dwLen / dwAlign) * dwAlign;
-    }
-
+    [[deprecated("Pass attribute value by string_view instead")]]
     size_t SetAttribute(uint32_t name_code, const char *attribute)
     {
-        size_t len = 0;
-        if (attribute)
-            len = GetLen(strlen(attribute) + 1);
-
         size_t n;
         for (n = 0; n < attributes_.size(); n++)
         {
@@ -431,16 +451,11 @@ class ATTRIBUTES final
             {
                 if (attribute)
                 {
-                    auto *const oldPtr = attributes_[n]->value_;
-                    attributes_[n]->value_ = new char[len];
-                    strcpy_s(attributes_[n]->value_, len, attribute);
-                    delete[] oldPtr;
+                    attributes_[n]->value_ = attribute;
                 }
                 else
                 {
-                    delete[] attributes_[n]->value_;
-
-                    attributes_[n]->value_ = nullptr;
+                    attributes_[n]->value_.reset();
                 }
                 return n;
             }
@@ -450,9 +465,30 @@ class ATTRIBUTES final
 
         if (attribute)
         {
-            attributes_[n]->value_ = new char[len];
-            strcpy_s(attributes_[n]->value_, len, attribute);
+            attributes_[n]->value_ = attribute;
         }
+        else {
+            attributes_[n]->value_.reset();
+        }
+
+        return attributes_.size() - 1;
+    }
+
+    size_t SetAttribute(uint32_t name_code, const std::string_view &attribute)
+    {
+        size_t n;
+        for (n = 0; n < attributes_.size(); n++)
+        {
+            if (attributes_[n]->nameCode_ == name_code)
+            {
+                attributes_[n]->value_ = attribute;
+                return n;
+            }
+        }
+
+        auto &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name_code));
+
+        attributes_[n]->value_ = attribute;
 
         return attributes_.size() - 1;
     }
@@ -467,27 +503,7 @@ class ATTRIBUTES final
         nameCode_ = n;
     }
 
-    /*void Dump(ATTRIBUTES *pA, int32_t level)
-    {
-        char buffer[128];
-        if (pA == nullptr)
-            return;
-
-        if (level >= 128)
-            level = 127;
-        if (level != 0)
-            memset(buffer, ' ', level);
-        buffer[level] = 0;
-
-        for (uint32_t n = 0; n < pA->GetAttributesNum(); n++)
-        {
-            //~!~
-            xtrace("%s%s = %s", buffer, pA->GetAttributeName(n), pA->GetAttribute(n));
-            Dump(pA->GetAttributeClass(pA->GetAttributeName(n)), level + 2);
-        }
-    }*/
-
-    [[nodiscard]] auto GetStringCodec() const noexcept -> VSTRING_CODEC &
+    [[nodiscard]] VSTRING_CODEC &GetStringCodec() const noexcept
     {
         return stringCodec_;
     }
@@ -497,6 +513,4 @@ class ATTRIBUTES final
     ATTRIBUTES(VSTRING_CODEC &string_codec, ATTRIBUTES *parent, uint32_t name_code);
 
     void Release() noexcept;
-
-    void ReleaseLeafs();
 };
