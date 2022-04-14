@@ -116,11 +116,12 @@ bool FILE_SERVICE::_FileOrDirectoryExists(const char *p)
 }
 
 std::vector<std::string> FILE_SERVICE::_GetPathsOrFilenamesByMask(const char *sourcePath, const char *mask,
-                                                                  bool getPaths, bool onlyDirs, bool onlyFiles)
+                                                                  bool getPaths, bool onlyDirs, bool onlyFiles,
+                                                                  bool recursive)
 {
     std::vector<std::string> result;
 
-    const auto fsPaths = _GetFsPathsByMask(sourcePath, mask, getPaths, onlyDirs, onlyFiles);
+    const auto fsPaths = _GetFsPathsByMask(sourcePath, mask, getPaths, onlyDirs, onlyFiles, recursive);
     for (std::filesystem::path curPath : fsPaths)
     {
         auto u8Path = curPath.u8string();
@@ -130,30 +131,19 @@ std::vector<std::string> FILE_SERVICE::_GetPathsOrFilenamesByMask(const char *so
     return result;
 }
 
-std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *sourcePath, const char *mask,
-                                                                   bool getPaths, bool onlyDirs, bool onlyFiles)
+template <typename DirIterator>
+std::vector<std::filesystem::path> iter_directory(DirIterator &it, std::error_code &ec, const char *mask,
+                                                  bool getPaths, bool onlyDirs, bool onlyFiles)
 {
     std::vector<std::filesystem::path> result;
 
-    std::filesystem::path srcPath;
-    if (sourcePath == nullptr || sourcePath[0] =='\0')
-    {
-        srcPath = std::filesystem::current_path();
-    }
-    else
-    {
-        srcPath = std::filesystem::u8path(ConvertPathResource(sourcePath));
-    }
-
-    std::filesystem::path curPath;
-    std::error_code ec;
-    auto it = std::filesystem::directory_iterator(srcPath, ec);
     if (ec)
     {
         spdlog::warn("Failed to open save folder: {}", ec.message());
         return result;
     }
 
+    std::filesystem::path curPath;
     for (auto &dirEntry : it)
     {
         bool thisIsDir = dirEntry.is_directory();
@@ -176,6 +166,33 @@ std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *s
     }
 
     return result;
+}
+
+std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *sourcePath, const char *mask,
+                                                                   bool getPaths, bool onlyDirs, bool onlyFiles,
+                                                                   bool recursive)
+{
+    std::filesystem::path srcPath;
+    if (sourcePath == nullptr || sourcePath[0] =='\0')
+    {
+        srcPath = std::filesystem::current_path();
+    }
+    else
+    {
+        srcPath = std::filesystem::u8path(ConvertPathResource(sourcePath));
+    }
+
+    std::error_code ec;
+    if (recursive)
+    {
+        auto it = std::filesystem::recursive_directory_iterator(srcPath, ec);
+        return iter_directory(it, ec, mask, getPaths, onlyDirs, onlyFiles);
+    }
+    else
+    {
+        auto it = std::filesystem::directory_iterator(srcPath, ec);
+        return iter_directory(it, ec, mask, getPaths, onlyDirs, onlyFiles);
+    }
 }
 
 std::time_t FILE_SERVICE::_ToTimeT(std::filesystem::file_time_type tp)
