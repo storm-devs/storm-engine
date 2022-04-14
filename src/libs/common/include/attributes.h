@@ -39,6 +39,9 @@ constexpr size_t TSE_MAX_EVENT_LENGTH = 64;
 
 class ATTRIBUTES
 {
+    // TODO: remove with another iteration of rewriting this
+    friend class COMPILER;
+
     VSTRING_CODEC *pVStringCodec;
     uint32_t nNameCode;
     char *Attribute;
