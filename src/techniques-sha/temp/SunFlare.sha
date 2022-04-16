@@ -1,0 +1,27 @@
+block test123()
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogEnable = false
+			Lighting = false;
+			CullMode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+
+			ColorOp[0] = modulate;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = current;
+
+			AlphaOp[0] = disable;
+
+			ColorOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+

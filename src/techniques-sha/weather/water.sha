@@ -1,0 +1,34 @@
+block water_pena()
+{
+	technique t0
+	{
+		pass p0
+		{
+			ZWriteEnable = false;
+			SpecularEnable = false;
+			Lighting = false;
+			CullMode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+
+			ColorOp[0] = modulate;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = tfactor;
+
+			AlphaOp[0] = SelectArg1;
+			AlphaArg1[0] = diffuse;
+
+			ColorOp[1] = lerp;
+			ColorArg0[1] = diffuse;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+
+			AlphaOp[1] = disable;
+
+                        ColorOp[2] = disable;
+                        ColorOp[3] = disable;
+		}
+	}
+}

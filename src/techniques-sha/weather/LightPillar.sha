@@ -1,0 +1,28 @@
+block LightPillar()
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogEnable = false
+			Lighting = false;
+			CullMode = cw;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+
+			ColorOp[0] = selectarg1;
+			ColorArg1[0] = current;
+
+			AlphaOp[0] = selectarg1;
+			AlphaArg1[0] = current;
+
+			ColorOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}

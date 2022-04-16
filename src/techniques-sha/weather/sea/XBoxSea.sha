@@ -1,0 +1,55 @@
+block XBox3Sea()
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogTableMode = none;
+			FogVertexMode = none;
+			CullMode = none;
+			ColorVertex = true;
+			SpecularEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = one;
+			DestBlend = srcalpha;
+			Lighting = false;
+			LocalViewer = true;
+			NormalizeNormals = false;
+
+			VertexShader = "SeaVS_GF3Reflect";
+			PixelShader = "SeaPS_XBoxReflect";
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+block XBox3SeaSunRoad
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogEnable = false;
+			CullMode = none;
+			ColorVertex = true;
+			SpecularEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = one;
+			DestBlend = srcalpha;
+			Lighting = false;
+			LocalViewer = true;
+			NormalizeNormals = false;
+
+			VertexShader = "SeaVS_GF3Reflect";
+			PixelShader = "SeaPS_XBoxReflectSunRoad";
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}

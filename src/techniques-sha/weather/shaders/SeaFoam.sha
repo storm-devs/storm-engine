@@ -1,0 +1,95 @@
+VertexShader SeaVS_Foam
+{
+	decl
+	{
+        stream[0];
+
+        float position[3];	// Position
+		color;					// diffuse
+        float texcoord[2];	// Tex coord 0
+    }
+	asm
+	{
+		#define CV_WORLDVIEWPROJ_0	0
+		#define CV_WORLDVIEWPROJ_1	1
+		#define CV_WORLDVIEWPROJ_2	2
+		#define CV_WORLDVIEWPROJ_3	3
+ 
+		#define V_POSITION 		v0
+		#define V_DIFFUSE 		v1
+		#define V_TEXTURE 		v2
+
+		vs.1.0
+
+		dcl_position v0
+		dcl_color v1
+		dcl_texcoord v2
+
+		; Transform position to clip space and output it
+		dp4 oPos.x, V_POSITION, c[CV_WORLDVIEWPROJ_0]
+		dp4 oPos.y, V_POSITION, c[CV_WORLDVIEWPROJ_1]
+		dp4 oPos.z, V_POSITION, c[CV_WORLDVIEWPROJ_2]
+		dp4 oPos.w, V_POSITION, c[CV_WORLDVIEWPROJ_3]
+
+		mov oD0, V_DIFFUSE
+
+		; fog attenuation
+		//sub TEMP.z,TEMP.z,c[CV_FOG].y				; dist -= start_fog_distance
+		//max TEMP.z,c[CV_ZERO].x,TEMP.z				; clamp to zero
+		//mul TEMP.z,TEMP.z,c[CV_FOG].x				; dist * density
+		//expp TEMP.z,TEMP.z							; res = e^(dist * density)
+		//rcp TEMP.z,TEMP.z							; res = 1 / e^(dist * density)
+		//mad oFog.x,TEMP.z,-c[CV_FOG].z,c[CV_FOG].z 	; fog = 255.0f * (1.0f/e^(bla) - 1.0f)
+
+		mov oT0.xy, V_TEXTURE
+		mov oT1.xy, V_TEXTURE
+	}
+}
+
+PixelShader SeaPS_Foam
+{
+	asm
+	{
+		#include "reflect.h"
+
+		ps.1.1
+
+		tex t0
+		tex t1
+
+		mov r1, t0
+		//mul r1.rgb, r1, c[CP_FOAM_COLOR]
+		mul r1.rgb, r1, c0
+
+		lrp r0.rgb, v0, t1, r1
+		mov r0.a,v0
+	}
+}
+
+block SeaFoamShader(dword dwColor)
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogEnable = false;
+			CullMode = none;
+			SpecularEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = one;
+
+			Lighting = false;
+
+			VertexShader = "SeaVS_Foam";
+			PixelShader = "SeaPS_Foam";
+			VertexShaderConstant[0] = WorldViewProj;
+			PixelShaderConstant[0] = <dwColor>;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}

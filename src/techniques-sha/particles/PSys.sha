@@ -1,0 +1,143 @@
+//Particles technique
+VertexShader VS_Particles
+{
+	decl
+	{
+		stream[0];
+
+		float position[3]; 		// #vRelativePos
+		color;   				// #dwColor
+		float texcoord[2]; 		// #vTexCoord1
+		float texcoord[2]; 		// #vTexCoord2
+		float tangent[1]; 		// #fAngle   
+		float blendweight[1]; 	// #fBlend
+		float texcoord[3]; 		// #vParticlePos
+		float texcoord[1]; 		// #AddPowerK
+	}
+
+	asm
+	{
+		vs.1.1
+
+		dcl_position v0
+		dcl_color v1
+		dcl_texcoord v2
+		dcl_texcoord1 v3
+		dcl_tangent v4
+		dcl_blendweight v5
+		dcl_texcoord2 v6
+		dcl_texcoord3 v7
+
+//-----------------------------------------------
+
+		mov oD0, v1             //mov oD0, dwColor
+		mov oT0, v2             //mov oT0, vTexCoord1
+		mov oT1, v3             //mov oT0, vTexCoord2
+		mov oT3, v2
+
+
+//-------------------------------
+		mov oT2.xyzw, c[13].xxxx  //mov oT2.xyzw, c[GC_CONSTANT].xxxx                              
+		mov oT2.x, v7.x           //mov oT2.x, AddPowerK.x
+//-------------------------------    
+
+		mov oD1.xyzw, v5.xxxx    //mov oD1.xyzw, fBlend.xxxx  
+		
+//-----------------------------------------------
+		mad r7.xy, v4.x, c[1].x, c[1].yzzw        //mad r7.xy, fAngle.x, c[GC_FREE+1].x, c[GC_FREE+1].yzzw
+		frc r2.xy, r7.xy                          //frc r2.xy, r7.xy
+		mul r9.xy, r2, c[1].w                     //mul r9.xy, r2, c[GC_FREE+1].w
+		add r4.xy, r9, c[2].x                     //add r4.xy, r9, c[GC_FREE+2].x
+		mul r11.xy, r4, r4                        //mul r11.xy, r4, r4
+		mad r1.xy, r11.xy, c[2].w, c[2].y         //mad r1.xy, r11.xy, c[GC_FREE+2].w, c[GC_FREE+2].y
+		mad r3.xy, r11.xy, r1, c[2].z             //mad r3.xy, r11.xy, r1, c[GC_FREE+2].z
+		mad r5.xy, r11.xy, r3, c[0].x             //mad r5.xy, r11.xy, r3, c[GC_FREE+0].x
+		mad r7.xy, r11.xy, r5, c[0].w             //mad r7.xy, r11.xy, r5, c[GC_FREE+0].w
+		mad r0.xy, r11.xy, r7, c[0].y             //mad r0.xy, r11.xy, r7, c[GC_FREE+0].y
+//-----------------------------------------------		
+
+//-----------------------------------------------
+//направление света...   
+		mad oD1.x, -r0.y, c[13].z, c[13].z
+		mad oD1.y, -r0.x, c[13].z, c[13].z
+		mov oD1.z, c[13].z   
+
+
+		mov r1, v0                                        //mov r1, vRelativePos
+		mul r3.x, r1.y, r0.y				; r3.x = y*sin        //mul r3.x, r1.y, r0.y 
+		mul r3.y, r1.x, r0.x				; r3.y = x*cos        //mul r3.y, r1.x, r0.x
+		add r2.x, r3.y, r3.x        ; X = x*cos + y*sin;  //add r2.x, r3.y, r3.x
+		
+		
+		mul r3.x, r1.x, r0.y				; r3.x = x*sin        //mul r3.x, r1.x, r0.y			
+		mul r3.y, r1.y, r0.x				; r3.y = y*cos        //mul r3.y, r1.y, r0.x			
+		add r2.y, r3.y, -r3.x				; Y = y*cos - x*sin;  //add r2.y, r3.y, -r3.x			
+			
+		mov r2.z, c[13].x        //mov r2.z, c[GC_CONSTANT].x 
+		mov r2.w, c[13].x        //mov r2.w, c[GC_CONSTANT].x
+			
+//-----------------------------------------------						
+
+		m4x4 r3, v6, c[3]          //m4x4 r3, vParticlePos, c[GC_FREE+3] 
+		add r2, r2, r3             //add r2, r2, r3                      
+
+//-----------------------------------------------				
+			
+		m4x4 oPos, r2, c[7]        //m4x4 oPos, r2, c[GC_FREE+7]
+	}
+}
+
+
+
+PixelShader PS_Particles
+{
+	asm
+	{
+		ps.1.1
+		
+		def c0, 0.6f,0.6f,0.6f,0.6f
+		
+		tex t0
+		tex t1
+		texcoord t2                  //t2 = (K, 0, 0, undefined)
+		tex t3 
+
+		lrp r0, v1.aaaa, t0, t1           //Блендим между кадрами
+		mul r1, r0, v0               //Учитываем дифуз
+
+		mul r0.rgb, r1, r1.aaaa      //Альфу учитываем
+
+		dp3 r1.rgba, t2, r1.aaaa         //r0.rgba = K*A
+
+		mov r0.a, r1.a
+		
+		dp3 r1, t3_bx2, v1_bx2  //бамп посчитали
+		add r1, r1, c0
+		mul r0.rgb, r0, r1  
+	}
+}
+
+
+block AdvancedParticles()
+{
+	technique t0
+	{
+		pass p0
+		{
+			FogEnable = false;
+			ZWriteenable = false;
+		  
+			SrcBlend = one;
+			DestBlend = invsrcalpha;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+	  
+			PixelShader = "PS_Particles";
+			VertexShader = "VS_Particles";
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}

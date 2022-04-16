@@ -1,0 +1,54 @@
+
+block sh_Editor_back()
+{
+	technique t0
+	{
+		pass p0
+		{
+
+			CullMode = none;
+			Lighting = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			Zenable= false;
+			ColorArg1[0] = diffuse;
+			ColorOp[0] = selectarg1;
+			ColorOp[1] = disable;
+            AlphaArg1[0] = diffuse;
+			AlphaOp[0] = selectarg1;
+			Edgeantialias= true;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+
+block sh_Editor_front()
+{
+	technique t0
+	{
+		pass p0
+		{
+
+			CullMode = none;
+			Lighting = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			Edgeantialias= true;
+			Zenable= true;
+			ColorArg1[0] = diffuse;
+			ColorOp[0] = selectarg1;
+            AlphaArg1[0] = diffuse;
+			AlphaOp[0] = selectarg1;
+			ColorOp[1] = disable;
+			
+			Render.Draw
+			
+			Restore.States
+		}
+	}
+}
+

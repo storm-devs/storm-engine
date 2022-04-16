@@ -1,0 +1,92 @@
+block Artifact()
+{
+	technique t0
+	{
+		pass p0
+		{
+			CullMode = none;
+			ColorVertex = true;
+			AlphaTestEnable = true;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			AlphaRef = 0x0;
+			DestBlend = one;
+			ZWriteEnable = false;
+			ZEnable = false;
+			FogEnable = true;
+
+			ColorOp[0] = selectarg1;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = diffuse;
+			AddressV[0] = CLAMP;
+
+			ColorOp[1] = blenddiffusealpha;
+			ColorArg0[1] = diffuse;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+			AddressV[1] = CLAMP;
+
+			ColorOp[2] = modulate;
+			ColorArg0[2] = diffuse;
+			ColorArg1[2] = current;
+
+			AlphaOp[0] = selectarg1;
+			AlphaArg1[0] = texture;
+
+			AlphaOp[1] = lerp;
+			AlphaArg0[1] = diffuse;
+			AlphaArg1[1] = texture;
+			AlphaArg2[1] = current;
+
+			ColorOp[3] = disable;
+			AlphaOp[2] = disable;
+
+			Render.Draw
+
+			!ZEnable = true;
+			Render.Draw
+			Render.Draw
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block ParticlesArtifact()
+{
+	technique t0
+	{
+		pass p0
+		{
+			CullMode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			ZWriteEnable = false;
+			Zenable = false;
+			FogEnable = false;
+			Lighting = false;
+			Srcblend = srcalpha;
+			Destblend = one;
+			TextureFactor = 0x10FFFFFF;
+
+			Colorop[0] = modulate;
+			Colorarg1[0] = texture;
+			Colorarg2[0] = current;
+			ColorOp[1] = disable;
+
+			AlphaOp[0] = modulate;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = tfactor;
+			Alphaop[1] = disable;
+
+			Render.Draw
+			!ZEnable = true;
+			!TextureFactor = 0x35FFFFFF;
+			Render.Draw
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}

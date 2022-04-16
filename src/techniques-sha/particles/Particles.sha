@@ -1,0 +1,125 @@
+block Particles()
+{
+	technique t0
+	{
+		pass p0
+		{
+			CullMode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			ZWriteEnable = false;
+			FogEnable = true;
+			Lighting = false;
+			Texcoordindex[0] = 0;
+			Colorarg1[0] = texture;
+			Colorarg2[0] = current;
+			Colorop[0] = modulate;
+			ColorOp[1] = disable;
+			Srcblend = srcalpha;
+//			Destblend = one;
+			Destblend = invsrcalpha;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[1] = disable;
+			Alphaop[0] = modulate;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block Particles_Inv()
+{
+	technique t0
+	{
+		pass p0
+		{
+			CullMode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			ZWriteEnable = false;
+			FogEnable = true;
+			Lighting = false;
+			Texcoordindex[0] = 0;
+			Colorarg1[0] = texture_complement;
+			Colorarg2[0] = current;
+			Colorop[0] = modulate;
+			ColorOp[1] = disable;
+			Srcblend = srcalpha;
+//			Destblend = one;
+			Destblend = invsrcalpha;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[1] = disable;
+			Alphaop[0] = modulate;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block Particles_InvOld()
+{
+	technique t0
+	{
+		pass p0
+		{
+			CullMode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			ZWriteEnable = false;
+			FogEnable = true;
+//			Lighting = true;
+			Texcoordindex[0] = 0;
+			Colorarg2[0] = tfactor;
+			Colorarg1[0] = texture;
+			Colorop[0] = blenddiffusealpha;
+			ColorOp[1] = disable;
+			alphaop[0] = disable;
+			TextureFactor = 0xff000000;
+			Srcblend = zero;
+			Destblend = invsrccolor;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block ParticlesFire()
+{
+	technique t0
+	{
+		pass p0
+		{
+			CullMode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			ZWriteEnable = false;
+			FogEnable = true;
+			Lighting = false;
+			Texcoordindex[0] = 0;
+			Colorarg1[0] = texture;
+			Colorarg2[0] = current;
+			Colorop[0] = modulate;
+			ColorOp[1] = disable;
+			Srcblend = srcalpha;
+			Destblend = one;
+//			Destblend = invsrcalpha;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[1] = disable;
+			Alphaop[0] = modulate;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+

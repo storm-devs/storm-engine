@@ -1,0 +1,27 @@
+block CharacterSelector()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			FogEnable = true;
+			ZWriteEnable = false;
+			ZEnable = true;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = one;
+			ColorOp[0] = modulate;
+			ColorArg1[0] = texture;
+			ColorArg2[0] = diffuse;
+			AlphaOp[0] = selectArg1;
+			AlphaArg1[0] = texture;
+			ColorOp[1] = disable;
+			AddressU[0] = Clamp;
+			AddressV[0] = Clamp;
+			Render.Draw
+			Restore.States
+		}
+	}
+}

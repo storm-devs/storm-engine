@@ -1,0 +1,326 @@
+block Fader()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			ZEnable = false;
+			fogenable = false;
+			cullmode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = modulate;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = diffuse;
+			AlphaOp[0] = SelectArg1;
+			AlphaOp[1] = disable;
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}
+
+block FaderWithTips()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			ZEnable = false;
+			fogenable = false;
+			cullmode = none;
+			texcoordindex[1] = 0;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = modulate;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+			ColorOp[1] = blendtexturealpha;
+			ColorOp[2] = disable;
+			AlphaArg1[0] = diffuse;
+			AlphaOp[0] = SelectArg1;
+			AlphaArg1[1] = current;
+			AlphaOp[1] = SelectArg1;
+			AlphaOp[2] = disable;
+
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}
+
+
+block Grass()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			alpharef = 80;
+			cullmode = none;
+			AlphaTestEnable = true;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = modulate2x;
+			ColorOp[1] = disable;
+
+			texcoordindex[1] = 0;
+
+			AlphaArg1[0] = diffuse;
+			AlphaArg2[0] = texture;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block Coronas()
+{
+	technique t0
+	{
+		pass p0
+		{
+			zwriteenable = false;
+			zenable = false;
+			fogenable = false;
+			lighting = false;
+			cullmode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = one;
+			DestBlend = one;
+			ColorArg1[0] = diffuse;
+			ColorArg2[0] = texture;
+			ColorOp[0] = modulate;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+
+		}
+	}
+}
+
+block LocFly()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			zwriteenable = false;
+			fogenable = false;
+			cullmode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = diffuse;
+			ColorOp[0] = SelectArg1;
+		    ColorOp[1] = disable;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+	        AlphaOp[0] = modulate;
+			AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block WideScreen()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			ZEnable = false;
+			cullmode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+			texturefactor = 0;
+			ColorArg1[0] = tfactor;
+			ColorOp[0] = SelectArg1;
+			ColorOp[1] = disable;
+			AlphaOp[0] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block Blot()
+{
+	technique t0
+	{
+		pass p0
+		{
+			SSZbias = 600;
+			lighting = false;
+			ZEnable = true;
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg2[0] = texture;
+			ColorOp[0] = SelectArg2;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+			AlphaOp[0] = modulate;
+			AlphaArg1[1] = current;
+			AlphaArg2[1] = tfactor;
+			AlphaOp[1] = modulate;
+			AlphaOp[2] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block ProgressTech()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			fogenable = false;
+			ZEnable = false;
+			cullmode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+			ColorArg1[0] = texture;
+			ColorOp[0] = SelectArg1;
+			ColorOp[1] = disable;
+			AlphaArg1[0] = texture;
+			AlphaOp[0] = SelectArg1;
+			AlphaOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block ProgressBackTech()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			fogenable = false;
+			ZEnable = false;
+			cullmode = none;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+			ColorArg1[0] = texture;
+			ColorOp[0] = SelectArg1;
+			ColorOp[1] = disable;
+			AlphaOp[0] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block ProgressBackTechWithTips()
+{
+	technique t0
+	{
+		pass p0
+		{
+			lighting = false;
+			fogenable = false;
+			ZEnable = false;
+			cullmode = none;
+			texcoordindex[1] = 0;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+			ColorArg1[0] = texture;
+			ColorOp[0] = SelectArg1;
+			ColorArg1[1] = texture;
+			ColorArg2[1] = current;
+			ColorOp[1] = blendtexturealpha;
+			ColorOp[2] = disable;
+			AlphaOp[0] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
+
+block Blood()
+{
+	technique t0
+	{
+		pass p0
+		{
+			SSZbias = 600;
+			lighting = false;
+			ZEnable = true;
+			ZWriteEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = true;
+			SrcBlend = srcalpha;
+			DestBlend = invsrcalpha;
+
+			ColorOp[0] = modulate;
+			ColorArg1[0] = tfactor;
+			ColorArg2[0] = texture;
+			AlphaOp[0] = modulate;
+			AlphaArg1[0] = texture;
+			AlphaArg2[0] = diffuse;
+
+			ColorOp[1] = disable;
+			AlphaOp[1] = disable;
+
+			Render.Draw
+			Restore.States
+		}
+	}
+}
+

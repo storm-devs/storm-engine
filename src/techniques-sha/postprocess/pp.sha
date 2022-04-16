@@ -1,0 +1,22 @@
+block PostProcess()
+{
+	technique t0
+	{
+		pass p0
+    {
+      ZEnable = false;
+			AlphaTestEnable = false;
+			AlphaBlendEnable = false;
+			fogEnable = false;
+
+			ColorOp[0] = SelectArg1;
+			ColorArg1[0] = Texture;
+
+			ColorOp[1] = disable;
+
+			Render.Draw
+
+			Restore.States
+		}
+	}
+}
