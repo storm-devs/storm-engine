@@ -1,6 +1,8 @@
 #include "compiler.h"
 #include "core_impl.h"
 
+#include <execution>
+
 #define INVALID_FA "Invalid function argument"
 #define BAD_FA "Bad function argument"
 #define MISSING_PARAMETER "Missing function parameter(s)"
@@ -109,6 +111,7 @@ enum FUNCTION_CODE
     FUNC_SETTIMESCALE,
     FUNC_CHECKFUNCTION,
     FUNC_GETENGINEVERSION,
+    FUNC_SORT,
 };
 
 INTFUNCDESC IntFuncTable[] = {
@@ -140,7 +143,8 @@ INTFUNCDESC IntFuncTable[] = {
     "GetArraySize", VAR_INTEGER, 0, "GetTargetPlatform", VAR_STRING, 2, "GetEntity", VAR_INTEGER, 2, "FindEntity",
     VAR_INTEGER, 1, "FindEntityNext", VAR_INTEGER, 2, "GetSymbol", VAR_STRING, 2, "IsDigit", VAR_INTEGER, 2,
     "SaveVariable", VAR_INTEGER, 2, "LoadVariable", VAR_INTEGER, 2, "SetControlTreshold", TVOID, 2, "LockControl",
-    TVOID, 1, "TestRef", VAR_INTEGER, 1, "SetTimeScale", TVOID, 1, "CheckFunction", VAR_INTEGER, 0, "GetEngineVersion"};
+    TVOID, 1, "TestRef", VAR_INTEGER, 1, "SetTimeScale", TVOID, 1, "CheckFunction", VAR_INTEGER, 0, "GetEngineVersion",
+    VAR_INTEGER, 1, "sort", TVOID};
 
 /*
 char * FuncNameTable[]=
@@ -2533,6 +2537,21 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->Convert(VAR_STRING);
         pV->Get(pChar);
         core_internal.InitiateStateLoading(pChar);
+        break;
+    case FUNC_SORT:
+        pV = SStack.Pop();
+        if (!pV || pV->GetType() != VAR_AREFERENCE)
+        {
+            SetError(INVALID_FA);
+            break;
+        }
+        pA = pV->GetAClass();
+
+        std::sort(std::execution::seq, std::begin(pA->attributes_), std::end(pA->attributes_),
+                  [](const std::unique_ptr<ATTRIBUTES> &lhs, const std::unique_ptr<ATTRIBUTES> &rhs) {
+                      return strcmp(lhs->GetThisName(), rhs->GetThisName()) < 0;
+                  });
+
         break;
     }
     return nullptr;

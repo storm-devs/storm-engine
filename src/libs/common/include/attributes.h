@@ -42,6 +42,9 @@ constexpr size_t TSE_MAX_EVENT_LENGTH = 64;
 
 class ATTRIBUTES final
 {
+    // TODO: remove with another iteration of rewriting this
+    friend class COMPILER;
+
     VSTRING_CODEC &stringCodec_;
     uint32_t nameCode_{};
     std::optional<std::string> value_;
