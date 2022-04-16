@@ -1,15 +1,18 @@
-#ifndef TECHNIQUE_HPP
-#define TECHNIQUE_HPP
+#ifndef _WIN32 // FIX_LINUX Effects
+#pragma once
 
-#include "../Common_h/vmodule_api.h"
-#include "../Common_h/dx9render.h"
-#include <string>
-#include <unordered_map>
+#include "dx9render.h"
 
 struct SRSPARAM
 {
 	char		* cName;
 	uint32_t		dwCode;
+
+	SRSPARAM(const char *cName, uint32_t dwCode)
+	{
+		this->cName = strdup(cName);
+		this->dwCode = dwCode;
+	}
 };
 
 struct pass_t
@@ -150,7 +153,7 @@ public:
 
 	void		SetCurrentBlock(const char *name, uint32_t _dwNumParams, void *pParams);
 
-	bool		DecodeFile(char *sname);
+	bool		DecodeFile(std::string sname);
 	void		DecodeFiles(char *sub_dir = nullptr);
 
 	bool		ExecutePassStart();
@@ -162,4 +165,4 @@ public:
 
 };
 
-#endif
+#endif // FIX_LINUX Effects

@@ -1,10 +1,11 @@
-#include "Technique.h"
-#include "../Common_h/defines.h"
-#include <d3dx9.h>
+#ifndef _WIN32 // FIX_LINUX Effects
+#include "technique.h"
+#include "core.h"
+#include "defines.h"
+#include "inlines.h"
 
-
-#define SHA_DIR		"modules\\Techniques"
-#define SHA_EXT		".sha"
+#define SHA_DIR		"resource\\techniques-sha"
+#define SHA_EXT		"*.sha"
 
 #define PASS_OK				0
 #define PASS_ERROR			1
@@ -91,10 +92,11 @@
 // common defines
 #define SAVED_STATES_ADD		128
 
-char* SkipToken(char* str, char* cmp)
+char* SkipToken(char* str, const char* cmp)
 {
 	int flag;
-	char *str1,*cmp1;
+	char* str1;
+	const char* cmp1;
 
 	if (str==nullptr || cmp==nullptr) return nullptr;
 	cmp1 = cmp;
@@ -131,10 +133,11 @@ char* SkipToken(char* str, char* cmp)
 	return nullptr;
 }
 
-char* FindToken(char* str,char* cmp)
+char* FindToken(char* str,const char* cmp)
 {
 	int flag;
-	char *str1,*cmp1;
+	char* str1;
+	const char* cmp1;
 
 	if (str==nullptr || cmp==nullptr) return nullptr;
 	cmp1 = cmp;
@@ -168,13 +171,13 @@ char* FindToken(char* str,char* cmp)
 }
 
 // Get token before symbol skip
-char*	GetTokenWhile(char* src, char* dst, char* skip)
+char* GetTokenWhile(char* src, char* dst, const char* skip)
 {
 	if (!src || !dst || !skip) return nullptr;
 	dst[0] = 0;
 	char *dst1 = dst;
-	long lensrc = strlen(src);
-	long dstlen = 0;
+	int32_t lensrc = strlen(src);
+	int32_t dstlen = 0;
 	while (lensrc && src[0]==' ') { src++; lensrc--; };
 	while ((lensrc--)&&(*src!=*skip))
 	{
@@ -193,9 +196,9 @@ typedef struct
 	SRSPARAM				*pParam;
 	uint32_t					dwParamNum;
 	bool					bUse;
-	long					dwUseSubCode;
+	int32_t					dwUseSubCode;
 	uint32_t					SrsType;
-	char					*cName;
+	const char					*cName;
 	D3DRENDERSTATETYPE		State;
 } SRS;
 
@@ -204,9 +207,9 @@ typedef struct
 	SRSPARAM					*pParam;
 	uint32_t						dwParamNum;
 	bool						bUse;
-	long						dwUseSubCode;
+	int32_t						dwUseSubCode;
 	uint32_t						SrsType;
-	char						*cName;
+	const char						*cName;
 	D3DTEXTURESTAGESTATETYPE	State;
 } STSS;
 
@@ -215,9 +218,9 @@ typedef struct
 	SRSPARAM					*pParam;
 	uint32_t						dwParamNum;
 	bool						bUse;
-	long						dwUseSubCode;
+	int32_t						dwUseSubCode;
 	uint32_t						SrsType;
-	char						*cName;
+	const char						*cName;
 	D3DSAMPLERSTATETYPE			State;
 } SAMP;
 
@@ -699,14 +702,14 @@ void ClearComment(char * pStr)
 {
 	// search comment and delete all symbols after
 	if (!pStr || !pStr[0]) return;
-	long iLen = strlen(pStr);
+	int32_t iLen = strlen(pStr);
 	char *pSkip1 = FindToken(pStr,COMMENT1);
-	long iStart1 = iLen, iStart2 = iLen;
+	int32_t iStart1 = iLen, iStart2 = iLen;
 	if (pSkip1) iStart1 = (pSkip1 - pStr) - strlen(COMMENT1);
 	char *pSkip2 = FindToken(pStr,COMMENT2);
 	if (pSkip2) iStart2 = (pSkip2 - pStr) - strlen(COMMENT2);
-	long iStart = (iStart2 > iStart1) ? iStart1 : iStart2;
-	for (long i=iStart;i<iLen;i++) pStr[i] = 0;
+	int32_t iStart = (iStart2 > iStart1) ? iStart1 : iStart2;
+	for (int32_t i=iStart;i<iLen;i++) pStr[i] = 0;
 }
 
 bool isVertexDeclaration(char *pStr) { return (SkipToken(pStr,VERTEX_DECL)) ? true : false; }
@@ -727,8 +730,9 @@ bool isDigit(char * pStr) { return ((pStr) ? (pStr[0]>='0' && pStr[0]<='9') : fa
 uint32_t CTechnique::GetSRSIndex(char *pStr)
 {
 	uint32_t dwNumParam = sizeof(RenderStates) / sizeof(STSS);
-	for (uint32_t i=0;i<dwNumParam;i++) if (_stricmp(pStr,RenderStates[i].cName)==0) return i;
-	api->Trace("ERROR: SetRenderState: unknown parameter type <%s> in <%s> file, technique <%s>",pStr,sCurrentFileName,sCurrentBlockName);
+	for (uint32_t i=0;i<dwNumParam;i++) if (storm::iEquals(pStr,RenderStates[i].cName)) return i;
+	core.Trace("ERROR: SetRenderState: unknown parameter type <%s> in <%s> file, technique <%s>", pStr,
+				sCurrentFileName, sCurrentBlockName);
 	//THROW;
 	return INVALID_SRS_INDEX;
 }
@@ -736,7 +740,7 @@ uint32_t CTechnique::GetSRSIndex(char *pStr)
 uint32_t CTechnique::GetSTSSIndex(char *pStr)
 {
 	uint32_t dwNumParam = sizeof(TexturesStageStates) / sizeof(STSS);
-	for (uint32_t i=0;i<dwNumParam;i++) if (_stricmp(pStr,TexturesStageStates[i].cName)==0) return i;
+	for (uint32_t i=0;i<dwNumParam;i++) if (storm::iEquals(pStr,TexturesStageStates[i].cName)) return i;
 	//api->Trace("ERROR: SetTextureStageState: unknown parameter type <%s> in <%s> file, technique <%s>",pStr,sCurrentFileName,sCurrentBlockName);
 	//THROW;
 	return INVALID_INDEX;
@@ -745,7 +749,7 @@ uint32_t CTechnique::GetSTSSIndex(char *pStr)
 uint32_t CTechnique::GetSAMPIndex(char *pStr)
 {
 	uint32_t dwNumParam = sizeof(SampleStates) / sizeof(SAMP);
-	for (uint32_t i = 0; i<dwNumParam; i++) if (_stricmp(pStr, SampleStates[i].cName) == 0) return i;
+	for (uint32_t i = 0; i<dwNumParam; i++) if (storm::iEquals(pStr, SampleStates[i].cName)) return i;
 	//api->Trace("ERROR: SetSamplerState: unknown parameter type <%s> in <%s> file, technique <%s>", pStr, sCurrentFileName, sCurrentBlockName);
 	//THROW;
 	return INVALID_INDEX;
@@ -753,8 +757,8 @@ uint32_t CTechnique::GetSAMPIndex(char *pStr)
 
 uint32_t CTechnique::GetIndex(char *pStr, SRSPARAM *pParam, uint32_t dwNumParam, bool bCanBeNumber)
 {
-	for (uint32_t i=0;i<dwNumParam;i++) if (_stricmp(pStr,pParam[i].cName)==0) return i;
-	if (!bCanBeNumber) api->Trace("ERROR: Unknown parameter type <%s> in <%s> file, technique <%s>",pStr,sCurrentFileName,sCurrentBlockName);
+	for (uint32_t i=0;i<dwNumParam;i++) if (storm::iEquals(pStr,pParam[i].cName)) return i;
+	if (!bCanBeNumber) core.Trace("ERROR: Unknown parameter type <%s> in <%s> file, technique <%s>",pStr,sCurrentFileName,sCurrentBlockName);
 	//THROW;
 	return INVALID_INDEX;
 }
@@ -779,7 +783,8 @@ uint32_t CTechnique::GetCode(char *pStr, SRSPARAM *pParam, uint32_t dwNumParam, 
 	}
 	else
 	{
-		api->Trace("ERROR: unknown parameter type <%s> in <%s> file, technique <%s>",pStr,sCurrentFileName,sCurrentBlockName);
+		core.Trace("ERROR: unknown parameter type <%s> in <%s> file, technique <%s>", pStr, sCurrentFileName,
+					sCurrentBlockName);
 		return 0;
 	}
 }
@@ -787,12 +792,12 @@ uint32_t CTechnique::GetCode(char *pStr, SRSPARAM *pParam, uint32_t dwNumParam, 
 uint32_t CTechnique::AddShader(char *pShaderName)
 {
 	// find exist shader or create empty new
-	for (uint32_t i=0;i<dwNumShaders;i++) if (_stricmp(pShaders[i].pName,pShaderName)==0) return i;
-	pShaders = (shader_t*)RESIZE(pShaders,sizeof(shader_t) * (dwNumShaders+1));
+	for (uint32_t i=0;i<dwNumShaders;i++) if (storm::iEquals(pShaders[i].pName,pShaderName)) return i;
+	pShaders = (shader_t*)realloc(pShaders,sizeof(shader_t) * (dwNumShaders+1));
 	shader_t *pS = &pShaders[dwNumShaders];
 	ZERO(pShaders[dwNumShaders]);
 	const auto len = strlen(pShaderName) + 1;
-	pS->pName = NEW char[len];
+	pS->pName = new char[len];
 	memcpy(pS->pName, pShaderName, len);
 	pS->dwHashName = hash_string(pShaderName);
 	pS->pVertexDecl = nullptr;
@@ -807,8 +812,8 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 	block_t	* pB = &pBlocks[dwNumBlocks];
 	technique_t * pTechniques = &pB->pTechniques[pB->dwNumTechniques];
 
-	pTechniques->pPasses = (pass_t*)RESIZE(pTechniques->pPasses, sizeof(pass_t) * (pTechniques->dwNumPasses + 1));
-	PZERO(&pTechniques->pPasses[pTechniques->dwNumPasses], sizeof pass_t);
+	pTechniques->pPasses = (pass_t*)realloc(pTechniques->pPasses, sizeof(pass_t) * (pTechniques->dwNumPasses + 1));
+	PZERO(&pTechniques->pPasses[pTechniques->dwNumPasses], sizeof(pass_t));
 
 	uint32_t	* pPass = pPassStorage;
 	uint32_t	* pPassBegin = pPass;
@@ -817,7 +822,7 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 	while (nullptr != (*pStr = GetString(pFile,dwSize,*pStr)))
 	{
 #define SKIP3	{ (*pStr)++; continue; }
-		*pStr = _strlwr(*pStr);
+		tolwr(*pStr);
 		ClearComment(*pStr);
 		if (isEndBracket(*pStr)) break;		// end of pass
 
@@ -852,7 +857,7 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 			if (isPixelShaderConst(*pStr))
 			{
 				if (!bIn)
-					__debugbreak();
+					throw std::runtime_error("bad bIn");
 				uint32_t dwIndex = 0;
 				*pPass++ = CODE_SPSCONST | dwAdditionalFlags;
 				GetTokenWhile(SkipToken(*pStr,"["),&temp[0],"]");
@@ -906,7 +911,8 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 					*pPass++ = CODE_STSS | dwAdditionalFlags;
 					*pPass++ = dwTextureIndex;
 					if (TexturesStageStates[dwIndex].bUse && TexturesStageStates[dwIndex].dwUseSubCode & (1 << dwTextureIndex) && dwAdditionalFlags & FLAGS_CODE_RESTORE)
-						api->Trace("WARN: STSS: dup restore param type <%s[%d]> in <%s> file, technique <%s>", temp, dwTextureIndex, sCurrentFileName, sCurrentBlockName);
+						core.Trace("WARN: STSS: dup restore param type <%s[%d]> in <%s> file, technique <%s>", temp,
+									dwTextureIndex, sCurrentFileName, sCurrentBlockName);
 					if (dwAdditionalFlags & FLAGS_CODE_RESTORE)
 					{
 						TexturesStageStates[dwIndex].bUse = true;
@@ -930,7 +936,8 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 					if (dwIndex != INVALID_INDEX)
 					{
 						if (SampleStates[dwIndex].bUse && SampleStates[dwIndex].dwUseSubCode & (1 << dwTextureIndex) && dwAdditionalFlags & FLAGS_CODE_RESTORE)
-							api->Trace("WARN: SAMP: dup restore param type <%s[%d]> in <%s> file, technique <%s>", temp, dwTextureIndex, sCurrentFileName, sCurrentBlockName);
+							core.Trace("WARN: SAMP: dup restore param type <%s[%d]> in <%s> file, technique <%s>", temp,
+										dwTextureIndex, sCurrentFileName, sCurrentBlockName);
 						if (dwAdditionalFlags & FLAGS_CODE_RESTORE)
 						{
 							SampleStates[dwIndex].bUse = true;
@@ -947,7 +954,8 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 						}
 					}
 					else
-						api->Trace("ERROR: unknown parameter type <%s> in <%s> file, technique <%s>", pStr, sCurrentFileName, sCurrentBlockName);
+						core.Trace("ERROR: unknown parameter type <%s> in <%s> file, technique <%s>", pStr,
+									sCurrentFileName, sCurrentBlockName);
 				}
 				SKIP3;
 			}
@@ -988,7 +996,8 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 				if (dwCode==0xFFFFFFFF)	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				{
 					// maybe world0-world256
-					if (nullptr==(pTemp = SkipToken(*pStr,WORLD_TRANSFORM_CHECK))) THROW("transform. error!");
+					if (nullptr == (pTemp = SkipToken(*pStr, WORLD_TRANSFORM_CHECK)))
+						throw std::runtime_error("transform. error!");
 					sscanf(pTemp,"%lu", &dwCode);
 					dwCode = (uint32_t)D3DTS_WORLDMATRIX(dwCode);
 				}
@@ -1006,7 +1015,8 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 				uint32_t dwSRSIndex = GetSRSIndex(temp);
 				Assert(dwSRSIndex!=INVALID_SRS_INDEX);
 				if (RenderStates[dwSRSIndex].bUse && dwAdditionalFlags & FLAGS_CODE_RESTORE)
-					api->Trace("WARN: SRS: dup restore param type <%s> in <%s> file, technique <%s>", temp, sCurrentFileName, sCurrentBlockName);
+					core.Trace("WARN: SRS: dup restore param type <%s> in <%s> file, technique <%s>", temp,
+								sCurrentFileName, sCurrentBlockName);
 				if (dwAdditionalFlags & FLAGS_CODE_RESTORE) RenderStates[dwSRSIndex].bUse = true;
 				uint32_t * pPassCode = pPass;
 				*pPass++ = CODE_SRS|dwAdditionalFlags;
@@ -1027,7 +1037,7 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 	}
 
 	uint32_t dwSizePass = pPass - pPassBegin;
-	pPassBegin = NEW uint32_t[dwSizePass];//(uint32_t*)RESIZE(pPassBegin,dwSizePass*sizeof(uint32_t));
+	pPassBegin = new uint32_t[dwSizePass];//(uint32_t*)RESIZE(pPassBegin,dwSizePass*sizeof(uint32_t));
 	memcpy(pPassBegin, pPassStorage, dwSizePass * sizeof(uint32_t));
 	pTechniques->pPasses[pTechniques->dwNumPasses].dwSize = dwSizePass;
 	pTechniques->pPasses[pTechniques->dwNumPasses].isValidate = true;
@@ -1040,15 +1050,15 @@ uint32_t CTechnique::ProcessPass(char * pFile, uint32_t dwSize, char **pStr)
 uint32_t CTechnique::ProcessTechnique(char *pFile, uint32_t dwSize, char **pStr)
 {
 	block_t	*pB = &pBlocks[dwNumBlocks];
-	pB->pTechniques = (technique_t*)RESIZE(pB->pTechniques,sizeof(technique_t)*(pB->dwNumTechniques+1));
-	PZERO(&pB->pTechniques[pB->dwNumTechniques],sizeof technique_t);
+	pB->pTechniques = (technique_t*)realloc(pB->pTechniques,sizeof(technique_t)*(pB->dwNumTechniques+1));
+	PZERO(&pB->pTechniques[pB->dwNumTechniques],sizeof(technique_t));
 	// clear STSS and SRS bUse
 	ClearSRS_STSS_bUse();
 	// search for pass and '}'
 	while (nullptr != (*pStr = GetString(pFile,dwSize,*pStr)))
 	{
 #define SKIP2	{ (*pStr)++; continue; }
-		*pStr = _strlwr(*pStr);
+		tolwr(*pStr);
 		ClearComment(*pStr);
 		//if (isComment(*pStr)) SKIP2;
 		if (isEndBracket(*pStr)) break;		// end of technique
@@ -1065,7 +1075,7 @@ uint32_t CTechnique::ProcessTechnique(char *pFile, uint32_t dwSize, char **pStr)
 void AddDeclElement(shader_t *pS)
 {
 	pS->dwDeclSize++;
-	pS->pDecl = (D3DVERTEXELEMENT9*)RESIZE(pS->pDecl,sizeof(D3DVERTEXELEMENT9) * pS->dwDeclSize);
+	pS->pDecl = (D3DVERTEXELEMENT9*)realloc(pS->pDecl,sizeof(D3DVERTEXELEMENT9) * pS->dwDeclSize);
 	pS->pDecl[pS->dwDeclSize - 1].Method = D3DDECLMETHOD_DEFAULT;
 }
 
@@ -1078,11 +1088,11 @@ uint32_t CTechnique::ProcessVertexDeclaration(shader_t *pS, char *pFile, uint32_
 {
 	uint32_t dwTemp;;
 	uint32_t dwStream = 0, dwOffset = 0;
-	uint32_t dwIndexes[_countof(MYDECLUSAGE)] = { 0 };
+	uint32_t dwIndexes[std::size(MYDECLUSAGE)] = { 0 };
 
 	while (nullptr != (*pStr = GetString(pFile,dwSize,*pStr)))
 	{
-		*pStr = _strlwr(*pStr);
+		tolwr(*pStr);
 		ClearComment(*pStr);
 		if (isEndBracket(*pStr)) break;		// end of declaration
 		if (SkipToken(*pStr,VDECL_STREAM_CHECK))
@@ -1092,7 +1102,7 @@ uint32_t CTechnique::ProcessVertexDeclaration(shader_t *pS, char *pFile, uint32_
 		}
 		if (SkipToken(*pStr,VDECL_FLOAT_CHECK))
 		{
-			sscanf(SkipToken(*pStr, "["), "%lu", &dwTemp);
+			sscanf(SkipToken(*pStr, "["), "%u", &dwTemp);
 			switch (dwTemp)
 			{
 			case 1: dwTemp = D3DDECLTYPE_FLOAT1; break;
@@ -1108,7 +1118,7 @@ uint32_t CTechnique::ProcessVertexDeclaration(shader_t *pS, char *pFile, uint32_
 
 			// Usage
 			dwTemp = ~0;
-			for (int i = 0; i < _countof(MYDECLUSAGE); i++)
+			for (int i = 0; i < std::size(MYDECLUSAGE); i++)
 			{
 				if (SkipToken(*pStr, MYDECLUSAGE[i].cName))
 				{
@@ -1139,7 +1149,7 @@ uint32_t CTechnique::ProcessVertexDeclaration(shader_t *pS, char *pFile, uint32_
 
 	HRESULT hr = pRS->CreateVertexDeclaration(pS->pDecl, &pS->pVertexDecl);
 	if (hr != S_OK)
-		api->Trace("ERROR: invalid shader declaration <%s>", pS->pName);
+		core.Trace("ERROR: invalid shader declaration <%s>", pS->pName);
 
 	return 0;
 }
@@ -1185,7 +1195,7 @@ char *CTechnique::Preprocessor(char *pBuffer, uint32_t & dwSize)
 
 	while (nullptr != (pStr = GetString(pBuffer,dwBufSize,pStr)))
 	{
-		//pStr = _strlwr(pStr);
+		//tolwr(pStr);
 		ClearComment(pStr);
 		if (isDefine(pStr))
 		{
@@ -1195,16 +1205,16 @@ char *CTechnique::Preprocessor(char *pBuffer, uint32_t & dwSize)
 			if (dwMaxDefineElements != dwNewSize)
 			{
 				dwMaxDefineElements = dwNewSize;
-				pDefines = (define_t*)RESIZE(pDefines,sizeof(define_t) * dwMaxDefineElements);
+				pDefines = (define_t*)realloc(pDefines,sizeof(define_t) * dwMaxDefineElements);
 			}
 			auto len = strlen(sName) + 1;
-			pDefines[dwNumDefines].pName = NEW char[len];
+			pDefines[dwNumDefines].pName = new char[len];
 			memcpy(pDefines[dwNumDefines].pName, sName, len);
 
 			pDefines[dwNumDefines].dwNameLen = len - 1;
 
 			len = strlen(sValue) + 1;
-			pDefines[dwNumDefines].pValue = NEW char[len];
+			pDefines[dwNumDefines].pValue = new char[len];
 			memcpy(pDefines[dwNumDefines].pValue, sValue, len);
 
 			dwNumDefines++;
@@ -1219,7 +1229,7 @@ char *CTechnique::Preprocessor(char *pBuffer, uint32_t & dwSize)
 			if (!bToken)
 			{
 				// find define
-				for (i=0;i<dwNumDefines;i++) if (dwTempLen==pDefines[i].dwNameLen && _stricmp(pDefines[i].pName,sToken)==0)
+				for (i=0;i<dwNumDefines;i++) if (dwTempLen==pDefines[i].dwNameLen && storm::iEquals(pDefines[i].pName,sToken))
 				{
 					if (pDefines[i].pValue) strcpy_s(sToken,pDefines[i].pValue);
 					dwTempLen = strlen(sToken);
@@ -1231,7 +1241,7 @@ char *CTechnique::Preprocessor(char *pBuffer, uint32_t & dwSize)
 			if (dwNewSize > dwMaxProgramElements)
 			{
 				dwMaxProgramElements = dwNewSize;
-				pProgram = (char*)RESIZE(pProgram,dwMaxProgramElements);
+				pProgram = (char*)realloc(pProgram,dwMaxProgramElements);
 			}
 			strcpy_s(&pProgram[dwProgramSize], dwNewSize-dwProgramSize, sToken);
 			dwProgramSize += dwTempLen;
@@ -1267,7 +1277,7 @@ uint32_t CTechnique::ProcessShaderAsm(shader_t * pS, char *pFile, uint32_t dwSiz
 	char *pBuffer = nullptr;
 	while (nullptr != (*pStr = GetString(pFile,dwSize,*pStr)))
 	{
-		//*pStr = _strlwr(*pStr);
+		//tolwr(*pStr);
 		ClearComment(*pStr);
 		if (isBeginBracket(*pStr)) TOTAL_SKIP;
 		if (isEndBracket(*pStr)) break;		// end of declaration
@@ -1282,21 +1292,22 @@ uint32_t CTechnique::ProcessShaderAsm(shader_t * pS, char *pFile, uint32_t dwSiz
 			sprintf_s(sIncFileName,"%s\\%s",sCurrentDir,sName);
 			if (!fio->LoadFile(sIncFileName,&pTempBuffer,&dwFileSize))
 			{
-				api->Trace("ERROR: in file %s, file not found : %s", sCurrentFileName, sIncFileName);
+				core.Trace("ERROR: in file %s, file not found : %s", sCurrentFileName, sIncFileName);
 				TOTAL_SKIP;
 			}
 			pTempBuffer[dwFileSize-1] = 0x0;
 			pTemp = pTempBuffer;
 		}
 
-		long iLen = strlen(pTemp)-1;
-		pBuffer = (char*)RESIZE(pBuffer,dwTotalLen + iLen + 4);
+		int32_t iLen = strlen(pTemp)-1;
+		pBuffer = (char*)realloc(pBuffer,dwTotalLen + iLen + 4);
 		strcpy_s(&pBuffer[dwTotalLen], iLen + 4,pTemp);
 		strcpy_s(&pBuffer[dwTotalLen+iLen+1], 3,"\r\n");
 		dwTotalLen += iLen + 2;
 		STORM_DELETE(pTempBuffer);
 		TOTAL_SKIP;
 	}
+#ifdef _WIN32 // FIX_LINUX replace D3DXAssembleShader with D3DCompile or ???
 #ifndef _XBOX
 	ID3DXBuffer * CompiledShader = nullptr, * ErrorShader = nullptr;
 #else
@@ -1322,10 +1333,10 @@ uint32_t CTechnique::ProcessShaderAsm(shader_t * pS, char *pFile, uint32_t dwSiz
 	if (D3D_OK != hr && ErrorShader)
 	{
 		const auto len = ErrorShader->GetBufferSize() + 1;
-		char * pErrStr = NEW char[len];
+		char * pErrStr = new char[len];
 		strncpy_s(pErrStr, len, (char*)ErrorShader->GetBufferPointer(), ErrorShader->GetBufferSize());
 		pErrStr[ErrorShader->GetBufferSize()] = 0;
-		api->Trace("ERROR: in compile shader %s\nerror:\n%s", pS->pName, pErrStr);
+		core.Trace("ERROR: in compile shader %s\nerror:\n%s", pS->pName, pErrStr);
 		RELEASE(CompiledShader);
 		RELEASE(ErrorShader);
 		STORM_DELETE(pBuffer);
@@ -1344,6 +1355,7 @@ uint32_t CTechnique::ProcessShaderAsm(shader_t * pS, char *pFile, uint32_t dwSiz
 
 	RELEASE(CompiledShader);
 	RELEASE(ErrorShader);
+#endif
 	STORM_DELETE(pBuffer);
 	return 0;
 }
@@ -1362,7 +1374,7 @@ uint32_t CTechnique::ProcessVertexShader(char *pFile, uint32_t dwSize, char **pS
 
 	while (nullptr != (*pStr = GetString(pFile,dwSize,*pStr)))
 	{
-		*pStr = _strlwr(*pStr);
+		tolwr(*pStr);
 		ClearComment(*pStr);
 		if (isEndBracket(*pStr)) break;		// end of vertex shader
 		if (isVertexDeclaration(*pStr)) ProcessVertexDeclaration(pS, pFile, dwSize, pStr);
@@ -1387,7 +1399,7 @@ uint32_t CTechnique::ProcessPixelShader(char *pFile, uint32_t dwSize, char **pSt
 
 	while (nullptr != (*pStr = GetString(pFile,dwSize,*pStr)))
 	{
-		*pStr = _strlwr(*pStr);
+		tolwr(*pStr);
 		ClearComment(*pStr);
 		if (isEndBracket(*pStr)) break;		// end of vertex shader
 		if (isAsm(*pStr)) ProcessShaderAsm(pS, pFile, dwSize, pStr, CODE_SPS);
@@ -1403,10 +1415,10 @@ uint32_t CTechnique::ProcessBlock(char * pFile, uint32_t dwSize, char **pStr)
 	char	temp[1024], pTempParamStr[1024];
 
 	// resize
-	pBlocks = (block_t*)RESIZE(pBlocks,sizeof(block_t)*(dwNumBlocks+1));
+	pBlocks = (block_t*)realloc(pBlocks,sizeof(block_t)*(dwNumBlocks+1));
 
 	block_t	* pB = &pBlocks[dwNumBlocks];
-	PZERO(pB,sizeof block_t);
+	PZERO(pB,sizeof(block_t));
 
 	dwNumParams = 0;
 
@@ -1416,12 +1428,12 @@ uint32_t CTechnique::ProcessBlock(char * pFile, uint32_t dwSize, char **pStr)
 		GetTokenWhile(pName,&temp[0],"(");
 		pB->dwHashBlockName = hash_string(temp);
 		const auto len = strlen(temp) + 1;
-		pB->pBlockName = NEW char[len];
+		pB->pBlockName = new char[len];
 		memcpy(pB->pBlockName, temp, len);
 		for (i=0;i<dwNumBlocks;i++)
-			if (pBlocks[i].dwHashBlockName == pB->dwHashBlockName && (_stricmp(pBlocks[i].pBlockName,pB->pBlockName)==0))
+			if (pBlocks[i].dwHashBlockName == pB->dwHashBlockName && (storm::iEquals(pBlocks[i].pBlockName,pB->pBlockName)))
 			{
-				api->Trace("ERROR: Techniques: Find duplicate technique name: %s",pB->pBlockName);
+				core.Trace("ERROR: Techniques: Find duplicate technique name: %s", pB->pBlockName);
 				break;
 			}
 
@@ -1435,14 +1447,14 @@ uint32_t CTechnique::ProcessBlock(char * pFile, uint32_t dwSize, char **pStr)
 			// get type
 			pParamStr = GetTokenWhile(pParamStr,&temp[0]," ");
 			if (!pParamStr[0]) break;
-			pParams = (SRSPARAM*)RESIZE(pParams,sizeof(SRSPARAM)*(dwNumParams+1));
-			pB->pParams = (uint32_t*)RESIZE(pB->pParams,sizeof(uint32_t)*(dwNumParams+1));
+			pParams = (SRSPARAM*)realloc(pParams,sizeof(SRSPARAM)*(dwNumParams+1));
+			pB->pParams = (uint32_t*)realloc(pB->pParams,sizeof(uint32_t)*(dwNumParams+1));
 			pParams[dwNumParams].dwCode = GetCode(&temp[0],PARAM_TYPES,sizeof(PARAM_TYPES) / sizeof(SRSPARAM));
 			pB->pParams[dwNumParams] = pParams[dwNumParams].dwCode;
 			// get parameter name
 			pParamStr = GetTokenWhile(pParamStr,&temp[0],",");
 			const auto len = strlen(temp) + 1;
-			pParams[dwNumParams].cName = NEW char[len];
+			pParams[dwNumParams].cName = new char[len];
 			strcpy_s(pParams[dwNumParams].cName, len, temp);
 			dwNumParams++;
 			pB->dwNumParams++;
@@ -1452,7 +1464,7 @@ uint32_t CTechnique::ProcessBlock(char * pFile, uint32_t dwSize, char **pStr)
 	while (nullptr != (*pStr = GetString(pFile,dwSize,*pStr)))
 	{
 #define SKIP1	{ (*pStr)++; continue; }
-		*pStr = _strlwr(*pStr);
+		tolwr(*pStr);
 		ClearComment(*pStr);
 		//if (isComment(*pStr)) SKIP1;
 		if (isEndBracket(*pStr)) break;		// end of block
@@ -1496,15 +1508,15 @@ void CTechnique::DecodeFiles(char *sub_dir)
 {
 	uint64_t dwRDTSC;
 	RDTSC_B(dwRDTSC);
-	pPassStorage = NEW uint32_t[16384];
+	pPassStorage = new uint32_t[16384];
 
 	InnerDecodeFiles(sub_dir);
 
 	STORM_DELETE(pPassStorage);
 	RDTSC_E(dwRDTSC);
-	api->Trace("Techniques: %d shaders compiled.",dwNumShaders);
-	api->Trace("Techniques: %d techniques compiled.",dwNumBlocks);
-	api->Trace("Techniques: compiled by %d ticks.",dwRDTSC);
+	core.Trace("Techniques: %d shaders compiled.", dwNumShaders);
+	core.Trace("Techniques: %d techniques compiled.", dwNumBlocks);
+	core.Trace("Techniques: compiled by %d ticks.", dwRDTSC);
 
 	// some optimize
 	for (uint32_t i=0; i<dwNumBlocks; i++) STORM_DELETE(pBlocks[i].pBlockName);
@@ -1512,49 +1524,27 @@ void CTechnique::DecodeFiles(char *sub_dir)
 
 void CTechnique::InnerDecodeFiles(char *sub_dir)
 {
-	char				file_mask[256];
-	WIN32_FIND_DATA		wfd;
+	sprintf(sCurrentDir, "%s%s", SHA_DIR, (sub_dir) ? sub_dir : "");
 
-	sprintf_s(sCurrentDir,"%s%s",SHA_DIR,(sub_dir) ? sub_dir : "");
-	sprintf_s(file_mask,"%s\\*.*",sCurrentDir);
-
-	HANDLE hFile = fio->_FindFirstFile(file_mask,&wfd);
-	if (hFile != INVALID_HANDLE_VALUE)
+	const auto vFilenames = fio->_GetPathsOrFilenamesByMask(sCurrentDir, SHA_EXT, true, false, true, true);
+	for (std::string path : vFilenames)
 	{
-		do
-		{
-			if (wfd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
-			{
-				if (wfd.cFileName[0] == '.') continue;
-				sprintf_s(file_mask,"%s\\%s",(sub_dir) ? sub_dir : "",wfd.cFileName);
-				InnerDecodeFiles(file_mask);
-			}
-			else
-			{
-				if (SkipToken(wfd.cFileName,SHA_EXT))
-				{
-					sprintf_s(file_mask,"%s\\%s",(sub_dir) ? sub_dir : "",wfd.cFileName);
-					DecodeFile(file_mask);
-				}
-			}
-		} while (fio->_FindNextFile(hFile,&wfd));
-
-		fio->_FindClose(hFile);
+		DecodeFile(path);
 	}
 }
 
-bool CTechnique::DecodeFile(char *sname)
+bool CTechnique::DecodeFile(std::string sname)
 {
 	char fname[256];
 
-	sprintf_s(fname,"%s%s",SHA_DIR,sname);
-	strcpy_s(sCurrentFileName,sname);
-	HANDLE hFile = fio->_CreateFile(fname,GENERIC_READ,FILE_SHARE_READ,OPEN_EXISTING);
-	uint32_t dwSize = fio->_GetFileSize(hFile,nullptr);
+	sprintf(fname, "%s", sname.c_str());
+	strcpy(sCurrentFileName, fname);
+	auto fileS = fio->_CreateFile(fname, std::ios::binary | std::ios::in);
+	auto dwSize = fio->_GetFileSize(fname);
 	Assert(dwSize!=0);
-	char *pFile = NEW char[dwSize];
-	fio->_ReadFile(hFile,pFile,dwSize,nullptr);
-	fio->_CloseHandle(hFile);
+	char *pFile = new char[dwSize];
+	fio->_ReadFile(fileS, pFile, dwSize);
+	fio->_CloseFile(fileS);
 
 	// change 0xd and 0xa to 0x0
 	for (uint32_t i=0;i<dwSize;i++)
@@ -1570,7 +1560,7 @@ bool CTechnique::DecodeFile(char *sname)
 	while (nullptr != (pStr = GetString(pFile, dwSize, pStr)))
 	{
 #define SKIP	{ pStr++; continue; }
-		pStr = _strlwr(pStr);
+		tolwr(pStr);
 		ClearComment(pStr);
 		//if (isComment(pStr)) SKIP;
 		if (isPixelShader(pStr))
@@ -1605,7 +1595,7 @@ bool CTechnique::ExecutePassStart()
 	if (it == htBlocks.end()) 
 		return false;
 	dwCurBlock = it->second;
-	//for (uint32_t i=0;i<dwNumBlocks;i++) if (pBlocks[i].dwHashBlockName == dwHashCode && (_stricmp(pBlocks[i].pBlockName,sCurrentBlockName)==0)) break;
+	//for (uint32_t i=0;i<dwNumBlocks;i++) if (pBlocks[i].dwHashBlockName == dwHashCode && (storm::iEquals(pBlocks[i].pBlockName,sCurrentBlockName))) break;
 	//if (i==dwNumBlocks) return false;	// don't find concur block
 	//Assert(i == dwFind);
 	//dwCurBlock = i;
@@ -1647,7 +1637,8 @@ uint32_t CTechnique::GetPassParameter(uint32_t dwParam, uint32_t dwFlags)
 {
 	if (dwFlags&FLAGS_CODE_IN_PARAM)
 	{
-		if (dwParam>=dwCurNumParams) THROW("Technique: Exceeded parameter numbers!");
+		if (dwParam >= dwCurNumParams)
+			throw std::runtime_error("Technique: Exceeded parameter numbers!");
 		return pCurParams[dwParam];
 	}
 
@@ -1742,15 +1733,16 @@ bool CTechnique::ExecutePass(bool bStart)
 			case CODE_TEXTURE:		// SetTexture(
 				{
 					uint32_t dwTextureIndex = *pPass++;
-					long iTextureIndex = (long)*pPass++;
-					if (iTextureIndex>=0) iTextureIndex = (long)GetPassParameter(*pPass++,dwSubCode);
+					int32_t iTextureIndex = (int32_t)*pPass++;
+					if (iTextureIndex>=0) iTextureIndex = (int32_t)GetPassParameter(*pPass++,dwSubCode);
 					pRS->TextureSet(dwTextureIndex,iTextureIndex);
 				}
 			break;
 			case CODE_TRANSFORM:	// SetTransform(
 				{
 					D3DTRANSFORMSTATETYPE TransformType = (D3DTRANSFORMSTATETYPE)*pPass++;
-					pRS->SetTransform(TransformType,(D3DMATRIX*)GetPassParameter(*pPass++,dwSubCode));
+					throw std::runtime_error("conversion from uint32_t to D3DMATRIX*");
+					//pRS->SetTransform(TransformType,(D3DMATRIX*)GetPassParameter(*pPass++,dwSubCode));
 				}
 			break;
 			case CODE_RENDER:		// Render functions
@@ -1801,7 +1793,8 @@ bool CTechnique::ExecutePass(bool bStart)
 			case CODE_SPSCONST:
 				{
 					uint32_t dwShaderConstIndex = *pPass++;
-					pRS->SetPixelShaderConstantF(dwShaderConstIndex, (const float*)GetPassParameter(*pPass++, dwSubCode), 1); //~!~
+					throw std::runtime_error("conversion from uint32_t to const float *");
+					//pRS->SetPixelShaderConstantF(dwShaderConstIndex, (const float*)GetPassParameter(*pPass++, dwSubCode), 1); //~!~
 				}
 			break;
 			case CODE_SVSCONST:
@@ -1812,6 +1805,9 @@ bool CTechnique::ExecutePass(bool bStart)
 					{
 						case SUBCODE_SVSCONST_WORLDVIEWPROJ:
 						{
+#ifndef _WIN32 // FIX_LINUX replace D3DXMATRIX
+							throw std::runtime_error("replace D3DXMATRIX in technique.cpp");
+#else
 							D3DXMATRIX matTemp, matWorldViewProj;
 
 							D3DXMATRIX matWorld; pRS->GetTransform(D3DTS_WORLD, &matWorld);
@@ -1824,6 +1820,7 @@ bool CTechnique::ExecutePass(bool bStart)
 							// Projection to clip space
 							D3DXMatrixTranspose(&matWorldViewProj, &matWorldViewProj);
 							pRS->SetVertexShaderConstantF(dwShaderConstIndex,&matWorldViewProj(0, 0), 4);
+#endif
 						}
 						break;
 					}
@@ -1853,7 +1850,7 @@ void inline CTechnique::AddState2Restore2(uint32_t dwState, uint32_t dw1)
 	// add new memory if need
 	if ((dwCurSavedStatesPos+2) >= dwCurMaxSavedSize / sizeof(pSavedStates[0]))
 	{
-		pSavedStates = (uint32_t*)RESIZE(pSavedStates,dwCurMaxSavedSize + SAVED_STATES_ADD * sizeof(pSavedStates[0]));
+		pSavedStates = (uint32_t*)realloc(pSavedStates,dwCurMaxSavedSize + SAVED_STATES_ADD * sizeof(pSavedStates[0]));
 		dwCurMaxSavedSize += SAVED_STATES_ADD;
 	}
 
@@ -1867,7 +1864,7 @@ void inline CTechnique::AddState2Restore3(uint32_t dwState, uint32_t dw1, uint32
 	// add new memory if need
 	if ((dwCurSavedStatesPos+3) >= dwCurMaxSavedSize / sizeof(pSavedStates[0]))
 	{
-		pSavedStates = (uint32_t*)RESIZE(pSavedStates,dwCurMaxSavedSize + SAVED_STATES_ADD *sizeof(pSavedStates[0]));
+		pSavedStates = (uint32_t*)realloc(pSavedStates,dwCurMaxSavedSize + SAVED_STATES_ADD *sizeof(pSavedStates[0]));
 		dwCurMaxSavedSize += SAVED_STATES_ADD;
 	}
 
@@ -1882,7 +1879,7 @@ void inline CTechnique::AddState2Restore(uint32_t dwState)
 	// add new memory if need
 	if (dwCurSavedStatesPos >= dwCurMaxSavedSize / sizeof(pSavedStates[0]))
 	{
-		pSavedStates = (uint32_t*)RESIZE(pSavedStates,dwCurMaxSavedSize + SAVED_STATES_ADD *sizeof(pSavedStates[0]));
+		pSavedStates = (uint32_t*)realloc(pSavedStates,dwCurMaxSavedSize + SAVED_STATES_ADD *sizeof(pSavedStates[0]));
 		dwCurMaxSavedSize += SAVED_STATES_ADD;
 	}
 
@@ -1934,11 +1931,13 @@ void CTechnique::RestoreSavedStates()
 			break;
 			case CODE_SPS:
 					dwValue = pSavedStates[dwTempSavedStatesPos++];
-					pRS->SetPixelShader((IDirect3DPixelShader9*)dwValue);
+					throw std::runtime_error("conversion from uint32_t to IDirect3DPixelShader9 *");
+					//pRS->SetPixelShader((IDirect3DPixelShader9*)dwValue);
 			break;
 			case CODE_SVS:
 					dwValue = pSavedStates[dwTempSavedStatesPos++];
-					pRS->SetVertexShader((IDirect3DVertexShader9*)dwValue);
+					throw std::runtime_error("conversion from uint32_t to IDirect3DPixelShader9 *");
+					//pRS->SetVertexShader((IDirect3DVertexShader9*)dwValue);
 			break;
 		}
 	}
@@ -1951,15 +1950,15 @@ void CTechnique::SetCurrentBlock(const char * name, uint32_t _dwNumParams, void 
 	if(name && name[0])
 	{
 
-	strcpy_s(sCurrentBlockName,name);	
-	_strlwr(sCurrentBlockName);
+	strcpy_s(sCurrentBlockName,name);
+	tolwr(sCurrentBlockName);
 	//dwHashCode = hash_string(sCurrentBlockName);
 	dwCurNumParams = _dwNumParams;
 
 	if (dwCurNumParams > dwCurParamsMax)
 	{
 		while (dwCurNumParams>dwCurParamsMax) dwCurParamsMax += 10;
-		pCurParams = (uint32_t*)RESIZE(pCurParams, sizeof(uint32_t) * dwCurParamsMax);
+		pCurParams = (uint32_t*)realloc(pCurParams, sizeof(uint32_t) * dwCurParamsMax);
 	}
 
 	for (uint32_t i=0; i<_dwNumParams; i++)
@@ -1967,6 +1966,7 @@ void CTechnique::SetCurrentBlock(const char * name, uint32_t _dwNumParams, void 
 	}
 	else
 	{
-		api->Trace("ERROR: SetCurrentBlock: unknown technique <%s> first character is <%s> ",name,name[0]);
+		core.Trace("ERROR: SetCurrentBlock: unknown technique <%s> first character is <%s> ", name, name[0]);
 	}
 }
+#endif // FIX_LINUX Effects
