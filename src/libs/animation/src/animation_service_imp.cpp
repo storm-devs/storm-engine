@@ -135,7 +135,7 @@ Animation *AnimationServiceImp::CreateAnimation(const char *animationName)
     for (i = 0; i < ainfo.size(); i++)
         if (ainfo[i])
         {
-            if (ainfo[i][0] == animationName)
+            if (*ainfo[i] == animationName)
                 break;
         }
     if (i == ainfo.size())
