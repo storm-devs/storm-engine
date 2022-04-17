@@ -79,8 +79,8 @@ DATA & DATA::operator=(const DATA &data)
     pReference = data.pReference;
     if (data.AttributesClass)
     {
-        AttributesClass = new ATTRIBUTES(pVCompiler->GetVSC());
-        AttributesClass->Copy(data.AttributesClass);
+        Assert(&data.AttributesClass->GetStringCodec() == pVCompiler->GetVSC());
+        AttributesClass = new ATTRIBUTES(data.AttributesClass->Copy());
     }
     else
     {
@@ -2088,8 +2088,22 @@ bool DATA::Copy(DATA *pV)
                 return false;
             }
             if (pVV->AttributesClass == nullptr)
-                pVV->AttributesClass = new ATTRIBUTES(pVCompiler->GetVSC());
-            pVV->AttributesClass->Copy(pV->AttributesClass);
+            {
+                if (pV->AttributesClass != nullptr)
+                {
+                    Assert(&pV->AttributesClass->GetStringCodec() == pVCompiler->GetVSC());
+                    pVV->AttributesClass = new ATTRIBUTES(pV->AttributesClass->Copy());
+                }
+                else
+                {
+                    pVV->AttributesClass = new ATTRIBUTES(*pVCompiler->GetVSC());
+                }
+            }
+            else if (pV->AttributesClass != nullptr) {
+                Assert(&pV->AttributesClass->GetStringCodec() == pVCompiler->GetVSC());
+                *pVV->AttributesClass = pV->AttributesClass->Copy();
+            }
+
         }
         else
         {
@@ -2099,9 +2113,19 @@ bool DATA::Copy(DATA *pV)
             }
             else
             {
-                if (AttributesClass == nullptr)
-                    AttributesClass = new ATTRIBUTES(pVCompiler->GetVSC());
-                AttributesClass->Copy(pV->AttributesClass);
+                if (AttributesClass == nullptr) {
+                    if (pV->AttributesClass != nullptr) {
+                        Assert(&pV->AttributesClass->GetStringCodec() == pVCompiler->GetVSC());
+                        AttributesClass = new ATTRIBUTES(pV->AttributesClass->Copy());
+                    }
+                    else {
+                        AttributesClass = new ATTRIBUTES(*pVCompiler->GetVSC());
+                    }
+                }
+                else if (pV->AttributesClass != nullptr) {
+                    Assert(&pV->AttributesClass->GetStringCodec() == pVCompiler->GetVSC());
+                    *AttributesClass = pV->AttributesClass->Copy();
+                }
             }
         }
         break;

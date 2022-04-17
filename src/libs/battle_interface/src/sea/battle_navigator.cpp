@@ -444,7 +444,7 @@ void BATTLE_NAVIGATOR::FillOneSideFireRange(BI_NOTEXTURE_VERTEX *pv, ATTRIBUTES 
 void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
 {
     int i;
-    char *tmpstr;
+    const char *tmpstr;
 
     m_pOwnerEI = pOwnerEI;
     if (RenderService == nullptr)

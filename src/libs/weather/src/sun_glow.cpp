@@ -365,7 +365,7 @@ uint32_t SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
     if (*pParent == "Flares")
     {
         bHaveFlare = true;
-        auto *const pTemp = pAttribute->GetThisAttr();
+        const char *pTemp = pAttribute->GetThisAttr();
         // flare_t * pFlare = &Flares.aFlares[Flares.aFlares.Add()];
         flare_t flare;
         sscanf(pTemp, "%f,%f,%d,%x", &flare.fDist, &flare.fSize, &flare.dwSubTexIndex, &flare.dwColor);

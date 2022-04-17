@@ -72,7 +72,7 @@ class CoreImpl : public Core
     void *GetService(const char *service_name) override;
 
     ATTRIBUTES *Entity_GetAttributeClass(entid_t id_PTR, const char *name) override;
-    char *Entity_GetAttribute(entid_t id_PTR, const char *name) override;
+    const char *Entity_GetAttribute(entid_t id_PTR, const char *name) override;
     uint32_t Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, uint32_t def = 0) override;
     FLOAT Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT def = 0) override;
     bool Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute) override;

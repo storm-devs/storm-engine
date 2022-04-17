@@ -503,7 +503,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         }
         for (n = 0; n < m_nSlotsQnt; n++)
         {
-            char *sBadPict;
+            const char *sBadPict;
             sprintf_s(param, "BadPicture%d", n + 1);
             if ((sBadPict = pAttribute->GetAttribute(param)) != nullptr)
             {
@@ -531,7 +531,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         for (i = 0; i < m_nListSize; i++)
         {
             char attrName[256];
-            char *sStringName;
+            const char *sStringName;
             sprintf_s(attrName, "pic%d", i + 1);
             auto *pListEntity = pAttribute->GetAttributeClass(attrName);
 
@@ -602,7 +602,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
                 }
 
                 // set pictures
-                char *tmpStr;
+                const char *tmpStr;
                 for (n = 0; n < m_nSlotsQnt; n++)
                 {
                     sprintf_s(param, "name%d", n + 1);
@@ -1063,7 +1063,7 @@ void CXI_VIMAGESCROLL::ChangeScroll(int nScrollItemNum)
         char sAttrName[256];
         char param[256];
         ATTRIBUTES *pAttribute;
-        char *sStringName;
+        const char *sStringName;
         for (i = nScrollItemNum; i < nScrollLastNum; i++)
         {
             m_Image[i].Clear(m_nSlotsQnt, m_nStringQuantity);
@@ -1090,7 +1090,7 @@ void CXI_VIMAGESCROLL::ChangeScroll(int nScrollItemNum)
                 }
 
                 // set pictures
-                char *tmpStr;
+                const char *tmpStr;
                 for (n = 0; n < m_nSlotsQnt; n++)
                 {
                     sprintf_s(param, "name%d", n + 1);
@@ -1204,7 +1204,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
     {
         // get special technique name and color
         m_dwSpecTechniqueARGB = pAttribute->GetAttributeAsDword("SpecTechniqueColor");
-        char *sTechnique = pAttribute->GetAttribute("SpecTechniqueName");
+        const char *sTechnique = pAttribute->GetAttribute("SpecTechniqueName");
         if (sTechnique != nullptr)
         {
             const auto len = strlen(sTechnique) + 1;
@@ -1252,7 +1252,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
                 }
                 for (i = 0; i < m_nGroupQuantity; i++)
                 {
-                    char *stmp = pA->GetAttribute(i);
+                    const char *stmp = pA->GetAttribute(i);
                     if (stmp == nullptr)
                         continue;
                     const auto len = strlen(stmp) + 1;
@@ -1270,7 +1270,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
         // get bad picture
         for (n = 0; n < m_nSlotsQnt; n++)
         {
-            char *sBadPict;
+            const char *sBadPict;
             sprintf_s(param, "BadPicture%d", n + 1);
             if ((sBadPict = pAttribute->GetAttribute(param)) != nullptr)
             {
@@ -1298,7 +1298,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
         for (i = 0; i < m_nListSize; i++)
         {
             char attrName[256];
-            char *sStringName;
+            const char *sStringName;
             sprintf_s(attrName, "pic%d", i + 1);
             ATTRIBUTES *pListEntity = pAttribute->GetAttributeClass(attrName);
 
@@ -1369,7 +1369,7 @@ void CXI_VIMAGESCROLL::RefreshScroll()
                 }
 
                 // set pictures
-                char *tmpStr;
+                const char *tmpStr;
                 for (n = 0; n < m_nSlotsQnt; n++)
                 {
                     sprintf_s(param, "name%d", n + 1);
@@ -1594,7 +1594,7 @@ void CXI_VIMAGESCROLL::UpdateTexturesGroup()
             }
             for (i = 0; i < m_nGroupQuantity; i++)
             {
-                char *stmp = pA->GetAttribute(i);
+                const char *stmp = pA->GetAttribute(i);
                 if (stmp == nullptr)
                 {
                     m_sGroupName[i] = nullptr;
@@ -1635,7 +1635,7 @@ void CXI_VIMAGESCROLL::UpdateTexturesGroup()
     }
 }
 
-int CXI_VIMAGESCROLL::FindTexGroupFromOld(char **pGroupList, char *groupName, int listSize)
+int CXI_VIMAGESCROLL::FindTexGroupFromOld(char **pGroupList, const char *groupName, int listSize)
 {
     if (pGroupList == nullptr || groupName == nullptr)
         return -1;

@@ -220,11 +220,11 @@ int32_t BIShipCommandList::FortAdding(bool allLabel, bool bFriend, bool bNeutral
             auto *pvdat = core.Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
             if (pvdat != nullptr && pvdat->GetInt() == 0)
                 continue;
-            char *pLocName = nullptr;
+            const char *pLocName = nullptr;
             if (pL->pA != nullptr)
                 pLocName = pL->pA->GetAttribute("name");
             retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1,
-                                    pL->pA->GetAttribute("name"), pL->pchr_note);
+                                    pL->pA->GetAttribute("name"), pL->pchr_note.c_str());
         }
     } while ((pL = g_IslandDescr.GetNext()) != nullptr);
 
@@ -272,11 +272,11 @@ int32_t BIShipCommandList::LandAdding(bool allLabel)
         auto *pvdat = core.Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
         if (pvdat != nullptr && pvdat->GetInt() == 0)
             continue;
-        char *pLocName = nullptr;
+        const char *pLocName = nullptr;
         if (pL->pA != nullptr)
             pLocName = pL->pA->GetAttribute("name");
         retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1, pLocName,
-                                pL->pchr_note);
+                                pL->pchr_note.c_str());
     } while ((pL = g_IslandDescr.GetNext()) != nullptr);
     return retVal;
 }
@@ -462,11 +462,11 @@ int32_t BIShipCommandList::TownAdding(bool allLabel, bool bDiseased, bool bNotDi
         auto *pvdat = core.Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
         if (pvdat != nullptr && pvdat->GetInt() == 0)
             continue;
-        char *pLocName = nullptr;
+        const char *pLocName = nullptr;
         if (pL->pA != nullptr)
             pLocName = pL->pA->GetAttribute("name");
         retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1, pLocName,
-                                pL->pchr_note);
+                                pL->pchr_note.c_str());
     } while ((pL = g_IslandDescr.GetNext()) != nullptr);
     return retVal;
 }

@@ -46,7 +46,7 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES *pAIsland)
     ATTRIBUTES *pATmp;
     for (auto i = 0; i < m_nLocators; i++)
     {
-        m_pLocators[i].pchr_note = nullptr;
+        m_pLocators[i].pchr_note.clear();
         if ((pATmp = m_pLocators[i].pA = pA->GetAttributeClass(i)) == nullptr)
             continue;
         m_pLocators[i].pchr_note = pATmp->GetAttribute("labelLoc");

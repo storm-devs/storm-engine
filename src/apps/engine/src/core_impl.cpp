@@ -672,7 +672,7 @@ ATTRIBUTES *CoreImpl::Entity_GetAttributeClass(entid_t id_PTR, const char *name)
     return pE->AttributesPointer->FindAClass(pE->AttributesPointer, name);
 }
 
-char *CoreImpl::Entity_GetAttribute(entid_t id_PTR, const char *name)
+const char *CoreImpl::Entity_GetAttribute(entid_t id_PTR, const char *name)
 {
     Entity *pE = EntityManager::GetEntityPointer(id_PTR);
     if (pE == nullptr)
