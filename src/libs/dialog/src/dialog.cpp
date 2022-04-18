@@ -1048,7 +1048,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
                 pA = pA->GetAttributeClass(m_DlgLinks.nSelectLine);
             if (pA)
             {
-                char *goName = pA->GetAttribute("go");
+                const char* goName = pA->GetAttribute("go");
                 if (!goName || storm::iEquals(goName, selectedLinkName))
                     EmergencyExit();
                 else

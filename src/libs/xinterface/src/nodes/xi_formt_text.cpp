@@ -1438,7 +1438,7 @@ void CXI_FORMATEDTEXT::SetSpecialStrings(ATTRIBUTES *pARoot)
         ATTRIBUTES *pA = pARoot->GetAttributeClass(i);
         if (pA == nullptr)
             continue;
-        char *tmpstr = pA->GetAttribute("str");
+        const char *tmpstr = pA->GetAttribute("str");
         if (tmpstr == nullptr)
             continue;
         const int pos = pA->GetAttributeAsDword("pos", -1);

@@ -70,10 +70,10 @@ inline bool CheckID(VDATA *vd, const char *id, bool &res)
     a = a->GetAttributeClass("id");
     if (!a)
         return true;
-    auto *const attr = a->GetThisAttr();
-    if (!attr)
+    if (!a->HasValue()) {
         return true;
-    res = storm::iEquals(attr, id);
+    }
+    res = storm::iEquals(a->GetThisAttr(), id);
     return true;
 }
 

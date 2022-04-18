@@ -30,15 +30,15 @@ class STRING_CODEC : public VSTRING_CODEC
         PZERO(HTable, sizeof(HTable));
     }
 
-    ~STRING_CODEC()
+    ~STRING_CODEC() override
     {
         Release();
-    };
+    }
 
-    uint32_t GetNum()
+    uint32_t GetNum() override
     {
         return nStringsNum;
-    };
+    }
 
     void Release()
     {
@@ -55,7 +55,7 @@ class STRING_CODEC : public VSTRING_CODEC
         }
     }
 
-    uint32_t Convert(const char *pString, int32_t iLen)
+    uint32_t Convert(const char *pString, int32_t iLen) override
     {
         if (pString == nullptr)
             return 0xffffffff;
@@ -68,7 +68,7 @@ class STRING_CODEC : public VSTRING_CODEC
         return Convert(cTemp, bNew);
     }
 
-    uint32_t Convert(const char *pString)
+    uint32_t Convert(const char *pString) override
     {
         if (pString == nullptr)
             return 0xffffffff;
@@ -117,9 +117,9 @@ class STRING_CODEC : public VSTRING_CODEC
         return nStringCode;
     }
 
-    void VariableChanged();
+    void VariableChanged() override;
 
-    const char *Convert(uint32_t code)
+    const char *Convert(uint32_t code) override
     {
         uint32_t nTableIndex = code >> 16;
         if (nTableIndex >= HASH_TABLE_SIZE)

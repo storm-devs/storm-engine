@@ -697,7 +697,7 @@ void InterfaceBackScene::InitLight(ATTRIBUTES *pAParam)
     pLight->vLightPos = locMtx.Pos();
 
     // load model
-    char *pcFonarModel = pAParam->GetAttribute("model");
+    const char *pcFonarModel = pAParam->GetAttribute("model");
     if (pcFonarModel)
     {
         auto pGeo = static_cast<VGEOMETRY *>(core.GetService("Geometry"));
