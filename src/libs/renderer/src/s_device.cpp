@@ -4436,6 +4436,20 @@ void DX9RENDER::DrawSphere(const CVECTOR &vPos, float fRadius, uint32_t dwColor)
                     sizeof(DX9SphVertex), "DXSphere");
 }
 
+
+void DX9RENDER::DrawEllipsoid(const CVECTOR &vPos, float a, float b, float c, float ay, uint32_t dwColor)
+{
+    CMatrix trans, scale, rot;
+    trans.BuildPosition(vPos.x, vPos.y, vPos.z);
+    scale.BuildScale(a, b, c);
+    rot.BuildRotateY(ay);
+
+    SetTransform(D3DTS_WORLD, scale * rot * trans);
+    SetRenderState(D3DRS_TEXTUREFACTOR, dwColor);
+    DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZ | D3DFVF_DIFFUSE, DX9sphereNumTrgs, DX9sphereVertex,
+                    sizeof(DX9SphVertex), "DXEllipsoid");
+}
+
 void DX9RENDER::SetLoadTextureEnable(bool bEnable)
 {
     bLoadTextureEnabled = bEnable;

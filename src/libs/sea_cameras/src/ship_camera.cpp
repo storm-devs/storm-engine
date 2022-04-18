@@ -1,42 +1,21 @@
-#include "ship_camera.h"
-#include "sd2_h/save_load.h"
 #include "core.h"
+#include "sd2_h/save_load.h"
+#include "ship_camera.h"
 
 #define SCMR_BOXSCALE_X 1.6f
 #define SCMR_BOXSCALE_Y 1.3f
 #define SCMR_BOXSCALE_Z 1.4f
 
 SHIP_CAMERA::SHIP_CAMERA()
+    : fDistanceDlt(0.0f), fDistanceInertia(15.0f), fAngleXDlt(0.0f), fAngleXInertia(12.0f), fAngleYDlt(0.0f),
+      fAngleYInertia(10.0f), fModelAy(0.0f), pSea(nullptr), pIsland(nullptr), lIlsInitCnt(0), pRS(nullptr)
 {
     SetOn(false);
     SetActive(false);
-
-    ZERO(vAng);
-    pRS = nullptr;
-    pSea = nullptr;
-    pIsland = nullptr;
-    lIlsInitCnt = 0;
-
-    fDistanceDlt = 0.0f;
-    fAngleXDlt = fAngleYDlt = 0.0f;
-    fModelAy = 0.0f;
-
-    fDistanceInertia = 15.0f;
-    fAngleXInertia = 12.0f;
-    fAngleYInertia = 10.0f;
-}
-
-SHIP_CAMERA::~SHIP_CAMERA()
-{
 }
 
 bool SHIP_CAMERA::Init()
 {
-    // core.SystemMessages(GetId(),true);
-
-    iLockX = 0;
-    iLockY = 0;
-
     SetDevices();
 
     return true;
@@ -48,7 +27,6 @@ void SHIP_CAMERA::SetDevices()
     Assert(pRS);
 
     pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
-    // Assert(pSea);
 }
 
 void SHIP_CAMERA::Execute(uint32_t dwDeltaTime)
@@ -62,14 +40,20 @@ void SHIP_CAMERA::Execute(uint32_t dwDeltaTime)
 
     const auto fDeltaTime = 0.001f * static_cast<float>(core.GetDeltaTime());
 
-    auto *pModel = GetModelPointer();
+    const auto *pModel = GetModelPointer();
     Assert(pModel);
-    auto *const mtx = &pModel->mtx;
+    const auto * mtx = &pModel->mtx;
     vCenter = mtx->Pos();
 
-    fModelAy = static_cast<float>(atan2(mtx->Vz().x, mtx->Vz().z));
+    fModelAy = atan2(mtx->Vz().x, mtx->Vz().z);
 
     Move(fDeltaTime);
+}
+
+void SHIP_CAMERA::Realize(uint32_t dwDeltaTime) const
+{
+    pRS->DrawEllipsoid(GetAIObj()->GetPos(), a, b, c, fModelAy, 0x900C0C0C);
+    pRS->DrawSphere(vCenter, 5.0f, 0xFFFFFFFF);
 }
 
 void SHIP_CAMERA::Move(float fDeltaTime)
@@ -80,7 +64,6 @@ void SHIP_CAMERA::Move(float fDeltaTime)
         return;
 
     const auto fSpeed = fDeltaTime;
-    auto fTempHeight = 0.0f;
 
     CONTROL_STATE cs;
 
@@ -98,7 +81,6 @@ void SHIP_CAMERA::Move(float fDeltaTime)
         fKInert = 0.0f;
     if (fKInert > 1.0f)
         fKInert = 1.0f;
-    fSensivityDistance = 1.0f;
     fDistanceDlt += (fSensivityDistanceDlt - fDistanceDlt) * fKInert;
     fDistance += fSpeed * fDistanceDlt;
     if (fDistance > 1.0f)
@@ -138,17 +120,21 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     if (vAng.x > fMaxAngleX)
         vAng.x = fMaxAngleX;
 
-    // Current distance
-    auto boxSize =
-        GetAIObj()->GetBoxsize() * CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
+    const auto *modelMtx = GetAIObj()->GetMatrix();
+    auto boxSize = GetAIObj()->GetBoxsize();
+    // Recalculate box size: (box size + immersion) * hand-fitted scale
+    boxSize.y += modelMtx->pos.y;
+    boxSize *= CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
+    // Project real height (with masts)
     const auto realBoxSize = GetAIObj()->GetRealBoxsize();
     boxSize.x += realBoxSize.y;
     boxSize.z += realBoxSize.y;
+
     const auto maxRad = boxSize.z * 2.0f;
     // Semi-axes of the ellipsoid along which the camera moves
-    const auto a = boxSize.x * 1.2f + fDistance * (maxRad - boxSize.x * 1.2f); // x
-    const auto b = boxSize.y * 1.5f + fDistance * (70.0f - boxSize.y * 1.5f);  // y
-    const auto c = boxSize.z * 1.2f + fDistance * (maxRad - boxSize.z * 1.2f); // z
+    a = boxSize.x * 1.2f + fDistance * (maxRad - boxSize.x * 1.2f);     // x
+    b = boxSize.y * 1.5f + fDistance * (70.0f - boxSize.y * 1.5f);  // y
+    c = boxSize.z * 1.2f + fDistance * (maxRad - boxSize.z * 1.2f); // z
     // Find the position of the camera on the ellipsoid
     vCenter.y += 0.5f * boxSize.y;
     CVECTOR vPos;
@@ -163,12 +149,14 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     {
         // Below 0 driving on an elliptical cylinder
         vPos.x = a * sinf(vAng.y);
-        vPos.y = 0.0f; // b*sinf(-vAng.x);
+        vPos.y = 0.0f;
         vPos.z = c * cosf(vAng.y);
     }
     vPos = CMatrix(CVECTOR(0.0f, fModelAy, 0.0f), vCenter) * vPos;
+    vCenter.y += fDistance * 2.0f * boxSize.y;
+    vCenter.y = std::min(vCenter.y, boxSize.y);
     if (vAng.x > 0.0f)
-        vCenter.y += boxSize.z * vAng.x * 6.0f;
+        vCenter.y += realBoxSize.y * vAng.x * 6.0f;
     // Limit the height from the bottom
     const auto fWaveY = pSea->WaveXZ(vPos.x, vPos.z);
     if (vPos.y - fWaveY < fMinHeightOnSea)
@@ -185,19 +173,12 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     if (vPos.y > oldPosY)
         vCenter.y += vPos.y - oldPosY;
     // Set new camera
-    vCenter.y += fDistance * 2.0f * boxSize.y;
     pRS->SetCamera(vPos, vCenter, CVECTOR(0.0f, 1.0f, 0.0f));
     pRS->SetPerspective(GetPerspective());
 }
 
-void SHIP_CAMERA::Realize(uint32_t dwDeltaTime)
-{
-}
-
 void SHIP_CAMERA::SetCharacter(ATTRIBUTES *_pACharacter)
 {
-    entid_t eidTemp;
-
     pACharacter = _pACharacter;
 }
 
@@ -235,9 +216,7 @@ uint32_t SHIP_CAMERA::AttributeChanged(ATTRIBUTES *pAttr)
 
 void SHIP_CAMERA::ShipsCollision(CVECTOR &pos)
 {
-    CVECTOR p;
-    const auto &entities = EntityManager::GetEntityIdVector("ship");
-    for (auto ent : entities)
+    for (const auto &entities = EntityManager::GetEntityIdVector("ship"); const auto ent : entities)
     {
         // Object pointer
         auto *ship = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ent));
@@ -247,6 +226,7 @@ void SHIP_CAMERA::ShipsCollision(CVECTOR &pos)
             continue;
         // Camera position in the ship system
         Assert(ship->GetMatrix());
+        CVECTOR p;
         ship->GetMatrix()->MulToInv(pos, p);
         // Check if hitting the box
         auto s = ship->GetBoxsize() * CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
@@ -278,7 +258,7 @@ void SHIP_CAMERA::ShipsCollision(CVECTOR &pos)
 
 bool SHIP_CAMERA::IslandCollision(CVECTOR &pos)
 {
-    const auto camRadius = 0.4f;
+    constexpr auto camRadius = 0.4f;
     // Island
     if (pIsland == nullptr)
     {
@@ -306,33 +286,33 @@ bool SHIP_CAMERA::IslandCollision(CVECTOR &pos)
     dir *= 1.0f / dist;
     const auto dr = dir * (dist + camRadius);
     // First check
-    float k[5];
-    k[0] = mdl->Trace(vCenter, vCenter + dr);
+    float kArr[5];
+    kArr[0] = mdl->Trace(vCenter, vCenter + dr);
     // Basis
     auto left = dir ^ CVECTOR(0.0f, 1.0f, 0.0f);
     const auto l = ~left;
     if (l <= 0.0f)
     {
-        if (k[0] < 1.0f)
-            pos = vCenter + (pos - vCenter) * k[0] - dir * camRadius;
-        return k[0] < 1.0f;
+        if (kArr[0] < 1.0f)
+            pos = vCenter + (pos - vCenter) * kArr[0] - dir * camRadius;
+        return kArr[0] < 1.0f;
     }
     left *= 1.0f / sqrtf(l);
     const auto up = dir ^ left;
-    // Find nearest distanse
-    CVECTOR src;
-    src = vCenter + left * camRadius;
-    k[1] = mdl->Trace(src, src + dr);
+    CVECTOR src = vCenter + left * camRadius;
+    kArr[1] = mdl->Trace(src, src + dr);
     src = vCenter - left * camRadius;
-    k[2] = mdl->Trace(src, src + dr);
+    kArr[2] = mdl->Trace(src, src + dr);
     src = vCenter + up * camRadius;
-    k[3] = mdl->Trace(src, src + dr);
+    kArr[3] = mdl->Trace(src, src + dr);
     src = vCenter - up * camRadius;
-    k[4] = mdl->Trace(src, src + dr);
+    kArr[4] = mdl->Trace(src, src + dr);
     auto kRes = 2.0f;
-    for (int32_t i = 0; i < 5; i++)
-        if (kRes > k[i])
-            kRes = k[i];
+    for (const float k : kArr)
+    {
+        if (kRes > k)
+            kRes = k;
+    }
     if (kRes < 1.0f)
         pos = vCenter + (pos - vCenter) * kRes - dir * camRadius;
     return kRes < 1.0f;
@@ -340,8 +320,10 @@ bool SHIP_CAMERA::IslandCollision(CVECTOR &pos)
 
 void SHIP_CAMERA::Save(CSaveLoad *pSL)
 {
-    pSL->SaveLong(iLockX);
-    pSL->SaveLong(iLockY);
+    // TODO: remove
+    pSL->SaveLong({});
+    pSL->SaveLong({});
+
     pSL->SaveFloat(fMinHeightOnSea);
     pSL->SaveFloat(fMaxHeightOnShip);
     pSL->SaveFloat(fDistance);
@@ -374,8 +356,10 @@ void SHIP_CAMERA::Save(CSaveLoad *pSL)
 
 void SHIP_CAMERA::Load(CSaveLoad *pSL)
 {
-    iLockX = pSL->LoadLong();
-    iLockY = pSL->LoadLong();
+    // TODO: remove
+    pSL->LoadLong();
+    pSL->LoadLong();
+
     fMinHeightOnSea = pSL->LoadFloat();
     fMaxHeightOnShip = pSL->LoadFloat();
     fDistance = pSL->LoadFloat();
