@@ -50,6 +50,7 @@
 #define BI_EVENT_GET_DATA "BI_GetData"
 #define BI_EVENT_CHECK_SHIPSTATE_SHOW "BI_CheckSSShow"
 #define BI_EVENT_GET_FORT_RELATION "BI_GetFortRelation"
+#define BI_EVENT_GET_CMD_LIST_ORDER_PRIORITY "BI_GetCmdListOrderPriority"
 
 // relationship types
 #define BI_RELATION_ENEMY 0
