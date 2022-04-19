@@ -160,7 +160,7 @@ int CXI_EDITBOX::CommandExecute(int wActCode)
                 break;
             char param[256];
             param[0] = 0;
-            auto *const tmpstr = pA->GetAttribute("strdata");
+            const char *tmpstr = pA->GetAttribute("strdata");
             switch (m_alpha[m_bUpChrRegistrOffset + m_nCurAlphaNum])
             {
             case '*':

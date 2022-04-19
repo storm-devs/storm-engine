@@ -224,7 +224,7 @@ ISLAND_DESCRIBER::LOCATOR_DESCR *ISLAND_DESCRIBER::FindLocatorByName(char *name)
     {
         if (m_pLocators[i].pA == nullptr)
             continue;
-        auto *const curName = m_pLocators[i].pA->GetAttribute("name");
+        const char* curName = m_pLocators[i].pA->GetAttribute("name");
         if (curName != nullptr && storm::iEquals(name, curName))
             return &m_pLocators[i];
     }

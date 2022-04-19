@@ -594,7 +594,7 @@ uint32_t RAIN::AttributeChanged(ATTRIBUTES *pAttribute)
         }
         if (*pAttribute == "DropsTexture")
         {
-            sDropsTexture = pAttribute->GetThisAttr();
+            sDropsTexture = to_string(pAttribute->GetThisAttr());
             return 0;
         }
     }
@@ -607,7 +607,7 @@ uint32_t RAIN::AttributeChanged(ATTRIBUTES *pAttribute)
         }
         if (*pAttribute == "Texture")
         {
-            sRainbowTexture = pAttribute->GetThisAttr();
+            sRainbowTexture = to_string(pAttribute->GetThisAttr());
             return 0;
         }
     }

@@ -29,15 +29,15 @@ void AIGroup::AddShip(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pASh
     AIShip *pShip = nullptr;
     if (const auto *pAMode = pACharacter->FindAClass(pACharacter, "Ship.Mode"))
     {
-        if (std::string("war") == pAMode->GetThisAttr())
+        if (std::string("war") == to_string(pAMode->GetThisAttr()))
         {
             pShip = new AIShipWar();
         }
-        else if (std::string("trade") == pAMode->GetThisAttr())
+        else if (std::string("trade") == to_string(pAMode->GetThisAttr()))
         {
             pShip = new AIShipTrade();
         }
-        else if (std::string("boat") == pAMode->GetThisAttr())
+        else if (std::string("boat") == to_string(pAMode->GetThisAttr()))
         {
             pShip = new AIShipBoat();
         }
@@ -49,7 +49,7 @@ void AIGroup::AddShip(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pASh
 
     CVECTOR vShipPos;
 
-    if (const auto event = GetCommanderACharacter()->GetAttribute("GroupShipPos_event"))
+    if (const char *event = GetCommanderACharacter()->GetAttribute("GroupShipPos_event"))
     {
         const auto result = core.Event(event, "lfffa", static_cast<uint32_t>(aGroupShips.size()), vInitGroupPos.x,
                                        vInitGroupPos.y, vInitGroupPos.z, pACharacter);
@@ -366,7 +366,7 @@ void AIGroup::ShipChangeGroup(ATTRIBUTES *pACharacter, const char *pGroupName)
     if (!pGOld)
     {
         core.Trace("AIGroup::ShipChangeGroup: Can't find group with character id = %s",
-                   pACharacter->GetAttribute("id"));
+                   static_cast<const char*>(pACharacter->GetAttribute("id")));
         return;
     }
     AIGroup *pGNew = FindOrCreateGroup(pGroupName);

@@ -29,6 +29,8 @@ class ATTRIBUTES final
     // TODO: remove with another iteration of rewriting this
     friend class COMPILER;
 
+    class LegacyProxy;
+
   public:
     [[deprecated("Pass StringCodec by reference instead")]] explicit ATTRIBUTES(VSTRING_CODEC *p);
 
@@ -45,7 +47,7 @@ class ATTRIBUTES final
     [[nodiscard]] const char* GetThisName() const;
     [[nodiscard]] bool HasValue() const noexcept;
     [[nodiscard]] const std::string &GetValue() const;
-    [[nodiscard]] const char *GetThisAttr() const;
+    [[nodiscard]] LegacyProxy GetThisAttr() const;
     void SetName(const std::string_view &new_name);
     [[deprecated("Pass attribute value by string_view instead")]]
     void SetValue(const char *new_value);
@@ -54,9 +56,9 @@ class ATTRIBUTES final
     [[nodiscard]] ATTRIBUTES *GetAttributeClass(const std::string_view &name) const;
     [[nodiscard]] ATTRIBUTES *GetAttributeClass(uint32_t n) const;
     [[nodiscard]] ATTRIBUTES *VerifyAttributeClass(const std::string_view &name);
-    [[nodiscard]] const char *GetAttribute(size_t n) const;
+    [[nodiscard]] LegacyProxy GetAttribute(size_t n) const;
+    [[nodiscard]] LegacyProxy GetAttribute(const std::string_view &name) const;
     [[nodiscard]] const char *GetAttributeName(size_t n) const;
-    [[nodiscard]] const char *GetAttribute(const std::string_view &name) const;
     [[nodiscard]] uint32_t GetAttributeAsDword(const char *name = nullptr, uint32_t def = 0) const;
     [[nodiscard]] uintptr_t GetAttributeAsPointer(const char *name = nullptr, uintptr_t def = 0) const;
     [[nodiscard]] float GetAttributeAsFloat(const char *name = nullptr, float def = 0) const;
@@ -94,4 +96,46 @@ private:
     std::vector<std::unique_ptr<ATTRIBUTES>> attributes_;
     ATTRIBUTES *parent_{nullptr};
     bool break_{false};
+    
+    class LegacyProxy
+    {
+        using value_t = decltype(value_);
+        using proxy_value_t = std::add_lvalue_reference_t<std::add_const_t<value_t>>;
+
+      public:
+        LegacyProxy(const LegacyProxy &other) = delete;
+        LegacyProxy(LegacyProxy &&other) = delete;
+        LegacyProxy & operator=(const LegacyProxy &other) = delete;
+        LegacyProxy & operator=(LegacyProxy &&other) = delete;
+
+        LegacyProxy() : proxy_value_(null_value)
+        {            
+        }
+
+        LegacyProxy(proxy_value_t value) : proxy_value_(value)
+        {
+        }
+
+        // use to_string directly when the implicit cast is ambiguous
+        operator std::string() const &&
+        {
+            return proxy_value_ ? *proxy_value_ : value_t::value_type{};
+        }
+
+        operator const char *() const &&
+        {
+            return proxy_value_ ? proxy_value_->c_str() : nullptr;
+        }
+
+        friend std::string to_string(LegacyProxy &&proxy)
+        {
+            return std::move(proxy).operator std::string();
+        }
+
+      private:
+        static inline value_t null_value;
+
+        proxy_value_t proxy_value_;
+    };
 };
+

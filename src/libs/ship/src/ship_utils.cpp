@@ -41,7 +41,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, int32_t &iNumVContour)
     }
     else
     {
-        core.Trace("SHIP: Up trace error, ship %s", GetAShip()->GetAttribute("Name"));
+        core.Trace("SHIP: Up trace error, ship %s", static_cast<const char*>(GetAShip()->GetAttribute("Name")));
         bDefaultContour = true;
         Beep(1000, 200);
     }
@@ -55,7 +55,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, int32_t &iNumVContour)
         vP2 = vSrc + fRes * (vDst - vSrc);
     else
     {
-        core.Trace("SHIP: Down trace error, ship %s", GetAShip()->GetAttribute("Name"));
+        core.Trace("SHIP: Down trace error, ship %s", static_cast<const char*>(GetAShip()->GetAttribute("Name")));
         bDefaultContour = true;
         Beep(1000, 200);
     }

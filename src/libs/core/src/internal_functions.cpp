@@ -2571,7 +2571,7 @@ void COMPILER::DumpAttributes(ATTRIBUTES *pA, int32_t level)
 
     for (uint32_t n = 0; n < pA->GetAttributesNum(); n++)
     {
-        DTrace("%s%s = %s", buffer, pA->GetAttributeName(n), pA->GetAttribute(n));
+        DTrace("%s%s = %s", buffer, pA->GetAttributeName(n), static_cast<const char*>(pA->GetAttribute(n)));
         DumpAttributes(pA->GetAttributeClass(pA->GetAttributeName(n)), level + 2);
     }
 }

@@ -225,7 +225,7 @@ bool WorldMap::Init()
         wdmObjects->stormBrnDistMax =
             AttributesPointer->GetAttributeAsFloat("stormBrnDistMax", wdmObjects->stormBrnDistMax);
         wdmObjects->stormZone = AttributesPointer->GetAttributeAsFloat("stormZone", wdmObjects->stormZone);
-        auto *const s = AttributesPointer->GetAttribute("debug");
+        const char *s = AttributesPointer->GetAttribute("debug");
         wdmObjects->isDebug = s && (storm::iEquals(s, "true"));
         saveData = AttributesPointer->CreateSubAClass(AttributesPointer, "encounters");
         wdmObjects->resizeRatio = AttributesPointer->GetAttributeAsFloat("resizeRatio", wdmObjects->resizeRatio);
@@ -335,13 +335,13 @@ bool WorldMap::Init()
             }
             if (storm::iEquals(type, "Warring") && modelName && modelName[0])
             {
-                auto *const attacked = a->GetAttribute("attacked");
+                const char *attacked = a->GetAttribute("attacked");
                 if (attacked)
                 {
                     auto *a1 = saveData->FindAClass(saveData, attacked);
                     if (a1)
                     {
-                        auto *const modelName1 = a1->GetAttribute("modelName");
+                        const char *modelName1 = a1->GetAttribute("modelName");
                         if (modelName1 && modelName1[0])
                         {
                             if (!CreateWarringShips(modelName, modelName1, -1.0f, a, a1))
@@ -474,7 +474,7 @@ void WorldMap::Realize(uint32_t delta_time)
 #endif
     }
     //
-    auto *tmp = aDate->GetAttribute("sec");
+    const char *tmp = aDate->GetAttribute("sec");
     if (tmp)
         strcpy_s(wdmObjects->attrSec, tmp);
     tmp = aDate->GetAttribute("min");

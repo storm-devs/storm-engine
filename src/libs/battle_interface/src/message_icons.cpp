@@ -196,7 +196,7 @@ bool MESSAGE_ICONS::InitData(entid_t host_eid, VDX9RENDER *_rs, ATTRIBUTES *pARo
     m_fBlindTimeUp = pARoot->GetAttributeAsFloat("BlindUpTime", .5f);
     m_fBlindTimeDown = pARoot->GetAttributeAsFloat("BlindDownTime", 1.f);
 
-    auto *const stmp = pARoot->GetAttribute("texture");
+    const char *stmp = pARoot->GetAttribute("texture");
     if (stmp != nullptr)
         m_idMsgIconsTexture = rs->TextureCreate(stmp);
     m_nHorzTextureSize = pARoot->GetAttributeAsDword("TexHSize", 1);

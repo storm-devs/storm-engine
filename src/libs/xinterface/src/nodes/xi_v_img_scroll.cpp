@@ -435,7 +435,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
     {
         // get special technique name and color
         m_dwSpecTechniqueARGB = pAttribute->GetAttributeAsDword("SpecTechniqueColor");
-        auto *const sTechnique = pAttribute->GetAttribute("SpecTechniqueName");
+        const char *sTechnique = pAttribute->GetAttribute("SpecTechniqueName");
         if (sTechnique != nullptr)
         {
             const auto len = strlen(sTechnique) + 1;
@@ -476,7 +476,7 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
                 }
                 for (i = 0; i < m_nGroupQuantity; i++)
                 {
-                    auto *const stmp = pA->GetAttribute(i);
+                    const char *stmp = pA->GetAttribute(i);
                     if (stmp == nullptr)
                         continue;
                     const auto len = strlen(stmp) + 1;

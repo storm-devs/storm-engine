@@ -410,10 +410,9 @@ void XINTERFACE::Realize(uint32_t)
             for (auto i = 0; i < m_nStringQuantity; i++)
                 if (m_stringes[i].bUsed)
                 {
-                    auto *tmps = tmpAttr->GetAttribute(m_stringes[i].sStringName);
                     pRenderService->ExtPrint(m_stringes[i].fontNum, m_stringes[i].dwColor, 0, m_stringes[i].eAlignment,
                                              true, m_stringes[i].fScale, dwScreenWidth, dwScreenHeight, m_stringes[i].x,
-                                             m_stringes[i].y, "%s", tmpAttr->GetAttribute(m_stringes[i].sStringName));
+                                             m_stringes[i].y, "%s", static_cast<const char*>(tmpAttr->GetAttribute(m_stringes[i].sStringName)));
                 }
     }
 
@@ -2636,7 +2635,7 @@ uint32_t XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
         if (storm::iEquals(patr->GetThisName(), "pic"))
         {
             STORM_DELETE(pImList->sPicture);
-            if (patr->GetThisAttr() != nullptr)
+            if (patr->HasValue())
             {
                 const auto len = strlen(patr->GetThisAttr()) + 1;
                 if ((pImList->sPicture = new char[len]) == nullptr)
@@ -2655,7 +2654,7 @@ uint32_t XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
             if (pImList->sImageListName != nullptr)
                 pPictureService->ReleaseTextureID(pImList->sImageListName);
             STORM_DELETE(pImList->sImageListName);
-            if (patr->GetThisAttr() != nullptr)
+            if (patr->HasValue())
             {
                 const auto len = strlen(patr->GetThisAttr()) + 1;
                 if ((pImList->sImageListName = new char[len]) == nullptr)

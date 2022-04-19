@@ -71,7 +71,7 @@ int32_t BIManCommandList::CommandAdding()
         const int32_t pictureNum = pA->GetAttributeAsDword("picNum", 0);
         const int32_t selPictureNum = pA->GetAttributeAsDword("selPicNum", 0);
         const int32_t texNum = pA->GetAttributeAsDword("texNum", -1);
-        auto *const eventName = pA->GetAttribute("event");
+        const char *eventName = pA->GetAttribute("event");
         retVal +=
             AddToIconList(texNum, pictureNum, selPictureNum, -1, -1, eventName, -1, nullptr, pA->GetAttribute("note"));
     }
@@ -97,7 +97,7 @@ int32_t BIManCommandList::UserIconsAdding()
         const int32_t pictureNum = pA->GetAttributeAsDword("pic", 0);
         const int32_t selPictureNum = pA->GetAttributeAsDword("selpic", 0);
         const int32_t textureNum = pA->GetAttributeAsDword("tex", -1);
-        auto *const eventName = pA->GetAttribute("event");
+        const char *eventName = pA->GetAttribute("event");
         retVal += AddToIconList(textureNum, pictureNum, selPictureNum, -1, -1, eventName, i + 1,
                                 pA->GetAttribute("name"), pA->GetAttribute("note"));
     }
@@ -126,7 +126,7 @@ int32_t BIManCommandList::AbilityAdding()
         const int32_t textureNum = pA->GetAttributeAsDword("texNum", -1);
         // retVal += AddToIconList( textureNum, pictureNum, selPictureNum, -1, -1, pA->GetThisName(), i, null,
         // pA->GetAttribute("note") );
-        auto *const eventName = pA->GetAttribute("event");
+        const char *eventName = pA->GetAttribute("event");
         retVal += AddToIconList(textureNum, pictureNum, selPictureNum, -1, -1, eventName, -1, nullptr,
                                 pA->GetAttribute("note"));
     }

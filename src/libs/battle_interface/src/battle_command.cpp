@@ -561,7 +561,7 @@ ATTRIBUTES *BICommandList::GetCurrentCommandAttribute() const
         auto *pA = pAR->GetAttributeClass(n);
         if (!pA)
             continue;
-        auto *const pcCommName = pA->GetAttribute("event");
+        const char *pcCommName = pA->GetAttribute("event");
         if (m_sCurrentCommandName == pcCommName)
             return pA;
     }
