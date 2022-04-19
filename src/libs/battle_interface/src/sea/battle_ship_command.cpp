@@ -224,7 +224,7 @@ int32_t BIShipCommandList::FortAdding(bool allLabel, bool bFriend, bool bNeutral
             if (pL->pA != nullptr)
                 pLocName = pL->pA->GetAttribute("name");
             retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1,
-                                    pL->pA->GetAttribute("name"), pL->pchr_note.c_str());
+                                    pL->pA->GetAttribute("name"), pL->pchr_note);
         }
     } while ((pL = g_IslandDescr.GetNext()) != nullptr);
 
@@ -276,7 +276,7 @@ int32_t BIShipCommandList::LandAdding(bool allLabel)
         if (pL->pA != nullptr)
             pLocName = pL->pA->GetAttribute("name");
         retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1, pLocName,
-                                pL->pchr_note.c_str());
+                                pL->pchr_note);
     } while ((pL = g_IslandDescr.GetNext()) != nullptr);
     return retVal;
 }
@@ -466,7 +466,7 @@ int32_t BIShipCommandList::TownAdding(bool allLabel, bool bDiseased, bool bNotDi
         if (pL->pA != nullptr)
             pLocName = pL->pA->GetAttribute("name");
         retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1, pLocName,
-                                pL->pchr_note.c_str());
+                                pL->pchr_note);
     } while ((pL = g_IslandDescr.GetNext()) != nullptr);
     return retVal;
 }

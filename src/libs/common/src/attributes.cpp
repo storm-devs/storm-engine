@@ -200,8 +200,8 @@ bool ATTRIBUTES::SetAttributeUseDword(const char *name, uint32_t val)
     std::string buffer;
     buffer = std::to_string(val);
     if (name)
-        return SetAttribute(name, buffer.c_str()) != 0;
-    SetValue(buffer.c_str());
+        return SetAttribute(name, buffer) != 0;
+    SetValue(buffer);
     return true;
 }
 
