@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core.h"
+#include "core_private.h"
 
 #include "compiler.h"
 #include "services_list.h"
@@ -10,7 +10,7 @@
 
 #define ENGINE_SCRIPT_VERSION 54128
 
-class CoreImpl : public Core
+class CoreImpl : public CorePrivate
 {
   public:
     CoreImpl() = default;

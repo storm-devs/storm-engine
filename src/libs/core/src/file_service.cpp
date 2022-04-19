@@ -16,6 +16,13 @@
 const char INI_LINEFEED[3] = {0xd, 0xa, 0};
 const char INI_VOIDSYMS[VOIDSYMS_NUM] = {0x20, 0x9};
 
+namespace
+{
+FILE_SERVICE file_service;
+}
+
+extern VFILE_SERVICE *fio = &file_service;
+
 void FILE_SERVICE::FlushIniFiles()
 {
     for (uint32_t n = 0; n <= Max_File_Index; n++)

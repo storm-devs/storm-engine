@@ -1,4 +1,4 @@
-#include "steam_api_impl.hpp"
+#include "steam_api.hpp"
 
 #ifdef STORM_ENABLE_STEAM
 #include <stdexcept>

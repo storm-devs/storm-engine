@@ -4,7 +4,6 @@
 
 #include "entity.h"
 #include "fader.h"
-#include "steam_api_impl.hpp"
 #include "core.h"
 #include "s_import_func.h"
 #include "v_s_stack.h"

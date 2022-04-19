@@ -23,9 +23,15 @@
 #define SBUPDATE 4
 #define DEF_COMPILE_EXPRESSIONS
 
+
+namespace
+{
+S_DEBUG s_debug;
+}
+
 // extern char * FuncNameTable[];
 extern INTFUNCDESC IntFuncTable[];
-extern S_DEBUG * CDebug;
+extern S_DEBUG *CDebug = &s_debug;
 extern uint32_t dwNumberScriptCommandsExecuted;
 
 using std::chrono::duration_cast;

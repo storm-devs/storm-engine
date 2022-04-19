@@ -1,6 +1,6 @@
 #include "steam_api_script_lib.hpp"
 
-#include "steam_api_impl.hpp"
+#include "steam_api.hpp"
 #include "core.h"
 #include "defines.h"
 #include "s_import_func.h"

@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME animation
     TYPE storm_module
-    DEPENDENCIES common util
+    DEPENDENCIES common core util
 )
