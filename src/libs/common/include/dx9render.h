@@ -161,7 +161,7 @@ class VDX9RENDER : public SERVICE
     virtual void DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, int32_t iVBuff, int32_t iStride, int32_t iStartV, int32_t iNumPT,
                                const char *cBlockName = nullptr) = 0;
     virtual void DrawPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwVertexBufferFormat, uint32_t dwNumPT,
-                                 void *pVerts, uint32_t dwStride, const char *cBlockName = nullptr) = 0;
+                                 const void *pVerts, uint32_t dwStride, const char *cBlockName = nullptr) = 0;
     virtual void DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwMinIndex, uint32_t dwNumVertices,
                                         uint32_t dwPrimitiveCount, const void *pIndexData, D3DFORMAT IndexDataFormat,
                                         const void *pVertexData, uint32_t dwVertexStride,
@@ -318,4 +318,6 @@ class VDX9RENDER : public SERVICE
     virtual void SetGLOWParams(float _fBlurBrushSize, int32_t _GlowIntensity, int32_t _GlowPasses) = 0;
 
     virtual IDirect3DBaseTexture9 *GetTextureFromID(int32_t nTextureID) = 0;
+
+    virtual bool GetRenderTargetAsTexture(IDirect3DTexture9 **tex) = 0;
 };

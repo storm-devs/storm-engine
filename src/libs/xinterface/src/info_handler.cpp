@@ -4,19 +4,14 @@
 
 #include "v_module_api.h"
 
-InfoHandler::InfoHandler()
-    : m_rs(nullptr)
+InfoHandler::InfoHandler() : m_rs(nullptr), tex(nullptr)
 {
-    m_pSurface = nullptr;
-    m_pRenderTarget = nullptr;
 }
 
 InfoHandler::~InfoHandler()
 {
-    if (m_pSurface)
-        m_rs->Release(m_pSurface);
-    if (m_pRenderTarget)
-        m_rs->Release(m_pRenderTarget);
+    if (tex)
+        m_rs->Release(tex);
 }
 
 bool InfoHandler::Init()
@@ -33,42 +28,61 @@ bool InfoHandler::Init()
         m_rs->MakePostProcess();
     }
 
-    if (m_rs->GetRenderTarget(&m_pRenderTarget) != D3D_OK || !m_pRenderTarget)
+    if(!DoPreOut())
     {
-        core.Trace("Can`t get render target");
+        core.Trace("DoPreOut failed");
         return false;
     }
 
-    auto isOk = false;
-    D3DSURFACE_DESC desc;
-    if (m_pRenderTarget->GetDesc(&desc) == D3D_OK)
+    if (!m_rs->GetRenderTargetAsTexture(&tex))
     {
-        if (m_rs->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, &m_pSurface) == D3D_OK)
-        {
-            if (DoPreOut())
-            {
-                if (m_rs->GetRenderTargetData(m_pRenderTarget, m_pSurface) == D3D_OK)
-                {
-                    isOk = true;
-                }
-            }
-        }
-    }
-    if (!isOk)
-    {
-        core.Trace("Screen shot for info shower not created!");
-        if (m_pSurface)
-        {
-            m_rs->Release(m_pSurface);
-            m_pSurface = nullptr;
-        }
-        if (m_pRenderTarget)
-        {
-            m_rs->Release(m_pRenderTarget);
-            m_pRenderTarget = nullptr;
-        }
+        core.Trace("[InfoHandler] GetRenderTargetAsTexture failed");
         return false;
     }
+
+    D3DVIEWPORT9 vp;
+    m_rs->GetViewport(&vp);
+    const auto w = static_cast<float>(vp.Width);
+    const auto h = static_cast<float>(vp.Height);
+    if (w <= 0 || h <= 0)
+        return false;
+
+    drawbuf_base[0].x = 0.0f;
+    drawbuf_base[0].y = 0.0f;
+    drawbuf_base[0].z = 0.5f;
+    drawbuf_base[0].rhw = 1.0f;
+    drawbuf_base[0].u = 0.0f;
+    drawbuf_base[0].v = 0.0f;
+    drawbuf_base[1].x = w;
+    drawbuf_base[1].y = 0.0f;
+    drawbuf_base[1].z = 0.5f;
+    drawbuf_base[1].rhw = 1.0f;
+    drawbuf_base[1].u = 1.0f;
+    drawbuf_base[1].v = 0.0f;
+    drawbuf_base[2].x = 0.0f;
+    drawbuf_base[2].y = h;
+    drawbuf_base[2].z = 0.5f;
+    drawbuf_base[2].rhw = 1.0f;
+    drawbuf_base[2].u = 0.0f;
+    drawbuf_base[2].v = 1.0f;
+    drawbuf_base[3].x = 0.0f;
+    drawbuf_base[3].y = h;
+    drawbuf_base[3].z = 0.5f;
+    drawbuf_base[3].rhw = 1.0f;
+    drawbuf_base[3].u = 0.0f;
+    drawbuf_base[3].v = 1.0f;
+    drawbuf_base[4].x = w;
+    drawbuf_base[4].y = 0.0f;
+    drawbuf_base[4].z = 0.5f;
+    drawbuf_base[4].rhw = 1.0f;
+    drawbuf_base[4].u = 1.0f;
+    drawbuf_base[4].v = 0.0f;
+    drawbuf_base[5].x = w;
+    drawbuf_base[5].y = h;
+    drawbuf_base[5].z = 0.5f;
+    drawbuf_base[5].rhw = 1.0f;
+    drawbuf_base[5].u = 1.0f;
+    drawbuf_base[5].v = 1.0f;
 
     return true;
 }
@@ -79,14 +93,13 @@ void InfoHandler::Execute(uint32_t delta_time)
 
 void InfoHandler::Realize(uint32_t delta_time) const
 {
-    if (m_pSurface == nullptr || m_pRenderTarget == nullptr)
+    if (tex == nullptr)
         return;
     m_rs->MakePostProcess();
     // keep the screen constant
-    if (m_rs->UpdateSurface(m_pSurface, nullptr, 0, m_pRenderTarget, nullptr) != D3D_OK)
-    {
-        core.Trace("Can't copy fader screen shot to render target!");
-    }
+    m_rs->SetTexture(0, tex);
+    m_rs->DrawPrimitiveUP(D3DPT_TRIANGLELIST, D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2, 2, drawbuf_base,
+                        sizeof(drawbuf_base[0]), "Fader");
 }
 
 uint64_t InfoHandler::ProcessMessage(MESSAGE &message)
@@ -124,6 +137,7 @@ bool InfoHandler::DoPreOut()
         fScale = AttributesPointer->GetAttributeAsFloat("scale", 1.f);
         nOutOffset = AttributesPointer->GetAttributeAsDword("offset", m_rs->CharHeight(0));
     }
+
     auto *const picTexureFile = AttributesPointer->GetAttribute("picfilename");
     auto *const picBackTexureFile = AttributesPointer->GetAttribute("picbackfilename");
     const uint32_t TMP_VERTEX_FORMAT = (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2);
@@ -144,14 +158,21 @@ bool InfoHandler::DoPreOut()
     pV[3].pos.z = 1.f;
     pV[3].w = .5f;
 
-    if (m_pRenderTarget->GetDesc(&desc) != D3D_OK)
+    IDirect3DSurface9 *pRenderTarget;
+    if (m_rs->GetRenderTarget(&pRenderTarget) != D3D_OK)
+    {
         return false;
+    }
+    
+    if (pRenderTarget->GetDesc(&desc) != D3D_OK)
+    {
+        m_rs->Release(pRenderTarget);
+        return false;
+    }
 
-    auto ntmp = 0;
-    const char *ps = nullptr;
     if (inStrStart)
     {
-        ntmp = m_rs->StringWidth(inStrStart, 0, fScale);
+        const auto ntmp = m_rs->StringWidth(inStrStart, 0, fScale);
         nOutWidth = static_cast<int>(sqrtf(4.f * ntmp * nOutOffset) + .9f);
         // record width is approximately four times the height
         if (nOutWidth > static_cast<int>(desc.Width))
@@ -161,7 +182,7 @@ bool InfoHandler::DoPreOut()
             nInsideRectWidth = desc.Width;
 
         nRowQ = 0;
-        for (ps = inStrStart; ps != nullptr && *ps;)
+        for (const auto * ps = inStrStart; ps != nullptr && *ps;)
         {
             ps = GetCutString(ps, nOutWidth, fScale);
             nRowQ++;
@@ -287,9 +308,9 @@ bool InfoHandler::DoPreOut()
             m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, TMP_VERTEX_FORMAT, 2, &pV, sizeof(TMP_VERTEX), "iInfoShower");
 
             // show strings
-            ntmp = 0;
+            auto ntmp = 0;
             const int topY = (desc.Height - nRowQ * nOutOffset) / 2;
-            for (ps = inStrStart; ps != nullptr && *ps;)
+            for (auto * ps = inStrStart; ps != nullptr && *ps;)
             {
                 auto *const oldps = ps;
                 ps = GetCutString(ps, nOutWidth, fScale);
@@ -307,6 +328,8 @@ bool InfoHandler::DoPreOut()
         if (bMakeEndScene)
             m_rs->EndScene();
     }
+
+    m_rs->Release(pRenderTarget);
 
     return isOK;
 }
@@ -397,47 +420,3 @@ void InfoHandler::StringToBufer(char *outStr, int sizeBuf, const char *inStr, in
     strncpy_s(outStr, sizeBuf, inStr, n);
     outStr[n] = 0;
 }
-
-/*
-void InfoHandler::LostRender()
-{
-    if (m_pSurface) m_rs->Release(m_pSurface);
-    if (m_pRenderTarget) m_rs->Release(m_pRenderTarget);
-}
-
-void InfoHandler::RestoreRender()
-{
-    if (m_rs->GetRenderTarget(&m_pRenderTarget) != D3D_OK)
-    {
-        core.Trace("Can`t get render target");
-        return;
-    }
-
-    bool isOk = false;
-    D3DSURFACE_DESC desc;
-    if (m_pRenderTarget->GetDesc(&desc) == D3D_OK)
-    {
-        if (m_rs->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, &m_pSurface) == D3D_OK)
-        {
-            if (DoPreOut())
-            {
-                if (m_rs->GetRenderTargetData(m_pRenderTarget, m_pSurface) == D3D_OK)
-                {
-                    isOk = true;
-                }
-            }
-        }
-    }
-    if (!isOk)
-    {
-        core.Trace("Screen shot for info shower not created!");
-        if (m_pSurface)
-        {
-            m_rs->Release(m_pSurface); m_pSurface = 0;
-        }
-        if (m_pRenderTarget)
-        {
-            m_rs->Release(m_pRenderTarget); m_pRenderTarget = 0;
-        }
-    }
-}*/
