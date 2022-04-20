@@ -20,47 +20,6 @@ STORM_SETUP(
     util
     window
 
-    # VM
-    animals
-    animation
-    ball_splash
-    battle_interface
-    blade
-    blot
-    collide
-    dialog
-    geometry
-    island
-    lighter
-    location
-    locator
-    mast
-    model
-    particles
-    pcs_controls
-    renderer
-    rigging
-    sailors
-    script_library
-    sea
-    sea_ai
-    sea_cameras
-    sea_operator
-    sea_creatures
-    sea_foam
-    shadow
-    ship
-    sink_effect
-    sound
-    sound_service
-    teleport
-    tornado
-    touch
-    water_rings
-    weather
-    worldmap
-    xinterface
-
     # external
     mimalloc
     sentry-native
