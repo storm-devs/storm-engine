@@ -69,7 +69,7 @@ class CXI_SCROLLIMAGE : public CINODE
     int GetLeftQuantity() const;
     float GetShiftDistance(int shiftIdx) const;
     void UpdateTexturesGroup();
-    int FindTexGroupFromOld(char **pGroupList, char *groupName, int listSize);
+    int FindTexGroupFromOld(char **pGroupList, const char *groupName, int listSize);
     int32_t GetMousePointedPictureNum() const;
 
   protected:

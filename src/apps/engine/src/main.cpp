@@ -1,4 +1,3 @@
-#include <fstream>
 #include <thread>
 
 #include <SDL2/SDL.h>
@@ -6,23 +5,19 @@
 #include <mimalloc.h>
 #include <spdlog/spdlog.h>
 
+#include "core_private.h"
 #include "lifecycle_diagnostics_service.hpp"
 #include "logging.hpp"
-#include "compiler.h"
 #include "os_window.hpp"
-#include "steam_api_impl.hpp"
-#include "file_service.h"
-#include "s_debug.h"
+#include "steam_api.hpp"
 #include "v_sound_service.h"
 #include "storm/fs.h"
 #include "watermark.hpp"
 
-VFILE_SERVICE *fio = nullptr;
-S_DEBUG *CDebug = nullptr;
-Core &core = core_internal;
-
 namespace
 {
+
+CorePrivate *core_private;
 
 constexpr char defaultLoggerName[] = "system";
 bool isRunning = false;
@@ -32,7 +27,7 @@ storm::diag::LifecycleDiagnosticsService lifecycleDiagnostics;
 
 void RunFrame()
 {
-    if (!core_internal.Run())
+    if (!core_private->Run())
     {
         isRunning = false;
     }
@@ -90,17 +85,17 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
     if (event == storm::OSWindow::Closed)
     {
         isRunning = false;
-        if (core_internal.initialized())
+        if (core_private->initialized())
         {
-            core_internal.Event("DestroyWindow");
+            core_private->Event("DestroyWindow");
         }
     }
     else if (event == storm::OSWindow::FocusGained)
     {
         bActive = true;
-        if (core_internal.initialized())
+        if (core_private->initialized())
         {
-            core_internal.AppState(bActive);
+            core_private->AppState(bActive);
             if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService")))
             {
                 soundService->SetActiveWithFade(true);
@@ -110,9 +105,9 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
     else if (event == storm::OSWindow::FocusLost)
     {
         bActive = false;
-        if (core_internal.initialized())
+        if (core_private->initialized())
         {
-            core_internal.AppState(bActive);
+            core_private->AppState(bActive);
             if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService")))
             {
                 soundService->SetActiveWithFade(false);
@@ -146,10 +141,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     SDL_InitSubSystem(SDL_INIT_EVENTS | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
 
-    // Init FS
-    FILE_SERVICE File_Service;
-    fio = &File_Service;
-
     // Init diagnostics
     const auto lifecycleDiagnosticsGuard =
 #ifdef STORM_ENABLE_CRASH_REPORTS
@@ -163,7 +154,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     }
     else
     {
-        lifecycleDiagnostics.setCrashInfoCollector([]() { core_internal.collectCrashInfo(); });
+        lifecycleDiagnostics.setCrashInfoCollector([]() { core_private->collectCrashInfo(); });
     }
 
     // Init stash
@@ -175,12 +166,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     spdlog::info("mimalloc-redirect status: {}", mi_is_redirected());
 
     // Init core
-    core_internal.Init();
-
-    // Init script debugger
-    S_DEBUG debug;
-    debug.Init();
-    CDebug = &debug;
+    core_private = static_cast<CorePrivate *>(&core);
+    core_private->Init();
 
     // Read config
     auto ini = fio->OpenIniFile(fs::ENGINE_INI_FILE_NAME);
@@ -218,12 +205,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
     std::shared_ptr<storm::OSWindow> window = storm::OSWindow::Create(width, height, fullscreen);
     window->SetTitle("Sea Dogs");
-    core_internal.Set_Hwnd(static_cast<HWND>(window->OSHandle()));
+    core_private->Set_Hwnd(static_cast<HWND>(window->OSHandle()));
     window->Subscribe(HandleWindowEvent);
     window->Show();
 
     // Init core
-    core_internal.InitBase();
+    core_private->InitBase();
 
     // Message loop
     auto dwOldTime = GetTickCount();
@@ -260,9 +247,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     }
 
     // Release
-    core_internal.Event("ExitApplication");
-    core_internal.CleanUp();
-    core_internal.ReleaseBase();
+    core_private->Event("ExitApplication");
+    core_private->CleanUp();
+    core_private->ReleaseBase();
     ClipCursor(nullptr);
     SDL_Quit();
 

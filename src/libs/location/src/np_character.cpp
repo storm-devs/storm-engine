@@ -320,10 +320,11 @@ void NPCharacter::Update(float dltTime)
                         location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
                                         "tmpl.%s(%s)", fid, id);
                 }
-                id = atr->GetThisAttr();
-                if (id)
+                if (atr->HasValue())
+                {
                     location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "tmpl(%s)",
-                                    id);
+                                    atr->GetThisAttr());
+                }
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.type");
             if (atr)
@@ -336,17 +337,16 @@ void NPCharacter::Update(float dltTime)
                         location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
                                         "type.%s(%s)", fid, id);
                 }
-                id = atr->GetThisAttr();
-                if (id)
+                if (atr->HasValue())
                     location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "type(%s)",
-                                    id);
+                                    atr->GetThisAttr());
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.group");
             if (atr)
             {
-                id = atr->GetThisAttr();
-                if (!id)
-                    id = "";
+                id = "";
+                if (atr->HasValue())
+                    id = atr->GetThisAttr();
                 location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
                                 "group(\"%s\")", id);
             }

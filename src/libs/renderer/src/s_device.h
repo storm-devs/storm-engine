@@ -194,7 +194,7 @@ class DX9RENDER : public VDX9RENDER
     void DrawPrimitive(D3DPRIMITIVETYPE dwPrimitiveType, int32_t iVBuff, int32_t iStride, int32_t iStartV, int32_t iNumPT,
                        const char *cBlockName = nullptr) override;
     void DrawPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwVertexBufferFormat, uint32_t dwNumPT,
-                         void *pVerts, uint32_t dwStride, const char *cBlockName = nullptr) override;
+                         const void *pVerts, uint32_t dwStride, const char *cBlockName = nullptr) override;
     void DrawIndexedPrimitiveUP(D3DPRIMITIVETYPE dwPrimitiveType, uint32_t dwMinIndex, uint32_t dwNumVertices,
                                 uint32_t dwPrimitiveCount, const void *pIndexData, D3DFORMAT IndexDataFormat,
                                 const void *pVertexData, uint32_t dwVertexStride,
@@ -396,6 +396,7 @@ class DX9RENDER : public VDX9RENDER
 
     void SetColorParameters(float fGamma, float fBrightness, float fContrast) override;
     void DrawSphere(const CVECTOR &vPos, float fRadius, uint32_t dwColor) override;
+    void DrawEllipsoid(const CVECTOR &vPos, float a, float b, float c, float ay, uint32_t dwColor) override;
 
     void GetNearFarPlane(float &fNear, float &fFar) override;
     void SetNearFarPlane(float fNear, float fFar) override;
@@ -427,6 +428,8 @@ class DX9RENDER : public VDX9RENDER
     void SetGLOWParams(float _fBlurBrushSize, int32_t _GlowIntensity, int32_t _GlowPasses) override;
 
     IDirect3DBaseTexture9 *GetTextureFromID(int32_t nTextureID) override;
+
+    bool GetRenderTargetAsTexture(IDirect3DTexture9 **tex) override;
 
     void LostRender();
     void RestoreRender();

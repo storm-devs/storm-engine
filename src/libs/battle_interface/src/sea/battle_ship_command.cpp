@@ -19,50 +19,76 @@ BIShipCommandList::~BIShipCommandList()
 void BIShipCommandList::FillIcons()
 {
     int32_t nIconsQuantity = 0;
+    auto fill = [this, &nIconsQuantity](const std::function<bool(int32_t)>& check) {
+        if (check(BI_COMMODE_MY_SHIP_SELECT))
+            nIconsQuantity +=
+                ShipAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, true, false, false, false);
+        if (check(BI_COMMODE_NEUTRAL_SHIP_SELECT))
+            nIconsQuantity +=
+                ShipAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, false, true, false);
+        if (check(BI_COMMODE_FRIEND_SHIP_SELECT))
+            nIconsQuantity +=
+                ShipAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, false, false, true);
+        if (check(BI_COMMODE_ENEMY_SHIP_SELECT))
+            nIconsQuantity +=
+                ShipAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, true, false, false);
 
-    if (m_nCurrentCommandMode & BI_COMMODE_MY_SHIP_SELECT)
-        nIconsQuantity +=
-            ShipAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, true, false, false, false);
-    if (m_nCurrentCommandMode & BI_COMMODE_NEUTRAL_SHIP_SELECT)
-        nIconsQuantity +=
-            ShipAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, false, true, false);
-    if (m_nCurrentCommandMode & BI_COMMODE_FRIEND_SHIP_SELECT)
-        nIconsQuantity +=
-            ShipAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, false, false, true);
-    if (m_nCurrentCommandMode & BI_COMMODE_ENEMY_SHIP_SELECT)
-        nIconsQuantity +=
-            ShipAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, true, false, false);
+        if (check(BI_COMMODE_FRIEND_FORT_SELECT))
+            nIconsQuantity +=
+                FortAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, true, false, false);
+        if (check(BI_COMMODE_NEUTRAL_FORT_SELECT))
+            nIconsQuantity +=
+                FortAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, true, false);
+        if (check(BI_COMMODE_ENEMY_FORT_SELECT))
+            nIconsQuantity +=
+                FortAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, false, true);
+        if (check(BI_COMMODE_LAND_SELECT))
+            nIconsQuantity += LandAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0);
 
-    if (m_nCurrentCommandMode & BI_COMMODE_FRIEND_FORT_SELECT)
-        nIconsQuantity += FortAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, true, false, false);
-    if (m_nCurrentCommandMode & BI_COMMODE_NEUTRAL_FORT_SELECT)
-        nIconsQuantity += FortAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, true, false);
-    if (m_nCurrentCommandMode & BI_COMMODE_ENEMY_FORT_SELECT)
-        nIconsQuantity += FortAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, false, true);
-    if (m_nCurrentCommandMode & BI_COMMODE_LAND_SELECT)
-        nIconsQuantity += LandAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0);
+        if (check(BI_COMMODE_COMMAND_SELECT))
+            nIconsQuantity += CommandAdding();
 
-    if (m_nCurrentCommandMode & BI_COMMODE_COMMAND_SELECT)
-        nIconsQuantity += CommandAdding();
+        if (check(BI_COMMODE_CANNON_CHARGE))
+            nIconsQuantity += ChargeAdding();
 
-    if (m_nCurrentCommandMode & BI_COMMODE_CANNON_CHARGE)
-        nIconsQuantity += ChargeAdding();
+        if (check(BI_COMMODE_USER_ICONS))
+            nIconsQuantity += UserIconsAdding();
 
-    if (m_nCurrentCommandMode & BI_COMMODE_USER_ICONS)
-        nIconsQuantity += UserIconsAdding();
+        if (check(BI_COMMODE_ENEMY_TOWN))
+            nIconsQuantity +=
+                TownAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, true, true, true, false, false);
 
-    if (m_nCurrentCommandMode & BI_COMMODE_ENEMY_TOWN)
-        nIconsQuantity +=
-            TownAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, true, true, true, false, false);
+        if (check(BI_COMMODE_DISEASED_TOWN))
+            nIconsQuantity +=
+                TownAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, true, false, true, true, true);
 
-    if (m_nCurrentCommandMode & BI_COMMODE_DISEASED_TOWN)
-        nIconsQuantity +=
-            TownAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, true, false, true, true, true);
+        if (check(BI_COMMODE_NOTDISEASED_TOWN))
+            nIconsQuantity +=
+                TownAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, true, true, true, true);
+    };
 
-    if (m_nCurrentCommandMode & BI_COMMODE_NOTDISEASED_TOWN)
-        nIconsQuantity +=
-            TownAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, false, true, true, true, true);
+    int32_t i = 0;
+    if (auto *data = core.Event(BI_EVENT_GET_CMD_LIST_ORDER_PRIORITY, "l", i))
+    { // dynamic event-based filling
+        int32_t cmd{};
+        const auto check = [&cmd](const int32_t current_cmd) { return cmd == current_cmd; };
+        do
+        {
+            cmd = data->GetInt();
+            if (m_nCurrentCommandMode & cmd)
+            {
+                fill(check);
+            }
 
+            data = core.Event(BI_EVENT_GET_CMD_LIST_ORDER_PRIORITY, "l", ++i);
+        } while (data);
+
+    } else
+    {
+        // no-event fallback
+        fill([this](const uint32_t current_cmd) { return (m_nCurrentCommandMode & current_cmd) != 0; });
+    }
+    
     nIconsQuantity += AddCancelIcon();
 }
 
@@ -220,7 +246,7 @@ int32_t BIShipCommandList::FortAdding(bool allLabel, bool bFriend, bool bNeutral
             auto *pvdat = core.Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
             if (pvdat != nullptr && pvdat->GetInt() == 0)
                 continue;
-            char *pLocName = nullptr;
+            const char *pLocName = nullptr;
             if (pL->pA != nullptr)
                 pLocName = pL->pA->GetAttribute("name");
             retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1,
@@ -272,7 +298,7 @@ int32_t BIShipCommandList::LandAdding(bool allLabel)
         auto *pvdat = core.Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
         if (pvdat != nullptr && pvdat->GetInt() == 0)
             continue;
-        char *pLocName = nullptr;
+        const char *pLocName = nullptr;
         if (pL->pA != nullptr)
             pLocName = pL->pA->GetAttribute("name");
         retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1, pLocName,
@@ -462,7 +488,7 @@ int32_t BIShipCommandList::TownAdding(bool allLabel, bool bDiseased, bool bNotDi
         auto *pvdat = core.Event("evntCheckEnableLocator", "sa", m_sCurrentCommandName.c_str(), pL->pA);
         if (pvdat != nullptr && pvdat->GetInt() == 0)
             continue;
-        char *pLocName = nullptr;
+        const char *pLocName = nullptr;
         if (pL->pA != nullptr)
             pLocName = pL->pA->GetAttribute("name");
         retVal += AddToIconList(pL->texIdx, pL->picIdx, pL->selPicIdx, -1, pL->characterIndex, nullptr, -1, pLocName,

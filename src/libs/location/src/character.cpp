@@ -1054,10 +1054,11 @@ void Character::SetSignTechnique()
     if (!pATechnique)
         return;
 
-    char *pcTechniqueName = pATechnique->GetThisAttr();
-    if (!pcTechniqueName)
+    if (!pATechnique->HasValue())
+    {
         return;
-
+    }
+    const auto *pcTechniqueName = pATechnique->GetThisAttr();
     if (signTechniqueName == pcTechniqueName)
         return;
     signTechniqueName = pcTechniqueName;

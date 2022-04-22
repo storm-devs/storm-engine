@@ -1,13 +1,15 @@
 #include "core_impl.h"
 
-#include "steam_api_impl.hpp"
 #include "compiler.h"
 #include "controls.h"
 #include "storm/fs.h"
+#include "steam_api.hpp"
 
 #include <fstream>
 
 #include "storm/string_compare.hpp"
+
+Core& core = core_internal;
 
 namespace storm
 {
@@ -672,7 +674,7 @@ ATTRIBUTES *CoreImpl::Entity_GetAttributeClass(entid_t id_PTR, const char *name)
     return pE->AttributesPointer->FindAClass(pE->AttributesPointer, name);
 }
 
-char *CoreImpl::Entity_GetAttribute(entid_t id_PTR, const char *name)
+const char *CoreImpl::Entity_GetAttribute(entid_t id_PTR, const char *name)
 {
     Entity *pE = EntityManager::GetEntityPointer(id_PTR);
     if (pE == nullptr)

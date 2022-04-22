@@ -52,11 +52,11 @@ bool BIUtils::ReadStringFromAttr(ATTRIBUTES *pA, const char *name, char *buf, in
     return bRet;
 }
 
-char *BIUtils::GetStringFromAttr(ATTRIBUTES *pA, const char *name, const char *defVal)
+const char *BIUtils::GetStringFromAttr(ATTRIBUTES *pA, const char *name, const char *defVal)
 {
     if (pA == nullptr || name == nullptr)
         return (char *)defVal;
-    auto *const aVal = pA->GetAttribute(name);
+    const char* aVal = pA->GetAttribute(name);
     if (aVal == nullptr)
         return (char *)defVal;
     return aVal;
@@ -124,7 +124,7 @@ bool BIUtils::ReadPosFromAttr(ATTRIBUTES *pA, const char *name, int32_t &nX, int
     nY = nYDef;
     if (pA && name)
     {
-        char *pcStr = pA->GetAttribute(name);
+        const char *pcStr = pA->GetAttribute(name);
         if (pcStr)
         {
             sscanf(pcStr, "%d,%d", &nX, &nY);
@@ -138,7 +138,7 @@ int32_t BIUtils::GetAlignmentFromAttr(ATTRIBUTES *pA, const char *name, int32_t 
 {
     if (pA && name)
     {
-        char *pcTmp = pA->GetAttribute(name);
+        const char *pcTmp = pA->GetAttribute(name);
         if (pcTmp)
         {
             if (storm::iEquals(pcTmp, "left"))
@@ -156,7 +156,7 @@ int32_t BIUtils::GetFontIDFromAttr(ATTRIBUTES *pA, const char *name, VDX9RENDER 
 {
     if (rs && pA && name)
     {
-        char *pcTmp = pA->GetAttribute(name);
+        const char *pcTmp = pA->GetAttribute(name);
         if (pcTmp)
             return rs->LoadFont(pcTmp);
     }
@@ -351,7 +351,7 @@ void BITextInfo::Init(VDX9RENDER *rs, ATTRIBUTES *pA)
         pos.x = pos.y = 0;
     }
 
-    char *textAttr = pA->GetAttribute("text");
+    const char *textAttr = pA->GetAttribute("text");
     sText = textAttr ? textAttr : "";
 
     pARefresh = nullptr;
@@ -365,7 +365,7 @@ void BITextInfo::Print()
     {
         if (pARefresh)
         {
-            char *textAttr = pARefresh->GetAttribute("text");
+            const char *textAttr = pARefresh->GetAttribute("text");
             sText = textAttr ? textAttr : "";
         }
         if (!sText.empty())

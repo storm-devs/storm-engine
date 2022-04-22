@@ -3,7 +3,6 @@
 #include "common_camera.h"
 #include "island_base.h"
 #include "dx9render.h"
-#include "model.h"
 #include "sea_base.h"
 
 #define MIN_DIST 70.f
@@ -16,8 +15,6 @@
 class SHIP_CAMERA : public COMMON_CAMERA
 {
   private:
-    int32_t iLockX, iLockY;
-
     float fMinHeightOnSea, fMaxHeightOnShip;
     float fDistance, fMaxDistance, fMinDistance;
     float fDistanceDlt, fDistanceInertia;
@@ -27,10 +24,13 @@ class SHIP_CAMERA : public COMMON_CAMERA
     float fSensivityDistance, fSensivityAzimuthAngle, fSensivityHeightAngle;
     float fSensivityHeightAngleOnShip;
     float fInvertMouseX, fInvertMouseY;
-    CVECTOR vCenter, vAng;
+    CVECTOR vCenter, vAng = {};
     float fModelAy;
 
-    // int32_t minHeightOnSea,maxHeightOnSea;
+    // camera ellipsoid parameters
+    float a = 1e-10f;
+    float b = 1e-10f;
+    float c = 1e-10f;
 
   private:
     SEA_BASE *pSea;
@@ -43,7 +43,7 @@ class SHIP_CAMERA : public COMMON_CAMERA
     bool Init() override;
     void SetDevices();
     void Execute(uint32_t dwDeltaTime);
-    void Realize(uint32_t dwDeltaTime);
+    void Realize(uint32_t dwDeltaTime) const;
 
     void ProcessStage(Stage stage, uint32_t delta) override
     {
@@ -55,10 +55,7 @@ class SHIP_CAMERA : public COMMON_CAMERA
         case Stage::realize:
             Realize(delta);
             break;
-            /*case Stage::lost_render:
-              LostRender(delta); break;
-            case Stage::restore_render:
-              RestoreRender(delta); break;*/
+        default: ;
         }
     }
 
@@ -70,7 +67,6 @@ class SHIP_CAMERA : public COMMON_CAMERA
 
   public:
     SHIP_CAMERA();
-    ~SHIP_CAMERA() override;
 
     void Save(CSaveLoad *pSL) override;
     void Load(CSaveLoad *pSL) override;

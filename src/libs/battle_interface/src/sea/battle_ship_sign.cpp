@@ -129,7 +129,7 @@ void BIShipIcon::Draw()
 void BIShipIcon::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
 {
     int32_t n;
-    char *pcTmp;
+    const char *pcTmp;
     char param[256];
 
     m_pARoot = pRoot;

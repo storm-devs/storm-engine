@@ -32,27 +32,16 @@ class InfoHandler : public Entity
     }
 
   protected:
-    void StringToBufer(char *outStr, int sizeBuf, char *inStr, int copySize) const;
-    char *GetCutString(char *pstr, int nOutWidth, float fScale) const;
+    void StringToBufer(char *outStr, int sizeBuf, const char *inStr, int copySize) const;
+    const char *GetCutString(const char *pstr, int nOutWidth, float fScale) const;
     bool DoPreOut();
 
-    IDirect3DSurface9 *m_pSurface;
-    IDirect3DSurface9 *m_pRenderTarget;
+    IDirect3DTexture9 *tex;
 
-    /*int32_t    m_idVBuf;
-
-    int        m_dwOutputWidth;
-    int        m_nOutCenterX, m_nOutCenterY;
-
-    DWORD    m_dwBackFillColor;
-    DWORD    m_dwFrontFillColor;
-
-    int32_t    m_idFont;
-
-    struct    STRING_LIST
+    struct
     {
-      int x,y;
-      char * strData;
-      STRING_LIST    * next;
-    } * m_strList;*/
+        float x, y, z, rhw;
+        float u, v;
+    } drawbuf_base[6];
 };
+

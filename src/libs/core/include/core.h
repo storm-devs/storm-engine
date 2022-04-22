@@ -31,7 +31,7 @@ class Core
     virtual void *GetService(const char *service_name) = 0;
 
     virtual ATTRIBUTES *Entity_GetAttributeClass(entid_t id_PTR, const char *name) = 0;
-    virtual char *Entity_GetAttribute(entid_t id_PTR, const char *name) = 0;
+    virtual const char *Entity_GetAttribute(entid_t id_PTR, const char *name) = 0;
     virtual uint32_t Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, uint32_t def = 0) = 0;
     virtual FLOAT Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT def = 0) = 0;
     virtual bool Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute) = 0;

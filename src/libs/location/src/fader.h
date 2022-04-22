@@ -53,8 +53,7 @@ class Fader : public Entity
     // --------------------------------------------------------------------------------------------
   private:
     VDX9RENDER *rs;
-    IDirect3DSurface9 *renderTarget;
-    IDirect3DTexture9 *textureBase;
+    IDirect3DTexture9 *tex;
 
     bool isWork;
     bool haveFrame;

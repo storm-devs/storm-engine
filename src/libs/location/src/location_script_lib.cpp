@@ -4,7 +4,6 @@
 
 #include "entity.h"
 #include "fader.h"
-#include "steam_api_impl.hpp"
 #include "core.h"
 #include "s_import_func.h"
 #include "v_s_stack.h"
@@ -70,10 +69,10 @@ inline bool CheckID(VDATA *vd, const char *id, bool &res)
     a = a->GetAttributeClass("id");
     if (!a)
         return true;
-    auto *const attr = a->GetThisAttr();
-    if (!attr)
+    if (!a->HasValue()) {
         return true;
-    res = storm::iEquals(attr, id);
+    }
+    res = storm::iEquals(a->GetThisAttr(), id);
     return true;
 }
 

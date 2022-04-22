@@ -784,11 +784,11 @@ uint64_t XINTERFACE::ProcessMessage(MESSAGE &message)
         if (pA == nullptr)
             break;
         const std::string &param = message.String();
-        char *pText = pA->GetAttribute("Text");
+        const char *pText = pA->GetAttribute("Text");
         if (pText == nullptr)
             break;
         char subText[256];
-        char *pCur = pText;
+        const char *pCur = pText;
         while (true)
         {
             subText[0] = 0;
@@ -2825,7 +2825,7 @@ char *XINTERFACE::SaveFileFind(int32_t saveNum, char *buffer, size_t bufSize, in
     if (!m_pSaveFindRoot) // create save file list
     {
         // get file name for searching (whith full path)
-        char *sSavePath = AttributesPointer->GetAttribute("SavePath");
+        const char *sSavePath = AttributesPointer->GetAttribute("SavePath");
         if (sSavePath != nullptr)
         {
             fio->_CreateDirectory(sSavePath);
@@ -2874,7 +2874,7 @@ bool XINTERFACE::NewSaveFileName(const char *fileName) const
     }
 
     char param[256];
-    char *sSavePath = AttributesPointer->GetAttribute("SavePath");
+    const char *sSavePath = AttributesPointer->GetAttribute("SavePath");
 
     if (sSavePath == nullptr)
     {
@@ -2895,7 +2895,7 @@ void XINTERFACE::DeleteSaveFile(const char *fileName)
         return;
     }
     char param[256];
-    char *sSavePath = AttributesPointer->GetAttribute("SavePath");
+    const char *sSavePath = AttributesPointer->GetAttribute("SavePath");
     if (sSavePath == nullptr)
     {
         sprintf(param, "%s", fileName);
@@ -3344,7 +3344,7 @@ int XINTERFACE::LoadIsExist()
     }
 
     char param[1024];
-    char *sSavePath = AttributesPointer->GetAttribute("SavePath");
+    const char *sSavePath = AttributesPointer->GetAttribute("SavePath");
     if (sSavePath != nullptr)
     {
         fio->_CreateDirectory(sSavePath);

@@ -278,7 +278,7 @@ class AIFort : public VAI_OBJBASE
 
     void AddFortHit(int32_t iCharacterIndex, CVECTOR &vHitPos);
     float GetSpeedV0(uint32_t dwFortIndex);
-    bool ScanFortForCannons(AI_FORT *pFort, char *pModelsDir, char *pLocatorsName) const;
+    bool ScanFortForCannons(AI_FORT *pFort, const char *pModelsDir, const char *pLocatorsName) const;
     bool AddFort(ATTRIBUTES *pIslandAP, ATTRIBUTES *pFortAP, ATTRIBUTES *pFortCharacter, entid_t eidModel,
                  entid_t eidBlot);
     AI_FORT *FindFort(entid_t eidModel);

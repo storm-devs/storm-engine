@@ -192,7 +192,7 @@ macro(STORM_SETUP)
   elseif(${_SETUP_TYPE} STREQUAL "storm_module")
     add_library("${_SETUP_TARGET_NAME}" ${lib_mode} ${SRCS})
     _set_ide_folder("${_SETUP_TARGET_NAME}" "Modules")
-    set_target_properties("${_SETUP_TARGET_NAME}" PROPERTIES STORM_MODULE YES)
+    set(global_modules_list "${global_modules_list};${_SETUP_TARGET_NAME}" CACHE INTERNAL "global_modules_list")
   else()
     message(FATAL_ERROR "[StormSetup] 'TYPE' is incorrect!")
   endif()
@@ -217,25 +217,21 @@ macro(STORM_SETUP)
     "${_SETUP_TARGET_NAME}" PROPERTIES OUTPUT_NAME ${_SETUP_TARGET_NAME} VERSION
                                                                          "1")
 
+  # link storm modules to executable forcing unused symbols to be preserved
+  if(${_SETUP_TYPE} STREQUAL "executable")
+    list(APPEND _SETUP_DEPENDENCIES "${global_modules_list}")
+    list(REMOVE_DUPLICATES _SETUP_DEPENDENCIES)
+    foreach(module ${global_modules_list})
+      if(TARGET ${module})
+        # TODO: make it portable? (at least for gcc it is --whole-archive)
+        list(APPEND target_link_flags "/WHOLEARCHIVE:${module}")
+      endif()
+    endforeach()
+  endif()
+
   if(_SETUP_DEPENDENCIES)
     target_link_libraries("${_SETUP_TARGET_NAME}" ${lib_scope}
                           ${_SETUP_DEPENDENCIES})
-
-    if(${_SETUP_TYPE} STREQUAL "executable")
-      foreach(dep ${_SETUP_DEPENDENCIES})
-        if(TARGET ${dep})
-          get_property(
-            is_storm_module
-            TARGET ${dep}
-            PROPERTY STORM_MODULE
-            SET)
-          if(is_storm_module)
-            # TODO: make it portable? (at least for gcc it is --whole-archive)
-            list(APPEND target_link_flags "/WHOLEARCHIVE:${dep}")
-          endif()
-        endif()
-      endforeach()
-    endif()
   endif()
 
   if(_SETUP_LINKER_FLAGS)

@@ -27,7 +27,7 @@ class ISLAND_DESCRIBER
         int relation;
         ATTRIBUTES *pA;
         float x, z, r;
-        char *pchr_note;
+        const char *pchr_note;
         int picIdx;
         int selPicIdx;
         int texIdx;
