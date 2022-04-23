@@ -4,8 +4,15 @@
 #include "defines.h"
 #include "inlines.h"
 
+#define USE_FX // Will load techniques from fx files
+
+#ifdef USE_FX
+#define SHA_DIR "resource\\techniques"
+#define SHA_EXT "*.fx"
+#else
 #define SHA_DIR "resource\\techniques-sha"
 #define SHA_EXT "*.sha"
+#endif
 
 #define PASS_OK 0
 #define PASS_ERROR 1
@@ -388,8 +395,13 @@ SRS RenderStates[] = {
     {DEFSIZE(0), SRS_FLOAT, "FogEnd", D3DRS_FOGEND},
     {DEFSIZE(0), SRS_FLOAT, "FogDensity", D3DRS_FOGDENSITY},
     {DEFSIZE(MYTRUEFALSE), SRS_DWORD, "EdgeAntialias", D3DRS_ANTIALIASEDLINEENABLE},
+#ifdef USE_FX
+    {DEFSIZE(0), SRS_DWORD, "DepthBias", D3DRS_DEPTHBIAS},
+    {DEFSIZE(0), SRS_DWORD, "SlopeScaleDepthBias", D3DRS_SLOPESCALEDEPTHBIAS},
+#else
     {DEFSIZE(0), SRS_DWORD, "Zbias", D3DRS_DEPTHBIAS},
     {DEFSIZE(0), SRS_DWORD, "SSZbias", D3DRS_SLOPESCALEDEPTHBIAS},
+#endif
     {DEFSIZE(MYTRUEFALSE), SRS_DWORD, "RangeFogEnable", D3DRS_RANGEFOGENABLE},
     {DEFSIZE(MYTRUEFALSE), SRS_DWORD, "StencilEnable", D3DRS_STENCILENABLE},
     {DEFSIZE(MYD3DSTENCILOP), SRS_DWORD, "StencilFail", D3DRS_STENCILFAIL},
@@ -868,11 +880,25 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
         tolwr(*pStr);
         ClearComment(*pStr);
         if (isEndBracket(*pStr))
+        {
+#ifdef USE_FX // fx files has no "Render." and "Restore." strings
+            *pPass++ = CODE_RENDER;
+            *pPass++ = SUBCODE_RENDER_DRAW;
+
+            *pPass++ = CODE_RESTORE;
+            *pPass++ = SUBCODE_RESTORE_STATES;
+            // clear STSS and SRS bUse
+            ClearSRS_STSS_bUse();
+#endif
             break; // end of pass
+        }
 
         // check right side of expression for [in] parameters
         bool bIn = false;
         uint32_t dwInParamIndex = 0;
+#ifdef false // current sha files has no params. Last usage was in
+             // ENGINE/modules/techniques/weather/shaders/SeaFoam.sha. Removed here:
+             // https://github.com/storm-devs/thunderstorm-engine/commit/f290ca08ff33d3f86fcdf6aef26b0e20e36ab54c
         if (pTemp = SkipToken(*pStr, INPARAM_CHECK)) // STSS or SetTexture
         {
             GetTokenWhile(pTemp, &temp[0], ">");
@@ -880,6 +906,7 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
             dwInParamIndex = GetIndex(temp, pParams, dwNumParams, false);
             dwAdditionalFlags |= FLAGS_CODE_IN_PARAM;
         }
+#endif
 
         // check for additional flags such as "no restore states" and other
         dwAdditionalFlags |= FLAGS_CODE_RESTORE;
@@ -889,6 +916,7 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
             dwAdditionalFlags &= (~FLAGS_CODE_RESTORE);
         }
 
+#ifndef USE_FX // fx files has no "Restore." strings
         // restore states check
         if (pTemp = SkipToken(*pStr, RESTORE_STATES_CHECK))
         {
@@ -898,6 +926,7 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
             ClearSRS_STSS_bUse();
             SKIP3;
         }
+#endif
         if (isPixelShaderConst(*pStr))
         {
             if (!bIn)
@@ -1032,6 +1061,7 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
             SKIP3;
         }
 
+#ifndef USE_FX // fx files has no "Render." strings
         // RENDER
         if (SkipToken(*pStr, RENDER_CHECK))
         {
@@ -1039,7 +1069,9 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
             *pPass++ = SUBCODE_RENDER_DRAW;
             SKIP3;
         }
+#endif
 
+#ifdef false // current sha files has no "transform." strings
         // transform
         if (SkipToken(*pStr, TRANSFORM_CHECK))
         {
@@ -1059,6 +1091,7 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
             *pPass++ = dwInParamIndex;
             SKIP3;
         }
+#endif
 
         // SetRenderState
         if (SkipToken(*pStr, "="))
@@ -1507,7 +1540,10 @@ uint32_t CTechnique::ProcessPixelShader(char *pFile, uint32_t dwSize, char **pSt
 uint32_t CTechnique::ProcessBlock(char *pFile, uint32_t dwSize, char **pStr)
 {
     uint32_t i;
-    char temp[1024], pTempParamStr[1024];
+    char temp[1024];
+#ifndef USE_FX // fx files has no parameters
+    char pTempParamStr[1024];
+#endif
 
     // resize
     pBlocks = (block_t *)realloc(pBlocks, sizeof(block_t) * (dwNumBlocks + 1));
@@ -1518,7 +1554,11 @@ uint32_t CTechnique::ProcessBlock(char *pFile, uint32_t dwSize, char **pStr)
     dwNumParams = 0;
 
     // get name this block
+#ifdef USE_FX
+    char *pName = SkipToken(*pStr, TECHNIQUE);
+#else
     char *pName = SkipToken(*pStr, BLOCK);
+#endif
     strcpy_s(sCurrentBlockName, pName);
     GetTokenWhile(pName, &temp[0], "(");
     pB->dwHashBlockName = hash_string(temp);
@@ -1535,6 +1575,7 @@ uint32_t CTechnique::ProcessBlock(char *pFile, uint32_t dwSize, char **pStr)
 
     htBlocks[pB->pBlockName] = dwNumBlocks;
     // get parameters
+#ifndef USE_FX // fx files has no parameters
     pTempParamStr[0] = 0;
     GetTokenWhile(SkipToken(*pStr, "("), &pTempParamStr[0], ")");
     char *pParamStr = &pTempParamStr[0];
@@ -1556,6 +1597,15 @@ uint32_t CTechnique::ProcessBlock(char *pFile, uint32_t dwSize, char **pStr)
         dwNumParams++;
         pB->dwNumParams++;
     }
+#endif
+
+#ifdef USE_FX
+    // HACK: remove after drop sha files support
+    // For all lines except the first one, we need to get the previous line
+    // in order to get correct line when entering the loop
+    if (pFile != *pStr)
+        (*pStr)--;
+#endif
 
     // search for technique and '}'
     while (nullptr != (*pStr = GetString(pFile, dwSize, *pStr)))
@@ -1571,7 +1621,16 @@ uint32_t CTechnique::ProcessBlock(char *pFile, uint32_t dwSize, char **pStr)
         if (isEndBracket(*pStr))
             break; // end of block
         if (isTechnique(*pStr))
+        {
             ProcessTechnique(pFile, dwSize, pStr);
+#ifdef USE_FX
+            // HACK: remove after drop sha files support
+            // fx files don't have "block" => it has 1 less level. Entry into ProcessBlock occurred
+            // by "technique" and the exit from it should use SKIP1 for keepeng "{"
+            (*pStr)--;
+            continue;
+#endif
+        }
         SKIP1;
     }
 
@@ -1687,7 +1746,11 @@ bool CTechnique::DecodeFile(std::string sname)
             if (dwRes == SHADER_ERROR)
                 return false;
         }
+#ifdef USE_FX
+        if (isTechnique(pStr)) // fx files has no blocks
+#else
         if (isBlock(pStr))
+#endif
         {
             uint32_t dwRes = ProcessBlock(pFile, dwSize, &pStr);
             if (dwRes == BLOCK_ERROR)
