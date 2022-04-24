@@ -125,6 +125,8 @@ class CTechnique
     uint32_t ProcessPixelShader(char *pFile, uint32_t dwSize, char **pStr);
     uint32_t ProcessShaderAsm(shader_t *pS, char *pFile, uint32_t dwSize, char **pStr, uint32_t dwShaderType,
                               bool HLSL = false);
+    void GetShaderBinPath(char *pShaderStr, uint32_t dwShaderType, char *dest);
+    uint32_t ProcessShaderBin(shader_t *pS, char *pFile, uint32_t dwShaderType);
 
     uint32_t AddShader(char *pShaderName);
     char *Preprocessor(char *pBuffer, uint32_t &dwSize);
