@@ -448,7 +448,8 @@ void FILE_SERVICE::ScanResourcePaths()
             std::string path = get_dir_iterator_path(entry.path());
             std::string path_lwr = convert_path(path.c_str());
             tolwr(path_lwr.data());
-            if (starts_with(path_lwr, "program") || starts_with(path_lwr, "resource") || ends_with(path_lwr, ".ini"))
+            if (starts_with(path_lwr, "program") || starts_with(path_lwr, "resource") ||
+                starts_with(path_lwr, "save") || ends_with(path_lwr, ".ini"))
             {
                 ResourcePaths[path_lwr] = path;
                 if (entry.is_directory())
