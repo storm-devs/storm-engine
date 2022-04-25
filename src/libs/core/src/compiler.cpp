@@ -37,7 +37,9 @@ S_DEBUG s_debug;
 
 // extern char * FuncNameTable[];
 extern INTFUNCDESC IntFuncTable[];
+#ifdef _WIN32 // FIX_LINUX s_debug.h
 extern S_DEBUG *CDebug = &s_debug;
+#endif
 extern uint32_t dwNumberScriptCommandsExecuted;
 
 using std::chrono::duration_cast;
