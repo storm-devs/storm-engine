@@ -6600,8 +6600,9 @@ bool COMPILER::SaveState(std::fstream &fileS)
     {
         char *pDst = new char[dwCurPointer * 2];
         uint32_t dwPackLen = dwCurPointer * 2;
+        uLongf tmpLong = dwPackLen;
         RDTSC_B(dw2);
-        compress2((Bytef *)pDst, (uLongf *)&dwPackLen, (Bytef *)pBuffer, dwCurPointer, Z_BEST_COMPRESSION);
+        compress2((Bytef *)pDst, (uLongf *)&tmpLong, (Bytef *)pBuffer, dwCurPointer, Z_BEST_COMPRESSION);
         RDTSC_E(dw2);
 
         fio->_WriteFile(fileS, &dwCurPointer, sizeof(dwCurPointer));
@@ -6638,7 +6639,8 @@ bool COMPILER::LoadState(std::fstream &fileS)
     char *pCBuffer = new char[dwPackLen];
     pBuffer = new char[dwMaxSize];
     fio->_ReadFile(fileS, pCBuffer, dwPackLen);
-    uncompress((Bytef *)pBuffer, (uLongf *)&dwMaxSize, (Bytef *)pCBuffer, dwPackLen);
+    uLongf tmpLong = dwMaxSize;
+    uncompress((Bytef *)pBuffer, (uLongf *)&tmpLong, (Bytef *)pCBuffer, dwPackLen);
     delete[] pCBuffer;
     dwCurPointer = 0;
 
@@ -6804,7 +6806,8 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, int32_t data_
 
     char *pDst = new char[data_size * 2];
     uint32_t dwPackLen = data_size * 2;
-    compress2((Bytef *)pDst, (uLongf *)&dwPackLen, static_cast<Bytef *>(save_data), data_size, Z_BEST_COMPRESSION);
+    uLongf tmpLong = dwPackLen;
+    compress2((Bytef *)pDst, (uLongf *)&tmpLong, static_cast<Bytef *>(save_data), data_size, Z_BEST_COMPRESSION);
 
     fio->_WriteFile(fileS, &dwPackLen, sizeof(dwPackLen));
     fio->_WriteFile(fileS, pDst, dwPackLen);
@@ -6941,7 +6944,7 @@ void *COMPILER::GetSaveData(const char *file_name, int32_t &data_size)
     char *pCBuffer = new char[dwPackLen];
     fio->_ReadFile(fileS, pCBuffer, dwPackLen);
     char *pBuffer = new char[exdh.dwExtDataSize];
-    uint32_t dwDestLen = exdh.dwExtDataSize;
+    uLongf dwDestLen = exdh.dwExtDataSize;
     uncompress((Bytef *)pBuffer, (uLongf *)&dwDestLen, (Bytef *)pCBuffer, dwPackLen);
     fio->_CloseFile(fileS);
     delete[] pCBuffer;
