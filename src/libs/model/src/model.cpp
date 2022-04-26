@@ -70,6 +70,9 @@ void *VBTransform(void *vb, int32_t startVrt, int32_t nVerts, int32_t totVerts)
     GEOS::VERTEX0 *dst;
     dest_vb->Lock(0, 0, (VOID **)&dst, D3DLOCK_DISCARD | D3DLOCK_NOSYSLOCK);
 
+#ifndef _WIN32 // FIX_LINUX DirectXMath
+    CMatrix mtx;
+#endif
     for (int32_t v = 0; v < totVerts; v++)
     {
         // Vertex
@@ -120,6 +123,25 @@ void *VBTransform(void *vb, int32_t startVrt, int32_t nVerts, int32_t totVerts)
         // Normal
         XMStoreFloat3(reinterpret_cast<DirectX::XMFLOAT3 *>(&dstVrt.nrm),
             XMVector3Transform(XMLoadFloat3(reinterpret_cast<DirectX::XMFLOAT3 *>(&vrt.nrm)), xmmtx));
+#else
+        mtx.matrix[0] = -(m1.matrix[0] * vrt.weight + m2.matrix[0] * wNeg);
+        mtx.matrix[1] = m1.matrix[1] * vrt.weight + m2.matrix[1] * wNeg;
+        mtx.matrix[2] = m1.matrix[2] * vrt.weight + m2.matrix[2] * wNeg;
+        mtx.matrix[4] = -(m1.matrix[4] * vrt.weight + m2.matrix[4] * wNeg);
+        mtx.matrix[5] = m1.matrix[5] * vrt.weight + m2.matrix[5] * wNeg;
+        mtx.matrix[6] = m1.matrix[6] * vrt.weight + m2.matrix[6] * wNeg;
+        mtx.matrix[8] = -(m1.matrix[8] * vrt.weight + m2.matrix[8] * wNeg);
+        mtx.matrix[9] = m1.matrix[9] * vrt.weight + m2.matrix[9] * wNeg;
+        mtx.matrix[10] = m1.matrix[10] * vrt.weight + m2.matrix[10] * wNeg;
+        mtx.matrix[12] = -(m1.matrix[12] * vrt.weight + m2.matrix[12] * wNeg);
+        mtx.matrix[13] = m1.matrix[13] * vrt.weight + m2.matrix[13] * wNeg;
+        mtx.matrix[14] = m1.matrix[14] * vrt.weight + m2.matrix[14] * wNeg;
+
+        // Position
+        ((CVECTOR &)dstVrt.pos) = mtx * (CVECTOR &)vrt.pos;
+
+        // Normal
+        ((CVECTOR &)dstVrt.nrm) = mtx * (CVECTOR &)vrt.nrm;
 #endif // _WIN32 DirectXMath
 
         // Rest
