@@ -167,4 +167,4 @@ class CTechnique
     ~CTechnique();
 };
 
-#endif // FIX_LINUX Effects
+#endif // Effects

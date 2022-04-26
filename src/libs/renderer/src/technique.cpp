@@ -2056,9 +2056,7 @@ bool CTechnique::ExecutePass(bool bStart)
             switch (dwCode)
             {
             case SUBCODE_SVSCONST_WORLDVIEWPROJ: {
-#ifndef _WIN32 // FIX_LINUX replace D3DXMATRIX
-                throw std::runtime_error("replace D3DXMATRIX in technique.cpp");
-#else
+#ifdef _WIN32 // FIX_LINUX replace D3DXMATRIX
                 D3DXMATRIX matTemp, matWorldViewProj;
 
                 D3DXMATRIX matWorld;
@@ -2074,6 +2072,8 @@ bool CTechnique::ExecutePass(bool bStart)
                 // Projection to clip space
                 D3DXMatrixTranspose(&matWorldViewProj, &matWorldViewProj);
                 pRS->SetVertexShaderConstantF(dwShaderConstIndex, &matWorldViewProj(0, 0), 4);
+#else
+                throw std::runtime_error("replace D3DXMATRIX in technique.cpp");
 #endif
             }
             break;
@@ -2224,4 +2224,4 @@ void CTechnique::SetCurrentBlock(const char *name, uint32_t _dwNumParams, void *
         core.Trace("ERROR: SetCurrentBlock: unknown technique <%s> first character is <%s> ", name, name[0]);
     }
 }
-#endif // FIX_LINUX Effects
+#endif // Effects
