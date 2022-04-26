@@ -3740,10 +3740,12 @@ HRESULT DX9RENDER::GetPixelShader(IDirect3DPixelShader9 **ppShader)
     return CHECKD3DERR(d3d9->GetPixelShader(ppShader));
 }
 
+#ifdef _WIN32 // Effects
 ID3DXEffect *DX9RENDER::GetEffectPointer(const char *techniqueName)
 {
     return effects_.getEffectPointer(techniqueName);
 }
+#endif
 
 HRESULT DX9RENDER::SetTexture(uint32_t Stage, IDirect3DBaseTexture9 *pTexture)
 {
