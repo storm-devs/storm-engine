@@ -345,6 +345,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
 
     std::string SoundName = "resource\\sounds\\";
     SoundName += FileName;
+    SoundName = fio->ConvertPathResource(SoundName.c_str());
 
     FMOD::Sound *sound = nullptr;
     auto SoundIdx = 0;
