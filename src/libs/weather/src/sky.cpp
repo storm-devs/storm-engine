@@ -456,25 +456,25 @@ uint32_t SKY::AttributeChanged(ATTRIBUTES *pAttribute)
 
     if (*pAttribute == "techSky")
     {
-        sTechSky = pAttribute->GetThisAttr();
+        sTechSky = to_string(pAttribute->GetThisAttr());
         return 0;
     }
 
     if (*pAttribute == "techSkyBlend")
     {
-        sTechSkyBlend = pAttribute->GetThisAttr();
+        sTechSkyBlend = to_string(pAttribute->GetThisAttr());
         return 0;
     }
 
     if (*pAttribute == "techSkyAlpha")
     {
-        sTechSkyBlendAlpha = pAttribute->GetThisAttr();
+        sTechSkyBlendAlpha = to_string(pAttribute->GetThisAttr());
         return 0;
     }
 
     if (*pAttribute == "techSkyFog")
     {
-        sTechSkyFog = pAttribute->GetThisAttr();
+        sTechSkyFog = to_string(pAttribute->GetThisAttr());
         return 0;
     }
 
@@ -523,13 +523,13 @@ void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)
             {
                 const auto i = atol(&attrName[1]);
                 if (i < q)
-                    aSkyDirArray[i] = pAttribute->GetAttribute(n);
+                    aSkyDirArray[i] = to_string(pAttribute->GetAttribute(n));
             }
         }
     }
     else
     {
-        aSkyDirArray[0] = pAttribute->GetAttribute(static_cast<size_t>(0U));
+        aSkyDirArray[0] = to_string(pAttribute->GetAttribute(0U));
     }
     fTimeFactor = static_cast<float>(atof(pAttribute->GetThisAttr()));
     if (fTimeFactor < 0.f || fTimeFactor > 24.f)

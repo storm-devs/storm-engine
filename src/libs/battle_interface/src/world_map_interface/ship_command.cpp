@@ -49,7 +49,7 @@ int32_t WMShipCommandList::CommandAdding()
         const int32_t pictureNum = pA->GetAttributeAsDword("picNum", 0);
         const int32_t selPictureNum = pA->GetAttributeAsDword("selPicNum", 0);
         const int32_t texNum = pA->GetAttributeAsDword("texNum", -1);
-        auto *const eventName = pA->GetAttribute("event");
+        const char *eventName = pA->GetAttribute("event");
         retVal +=
             AddToIconList(texNum, pictureNum, selPictureNum, -1, -1, eventName, -1, nullptr, pA->GetAttribute("note"));
     }

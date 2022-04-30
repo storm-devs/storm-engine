@@ -166,7 +166,7 @@ uint32_t AISeaGoods::AttributeChanged(ATTRIBUTES *pAttribute)
     }
     if (*pAttribute == "Model")
     {
-        sTmpModel = pAttribute->GetThisAttr();
+        sTmpModel = to_string(pAttribute->GetThisAttr());
         return 0;
     }
     if (*pAttribute == "Good")
@@ -191,7 +191,7 @@ uint32_t AISeaGoods::AttributeChanged(ATTRIBUTES *pAttribute)
 
     if (*pAttribute == "ModelsPath")
     {
-        sModelPath = pAttribute->GetThisAttr();
+        sModelPath = to_string(pAttribute->GetThisAttr());
         return 0;
     }
     if (*pAttribute == "DeleteGoodAnyway")

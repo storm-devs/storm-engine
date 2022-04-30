@@ -88,10 +88,10 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     if (ap)
     {
         // Font
-        auto *s = ap->GetAttribute("font");
+        const char *s = ap->GetAttribute("font");
         if (s && s[0])
             dateFont = wdmObjects->wm->GetRS()->LoadFont(s);
-        const auto *coordinate = ap->GetAttribute("coordinate");
+        const char *coordinate = ap->GetAttribute("coordinate");
         if (coordinate != nullptr)
         {
             strcpy_s(wdmObjects->stCoordinate, coordinate);
@@ -126,7 +126,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     if (ap)
     {
         // Font
-        auto *texName = ap->GetAttribute("texName");
+        const char *texName = ap->GetAttribute("texName");
         if (texName)
         {
             const auto newTxNationFlag = wdmObjects->rs->TextureCreate(texName);

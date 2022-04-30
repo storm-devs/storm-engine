@@ -414,27 +414,27 @@ uint32_t SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
         }
         if (*pAttribute == "SunTexture")
         {
-            Glow.sSunTexture = pAttribute->GetThisAttr();
+            Glow.sSunTexture = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "MoonTexture")
         {
-            Glow.sMoonTexture = pAttribute->GetThisAttr();
+            Glow.sMoonTexture = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "GlowTexture")
         {
-            Glow.sGlowTexture = pAttribute->GetThisAttr();
+            Glow.sGlowTexture = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "TechniqueZ")
         {
-            Glow.sTechniqueZ = pAttribute->GetThisAttr();
+            Glow.sTechniqueZ = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "TechniqueNoZ")
         {
-            Glow.sTechniqueNoZ = pAttribute->GetThisAttr();
+            Glow.sTechniqueNoZ = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "DecayTime")
@@ -454,12 +454,12 @@ uint32_t SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
         }
         if (*pAttribute == "Texture")
         {
-            Flares.sTexture = pAttribute->GetThisAttr();
+            Flares.sTexture = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "Technique")
         {
-            Flares.sTechnique = pAttribute->GetThisAttr();
+            Flares.sTechnique = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "TexSizeX")
@@ -485,12 +485,12 @@ uint32_t SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
         bHaveOverflow = true;
         if (*pAttribute == "Texture")
         {
-            Overflow.sTexture = pAttribute->GetThisAttr();
+            Overflow.sTexture = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "Technique")
         {
-            Overflow.sTechnique = pAttribute->GetThisAttr();
+            Overflow.sTechnique = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "Size")
@@ -516,7 +516,7 @@ uint32_t SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
         bHaveReflection = true;
         if (*pAttribute == "Texture")
         {
-            Reflection.sTexture = pAttribute->GetThisAttr();
+            Reflection.sTexture = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         if (*pAttribute == "Size")
@@ -536,7 +536,7 @@ uint32_t SUNGLOW::AttributeChanged(ATTRIBUTES *pAttribute)
         }
         if (*pAttribute == "Technique")
         {
-            Reflection.sTechnique = pAttribute->GetThisAttr();
+            Reflection.sTechnique = to_string(pAttribute->GetThisAttr());
             return 0;
         }
         return 0;

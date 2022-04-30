@@ -457,7 +457,7 @@ bool ISLAND::CreateShadowMap(char *pDir, char *pName)
     }
 
     const std::filesystem::path path =
-        std::filesystem::path() / "resource" / "foam" / pDir / AttributesPointer->GetAttribute("LightingPath");
+        std::filesystem::path() / "resource" / "foam" / pDir / to_string(AttributesPointer->GetAttribute("LightingPath"));
     const std::string fileName = path.string() + pName + ".tga";
 
     fShadowMapSize = 2.0f * Max(vRealBoxSize.x, vRealBoxSize.z) + 1024.0f;
@@ -775,8 +775,8 @@ bool ISLAND::Mount(const std::string_view &fname, const std::string_view &fdir, 
     // <---
 
     model_id = EntityManager::CreateEntity("MODELR");
-    core.Send_Message(model_id, "ls", MSG_MODEL_SET_LIGHT_PATH, AttributesPointer->GetAttribute("LightingPath"));
-    core.Send_Message(model_id, "ls", MSG_MODEL_LOAD_GEO, (char *)pathStr.c_str());
+    core.Send_Message(model_id, "ls", MSG_MODEL_SET_LIGHT_PATH, static_cast<const char*>(AttributesPointer->GetAttribute("LightingPath")));
+    core.Send_Message(model_id, "ls", MSG_MODEL_LOAD_GEO, pathStr.c_str());
 
     // extract subobject(sea_bed) to another model
     auto *pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));

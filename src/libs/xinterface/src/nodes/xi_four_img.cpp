@@ -336,7 +336,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
             }
             for (i = 0; i < m_nTexturesQuantity; i++)
             {
-                auto *const stmp = pA->GetAttribute(i);
+                const char *stmp = pA->GetAttribute(i);
                 if (stmp == nullptr)
                     m_sGroupName[i] = nullptr;
                 else
@@ -372,7 +372,7 @@ void CXI_FOURIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, con
                         pPictureService->GetImageNum(m_sGroupName[m_twoTexID[i]], pAttrTmp->GetAttribute("img2"));
                 else
                     m_twoImgID[i] = -1;
-                auto *tmps = pAttrTmp->GetAttribute("str1");
+                const char *tmps = pAttrTmp->GetAttribute("str1");
                 if (tmps != nullptr && *tmps == '#')
                 {
                     const auto len = strlen(tmps);

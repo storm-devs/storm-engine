@@ -47,7 +47,6 @@ class TestStringCodec : public VSTRING_CODEC
 
 TEST_CASE("Remove carriage return characters from string", "[xinterface]")
 {
-    using namespace storm;
     using namespace std::string_literals;
 
     auto value = "Hello,\r\nWorld!\r\n"s;
@@ -59,7 +58,6 @@ TEST_CASE("Remove carriage return characters from string", "[xinterface]")
 
 TEST_CASE("Parse options", "[xinterface]")
 {
-    using namespace storm;
     using namespace std::string_literals;
     using namespace std::string_view_literals;
 
@@ -75,11 +73,11 @@ TEST_CASE("Parse options", "[xinterface]")
 
         CHECK(attribute.GetAttributesNum() == 2);
 
-        const auto title_attribute = attribute.GetAttribute("title");
+        const char *title_attribute = attribute.GetAttribute("title");
         REQUIRE(title_attribute != nullptr);
         CHECK(title_attribute == "My title"sv);
 
-        const auto text_attribute = attribute.GetAttribute("text");
+        const char *text_attribute = attribute.GetAttribute("text");
         REQUIRE(text_attribute != nullptr);
         CHECK(text_attribute == "Hello, World!"sv);
     }
@@ -94,11 +92,11 @@ TEST_CASE("Parse options", "[xinterface]")
 
         CHECK(attribute.GetAttributesNum() == 2);
 
-        const auto title_attribute = attribute.GetAttribute("title");
+        const char *title_attribute = attribute.GetAttribute("title");
         REQUIRE(title_attribute != nullptr);
         CHECK(title_attribute == "My title"sv);
 
-        const auto text_attribute = attribute.GetAttribute("text");
+        const char *text_attribute = attribute.GetAttribute("text");
         REQUIRE(text_attribute != nullptr);
         CHECK(text_attribute == "Hello, World!"sv);
     }
@@ -117,19 +115,21 @@ TEST_CASE("Parse options", "[xinterface]")
         storm::parseOptions(source, attribute);
 
         CHECK(attribute.GetAttributesNum() == 2);
-        CHECK(attribute.GetAttribute("title") == "Inform the governor about the French attack."sv);
+        const char *title_attribute = attribute.GetAttribute("title");
+        REQUIRE(title_attribute != nullptr);
+        CHECK(title_attribute == "Inform the governor about the French attack."sv);
 
-        const auto text_attribute = attribute.GetAttributeClass("text");
+        const auto *text_attribute = attribute.GetAttributeClass("text");
         REQUIRE(text_attribute != nullptr);
         CHECK(text_attribute->GetAttributesNum() == 2);
 
-        const auto t1 = text_attribute->GetAttribute("t1");
+       const char *t1 = text_attribute->GetAttribute("t1");
         REQUIRE(t1 != nullptr);
         CHECK(
             t1 ==
             "Malcolm was right about spotting French near #sisland_Oxbay#. A war fleet is upon #sOxbay# port! I had better get away before I am detected and destroyed with the rest of the English here."sv);
 
-        const auto t2 = text_attribute->GetAttribute("t2");
+        const char *t2 = text_attribute->GetAttribute("t2");
         REQUIRE(t2 != nullptr);
         CHECK(
             t2 ==

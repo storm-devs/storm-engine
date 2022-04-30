@@ -5390,7 +5390,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                     pV->Set("error");
                     break; /*return false;*/
                 }
-                pV->Set(rAP->GetThisAttr());
+                pV->Set(to_string(rAP->GetThisAttr()));
                 break;
             default:
                 SetError("invalid argument for STACK_PUSH");
