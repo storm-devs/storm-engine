@@ -219,8 +219,8 @@ macro(STORM_SETUP)
 
   # link storm modules to executable forcing unused symbols to be preserved
   if(${_SETUP_TYPE} STREQUAL "executable")
+    list(REMOVE_DUPLICATES global_modules_list)
     list(APPEND _SETUP_DEPENDENCIES "${global_modules_list}")
-    list(REMOVE_DUPLICATES _SETUP_DEPENDENCIES)
     foreach(module ${global_modules_list})
       if(TARGET ${module})
         # TODO: make it portable? (at least for gcc it is --whole-archive)
