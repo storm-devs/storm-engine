@@ -9,6 +9,8 @@
 #include "v_s_stack.h"
 #include "storm/fs.h"
 
+#include <string_view>
+
 #include <fmt/chrono.h>
 
 #include <DxErr.h>
@@ -248,7 +250,6 @@ char sSplashText[] = {'\xbb', '\x9a', '\x89', '\x9a', '\x93', '\x90', '\x8f', '\
 #pragma warning(pop)
 char splashbuffer[256];
 
-#define TEXTURESDIR "resource\\textures\\%s.tx"
 #define VIDEODIR "Resource\\Videos\\%s"
 
 struct DX9SphVertex
@@ -1313,31 +1314,14 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
         return -1;
     }
 
-    // delete relative path "resource\textures\"
-    // std::string sTexName = fname;
-    // sTexName.GetRelativePath("resource\\textures\\");
-    // sTexName = sTexName - std::string(".tx");
-    // ~!~
-    //__debugbreak();
-    // fs::path path = fs::path() / "resource" / "textures" / fname;
-
     if (fname == nullptr)
     {
         core.Trace("Can't create texture with null name");
         return -1L;
     }
 
-    std::filesystem::path path = fname;
-    std::string pathStr = path.extension().string();
-    if (storm::iEquals(pathStr, ".tx"))
-        path.replace_extension();
-    pathStr = path.string();
-    fname = pathStr.c_str(); //~!~ msvc still doesn't have working c_str for path
-
     if (!bLoadTextureEnabled)
         return -1;
-
-    size_t fname_len = strlen(fname);
 
     for (int32_t i = 3; i >= -1; i--)
     {
@@ -1365,12 +1349,6 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
         {
             bTrace = true;
             strcpy_s(_fname, fname);
-        }
-
-        if (strlen(_fname) > std::size(".tx") - 1)
-        {
-            if (storm::iEquals(&_fname[strlen(_fname) - 3], ".tx"))
-                _fname[strlen(_fname) - 3] = 0;
         }
 
         _strupr(_fname);
@@ -1446,16 +1424,27 @@ bool DX9RENDER::TextureIncReference(int32_t texid)
 
 bool DX9RENDER::TextureLoad(int32_t t)
 {
+    using namespace std::literals;
+
     ProgressView();
     // Form the path to the texture
     char fn[_MAX_FNAME];
     Textures[t].dwSize = 0;
-    // sprintf_s(fn,"resource\\textures\\%s.tx",fname);
     if (Textures[t].name == nullptr)
     {
         return false;
     }
-    sprintf_s(fn, TEXTURESDIR, Textures[t].name);
+
+    std::string_view name_sv(Textures[t].name, strlen(Textures[t].name));
+    auto has_resource_prefix =
+        std::distance(std::ranges::search(name_sv, "resource\\textures\\"sv, storm::detail::is_iequal{}).begin(),
+                      name_sv.begin()) == 0;
+    auto has_tx_postfix =
+        std::distance(std::ranges::search(name_sv, ".tx"sv, storm::detail::is_iequal{}).begin(),
+                      name_sv.end()) == 3;
+
+    sprintf_s(fn, "%s%s%s", has_resource_prefix ? "" : "resource\\textures\\", Textures[t].name, has_tx_postfix ? "" : ".tx");
+
     for (int32_t s = 0, d = 0; fn[d]; s++)
     {
         if (d > 0 && fn[d - 1] == '\\' && fn[s] == '\\')
