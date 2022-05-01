@@ -4,15 +4,17 @@ ATTRIBUTES::ATTRIBUTES(VSTRING_CODEC *p): ATTRIBUTES(*p)
 {
 }
 
-ATTRIBUTES::ATTRIBUTES(ATTRIBUTES &&other) noexcept: stringCodec_(other.stringCodec_), nameCode_(other.nameCode_), value_(std::move(other.value_)),
-                                                     attributes_(std::move(other.attributes_)), break_(other.break_)
+ATTRIBUTES::ATTRIBUTES(ATTRIBUTES &&other) noexcept
+    : stringCodec_(other.stringCodec_), nameCode_(other.stringCodec_.Convert("root")), value_(std::move(other.value_)),
+      attributes_(std::move(other.attributes_)), break_(other.break_)
 {
 }
 
 ATTRIBUTES & ATTRIBUTES::operator=(ATTRIBUTES &&other) noexcept
 {
     stringCodec_ = other.stringCodec_;
-    nameCode_ = other.nameCode_;
+    // Do not update name code
+    // nameCode_ = other.nameCode_;
     value_ = std::move(other.value_);
     attributes_ = std::move(other.attributes_);
     // Do not update parent
