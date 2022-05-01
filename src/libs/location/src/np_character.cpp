@@ -323,7 +323,7 @@ void NPCharacter::Update(float dltTime)
                 if (atr->HasValue())
                 {
                     location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "tmpl(%s)",
-                                    atr->GetThisAttr());
+                                    static_cast<const char*>(atr->GetThisAttr()));
                 }
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.type");
@@ -339,7 +339,7 @@ void NPCharacter::Update(float dltTime)
                 }
                 if (atr->HasValue())
                     location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "type(%s)",
-                                    atr->GetThisAttr());
+                                    static_cast<const char*>(atr->GetThisAttr()));
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.group");
             if (atr)

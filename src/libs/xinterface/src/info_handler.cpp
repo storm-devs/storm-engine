@@ -138,8 +138,8 @@ bool InfoHandler::DoPreOut()
         nOutOffset = AttributesPointer->GetAttributeAsDword("offset", m_rs->CharHeight(0));
     }
 
-    auto *const picTexureFile = AttributesPointer->GetAttribute("picfilename");
-    auto *const picBackTexureFile = AttributesPointer->GetAttribute("picbackfilename");
+    const char *picTexureFile = AttributesPointer->GetAttribute("picfilename");
+    const char *picBackTexureFile = AttributesPointer->GetAttribute("picbackfilename");
     const uint32_t TMP_VERTEX_FORMAT = (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2);
     struct TMP_VERTEX
     {

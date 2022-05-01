@@ -58,9 +58,10 @@ const std::string & ATTRIBUTES::GetValue() const
     return *value_;
 }
 
-const char * ATTRIBUTES::GetThisAttr() const
+ATTRIBUTES::LegacyProxy ATTRIBUTES::GetThisAttr() const
 {
-    return value_ ? value_->c_str() : nullptr;
+    return value_;
+
 }
 
 void ATTRIBUTES::SetName(const std::string_view &new_name)
@@ -114,38 +115,36 @@ ATTRIBUTES *ATTRIBUTES::VerifyAttributeClass(const std::string_view &name)
     return (pTemp) ? pTemp : CreateAttribute(name, "");
 }
 
-const char * ATTRIBUTES::GetAttribute(size_t n) const
+const char *ATTRIBUTES::GetAttributeName(size_t n) const
 {
-    if (n < attributes_.size() && attributes_[n]->value_) {
-        return attributes_[n]->value_->c_str();
-    }
-    else {
-        return nullptr;
-    }
-}
-
-const char * ATTRIBUTES::GetAttributeName(size_t n) const
-{
-    if (n < attributes_.size()) {
+    if (n < attributes_.size())
+    {
         return attributes_[n]->GetThisName();
     }
-    else {
+    else
+    {
         return nullptr;
     }
 }
 
-const char * ATTRIBUTES::GetAttribute(const std::string_view &name) const
+ATTRIBUTES::LegacyProxy ATTRIBUTES::GetAttribute(size_t n) const
+{
+    if (n < attributes_.size()) {
+        return attributes_[n]->value_;
+    }
+    else {
+        return {};
+    }
+}
+
+
+ATTRIBUTES::LegacyProxy ATTRIBUTES::GetAttribute(const std::string_view &name) const
 {
     for (const auto &attribute : attributes_)
         if (storm::iEquals(name, attribute->GetThisName())) {
-            if (attribute->value_) {
-                return attribute->value_->c_str();
-            }
-            else {
-                return nullptr;
-            }
+            return attribute->value_;
         }
-    return nullptr;
+    return {};
 }
 
 uint32_t ATTRIBUTES::GetAttributeAsDword(const char *name, uint32_t def) const

@@ -68,7 +68,7 @@ uint32_t _GetAssembledString(VS_STACK *pS)
                         ATTRIBUTES *pA = pAttr->FindAClass(pAttr, &accessString[nAttrNameStart]);
                         if (pA != nullptr && pA->HasValue())
                         {
-                            const auto *writeStr = pA->GetThisAttr();
+                            const char *writeStr = pA->GetThisAttr();
                             switch (accessString[0])
                             {
                             case 's':

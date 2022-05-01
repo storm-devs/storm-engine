@@ -290,7 +290,7 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
     }
     if (!pA)
         return;
-    str = pA->GetAttribute("str");
+    str = to_string(pA->GetAttribute("str"));
     int strLength = utf8::Utf8StringLength(str.c_str());
     if (m_nEditPos < 0)
         m_nEditPos = strLength;

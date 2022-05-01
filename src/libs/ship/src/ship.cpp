@@ -1393,13 +1393,13 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
 
     EntityManager::AddToLayer(SHIP_CANNON_TRACE, GetId(), iShipPriorityExecute);
 
-    auto *const pName = GetAShip()->GetAttribute("Name");
+    const char *pName = GetAShip()->GetAttribute("Name");
     if (!pName)
     {
         core.Trace("SHIP::Mount : Can't find attribute name in ShipsTypes %d, char: %d, %s, %s, %s",
                    GetAShip()->GetAttributeAsDword("index"), GetACharacter()->GetAttributeAsDword("index"),
-                   GetACharacter()->GetAttribute("name"), GetACharacter()->GetAttribute("lastname"),
-                   GetACharacter()->GetAttribute("id"));
+                   static_cast<const char*>(GetACharacter()->GetAttribute("name")), static_cast<const char*>(GetACharacter()->GetAttribute("lastname")),
+                   static_cast<const char*>(GetACharacter()->GetAttribute("id")));
         // GetACharacter()->Dump(GetACharacter(), 0);
         bMounted = false;
         return false;

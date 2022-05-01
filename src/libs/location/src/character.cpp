@@ -21,6 +21,7 @@
 #include "core.h"
 #include "v_data.h"
 
+
 //============================================================================================
 
 #define CHARACTER_WAIT_AFTER_DEAD 6.0f //
@@ -1058,7 +1059,7 @@ void Character::SetSignTechnique()
     {
         return;
     }
-    const auto *pcTechniqueName = pATechnique->GetThisAttr();
+    const char *pcTechniqueName = pATechnique->GetThisAttr();
     if (signTechniqueName == pcTechniqueName)
         return;
     signTechniqueName = pcTechniqueName;

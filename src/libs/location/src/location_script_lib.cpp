@@ -72,7 +72,7 @@ inline bool CheckID(VDATA *vd, const char *id, bool &res)
     if (!a->HasValue()) {
         return true;
     }
-    res = storm::iEquals(a->GetThisAttr(), id);
+    res = storm::iEquals(to_string(a->GetThisAttr()), id);
     return true;
 }
 

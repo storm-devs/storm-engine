@@ -60,7 +60,7 @@ class CSaveLoad
         dwCurSize = 0;
 
         auto *pV = core.Event("SeaLoad_GetPointer", "sl", "seasave", -1);
-        auto *const pSave = pV->GetAClass()->GetAttribute("save");
+        const char *pSave = pV->GetAClass()->GetAttribute("save");
         uint32_t dwSize;
         char str[256];
         strncpy_s(str, pSave, 8);

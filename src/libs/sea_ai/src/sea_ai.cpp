@@ -147,7 +147,7 @@ uint64_t SEA_AI::ProcessMessage(MESSAGE &message)
         auto *pAIShip = AIShip::FindShip(pCharacter);
         if (!pAIShip)
         {
-            core.Trace("SeaAI err: SetSailState, can't find ship for character = %s", pCharacter->GetAttribute("id"));
+            core.Trace("SeaAI err: SetSailState, can't find ship for character = %s", static_cast<const char*>(pCharacter->GetAttribute("id")));
             return 0;
         }
         core.Send_Message(pAIShip->GetShipEID(), "lf", MSG_SHIP_SET_SAIL_STATE, fSailState);
@@ -424,7 +424,7 @@ void SEA_AI::AddShip(entid_t eidShip, ATTRIBUTES *pCharacter, ATTRIBUTES *pAShip
     Assert(pG);
 
     // search group
-    auto *const pGName = pG->GetAttribute("Name");
+    const char *pGName = pG->GetAttribute("Name");
     Assert(pGName);
 
     AIGroup::FindOrCreateGroup(pGName)->AddShip(eidShip, pCharacter, pAShip);
@@ -442,7 +442,7 @@ void SEA_AI::SetCompanionEnemy(ATTRIBUTES *pACharacter)
     // create and add to new group
     auto *pSeaAIG = pACharacter->FindAClass(pACharacter, "SeaAI.Group");
     Assert(pSeaAIG);
-    auto *const pGName = pSeaAIG->GetAttribute("Name");
+    const char *pGName = pSeaAIG->GetAttribute("Name");
     Assert(pGName);
 
     AIGroup::FindOrCreateGroup(pGName)->InsertShip(pS);

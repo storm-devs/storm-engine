@@ -121,7 +121,7 @@ void CXI_KEYCHANGER::SetChoosingControls(ATTRIBUTES *pA)
         sprintf_s(contrlName, "cntrl_%d", i);
         m_pbControlsStick[i] = false;
         m_pControlsID[i] = core.Controls->CreateControl(contrlName);
-        auto *const keyCode = pA->GetAttribute(i);
+        const char *keyCode = pA->GetAttribute(i);
         if (keyCode != nullptr)
         {
             core.Controls->MapControl(m_pControlsID[i], atoi(keyCode));
