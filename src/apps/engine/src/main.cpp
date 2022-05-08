@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     }
     mi_register_output(mimalloc_fun, nullptr);
     mi_option_set(mi_option_show_errors, 1);
-    mi_option_set(mi_option_show_stats, 1);
+    mi_option_set(mi_option_show_stats, 0);
     mi_option_set(mi_option_eager_commit, 1);
     mi_option_set(mi_option_eager_region_commit, 1);
     mi_option_set(mi_option_large_os_pages, 1);
