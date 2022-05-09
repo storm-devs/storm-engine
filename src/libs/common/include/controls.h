@@ -192,6 +192,16 @@ class CONTROLS
 
     virtual void SetMouseSensivityY(float){};
 
+    virtual short GetAsyncKeyState(int vk)
+    {
+        return GetAsyncKeyState(vk);
+    }
+
+    virtual short GetKeyState(int vk)
+    {
+        return GetKeyState(vk);
+    }
+
     virtual short GetDebugAsyncKeyState(int vk)
     {
         return GetAsyncKeyState(vk);
