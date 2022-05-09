@@ -66,9 +66,6 @@ class CXI_UTILS
 
     void FrameUpdate();
 
-    // key input
-    static char GetKeyInput();
-
     // string processing
     static void StringLeftClamp(char *&pcString);
     static const char *StringGetTokenID(char *&pcString, char *pcBuffer, int32_t nBufferSize);
