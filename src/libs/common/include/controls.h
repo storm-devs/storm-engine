@@ -194,27 +194,27 @@ class CONTROLS
 
     virtual short GetAsyncKeyState(int vk)
     {
-        return GetAsyncKeyState(vk);
+        return 0;
     }
 
     virtual short GetKeyState(int vk)
     {
-        return GetKeyState(vk);
+        return 0;
     }
 
     virtual short GetDebugAsyncKeyState(int vk)
     {
-        return GetAsyncKeyState(vk);
+        return 0;
     }
 
     virtual short GetDebugKeyState(int vk)
     {
-        return GetKeyState(vk);
+        return 0;
     }
 
     virtual bool IsKeyPressed(int vk)
     {
-        return GetKeyState(vk) < 0;
+        return 0;
     }
 
     // Get the keystroke buffer per frame (taking into account the language)
