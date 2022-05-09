@@ -313,7 +313,7 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
     RenderService->SetTextureStageState(2, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
     RenderService->SetTextureStageState(2, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
     // block for Sea Dogs: Return Of the legend <--
-    /*if(core.Controls->GetDebugAsyncKeyState(0xc0)<0)
+    /*if(GetAsyncKeyState(0xc0)<0)
     {
       //RenderService->TextureSet(0, 0);
       RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MAGFILTER, D3DTEXF_POINT);

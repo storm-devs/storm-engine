@@ -89,7 +89,7 @@ void Lighter::Execute(uint32_t delta_time)
     }
     if (waitChange <= 0.0f)
     {
-        if (core.Controls->GetDebugAsyncKeyState(VK_NUMPAD0) < 0)
+        if (GetAsyncKeyState(VK_NUMPAD0) < 0)
         {
             waitChange = 0.5f;
             if (isInited)
@@ -166,7 +166,7 @@ void Lighter::PreparingData()
 
 void Lighter::Realize(uint32_t delta_time)
 {
-    if (core.Controls->GetDebugAsyncKeyState(VK_DECIMAL) < 0)
+    if (GetAsyncKeyState(VK_DECIMAL) < 0)
     {
         window.isNoPrepared = !isInited;
         geometry.DrawNormals(rs);
