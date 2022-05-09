@@ -63,31 +63,30 @@ LRESULT CALLBACK SourceViewWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM l
             switch (static_cast<int>(wParam))
             {
             case VK_HOME:
-                if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
+                if (GetAsyncKeyState(VK_CONTROL) < 0)
                     CDebug->SourceView->SetActiveLine(0);
                 break;
             case VK_END:
-                if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
+                if (GetAsyncKeyState(VK_CONTROL) < 0)
                     CDebug->SourceView->SetActiveLine(CDebug->SourceView->nLinesNum - 1);
                 break;
             case 'G':
                 break;
             case 'F':
-                if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
+                if (GetAsyncKeyState(VK_CONTROL) < 0)
                     CDebug->SourceView->FindModal();
                 break;
             case 'O':
-                if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
+                if (GetAsyncKeyState(VK_CONTROL) < 0)
                     CDebug->OpenNewFile();
                 break;
             case VK_F2:
-                if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0 &&
-                    core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+                if (GetAsyncKeyState(VK_CONTROL) < 0 && GetAsyncKeyState(VK_SHIFT) < 0)
                 {
                     CDebug->SourceView->ClearAllBookmarks();
                     break;
                 }
-                if (core.Controls->GetDebugAsyncKeyState(VK_CONTROL) < 0)
+                if (GetAsyncKeyState(VK_CONTROL) < 0)
                 {
                     CDebug->SourceView->ToogleBookmark();
                     break;
