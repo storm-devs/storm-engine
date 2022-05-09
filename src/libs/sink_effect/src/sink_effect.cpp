@@ -91,7 +91,7 @@ void SINKEFFECT::Execute(uint32_t _dTime)
 {
     // GUARD(SINKEFFECT::Execute)
     /*
-      if (GetAsyncKeyState('X'))
+      if (core.Controls->GetAsyncKeyState('X'))
       {
         if (renderer && sea)
         {

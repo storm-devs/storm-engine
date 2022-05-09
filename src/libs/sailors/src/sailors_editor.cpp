@@ -66,7 +66,7 @@ void SailorsEditor::Execute(uint32_t dltTime)
     SetCamera(dltTime);
     menu.OnKeyPress(menu.sailrs->shipWalk[0].sailorsPoints);
 
-    if (GetAsyncKeyState(VK_ESCAPE) < 0)
+    if (core.Controls->GetAsyncKeyState(VK_ESCAPE) < 0)
 #ifdef _WIN32 // FIX_LINUX ExitProcess
         ExitProcess(0);
 #else
@@ -107,33 +107,33 @@ void SailorsEditor::SetCamera(uint32_t &dltTime)
     pos = mtx * cameraPos;
 
     float speed = 0;
-    if (GetAsyncKeyState(VK_LBUTTON) < 0)
+    if (core.Controls->GetAsyncKeyState(VK_LBUTTON) < 0)
         speed = -0.1f;
-    if (GetAsyncKeyState(VK_RBUTTON) < 0)
+    if (core.Controls->GetAsyncKeyState(VK_RBUTTON) < 0)
         speed = 0.1f;
 
     cameraPos.y += speed * (dltTime / 10.0f);
     rs->SetCamera(cameraTo + pos, cameraTo, CVECTOR(0.0f, 1.0f, 0.0f));
 
-    if (GetAsyncKeyState(0x57) < 0)
+    if (core.Controls->GetAsyncKeyState(0x57) < 0)
     {
         cameraTo.x -= sin(cameraAng.y) * dltTime / 50.0f;
         cameraTo.z -= cos(cameraAng.y) * dltTime / 50.0f;
     }
 
-    if (GetAsyncKeyState(0x53) < 0)
+    if (core.Controls->GetAsyncKeyState(0x53) < 0)
     {
         cameraTo.x += sin(cameraAng.y) * dltTime / 50.0f;
         cameraTo.z += cos(cameraAng.y) * dltTime / 50.0f;
     }
 
-    if (GetAsyncKeyState(0x41) < 0)
+    if (core.Controls->GetAsyncKeyState(0x41) < 0)
     {
         cameraTo.x += sin(cameraAng.y + PI / 2) * dltTime / 50.0f;
         cameraTo.z += cos(cameraAng.y + PI / 2) * dltTime / 50.0f;
     }
 
-    if (GetAsyncKeyState(0x44) < 0)
+    if (core.Controls->GetAsyncKeyState(0x44) < 0)
     {
         cameraTo.x -= sin(cameraAng.y + PI / 2) * dltTime / 50.0f;
         cameraTo.z -= cos(cameraAng.y + PI / 2) * dltTime / 50.0f;

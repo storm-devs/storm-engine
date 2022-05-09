@@ -352,9 +352,9 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
     // Matrix update
     mdl->mtx.BuildMatrix(angs, rpos);
     /*
-    if(GetAsyncKeyState('Z') >= 0)
+    if(core.Controls->GetAsyncKeyState('Z') >= 0)
     {
-      if(GetAsyncKeyState('X') < 0) rpos.y += 30.0f;
+      if(core.Controls->GetAsyncKeyState('X') < 0) rpos.y += 30.0f;
       mdl->mtx.BuildMatrix(angs, rpos);
     }else{
       mdl->mtx.BuildMatrix(angs, pos + CVECTOR(0.0f, 30.0f, 0.0f));

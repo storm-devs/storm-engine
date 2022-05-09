@@ -551,42 +551,42 @@ void Menu::OnKeyPress(SailorsPoints &sailorsPoints)
     key = 0;
     shiftKey = 0;
 
-    if (GetAsyncKeyState(VK_UP) < 0)
+    if (core.Controls->GetAsyncKeyState(VK_UP) < 0)
         key = VK_UP;
-    else if (GetAsyncKeyState(VK_DOWN) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_DOWN) < 0)
         key = VK_DOWN;
-    else if (GetAsyncKeyState(VK_LEFT) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_LEFT) < 0)
         key = VK_LEFT;
-    else if (GetAsyncKeyState(VK_RIGHT) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_RIGHT) < 0)
         key = VK_RIGHT;
-    else if (GetAsyncKeyState(VK_RETURN) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_RETURN) < 0)
         key = VK_RETURN;
-    else if (GetAsyncKeyState(VK_INSERT) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_INSERT) < 0)
         key = VK_INSERT;
-    else if (GetAsyncKeyState(VK_DELETE) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_DELETE) < 0)
         key = VK_DELETE;
-    else if (GetAsyncKeyState(VK_SPACE) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_SPACE) < 0)
         key = VK_SPACE;
-    else if (GetAsyncKeyState(VK_F1) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_F1) < 0)
         key = VK_F1;
-    else if (GetAsyncKeyState(VK_F2) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_F2) < 0)
         key = VK_F2;
-    else if (GetAsyncKeyState(VK_F3) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_F3) < 0)
         key = VK_F3;
-    else if (GetAsyncKeyState(VK_F5) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_F5) < 0)
         key = VK_F5;
-    else if (GetAsyncKeyState(VK_F6) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_F6) < 0)
         key = VK_F6;
-    else if (GetAsyncKeyState(VK_F9) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_F9) < 0)
         key = VK_F9;
-    else if (GetAsyncKeyState(VK_F4) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_F4) < 0)
         key = VK_F4;
-    else if (GetAsyncKeyState(VK_F10) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_F10) < 0)
         key = VK_F10;
-    else if (GetAsyncKeyState(VK_F11) < 0)
+    else if (core.Controls->GetAsyncKeyState(VK_F11) < 0)
         key = VK_F11;
 
-    if (GetAsyncKeyState(VK_LSHIFT) < 0 || GetAsyncKeyState(VK_RSHIFT) < 0)
+    if (core.Controls->GetAsyncKeyState(VK_LSHIFT) < 0 || core.Controls->GetAsyncKeyState(VK_RSHIFT) < 0)
         shiftKey = 1;
     else
         shiftKey = 0;

@@ -590,6 +590,16 @@ void PCS_CONTROLS::ClearKeyBuffer()
     m_KeyBuffer.Reset();
 }
 
+short PCS_CONTROLS::GetAsyncKeyState(int vk)
+{
+    return IsKeyPressed(vk) ? -1 : 0;
+}
+
+short PCS_CONTROLS::GetKeyState(int vk)
+{
+    return GetAsyncKeyState(vk);
+}
+
 short PCS_CONTROLS::GetDebugAsyncKeyState(int vk)
 {
     // -1 because WinAPI sets msb when key pressed, so old code expects negative value

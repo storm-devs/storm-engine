@@ -563,7 +563,7 @@ void LocationCamera::ExecuteTopos(float dltTime)
 // Free flying camera execution
 void LocationCamera::ExecuteFree(float dltTime)
 {
-    if (GetKeyState(VK_NUMLOCK) & 1)
+    if (core.Controls->GetKeyState(VK_NUMLOCK) & 1)
         return;
 
     const auto pi = 3.14159265359f;

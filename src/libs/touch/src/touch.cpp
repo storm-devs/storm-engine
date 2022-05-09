@@ -115,8 +115,8 @@ void TOUCH::Execute(uint32_t dwCoreDeltaTime)
 
     FakeTouch(); // just push out the ships that are still in each other
 
-    // if (GetAsyncKeyState('5')) fScale -= 0.1f;
-    // if (GetAsyncKeyState('6')) fScale += 0.1f;
+    // if (core.Controls->GetAsyncKeyState('5')) fScale -= 0.1f;
+    // if (core.Controls->GetAsyncKeyState('6')) fScale += 0.1f;
 
     RDTSC_E(dwRdtsc);
 }
