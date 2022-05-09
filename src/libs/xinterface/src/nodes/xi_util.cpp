@@ -106,14 +106,12 @@ char CXI_UTILS::GetKeyInput()
 
                 uint8_t pKBState[256];
                 uint16_t pcTmp[16]; // in general, need 2 characters (the rest just in case)
-#ifdef _WIN32 // FIX_LINUX VirtualKey
                 GetKeyboardState(pKBState);
                 if (ToAscii(n, MapVirtualKey(n, 0), pKBState, pcTmp, 0) == 1)
                 {
                     cRetVal = static_cast<char>(pcTmp[0]);
                     return cRetVal;
                 }
-#endif
             }
             cRetVal = 0;
         }

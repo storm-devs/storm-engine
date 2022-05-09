@@ -194,29 +194,17 @@ class CONTROLS
 
     virtual short GetDebugAsyncKeyState(int vk)
     {
-#ifdef _WIN32 // FIX_LINUX VirtualKey
         return GetAsyncKeyState(vk);
-#else
-        return 0;
-#endif
     }
 
     virtual short GetDebugKeyState(int vk)
     {
-#ifdef _WIN32 // FIX_LINUX VirtualKey
         return GetKeyState(vk);
-#else
-        return 0;
-#endif
     }
 
     virtual bool IsKeyPressed(int vk)
     {
-#ifdef _WIN32 // FIX_LINUX VirtualKey
         return GetKeyState(vk) < 0;
-#else
-        return false;
-#endif
     }
 
     // Get the keystroke buffer per frame (taking into account the language)
