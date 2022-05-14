@@ -1117,7 +1117,10 @@ S_TOKEN_TYPE TOKEN::ProcessToken(char *&pointer, bool bKeepData)
             sym = *Program;
             Program += utf8::u8_inc(Program);
             if (sym == '\r' || sym == '\n')
+            {
+                --Program;
                 break;
+            }
         } while (sym != 0);
         SetNTokenData(pBase, Program - pBase);
         break;
