@@ -1428,7 +1428,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 }
                 if (use_script_cache_)
                 {
-                    script_cache_.defines.emplace_back(di.name, di.deftype, di.data4b);
+                    script_cache_.defines.emplace_back(storm::script_cache::Define{di.name, di.deftype, di.data4b});
                 }
             }
             break;
@@ -1515,7 +1515,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         }
                         if (use_script_cache_)
                         {
-                            script_cache_.functions.emplace_back(fi, std::vector<storm::script_cache::FunctionLocalVariable>{});
+                            script_cache_.functions.emplace_back(storm::script_cache::Function{
+                                fi, std::vector<storm::script_cache::FunctionLocalVariable>{}});
                         }
                         break;
                     }
@@ -1760,7 +1761,8 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
                     if (use_script_cache_)
                     {
-                        script_cache_.functions.back().arguments.emplace_back(lvi, bExtern);
+                        script_cache_.functions.back().arguments.emplace_back(
+                            storm::script_cache::FunctionLocalVariable{lvi, bExtern});
                     }
                 }
             }
@@ -2147,7 +2149,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                 SetEventHandler(gs, Token.GetData(), 0, true);
                 if (use_script_cache_)
                 {
-                    script_cache_.event_handlers.emplace_back(gs, Token.GetData());
+                    script_cache_.event_handlers.emplace_back(storm::script_cache::EventHandler{gs, Token.GetData()});
                 }
             }
             else

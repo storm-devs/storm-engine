@@ -41,7 +41,7 @@ Supervisor::~Supervisor()
 void Supervisor::AddCharacter(Character *ch)
 {
     Assert(ch);
-    character.emplace_back(ch, time);
+    character.emplace_back(CharacterEx{ch, time});
     colchr.resize(character.size() * character.size());
 }
 
@@ -364,7 +364,7 @@ std::vector<Supervisor::FindCharacter> Supervisor::FindCharacters(Character *chr
                 continue;
         }
         // Add
-        found_characters.emplace_back(character[i].c, dx, dy, dz, d);
+        found_characters.emplace_back(FindCharacter{character[i].c, dx, dy, dz, d});
     }
     if (isSort)
     {
