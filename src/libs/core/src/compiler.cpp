@@ -6599,14 +6599,15 @@ bool COMPILER::SaveState(std::fstream &fileS)
     if (dwCurPointer)
     {
         char *pDst = new char[dwCurPointer * 2];
-        uint32_t dwPackLen = dwCurPointer * 2;
+        uLongf ulPackLen = dwCurPointer * 2;
         RDTSC_B(dw2);
-        compress2((Bytef *)pDst, (uLongf *)&dwPackLen, (Bytef *)pBuffer, dwCurPointer, Z_BEST_COMPRESSION);
+        compress2((Bytef *)pDst, &ulPackLen, (Bytef *)pBuffer, dwCurPointer, Z_BEST_COMPRESSION);
         RDTSC_E(dw2);
+        uint32_t uiPackLen = ulPackLen;
 
         fio->_WriteFile(fileS, &dwCurPointer, sizeof(dwCurPointer));
-        fio->_WriteFile(fileS, &dwPackLen, sizeof(dwPackLen));
-        fio->_WriteFile(fileS, pDst, dwPackLen);
+        fio->_WriteFile(fileS, &uiPackLen, sizeof(uiPackLen));
+        fio->_WriteFile(fileS, pDst, uiPackLen);
 
         delete[] pDst;
     }
@@ -6638,7 +6639,9 @@ bool COMPILER::LoadState(std::fstream &fileS)
     char *pCBuffer = new char[dwPackLen];
     pBuffer = new char[dwMaxSize];
     fio->_ReadFile(fileS, pCBuffer, dwPackLen);
-    uncompress((Bytef *)pBuffer, (uLongf *)&dwMaxSize, (Bytef *)pCBuffer, dwPackLen);
+    uLongf ulMaxSize = dwMaxSize;
+    uncompress((Bytef *)pBuffer, &ulMaxSize, (Bytef *)pCBuffer, dwPackLen);
+    dwMaxSize = ulMaxSize;
     delete[] pCBuffer;
     dwCurPointer = 0;
 
@@ -6803,11 +6806,12 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, int32_t data_
     fio->_SetFilePointer(fileS, dwFileSize, std::ios::beg);
 
     char *pDst = new char[data_size * 2];
-    uint32_t dwPackLen = data_size * 2;
-    compress2((Bytef *)pDst, (uLongf *)&dwPackLen, static_cast<Bytef *>(save_data), data_size, Z_BEST_COMPRESSION);
+    uLongf ulPackLen = data_size * 2;
+    compress2((Bytef *)pDst, &ulPackLen, static_cast<Bytef *>(save_data), data_size, Z_BEST_COMPRESSION);
+    uint32_t uiPackLen = ulPackLen;
 
-    fio->_WriteFile(fileS, &dwPackLen, sizeof(dwPackLen));
-    fio->_WriteFile(fileS, pDst, dwPackLen);
+    fio->_WriteFile(fileS, &uiPackLen, sizeof(uiPackLen));
+    fio->_WriteFile(fileS, pDst, uiPackLen);
     fio->_CloseFile(fileS);
 
     delete[] pDst;
@@ -6941,14 +6945,14 @@ void *COMPILER::GetSaveData(const char *file_name, int32_t &data_size)
     char *pCBuffer = new char[dwPackLen];
     fio->_ReadFile(fileS, pCBuffer, dwPackLen);
     char *pBuffer = new char[exdh.dwExtDataSize];
-    uint32_t dwDestLen = exdh.dwExtDataSize;
-    uncompress((Bytef *)pBuffer, (uLongf *)&dwDestLen, (Bytef *)pCBuffer, dwPackLen);
+    uLongf ulDestLen = exdh.dwExtDataSize;
+    uncompress((Bytef *)pBuffer, &ulDestLen, (Bytef *)pCBuffer, dwPackLen);
     fio->_CloseFile(fileS);
     delete[] pCBuffer;
     RDTSC_E(dw2);
     // core_internal.Trace("GetSaveData = %d", dw2);
 
-    data_size = dwDestLen;
+    data_size = ulDestLen;
     return pBuffer;
 }
 
