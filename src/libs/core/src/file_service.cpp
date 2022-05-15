@@ -433,6 +433,21 @@ std::string convert_path(const char *path)
     return conv;
 }
 
+void FILE_SERVICE::AddEntryToResourcePaths(const std::filesystem::directory_entry &entry, std::string &CheckingPath)
+{
+    if (entry.is_regular_file() || entry.is_directory())
+    {
+        std::string path = get_dir_iterator_path(entry.path());
+        std::string path_lwr = convert_path(path.c_str());
+        tolwr(path_lwr.data());
+        if (starts_with(path_lwr, CheckingPath + "program") || starts_with(path_lwr, CheckingPath + "resource") ||
+            starts_with(path_lwr, CheckingPath + "save") || ends_with(path_lwr, ".ini"))
+        {
+            ResourcePaths[path_lwr] = path;
+        }
+    }
+}
+
 void FILE_SERVICE::ScanResourcePaths()
 {
 #ifndef _WIN32
@@ -442,24 +457,17 @@ void FILE_SERVICE::ScanResourcePaths()
         ResourcePaths = std::unordered_map<std::string, std::string>();
     }
     ResourcePaths.clear();
+    std::string ExePath = "";
     for (const auto &entry : std::filesystem::recursive_directory_iterator("."))
     {
-        if (entry.is_regular_file() || entry.is_directory())
-        {
-            std::string path = get_dir_iterator_path(entry.path());
-            std::string path_lwr = convert_path(path.c_str());
-            tolwr(path_lwr.data());
-            if (starts_with(path_lwr, "program") || starts_with(path_lwr, "resource") ||
-                starts_with(path_lwr, "save") || ends_with(path_lwr, ".ini"))
-            {
-                ResourcePaths[path_lwr] = path;
-                if (entry.is_directory())
-                {
-                    terminate_with_char(path_lwr, PATH_SEP);
-                    ResourcePaths[path_lwr] = path;
-                }
-            }
-        }
+        AddEntryToResourcePaths(entry, ExePath);
+    }
+    ExePath = fio->_GetExecutableDirectory();
+    auto it = std::filesystem::recursive_directory_iterator(ExePath);
+    tolwr(ExePath.data());
+    for (const auto &entry : it)
+    {
+        AddEntryToResourcePaths(entry, ExePath);
     }
 #endif
     ResourcePathsFirstScan = false;

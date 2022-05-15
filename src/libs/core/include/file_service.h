@@ -124,6 +124,7 @@ class FILE_SERVICE : public VFILE_SERVICE
     void FlushIniFiles();
 
     // Resource paths
+    void AddEntryToResourcePaths(const std::filesystem::directory_entry &entry, std::string &CheckingPath);
     void ScanResourcePaths() override;
     std::string ConvertPathResource(const char *path) override;
 };
