@@ -2977,8 +2977,7 @@ int32_t DX9RENDER::LoadFont(const char *fontName)
         strncpy_s(sDup, fontName, sizeof(sDup) - 1);
         sDup[sizeof(sDup) - 1] = 0;
     }
-    toupr(sDup);
-    fontName = sDup;
+    fontName = toupr(sDup);
     const uint32_t hashVal = hash_string(fontName);
 
     int32_t i;
@@ -3029,8 +3028,7 @@ bool DX9RENDER::UnloadFont(const char *fontName)
         strncpy_s(sDup, fontName, sizeof(sDup) - 1);
         sDup[sizeof(sDup) - 1] = 0;
     }
-    toupr(sDup);
-    fontName = sDup;
+    fontName = toupr(sDup);
     const uint32_t hashVal = hash_string(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)
@@ -3083,8 +3081,7 @@ bool DX9RENDER::SetCurFont(const char *fontName)
         strncpy_s(sDup, fontName, sizeof(sDup) - 1);
         sDup[sizeof(sDup) - 1] = 0;
     }
-    toupr(sDup);
-    fontName = sDup;
+    fontName = toupr(sDup);
     const uint32_t hashVal = hash_string(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)

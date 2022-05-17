@@ -76,22 +76,26 @@ constexpr float PIm2 = (PI * 2.0f);
 constexpr float PId2 = (PI / 2.0f);
 constexpr float PId4 = (PI / 4.0f);
 
-inline void toupr(char *str)
+inline char *toupr(char *str)
 {
+    char *result = str;
     while (*str != '\0')
     {
         *str = toupper(*str);
         str++;
     }
+    return result;
 }
 
-inline void tolwr(char *str)
+inline char *tolwr(char *str)
 {
+    char *result = str;
     while (*str != '\0')
     {
         *str = tolower(*str);
         str++;
     }
+    return result;
 }
 
 #ifdef _WIN32 // FIX_LINUX RDTSC_*
