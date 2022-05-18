@@ -90,7 +90,7 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
 {
     if (!isActive())
         return;
-    if (core.Controls->GetKeyState(VK_NUMLOCK) & 1)
+    if (core.Controls->GetKeyState(VK_NUMLOCK) < 0)
         return;
 
     // POINT pnt;

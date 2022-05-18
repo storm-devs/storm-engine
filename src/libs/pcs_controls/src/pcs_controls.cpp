@@ -639,6 +639,8 @@ bool PCS_CONTROLS::IsKeyPressed(int vk)
         pressed = input_->KeyboardSDLKeyState(SDL_SCANCODE_RETURN) ||
                   input_->KeyboardSDLKeyState(SDL_SCANCODE_KP_ENTER);
     }
+    else if (vk == VK_NUMLOCK)
+        pressed = input_->KeyboardModState(vk);
     else
         pressed = input_->KeyboardKeyState(vk);
 

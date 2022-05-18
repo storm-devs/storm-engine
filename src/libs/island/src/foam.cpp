@@ -53,7 +53,7 @@ bool CoastFoam::Init()
 
 void CoastFoam::Execute(uint32_t Delta_Time)
 {
-    bEditMode = (bCanEdit) ? LOWORD(core.Controls->GetDebugKeyState(VK_NUMLOCK)) != 0 : false;
+    bEditMode = (bCanEdit) ? (core.Controls->GetDebugKeyState(VK_NUMLOCK) < 0) : false;
     auto fDeltaTime = static_cast<float>(Delta_Time) * 0.001f;
 }
 
