@@ -621,7 +621,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
 
     bEventsBreak = false;
 
-    uint32_t nTimeOnEvent = GetTickCount();
+    uint32_t nTimeOnEvent = SDL_GetTicks();
     current_debug_mode = CDebug->GetTraceMode();
 
     pVD = nullptr;
@@ -689,7 +689,7 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
             break;
     }
 
-    nTimeOnEvent = GetTickCount() - nTimeOnEvent;
+    nTimeOnEvent = SDL_GetTicks() - nTimeOnEvent;
 
     nRuntimeTicks += nTimeOnEvent;
 
