@@ -37,6 +37,7 @@ class StormEngine(ConanFile):
 
     default_options = {
         "sdl2:sdl2main": False,
+        "sdl2:pulse": False,
         "sentry-native:backend": "crashpad",
         "mimalloc:shared": True,
         "mimalloc:override": True
