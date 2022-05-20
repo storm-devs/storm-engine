@@ -4145,7 +4145,7 @@ void DX9RENDER::StartProgressView()
         progressTipsTexture = TextureCreate(progressTipsImage);
         isInPViewProcess = false;
     }
-    progressUpdateTime = GetTickCount() - 1000;
+    progressUpdateTime = SDL_GetTicks() - 1000;
 }
 
 void DX9RENDER::ProgressView()
@@ -4156,7 +4156,7 @@ void DX9RENDER::ProgressView()
     if (isInPViewProcess)
         return;
     // Analyzing time
-    const uint32_t time = GetTickCount();
+    const uint32_t time = SDL_GetTicks();
     if (abs(static_cast<int32_t>(progressUpdateTime - time)) < 50)
         return;
     progressUpdateTime = time;
