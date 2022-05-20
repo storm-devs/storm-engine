@@ -30,6 +30,7 @@ class StormEngine(ConanFile):
         else:
             # conan-center
             self.requires("libsafec/3.6.0")
+            self.requires("openssl/1.1.1o")
         if self.options.steam:
             self.requires("steamworks/1.5.1@storm/prebuilt")
 
