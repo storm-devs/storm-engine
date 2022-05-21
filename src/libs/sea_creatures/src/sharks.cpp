@@ -352,9 +352,9 @@ inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime,
     // Matrix update
     mdl->mtx.BuildMatrix(angs, rpos);
     /*
-    if(GetAsyncKeyState('Z') >= 0)
+    if(core.Controls->GetAsyncKeyState('Z') >= 0)
     {
-      if(GetAsyncKeyState('X') < 0) rpos.y += 30.0f;
+      if(core.Controls->GetAsyncKeyState('X') < 0) rpos.y += 30.0f;
       mdl->mtx.BuildMatrix(angs, rpos);
     }else{
       mdl->mtx.BuildMatrix(angs, pos + CVECTOR(0.0f, 30.0f, 0.0f));
@@ -511,7 +511,7 @@ Sharks::Sharks() : sea(0), island(0), indeces{}, vrt{}
 {
     rs = nullptr;
     camPos = 0.0f;
-    numShakes = 3 + (GetTickCount() & 3);
+    numShakes = 3 + (SDL_GetTicks() & 3);
     trackTx = -1;
     periscope.time = -1.0;
     waitPTime = -1.0f;
@@ -570,7 +570,7 @@ bool Sharks::Init()
                             const auto day = root->GetAttributeAsDword("day");
                             if (day == 7)
                             {
-                                if ((GetTickCount() & 7) == 5)
+                                if ((SDL_GetTicks() & 7) == 5)
                                 {
                                     waitPTime = 60.0f + rand() * 500.0f / RAND_MAX;
                                 }

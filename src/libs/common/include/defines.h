@@ -6,6 +6,8 @@
 #include <cstring>
 #include <cctype>
 
+#include <SDL2/SDL.h>
+
 namespace TOREMOVE
 {
 inline uint32_t HashNoCase(const char *str)
@@ -76,19 +78,8 @@ constexpr float PIm2 = (PI * 2.0f);
 constexpr float PId2 = (PI / 2.0f);
 constexpr float PId4 = (PI / 4.0f);
 
-#define RDTSC_B(x)                                                                                                     \
-    {                                                                                                                  \
-        LARGE_INTEGER li;                                                                                              \
-        QueryPerformanceCounter(&li);                                                                                  \
-        x = li.QuadPart;                                                                                               \
-    }
-#define RDTSC_E(x)                                                                                                     \
-    {                                                                                                                  \
-        LARGE_INTEGER li;                                                                                              \
-        QueryPerformanceCounter(&li);                                                                                  \
-        x = li.QuadPart - x;                                                                                           \
-    }
-
+#define RDTSC_B(x)    { x = SDL_GetPerformanceCounter(); }
+#define RDTSC_E(x)    { x = SDL_GetPerformanceCounter() - x; }
 //#define RDTSC_B(x)    { x = __rdtsc(); }
 //#define RDTSC_E(x)    { x = __rdtsc() - x; }
 

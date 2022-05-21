@@ -105,7 +105,7 @@ void Player::Move(float dltTime)
     }
 
     /*
-    if(GetAsyncKeyState(VK_SPACE) < 0)
+    if(core.Controls->GetAsyncKeyState(VK_SPACE) < 0)
     {
       impulse.y += 5.0f;
       impulse.y *= 2;

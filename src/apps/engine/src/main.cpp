@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
     core_private->InitBase();
 
     // Message loop
-    auto dwOldTime = GetTickCount();
+    auto dwOldTime = SDL_GetTicks();
 
     isRunning = true;
     while (isRunning)
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
             if (dwMaxFPS)
             {
                 const auto dwMS = 1000u / dwMaxFPS;
-                const auto dwNewTime = GetTickCount();
+                const auto dwNewTime = SDL_GetTicks();
                 if (dwNewTime - dwOldTime < dwMS)
                     continue;
                 dwOldTime = dwNewTime;

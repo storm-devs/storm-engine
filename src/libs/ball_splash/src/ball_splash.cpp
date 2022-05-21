@@ -115,7 +115,7 @@ void BALLSPLASH::Realize(uint32_t _dTime)
 
     RDTSC_E(ticks);
     /*
-    if ((GetKeyState('Z') & 0x8000) != 0)
+    if ((core.Controls->GetKeyState('Z') & 0x8000) != 0)
     {
       renderer->Print(0, 150, "splash: all = %d, count = %d", ticks/1000, TSplash::processCount);
       if (TSplash::processCount)
