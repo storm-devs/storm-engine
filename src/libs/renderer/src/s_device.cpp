@@ -10,6 +10,7 @@
 #include "storm/fs.h"
 
 #include <string_view>
+#include <algorithm>
 
 #include <fmt/chrono.h>
 
@@ -1435,9 +1436,10 @@ bool DX9RENDER::TextureLoad(int32_t t)
         return false;
     }
 
-    tolwr(Textures[t].name);
-    auto has_resource_prefix = starts_with(Textures[t].name, "resource\\textures\\");
-    auto has_tx_postfix = ends_with(Textures[t].name, ".tx");
+    auto lTexture = std::string(Textures[t].name);
+    std::transform(lTexture.begin(), lTexture.end(), lTexture.begin(), [](unsigned char c) { return std::tolower(c); });
+    auto has_resource_prefix = starts_with(lTexture, "resource\\textures\\");
+    auto has_tx_postfix = ends_with(lTexture, ".tx");
 
     sprintf_s(fn, "%s%s%s", has_resource_prefix ? "" : "resource\\textures\\", Textures[t].name, has_tx_postfix ? "" : ".tx");
 
