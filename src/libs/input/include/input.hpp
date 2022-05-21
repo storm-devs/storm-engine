@@ -123,6 +123,8 @@ class Input
     virtual void Unsubscribe(int id) = 0;
 
     //! Current keyboard key state
+    //! \return true if key is Num Lock, Caps Lock or Scroll Lock and key is on
+    virtual bool KeyboardModState(const KeyboardKey &key) const = 0;
     //! \return true if key is pressed
     virtual bool KeyboardKeyState(const KeyboardKey &key) const = 0;
     virtual bool KeyboardSDLKeyState(const SDL_Scancode &key) const = 0;

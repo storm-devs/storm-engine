@@ -59,7 +59,7 @@ char CXI_UTILS::GetKeyInput()
         if (pThis->keys[n].nAsyncKeyCode < 0)
             continue;
 
-        if (GetAsyncKeyState(pThis->keys[n].nAsyncKeyCode) < 0)
+        if (core.Controls->GetAsyncKeyState(pThis->keys[n].nAsyncKeyCode) < 0)
         {
             pThis->m_bIsKeyPressed = true;
 

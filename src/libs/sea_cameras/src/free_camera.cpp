@@ -90,7 +90,7 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
 {
     if (!isActive())
         return;
-    if (LOWORD(GetKeyState(VK_NUMLOCK)) != 0)
+    if (core.Controls->GetKeyState(VK_NUMLOCK) < 0)
         return;
 
     // POINT pnt;
@@ -118,9 +118,9 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
     float s2 = sinf(vAng.z);
     float speed = 5.0f * 0.001f * static_cast<float>(DeltaTime);
 
-    if (GetAsyncKeyState(VK_SHIFT))
+    if (core.Controls->GetAsyncKeyState(VK_SHIFT))
         speed *= 4.0f;
-    if (GetAsyncKeyState(VK_CONTROL))
+    if (core.Controls->GetAsyncKeyState(VK_CONTROL))
         speed *= 8.0f;
 
     core.Controls->GetControlState("FreeCamera_Forward", cs);
@@ -130,10 +130,10 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
     if (cs.state == CST_ACTIVE)
         vPos -= speed * CVECTOR(s0 * c1, -s1, c0 * c1);
 
-    /*if (GetAsyncKeyState(VK_LBUTTON))    vPos += speed*CVECTOR(s0*c1, -s1, c0*c1);
-    if (GetAsyncKeyState(VK_RBUTTON))    vPos -= speed*CVECTOR(s0*c1, -s1, c0*c1);
-    if(GetAsyncKeyState('I'))    vPos += speed*CVECTOR(0.0f, 0.1f , 0.0f);
-    if(GetAsyncKeyState('K'))    vPos += speed*CVECTOR(0.0f, -0.1f, 0.0f);*/
+    /*if (core.Controls->GetAsyncKeyState(VK_LBUTTON))    vPos += speed*CVECTOR(s0*c1, -s1, c0*c1);
+    if (core.Controls->GetAsyncKeyState(VK_RBUTTON))    vPos -= speed*CVECTOR(s0*c1, -s1, c0*c1);
+    if(core.Controls->GetAsyncKeyState('I'))    vPos += speed*CVECTOR(0.0f, 0.1f , 0.0f);
+    if(core.Controls->GetAsyncKeyState('K'))    vPos += speed*CVECTOR(0.0f, -0.1f, 0.0f);*/
 
     // vPos = CVECTOR(0.0f, 20.0f, 0.0f);
 

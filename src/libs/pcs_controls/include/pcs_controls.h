@@ -82,6 +82,8 @@ class PCS_CONTROLS : public CONTROLS
     void SetMouseSensivityX(float) override;
     void SetMouseSensivityY(float) override;
 
+    short GetAsyncKeyState(int vk) override;
+    short GetKeyState(int vk) override;
     short GetDebugAsyncKeyState(int vk) override;
     short GetDebugKeyState(int vk) override;
     bool m_bIsOffDebugKeys;

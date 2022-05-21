@@ -390,6 +390,18 @@ void SDLInput::ProcessEvent(const SDL_Event &event)
     }
 }
 
+bool SDLInput::KeyboardModState(const KeyboardKey &key) const
+{
+    if (key == VK_NUMLOCK)
+        return SDL_GetModState() & KMOD_NUM;
+    else if (key == VK_CAPITAL)
+        return SDL_GetModState() & KMOD_CAPS;
+    else if (key == VK_SCROLL)
+        return SDL_GetModState() & KMOD_SCROLL;
+    else
+       return false;
+}
+
 bool SDLInput::KeyboardKeyState(const KeyboardKey &key) const
 {
     return keyStates_[keyToSDL(key)] != 0;
