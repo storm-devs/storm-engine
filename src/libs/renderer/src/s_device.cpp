@@ -1776,6 +1776,7 @@ bool DX9RENDER::TextureLoad(int32_t t)
 
 bool DX9RENDER::TextureLoadUsingD3DX(const char* path, int32_t t)
 {
+#ifdef _WIN32 // TextureLoadUsingD3DX - used only for loading raw Targa
     // TODO: reimplement the whole thing in a tidy way
     IDirect3DTexture9 *pTex;
     if(CHECKD3DERR(D3DXCreateTextureFromFileA(d3d9, path, &pTex)))
@@ -1796,6 +1797,9 @@ bool DX9RENDER::TextureLoadUsingD3DX(const char* path, int32_t t)
     Textures[t].loaded = true;
 
     return true;
+#else
+    return false;
+#endif
 }
 
 IDirect3DBaseTexture9 *DX9RENDER::GetBaseTexture(int32_t iTexture)
