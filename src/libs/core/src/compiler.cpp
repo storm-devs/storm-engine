@@ -6482,7 +6482,11 @@ void COMPILER::SaveVariable(DATA *pV, bool bdim)
         {
             pA = TraceARoot(pV->AttributesClass, pString);
         }
+#ifdef _WIN32 // __except
         __except (EXCEPTION_EXECUTE_HANDLER)
+#else
+        catch (...)
+#endif
         {
             SetError("Save - ARef to non existing attributes branch");
             WriteVDword(0xffffffff);
