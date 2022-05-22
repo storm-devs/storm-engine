@@ -11,6 +11,7 @@
 #include "animation_imp.h"
 #include "animation_service_imp.h"
 #include "core.h"
+#include "portable-snippets/debug-trap.h"
 
 //============================================================================================
 
@@ -374,7 +375,7 @@ void AnimationImp::BuildAnimationMatrices()
         else
         {
             core.Trace("AnimationImp::BuildAnimationMatrices -> Not support mode");
-            __debugbreak();
+            psnip_trap();
             /*_asm int 3;*/
             //    float frame = 0.0f;
             //    for(int32_t j = 0; j < nbones; j++)

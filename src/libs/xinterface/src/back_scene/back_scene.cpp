@@ -4,6 +4,7 @@
 #include "math3d/matrix.h"
 #include "model.h"
 #include "shared/messages.h"
+#include "portable-snippets/debug-trap.h"
 
 InterfaceBackScene::LightParam::~LightParam()
 {
@@ -33,7 +34,7 @@ void InterfaceBackScene::LightParam::UpdateParams(float fTime)
         if (jjj > 10000)
         {
             core.Trace("jjj: %f, %f", fColorTimer, fColorPeriod);
-            __debugbreak();
+            psnip_trap();
         }
     }
     const auto fPer = fColorPeriod + fAddPeriod;

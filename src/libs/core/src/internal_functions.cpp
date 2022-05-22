@@ -1,5 +1,6 @@
 #include "compiler.h"
 #include "core_impl.h"
+#include "portable-snippets/debug-trap.h"
 
 #include <execution>
 
@@ -1262,7 +1263,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
     case FUNC_BREAKPOINT:
 #ifdef _DEBUG
-        __debugbreak();
+        psnip_trap();
 #endif
         break;
     case FUNC_VARTYPE:

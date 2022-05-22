@@ -17,6 +17,7 @@
 #include "sea_base.h"
 #include "shared/messages.h"
 #include "v_sound_service.h"
+#include "portable-snippets/debug-trap.h"
 
 #include "core.h"
 #include "v_data.h"
@@ -3476,13 +3477,13 @@ uint32_t Character::zExMessage(MESSAGE &message)
                 if (id)
                 {
                     if (strcmp(id, characterID) != 0)
-                        __debugbreak();
+                        psnip_trap();
                     if (strcmp(id, msg.c_str()) != 0)
-                        __debugbreak();
+                        psnip_trap();
                 }
             }
             if (strcmp(msg.c_str(), characterID) != 0)
-                __debugbreak();
+                psnip_trap();
 #endif
             return 1;
         }

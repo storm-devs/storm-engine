@@ -189,7 +189,7 @@ PARTICLE_SYSTEM *PARTICLES::CreateSystem(const char *pFileName, uint32_t LifeTim
     // pFullFileName = "resource\\particles\\";
     // pFullFileName += pFileName;
     // pFullFileName.AddExtention(".xps");
-    //__debugbreak(); //~!~
+    //psnip_trap(); //~!~
     auto path = std::filesystem::path() / "resource" / "particles" / pFileName;
     std::string pathStr = path.extension().string();
     if (!storm::iEquals(pathStr, ".xps"))

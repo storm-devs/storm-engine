@@ -9,6 +9,7 @@
 #include "logging.hpp"
 #include "script_cache.h"
 #include "storm_assert.h"
+#include "portable-snippets/debug-trap.h"
 
 #include <unordered_map>
 
@@ -3886,7 +3887,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
         switch (Token_type)
         {
         case ARGS_NUM:
-            __debugbreak();
+            psnip_trap();
             break;
         case STACK_COMPARE:
             pV = SStack.Read();

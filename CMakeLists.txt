@@ -77,5 +77,6 @@ set(SOURCE_FILE_EXTENSIONS "*.cpp" CACHE STRING "File extensions for source file
 set(HEADER_FILE_EXTENSIONS "*.h" "*.hpp" CACHE STRING "File extensions for header files" FORCE)
 ###
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/extern")
 add_subdirectory(src)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT engine)
