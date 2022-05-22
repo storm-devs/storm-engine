@@ -327,10 +327,12 @@ void* CoreImpl::GetAppHWND()
     return App_Hwnd;
 }
 
+#ifdef _WIN32 // HINSTANCE
 HINSTANCE CoreImpl::GetAppInstance()
 {
     return hInstance;
 }
+#endif
 
 void CoreImpl::SetTimeScale(float _scale)
 {
