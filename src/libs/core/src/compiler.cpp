@@ -1903,7 +1903,6 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
         auto fName = std::filesystem::path(Segment.name.c_str()).filename().string();
         strcpy_s(file_name, fName.c_str());
         strcat_s(file_name, ".b");
-        std::wstring FileNameW = utf8::ConvertUtf8ToWide(file_name);
         auto fileS = fio->_CreateFile(file_name, std::ios::binary | std::ios::out);
         if (fileS.is_open())
         {
