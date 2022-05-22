@@ -1,15 +1,18 @@
-#ifndef TECHNIQUE_HPP
-#define TECHNIQUE_HPP
+#ifndef _WIN32 // Effects
+#pragma once
 
-#include "../Common_h/dx9render.h"
-#include "../Common_h/vmodule_api.h"
-#include <string>
-#include <unordered_map>
+#include "dx9render.h"
 
 struct SRSPARAM
 {
     char *cName;
     uint32_t dwCode;
+
+    SRSPARAM(const char *cName, uint32_t dwCode)
+    {
+        this->cName = strdup(cName);
+        this->dwCode = dwCode;
+    }
 };
 
 struct pass_t
@@ -122,6 +125,8 @@ class CTechnique
     uint32_t ProcessPixelShader(char *pFile, uint32_t dwSize, char **pStr);
     uint32_t ProcessShaderAsm(shader_t *pS, char *pFile, uint32_t dwSize, char **pStr, uint32_t dwShaderType,
                               bool HLSL = false);
+    void GetShaderBinPath(char *pShaderStr, uint32_t dwShaderType, char *dest);
+    uint32_t ProcessShaderBin(shader_t *pS, char *pFile, uint32_t dwShaderType);
 
     uint32_t AddShader(char *pShaderName);
     char *Preprocessor(char *pBuffer, uint32_t &dwSize);
@@ -151,7 +156,7 @@ class CTechnique
   public:
     void SetCurrentBlock(const char *name, uint32_t _dwNumParams, void *pParams);
 
-    bool DecodeFile(char *sname);
+    bool DecodeFile(std::string sname);
     void DecodeFiles(char *sub_dir = nullptr);
 
     bool ExecutePassStart();
@@ -162,4 +167,4 @@ class CTechnique
     ~CTechnique();
 };
 
-#endif
+#endif // _WIN32
