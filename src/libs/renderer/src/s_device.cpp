@@ -38,6 +38,7 @@ namespace
 {
 constexpr auto kKeyTakeScreenshot = "TakeScreenshot";
 
+#ifdef _WIN32 // Screenshot
 D3DXIMAGE_FILEFORMAT GetScreenshotFormat(const std::string &fmt)
 {
     if (fmt == "bmp")
@@ -79,6 +80,7 @@ D3DXIMAGE_FILEFORMAT GetScreenshotFormat(const std::string &fmt)
 
     return D3DXIFF_FORCE_DWORD;
 }
+#endif
 
 void InvokeEntitiesLostRender()
 {
@@ -494,12 +496,14 @@ bool DX9RENDER::Init()
         screenshotExt = str;
         std::ranges::transform(screenshotExt, screenshotExt.begin(),
                                [](const unsigned char c) { return std::tolower(c); });
+#ifdef _WIN32 // Screenshot
         screenshotFormat = GetScreenshotFormat(str);
         if (screenshotFormat == D3DXIFF_FORCE_DWORD)
         {
             screenshotExt = "jpg";
             screenshotFormat = D3DXIFF_JPG;
         }
+#endif
 
         bShowFps = ini->GetInt(nullptr, "show_fps", 0) == 1;
         bShowExInfo = ini->GetInt(nullptr, "show_exinfo", 0) == 1;
@@ -3282,7 +3286,9 @@ void DX9RENDER::MakeScreenShot()
         screenshot_path.replace_filename(screenshot_base_filename + "_" + std::to_string(i));
         screenshot_path.replace_extension(screenshotExt);
     }
+#ifdef _WIN32 // Screenshot
     D3DXSaveSurfaceToFile(screenshot_path.c_str(), screenshotFormat, surface, nullptr, nullptr);
+#endif
 
     surface->Release();
     renderTarget->Release();

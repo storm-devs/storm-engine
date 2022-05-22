@@ -593,7 +593,9 @@ private:
 
     std::stack<RenderTarget> stRenderTarget;
 
+#ifdef _WIN32 // Screenshot
     D3DXIMAGE_FILEFORMAT screenshotFormat;
+#endif
     std::string screenshotExt;
 
     bool TextureLoad(int32_t texid);
