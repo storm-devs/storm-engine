@@ -1,3 +1,4 @@
+#ifdef _WIN32 // S_DEBUG
 #include "s_dbg_sourceview.h"
 #include "core_impl.h"
 #include "data.h"
@@ -1346,3 +1347,4 @@ void SOURCE_VIEW::FindNext()
         }
     }
 }
+#endif // S_DEBUG

@@ -26,6 +26,7 @@ struct u8_char
     };
 };
 
+#ifdef _WIN32 // S_DEBUG
 inline std::string ConvertWideToUtf8(const std::wstring &wstr)
 {
     int count = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), static_cast<int>(wstr.length()), NULL, 0, NULL, NULL);
@@ -41,6 +42,7 @@ inline std::wstring ConvertUtf8ToWide(const std::string &str)
     MultiByteToWideChar(CP_UTF8, 0, str.c_str(), static_cast<int>(str.length()), &wstr[0], count);
     return wstr;
 }
+#endif
 
 /* is c the start of a utf8 sequence? */
 #define isutf(c) (((c)&0xC0) != 0x80)

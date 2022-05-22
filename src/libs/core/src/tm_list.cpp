@@ -1,3 +1,4 @@
+#ifdef _WIN32 // S_DEBUG
 #include "tm_list.h"
 
 #include "defines.h"
@@ -429,3 +430,4 @@ char *TM_LIST::GetCharID()
 {
     return CharID;
 }
+#endif // S_DEBUG
