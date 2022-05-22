@@ -8,7 +8,7 @@ class ENTITY_STATE_GEN
   public:
     virtual ~ENTITY_STATE_GEN() = default;
 
-    virtual void _cdecl SetState(const char *Format, ...) = 0;
+    virtual void SetState(const char *Format, ...) = 0;
 };
 
 class ENTITY_STATE

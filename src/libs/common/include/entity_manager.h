@@ -347,7 +347,7 @@ class EntityManager final
     }
 
     /* this is (temporary) workaround solution */
-    static constexpr AllEntIterators GetEntityIdIterators()
+    static AllEntIterators GetEntityIdIterators()
     {
         return std::pair{std::begin(entities_.first), std::begin(entities_.first) + entities_.second};
     }

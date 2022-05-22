@@ -10,6 +10,7 @@
 #include "storm/fs.h"
 
 #include <string_view>
+#include <algorithm>
 
 #include <fmt/chrono.h>
 
@@ -1351,7 +1352,7 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
             strcpy_s(_fname, fname);
         }
 
-        _strupr(_fname);
+        toupr(_fname);
 
         const uint32_t hf = hash_string(_fname);
 
@@ -1435,13 +1436,10 @@ bool DX9RENDER::TextureLoad(int32_t t)
         return false;
     }
 
-    std::string_view name_sv(Textures[t].name, strlen(Textures[t].name));
-    auto has_resource_prefix =
-        std::distance(std::ranges::search(name_sv, "resource\\textures\\"sv, storm::detail::is_iequal{}).begin(),
-                      name_sv.begin()) == 0;
-    auto has_tx_postfix =
-        std::distance(std::ranges::search(name_sv, ".tx"sv, storm::detail::is_iequal{}).begin(),
-                      name_sv.end()) == 3;
+    auto lTexture = std::string(Textures[t].name);
+    std::transform(lTexture.begin(), lTexture.end(), lTexture.begin(), [](unsigned char c) { return std::tolower(c); });
+    auto has_resource_prefix = starts_with(lTexture, "resource\\textures\\");
+    auto has_tx_postfix = ends_with(lTexture, ".tx");
 
     sprintf_s(fn, "%s%s%s", has_resource_prefix ? "" : "resource\\textures\\", Textures[t].name, has_tx_postfix ? "" : ".tx");
 
@@ -2929,7 +2927,7 @@ int32_t DX9RENDER::LoadFont(const char *fontName)
         strncpy_s(sDup, fontName, sizeof(sDup) - 1);
         sDup[sizeof(sDup) - 1] = 0;
     }
-    fontName = _strupr(sDup);
+    fontName = toupr(sDup);
     const uint32_t hashVal = hash_string(fontName);
 
     int32_t i;
@@ -2980,7 +2978,7 @@ bool DX9RENDER::UnloadFont(const char *fontName)
         strncpy_s(sDup, fontName, sizeof(sDup) - 1);
         sDup[sizeof(sDup) - 1] = 0;
     }
-    fontName = _strupr(sDup);
+    fontName = toupr(sDup);
     const uint32_t hashVal = hash_string(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)
@@ -3033,7 +3031,7 @@ bool DX9RENDER::SetCurFont(const char *fontName)
         strncpy_s(sDup, fontName, sizeof(sDup) - 1);
         sDup[sizeof(sDup) - 1] = 0;
     }
-    fontName = _strupr(sDup);
+    fontName = toupr(sDup);
     const uint32_t hashVal = hash_string(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)

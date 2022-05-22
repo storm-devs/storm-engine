@@ -605,10 +605,10 @@ void AIShipCannonController::Realize(float fDeltaTime)
                 constexpr auto green = ARGB(0xFF, 0x7C, 0xFC, 0x00);
 
                 const auto &&vPos = cannon.GetPos();
-                Lines.emplace_back(vPos, red);
-                Lines.emplace_back(vPos + 5.0f * cannon.GetDir(), red);
-                Lines.emplace_back(vPos, green);
-                Lines.emplace_back(vPos + CVECTOR{0.0f, cannon.GetDirY(), 0.0f}, green);
+                Lines.emplace_back(RS_LINE{vPos, red});
+                Lines.emplace_back(RS_LINE{vPos + 5.0f * cannon.GetDir(), red});
+                Lines.emplace_back(RS_LINE{vPos, green});
+                Lines.emplace_back(RS_LINE{vPos + CVECTOR{0.0f, cannon.GetDirY(), 0.0f}, green});
             }
         }
     }
@@ -672,9 +672,9 @@ void AIShipCannonController::Realize(float fDeltaTime)
                 v[2] += v[0];
 
                 constexpr auto color = ARGB(0x0F, 0x90, 0xEE, 0x90);
-                Verts.emplace_back(v[0], color);
-                Verts.emplace_back(v[1], color);
-                Verts.emplace_back(v[2], color);
+                Verts.emplace_back(tr_vertex{v[0], color});
+                Verts.emplace_back(tr_vertex{v[1], color});
+                Verts.emplace_back(tr_vertex{v[2], color});
             }
         }
     }

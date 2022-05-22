@@ -8,6 +8,7 @@
 #include <fstream>
 
 #include "storm/string_compare.hpp"
+#include <SDL2/SDL.h>
 
 Core& core = core_internal;
 
@@ -290,7 +291,7 @@ void CoreImpl::ProcessEngineIniFile()
             if (iScriptVersion != ENGINE_SCRIPT_VERSION)
             {
                 ShowCursor(true);
-                MessageBoxA(nullptr, "Wrong script version", "Error", MB_OK);
+                SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Wrong script version", nullptr);
                 Compiler->ExitProgram();
             }
         }

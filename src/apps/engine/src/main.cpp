@@ -116,13 +116,13 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
     }
 }
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
+int main(int argc, char *argv[])
 {
     // Prevent multiple instances
     if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
         GetLastError() == ERROR_ALREADY_EXISTS)
     {
-        MessageBoxA(nullptr, "Another instance is already running!", "Error", MB_ICONERROR);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Another instance is already running!", nullptr);
         return EXIT_SUCCESS;
     }
     mi_register_output(mimalloc_fun, nullptr);
@@ -150,7 +150,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 #endif
     if (!lifecycleDiagnosticsGuard)
     {
-        MessageBoxA(nullptr, "Unable to initialize lifecycle service!", "Warning", MB_ICONWARNING);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Warning", "Unable to initialize lifecycle service!", nullptr);
     }
     else
     {

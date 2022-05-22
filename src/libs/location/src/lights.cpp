@@ -450,7 +450,7 @@ int32_t Lights::AddMovingLight(const char *type, const CVECTOR &pos)
     if (nType < 0)
         return -1;
 
-    aMovingLight.emplace_back(idx, numLights);
+    aMovingLight.emplace_back(MovingLight{idx, static_cast<int32_t>(numLights)});
     AddLight(nType, pos);
     return idx;
 }
