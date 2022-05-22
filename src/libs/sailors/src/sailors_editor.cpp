@@ -67,7 +67,11 @@ void SailorsEditor::Execute(uint32_t dltTime)
     menu.OnKeyPress(menu.sailrs->shipWalk[0].sailorsPoints);
 
     if (core.Controls->GetAsyncKeyState(VK_ESCAPE) < 0)
+#ifdef _WIN32 // TODO: restore sailors editor and move to tools folder
         ExitProcess(0);
+#else
+        exit(0);
+#endif
 };
 
 void SailorsEditor::Realize(uint32_t dltTime)
