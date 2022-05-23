@@ -34,7 +34,7 @@ float COLL::Trace(EntityManager::LayerIterators its, const CVECTOR &src, const C
     auto best_res = 2.0f;
     for (auto it = its.first; it != its.second; ++it)
     {
-        const auto eid = it->second;
+        const auto eid = *it;
 
         int32_t e;
         for (e = 0; e < entities; e++)
@@ -69,7 +69,7 @@ bool COLL::Clip(EntityManager::LayerIterators its, const PLANE *planes, int32_t 
 
     for (auto it = its.first; it != its.second; ++it)
     {
-        const auto eid = it->second;
+        const auto eid = *it;
 
         int32_t e;
         for (e = 0; e < entities; e++)

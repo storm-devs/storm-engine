@@ -227,7 +227,7 @@ void Blood::AddBlood(const CVECTOR &pos)
     // loop through the layer
     for (auto it = its.first; it != its.second; ++it)
     {
-        auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(it->second));
+        auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(*it));
         if (!m)
             continue;
         auto *root = m->GetNode(0);

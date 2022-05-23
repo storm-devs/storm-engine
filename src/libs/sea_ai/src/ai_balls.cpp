@@ -244,7 +244,7 @@ void AIBalls::Execute(uint32_t Delta_Time)
             const auto its = EntityManager::GetEntityIdIterators(SHIP_CANNON_TRACE);
             for (auto it = its.first; it != its.second; ++it)
             {
-                auto *pShip = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(it->second));
+                auto *pShip = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(*it));
                 fRes = pShip->Cannon_Trace(pBall->iBallOwner, vSrc, vDst);
                 if (fRes <= 1.0f)
                     break;

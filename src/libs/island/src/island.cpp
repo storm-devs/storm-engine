@@ -418,7 +418,7 @@ void ISLAND::CalcBoxParameters(CVECTOR &_vBoxCenter, CVECTOR &_vBoxSize)
     const auto its = EntityManager::GetEntityIdIterators(ISLAND_TRACE);
     for (auto it = its.first; it != its.second; ++it)
     {
-        MODEL *pM = static_cast<MODEL *>(EntityManager::GetEntityPointer(it->second));
+        MODEL *pM = static_cast<MODEL *>(EntityManager::GetEntityPointer(*it));
         if (pM == nullptr)
             continue;
 

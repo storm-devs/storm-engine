@@ -97,7 +97,7 @@ bool SEA::SunRoad_Render2()
             const auto its = EntityManager::GetEntityIdIterators(SEA_SUNROAD);
             for (auto it = its.first; it != its.second; ++it)
             {
-                const auto ent_id = it->second;
+                const auto ent_id = *it;
                 const auto hash = EntityManager::GetClassCode(ent_id);
                 if (hash != dwShipCode && hash != dwSailCode && hash != dwIslandCode)
                 {
@@ -176,13 +176,13 @@ bool SEA::EnvMap_Render2()
         auto its = EntityManager::GetEntityIdIterators(SEA_REFLECTION);
         for (auto it = its.first; it != its.second; ++it)
         {
-            core.Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            core.Send_Message(*it, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
         }
 
         its = EntityManager::GetEntityIdIterators(SEA_REFLECTION2);
         for (auto it = its.first; it != its.second; ++it)
         {
-            core.Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            core.Send_Message(*it, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
         }
 
         rs->EndScene();
@@ -245,7 +245,7 @@ bool SEA::SunRoad_Render()
             const auto its = EntityManager::GetEntityIdIterators(SEA_SUNROAD);
             for (auto it = its.first; it != its.second; ++it)
             {
-                const auto ent_id = it->second;
+                const auto ent_id = *it;
                 const auto hash = EntityManager::GetClassCode(ent_id);
                 if (hash != dwShipCode && hash != dwSailCode && hash != dwIslandCode)
                 {
@@ -301,13 +301,13 @@ bool SEA::EnvMap_Render()
         auto its = EntityManager::GetEntityIdIterators(SEA_REFLECTION);
         for (auto it = its.first; it != its.second; ++it)
         {
-            core.Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            core.Send_Message(*it, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
         }
 
         its = EntityManager::GetEntityIdIterators(SEA_REFLECTION2);
         for (auto it = its.first; it != its.second; ++it)
         {
-            core.Send_Message(it->second, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            core.Send_Message(*it, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
         }
 
         rs->EndScene();

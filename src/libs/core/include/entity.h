@@ -1,6 +1,8 @@
 #pragma once
-#include "attributes.h" // TODO: REMOVE
+
 #include <cstdint>
+
+#include "attributes.h" // TODO: REMOVE
 
 /* typedefs */
 class Entity;
@@ -9,9 +11,9 @@ using entptr_t = Entity *;
 using entid_t = uint64_t;
 
 constexpr auto max_ent_in_layer = 1024;
-constexpr auto max_layers_num = 32;
+constexpr auto max_layers_num = 32; // cannot exceed 32
 constexpr auto max_ent_num = max_ent_in_layer * max_layers_num;
-constexpr entid_t invalid_entity = 0;
+constexpr entid_t invalid_entity = {};
 
 /* Entity base class */
 class Entity
@@ -21,7 +23,6 @@ class Entity
   public:
     struct EntitySelfData
     {
-        // const char* name;
         entid_t id;
     };
 
@@ -39,12 +40,6 @@ class Entity
     {
         return data_.id;
     }
-
-    /*[[nodiscard]]
-    auto GetName() const
-    {
-      return data_.name;
-    }*/
 
     Entity() = default;
     Entity(const Entity &) = delete;

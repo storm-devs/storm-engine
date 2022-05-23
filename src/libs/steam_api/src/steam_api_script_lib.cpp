@@ -2,7 +2,7 @@
 
 #include "steam_api.hpp"
 #include "core.h"
-#include "defines.h"
+#include "v_module_api.h"
 #include "s_import_func.h"
 #include "v_s_stack.h"
 

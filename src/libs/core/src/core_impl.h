@@ -5,6 +5,7 @@
 #include "compiler.h"
 #include "services_list.h"
 #include "timer.h"
+#include "v_module_api.h"
 
 #include <windows.h>
 
