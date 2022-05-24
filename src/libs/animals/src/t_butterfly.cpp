@@ -50,7 +50,7 @@ void TButterfly::Initialize(const CVECTOR &_center, float _radius, int32_t _buff
 }
 
 //--------------------------------------------------------------------
-void TButterfly::Calculate(int32_t _dTime, COLLIDE *_collide, EntityManager::LayerIterators its)
+void TButterfly::Calculate(int32_t _dTime, COLLIDE *_collide, entity_container_cref its)
 {
     if (!active)
     {

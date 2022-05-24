@@ -95,21 +95,21 @@ void CoreImpl::Init()
     Compiler = new COMPILER;
 
     /* TODO: place this outside CoreImpl */
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::SetLayerType(SEA_EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::SetLayerType(SEA_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::SetLayerType(INTERFACE_EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::SetLayerType(INTERFACE_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::SetLayerType(FADER_EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::SetLayerType(FADER_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::SetLayerType(LIGHTER_EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::SetLayerType(LIGHTER_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::SetLayerType(VIDEO_EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::SetLayerType(VIDEO_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::SetLayerType(EDITOR_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::SetLayerType(INFO_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::SetLayerType(SOUND_DEBUG_REALIZE, EntityManager::Layer::Type::realize);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
+    core.SetLayerType(REALIZE, layer_type_t::realize);
+    core.SetLayerType(SEA_EXECUTE, layer_type_t::execute);
+    core.SetLayerType(SEA_REALIZE, layer_type_t::realize);
+    core.SetLayerType(INTERFACE_EXECUTE, layer_type_t::execute);
+    core.SetLayerType(INTERFACE_REALIZE, layer_type_t::realize);
+    core.SetLayerType(FADER_EXECUTE, layer_type_t::execute);
+    core.SetLayerType(FADER_REALIZE, layer_type_t::realize);
+    core.SetLayerType(LIGHTER_EXECUTE, layer_type_t::execute);
+    core.SetLayerType(LIGHTER_REALIZE, layer_type_t::realize);
+    core.SetLayerType(VIDEO_EXECUTE, layer_type_t::execute);
+    core.SetLayerType(VIDEO_REALIZE, layer_type_t::realize);
+    core.SetLayerType(EDITOR_REALIZE, layer_type_t::realize);
+    core.SetLayerType(INFO_REALIZE, layer_type_t::realize);
+    core.SetLayerType(SOUND_DEBUG_REALIZE, layer_type_t::realize);
 }
 
 void CoreImpl::InitBase()
@@ -196,7 +196,7 @@ bool CoreImpl::Run()
     if (Controls)
         ProcessControls();
 
-    EntityManager::NewLifecycle();
+    entity_manager_.NewLifecycle();
 
     ProcessRunEnd(SECTION_ALL);
 
@@ -343,7 +343,7 @@ void CoreImpl::SetTimeScale(float _scale)
 uint64_t CoreImpl::Send_Message(entid_t Destination, const char *Format, ...)
 {
     MESSAGE message;
-    auto *const ptr = EntityManager::GetEntityPointer(Destination); // check for valid destination
+    auto *const ptr = core.GetEntityPointer(Destination); // check for valid destination
     if (!ptr)
         return 0;
 
@@ -524,10 +524,10 @@ void CoreImpl::ProcessExecute()
     ProcessRunStart(SECTION_EXECUTE);
 
     const auto deltatime = Timer.GetDeltaTime();
-    const auto &entIds = EntityManager::GetEntityIdVector(EntityManager::Layer::Type::execute);
+    const auto &entIds = core.GetEntityIds(layer_type_t::execute);
     for (auto id : entIds)
     {
-        if (auto *ptr = EntityManager::GetEntityPointer(id))
+        if (auto *ptr = core.GetEntityPointer(id))
         {
             ptr->ProcessStage(Entity::Stage::execute, deltatime);
         }
@@ -542,10 +542,10 @@ void CoreImpl::ProcessRealize()
     ProcessRunStart(SECTION_REALIZE);
 
     const auto deltatime = Timer.GetDeltaTime();
-    const auto &entIds = EntityManager::GetEntityIdVector(EntityManager::Layer::Type::realize);
+    const auto &entIds = core.GetEntityIds(layer_type_t::realize);
     for (auto id : entIds)
     {
-        if (auto *ptr = EntityManager::GetEntityPointer(id))
+        if (auto *ptr = core.GetEntityPointer(id))
         {
             ptr->ProcessStage(Entity::Stage::realize, deltatime);
         }
@@ -667,7 +667,7 @@ uint32_t CoreImpl::GetRDeltaTime()
 
 ATTRIBUTES *CoreImpl::Entity_GetAttributeClass(entid_t id_PTR, const char *name)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return nullptr;
     if (pE->AttributesPointer == nullptr)
@@ -677,7 +677,7 @@ ATTRIBUTES *CoreImpl::Entity_GetAttributeClass(entid_t id_PTR, const char *name)
 
 const char *CoreImpl::Entity_GetAttribute(entid_t id_PTR, const char *name)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return nullptr;
     if (pE->AttributesPointer == nullptr)
@@ -687,7 +687,7 @@ const char *CoreImpl::Entity_GetAttribute(entid_t id_PTR, const char *name)
 
 uint32_t CoreImpl::Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, uint32_t def)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return def;
     if (pE->AttributesPointer == nullptr)
@@ -697,7 +697,7 @@ uint32_t CoreImpl::Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, 
 
 FLOAT CoreImpl::Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT def)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return def;
     if (pE->AttributesPointer == nullptr)
@@ -707,7 +707,7 @@ FLOAT CoreImpl::Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLO
 
 bool CoreImpl::Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return false;
     if (pE->AttributesPointer == nullptr)
@@ -717,7 +717,7 @@ bool CoreImpl::Entity_SetAttribute(entid_t id_PTR, const char *name, const char 
 
 bool CoreImpl::Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_t val)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return false;
     if (pE->AttributesPointer == nullptr)
@@ -727,7 +727,7 @@ bool CoreImpl::Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uin
 
 bool CoreImpl::Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return false;
     if (pE->AttributesPointer == nullptr)
@@ -737,7 +737,7 @@ bool CoreImpl::Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLO
 
 void CoreImpl::Entity_SetAttributePointer(entid_t id_PTR, ATTRIBUTES *pA)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return;
     pE->AttributesPointer = pA;
@@ -745,7 +745,7 @@ void CoreImpl::Entity_SetAttributePointer(entid_t id_PTR, ATTRIBUTES *pA)
 
 uint32_t CoreImpl::Entity_AttributeChanged(entid_t id_PTR, ATTRIBUTES *pA)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return 0;
     return pE->AttributeChanged(pA);
@@ -753,7 +753,7 @@ uint32_t CoreImpl::Entity_AttributeChanged(entid_t id_PTR, ATTRIBUTES *pA)
 
 ATTRIBUTES *CoreImpl::Entity_GetAttributePointer(entid_t id_PTR)
 {
-    Entity *pE = EntityManager::GetEntityPointer(id_PTR);
+    Entity *pE = core.GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return nullptr;
     return pE->AttributesPointer;
@@ -761,7 +761,7 @@ ATTRIBUTES *CoreImpl::Entity_GetAttributePointer(entid_t id_PTR)
 
 void CoreImpl::EraseEntities()
 {
-    EntityManager::EraseAll();
+    entity_manager_.EraseAll();
 }
 
 void CoreImpl::ClearEvents()
@@ -928,6 +928,71 @@ ScreenSize CoreImpl::GetScreenSize() const noexcept
 void CoreImpl::stopFrameProcessing()
 {
     stopFrameProcessing_ = true;
+}
+
+void CoreImpl::AddToLayer(layer_index_t index, entid_t id, priority_t priority)
+{
+    entity_manager_.AddToLayer(index, id, priority);
+}
+
+void CoreImpl::EraseEntity(entid_t entity)
+{
+    entity_manager_.EraseEntity(entity);
+}
+
+entid_t CoreImpl::CreateEntity(const char *name, ATTRIBUTES *attr)
+{
+    return entity_manager_.CreateEntity(name, attr);
+}
+
+entptr_t CoreImpl::GetEntityPointer(entid_t id) const
+{
+    return entity_manager_.GetEntityPointer(id);
+}
+
+entid_t CoreImpl::GetEntityId(const char *name) const
+{
+    return entity_manager_.GetEntityId(name);
+}
+
+entity_container_cref CoreImpl::GetEntityIds(layer_type_t type) const
+{
+    return entity_manager_.GetEntityIds(type);
+}
+
+entity_container_cref CoreImpl::GetEntityIds(layer_index_t index) const
+{
+    return entity_manager_.GetEntityIds(index);
+}
+
+entity_container_cref CoreImpl::GetEntityIds(const char *name) const
+{
+    return entity_manager_.GetEntityIds(name);
+}
+
+void CoreImpl::SetLayerType(layer_index_t index, layer_type_t type)
+{
+    entity_manager_.SetLayerType(index, type);
+}
+
+void CoreImpl::SetLayerFrozen(layer_index_t index, bool freeze)
+{
+    entity_manager_.SetLayerFrozen(index, freeze);
+}
+
+void CoreImpl::RemoveFromLayer(layer_index_t index, entid_t id)
+{
+    entity_manager_.RemoveFromLayer(index, id);
+}
+
+hash_t CoreImpl::GetClassCode(entid_t id) const
+{
+    return entity_manager_.GetClassCode(id);
+}
+
+bool CoreImpl::IsLayerFrozen(layer_index_t index) const
+{
+    return entity_manager_.IsLayerFrozen(index);
 }
 
 void CoreImpl:: collectCrashInfo() const

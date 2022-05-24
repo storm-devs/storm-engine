@@ -16,7 +16,7 @@ TSeagulls::TSeagulls() : enabled(true), count(0), frightened(false)
 //--------------------------------------------------------------------
 TSeagulls::~TSeagulls()
 {
-    EntityManager::EraseEntity(seagullModel);
+    core.EraseEntity(seagullModel);
 }
 
 //--------------------------------------------------------------------
@@ -65,7 +65,7 @@ void TSeagulls::Init()
     // if(!soundService)
     //    throw std::runtime_error("!Seagulls: No service: sound");
 
-    seagullModel = EntityManager::CreateEntity("MODELR");
+    seagullModel = core.CreateEntity("MODELR");
     core.Send_Message(seagullModel, "ls", MSG_MODEL_LOAD_GEO, ANIMALS_SEAGULL_FILENAME);
 }
 
@@ -203,7 +203,7 @@ void TSeagulls::Realize(uint32_t _dTime)
     if (!count)
         Add(cameraPos.x, cameraPos.y, cameraPos.z);
 
-    auto *seagull = static_cast<MODEL *>(EntityManager::GetEntityPointer(seagullModel));
+    auto *seagull = static_cast<MODEL *>(core.GetEntityPointer(seagullModel));
     if (!seagull)
         return;
 

@@ -113,13 +113,13 @@ void MAST::Execute(uint32_t Delta_Time)
             }
         }
         doMove(Delta_Time);
-        auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
+        auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model_id));
         if (mdl)
             mdl->Update();
     }
     else
     {
-        EntityManager::EraseEntity(GetId());
+        core.EraseEntity(GetId());
     }
     // UNGUARD
 }
@@ -137,7 +137,7 @@ void MAST::Realize(uint32_t Delta_Time)
     }
 
     MODEL *mdl;
-    if ((mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id))) != nullptr)
+    if ((mdl = static_cast<MODEL *>(core.GetEntityPointer(model_id))) != nullptr)
     {
         RenderService->SetRenderState(D3DRS_LIGHTING, true);
         mdl->ProcessStage(Stage::realize, Delta_Time);
@@ -196,22 +196,22 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
     m_pMastNode = mastNodePointer;
     if (mastNodePointer == nullptr)
         return;
-    auto *oldmdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(modelEI));
+    auto *oldmdl = static_cast<MODEL *>(core.GetEntityPointer(modelEI));
     if (oldmdl == nullptr)
         return; // do not bring down anything if there is no old model
     oldmodel_id = modelEI;
     ship_id = shipEI;
 
-    const auto ropeEI = EntityManager::GetEntityId("rope");
-    const auto sailEI = EntityManager::GetEntityId("sail");
-    const auto flagEI = EntityManager::GetEntityId("flag");
-    const auto vantEI = EntityManager::GetEntityId("vant");
-    const auto vantlEI = EntityManager::GetEntityId("vantl");
-    const auto vantzEI = EntityManager::GetEntityId("vantz");
+    const auto ropeEI = core.GetEntityId("rope");
+    const auto sailEI = core.GetEntityId("sail");
+    const auto flagEI = core.GetEntityId("flag");
+    const auto vantEI = core.GetEntityId("vant");
+    const auto vantlEI = core.GetEntityId("vantl");
+    const auto vantzEI = core.GetEntityId("vantz");
 
     // find the attributes
     VAI_OBJBASE *pVAI = nullptr;
-    pVAI = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(shipEI));
+    pVAI = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(shipEI));
     ATTRIBUTES *pA = nullptr;
     if (pVAI != nullptr)
         pA = pVAI->GetACharacter();
@@ -247,7 +247,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
             core.Send_Message(vantlEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
         if (vantzEI)
             core.Send_Message(vantzEI, "lip", MSG_VANT_DEL_MAST, modelEI, mastNodePointer);
-        auto mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
+        auto mdl = static_cast<MODEL *>(core.GetEntityPointer(model_id));
         if (mdl != nullptr)
             for (i = 0; i < 10000; i++)
             {
@@ -301,7 +301,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
 
         // set the initial parameters of the mast movement
         SHIP_BASE *sb;
-        sb = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(shipEI));
+        sb = static_cast<SHIP_BASE *>(core.GetEntityPointer(shipEI));
         if (sb)
         {
             mm.ang = sb->State.vAng;
@@ -328,13 +328,13 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         float minDist = 10000.f;
         SHIP_BASE *minDstShip;
 
-        const auto &ships = EntityManager::GetEntityIdVector("ship");
+        const auto &ships = core.GetEntityIds("ship");
         for (auto ship : ships)
         {
             if (ship == ship_id)
                 continue;
 
-            auto *sb = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(ship));
+            auto *sb = static_cast<SHIP_BASE *>(core.GetEntityPointer(ship));
             const float tmpDist = ~(sb->State.vPos - mm.mov);
             if (tmpDist < minDist)
             {
@@ -493,7 +493,7 @@ void MAST::doMove(uint32_t DeltaTime)
     float dtime = DELTA_TIME(static_cast<float>(DeltaTime));
     float rtime = DELTA_TIME_ROTATE(static_cast<float>(DeltaTime));
 
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id)); // geometry model of the mast
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model_id)); // geometry model of the mast
     if (mdl != nullptr)
     {
         if (bFallUnderWater) // if the mast is already sinking
@@ -546,10 +546,10 @@ void MAST::doMove(uint32_t DeltaTime)
             {
                 bNextClass = false;
                 // collision with the island
-                entid_t findEI = EntityManager::GetEntityId("ISLAND");
-                if (findEI && EntityManager::GetEntityPointer(findEI) != nullptr)
+                entid_t findEI = core.GetEntityId("ISLAND");
+                if (findEI && core.GetEntityPointer(findEI) != nullptr)
                 {
-                    auto modEI = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(findEI))->GetModelEID();
+                    auto modEI = static_cast<ISLAND_BASE *>(core.GetEntityPointer(findEI))->GetModelEID();
 
                     CVECTOR dp;
                     int tmp;
@@ -575,12 +575,12 @@ void MAST::doMove(uint32_t DeltaTime)
                     }
                 }
                 // collision with the ship
-                const auto &ships = EntityManager::GetEntityIdVector("ship");
+                const auto &ships = core.GetEntityIds("ship");
                 for (auto ship : ships)
                 {
-                    if (EntityManager::GetEntityPointer(ship) == nullptr)
+                    if (core.GetEntityPointer(ship) == nullptr)
                         continue;
-                    auto modEI = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ship))->GetModelEID();
+                    auto modEI = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(ship))->GetModelEID();
                     CVECTOR dp;
                     int tmp;
                     float yAng;
@@ -673,7 +673,7 @@ int MAST::GetSlide(entid_t mod, CVECTOR &pbeg, CVECTOR &pend, CVECTOR &dp, CVECT
                 vb.y -= hVal;
                 ve.y -= hVal;
                 hVal = 0;
-                auto *pmdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(mod));
+                auto *pmdl = static_cast<MODEL *>(core.GetEntityPointer(mod));
                 if (pmdl)
                 {
                     NODE *pnod = pmdl->GetCollideNode();
@@ -721,16 +721,16 @@ void MAST::AllRelease()
     }
 
     // delete sail group
-    core.Send_Message(EntityManager::GetEntityId("sail"), "li", MSG_SAIL_DEL_GROUP, GetId());
+    core.Send_Message(core.GetEntityId("sail"), "li", MSG_SAIL_DEL_GROUP, GetId());
 
     // remove flag group
-    core.Send_Message(EntityManager::GetEntityId("flag"), "li", MSG_FLAG_DEL_GROUP, model_id);
+    core.Send_Message(core.GetEntityId("flag"), "li", MSG_FLAG_DEL_GROUP, model_id);
 
     // announce deleting
     core.Send_Message(ship_id, "lp", MSG_MAST_DELGEOMETRY, m_pMastNode);
 
     // delete model
-    EntityManager::EraseEntity(model_id);
+    core.EraseEntity(model_id);
     m_pMastNode = nullptr;
 }
 
@@ -786,7 +786,7 @@ void HULL::Execute(uint32_t Delta_Time)
     }
     else
     {
-        EntityManager::EraseEntity(GetId());
+        core.EraseEntity(GetId());
     }
 }
 
@@ -799,7 +799,7 @@ void HULL::Realize(uint32_t Delta_Time)
     }
 
     MODEL *mdl;
-    if ((mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id))) != nullptr)
+    if ((mdl = static_cast<MODEL *>(core.GetEntityPointer(model_id))) != nullptr)
     {
         RenderService->SetRenderState(D3DRS_LIGHTING, true);
         mdl->ProcessStage(Stage::realize, Delta_Time);
@@ -830,17 +830,17 @@ void HULL::Mount(entid_t modelEI, entid_t shipEI, NODE *hullNodePointer)
     if (hullNodePointer == nullptr)
         return;
 
-    auto *oldmdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(modelEI));
+    auto *oldmdl = static_cast<MODEL *>(core.GetEntityPointer(modelEI));
     if (oldmdl == nullptr)
         return; // do not bring down anything if there is no old model
     oldmodel_id = modelEI;
     ship_id = shipEI;
 
-    const auto ropeEI = EntityManager::GetEntityId("rope");
+    const auto ropeEI = core.GetEntityId("rope");
 
     // find attributes
     VAI_OBJBASE *pVAI = nullptr;
-    pVAI = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(shipEI));
+    pVAI = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(shipEI));
     ATTRIBUTES *pA = nullptr;
     if (pVAI != nullptr)
         pA = pVAI->GetACharacter();
@@ -859,7 +859,7 @@ void HULL::Mount(entid_t modelEI, entid_t shipEI, NODE *hullNodePointer)
         // create new model
         bModel = true;
         model_id = hullNodePointer->Unlink2Model();
-        auto mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
+        auto mdl = static_cast<MODEL *>(core.GetEntityPointer(model_id));
 
         if (mdl != nullptr)
             for (i = 0; i < 10000; i++)
@@ -898,6 +898,6 @@ void HULL::AllRelease()
     }
 
     // delete model
-    EntityManager::EraseEntity(model_id);
+    core.EraseEntity(model_id);
     m_pHullNode = nullptr;
 }

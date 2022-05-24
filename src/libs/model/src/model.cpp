@@ -333,7 +333,7 @@ uint64_t MODELR::ProcessMessage(MESSAGE &message)
         {
             delete root;
             root = nullptr;
-            EntityManager::EraseEntity(GetId());
+            core.EraseEntity(GetId());
             return 0;
         }
         // CVECTOR tmp;

@@ -165,7 +165,7 @@ void LIGHTNING::CalcFlashPower(lightning_t *pL) const
     for (uint32_t i = 0; i < 3; i++)
     {
         const auto fRes =
-            pCollide->Trace(EntityManager::GetEntityIdIterators(SUN_TRACE), vCamPos, vTrace[i], nullptr, 0);
+            pCollide->Trace(core.GetEntityIds(SUN_TRACE), vCamPos, vTrace[i], nullptr, 0);
         if (fRes <= 1.0f)
             fPower -= 0.31f;
     }

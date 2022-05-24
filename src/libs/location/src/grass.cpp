@@ -97,11 +97,11 @@ bool Grass::Init()
 {
     // Layers
     // core.LayerCreate("execute", true, false);
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 1000);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
+    core.AddToLayer(EXECUTE, GetId(), 1000);
     // core.LayerCreate("realize", true, false);
-    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(REALIZE, GetId(), 1000);
+    core.SetLayerType(REALIZE, layer_type_t::realize);
+    core.AddToLayer(REALIZE, GetId(), 1000);
 
     // boal shader selection -->
     isGrassLightsOn = 1;
@@ -393,7 +393,7 @@ void Grass::Realize(uint32_t delta_time)
     // Fog
     uint32_t dwOldFogDensity;
     rs->GetRenderState(D3DRS_FOGDENSITY, &dwOldFogDensity);
-    entid_t eidIsland = EntityManager::GetEntityId("ISLAND");
+    entid_t eidIsland = core.GetEntityId("ISLAND");
     if (eidIsland)
     {
         auto fIslandFogDensity = static_cast<float>(dwOldFogDensity);

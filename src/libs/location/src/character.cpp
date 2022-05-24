@@ -618,7 +618,7 @@ Character::Character()
 
 Character::~Character()
 {
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(mdl));
     if (m)
     {
         auto *a = m->GetAnimation();
@@ -639,7 +639,7 @@ Character::~Character()
     m_nHandLightID = -1;
 
     // Removing from groups
-    core.Send_Message(EntityManager::GetEntityId("CharactersGroups"), "si", "UnloadCharacter", GetId());
+    core.Send_Message(core.GetEntityId("CharactersGroups"), "si", "UnloadCharacter", GetId());
 
     // Analyzing detectors
     // for(int32_t i = 0; i < numDetectors; i++) detector[i]->Exit(this);
@@ -649,11 +649,11 @@ Character::~Character()
     //
     if (location && !isDeleted)
         location->supervisor.DelCharacter(this);
-    EntityManager::EraseEntity(shadow);
-    EntityManager::EraseEntity(waterrings);
-    EntityManager::EraseEntity(mdl);
-    EntityManager::EraseEntity(blade);
-    EntityManager::EraseEntity(sign);
+    core.EraseEntity(shadow);
+    core.EraseEntity(waterrings);
+    core.EraseEntity(mdl);
+    core.EraseEntity(blade);
+    core.EraseEntity(sign);
     delete characterID;
 }
 
@@ -664,12 +664,12 @@ bool Character::Init()
     auto *const location = GetLocation();
     if (!location)
         return false;
-    effects = EntityManager::GetEntityId("LocationEffects");
+    effects = core.GetEntityId("LocationEffects");
     soundService = static_cast<VSoundService *>(core.GetService("SoundService"));
     // register our appearance in the location
     location->supervisor.AddCharacter(this);
     // The sea
-    sea = EntityManager::GetEntityId("sea");
+    sea = core.GetEntityId("sea");
     // save the identifier
     const char *id = nullptr;
     if (AttributesPointer)
@@ -680,7 +680,7 @@ bool Character::Init()
     characterID = new char[len];
     strcpy_s(characterID, len, id);
     // Add to the group
-    core.Send_Message(EntityManager::GetEntityId("CharactersGroups"), "sis", "MoveCharacter", GetId(), group);
+    core.Send_Message(core.GetEntityId("CharactersGroups"), "sis", "MoveCharacter", GetId(), group);
     SetSignModel();
     SetSignTechnique();
     return PostInit();
@@ -1010,7 +1010,7 @@ void Character::SetSignModel()
         return;
     }
     signName = signModelName;
-    EntityManager::EraseEntity(sign);
+    core.EraseEntity(sign);
     if (!signModelName[0])
     {
         return;
@@ -1023,7 +1023,7 @@ void Character::SetSignModel()
     std::string path = "quest_signs\\";
     path += signModelName;
     // Create and load the model
-    if (!(sign = EntityManager::CreateEntity("modelr")))
+    if (!(sign = core.CreateEntity("modelr")))
     {
         if (gs)
             gs->SetTexturePath("");
@@ -1044,8 +1044,8 @@ void Character::SetSignModel()
 
     if (gs)
         gs->SetTexturePath("");
-    EntityManager::AddToLayer(REALIZE, sign, 20000);
-    EntityManager::AddToLayer(SUN_TRACE, sign, 10);
+    core.AddToLayer(REALIZE, sign, 20000);
+    core.AddToLayer(SUN_TRACE, sign, 10);
 }
 
 void Character::SetSignTechnique()
@@ -1103,7 +1103,7 @@ void Character::ReadFightActions(ATTRIBUTES *at, ActionCharacter actions[4], int
 
 MODEL *Character::Model() const
 {
-    return static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
+    return static_cast<MODEL *>(core.GetEntityPointer(mdl));
 }
 
 // Move model to point x, y, z
@@ -1947,7 +1947,7 @@ void Character::Move(float dltTime)
     {
         if (fgtCurType >= fgt_attack_fast && fgtCurType <= fgt_attack_feintc)
         {
-            auto *eAttack = static_cast<Character *>(EntityManager::GetEntityPointer(enemyAttack));
+            auto *eAttack = static_cast<Character *>(core.GetEntityPointer(enemyAttack));
             if (eAttack)
             {
                 isTurnLock = false;
@@ -2124,7 +2124,7 @@ void Character::Move(float dltTime)
         curJumpFallTime += dltTime;
         if (isJumpSnd && priorityAction.name)
         {
-            auto *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
+            auto *sb = static_cast<SEA_BASE *>(core.GetEntityPointer(sea));
             if (sb && location->IsSwimming())
             {
                 seaY = sb->WaveXZ(curPos.x, curPos.z, nullptr);
@@ -2207,7 +2207,7 @@ void Character::Move(float dltTime)
     if (swimChange <= 0.0f && location->IsSwimming())
     {
         const bool old = isSwim;
-        auto *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
+        auto *sb = static_cast<SEA_BASE *>(core.GetEntityPointer(sea));
         isSwim = false;
         isRunDisable = false;
         if (sb)
@@ -2424,7 +2424,7 @@ void Character::Update(float dltTime)
                 {
                     core.Event("Location_CharacterExitFromLocation", "e", GetId());
                 }
-                EntityManager::EraseEntity(GetId());
+                core.EraseEntity(GetId());
             }
         }
     }
@@ -2457,7 +2457,7 @@ void Character::Update(float dltTime)
     }
     soundGrass = false;
     //
-    MODEL *signMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(sign));
+    MODEL *signMdl = static_cast<MODEL *>(core.GetEntityPointer(sign));
     if (signMdl)
     {
         CVECTOR dir = camPos - curPos;
@@ -2505,7 +2505,7 @@ void Character::Update(float dltTime)
 
             if (curHeadLookState == HeadLookState::character)
             {
-                auto *targetChrPtr = static_cast<Character *>(EntityManager::GetEntityPointer(headLookChrTarget));
+                auto *targetChrPtr = static_cast<Character *>(core.GetEntityPointer(headLookChrTarget));
 
                 if (targetChrPtr)
                 {
@@ -2650,7 +2650,7 @@ void Character::ActionEvent(const char *actionName, Animation *animation, int32_
             animation->Player(0).SetPosition(1.0f);
 
             // check where we fell and play the animation after falling to the ground and into the water.
-            SEA_BASE *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
+            SEA_BASE *sb = static_cast<SEA_BASE *>(core.GetEntityPointer(sea));
             if (sb)
             {
                 if (sb->WaveXZ(curPos.x, curPos.z, nullptr) - curPos.y > CHARACTER_SEA_SWIM)
@@ -2895,7 +2895,7 @@ void Character::PlayStep()
         return;
     if (isSwim)
         return;
-    auto *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
+    auto *sb = static_cast<SEA_BASE *>(core.GetEntityPointer(sea));
     auto *const location = GetLocation();
     if (sb && location->IsSwimming())
     {
@@ -3060,9 +3060,9 @@ void Character::ReleaseSound(int32_t id)
 bool Character::zLoadModel(MESSAGE &message)
 {
     char mpath[300];
-    EntityManager::EraseEntity(shadow);
-    EntityManager::EraseEntity(waterrings);
-    EntityManager::EraseEntity(mdl);
+    core.EraseEntity(shadow);
+    core.EraseEntity(waterrings);
+    core.EraseEntity(mdl);
     const std::string &name = message.String();
     const std::string &ani = message.String();
     // Path to textures
@@ -3073,7 +3073,7 @@ bool Character::zLoadModel(MESSAGE &message)
     strcpy_s(mpath, "characters\\");
     strcat_s(mpath, name.c_str());
     // Create and load the model
-    if (!(mdl = EntityManager::CreateEntity("modelr")))
+    if (!(mdl = core.CreateEntity("modelr")))
     {
         if (gs)
             gs->SetTexturePath("");
@@ -3091,13 +3091,13 @@ bool Character::zLoadModel(MESSAGE &message)
     if (!core.Send_Message(mdl, "ls", MSG_MODEL_LOAD_ANI, ani.c_str()) != 0)
     {
         core.Trace("Character animation '%s' not loaded", ani.c_str());
-        EntityManager::EraseEntity(mdl);
+        core.EraseEntity(mdl);
         return false;
     }
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(mdl));
     if (!m)
     {
-        EntityManager::EraseEntity(mdl);
+        core.EraseEntity(mdl);
         return false;
     }
     Animation *a = m->GetAnimation();
@@ -3107,9 +3107,9 @@ bool Character::zLoadModel(MESSAGE &message)
         eventId = a->SetEvent(ae_end, 0, &eventListener);
     }
     m->SetRenderTuner(&tuner);
-    EntityManager::AddToLayer(REALIZE, mdl, 20);
-    EntityManager::AddToLayer(SUN_TRACE, mdl, 10);
-    if (shadow = EntityManager::CreateEntity("shadow"))
+    core.AddToLayer(REALIZE, mdl, 20);
+    core.AddToLayer(SUN_TRACE, mdl, 10);
+    if (shadow = core.CreateEntity("shadow"))
     {
         core.Send_Message(shadow, "li", 0, mdl);
     }
@@ -3117,9 +3117,9 @@ bool Character::zLoadModel(MESSAGE &message)
     {
         core.Trace("Shadow not created!");
     }
-    if (!EntityManager::GetEntityId("waterrings"))
+    if (!core.GetEntityId("waterrings"))
     {
-        waterrings = EntityManager::CreateEntity("waterrings");
+        waterrings = core.CreateEntity("waterrings");
     }
     UpdateActionsData();
     return true;
@@ -3226,9 +3226,9 @@ bool Character::zSetBlade(MESSAGE &message)
     const float t = message.Float();
     const int32_t s = message.Long();
     const int32_t e = message.Long();
-    if (!EntityManager::GetEntityPointer(blade))
+    if (!core.GetEntityPointer(blade))
     {
-        if (!(blade = EntityManager::CreateEntity("blade")))
+        if (!(blade = core.CreateEntity("blade")))
             return false;
     }
     core.Send_Message(blade, "llisfll", MSG_BLADE_SET, nBladeIdx, mdl, name.c_str(), t, s, e);
@@ -3244,9 +3244,9 @@ bool Character::zSetGun(MESSAGE &message)
     isGunSet = true;
     if (name.empty())
         isGunSet = false;
-    if (!EntityManager::GetEntityPointer(blade))
+    if (!core.GetEntityPointer(blade))
     {
-        if (!(blade = EntityManager::CreateEntity("blade")))
+        if (!(blade = core.CreateEntity("blade")))
             return false;
     }
     core.Send_Message(blade, "lis", MSG_BLADE_GUNSET, mdl, name.c_str());
@@ -3283,7 +3283,7 @@ bool Character::zTurnByLoc(MESSAGE &message)
 bool Character::zTurnByChr(MESSAGE &message)
 {
     const entid_t chr = message.EntityID();
-    auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(chr));
+    auto *c = static_cast<Character *>(core.GetEntityPointer(chr));
     if (!c)
         return false;
     Turn(c->curPos.x - curPos.x, c->curPos.z - curPos.z);
@@ -3302,7 +3302,7 @@ bool Character::zTurnByPoint(MESSAGE &message)
 bool Character::zDistByCharacter(MESSAGE &message, bool is2D)
 {
     const entid_t chr = message.EntityID();
-    auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(chr));
+    auto *c = static_cast<Character *>(core.GetEntityPointer(chr));
     if (!c)
         return false;
     const float dx = curPos.x - c->curPos.x;
@@ -3331,9 +3331,9 @@ uint32_t Character::zExMessage(MESSAGE &message)
         i = message.Long();
         const std::string &modelName = message.String();
         const std::string &locatorName = message.String();
-        if (!EntityManager::GetEntityPointer(blade))
+        if (!core.GetEntityPointer(blade))
         {
-            if (!(blade = EntityManager::CreateEntity("blade")))
+            if (!(blade = core.CreateEntity("blade")))
                 return 0;
             UpdateWeapons();
         }
@@ -4992,7 +4992,7 @@ Character *Character::FindGunTarget(float &kDist, bool bOnlyEnemyTest, bool bAbo
     if (bOnlyEnemyTest || bAbortIfFriend)
     {
         chrGroup = static_cast<CharactersGroups *>(
-            EntityManager::GetEntityPointer(EntityManager::GetEntityId("CharactersGroups")));
+            core.GetEntityPointer(core.GetEntityId("CharactersGroups")));
         grp = chrGroup->FindGroupIndex(group);
         if (grp < 0)
             return nullptr;
@@ -5122,7 +5122,7 @@ void Character::FindNearCharacters(MESSAGE &message)
 // Check visibility
 bool Character::CharactersVisibleTest(MESSAGE &message)
 {
-    auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(message.EntityID()));
+    auto *chr = static_cast<Character *>(core.GetEntityPointer(message.EntityID()));
     if (!chr)
         return false;
     return VisibleTest(chr);
@@ -5160,18 +5160,18 @@ void Character::UpdateWeapons()
 {
     if (isFightWOWps)
     {
-        EntityManager::RemoveFromLayer(REALIZE, blade);
+        core.RemoveFromLayer(REALIZE, blade);
     }
     else
     {
-        EntityManager::AddToLayer(REALIZE, blade, 65550);
+        core.AddToLayer(REALIZE, blade, 65550);
     }
 }
 
 // Get direction towards the enemy to bounce on hit
 CVECTOR Character::GetEnemyDirForImpulse()
 {
-    auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(enemyAttack));
+    auto *chr = static_cast<Character *>(core.GetEntityPointer(enemyAttack));
     if (!chr)
         return CVECTOR(0.0f);
     CVECTOR dir = chr->curPos - curPos;
@@ -5365,13 +5365,13 @@ int32_t Character::GetRandomIndexByObstacle(ObstacleZone *pZone, int32_t num)
 
 Location *Character::GetLocation()
 {
-    auto *const location = static_cast<Location *>(EntityManager::GetEntityPointer(loc_id));
+    auto *const location = static_cast<Location *>(core.GetEntityPointer(loc_id));
 
     if (location)
         return location;
 
-    loc_id = EntityManager::GetEntityId("location");
-    return static_cast<Location *>(EntityManager::GetEntityPointer(loc_id));
+    loc_id = core.GetEntityId("location");
+    return static_cast<Location *>(core.GetEntityPointer(loc_id));
 }
 
 bool Character::CheckShotOnlyEnemyTest() const

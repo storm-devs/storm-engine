@@ -1346,10 +1346,10 @@ void BATTLE_NAVIGATOR::SetIsland()
     float islSize = 0;
 
     MODEL *pM = nullptr;
-    auto *pIsl = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("ISLAND")));
+    auto *pIsl = static_cast<ISLAND_BASE *>(core.GetEntityPointer(core.GetEntityId("ISLAND")));
     if (pIsl != nullptr)
     {
-        pM = static_cast<MODEL *>(EntityManager::GetEntityPointer(pIsl->GetModelEID()));
+        pM = static_cast<MODEL *>(core.GetEntityPointer(pIsl->GetModelEID()));
     }
     if (pM != nullptr)
     {
@@ -1541,7 +1541,7 @@ void BATTLE_NAVIGATOR::UpdateWindParam()
 {
     if (!m_wb && !m_pAWeather)
     {
-        m_wb = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("weather")));
+        m_wb = static_cast<WEATHER_BASE *>(core.GetEntityPointer(core.GetEntityId("weather")));
         /*if( core.IsNetActive() && !m_wb && m_pOwnerEI ) {
           VDATA * pSVWeather = (VDATA*)core.GetScriptVariable((m_pOwnerEI->IsServer()) ? "NSWeather" : "NCWeather");
         Assert(pSVWeather); m_pAWeather = pSVWeather->GetAClass(); Assert(m_pAWeather);

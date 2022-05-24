@@ -23,14 +23,14 @@ LocCrabs::~LocCrabs()
 bool LocCrabs::Init()
 {
     // Location Pointer
-    const auto loc = EntityManager::GetEntityId("location");
-    auto *location = (Location *)EntityManager::GetEntityPointer(loc);
+    const auto loc = core.GetEntityId("location");
+    auto *location = (Location *)core.GetEntityPointer(loc);
     if (!location)
         return false;
     // Execution
     // core.LayerCreate("realize", true, false);
-    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(REALIZE, GetId(), 100000);
+    core.SetLayerType(REALIZE, layer_type_t::realize);
+    core.AddToLayer(REALIZE, GetId(), 100000);
     return true;
 }
 
@@ -43,8 +43,8 @@ uint64_t LocCrabs::ProcessMessage(MESSAGE &message)
     if (num > sizeof(crab) / sizeof(LocCrab))
         num = sizeof(crab) / sizeof(LocCrab);
     // Location Pointer
-    const auto loc = EntityManager::GetEntityId("location");
-    auto *location = (Location *)EntityManager::GetEntityPointer(loc);
+    const auto loc = core.GetEntityId("location");
+    auto *location = (Location *)core.GetEntityPointer(loc);
     if (!location)
         return 0;
     // start crabs

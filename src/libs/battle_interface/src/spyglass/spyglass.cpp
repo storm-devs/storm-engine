@@ -793,7 +793,7 @@ VAI_OBJBASE *ISPYGLASS::GetFort()
 {
     if (!m_pFortObj)
     {
-        m_pFortObj = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("AIFORT")));
+        m_pFortObj = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(core.GetEntityId("AIFORT")));
     }
     return m_pFortObj;
 }

@@ -222,8 +222,8 @@ void XINTERFACE::SetDevice()
         }
     }
 
-    EntityManager::SetLayerType(INTERFACE_EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::SetLayerType(INTERFACE_REALIZE, EntityManager::Layer::Type::realize);
+    core.SetLayerType(INTERFACE_EXECUTE, layer_type_t::execute);
+    core.SetLayerType(INTERFACE_REALIZE, layer_type_t::realize);
     // core.SystemMessages(GetId(),true);
 
     if (AttributesPointer)
@@ -2679,7 +2679,7 @@ bool XINTERFACE::SFLB_DoSaveFileData(const char *saveName, const char *saveData)
         return false;
 
     entid_t ei;
-    if (!(ei = EntityManager::GetEntityId("SCRSHOTER")))
+    if (!(ei = core.GetEntityId("SCRSHOTER")))
         return false;
     int32_t textureId = core.Send_Message(ei, "l", MSG_SCRSHOT_MAKE);
     if (textureId == -1)

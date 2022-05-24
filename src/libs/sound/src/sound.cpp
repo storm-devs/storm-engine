@@ -31,7 +31,7 @@ bool SOUND::Init()
         core.Trace("!SOUND: Can`t create sound service");
 
     renderer = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
-    EntityManager::AddToLayer(REALIZE, GetId(), -1);
+    core.AddToLayer(REALIZE, GetId(), -1);
 
     return true;
     // UNGUARD

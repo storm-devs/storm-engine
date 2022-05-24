@@ -58,8 +58,8 @@ bool Blots::Init()
         throw std::runtime_error("No service: dx9render");
     // Layers
     ////core.LayerCreate("realize", true, false);
-    // EntityManager::SetLayerType(realize, EntityManager::Layer::Type::realize);
-    // EntityManager::AddToLayer(realize, GetId(), 1000);
+    // core.SetLayerType(realize, layer_type_t::realize);
+    // core.AddToLayer(realize, GetId(), 1000);
     textureID = rs->TextureCreate("blot.tga");
     return true;
     // UNGUARD
@@ -93,7 +93,7 @@ uint64_t Blots::ProcessMessage(MESSAGE &message)
 void Blots::Hit(MESSAGE &message)
 {
     // Model of a ship
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!m)
         return;
     // Position
@@ -134,7 +134,7 @@ void Blots::Hit(MESSAGE &message)
 void Blots::AddBlot(int32_t i, int32_t rnd, const CVECTOR &lpos, const CVECTOR &dir, float time)
 {
     // Model of a ship
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!m)
         return;
     blot[i].isUsed = false;
@@ -362,7 +362,7 @@ void Blots::Realize(uint32_t delta_time)
         updateBlot = 0;
     SaveBlot(updateBlot);
     // Model of a ship
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!m)
         return;
     // Distance from camera

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core.h"
 #include "../xdefines.h"
 #include "entity.h"
 #include "matrix.h"
@@ -159,7 +160,7 @@ class InterfaceBackScene : public Entity
 
         ~AniModelDescr()
         {
-            EntityManager::EraseEntity(ei);
+            core.EraseEntity(ei);
             pModel = nullptr;
         }
     };

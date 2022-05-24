@@ -7,7 +7,7 @@ entid_t last_trace_eid;
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-LOCAL_COLLIDE *COLL::CreateLocalCollide(EntityManager::layer_index_t idx)
+LOCAL_COLLIDE *COLL::CreateLocalCollide(layer_index_t idx)
 {
     return new LCOLL(idx);
 }
@@ -17,7 +17,7 @@ LOCAL_COLLIDE *COLL::CreateLocalCollide(EntityManager::layer_index_t idx)
 //----------------------------------------------------------------------------------
 float COLL::Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst)
 {
-    auto *cob = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(entity));
+    auto *cob = static_cast<COLLISION_OBJECT *>(core.GetEntityPointer(entity));
     if (static_cast<Entity *>(cob) == nullptr)
         return 2.0f;
 
@@ -28,22 +28,20 @@ float COLL::Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst)
 //----------------------------------------------------------------------------------
 // with enclusion list
 //----------------------------------------------------------------------------------
-float COLL::Trace(EntityManager::LayerIterators its, const CVECTOR &src, const CVECTOR &dst,
-                  const entid_t *exclude_list, int32_t entities)
+float COLL::Trace(entity_container_cref entities, const CVECTOR &src, const CVECTOR &dst,
+                  const entid_t *exclude_list, int32_t exclude_num)
 {
     auto best_res = 2.0f;
-    for (auto it = its.first; it != its.second; ++it)
+    for (const auto eid : entities)
     {
-        const auto eid = *it;
-
         int32_t e;
-        for (e = 0; e < entities; e++)
+        for (e = 0; e < exclude_num; e++)
             if (eid == exclude_list[e])
                 break;
 
-        if (e == entities)
+        if (e == exclude_num)
         {
-            auto *cob = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(eid));
+            auto *cob = static_cast<COLLISION_OBJECT *>(core.GetEntityPointer(eid));
             if (cob != nullptr)
             {
                 const auto res = cob->Trace(src, dst);
@@ -62,23 +60,21 @@ float COLL::Trace(EntityManager::LayerIterators its, const CVECTOR &src, const C
 //----------------------------------------------------------------------------------
 //
 //----------------------------------------------------------------------------------
-bool COLL::Clip(EntityManager::LayerIterators its, const PLANE *planes, int32_t nplanes, const CVECTOR &center,
-                float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, int32_t entities)
+bool COLL::Clip(entity_container_cref entities, const PLANE *planes, int32_t nplanes, const CVECTOR &center,
+                float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, int32_t exclude_num)
 {
     auto retval = false;
 
-    for (auto it = its.first; it != its.second; ++it)
+    for (const auto eid : entities)
     {
-        const auto eid = *it;
-
         int32_t e;
-        for (e = 0; e < entities; e++)
+        for (e = 0; e < exclude_num; e++)
             if (eid == exclude_list[e])
                 break;
 
-        if (e == entities)
+        if (e == exclude_num)
         {
-            auto *cob = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(eid));
+            auto *cob = static_cast<COLLISION_OBJECT *>(core.GetEntityPointer(eid));
             if (cob != nullptr)
             {
                 last_trace_eid = eid;

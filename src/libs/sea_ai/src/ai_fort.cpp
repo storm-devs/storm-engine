@@ -117,7 +117,7 @@ void AIFort::Realize(uint32_t Delta_Time)
     float fCurrentImmersion = 0.0f;
     if (core.FindClass(&eidIsland, "Island", 0))
     {
-      ISLAND_BASE * pIsland = (ISLAND_BASE *)EntityManager::GetEntityPointer(eidIsland);
+      ISLAND_BASE * pIsland = (ISLAND_BASE *)core.GetEntityPointer(eidIsland);
       fCurrentImmersion = pIsland->GetCurrentImmersion();
     }*/
 
@@ -218,8 +218,8 @@ bool AIFort::AddFort(ATTRIBUTES *pIslandAP, ATTRIBUTES *pFortLabelAP, ATTRIBUTES
     const auto bLights = (pALights) ? pALights->GetAttributeAsDword() != 0 : false;
     const auto bFlares = (pAFlares) ? pAFlares->GetAttributeAsDword() != 0 : false;
 
-    const auto eidTmp = EntityManager::GetEntityId("shiplights");
-    pShipsLights = static_cast<IShipLights *>(EntityManager::GetEntityPointer(eidTmp));
+    const auto eidTmp = core.GetEntityId("shiplights");
+    pShipsLights = static_cast<IShipLights *>(core.GetEntityPointer(eidTmp));
     Assert(pShipsLights);
 
     pShipsLights->AddLights(&pFort->tmpObject, pFort->GetModel(), bLights, bFlares);
@@ -267,7 +267,7 @@ AIFort::AI_FORT *AIFort::FindFort(entid_t eidModel)
 {
     for (auto &aFort : aForts)
     {
-        if (EntityManager::GetEntityPointer(aFort->GetModelEID()) == EntityManager::GetEntityPointer(eidModel))
+        if (core.GetEntityPointer(aFort->GetModelEID()) == core.GetEntityPointer(eidModel))
             return aFort;
     }
     return nullptr;
@@ -335,10 +335,10 @@ bool AIFort::ScanFortForCannons(AI_FORT *pFort, const char *pModelsDir, const ch
     const auto pathStr = path.string();
     // MessageBoxA(NULL, (LPCSTR)path.c_str(), "", MB_OK); //~!~
     // sLocatorsName.Format("%s\\%s", pModelsDir, pLocatorsName);
-    model_id = EntityManager::CreateEntity("MODELR");
+    model_id = core.CreateEntity("MODELR");
     core.Send_Message(model_id, "ls", MSG_MODEL_LOAD_GEO, (char *)pathStr.c_str());
 
-    auto *pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(model_id));
+    auto *pModel = static_cast<MODEL *>(core.GetEntityPointer(model_id));
     Assert(pModel);
 
     // search and add cannons & culverins
@@ -380,7 +380,7 @@ bool AIFort::ScanFortForCannons(AI_FORT *pFort, const char *pModelsDir, const ch
         dwIdx++;
     }
 
-    EntityManager::EraseEntity(model_id);
+    core.EraseEntity(model_id);
     return true;
 }
 
@@ -414,7 +414,7 @@ float AIFort::Trace(const CVECTOR &vSrc, const CVECTOR &vDst)
     auto fBestDistance = 1e10f;
     for (uint32_t i = 0; i < GetNumForts(); i++)
     {
-        auto *pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(GetFort(i)->GetModelEID()));
+        auto *pModel = static_cast<MODEL *>(core.GetEntityPointer(GetFort(i)->GetModelEID()));
         Assert(pModel);
         const auto fRes = pModel->Trace(vSrc, vDst);
         if (fRes > 1.0f)
@@ -436,7 +436,7 @@ float AIFort::Cannon_Trace(int32_t iBallOwner, const CVECTOR &vSrc, const CVECTO
     float fBestRes = 2.0;
     for (uint32_t i = 0; i < GetNumForts(); i++)
     {
-        auto *pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(GetFort(i)->GetModelEID()));
+        auto *pModel = static_cast<MODEL *>(core.GetEntityPointer(GetFort(i)->GetModelEID()));
 
         const float fRes = pModel->Trace(vSrc, vDst);
         if (fRes < fBestRes)

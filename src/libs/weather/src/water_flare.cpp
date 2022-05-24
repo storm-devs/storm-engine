@@ -27,8 +27,8 @@ bool WATERFLARE::Init()
 {
     // GUARD(bool WATERFLARE::Init())
 
-    EntityManager::AddToLayer(REALIZE, GetId(), -1);
-    EntityManager::AddToLayer(EXECUTE, GetId(), -1);
+    core.AddToLayer(REALIZE, GetId(), -1);
+    core.AddToLayer(EXECUTE, GetId(), -1);
 
     SetDevice();
 
@@ -45,9 +45,9 @@ void WATERFLARE::SetDevice()
         throw std::runtime_error("No service: dx9render");
 
     entid_t ent;
-    if (!(ent = EntityManager::GetEntityId("weather")))
+    if (!(ent = core.GetEntityId("weather")))
         throw std::runtime_error("No found WEATHER entity!");
-    pWeather = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(ent));
+    pWeather = static_cast<WEATHER_BASE *>(core.GetEntityPointer(ent));
 
     // UNGUARD
 }

@@ -85,7 +85,7 @@ void TOUCH::Execute(uint32_t dwCoreDeltaTime)
     int32_t i;
     entid_t ent;
     if (!pIslandBase)
-        pIslandBase = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("island")));
+        pIslandBase = static_cast<ISLAND_BASE *>(core.GetEntityPointer(core.GetEntityId("island")));
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(150));
 
@@ -95,7 +95,7 @@ void TOUCH::Execute(uint32_t dwCoreDeltaTime)
         return;
     for (i = 0; i < iNumShips; i++)
     {
-        pShips[i]->pShip = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(pShips[i]->eID));
+        pShips[i]->pShip = static_cast<SHIP_BASE *>(core.GetEntityPointer(pShips[i]->eID));
         if (pShips[i]->pShip && !pShips[i]->iNumVContour)
         {
             pShips[i]->pShip->BuildContour(&pShips[i]->vContour[0], pShips[i]->iNumVContour);

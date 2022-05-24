@@ -1,6 +1,6 @@
 #include "vcollide.h"
 
-LCOLL::LCOLL(EntityManager::layer_index_t idx) : boxRadius(0)
+LCOLL::LCOLL(layer_index_t idx) : boxRadius(0)
 {
     layerIndex_ = idx;
     col = static_cast<COLLIDE *>(core.GetService("coll"));
@@ -90,7 +90,7 @@ int32_t LCOLL::SetBox(const CVECTOR &boxSize, const CMatrix &transform, bool tes
     // F0(v0,v1,v2), F1(v0,v1,v2,v3)...
     addVerts = nullptr;
 
-    const auto its = EntityManager::GetEntityIdIterators(layerIndex_);
+    const auto its = core.GetEntityIds(layerIndex_);
     col->Clip(its, &plane[0], 6, boxCenter, boxRadius, AddPolyColl, nullptr, 0);
     return 0;
 }

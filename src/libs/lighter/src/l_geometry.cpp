@@ -93,7 +93,7 @@ void LGeometry::AddObject(const char *name, entid_t model)
         str[d++] = str[s];
     }
     object[numObjects].model = model;
-    object[numObjects].m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    object[numObjects].m = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!object[numObjects].m)
     {
         core.Trace("Location lighter: can't get pointer to model %s", name);
@@ -112,7 +112,7 @@ bool LGeometry::Process(VDX9RENDER *rs, int32_t numLights)
         // Index in the final file
         int32_t cindex = 0;
         // Check
-        if (object[i].m != static_cast<MODEL *>(EntityManager::GetEntityPointer(object[i].model)))
+        if (object[i].m != static_cast<MODEL *>(core.GetEntityPointer(object[i].model)))
         {
             core.Trace("Location lighter: lost model!!!");
             return false;

@@ -148,7 +148,7 @@ void AIBalls::AddBall(ATTRIBUTES *pABall)
     if (aBallTypes[i].sParticleName.size())
     {
         entid_t eidParticle;
-        if (eidParticle = EntityManager::GetEntityId("particles"))
+        if (eidParticle = core.GetEntityId("particles"))
         {
             pBall->pParticle = (VPARTICLE_SYSTEM *)core.Send_Message(
                 eidParticle, "lsffffffl", PS_CREATE_RIC, (char *)aBallTypes[i].sParticleName.c_str(), pBall->vPos.x,
@@ -163,12 +163,12 @@ void AIBalls::Execute(uint32_t Delta_Time)
     CVECTOR vSrc, vDst;
     entid_t EID;
 
-    if (!pIsland && (EID = EntityManager::GetEntityId("island")))
-        pIsland = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(EID));
-    if (!pSail && (EID = EntityManager::GetEntityId("sail")))
-        pSail = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(EID));
-    if (!pSea && (EID = EntityManager::GetEntityId("sea")))
-        pSea = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(EID));
+    if (!pIsland && (EID = core.GetEntityId("island")))
+        pIsland = static_cast<CANNON_TRACE_BASE *>(core.GetEntityPointer(EID));
+    if (!pSail && (EID = core.GetEntityId("sail")))
+        pSail = static_cast<CANNON_TRACE_BASE *>(core.GetEntityPointer(EID));
+    if (!pSea && (EID = core.GetEntityId("sea")))
+        pSea = static_cast<CANNON_TRACE_BASE *>(core.GetEntityPointer(EID));
 
     aBallRects.clear();
 
@@ -240,11 +240,11 @@ void AIBalls::Execute(uint32_t Delta_Time)
             // sail trace
             if (pSail)
                 pSail->Cannon_Trace(pBall->iBallOwner, vSrc, vDst);
-
-            const auto its = EntityManager::GetEntityIdIterators(SHIP_CANNON_TRACE);
-            for (auto it = its.first; it != its.second; ++it)
+            
+            auto &&entities = core.GetEntityIds(SHIP_CANNON_TRACE);
+            for (auto ent_id : entities)
             {
-                auto *pShip = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(*it));
+                auto *pShip = static_cast<CANNON_TRACE_BASE *>(core.GetEntityPointer(ent_id));
                 fRes = pShip->Cannon_Trace(pBall->iBallOwner, vSrc, vDst);
                 if (fRes <= 1.0f)
                     break;
@@ -491,7 +491,7 @@ void AIBalls::Load(CSaveLoad *pSL)
             if (pB.pParticle)
             {
                 pB.pParticle = nullptr;
-                if (auto eidParticle = EntityManager::GetEntityId("particles"))
+                if (auto eidParticle = core.GetEntityId("particles"))
                 {
                     pB.pParticle = (VPARTICLE_SYSTEM *)core.Send_Message(
                         eidParticle, "lsffffffl", PS_CREATE_RIC, (char *)aBallType.sParticleName.c_str(), pB.vPos.x,

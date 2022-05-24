@@ -5,30 +5,10 @@
 
 #include "v_module_api.h"
 
-std::array<EntityManager::Layer, max_layers_num> EntityManager::layers_;
-
-/* static array of entities and actual size */
-std::pair<std::array<EntityManager::EntityInternalData, max_ent_num>, EntityManager::entity_index_t>
-    EntityManager::entities_;
-
-/* stack for indices of erased entities: static constexpr array and top counter */
-std::pair<std::array<EntityManager::entity_index_t, max_ent_num>, EntityManager::entity_index_t>
-    EntityManager::freeIndices_;
-
-/* static array for indices to delete */
-/* RATIONALE:
- * Entities can be deleted inside destruction of another entity, therefore we shall either
- * loop until there is no entity to delete (O(N^N) at worst) or use a stack for them.
- */
-std::pair<std::array<EntityManager::entity_index_t, max_ent_num>, EntityManager::entity_index_t>
-    EntityManager::deletedIndices_;
-
-void EntityManager::_erase(EntityInternalData &data)
+void EntityManager::Erase(EntityInternalData &data)
 {
-    auto &mask = data.mask;
-
-    // remove from layers
-    for (unsigned i = 0; i < sizeof(mask) * 8; ++i)
+    // TODO: shift loop
+    for (layer_index_t i = 0; i < max_layers_num; ++i)
     {
         RemoveFromLayer(i, data);
     }
@@ -36,9 +16,9 @@ void EntityManager::_erase(EntityInternalData &data)
     delete data.ptr;
 }
 
-void EntityManager::_EraseEntityNoCheck(const entid_t entity)
+void EntityManager::EraseEntityNoCheck(const entid_t id)
 {
-    const auto index = static_cast<entid_index_t>(entity);
+    const auto index = static_cast<entid_index_t>(id);
     auto &entData = entities_.first[index];
     entData.deleted = true;
 
@@ -48,25 +28,37 @@ void EntityManager::_EraseEntityNoCheck(const entid_t entity)
     deletedArr[deletedSize++] = index;
 }
 
-EntityManager::hash_t EntityManager::GetClassCode(const entid_t id)
+hash_t EntityManager::GetClassCode(const entid_t id) const
 {
-    const auto &entData = GetEntityData(id);
-    return entData.hash;
+    const auto idx = GetEntityDataIdx(id);
+    if (!EntIdxValid(idx))
+    {
+        return {};
+    }
+
+    return entities_.first[idx].hash;
 }
 
 void EntityManager::AddToLayer(const layer_index_t index, const entid_t id, const priority_t priority)
 {
-    assert(index < max_layers_num); // valid index
-    // assert(entities_.first[static_cast<entid_index_t>(id)].mask & (1 << index)); // mask shall be set
-
-    auto &entData = GetEntityData(id);
-    // check if entity is already in layer
-    if (entData.mask & (1 << index))
+    assert(index < max_layers_num);
+    const auto idx = GetEntityDataIdx(id);
+    if (!EntIdxValid(idx))
+    {
         return;
+    }
+
+    auto& data = entities_.first[idx];
+
+    // check if entity is already in layer
+    if (data.mask & (1 << index))
+    {
+        return;
+    }
 
     // set info about layer
-    entData.mask |= 1 << index;
-    entData.priorities[index] = priority;
+    data.mask |= 1 << index;
+    data.priorities[index] = priority;
 
     auto &layer = layers_[index];
     auto &priorities = layer.priorities;
@@ -85,7 +77,10 @@ void EntityManager::AddToLayer(const layer_index_t index, const entid_t id, cons
 
 void EntityManager::RemoveFromLayer(const layer_index_t index, const entid_t id)
 {
-    return RemoveFromLayer(index, GetEntityData(id));
+    if (const auto idx = GetEntityDataIdx(id); EntIdxValid(idx))
+    {
+        RemoveFromLayer(index, entities_.first[idx]);
+    }
 }
 
 void EntityManager::RemoveFromLayer(const layer_index_t index, EntityInternalData &data)
@@ -166,7 +161,7 @@ entid_t EntityManager::CreateEntity(const char *name, ATTRIBUTES *attr)
     if (!ptr->Init())
     {
         // delete if fail
-        _EraseEntityNoCheck(id);
+        EraseEntityNoCheck(id);
         return invalid_entity;
     }
 
@@ -174,17 +169,29 @@ entid_t EntityManager::CreateEntity(const char *name, ATTRIBUTES *attr)
     return id;
 }
 
-void EntityManager::EraseEntity(const entid_t entity)
+void EntityManager::EraseEntity(const entid_t id)
 {
-    const auto &entData = GetEntityData(entity);
-    if (entData.ptr == nullptr)
+    const auto idx = GetEntityDataIdx(id);
+    if (!EntIdxValid(idx))
+    {
         return;
+    }
 
-    // validate
-    if (entData.ptr->GetId() != entity)
-        return; /* already replaced by another entity */
+    const auto &data = entities_.first[idx];
 
-    _EraseEntityNoCheck(entity);
+    // data ptr deleted
+    if (data.ptr == nullptr)
+    {
+        return;
+    }
+
+    // entity id mismatch
+    if (data.ptr->GetId() != id)
+    {
+        return;
+    }
+
+    EraseEntityNoCheck(id);
 }
 
 void EntityManager::EraseAll()
@@ -197,7 +204,7 @@ void EntityManager::EraseAll()
         if (index >= size)
             continue;
 
-        _erase(arr[index]); // release
+        Erase(arr[index]); // release
         arr[index] = {};
     }
 
@@ -206,17 +213,23 @@ void EntityManager::EraseAll()
     freeIndices_.second = 0;
 }
 
-entptr_t EntityManager::GetEntityPointer(const entid_t entity)
+entptr_t EntityManager::GetEntityPointer(const entid_t id) const
 {
-    const auto &entData = GetEntityData(entity);
-    return entData.deleted ? nullptr : entData.ptr;
+    const auto idx = GetEntityDataIdx(id);
+    if (!EntIdxValid(idx) || entities_.first[idx].deleted)
+    {
+        return nullptr;
+    }
+
+    return entities_.first[idx].ptr;
 }
 
-EntityManager::EntityVector EntityManager::GetEntityIdVector(const Layer::Type type)
+entity_container_cref EntityManager::GetEntityIds(const layer_type_t type) const
 {
-    std::vector<entid_t> result;
-    // should be vector of layer iterators actually... special iterator would be cool here too.
+    // TODO:: cache
+    static std::vector<entid_t> result;
     result.reserve(entities_.first.size()); // TODO: investigate memory consumption
+    result.clear();
 
     for (auto it = std::begin(layers_); it != std::end(layers_); ++it)
     {
@@ -233,15 +246,16 @@ EntityManager::EntityVector EntityManager::GetEntityIdVector(const Layer::Type t
     return result;
 }
 
-EntityManager::EntityVector EntityManager::GetEntityIdVector(const char *name)
+entity_container_cref EntityManager::GetEntityIds(const char *name) const
 {
-    return GetEntityIdVector(MakeHashValue(name));
+    return GetEntityIds(MakeHashValue(name));
 }
 
-EntityManager::EntityVector EntityManager::GetEntityIdVector(const uint32_t hash)
+entity_container_cref EntityManager::GetEntityIds(const uint32_t hash) const
 {
-    std::vector<entid_t> result;
-    result.reserve(max_ent_num); // TODO: investigate memory consumption
+    static std::vector<entid_t> result;
+    result.reserve(entities_.first.size()); // TODO: investigate memory consumption
+    result.clear();
 
     const auto &arr = entities_.first;
     const auto size = entities_.second;
@@ -257,26 +271,19 @@ EntityManager::EntityVector EntityManager::GetEntityIdVector(const uint32_t hash
     return result;
 }
 
-EntityManager::LayerIterators EntityManager::GetEntityIdIterators(const layer_index_t index)
+entity_container_cref EntityManager::GetEntityIds(const layer_index_t index) const
 {
     assert(index < max_layers_num);
 
-    auto &layer = layers_[index];
-
-    return std::pair{std::begin(layer.entity_ids), std::end(layer.entity_ids)};
+    return layers_[index].entity_ids;
 }
 
-EntityManager::AllEntIterators EntityManager::GetEntityIdIterators()
-{
-    return std::pair{std::begin(entities_.first), std::begin(entities_.first) + entities_.second};
-}
-
-entid_t EntityManager::GetEntityId(const char *name)
+entid_t EntityManager::GetEntityId(const char *name) const
 {
     return GetEntityId(MakeHashValue(name));
 }
 
-entid_t EntityManager::GetEntityId(const uint32_t hash)
+entid_t EntityManager::GetEntityId(const uint32_t hash) const
 {
     const auto &arr = entities_.first;
     const auto size = entities_.second;
@@ -292,14 +299,19 @@ entid_t EntityManager::GetEntityId(const uint32_t hash)
     return invalid_entity;
 }
 
-EntityManager::Layer::Type EntityManager::GetLayerType(const layer_index_t index)
+bool EntityManager::EntIdxValid(const size_t idx)
+{
+    return idx != invalid_entity_idx_t{};
+}
+
+layer_type_t EntityManager::GetLayerType(const layer_index_t index) const
 {
     assert(index < max_layers_num);
 
     return layers_[index].type;
 }
 
-void EntityManager::SetLayerType(const layer_index_t index, const Layer::Type type)
+void EntityManager::SetLayerType(const layer_index_t index, const layer_type_t type)
 {
     assert(index < max_layers_num);
 
@@ -313,7 +325,7 @@ void EntityManager::SetLayerFrozen(const layer_index_t index, const bool freeze)
     layers_[index].frozen = freeze;
 }
 
-bool EntityManager::IsLayerFrozen(const layer_index_t index)
+bool EntityManager::IsLayerFrozen(const layer_index_t index) const
 {
     assert(index < max_layers_num);
 
@@ -349,35 +361,37 @@ void EntityManager::NewLifecycle()
         if (arr[index].id == 0)
             continue;
 
-        _erase(arr[index]);   // release
+        Erase(arr[index]);   // release
         arr[index] = {};      // erase entity data
         PushFreeIndex(index); // push free index to stack instead of shifting
     }
     deletedSize = 0; // clear array of entities to delete
 }
 
-EntityManager::EntityInternalData & EntityManager::GetEntityData(const entid_t entity)
+size_t EntityManager::GetEntityDataIdx(const entid_t id) const
 {
-    static EntityInternalData null{.deleted = true};
-
-    const auto index = static_cast<entid_index_t>(entity);
-
-    if (index >= entities_.second) /* calm down it's ok... */
-        return null;
-
-    auto &data = entities_.first[index];
-
-    if (data.ptr == nullptr)
-        return null; /* THIS IS ALSO FUCKING OK */
-
-    /* check if valid */
-    const auto entid = data.ptr->GetId();
-    if (entity != entid)
+    // index out of range
+    const auto index = static_cast<entid_index_t>(id);
+    if (index >= entities_.second)
     {
-        return null;
+        return invalid_entity_idx_t{};
     }
 
-    return data;
+    // data ptr deleted
+    auto &data = entities_.first[index];
+    if (data.ptr == nullptr)
+    {
+        return invalid_entity_idx_t{};
+    }
+
+    // entity id mismatch
+    const auto entid = data.ptr->GetId();
+    if (id != entid)
+    {
+        return invalid_entity_idx_t{};
+    }
+    
+    return index;
 }
 
 entid_t EntityManager::PushEntity(entptr_t ptr, hash_t hash)

@@ -359,7 +359,7 @@ void SEA_AI::Save(const char *pStr)
     SL.CreateWrite();
 
     Helper.Save(&SL);
-    core.Send_Message(EntityManager::GetEntityId("SEA_CAMERAS"), "lp", AI_MESSAGE_SEASAVE, &SL);
+    core.Send_Message(core.GetEntityId("SEA_CAMERAS"), "lp", AI_MESSAGE_SEASAVE, &SL);
 
     AIBalls::pAIBalls->Save(&SL);
 
@@ -380,7 +380,7 @@ void SEA_AI::Load(const char *pStr)
     SL.CreateLoad();
 
     Helper.Load(&SL);
-    core.Send_Message(EntityManager::GetEntityId("SEA_CAMERAS"), "lp", AI_MESSAGE_SEALOAD, &SL);
+    core.Send_Message(core.GetEntityId("SEA_CAMERAS"), "lp", AI_MESSAGE_SEALOAD, &SL);
 
     AIBalls::pAIBalls->Load(&SL);
 

@@ -42,7 +42,7 @@ bool ShipLights::Init()
     Assert(pRS);
     pCollide = static_cast<COLLIDE *>(core.GetService("coll"));
     Assert(pCollide);
-    pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
+    pSea = static_cast<SEA_BASE *>(core.GetEntityPointer(core.GetEntityId("sea")));
     return true;
 }
 
@@ -502,10 +502,10 @@ void ShipLights::Execute(uint32_t dwDeltaTime)
             L.bVisible = true;
 
             float fDistance =
-                pCollide->Trace(EntityManager::GetEntityIdIterators(SAILS_TRACE), L.vCurPos, vCamPos, nullptr, 0);
+                pCollide->Trace(core.GetEntityIds(SAILS_TRACE), L.vCurPos, vCamPos, nullptr, 0);
             L.fFlareAlphaMax = (fDistance >= 1.0f) ? 1.0f : 0.2f;
 
-            const auto its = EntityManager::GetEntityIdIterators(SUN_TRACE);
+            const auto its = core.GetEntityIds(SUN_TRACE);
             fDistance = pCollide->Trace(its, L.vCurPos, vCamPos, nullptr, 0);
             const float fLen = fDistance * sqrtf(~(vCamPos - L.vCurPos));
             L.bVisible = fDistance >= 1.0f || (fLen < 0.6f);

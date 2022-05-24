@@ -44,7 +44,7 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
     const auto fDeltaTime = static_cast<float>(dwDeltaTime) * 0.001f;
 
     if (!pSea)
-        pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
+        pSea = static_cast<SEA_BASE *>(core.GetEntityPointer(core.GetEntityId("sea")));
 
     if (!pSea)
         return;
@@ -75,10 +75,10 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                 aShips.clear();
 
                 // enumerate ships
-                const auto &entities = EntityManager::GetEntityIdVector("ship");
+                const auto &entities = core.GetEntityIds("ship");
                 for (auto ent : entities)
                 {
-                    aShips.push_back(static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(ent)));
+                    aShips.push_back(static_cast<SHIP_BASE *>(core.GetEntityPointer(ent)));
                 }
 
                 // check ships

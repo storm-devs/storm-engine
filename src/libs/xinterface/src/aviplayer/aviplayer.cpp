@@ -56,12 +56,12 @@ bool CAviPlayer::Init()
     }
 
     // core.LayerCreate("vRealize",true,false);
-    EntityManager::SetLayerType(VIDEO_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(VIDEO_REALIZE, GetId(), -1);
+    core.SetLayerType(VIDEO_REALIZE, layer_type_t::realize);
+    core.AddToLayer(VIDEO_REALIZE, GetId(), -1);
 
     // core.LayerCreate("vExecute",true,false);
-    EntityManager::SetLayerType(VIDEO_EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(VIDEO_EXECUTE, GetId(), 1);
+    core.SetLayerType(VIDEO_EXECUTE, layer_type_t::execute);
+    core.AddToLayer(VIDEO_EXECUTE, GetId(), 1);
 
     if (!GetInterfaces())
     {

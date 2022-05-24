@@ -107,10 +107,10 @@ bool ItemEntity::ReadAndCreate()
     auto *const pcTechnique = BIUtils::GetStringFromAttr(AttributesPointer, "technique", "");
     if (pcModelName)
     {
-        if (m_eidModel = EntityManager::CreateEntity("modelr"))
+        if (m_eidModel = core.CreateEntity("modelr"))
         {
             core.Send_Message(m_eidModel, "ls", MSG_MODEL_LOAD_GEO, pcModelName);
-            m_pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eidModel));
+            m_pModel = static_cast<MODEL *>(core.GetEntityPointer(m_eidModel));
             SetModelToPosition(m_mtxpos);
             SetTechnique(pcTechnique);
         }
@@ -133,7 +133,7 @@ void ItemEntity::Release()
 {
     if (m_pModel)
     {
-        EntityManager::EraseEntity(m_eidModel);
+        core.EraseEntity(m_eidModel);
         m_pModel = nullptr;
     }
     DeleteParticle();
@@ -165,7 +165,7 @@ bool ItemEntity::TieToLocator(entid_t mdlEID, const char *pcLocName)
 {
     m_eidTieModel = mdlEID;
     m_sTieLocName = pcLocName;
-    auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdlEID));
+    auto *pMdl = static_cast<MODEL *>(core.GetEntityPointer(mdlEID));
     if (pMdl)
     {
         m_pMdlNode = pMdl->GetNode(0);
@@ -198,7 +198,7 @@ void ItemEntity::EndEventProcess()
 
 void ItemEntity::DrawIntoLocator()
 {
-    auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eidTieModel));
+    auto *pMdl = static_cast<MODEL *>(core.GetEntityPointer(m_eidTieModel));
     if (!pMdl)
     {
         UnTieFromLocator();
@@ -259,7 +259,7 @@ entid_t ItemEntity::GetModelEIDFromCharacterEID(entid_t chrEID)
 void ItemEntity::SetEventListener(entid_t mdlEID, entid_t mdlToTieEID, const char *pcLocName, const char *pcStartEvent,
                                   const char *pcEndEvent)
 {
-    auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdlEID));
+    auto *pMdl = static_cast<MODEL *>(core.GetEntityPointer(mdlEID));
     if (!pMdl)
         return;
     auto *a = pMdl->GetAnimation();
@@ -287,7 +287,7 @@ void ItemEntity::EventListener::Event(Animation *animation, int32_t playerIndex,
     }
     if (!m_bStartWaiting && m_sEndEvent == eventName)
     {
-        auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eidListenedModel));
+        auto *pMdl = static_cast<MODEL *>(core.GetEntityPointer(m_eidListenedModel));
         if (pMdl)
         {
             auto *a = pMdl->GetAnimation();
@@ -307,7 +307,7 @@ bool ItemEntity::CreateParticle()
         auto *const pcParticleName = BIUtils::GetStringFromAttr(AttributesPointer, "particle", "");
         if (pcParticleName && pcParticleName[0])
         {
-            const auto eidParticle = EntityManager::GetEntityId("particles");
+            const auto eidParticle = core.GetEntityId("particles");
             if (eidParticle)
             {
                 const auto vPos = m_mtxpos.Pos();
@@ -325,7 +325,7 @@ void ItemEntity::DeleteParticle()
 {
     if (m_pParticle)
     {
-        const auto eidParticle = EntityManager::GetEntityId("particles");
+        const auto eidParticle = core.GetEntityId("particles");
         if (eidParticle)
         {
             if (core.Send_Message(eidParticle, "lp", PS_VALIDATE_PARTICLE, m_pParticle))

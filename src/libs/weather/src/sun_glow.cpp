@@ -58,13 +58,13 @@ void SUNGLOW::SetDevice()
     pCollide = static_cast<COLLIDE *>(core.GetService("COLL"));
     Assert(pCollide);
 
-    if (!(ent = EntityManager::GetEntityId("weather")))
+    if (!(ent = core.GetEntityId("weather")))
         throw std::runtime_error("No found WEATHER entity!");
-    pWeather = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(ent));
+    pWeather = static_cast<WEATHER_BASE *>(core.GetEntityPointer(ent));
     Assert(pWeather);
 
-    if (ent = EntityManager::GetEntityId("sky"))
-        pSky = static_cast<SKY *>(EntityManager::GetEntityPointer(ent));
+    if (ent = core.GetEntityId("sky"))
+        pSky = static_cast<SKY *>(core.GetEntityPointer(ent));
     else
         pSky = nullptr;
 
@@ -152,9 +152,9 @@ void SUNGLOW::Execute(uint32_t Delta_Time)
     }
 }
 
-float SUNGLOW::LayerTrace(CVECTOR &vSrc, EntityManager::LayerIterators its) const
+float SUNGLOW::LayerTrace(CVECTOR &vSrc, entity_container_cref its) const
 {
-    if (its.first == its.second)
+    if (its.empty())
         return 2.0f;
 
     CVECTOR vDst;
@@ -198,8 +198,8 @@ void SUNGLOW::Realize(uint32_t Delta_Time)
     bVisible = true;
     fMinAlphaValue = 0.0f;
 
-    auto fSunTrace = LayerTrace(vCamPos, EntityManager::GetEntityIdIterators(SUN_TRACE));
-    auto fSailTrace = LayerTrace(vCamPos, EntityManager::GetEntityIdIterators(SAILS_TRACE));
+    auto fSunTrace = LayerTrace(vCamPos, core.GetEntityIds(SUN_TRACE));
+    auto fSailTrace = LayerTrace(vCamPos, core.GetEntityIds(SAILS_TRACE));
 
     if (fSunTrace <= 1.0f || fSailTrace <= 1.0f)
         bVisible = false;
@@ -742,7 +742,7 @@ float SUNGLOW::GetSunFadeoutFactor(const CVECTOR &vSunPos, float fSunSize)
     // get a pointer to the sky
     if (!pSky)
     {
-        pSky = static_cast<SKY *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sky")));
+        pSky = static_cast<SKY *>(core.GetEntityPointer(core.GetEntityId("sky")));
     }
     return pSky ? pSky->CalculateAlphaForSun(vSunPos, fSunSize) : 1.0f;
 }

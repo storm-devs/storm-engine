@@ -92,13 +92,12 @@ bool SEA::SunRoad_Render2()
         // Render scene here.
         // uint32_t dwSkyCode = MakeHashValue("sky");
 
-        if (!EntityManager::IsLayerFrozen(SEA_REFLECTION2))
+        if (!core.IsLayerFrozen(SEA_REFLECTION2))
         {
-            const auto its = EntityManager::GetEntityIdIterators(SEA_SUNROAD);
-            for (auto it = its.first; it != its.second; ++it)
+            auto &&entities = core.GetEntityIds(SEA_SUNROAD);
+            for (auto ent_id : entities)
             {
-                const auto ent_id = *it;
-                const auto hash = EntityManager::GetClassCode(ent_id);
+                const auto hash = core.GetClassCode(ent_id);
                 if (hash != dwShipCode && hash != dwSailCode && hash != dwIslandCode)
                 {
                     core.Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, static_cast<int32_t>(bSimpleSea));
@@ -173,16 +172,19 @@ bool SEA::EnvMap_Render2()
         // rs->SetView(mView);
 
         // Render scene here.
-        auto its = EntityManager::GetEntityIdIterators(SEA_REFLECTION);
-        for (auto it = its.first; it != its.second; ++it)
         {
-            core.Send_Message(*it, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            auto &&entities = core.GetEntityIds(SEA_REFLECTION);
+            for (auto ent_id : entities)
+            {
+                core.Send_Message(ent_id, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            }
         }
-
-        its = EntityManager::GetEntityIdIterators(SEA_REFLECTION2);
-        for (auto it = its.first; it != its.second; ++it)
         {
-            core.Send_Message(*it, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            auto &&entities = core.GetEntityIds(SEA_REFLECTION2);
+            for (auto ent_id : entities)
+            {
+                core.Send_Message(ent_id, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            }
         }
 
         rs->EndScene();
@@ -240,13 +242,12 @@ bool SEA::SunRoad_Render()
         rs->SetView(mView);
 
         // Render scene here.
-        if (!EntityManager::IsLayerFrozen(SEA_REFLECTION2))
+        if (!core.IsLayerFrozen(SEA_REFLECTION2))
         {
-            const auto its = EntityManager::GetEntityIdIterators(SEA_SUNROAD);
-            for (auto it = its.first; it != its.second; ++it)
+            auto &&entities = core.GetEntityIds(SEA_SUNROAD);
+            for (auto ent_id : entities)
             {
-                const auto ent_id = *it;
-                const auto hash = EntityManager::GetClassCode(ent_id);
+                const auto hash = core.GetClassCode(ent_id);
                 if (hash != dwShipCode && hash != dwSailCode && hash != dwIslandCode)
                 {
                     core.Send_Message(ent_id, "ll", MSG_SEA_SUNROAD_DRAW, static_cast<int32_t>(bSimpleSea));
@@ -298,16 +299,19 @@ bool SEA::EnvMap_Render()
         rs->SetView(mView);
 
         // Render scene here.
-        auto its = EntityManager::GetEntityIdIterators(SEA_REFLECTION);
-        for (auto it = its.first; it != its.second; ++it)
         {
-            core.Send_Message(*it, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            auto &&entities = core.GetEntityIds(SEA_REFLECTION);
+            for (auto ent_id : entities)
+            {
+                core.Send_Message(ent_id, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            }
         }
-
-        its = EntityManager::GetEntityIdIterators(SEA_REFLECTION2);
-        for (auto it = its.first; it != its.second; ++it)
         {
-            core.Send_Message(*it, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            auto &&entities = core.GetEntityIds(SEA_REFLECTION2);
+            for (auto ent_id : entities)
+            {
+                core.Send_Message(ent_id, "ll", MSG_SEA_REFLECTION_DRAW, static_cast<int32_t>(bSimpleSea));
+            }
         }
 
         rs->EndScene();

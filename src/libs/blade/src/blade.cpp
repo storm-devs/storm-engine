@@ -42,12 +42,12 @@ BLADE::BLADE_INFO::BLADE_INFO()
 
 BLADE::BLADE_INFO::~BLADE_INFO()
 {
-    EntityManager::EraseEntity(eid);
+    core.EraseEntity(eid);
 }
 
 void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode)
 {
-    auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(eid));
+    auto *obj = static_cast<MODEL *>(core.GetEntityPointer(eid));
     if (obj != nullptr)
     {
         CMatrix perMtx;
@@ -167,7 +167,7 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
 
 bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
 {
-    EntityManager::EraseEntity(eid);
+    core.EraseEntity(eid);
 
     // model name
     const std::string &mdlName = message.String();
@@ -182,10 +182,10 @@ bool BLADE::BLADE_INFO::LoadBladeModel(MESSAGE &message)
         if (gs)
             gs->SetTexturePath("Ammo\\");
         // Create a model
-        eid = EntityManager::CreateEntity("modelr");
+        eid = core.CreateEntity("modelr");
         if (!core.Send_Message(eid, "ls", MSG_MODEL_LOAD_GEO, path))
         {
-            EntityManager::EraseEntity(eid);
+            core.EraseEntity(eid);
             if (gs)
                 gs->SetTexturePath("");
             return false;
@@ -210,7 +210,7 @@ BLADE::BLADE()
 
 BLADE::~BLADE()
 {
-    EntityManager::EraseEntity(gun);
+    core.EraseEntity(gun);
 
     for (int32_t i = 0; i < ITEMS_INFO_QUANTITY; i++)
         items[i].Release();
@@ -224,7 +224,7 @@ bool BLADE::Init()
     if (col == nullptr)
         throw std::runtime_error("No service: COLLIDE");
 
-    EntityManager::AddToLayer(REALIZE, GetId(), 65550);
+    core.AddToLayer(REALIZE, GetId(), 65550);
 
     rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
@@ -241,7 +241,7 @@ void BLADE::Realize(uint32_t Delta_Time)
 {
     blade[0].time += 0.001f * (Delta_Time);
 
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(man));
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(man));
     if (!mdl)
         return;
 
@@ -262,7 +262,7 @@ void BLADE::Realize(uint32_t Delta_Time)
     // draw gun
     CMatrix perMtx;
     int32_t sti;
-    auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(gun));
+    auto *obj = static_cast<MODEL *>(core.GetEntityPointer(gun));
     if (obj != nullptr)
     {
         auto *gunNode = obj->GetNode(0);
@@ -337,7 +337,7 @@ bool BLADE::LoadBladeModel(MESSAGE &message)
 
 bool BLADE::LoadGunModel(MESSAGE &message)
 {
-    EntityManager::EraseEntity(gun);
+    core.EraseEntity(gun);
     man = message.EntityID();
     // model name
     const std::string &mdlName = message.String();
@@ -352,10 +352,10 @@ bool BLADE::LoadGunModel(MESSAGE &message)
         if (gs)
             gs->SetTexturePath("Ammo\\");
         // Create a model
-        gun = EntityManager::CreateEntity("modelr");
+        gun = core.CreateEntity("modelr");
         if (!core.Send_Message(gun, "ls", MSG_MODEL_LOAD_GEO, path))
         {
-            EntityManager::EraseEntity(gun);
+            core.EraseEntity(gun);
             if (gs)
                 gs->SetTexturePath("");
             return false;
@@ -370,7 +370,7 @@ bool BLADE::LoadGunModel(MESSAGE &message)
 
 void BLADE::GunFire()
 {
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(man));
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(man));
     auto *manNode = mdl->GetNode(0);
 
     //------------------------------------------------------
@@ -378,9 +378,9 @@ void BLADE::GunFire()
     CMatrix perMtx;
     int32_t sti;
 
-    auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(gun));
+    auto *obj = static_cast<MODEL *>(core.GetEntityPointer(gun));
     if (obj == nullptr) // no pistol - look for saber pistol
-        obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(blade[1].eid));
+        obj = static_cast<MODEL *>(core.GetEntityPointer(blade[1].eid));
 
     if (obj != nullptr)
     {
@@ -415,7 +415,7 @@ void BLADE::GunFire()
             resm.EqMultiply(perMtx, *(CMatrix *)&lb.m);
             auto rp = perMtx * CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
 
-            core.Send_Message(EntityManager::GetEntityId("particles"), "lsffffffl", PS_CREATEX, "gunfire", rp.x, rp.y,
+            core.Send_Message(core.GetEntityId("particles"), "lsffffffl", PS_CREATEX, "gunfire", rp.x, rp.y,
                               rp.z, resm.Vz().x, resm.Vz().y, resm.Vz().z, 0);
         }
         else
@@ -581,7 +581,7 @@ void BLADE::TIEITEM_INFO::Release()
     if (nItemIndex != -1)
     {
         nItemIndex = -1;
-        EntityManager::EraseEntity(eid);
+        core.EraseEntity(eid);
         delete locatorName;
         locatorName = nullptr;
     }
@@ -589,7 +589,7 @@ void BLADE::TIEITEM_INFO::Release()
 
 void BLADE::TIEITEM_INFO::DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODEL *mdl, NODE *manNode)
 {
-    auto *obj = static_cast<MODEL *>(EntityManager::GetEntityPointer(eid));
+    auto *obj = static_cast<MODEL *>(core.GetEntityPointer(eid));
     if (obj != nullptr)
     {
         CMatrix perMtx;
@@ -635,7 +635,7 @@ void BLADE::TIEITEM_INFO::DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODE
 
 bool BLADE::TIEITEM_INFO::LoadItemModel(const char *mdlName, const char *locName)
 {
-    EntityManager::EraseEntity(eid);
+    core.EraseEntity(eid);
     delete locatorName;
     locatorName = nullptr;
 
@@ -656,10 +656,10 @@ bool BLADE::TIEITEM_INFO::LoadItemModel(const char *mdlName, const char *locName
     if (gs)
         gs->SetTexturePath("Ammo\\");
     // Create a model
-    eid = EntityManager::CreateEntity("modelr");
+    eid = core.CreateEntity("modelr");
     if (!core.Send_Message(eid, "ls", MSG_MODEL_LOAD_GEO, path))
     {
-        EntityManager::EraseEntity(eid);
+        core.EraseEntity(eid);
         if (gs)
             gs->SetTexturePath("");
         return false;

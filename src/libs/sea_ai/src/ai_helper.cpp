@@ -47,7 +47,7 @@ bool AIHelper::SetDevice()
 
 bool AIHelper::Init() const
 {
-    pIsland = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("island")));
+    pIsland = static_cast<ISLAND_BASE *>(core.GetEntityPointer(core.GetEntityId("island")));
 
     return true;
 }

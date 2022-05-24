@@ -9,7 +9,6 @@
 #include "v_s_stack.h"
 #include "storm/fs.h"
 
-#include <string_view>
 #include <algorithm>
 
 #include <fmt/chrono.h>
@@ -78,24 +77,30 @@ namespace
 
     void InvokeEntitiesLostRender()
     {
-        const auto its = EntityManager::GetEntityIdIterators();
-        for (auto it = its.first; it != its.second; ++it)
+        for (layer_index_t i{}; i < max_layers_num; ++i)
         {
-            if (!it->deleted && it->ptr != nullptr)
+            auto &&entities = core.GetEntityIds(i);
+            for (auto ent_id : entities)
             {
-                it->ptr->ProcessStage(Entity::Stage::lost_render);
+                if (const auto ptr = core.GetEntityPointer(ent_id))
+                {
+                    ptr->ProcessStage(Entity::Stage::lost_render);
+                }
             }
         }
     }
 
     void InvokeEntitiesRestoreRender()
     {
-        const auto its = EntityManager::GetEntityIdIterators();
-        for (auto it = its.first; it != its.second; ++it)
+        for (layer_index_t i{}; i < max_layers_num; ++i)
         {
-            if (!it->deleted && it->ptr != nullptr)
+            auto &&entities = core.GetEntityIds(i);
+            for (auto ent_id : entities)
             {
-                it->ptr->ProcessStage(Entity::Stage::restore_render);
+                if (const auto ptr = core.GetEntityPointer(ent_id))
+                {
+                    ptr->ProcessStage(Entity::Stage::restore_render);
+                }
             }
         }
     }
@@ -3844,7 +3849,7 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     {
         if (pVTLcur->hash == newHash && storm::iEquals(pVTLcur->name, sVideoName))
         {
-            if (EntityManager::GetEntityPointer(pVTLcur->videoTexture_id))
+            if (core.GetEntityPointer(pVTLcur->videoTexture_id))
             {
                 pVTLcur->ref++;
                 return pVTLcur->VideoTexture;
@@ -3870,15 +3875,15 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     if ((pVTLcur->name = new char[len]) == nullptr)
         throw std::runtime_error("memory allocate error");
     strcpy_s(pVTLcur->name, len, sVideoName);
-    const entid_t ei = EntityManager::CreateEntity("TextureSequence");
-    pVTLcur->VideoTexture = static_cast<CVideoTexture *>(EntityManager::GetEntityPointer(ei));
+    const entid_t ei = core.CreateEntity("TextureSequence");
+    pVTLcur->VideoTexture = static_cast<CVideoTexture *>(core.GetEntityPointer(ei));
     if (pVTLcur->VideoTexture != nullptr)
     {
         pVTLcur->videoTexture_id = ei;
         if (pVTLcur->VideoTexture->Initialize(this, sVideoName, true) == nullptr)
         {
             delete pVTLcur;
-            EntityManager::EraseEntity(ei);
+            core.EraseEntity(ei);
         }
         else
         {
@@ -3889,7 +3894,7 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     else
     {
         delete pVTLcur;
-        EntityManager::EraseEntity(ei);
+        core.EraseEntity(ei);
     }
 
     return retVal;
@@ -3912,7 +3917,7 @@ void DX9RENDER::ReleaseVideoTexture(CVideoTexture *pVTexture)
                     pVTL = cur->next;
                 else
                     prev->next = cur->next;
-                EntityManager::EraseEntity(cur->videoTexture_id);
+                core.EraseEntity(cur->videoTexture_id);
                 delete cur->name;
                 delete cur;
                 break;
@@ -3926,7 +3931,7 @@ void DX9RENDER::PlayToTexture()
     VideoTextureEntity *cur = pVTL;
     while (cur != nullptr)
     {
-        if (EntityManager::GetEntityPointer(pVTL->videoTexture_id))
+        if (core.GetEntityPointer(pVTL->videoTexture_id))
         {
             cur->VideoTexture->FrameUpdate();
             cur = cur->next;

@@ -9,6 +9,17 @@ class Entity;
 class MESSAGE;
 using entptr_t = Entity *;
 using entid_t = uint64_t;
+using layer_index_t = uint8_t;
+using priority_t = uint32_t;
+using hash_t = uint32_t;
+using entity_container_cref = const std::vector<entid_t>&;
+
+enum class layer_type_t : uint8_t
+{
+    common,
+    execute,
+    realize
+};
 
 constexpr auto max_ent_in_layer = 1024;
 constexpr auto max_layers_num = 32; // cannot exceed 32

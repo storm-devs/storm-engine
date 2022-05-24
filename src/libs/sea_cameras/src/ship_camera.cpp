@@ -26,7 +26,7 @@ void SHIP_CAMERA::SetDevices()
     pRS = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     Assert(pRS);
 
-    pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
+    pSea = static_cast<SEA_BASE *>(core.GetEntityPointer(core.GetEntityId("sea")));
 }
 
 void SHIP_CAMERA::Execute(uint32_t dwDeltaTime)
@@ -216,10 +216,10 @@ uint32_t SHIP_CAMERA::AttributeChanged(ATTRIBUTES *pAttr)
 
 void SHIP_CAMERA::ShipsCollision(CVECTOR &pos)
 {
-    for (const auto &entities = EntityManager::GetEntityIdVector("ship"); const auto ent : entities)
+    for (const auto &entities = core.GetEntityIds("ship"); const auto ent : entities)
     {
         // Object pointer
-        auto *ship = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ent));
+        auto *ship = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(ent));
         if (!ship)
             break;
         if (ship == GetAIObj())
@@ -264,8 +264,8 @@ bool SHIP_CAMERA::IslandCollision(CVECTOR &pos)
     {
         if (lIlsInitCnt < 10)
         {
-            if (const auto island_id = EntityManager::GetEntityId("island"))
-                pIsland = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(island_id));
+            if (const auto island_id = core.GetEntityId("island"))
+                pIsland = static_cast<ISLAND_BASE *>(core.GetEntityPointer(island_id));
             lIlsInitCnt++;
             if (pIsland == nullptr)
                 return false;
@@ -274,7 +274,7 @@ bool SHIP_CAMERA::IslandCollision(CVECTOR &pos)
             return false;
     }
     // Model
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(pIsland->GetModelEID()));
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(pIsland->GetModelEID()));
     if (mdl == nullptr)
         return false;
     // Find direction, distance

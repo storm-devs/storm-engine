@@ -86,7 +86,7 @@ void CoastFoam::Realize(uint32_t Delta_Time)
 
     if (pSea == nullptr)
     {
-        pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
+        pSea = static_cast<SEA_BASE *>(core.GetEntityPointer(core.GetEntityId("sea")));
         if (pSea == nullptr)
             return;
     }

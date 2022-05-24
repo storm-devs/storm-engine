@@ -31,8 +31,8 @@ bool WideScreen::Init()
 {
     // Layers
     // core.LayerCreate("realize", true, false);
-    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(REALIZE, GetId(), -257);
+    core.SetLayerType(REALIZE, layer_type_t::realize);
+    core.AddToLayer(REALIZE, GetId(), -257);
     rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)
         throw std::runtime_error("No service: dx9render");
@@ -59,7 +59,7 @@ void WideScreen::Realize(uint32_t delta_time)
     state += dlt * delta_time * 0.001f;
     if (state < 0.0f)
     {
-        EntityManager::EraseEntity(GetId());
+        core.EraseEntity(GetId());
         return;
     }
     if (state > 1.0f)

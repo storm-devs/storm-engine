@@ -135,7 +135,7 @@ inline int ftoi(float f)
     }
 #define DELETE_Entity(x)                                                                                               \
     {                                                                                                                  \
-        EntityManager::EraseEntity(x);                                                                                 \
+        core.EraseEntity(x);                                                                                 \
     }
 #define RELEASE(x)                                                                                                     \
     {                                                                                                                  \

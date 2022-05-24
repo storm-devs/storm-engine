@@ -42,7 +42,7 @@ void ShipMan::Free() const
 {
     // GUARD_SAILORS(ShipMan::Free())
 
-    EntityManager::EraseEntity(this->modelID);
+    core.EraseEntity(this->modelID);
 
     // UN//GUARD_SAILORS
 };
@@ -720,7 +720,7 @@ void ShipWalk::CreateNewMan(SailorsPoints &sailorsPoints)
 
     const int current = shipMan.size() - 1;
 
-    shipMan[current].modelID = EntityManager::CreateEntity("MODELR");
+    shipMan[current].modelID = core.CreateEntity("MODELR");
 
     switch (rand() % 6) // 6 different character types
     {
@@ -746,7 +746,7 @@ void ShipWalk::CreateNewMan(SailorsPoints &sailorsPoints)
 
     core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_ANI, "Lo_Man");
 
-    shipMan[current].model = static_cast<MODEL *>(EntityManager::GetEntityPointer(shipMan[current].modelID));
+    shipMan[current].model = static_cast<MODEL *>(core.GetEntityPointer(shipMan[current].modelID));
     shipMan[current].SetAnimation(0, shipState);
 
     if (sailorsPoints.points.count)
@@ -785,14 +785,14 @@ bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType)
     bHide = false;
     shipID = _shipID;
 
-    const auto seaID = EntityManager::GetEntityId("sea");
-    shipState.sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(seaID));
+    const auto seaID = core.GetEntityId("sea");
+    shipState.sea = static_cast<SEA_BASE *>(core.GetEntityPointer(seaID));
 
     if (!editorMode)
     {
         // Game mode - ship created
 
-        ship = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(_shipID));
+        ship = static_cast<SHIP_BASE *>(core.GetEntityPointer(_shipID));
         shipModel = ship->GetModel();
 
         // Load points
@@ -1053,8 +1053,8 @@ bool Sailors::Init()
 
     rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
 
-    EntityManager::SetLayerType(SEA_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(SEA_REALIZE, GetId(), 65530);
+    core.SetLayerType(SEA_REALIZE, layer_type_t::realize);
+    core.AddToLayer(SEA_REALIZE, GetId(), 65530);
 
     // UN//GUARD_SAILORS
 

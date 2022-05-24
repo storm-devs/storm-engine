@@ -51,7 +51,7 @@ bool BLAST::Init()
         AddGeometry(name, RandomNum * rand() / RAND_MAX + 1);
     }
 
-    Splash = EntityManager::GetEntityId("BallSplash");
+    Splash = core.GetEntityId("BallSplash");
 
     return true;
 }
@@ -110,10 +110,10 @@ void BLAST::ProcessTime(uint32_t DT)
     uint32_t n;
     float res;
 
-    if (!EntityManager::GetEntityPointer(sea_eid))
+    if (!core.GetEntityPointer(sea_eid))
     {
-        sea_eid = EntityManager::GetEntityId("sea");
-        pSea = static_cast<CANNON_TRACE_BASE *>(EntityManager::GetEntityPointer(sea_eid));
+        sea_eid = core.GetEntityId("sea");
+        pSea = static_cast<CANNON_TRACE_BASE *>(core.GetEntityPointer(sea_eid));
     }
 
     const auto Delta_Time = static_cast<float>(DT); //*0.1;
@@ -168,7 +168,7 @@ void BLAST::ProcessTime(uint32_t DT)
     }
 
     if (bStop)
-        EntityManager::EraseEntity(GetId());
+        core.EraseEntity(GetId());
 }
 
 uint64_t BLAST::ProcessMessage(MESSAGE &message)

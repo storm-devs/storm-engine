@@ -10,7 +10,7 @@ InterfaceBackScene::LightParam::~LightParam()
     bUse = false;
     if (pModel)
     {
-        EntityManager::EraseEntity(eiModel);
+        core.EraseEntity(eiModel);
         pModel = nullptr;
     }
 }
@@ -69,9 +69,9 @@ void InterfaceBackScene::LightParam::UpdateParams(float fTime)
 
 InterfaceBackScene::MenuDescr::~MenuDescr()
 {
-    EntityManager::EraseEntity(eiActive);
+    core.EraseEntity(eiActive);
     pActive = nullptr;
-    EntityManager::EraseEntity(eiPassive);
+    core.EraseEntity(eiPassive);
     pPassive = nullptr;
 }
 
@@ -90,9 +90,9 @@ void InterfaceBackScene::MenuDescr::Set(CMatrix *pMtx, const char *pcActiveName,
     // create active model
     if (pcActiveName)
     {
-        eiActive = EntityManager::CreateEntity("MODELR");
+        eiActive = core.CreateEntity("MODELR");
         core.Send_Message(eiActive, "ls", MSG_MODEL_LOAD_GEO, pcActiveName);
-        pActive = static_cast<MODEL *>(EntityManager::GetEntityPointer(eiActive));
+        pActive = static_cast<MODEL *>(core.GetEntityPointer(eiActive));
         if (pActive && pMtx)
         {
             pActive->mtx = *pMtx;
@@ -108,9 +108,9 @@ void InterfaceBackScene::MenuDescr::Set(CMatrix *pMtx, const char *pcActiveName,
     // create passive model
     if (pcPassiveName)
     {
-        eiPassive = EntityManager::CreateEntity("MODELR");
+        eiPassive = core.CreateEntity("MODELR");
         core.Send_Message(eiPassive, "ls", MSG_MODEL_LOAD_GEO, pcPassiveName);
-        pPassive = static_cast<MODEL *>(EntityManager::GetEntityPointer(eiPassive));
+        pPassive = static_cast<MODEL *>(core.GetEntityPointer(eiPassive));
         if (pPassive && pMtx)
         {
             pPassive->mtx = *pMtx;
@@ -151,8 +151,8 @@ InterfaceBackScene::InterfaceBackScene()
 InterfaceBackScene::~InterfaceBackScene()
 {
     RestoreLight();
-    EntityManager::EraseEntity(m_eiModel);
-    EntityManager::EraseEntity(m_eiLocators);
+    core.EraseEntity(m_eiModel);
+    core.EraseEntity(m_eiLocators);
     m_pLocators = nullptr;
     m_pModel = nullptr;
     ReleaseMenuList();
@@ -401,12 +401,12 @@ void InterfaceBackScene::LoadModel(const char *pcModelName)
     // delete all
     if (m_pModel)
     {
-        EntityManager::EraseEntity(m_eiModel);
+        core.EraseEntity(m_eiModel);
         m_pModel = nullptr;
     }
     if (m_pLocators)
     {
-        EntityManager::EraseEntity(m_eiLocators);
+        core.EraseEntity(m_eiLocators);
         m_pLocators = nullptr;
     }
     auto *pGeo = static_cast<VGEOMETRY *>(core.GetService("Geometry"));
@@ -414,18 +414,18 @@ void InterfaceBackScene::LoadModel(const char *pcModelName)
         pGeo->SetTexturePath(
             (std::string("MainMenu\\") + XINTERFACE::pThis->StringService()->GetLanguage() + "\\").c_str());
     // create model
-    m_eiModel = EntityManager::CreateEntity("MODELR");
+    m_eiModel = core.CreateEntity("MODELR");
     core.Send_Message(m_eiModel, "ls", MSG_MODEL_LOAD_GEO, pcModelName);
-    m_pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eiModel));
+    m_pModel = static_cast<MODEL *>(core.GetEntityPointer(m_eiModel));
     if (pGeo)
         pGeo->SetTexturePath("");
-    EntityManager::AddToLayer(SUN_TRACE, m_eiModel, 0);
-    EntityManager::AddToLayer(RAIN_DROPS, m_eiModel, 100);
+    core.AddToLayer(SUN_TRACE, m_eiModel, 0);
+    core.AddToLayer(RAIN_DROPS, m_eiModel, 100);
     // create locators
-    m_eiLocators = EntityManager::CreateEntity("MODELR");
+    m_eiLocators = core.CreateEntity("MODELR");
     const auto sLocName = std::string(pcModelName) + "_locators";
     core.Send_Message(m_eiLocators, "ls", MSG_MODEL_LOAD_GEO, sLocName.c_str());
-    m_pLocators = static_cast<MODEL *>(EntityManager::GetEntityPointer(m_eiLocators));
+    m_pLocators = static_cast<MODEL *>(core.GetEntityPointer(m_eiLocators));
 }
 
 void InterfaceBackScene::SetCameraPosition(const char *pcLocatorName)
@@ -704,9 +704,9 @@ void InterfaceBackScene::InitLight(ATTRIBUTES *pAParam)
         if (pGeo)
             pGeo->SetTexturePath("MainMenu\\");
         // create model
-        pLight->eiModel = EntityManager::CreateEntity("MODELR");
+        pLight->eiModel = core.CreateEntity("MODELR");
         core.Send_Message(pLight->eiModel, "ls", MSG_MODEL_LOAD_GEO, pcFonarModel);
-        pLight->pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(pLight->eiModel));
+        pLight->pModel = static_cast<MODEL *>(core.GetEntityPointer(pLight->eiModel));
         if (pGeo)
             pGeo->SetTexturePath("");
         if (pLight->pModel)
@@ -907,9 +907,9 @@ void InterfaceBackScene::InitAniModel(ATTRIBUTES *pAParam)
     if (pGeo)
         pGeo->SetTexturePath("MainMenu\\");
     // create model
-    pObj->ei = EntityManager::CreateEntity("MODELR");
+    pObj->ei = core.CreateEntity("MODELR");
     core.Send_Message(pObj->ei, "ls", MSG_MODEL_LOAD_GEO, pcMdlName);
-    pObj->pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(pObj->ei));
+    pObj->pModel = static_cast<MODEL *>(core.GetEntityPointer(pObj->ei));
     if (pGeo)
         pGeo->SetTexturePath("");
 
@@ -957,9 +957,9 @@ void InterfaceBackScene::InitStaticModel(ATTRIBUTES *pAParam)
     if (pGeo)
         pGeo->SetTexturePath("MainMenu\\");
     // create model
-    pObj->ei = EntityManager::CreateEntity("MODELR");
+    pObj->ei = core.CreateEntity("MODELR");
     core.Send_Message(pObj->ei, "ls", MSG_MODEL_LOAD_GEO, pcMdlName);
-    pObj->pModel = static_cast<MODEL *>(EntityManager::GetEntityPointer(pObj->ei));
+    pObj->pModel = static_cast<MODEL *>(core.GetEntityPointer(pObj->ei));
     if (pGeo)
         pGeo->SetTexturePath("");
 

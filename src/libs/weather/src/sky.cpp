@@ -365,12 +365,12 @@ void SKY::Realize(uint32_t Delta_Time)
             entid_t eid;
 
             if (!pAstronomy)
-                if (eid = EntityManager::GetEntityId("Astronomy"))
-                    pAstronomy = static_cast<Entity *>(EntityManager::GetEntityPointer(eid));
+                if (eid = core.GetEntityId("Astronomy"))
+                    pAstronomy = static_cast<Entity *>(core.GetEntityPointer(eid));
 
             if (!pSunGlow)
-                if (eid = EntityManager::GetEntityId("SUNGLOW"))
-                    pSunGlow = static_cast<Entity *>(EntityManager::GetEntityPointer(eid));
+                if (eid = core.GetEntityId("SUNGLOW"))
+                    pSunGlow = static_cast<Entity *>(core.GetEntityPointer(eid));
 
             if (pAstronomy || pSunGlow)
             {
@@ -561,9 +561,9 @@ void SKY::UpdateTimeFactor()
 
     // fTimeFactor += core.GetDeltaTime() * 0.00005f;
     entid_t eid;
-    if (!(eid = EntityManager::GetEntityId("weather")))
+    if (!(eid = core.GetEntityId("weather")))
         return;
-    fTimeFactor = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(eid))->GetFloat(whf_time_counter);
+    fTimeFactor = static_cast<WEATHER_BASE *>(core.GetEntityPointer(eid))->GetFloat(whf_time_counter);
     fTimeFactor *= (1.f / 24.f) * aSkyDirArray.size();
 
     if (static_cast<int32_t>(fTimeFactor) >= static_cast<int32_t>(aSkyDirArray.size()))

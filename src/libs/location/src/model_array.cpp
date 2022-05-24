@@ -58,23 +58,23 @@ int32_t ModelArray::CreateModel(const char *modelName, const char *technique, in
     }
     // Create a model
     entid_t id, idModelRealizer;
-    if (!(id = EntityManager::CreateEntity("modelr")))
+    if (!(id = core.CreateEntity("modelr")))
         return -1;
-    if (!(idModelRealizer = EntityManager::CreateEntity("LocModelRealizer")))
+    if (!(idModelRealizer = core.CreateEntity("LocModelRealizer")))
     {
-        EntityManager::EraseEntity(id);
+        core.EraseEntity(id);
         return -1;
     }
     core.Send_Message(idModelRealizer, "lip", 1, id, pLights);
-    // if(isVisible) EntityManager::AddToLayer(realize, idModelRealizer, level);
-    EntityManager::AddToLayer(REALIZE, idModelRealizer, level);
+    // if(isVisible) core.AddToLayer(realize, idModelRealizer, level);
+    core.AddToLayer(REALIZE, idModelRealizer, level);
     core.Send_Message(idModelRealizer, "ll", 2, isVisible);
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(id));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(id));
     if (!m)
     {
         gs->SetTexturePath("");
-        EntityManager::EraseEntity(id);
-        EntityManager::EraseEntity(idModelRealizer);
+        core.EraseEntity(id);
+        core.EraseEntity(idModelRealizer);
         return -1;
     }
     // Loading
@@ -83,8 +83,8 @@ int32_t ModelArray::CreateModel(const char *modelName, const char *technique, in
     if (!core.Send_Message(id, "ls", MSG_MODEL_LOAD_GEO, resPath.c_str()))
     {
         gs->SetTexturePath("");
-        EntityManager::EraseEntity(id);
-        EntityManager::EraseEntity(idModelRealizer);
+        core.EraseEntity(id);
+        core.EraseEntity(idModelRealizer);
         return -1;
     }
     gs->SetTexturePath("");
@@ -140,8 +140,8 @@ void ModelArray::DeleteModel(int32_t modelIndex)
     delete model[modelIndex].reflection;
     model[modelIndex].reflection = nullptr;
     // Delete the model
-    EntityManager::EraseEntity(model[modelIndex].modelrealizer);
-    EntityManager::EraseEntity(model[modelIndex].id);
+    core.EraseEntity(model[modelIndex].modelrealizer);
+    core.EraseEntity(model[modelIndex].id);
     numModels--;
     if (modelIndex != numModels)
         model[modelIndex] = model[numModels];
@@ -209,14 +209,14 @@ entid_t ModelArray::RealizerID(int32_t modelIndex)
 MODEL *ModelArray::operator[](int32_t modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
-    return static_cast<MODEL *>(EntityManager::GetEntityPointer(model[modelIndex].id));
+    return static_cast<MODEL *>(core.GetEntityPointer(model[modelIndex].id));
 }
 
 // Getting animation by index
 Animation *ModelArray::GetAnimation(int32_t modelIndex)
 {
     Assert(modelIndex >= 0 && modelIndex < numModels);
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[modelIndex].id));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(model[modelIndex].id));
     if (!m)
         return nullptr;
     return m->GetAnimation();
@@ -304,7 +304,7 @@ void ModelArray::Update(float dltTime)
         if (model[i].rotator)
         {
             CMatrix mtr(model[i].rotator->rx * dltTime, model[i].rotator->ry * dltTime, model[i].rotator->rz * dltTime);
-            auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[i].id));
+            auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model[i].id));
             if (mdl)
                 mdl->mtx = CMatrix(mtr, mdl->mtx);
         }
@@ -417,7 +417,7 @@ bool ModelArray::VisibleTest(const CVECTOR &p1, const CVECTOR &p2)
     {
         if (model[i].isVisible)
         {
-            auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[i].id));
+            auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model[i].id));
             if (mdl->Trace(p1, p2) < 1.0f)
                 return false;
         }
@@ -434,7 +434,7 @@ float ModelArray::Trace(const CVECTOR &src, const CVECTOR &dst)
     {
         if (model[i].isVisible)
         {
-            auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[i].id));
+            auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model[i].id));
             const auto km = mdl->Trace(src, dst);
             if (k > km)
             {
@@ -458,7 +458,7 @@ void ModelArray::Clip(PLANE *p, int32_t numPlanes, CVECTOR &cnt, float rad, bool
     {
         if (model[i].isVisible)
         {
-            auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model[i].id));
+            auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model[i].id));
             mdl->Clip(p, numPlanes, cnt, rad, fnc);
         }
     }

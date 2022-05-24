@@ -65,7 +65,7 @@ Sharks::Shark::Shark() : fforce(), spos(), angs(), vBase(0), model(0)
 
 Sharks::Shark::~Shark()
 {
-    EntityManager::EraseEntity(model);
+    core.EraseEntity(model);
 }
 
 bool Sharks::Shark::Init(float vp_x, float vp_z, bool isLoadModel)
@@ -81,7 +81,7 @@ bool Sharks::Shark::Init(float vp_x, float vp_z, bool isLoadModel)
     if (!isLoadModel)
         return true;
     // Loading the model
-    if (!(model = EntityManager::CreateEntity("modelr")))
+    if (!(model = core.CreateEntity("modelr")))
         return false;
     // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
@@ -95,18 +95,18 @@ bool Sharks::Shark::Init(float vp_x, float vp_z, bool isLoadModel)
     {
         gs->SetTexturePath("");
         core.Trace("Shark model 'shark' not loaded");
-        EntityManager::EraseEntity(model);
+        core.EraseEntity(model);
         return false;
     }
     gs->SetTexturePath("");
     if (!core.Send_Message(model, "ls", MSG_MODEL_LOAD_ANI, "shark"))
     {
         core.Trace("Shark animation 'shark' not loaded");
-        EntityManager::EraseEntity(model);
+        core.EraseEntity(model);
         return false;
     }
     // Set the default animation
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!mdl || !mdl->GetAnimation())
         return false;
     mdl->GetAnimation()->SetEvent(ae_end, 0, this);
@@ -176,7 +176,7 @@ inline void Sharks::Shark::ShipApply(float x, float z, float r2)
 inline void Sharks::Shark::Coordination(float cam_x, float cam_z, float dltTime, SEA_BASE *sb, ISLAND_BASE *ib)
 {
     // get a model
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!mdl)
         return;
     // Repulsion force
@@ -367,7 +367,7 @@ inline void Sharks::Shark::IslandCollision(ISLAND_BASE *ib, int32_t numPnt, floa
     const auto step = 2.0f * SHARK_PI / numPnt;
     auto vx = 0.0f;
     auto vz = 0.0f;
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(ib->GetSeabedEID()));
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(ib->GetSeabedEID()));
     if (!mdl)
         return;
     for (int32_t i = 0; i < numPnt; i++)
@@ -442,7 +442,7 @@ void Sharks::Shark::Event(Animation *animation, int32_t index, int32_t eventID, 
 int32_t Sharks::Shark::GenerateTrack(uint16_t *inds, Vertex *vrt, uint16_t base, SEA_BASE *sb)
 {
     // get a model
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!mdl)
         return 0;
     auto k = mdl->mtx.Pos().y;
@@ -519,7 +519,7 @@ Sharks::Sharks() : sea(0), island(0), indeces{}, vrt{}
 
 Sharks::~Sharks()
 {
-    EntityManager::EraseEntity(periscope.model);
+    core.EraseEntity(periscope.model);
     if (rs)
         rs->TextureRelease(trackTx);
 }
@@ -539,12 +539,12 @@ bool Sharks::Init()
     const int32_t eprt = AttributesPointer->GetAttributeAsDword("executeParticles", 77);
     const int32_t rprt = AttributesPointer->GetAttributeAsDword("realizeParticles", 100000);
     // Set the execution layers
-    EntityManager::AddToLayer(SEA_EXECUTE, GetId(), eprt);
-    EntityManager::AddToLayer(SEA_REALIZE, GetId(), rprt);
+    core.AddToLayer(SEA_EXECUTE, GetId(), eprt);
+    core.AddToLayer(SEA_REALIZE, GetId(), rprt);
     for (int32_t i = 0; i < numShakes; i++)
     {
-        EntityManager::AddToLayer(SEA_EXECUTE, shark[i].model, emdl);
-        EntityManager::AddToLayer(SEA_REALIZE, shark[i].model, rmdl);
+        core.AddToLayer(SEA_EXECUTE, shark[i].model, emdl);
+        core.AddToLayer(SEA_REALIZE, shark[i].model, rmdl);
     }
     // Load the texture
     trackTx = rs->TextureCreate("Animals\\SharkTrack.tga");
@@ -602,11 +602,11 @@ void Sharks::Execute(uint32_t delta_time)
             shark[i].Repulsion(shark[j]);
     // take into account ships
 
-    const auto &entities = EntityManager::GetEntityIdVector("ship");
+    const auto &entities = core.GetEntityIds("ship");
     for (auto ent : entities)
     {
         // Object pointer
-        auto *ship = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ent));
+        auto *ship = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(ent));
         if (!ship)
             break;
         // Ship position
@@ -619,19 +619,19 @@ void Sharks::Execute(uint32_t delta_time)
             shark[i].ShipApply(shipPos.x, shipPos.z, rd2);
     }
     // The sea
-    auto *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
+    auto *sb = static_cast<SEA_BASE *>(core.GetEntityPointer(sea));
     if (!sb)
     {
-        sea = EntityManager::GetEntityId("sea");
-        sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
+        sea = core.GetEntityId("sea");
+        sb = static_cast<SEA_BASE *>(core.GetEntityPointer(sea));
         if (!sb)
             return;
     }
-    auto *ib = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(island));
+    auto *ib = static_cast<ISLAND_BASE *>(core.GetEntityPointer(island));
     if (!ib)
     {
-        island = EntityManager::GetEntityId("island");
-        ib = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(island));
+        island = core.GetEntityId("island");
+        ib = static_cast<ISLAND_BASE *>(core.GetEntityPointer(island));
         if (!ib)
             return;
     }
@@ -654,7 +654,7 @@ void Sharks::Execute(uint32_t delta_time)
                 if (periscope.pos.y > 0.0f)
                     periscope.pos.y = 0.0f;
             }
-            auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(periscope.model));
+            auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(periscope.model));
             if (mdl)
             {
                 mdl->mtx.BuildMatrix(CVECTOR(0.0f, periscope.ay, 0.0f), periscope.pos + CVECTOR(0.0f, 1.0f, 0.0f));
@@ -664,7 +664,7 @@ void Sharks::Execute(uint32_t delta_time)
             if (periscope.time < 0.0f)
             {
                 periscope.time = -1.0f;
-                EntityManager::EraseEntity(periscope.model);
+                core.EraseEntity(periscope.model);
             }
         }
         else
@@ -692,7 +692,7 @@ void Sharks::Execute(uint32_t delta_time)
 
 bool Sharks::LoadPeriscopeModel()
 {
-    if (!(periscope.model = EntityManager::CreateEntity("modelr")))
+    if (!(periscope.model = core.CreateEntity("modelr")))
         return false;
     auto *gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (!gs)
@@ -701,23 +701,23 @@ bool Sharks::LoadPeriscopeModel()
     if (!core.Send_Message(periscope.model, "ls", MSG_MODEL_LOAD_GEO, "Animals\\periscope"))
     {
         gs->SetTexturePath("");
-        EntityManager::EraseEntity(periscope.model);
+        core.EraseEntity(periscope.model);
         return false;
     }
     gs->SetTexturePath("");
-    auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(periscope.model));
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(periscope.model));
     if (!mdl)
     {
-        EntityManager::EraseEntity(periscope.model);
+        core.EraseEntity(periscope.model);
         return false;
     }
-    EntityManager::AddToLayer(SEA_REALIZE, periscope.model, 10);
+    core.AddToLayer(SEA_REALIZE, periscope.model, 10);
     return true;
 }
 
 void Sharks::Realize(uint32_t delta_time)
 {
-    auto *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
+    auto *sb = static_cast<SEA_BASE *>(core.GetEntityPointer(sea));
     if (!sb)
         return;
     int32_t num = 0;
@@ -735,7 +735,7 @@ void Sharks::Realize(uint32_t delta_time)
     }
 
     /*
-    ISLAND_BASE * ib = (ISLAND_BASE *)EntityManager::GetEntityPointer(island);
+    ISLAND_BASE * ib = (ISLAND_BASE *)core.GetEntityPointer(island);
     if(!ib) return;
     float maxRad = 0.0f;
     int32_t s = 30;

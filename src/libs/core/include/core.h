@@ -1,12 +1,14 @@
 #pragma once
 
+#include <ranges>
+
 // common includes
 #include "message.h"
-#include "entity_manager.h"
 #include "controls.h"
 #include "engine_version.hpp"
 #include "v_data.h"
 #include "v_file_service.h"
+#include "shared/layers.h"
 
 struct IFUNCINFO;
 
@@ -82,6 +84,22 @@ class Core
     [[nodiscard]] virtual ScreenSize GetScreenSize() const noexcept = 0;
 
     virtual void stopFrameProcessing() = 0;
+
+    // Entity management
+    virtual void AddToLayer(layer_index_t index, entid_t id, priority_t priority) = 0;
+    virtual void EraseEntity(entid_t entity) = 0;
+    virtual entid_t CreateEntity(const char *name, ATTRIBUTES *attr = nullptr) = 0;
+    virtual entptr_t GetEntityPointer(entid_t entity) const = 0;
+    virtual entid_t GetEntityId(const char *name) const = 0;
+    virtual entity_container_cref GetEntityIds(layer_type_t index) const = 0;
+    virtual entity_container_cref GetEntityIds(layer_index_t index) const = 0;
+    virtual entity_container_cref GetEntityIds(const char *name) const = 0;
+    virtual void SetLayerType(layer_index_t index, layer_type_t type) = 0;
+    virtual void SetLayerFrozen(layer_index_t index, bool freeze) = 0;
+    virtual void RemoveFromLayer(layer_index_t index, entid_t id) = 0;
+    virtual hash_t GetClassCode(entid_t id) const = 0;
+    virtual bool IsLayerFrozen(layer_index_t index) const = 0;
+
 
     CONTROLS* Controls{};
 };
