@@ -69,21 +69,27 @@ void BIShipCommandList::FillIcons()
 
     int32_t i = 0;
     if (auto *data = core.Event(BI_EVENT_GET_CMD_LIST_ORDER_PRIORITY, "l", i))
-    { // dynamic event-based filling
+    {
+        // dynamic event-based filling
         int32_t cmd{};
         const auto check = [&cmd](const int32_t current_cmd) { return cmd == current_cmd; };
-        do
+        while (true)
         {
             cmd = data->GetInt();
+            if (cmd == 0)
+            {
+                break;
+            }
+
             if (m_nCurrentCommandMode & cmd)
             {
                 fill(check);
             }
 
             data = core.Event(BI_EVENT_GET_CMD_LIST_ORDER_PRIORITY, "l", ++i);
-        } while (data);
-
-    } else
+        }
+    }
+    else
     {
         // no-event fallback
         fill([this](const uint32_t current_cmd) { return (m_nCurrentCommandMode & current_cmd) != 0; });
