@@ -167,7 +167,7 @@ VAI_OBJBASE *SHIPPOINTER::FindShipByChrIndex(int32_t chrIdx) const
     if (chrIdx == -1)
         return nullptr;
 
-    const auto &entities = core.GetEntityIds("ship");
+    auto &&entities = core.GetEntityIds("ship");
     for (auto ship : entities)
     {
         auto ps = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(ship));

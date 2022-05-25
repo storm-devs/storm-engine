@@ -66,7 +66,7 @@ bool SEAFOAM::Init()
 //--------------------------------------------------------------------
 void SEAFOAM::InitializeShipFoam()
 {
-    const auto &entities = core.GetEntityIds("ship");
+    auto &&entities = core.GetEntityIds("ship");
     for (auto ent : entities)
     {
         AddShip(ent);

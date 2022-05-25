@@ -31,80 +31,60 @@ CREATE_SCRIPTLIBRIARY(DX9RENDER_SCRIPT_LIBRIARY)
 
 namespace
 {
-    constexpr auto kKeyTakeScreenshot = "TakeScreenshot";
+constexpr auto kKeyTakeScreenshot = "TakeScreenshot";
 
-    D3DXIMAGE_FILEFORMAT GetScreenshotFormat(const std::string &fmt)
+D3DXIMAGE_FILEFORMAT GetScreenshotFormat(const std::string &fmt)
+{
+    if (fmt == "bmp")
     {
-        if (fmt == "bmp")
-        {
-            return D3DXIFF_BMP;
-        }
-        if (fmt == "jpg")
-        {
-            return D3DXIFF_JPG;
-        }
-        if (fmt == "tga")
-        {
-            return D3DXIFF_TGA;
-        }
-        if (fmt == "png")
-        {
-            return D3DXIFF_PNG;
-        }
-        if (fmt == "dds")
-        {
-            return D3DXIFF_DDS;
-        }
-        if (fmt == "ppm")
-        {
-            return D3DXIFF_PPM;
-        }
-        if (fmt == "dib")
-        {
-            return D3DXIFF_DIB;
-        }
-        if (fmt == "hdr")
-        {
-            return D3DXIFF_HDR;
-        }
-        if (fmt == "pfm") 
-        {
-            return D3DXIFF_PFM;
-        }
-
-        return D3DXIFF_FORCE_DWORD;
+        return D3DXIFF_BMP;
+    }
+    if (fmt == "jpg")
+    {
+        return D3DXIFF_JPG;
+    }
+    if (fmt == "tga")
+    {
+        return D3DXIFF_TGA;
+    }
+    if (fmt == "png")
+    {
+        return D3DXIFF_PNG;
+    }
+    if (fmt == "dds")
+    {
+        return D3DXIFF_DDS;
+    }
+    if (fmt == "ppm")
+    {
+        return D3DXIFF_PPM;
+    }
+    if (fmt == "dib")
+    {
+        return D3DXIFF_DIB;
+    }
+    if (fmt == "hdr")
+    {
+        return D3DXIFF_HDR;
+    }
+    if (fmt == "pfm")
+    {
+        return D3DXIFF_PFM;
     }
 
-    void InvokeEntitiesLostRender()
-    {
-        for (layer_index_t i{}; i < max_layers_num; ++i)
-        {
-            auto &&entities = core.GetEntityIds(i);
-            for (auto ent_id : entities)
-            {
-                if (const auto ptr = core.GetEntityPointer(ent_id))
-                {
-                    ptr->ProcessStage(Entity::Stage::lost_render);
-                }
-            }
-        }
-    }
-
-    void InvokeEntitiesRestoreRender()
-    {
-        for (layer_index_t i{}; i < max_layers_num; ++i)
-        {
-            auto &&entities = core.GetEntityIds(i);
-            for (auto ent_id : entities)
-            {
-                if (const auto ptr = core.GetEntityPointer(ent_id))
-                {
-                    ptr->ProcessStage(Entity::Stage::restore_render);
-                }
-            }
-        }
-    }
+    return D3DXIFF_FORCE_DWORD;
 }
+
+void InvokeEntitiesLostRender()
+{
+    core.ForEachEntity([](entptr_t entity_ptr) { entity_ptr->ProcessStage(Entity::Stage::lost_render); });
+}
+void InvokeEntitiesRestoreRender()
+{
+    core.ForEachEntity([](entptr_t entity_ptr) { entity_ptr->ProcessStage(Entity::Stage::restore_render); });
+}
+
+} // namespace
 
 DX9RENDER *DX9RENDER::pRS = nullptr;
 

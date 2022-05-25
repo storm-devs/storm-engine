@@ -24,7 +24,7 @@ class COMMON_CAMERA : public Entity
     {
         Assert(pACharacter);
         // get entity id from loaded ships
-        const auto &entities = core.GetEntityIds("ship");
+        auto &&entities = core.GetEntityIds("ship");
         for (auto ship : entities)
         {
             auto *pObj = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(ship));

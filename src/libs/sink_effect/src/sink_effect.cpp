@@ -48,7 +48,7 @@ uint64_t SINKEFFECT::ProcessMessage(MESSAGE &message)
         auto *const attrs = message.AttributePointer();
         if (attrs)
         {
-            const auto &entities = core.GetEntityIds("ship");
+            auto &&entities = core.GetEntityIds("ship");
             for (auto ent : entities)
             {
                 /*

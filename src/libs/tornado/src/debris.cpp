@@ -221,7 +221,7 @@ bool Debris::IsShip()
 {
     const CVECTOR p(pillar.GetX(0.0f), 0.0f, pillar.GetZ(0.0f));
     CVECTOR pos;
-    const auto &entities = core.GetEntityIds("ship");
+    auto &&entities = core.GetEntityIds("ship");
     for (auto id : entities)
     {
         // Object pointer

@@ -2,10 +2,19 @@
 
 #include <algorithm>
 #include <cassert>
+#include <limits>
+#include <type_traits>
 
 #include "v_module_api.h"
 
-void EntityManager::Erase(EntityInternalData &data)
+namespace
+{
+
+using invalid_entity_idx_t = std::integral_constant<size_t, std::numeric_limits<size_t>::max()>;
+
+}
+
+void EntityManager::EraseAndFree(EntityInternalData &data)
 {
     // TODO: shift loop
     for (layer_index_t i = 0; i < max_layers_num; ++i)
@@ -16,11 +25,11 @@ void EntityManager::Erase(EntityInternalData &data)
     delete data.ptr;
 }
 
-void EntityManager::EraseEntityNoCheck(const entid_t id)
+void EntityManager::MarkDeleted(const entid_t id)
 {
     const auto index = static_cast<entid_index_t>(id);
     auto &entData = entities_.first[index];
-    entData.deleted = true;
+    entData.valid = false;
 
     auto &deletedArr = deletedIndices_.first;
     auto &deletedSize = deletedIndices_.second;
@@ -48,7 +57,7 @@ void EntityManager::AddToLayer(const layer_index_t index, const entid_t id, cons
         return;
     }
 
-    auto& data = entities_.first[idx];
+    auto &data = entities_.first[idx];
 
     // check if entity is already in layer
     if (data.mask & (1 << index))
@@ -124,7 +133,7 @@ void EntityManager::RemoveFromLayer(const layer_index_t index, EntityInternalDat
 
 entid_t EntityManager::CreateEntity(const char *name, ATTRIBUTES *attr)
 {
-    /* FIND VMA */
+    // Find VMA
     const auto hash = MakeHashValue(name);
     if (hash == 0)
     {
@@ -144,28 +153,33 @@ entid_t EntityManager::CreateEntity(const char *name, ATTRIBUTES *attr)
         throw std::runtime_error("invalid entity name");
     }
 
-    /* CREATE Entity */
+    // Create entity
     auto *ptr = static_cast<Entity *>(pClass->CreateClass());
     if (ptr == nullptr)
     {
         throw std::runtime_error("CreateClass returned nullptr");
     }
 
-    /* INIT Entity */
+    // Init entity
     // set id first
     const auto id = PushEntity(ptr, hash);
     ptr->data_.id = id;
     ptr->AttributesPointer = attr;
 
+    // add to cache
+    cache_.UpdateAdd(hash, id);
+
     // then init
     if (!ptr->Init())
     {
+        // remove from cache
+        cache_.UpdateErase(hash, id);
+
         // delete if fail
-        EraseEntityNoCheck(id);
+        MarkDeleted(id);
         return invalid_entity;
     }
-
-    // return entid_t if success
+    
     return id;
 }
 
@@ -179,19 +193,22 @@ void EntityManager::EraseEntity(const entid_t id)
 
     const auto &data = entities_.first[idx];
 
-    // data ptr deleted
-    if (data.ptr == nullptr)
+    // check if already erased
+    if (data.valid == false)
     {
         return;
     }
 
-    // entity id mismatch
+    // check id mismatch
     if (data.ptr->GetId() != id)
     {
         return;
     }
 
-    EraseEntityNoCheck(id);
+    // remove from cache
+    cache_.UpdateErase(data.hash, id);
+
+    MarkDeleted(id);
 }
 
 void EntityManager::EraseAll()
@@ -204,19 +221,24 @@ void EntityManager::EraseAll()
         if (index >= size)
             continue;
 
-        Erase(arr[index]); // release
+        // release
+        EraseAndFree(arr[index]);
+
         arr[index] = {};
     }
 
     // clear arrays
     entities_.second = 0;
     freeIndices_.second = 0;
+
+    // clear cache
+    cache_.Clear();
 }
 
 entptr_t EntityManager::GetEntityPointer(const entid_t id) const
 {
     const auto idx = GetEntityDataIdx(id);
-    if (!EntIdxValid(idx) || entities_.first[idx].deleted)
+    if (!EntIdxValid(idx) || !entities_.first[idx].valid)
     {
         return nullptr;
     }
@@ -226,7 +248,7 @@ entptr_t EntityManager::GetEntityPointer(const entid_t id) const
 
 entity_container_cref EntityManager::GetEntityIds(const layer_type_t type) const
 {
-    // TODO:: cache
+    // TODO:: cache or iterator?
     static std::vector<entid_t> result;
     result.reserve(entities_.first.size()); // TODO: investigate memory consumption
     result.clear();
@@ -253,22 +275,27 @@ entity_container_cref EntityManager::GetEntityIds(const char *name) const
 
 entity_container_cref EntityManager::GetEntityIds(const uint32_t hash) const
 {
-    static std::vector<entid_t> result;
-    result.reserve(entities_.first.size()); // TODO: investigate memory consumption
-    result.clear();
+    static const std::vector<entid_t> null;
 
-    const auto &arr = entities_.first;
-    const auto size = entities_.second;
-
-    for (auto it = std::begin(arr); it != std::begin(arr) + size; ++it)
+    // if contains, it is already valid
+    // otherwise let's fill the cache in
+    bool empty = !cache_.Contains(hash);
+    if (empty)
     {
-        if (it->hash == hash && !it->deleted)
+        const auto &arr = entities_.first;
+        const auto size = entities_.second;
+
+        for (auto it = std::begin(arr); it != std::begin(arr) + size; ++it)
         {
-            result.push_back(it->id);
+            if (it->hash == hash && it->valid)
+            {
+                cache_.Add(hash, it->id);
+                empty = false;
+            }
         }
     }
 
-    return result;
+    return empty ? null : cache_.Get(hash);
 }
 
 entity_container_cref EntityManager::GetEntityIds(const layer_index_t index) const
@@ -290,7 +317,7 @@ entid_t EntityManager::GetEntityId(const uint32_t hash) const
 
     for (auto it = std::begin(arr); it != std::begin(arr) + size; ++it)
     {
-        if (it->hash == hash && !it->deleted)
+        if (it->hash == hash && it->valid)
         {
             return it->id;
         }
@@ -356,41 +383,35 @@ void EntityManager::NewLifecycle()
         const auto index = *it;
 
         if (index >= size)
+        {
             continue;
+        }
 
         if (arr[index].id == 0)
+        {
             continue;
+        }
 
-        Erase(arr[index]);   // release
-        arr[index] = {};      // erase entity data
-        PushFreeIndex(index); // push free index to stack instead of shifting
+        EraseAndFree(arr[index]); // release
+        arr[index] = {};          // erase entity data
+        PushFreeIndex(index);     // push free index to stack instead of shifting
     }
     deletedSize = 0; // clear array of entities to delete
 }
 
 size_t EntityManager::GetEntityDataIdx(const entid_t id) const
 {
-    // index out of range
     const auto index = static_cast<entid_index_t>(id);
-    if (index >= entities_.second)
-    {
-        return invalid_entity_idx_t{};
-    }
-
-    // data ptr deleted
     auto &data = entities_.first[index];
-    if (data.ptr == nullptr)
+
+    // check validity
+    if (index >= entities_.second || 
+        data.valid == false ||
+        data.ptr->GetId() != id)
     {
         return invalid_entity_idx_t{};
     }
 
-    // entity id mismatch
-    const auto entid = data.ptr->GetId();
-    if (id != entid)
-    {
-        return invalid_entity_idx_t{};
-    }
-    
     return index;
 }
 
@@ -404,20 +425,33 @@ entid_t EntityManager::PushEntity(entptr_t ptr, hash_t hash)
     auto &stack = freeIndices_.first;
     auto &top = freeIndices_.second;
 
-    /* check if free indices available */
+    // check if free indices available
     const entid_index_t idx = top != 0 ? stack[--top] : size;
 
-    /* calculate stamp */
+    // calculate stamp
     const auto ms =
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 
-    /* assemble entity id */
+    // assemble entity id
     const auto stamp = static_cast<entid_stamp_t>(ms.count());
     const auto id = static_cast<entid_t>(stamp) << 32 | idx;
 
-    /* push entity data */
-    arr[idx] = {{}, {}, {}, ptr, id, hash};
+    // push entity data
+    arr[idx] = {true, {}, {}, ptr, id, hash};
     ++size;
 
     return id;
+}
+
+void EntityManager::ForEachEntity(const std::function<void(entptr_t)> &f)
+{
+    auto &arr = entities_.first;
+    const auto size = entities_.second;
+    for (auto it = std::begin(arr); it < std::begin(arr) + size; ++it)
+    {
+        if (const auto entity_ptr = GetEntityPointer(it->id))
+        {
+            f(entity_ptr);
+        }
+    }
 }

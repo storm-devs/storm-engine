@@ -156,7 +156,7 @@ void SEA_OPERATOR::FirstInit()
 {
     sea = static_cast<SEA_BASE *>(core.GetEntityPointer(core.GetEntityId("sea")));
 
-    const auto &entities = core.GetEntityIds("ship");
+    auto &&entities = core.GetEntityIds("ship");
     for (auto ent : entities)
     {
         SetIfMyShip(ent);

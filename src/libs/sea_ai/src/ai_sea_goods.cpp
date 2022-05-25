@@ -75,7 +75,7 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                 aShips.clear();
 
                 // enumerate ships
-                const auto &entities = core.GetEntityIds("ship");
+                auto &&entities = core.GetEntityIds("ship");
                 for (auto ent : entities)
                 {
                     aShips.push_back(static_cast<SHIP_BASE *>(core.GetEntityPointer(ent)));

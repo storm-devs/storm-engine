@@ -602,7 +602,7 @@ void Sharks::Execute(uint32_t delta_time)
             shark[i].Repulsion(shark[j]);
     // take into account ships
 
-    const auto &entities = core.GetEntityIds("ship");
+    auto &&entities = core.GetEntityIds("ship");
     for (auto ent : entities)
     {
         // Object pointer

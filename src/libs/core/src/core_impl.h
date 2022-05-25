@@ -132,6 +132,7 @@ class CoreImpl final : public CorePrivate
     void RemoveFromLayer(layer_index_t index, entid_t id) override;
     hash_t GetClassCode(entid_t id) const override;
     bool IsLayerFrozen(layer_index_t index) const override;
+    void ForEachEntity(const std::function<void(entptr_t)>& f) override;
 
     void collectCrashInfo() const;
 
@@ -146,7 +147,7 @@ class CoreImpl final : public CorePrivate
 
     bool Exit_flag; // true if the program closing
 
-  private:
+private:
     void loadCompatibilitySettings(INIFILE &inifile);
 
     EntityManager entity_manager_;

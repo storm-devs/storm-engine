@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ranges>
+#include <functional>
 
 // common includes
 #include "message.h"
@@ -99,7 +99,7 @@ class Core
     virtual void RemoveFromLayer(layer_index_t index, entid_t id) = 0;
     virtual hash_t GetClassCode(entid_t id) const = 0;
     virtual bool IsLayerFrozen(layer_index_t index) const = 0;
-
+    virtual void ForEachEntity(const std::function<void(entptr_t)> &f) = 0;
 
     CONTROLS* Controls{};
 };

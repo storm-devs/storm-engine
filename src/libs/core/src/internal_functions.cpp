@@ -739,7 +739,14 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             entity_iterator = std::cbegin(entities);
             entity_iterator_end = std::cend(entities);
         }
-        ent = *entity_iterator;
+        if (entity_iterator != entity_iterator_end)
+        {
+            ent = *entity_iterator;
+        }
+        else
+        {
+            ent = invalid_entity;
+        }
 
         pV2 = pV2->GetVarPointer();
         pV2->Set(ent);
@@ -764,7 +771,14 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
 
         ++entity_iterator;
-        ent = entity_iterator != entity_iterator_end ? *entity_iterator : invalid_entity;
+        if (entity_iterator != entity_iterator_end)
+        {
+            ent = *entity_iterator;
+        }
+        else
+        {
+            ent = invalid_entity;
+        }
 
         pV2 = pV2->GetVarPointer();
         pV2->Set(ent);

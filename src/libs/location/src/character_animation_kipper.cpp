@@ -44,7 +44,7 @@ CharacterAnimationKipper::~CharacterAnimationKipper()
 bool CharacterAnimationKipper::Init()
 {
     // check that the it's the only one
-    const auto &entities = core.GetEntityIds("CharacterAnimationKipper");
+    auto &&entities = core.GetEntityIds("CharacterAnimationKipper");
     for (auto eid : entities)
     {
         if (core.GetEntityPointer(eid) == this)

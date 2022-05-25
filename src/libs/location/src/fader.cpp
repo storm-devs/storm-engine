@@ -55,7 +55,7 @@ bool Fader::Init()
 {
     // check that it's the only one
 
-    const auto &entities = core.GetEntityIds("Fader");
+    auto &&entities = core.GetEntityIds("Fader");
     for (auto eid : entities)
     {
         if (eid == GetId())

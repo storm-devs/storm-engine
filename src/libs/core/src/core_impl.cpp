@@ -995,6 +995,11 @@ bool CoreImpl::IsLayerFrozen(layer_index_t index) const
     return entity_manager_.IsLayerFrozen(index);
 }
 
+void CoreImpl::ForEachEntity(const std::function<void(entptr_t)> &f)
+{
+    entity_manager_.ForEachEntity(f);
+}
+
 void CoreImpl:: collectCrashInfo() const
 {
     Compiler->CollectCallStack();

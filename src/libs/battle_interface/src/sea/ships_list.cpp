@@ -215,7 +215,7 @@ void SHIP_DESCRIBE_LIST::Add(int32_t mainChrIndex, int32_t chIdx, ATTRIBUTES *pC
     pr->next = nullptr;
 
     // find this ship
-    const auto &entities = core.GetEntityIds("ship");
+    auto &&entities = core.GetEntityIds("ship");
     for (auto ship : entities)
     {
         auto *vob = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(ship));
@@ -285,7 +285,7 @@ void SHIP_DESCRIBE_LIST::Refresh()
 
     TMP_LONG_STACK tls;
 
-    const auto &entities = core.GetEntityIds("ship");
+    auto &&entities = core.GetEntityIds("ship");
     for (auto ship : entities)
     {
         auto *vob = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(ship));
