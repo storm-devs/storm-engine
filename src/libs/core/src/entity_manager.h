@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <chrono>
 #include <cstdint>
 #include <vector>
 
@@ -38,7 +37,6 @@ class EntityManager final
         layer_type_t type;
         bool frozen;
     };
-
   public:
     hash_t GetClassCode(entid_t id) const;
     entptr_t GetEntityPointer(entid_t id) const;
@@ -50,8 +48,8 @@ class EntityManager final
     layer_type_t GetLayerType(layer_index_t index) const;
     bool IsLayerFrozen(layer_index_t index) const;
 
-    void AddToLayer(layer_index_t index, entid_t id, priority_t priority);
-    void RemoveFromLayer(layer_index_t index, entid_t id);
+    void AddToLayer(layer_index_t layer_idx, entid_t entity_id, priority_t priority); // no bounds check
+    void RemoveFromLayer(layer_index_t layer_idx, entid_t entity_id);                 // no bounds check
     entid_t CreateEntity(const char *name, ATTRIBUTES *attr = nullptr);
     void EraseEntity(entid_t id);
     void EraseAll();
@@ -62,14 +60,15 @@ class EntityManager final
 
   private:
     static bool EntIdxValid(size_t idx);
-    static entid_t calculate_entity_id(size_t idx);
+    static entid_t CalculateEntityId(size_t idx);
 
     size_t GetEntityDataIdx(entid_t id) const;
     entid_t GetEntityId(uint32_t hash) const;
 
+    void AddToLayer(layer_index_t index, EntityInternalData &data, priority_t priority); // no bounds check
+    void RemoveFromLayer(layer_index_t index, EntityInternalData &data);                 // no bounds check
     void EraseAndFree(EntityInternalData &data);
     void MarkDeleted(entid_t id);
-    void RemoveFromLayer(layer_index_t index, EntityInternalData &data);
     entid_t InsertEntity(entptr_t ptr, hash_t hash);
 
     mutable EntityContainerCache cache_;

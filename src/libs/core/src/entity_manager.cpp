@@ -17,10 +17,12 @@ using invalid_entity_idx_t = std::integral_constant<size_t, std::numeric_limits<
 
 void EntityManager::EraseAndFree(EntityInternalData &data)
 {
-    // TODO: shift loop
     for (layer_index_t i = 0; i < max_layers_num; ++i)
     {
-        RemoveFromLayer(i, data);
+        if (data.mask >> i & 1)
+        {
+            RemoveFromLayer(i, data);
+        }
     }
 
     delete data.ptr;
@@ -44,22 +46,9 @@ hash_t EntityManager::GetClassCode(const entid_t id) const
     return entities_[idx].hash;
 }
 
-void EntityManager::AddToLayer(const layer_index_t index, const entid_t id, const priority_t priority)
+void EntityManager::AddToLayer(const layer_index_t index, EntityInternalData &data, const priority_t priority)
 {
     assert(index < max_layers_num);
-    const auto idx = GetEntityDataIdx(id);
-    if (!EntIdxValid(idx))
-    {
-        return;
-    }
-
-    auto &data = entities_[idx];
-
-    // check if entity is already in layer
-    if (data.mask & (1 << index))
-    {
-        return;
-    }
 
     // set info about layer
     data.mask |= 1 << index;
@@ -69,20 +58,14 @@ void EntityManager::AddToLayer(const layer_index_t index, const entid_t id, cons
     auto &priorities = layer.priorities;
     auto &entity_ids = layer.entity_ids;
 
-    // TODO: investigate if duplicate check is needed
+    // duplicate assert
+    assert(std::ranges::find(entity_ids, data.id) == std::end(entity_ids));
+
     const auto targetIdx =
         std::distance(std::begin(priorities), std::ranges::upper_bound(priorities, priority));
 
     priorities.insert(std::begin(priorities) + targetIdx, priority);
-    entity_ids.insert(std::begin(entity_ids) + targetIdx, id);
-}
-
-void EntityManager::RemoveFromLayer(const layer_index_t index, const entid_t id)
-{
-    if (const auto idx = GetEntityDataIdx(id); EntIdxValid(idx))
-    {
-        RemoveFromLayer(index, entities_[idx]);
-    }
+    entity_ids.insert(std::begin(entity_ids) + targetIdx, data.id);
 }
 
 void EntityManager::RemoveFromLayer(const layer_index_t index, EntityInternalData &data)
@@ -90,11 +73,6 @@ void EntityManager::RemoveFromLayer(const layer_index_t index, EntityInternalDat
     assert(index < max_layers_num);
 
     auto &mask = data.mask;
-    // check if entity is in layer
-    if (!(mask & (1 << index)))
-    {
-        return;
-    }
 
     const auto priority = data.priorities[index];
     const auto id = data.id;
@@ -103,13 +81,13 @@ void EntityManager::RemoveFromLayer(const layer_index_t index, EntityInternalDat
     auto &priorities = layer.priorities;
     auto &entity_ids = layer.entity_ids;
 
-    const auto size = std::ssize(priorities);
+    const auto ssize = std::ssize(priorities);
 
     const auto lowerIdx = std::distance(std::begin(priorities), std::ranges::lower_bound(priorities, priority));
-    assert(lowerIdx < size);
+    assert(lowerIdx < ssize);
 
     // look through this priority only
-    for (auto i = lowerIdx; i < size && priorities[i] == priority; ++i)
+    for (auto i = lowerIdx; i < ssize && priorities[i] == priority; ++i)
     {
         if (entity_ids[i] == id)
         {
@@ -263,23 +241,32 @@ entptr_t EntityManager::GetEntityPointer(const entid_t id) const
 
 entity_container_cref EntityManager::GetEntityIds(const layer_type_t type) const
 {
-    // TODO:: cache or iterator?
+    // TODO: introduce cache or invalidation-proof iterator?
     static std::vector<entid_t> result;
-    result.reserve(entities_.size()); // TODO: investigate memory consumption
+    result.reserve(entities_.size());
     result.clear();
-
+    
     for (auto it = std::begin(layers_); it != std::end(layers_); ++it)
     {
         if (it->frozen)
+        {
             continue;
+        }
 
         if (it->type == type)
         {
-            for (auto ent_it = std::begin(it->entity_ids); ent_it != std::end(it->entity_ids); ++ent_it)
-                result.push_back(*ent_it);
+            std::ranges::copy(it->entity_ids, std::back_inserter(result));
         }
     }
-
+    
+    // TODO: Investigate:
+    // Some entities are referenced in multiple layers of same type
+    // therefore there are getting processed multiple times.
+    // This negatively affects any logic that make use of delta time.
+    // Removing duplicates would resolve such issues, but
+    // 1) it will increase the complexity drastically
+    // 2) it's not obvious what duplicate to remove as they might
+    // have different priorities inside corresponding layers.
     return result;
 }
 
@@ -340,9 +327,9 @@ bool EntityManager::EntIdxValid(const size_t idx)
     return idx != invalid_entity_idx_t{};
 }
 
-entid_t EntityManager::calculate_entity_id(const size_t idx)
+entid_t EntityManager::CalculateEntityId(const size_t idx)
 {
-    // check if idx exceeds 2^32
+    // assert for idx exceeding 2^32
     assert(static_cast<size_t>(static_cast<uint32_t>(idx)) == idx);
 
     // calculate stamp
@@ -384,37 +371,64 @@ bool EntityManager::IsLayerFrozen(const layer_index_t index) const
     return layers_[index].frozen;
 }
 
+void EntityManager::AddToLayer(layer_index_t layer_idx, entid_t entity_id, priority_t priority)
+{
+
+    if (const auto entity_idx = GetEntityDataIdx(entity_id); EntIdxValid(entity_idx))
+    {
+        if (!(entities_[entity_idx].mask >> layer_idx & 1))
+        {
+            AddToLayer(layer_idx, entities_[entity_idx], priority);
+        }
+    }
+}
+
+void EntityManager::RemoveFromLayer(layer_index_t layer_idx, entid_t entity_id)
+{
+
+    if (const auto entity_idx = GetEntityDataIdx(entity_id); EntIdxValid(entity_idx))
+    {
+        if (entities_[entity_idx].mask >> layer_idx & 1)
+        {
+            RemoveFromLayer(layer_idx, entities_[entity_idx]);
+        }
+    }
+}
+
 void EntityManager::NewLifecycle()
 {
     // deletedSize will increment while erasing entities. this is safe for std::array iteration
     while (!deletedIndices_.empty())
     {
-        const auto index = deletedIndices_.top();
-        assert(index < entities_.size());
+        const auto entity_idx = deletedIndices_.top();
+        assert(entity_idx < entities_.size());
         deletedIndices_.pop();
 
         // release
-        EraseAndFree(entities_[index]);
+        EraseAndFree(entities_[entity_idx]);
         // erase entity data
-        entities_[index] = {};
+        entities_[entity_idx] = {};
         // push free index to stack instead of shifting
-        freeIndices_.push(index);
+        freeIndices_.push(entity_idx);
     }
 }
 
 size_t EntityManager::GetEntityDataIdx(const entid_t id) const
 {
-    const auto index = static_cast<entid_index_t>(id);
+    if (id == invalid_entity)
+    {
+        return invalid_entity_idx_t{};
+    }
 
     // check bounds
+    const auto index = static_cast<entid_index_t>(id);
     if (index >= std::size(entities_))
     {
         return invalid_entity_idx_t{};
     }
 
-    auto &data = entities_[index];
-
     // check validity
+    auto &data = entities_[index];
     if(data.valid == false)
     {
         return invalid_entity_idx_t{};
@@ -435,14 +449,14 @@ entid_t EntityManager::InsertEntity(entptr_t ptr, hash_t hash)
     entid_t id;
     if (freeIndices_.empty())
     {
-        const entid_index_t index = static_cast<entid_index_t>(std::size(entities_));
-        id = calculate_entity_id(index);
-        entities_.push_back(EntityInternalData{true, {}, {}, ptr, id, hash});
+        const entid_index_t index = std::size(entities_);
+        id = CalculateEntityId(index);
+        entities_.emplace_back(EntityInternalData{true, {}, {}, ptr, id, hash});
     }
     else
     {
         const entid_index_t index = freeIndices_.top();
-        id = calculate_entity_id(index);
+        id = CalculateEntityId(index);
         freeIndices_.pop();
         entities_[index] = {true, {}, {}, ptr, id, hash};
     }
