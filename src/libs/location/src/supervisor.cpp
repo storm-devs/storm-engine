@@ -33,7 +33,7 @@ Supervisor::~Supervisor()
     isDelete = true;
     for (size_t i = 0; i < character.size(); i++)
     {
-        character[i].c->AlreadySTORM_DELETE();
+        character[i].c->AlreadyDeleted();
         core.EraseEntity(character[i].c->GetId());
     }
 }
