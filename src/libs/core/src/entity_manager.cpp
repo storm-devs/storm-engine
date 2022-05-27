@@ -208,11 +208,6 @@ void EntityManager::EraseAll()
     for (auto it = std::begin(entities_); it != std::end(entities_); ++it)
     {
         const auto index = static_cast<entid_index_t>(it->id);
-        if (index >= entities_.size())
-        {
-            __debugbreak();
-            // TODO:???
-        }
 
         // release
         EraseAndFree(entities_[index]);
@@ -231,10 +226,37 @@ void EntityManager::EraseAll()
 entptr_t EntityManager::GetEntityPointer(const entid_t id) const
 {
     const auto idx = GetEntityDataIdx(id);
-    if (!EntIdxValid(idx) || !entities_[idx].valid)
+    if (!EntIdxValid(idx))
     {
         return nullptr;
     }
+
+    // This check was intentionally removed to workaround some rare corner cases that are not handled properly.
+    //
+    // Here's an example of such a corner case that leads to crash due to missing sanity checks:
+    // Location entity is being destroyed (marked as invalid) from scripts. Therefore in the next frame its
+    // destructor is called, invoking Supervisor destructor which in turn destroys (marks as invalid) all the
+    // Player entities.
+    // Here's how it looks like:
+    // + - exists and operates; ! - invalidated (marked as invalid); x - deleted
+    //               |  Frame 0 | Frame 1 | Frame 2 | Frame 3 |
+    // Location      |     +    |    !    |    x    |    x    |
+    // Supervisor    |     +    |    +    |    x    |    x    |
+    // Players[s]    |     +    |    +    |    !    |    x    |
+    //
+    // As it's shown, while Player[s] exists Location is always marked as invalid and doesn't return its pointer.
+    // At this point using an existing pointer to Location without check for validity would work (despite the
+    // inadmissibility of such); but calling GetEntityPointer legally returns nullptr due to `valid` flag unset.
+    // This case is exacerbated by the fact that in this corner case calls to `Player` are done via PostEvent.
+    //
+    // Although in this case it would be more consistent with introducing sanity checks over the code,
+    // such issues are very difficult to catch. And since this workaround doesn't introduce any harm except for
+    // encouraging inconsistency code, it makes sense to left it as a lifebuoy for the existing issues.
+    //
+    // if (!entities_[idx].valid)
+    // {
+    //     return nullptr;
+    // }
 
     return entities_[idx].ptr;
 }
