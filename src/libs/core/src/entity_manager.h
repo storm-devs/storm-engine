@@ -5,11 +5,15 @@
 #include <cstdint>
 #include <vector>
 
+#include <plf_stack.h>
+
 #include "entity.h"
 #include "entity_container_cache.h"
 
 class EntityManager final
 {
+    constexpr static size_t max_layers_num = 32; // cannot exceed 32
+
     using entid_index_t = uint32_t;
     using entid_stamp_t = uint32_t;
     using entity_index_t = uint32_t;
@@ -35,9 +39,6 @@ class EntityManager final
         bool frozen;
     };
 
-    // we are ok with half-precision
-    static_assert(sizeof(std::chrono::milliseconds) == sizeof(entid_stamp_t) * 2);
-
   public:
     hash_t GetClassCode(entid_t id) const;
     entptr_t GetEntityPointer(entid_t id) const;
@@ -47,6 +48,8 @@ class EntityManager final
     entity_container_cref GetEntityIds(layer_index_t index) const;
     entid_t GetEntityId(const char *name) const;
     layer_type_t GetLayerType(layer_index_t index) const;
+    bool IsLayerFrozen(layer_index_t index) const;
+
     void AddToLayer(layer_index_t index, entid_t id, priority_t priority);
     void RemoveFromLayer(layer_index_t index, entid_t id);
     entid_t CreateEntity(const char *name, ATTRIBUTES *attr = nullptr);
@@ -54,13 +57,12 @@ class EntityManager final
     void EraseAll();
     void SetLayerType(layer_index_t index, layer_type_t type);
     void SetLayerFrozen(layer_index_t index, bool freeze);
-    bool IsLayerFrozen(layer_index_t index) const;
-    void PushFreeIndex(entity_index_t index);
     void NewLifecycle();
     void ForEachEntity(const std::function<void(entptr_t)> &f);
 
   private:
     static bool EntIdxValid(size_t idx);
+    static entid_t calculate_entity_id(size_t idx);
 
     size_t GetEntityDataIdx(entid_t id) const;
     entid_t GetEntityId(uint32_t hash) const;
@@ -68,7 +70,7 @@ class EntityManager final
     void EraseAndFree(EntityInternalData &data);
     void MarkDeleted(entid_t id);
     void RemoveFromLayer(layer_index_t index, EntityInternalData &data);
-    entid_t PushEntity(entptr_t ptr, hash_t hash);
+    entid_t InsertEntity(entptr_t ptr, hash_t hash);
 
     mutable EntityContainerCache cache_;
 
@@ -76,11 +78,11 @@ class EntityManager final
     std::array<Layer, max_layers_num> layers_{};
 
     // array of all entities
-    std::pair<std::array<EntityInternalData, max_ent_num>, entity_index_t> entities_;
+    std::vector<EntityInternalData> entities_;
 
     // stack of erased entities
-    std::pair<std::array<entity_index_t, max_ent_num>, entity_index_t> freeIndices_;
+    plf::stack<entity_index_t> freeIndices_;
 
-    // array of entities for deferred delete
-    std::pair<std::array<entity_index_t, max_ent_num>, entity_index_t> deletedIndices_;
+    // stack of entities for deferred delete
+    plf::stack<entity_index_t> deletedIndices_;
 };

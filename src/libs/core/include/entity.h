@@ -21,9 +21,6 @@ enum class layer_type_t : uint8_t
     realize
 };
 
-constexpr auto max_ent_in_layer = 1024;
-constexpr auto max_layers_num = 32; // cannot exceed 32
-constexpr auto max_ent_num = max_ent_in_layer * max_layers_num;
 constexpr entid_t invalid_entity = {};
 
 /* Entity base class */
