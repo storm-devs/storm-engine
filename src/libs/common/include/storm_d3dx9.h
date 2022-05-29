@@ -2,7 +2,6 @@
 #ifndef _WIN32
 
 #include <d3d9.h>
-#include <algorithm>
 
 #define D3DX_DEFAULT ((UINT)-1)
 
