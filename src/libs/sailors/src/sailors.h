@@ -62,7 +62,6 @@ class ShipMan
 {
   public:
     entid_t modelID;
-    MODEL *model;
 
     CVECTOR pos, ang; // current position
     CVECTOR ptTo, angTo, dir;
@@ -111,8 +110,6 @@ class ShipMan
 class ShipWalk
 {
   public:
-    // ShipWalk() shipMan(_FL_) {}
-
     SHIP_BASE *ship;
     MODEL *shipModel;
     int crewCount; // Number of people
@@ -165,15 +162,9 @@ class Sailors : public Entity
     {
         switch (stage)
         {
-            // case Stage::execute:
-            //    Execute(delta); break;
         case Stage::realize:
             Realize(delta);
             break;
-            /*case Stage::lost_render:
-              LostRender(delta); break;
-            case Stage::restore_render:
-              RestoreRender(delta); break;*/
         }
     }
 
