@@ -122,13 +122,11 @@ int main(int argc, char *argv[])
 #ifdef _WIN32 // CreateEventA
     if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
         GetLastError() == ERROR_ALREADY_EXISTS)
-#else
-    if (false)
-#endif
     {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Another instance is already running!", nullptr);
         return EXIT_SUCCESS;
     }
+#endif
     mi_register_output(mimalloc_fun, nullptr);
     mi_option_set(mi_option_show_errors, 1);
     mi_option_set(mi_option_show_stats, 0);
