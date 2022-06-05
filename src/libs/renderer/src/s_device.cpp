@@ -563,7 +563,7 @@ bool DX9RENDER::Init()
 #ifdef _WIN32 // Effects
         RecompileEffects();
 #else
-        pTechnique = new CTechnique(this);
+        pTechnique = std::make_unique<CTechnique>(this);
         pTechnique->DecodeFiles();
 #endif
 
@@ -2647,8 +2647,7 @@ void DX9RENDER::RestoreRender()
 #ifdef _WIN32 // Effects
     RecompileEffects();
 #else
-    STORM_DELETE(pTechnique);
-    pTechnique = new CTechnique(this);
+    pTechnique = std::make_unique<CTechnique>(this);
     pTechnique->DecodeFiles();
 #endif
 
@@ -2764,8 +2763,7 @@ void DX9RENDER::RunStart()
 #ifdef _WIN32 // Effects
         RecompileEffects();
 #else
-        STORM_DELETE(pTechnique);
-        pTechnique = new CTechnique(this);
+        pTechnique = std::make_unique<CTechnique>(this);
         pTechnique->DecodeFiles();
 #endif
         InvokeEntitiesRestoreRender();

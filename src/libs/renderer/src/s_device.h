@@ -469,7 +469,7 @@ private:
 #ifdef _WIN32 // Effects
     Effects effects_;
 #else
-    CTechnique *pTechnique;
+    std::unique_ptr<CTechnique> pTechnique;
 #endif
 
     char *fontIniFileName;
