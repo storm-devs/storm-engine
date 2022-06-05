@@ -6482,7 +6482,7 @@ void COMPILER::SaveVariable(DATA *pV, bool bdim)
         {
             pA = TraceARoot(pV->AttributesClass, pString);
         }
-#ifdef _WIN32 // __except
+#ifdef _WIN32 // TODO: check and replace __except
         __except (EXCEPTION_EXECUTE_HANDLER)
 #else
         catch (...)
