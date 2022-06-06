@@ -37,8 +37,8 @@ Player::Player()
 Player::~Player()
 {
     entid_t peid;
-    if (peid = EntityManager::GetEntityId("ShootGunParticles"))
-        EntityManager::EraseEntity(peid);
+    if (peid = core.GetEntityId("ShootGunParticles"))
+        core.EraseEntity(peid);
 }
 
 bool Player::PostInit()
@@ -46,7 +46,7 @@ bool Player::PostInit()
     auto *const location = GetLocation();
     if (!location->supervisor.player)
         location->supervisor.player = this;
-    baterfl = EntityManager::GetEntityId("Animals");
+    baterfl = core.GetEntityId("Animals");
     return NPCharacter::PostInit();
 }
 
@@ -66,9 +66,9 @@ void Player::Move(float dltTime)
     if (!locCam)
     {
         entid_t lcam;
-        if (lcam = EntityManager::GetEntityId("LocationCamera"))
+        if (lcam = core.GetEntityId("LocationCamera"))
         {
-            locCam = static_cast<LocationCamera *>(EntityManager::GetEntityPointer(lcam));
+            locCam = static_cast<LocationCamera *>(core.GetEntityPointer(lcam));
         }
     }
     else
@@ -306,7 +306,7 @@ void Player::Update(float dltTime)
     activatedDialog = aDialog;
     core.Send_Message(baterfl, "lff", MSG_ANIMALS_BUTTERFLIES_XYZ, curPos.x, curPos.z);
     // go through characters in search of enemies to the player
-    if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
+    if (const auto eid = core.GetEntityId("CharactersGroups"))
     {
         auto *const location = GetLocation();
         for (size_t i = 0; i < location->supervisor.character.size(); i++)
@@ -659,7 +659,7 @@ Player *Player::FindAttackCharacter()
         // filter out uninteresting
         if (isEnemy) // ~!~
         {
-            if (chr->task.task != npct_fight || EntityManager::GetEntityPointer(chr->task.target) != this)
+            if (chr->task.task != npct_fight || core.GetEntityPointer(chr->task.target) != this)
                 continue;
         }
         if (isFgt)
@@ -677,7 +677,7 @@ Player *Player::FindAttackCharacter()
         }
         /*
                 if(chr->task.task == npct_fight &&
-                    EntityManager::GetEntityPointer(chr->task.target) == this)
+                    core.GetEntityPointer(chr->task.target) == this)
                 {
                     j = -1;
                     isEnemy = true;
@@ -686,7 +686,7 @@ Player *Player::FindAttackCharacter()
         // skip non-enemies
         if constexpr (!isEnemy) // ~!~
         {
-            if (const auto eid = EntityManager::GetEntityId("CharactersGroups"))
+            if (const auto eid = core.GetEntityId("CharactersGroups"))
             {
                 if (!core.Send_Message(eid, "sii", "IsEnemy", GetId(), chr->GetId()))
                     continue;
@@ -723,7 +723,7 @@ Player *Player::FindAttackCharacter()
 void Player::FireFromShootgun()
 {
     kSMReload = 0.0f;
-    if (const auto peid = EntityManager::GetEntityId("sound"))
+    if (const auto peid = core.GetEntityId("sound"))
     {
         core.Send_Message(peid, "lsllll", MSG_SOUND_PLAY, "OBJECTS\\sgboom.wav", 4, false, false, false);
     }
@@ -751,7 +751,7 @@ void Player::FireFromShootgun()
     ChrsDmg chrs[16];
     int32_t numChrs = 0;
 
-    const auto ids = EntityManager::GetEntityIdIterators(SUN_TRACE);
+    const auto ids = core.GetEntityIds(SUN_TRACE);
     for (int32_t i = 0; i < 6; i++)
     {
         // Get the position where the buckshot will fall
@@ -767,7 +767,7 @@ void Player::FireFromShootgun()
                 auto dir = !(src - dst);
                 dst = src + (dst - src) * dist;
                 // Got somewhere
-                auto *const e = EntityManager::GetEntityPointer(collide->GetObjectID());
+                auto *const e = core.GetEntityPointer(collide->GetObjectID());
                 if (e && e != this)
                 {
                     int32_t nm;

@@ -674,7 +674,7 @@ void Window::Reset(bool isActive)
     isList = false;
     isVisible = isActive;
     entid_t loc;
-    core.Send_Message(EntityManager::GetEntityId("location"), "ll", MSG_LOCATION_PAUSE, static_cast<int32_t>(isActive));
+    core.Send_Message(core.GetEntityId("location"), "ll", MSG_LOCATION_PAUSE, static_cast<int32_t>(isActive));
     slidID = -1;
     isPikerActive = false;
     isActiveMouseState = false;

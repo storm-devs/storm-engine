@@ -40,12 +40,12 @@ bool SEAFOAM::Init()
     /*if (core.IsNetActive())
     {
       NetFindClass(false, &seaID, "NetSea");
-      sea = (SEA_BASE*) EntityManager::GetEntityPointer(seaID);
+      sea = (SEA_BASE*) core.GetEntityPointer(seaID);
     }
     else*/
     {
-        seaID = EntityManager::GetEntityId("sea");
-        sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(seaID));
+        seaID = core.GetEntityId("sea");
+        sea = static_cast<SEA_BASE *>(core.GetEntityPointer(seaID));
     }
 
     renderer = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
@@ -55,7 +55,7 @@ bool SEAFOAM::Init()
 
     InitializeShipFoam();
 
-    // EntityManager::CreateEntity(&arrowModel,"MODELR");
+    // core.CreateEntity(&arrowModel,"MODELR");
     // core.Send_Message(arrowModel,"ls",MSG_MODEL_LOAD_GEO, "fish01");
 
     carcassTexture = renderer->TextureCreate("seafoam_2.tga");
@@ -66,7 +66,7 @@ bool SEAFOAM::Init()
 //--------------------------------------------------------------------
 void SEAFOAM::InitializeShipFoam()
 {
-    const auto &entities = EntityManager::GetEntityIdVector("ship");
+    auto &&entities = core.GetEntityIds("ship");
     for (auto ent : entities)
     {
         AddShip(ent);
@@ -77,7 +77,7 @@ void SEAFOAM::AddShip(entid_t pShipEID)
 {
     auto *foamInfo = &shipFoamInfo[shipsCount++];
 
-    foamInfo->ship = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(pShipEID));
+    foamInfo->ship = static_cast<SHIP_BASE *>(core.GetEntityPointer(pShipEID));
     foamInfo->shipModel = foamInfo->ship->GetModel();
     foamInfo->shipModel->GetNode(0)->geo->GetInfo(foamInfo->hullInfo);
     foamInfo->enabled = true;
@@ -357,7 +357,7 @@ void SEAFOAM::InterpolateRightParticle(tShipFoamInfo &_shipFoamInfo, int z, uint
 //--------------------------------------------------------------------
 void SEAFOAM::RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, uint32_t _dTime)
 {
-    // MODEL *arrow = (MODEL*)EntityManager::GetEntityPointer(arrowModel);
+    // MODEL *arrow = (MODEL*)core.GetEntityPointer(arrowModel);
 
     for (auto z = 0; z < TRACE_STEPS_Z; ++z)
     {
@@ -577,7 +577,7 @@ uint32_t SEAFOAM::AttributeChanged(ATTRIBUTES *pA)
       {
         if (NetFindClass(false, &shipID, "NetShip")) do
         {
-          Entity * pE = EntityManager::GetEntityPointer(shipID);
+          Entity * pE = core.GetEntityPointer(shipID);
           if (pE->GetNetID() == dwShipNetID)
           {
             AddShip(&shipID);

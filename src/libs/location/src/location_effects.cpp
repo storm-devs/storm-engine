@@ -74,12 +74,12 @@ bool LocationEffects::Init()
         throw std::runtime_error("No service: dx9render");
 
     // core.LayerCreate("execute", true, false);
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 10);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
+    core.AddToLayer(EXECUTE, GetId(), 10);
 
     // core.LayerCreate("realize", true, false);
-    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(REALIZE, GetId(), 1000000);
+    core.SetLayerType(REALIZE, layer_type_t::realize);
+    core.AddToLayer(REALIZE, GetId(), 1000000);
 
     splashesTxt = rs->TextureCreate("LocEfx\\chrsplprt.tga");
     flyTex = rs->TextureCreate("LocEfx\\firefly.tga");

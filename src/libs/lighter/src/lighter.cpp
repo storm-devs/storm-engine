@@ -51,10 +51,10 @@ bool Lighter::Init()
     if (!rs)
         throw std::runtime_error("No service: dx9render");
     //
-    EntityManager::SetLayerType(LIGHTER_EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(LIGHTER_EXECUTE, GetId(), 1000);
-    EntityManager::SetLayerType(LIGHTER_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(LIGHTER_REALIZE, GetId(), 1000);
+    core.SetLayerType(LIGHTER_EXECUTE, layer_type_t::execute);
+    core.AddToLayer(LIGHTER_EXECUTE, GetId(), 1000);
+    core.SetLayerType(LIGHTER_REALIZE, layer_type_t::realize);
+    core.AddToLayer(LIGHTER_REALIZE, GetId(), 1000);
     //
     lightProcessor.SetParams(&geometry, &window, &lights, &octTree, rs);
     // window system

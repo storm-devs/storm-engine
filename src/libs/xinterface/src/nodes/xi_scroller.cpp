@@ -167,7 +167,7 @@ void CXI_SCROLLER::MakeOwnedControl()
 {
     for (int32_t n = 0; n < static_cast<int32_t>(m_asOwnedNodes.size()); n++)
     {
-        auto *const pNode = static_cast<XINTERFACE *>(EntityManager::GetEntityPointer(g_idInterface))
+        auto *const pNode = static_cast<XINTERFACE *>(core.GetEntityPointer(g_idInterface))
                                 ->FindNode(m_asOwnedNodes[n].c_str(), nullptr);
         if (!pNode)
             continue;
@@ -219,7 +219,7 @@ float CXI_SCROLLER::GetOwnedStep()
     CINODE *pNode = nullptr;
     for (int32_t n = 0; n < static_cast<int32_t>(m_asOwnedNodes.size()); n++)
     {
-        pNode = static_cast<XINTERFACE *>(EntityManager::GetEntityPointer(g_idInterface))
+        pNode = static_cast<XINTERFACE *>(core.GetEntityPointer(g_idInterface))
                     ->FindNode(m_asOwnedNodes[n].c_str(), nullptr);
         if (pNode)
             break;

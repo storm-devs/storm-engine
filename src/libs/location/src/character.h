@@ -217,7 +217,7 @@ class Character : public Entity
         return 0;
     };
 
-    void AlreadySTORM_DELETE();
+    void AlreadyDeleted();
 
     //--------------------------------------------------------------------------------------------
     // Character model
@@ -712,7 +712,7 @@ class Character : public Entity
     entid_t loc_id;
 };
 
-inline void Character::AlreadySTORM_DELETE()
+inline void Character::AlreadyDeleted()
 {
     isDeleted = true;
 }

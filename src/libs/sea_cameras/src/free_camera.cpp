@@ -35,7 +35,7 @@ bool FREE_CAMERA::Init()
 {
     // GUARD(FREE_CAMERA::FREE_CAMERA())
     // core.LayerCreate("realize",true,false);
-    // EntityManager::AddToLayer("system_messages",GetId(),1);
+    // core.AddToLayer("system_messages",GetId(),1);
     SetDevice();
     // UNGUARD
     return true;
@@ -48,9 +48,9 @@ void FREE_CAMERA::SetDevice()
     pCollide = static_cast<COLLIDE *>(core.GetService("COLL"));
     Assert(pCollide);
 
-    /*EntityManager::CreateEntity(&sphere,"modelr");
+    /*core.CreateEntity(&sphere,"modelr");
     core.Send_Message(sphere,"ls",MSG_MODEL_LOAD_GEO,"mirror");
-    EntityManager::AddToLayer(realize,sphere,10000);*/
+    core.AddToLayer(realize,sphere,10000);*/
 }
 
 bool FREE_CAMERA::CreateState(ENTITY_STATE_GEN *state_gen) const
@@ -78,7 +78,7 @@ void FREE_CAMERA::Execute(uint32_t Delta_Time)
     pRS->GetCamera(vPos, vAng, persp);
 
     if (!pIslandBase)
-        pIslandBase = static_cast<ISLAND_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("island")));
+        pIslandBase = static_cast<ISLAND_BASE *>(core.GetEntityPointer(core.GetEntityId("island")));
 
     if (!pIslandBase)
         return;
@@ -149,11 +149,11 @@ void FREE_CAMERA::Move(uint32_t DeltaTime)
     {
       vRes = vPos + fRes * (vDst - vPos);
       entid_t ent = pCollide->GetObjectID();
-      MODELR *pEntity = (MODELR*)EntityManager::GetEntityPointer(ent);
+      MODELR *pEntity = (MODELR*)core.GetEntityPointer(ent);
     }
 
 
-    MODEL* pModel = (MODEL*)EntityManager::GetEntityPointer(sphere);
+    MODEL* pModel = (MODEL*)core.GetEntityPointer(sphere);
     pModel->mtx.BuildPosition(vRes.x,vRes.y,vRes.z);
     delete pVW;*/
 }

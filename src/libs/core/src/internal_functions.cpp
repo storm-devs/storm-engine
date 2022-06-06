@@ -424,9 +424,9 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
     Entity *pE;
     MESSAGE ms;
     uint32_t s_off;
-
-    static EntityManager::EntityVector *entVec;
-    static EntityManager::EntityVector::const_iterator it;
+    
+    static std::remove_reference_t<entity_container_cref>::const_iterator entity_iterator;
+    static std::remove_reference_t<entity_container_cref>::const_iterator entity_iterator_end;
 
     pResult = nullptr;
     TempFloat1 = 0;
@@ -701,14 +701,14 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->Convert(VAR_STRING);
         pV->Get(pChar);
 
-        ent = EntityManager::GetEntityId(pChar);
+        ent = core.GetEntityId(pChar);
 
         pV2 = pV2->GetVarPointer();
         pV2->Set(ent);
         pV2->SetType(VAR_AREFERENCE);
         pV2->SetAReference(core_internal.Entity_GetAttributePointer(ent));
 
-        if (EntityManager::GetEntityPointer(ent))
+        if (core.GetEntityPointer(ent))
             TempLong1 = 1;
         else
             TempLong1 = 0;
@@ -734,18 +734,26 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
         pV->Convert(VAR_STRING);
         pV->Get(pChar);
-
-        delete entVec;
-        entVec = new EntityManager::EntityVector(EntityManager::GetEntityIdVector(pChar));
-        it = entVec->begin();
-        ent = *it;
+        {
+            auto &&entities = core.GetEntityIds(pChar);
+            entity_iterator = std::cbegin(entities);
+            entity_iterator_end = std::cend(entities);
+        }
+        if (entity_iterator != entity_iterator_end)
+        {
+            ent = *entity_iterator;
+        }
+        else
+        {
+            ent = invalid_entity;
+        }
 
         pV2 = pV2->GetVarPointer();
         pV2->Set(ent);
         pV2->SetType(VAR_AREFERENCE);
         pV2->SetAReference(core_internal.Entity_GetAttributePointer(ent));
 
-        if (EntityManager::GetEntityPointer(ent))
+        if (core.GetEntityPointer(ent))
             TempLong1 = 1;
         else
             TempLong1 = 0;
@@ -762,15 +770,22 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             break;
         }
 
-        ++it;
-        ent = it != entVec->end() ? *it : invalid_entity;
+        ++entity_iterator;
+        if (entity_iterator != entity_iterator_end)
+        {
+            ent = *entity_iterator;
+        }
+        else
+        {
+            ent = invalid_entity;
+        }
 
         pV2 = pV2->GetVarPointer();
         pV2->Set(ent);
         pV2->SetType(VAR_AREFERENCE);
         pV2->SetAReference(core_internal.Entity_GetAttributePointer(ent));
 
-        if (EntityManager::GetEntityPointer(ent))
+        if (core.GetEntityPointer(ent))
             TempLong1 = 1;
         else
             TempLong1 = 0;
@@ -894,10 +909,10 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(pChar);
         {
-            const auto entities = EntityManager::GetEntityIdVector(pChar);
+            const auto entities = core.GetEntityIds(pChar);
             for (auto ent : entities)
             {
-                EntityManager::EraseEntity(ent);
+                core.EraseEntity(ent);
             }
         }
         break;
@@ -1201,7 +1216,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV2->SetType(VAR_AREFERENCE);
       pV2->SetAReference(core_internal.Entity_GetAttributePointer(ent));
 
-            if(EntityManager::GetEntityPointer(ent)) TempLong1 = 1;
+            if(core.GetEntityPointer(ent)) TempLong1 = 1;
             else TempLong1 = 0;
             pV = SStack.Push();
             pV->Set(TempLong1);
@@ -1214,7 +1229,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             pV->Set(ent);
             pV->SetType(VAR_AREFERENCE);
       pV->SetAReference(core_internal.Entity_GetAttributePointer(ent));
-            if(EntityManager::GetEntityPointer(ent)) TempLong1 = 1;
+            if(core.GetEntityPointer(ent)) TempLong1 = 1;
             else TempLong1 = 0;
             pV = SStack.Push();
             pV->Set(TempLong1);
@@ -1402,7 +1417,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         // pV2->Get(TempLong1);
         // if(TempLong1 == 0) core_internal.LayerSetRealize(pChar,false);
         // else core_internal.LayerSetRealize(pChar,true);
-        EntityManager::SetLayerType(TempLong1, EntityManager::Layer::Type::realize);
+        core.SetLayerType(TempLong1, layer_type_t::realize);
         break;
     case FUNC_LAYER_SET_EXECUTE:
         // pV2 = SStack.Pop(); if(!pV2){SetError(INVALID_FA);break;};
@@ -1416,7 +1431,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         // pV2->Get(TempLong1);
         // if(TempLong1 == 0) core_internal.LayerSetExecute(pChar,false);
         // else core_internal.LayerSetExecute(pChar,true);
-        EntityManager::SetLayerType(TempLong1, EntityManager::Layer::Type::execute);
+        core.SetLayerType(TempLong1, layer_type_t::execute);
         break;
         /*case FUNC_LAYER_SET_MESSAGES:
             pV2 = SStack.Pop(); if(!pV2){SetError(INVALID_FA);break;};
@@ -1448,7 +1463,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->Get(TempLong2);
         pV2->Get(TempEid);
         pV3->Get(TempLong1);
-        EntityManager::AddToLayer(TempLong2, TempEid, TempLong1);
+        core.AddToLayer(TempLong2, TempEid, TempLong1);
         break;
     case FUNC_LAYER_DELOBJECT:
         pV2 = SStack.Pop();
@@ -1465,7 +1480,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(TempLong2);
         pV2->Get(TempEid);
-        EntityManager::RemoveFromLayer(TempLong2, TempEid);
+        core.RemoveFromLayer(TempLong2, TempEid);
         break;
     case FUNC_LAYER_FREEZE:
         pV2 = SStack.Pop();
@@ -1482,7 +1497,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(TempLong2);
         pV2->Get(TempLong1);
-        EntityManager::SetLayerFrozen(TempLong2, TempLong1);
+        core.SetLayerFrozen(TempLong2, TempLong1);
         break;
 
     case FUNC_IS_Entity_LOADED:
@@ -1495,7 +1510,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV = pV->GetVarPointer();
         pV->Get(TempEid);
         pV = SStack.Push();
-        if (EntityManager::GetEntityPointer(TempEid) != nullptr)
+        if (core.GetEntityPointer(TempEid) != nullptr)
             TempLong1 = 1;
         else
             TempLong1 = 0;
@@ -1565,7 +1580,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
 
         pV2->Get(pChar);
-        if (ent = EntityManager::CreateEntity(pChar, pV->GetAClass()))
+        if (ent = core.CreateEntity(pChar, pV->GetAClass()))
         {
             // core_internal.Entity_SetAttributePointer(&entid_t,pV->GetAClass());
             pV->Set(ent);
@@ -1591,7 +1606,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             break;
         }
         pV->Get(pChar);
-        if (ent = EntityManager::CreateEntity(pChar))
+        if (ent = core.CreateEntity(pChar))
         {
             pV = SStack.Push();
             pV->Set(ent);
@@ -1609,7 +1624,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             break;
         }
         pV->Get(ent);
-        EntityManager::EraseEntity(ent);
+        core.EraseEntity(ent);
         break;
         //
     case FUNC_DEL_EVENT_HANDLER:
@@ -1842,7 +1857,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         CreateMessage(&ms, s_off, 1);
 
         uint64_t mresult = 0;
-        pE = EntityManager::GetEntityPointer(ent);
+        pE = core.GetEntityPointer(ent);
         if (pE)
         {
             ms.Move2Start();

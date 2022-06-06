@@ -22,7 +22,7 @@ TFlotsam::~TFlotsam()
 
     if (!modelsInitialized)
         for (auto i = 0; i < sink_effect::FLOTSAM_MODELS_COUNT; i++)
-            EntityManager::EraseEntity(modelIDs[i]);
+            core.EraseEntity(modelIDs[i]);
 }
 
 //--------------------------------------------------------------------
@@ -57,9 +57,9 @@ void TFlotsam::Initialize(SEA_BASE *_sea)
 
         for (auto i = 0; i < sink_effect::FLOTSAM_MODELS_COUNT; i++)
         {
-            modelIDs[i] = EntityManager::CreateEntity("MODELR");
+            modelIDs[i] = core.CreateEntity("MODELR");
             core.Send_Message(modelIDs[i], "ls", MSG_MODEL_LOAD_GEO, modelNames[i]);
-            models[i] = static_cast<MODEL *>(EntityManager::GetEntityPointer(modelIDs[i]));
+            models[i] = static_cast<MODEL *>(core.GetEntityPointer(modelIDs[i]));
         }
     }
 
@@ -115,7 +115,7 @@ void TFlotsam::Realize(uint32_t _dTime)
         pos.y = y;
     const CVECTOR ang(0.0f, angY, 0.0f);
     MODEL *model;
-    model = static_cast<MODEL *>(EntityManager::GetEntityPointer(ModelID));
+    model = static_cast<MODEL *>(core.GetEntityPointer(ModelID));
     if (model)
     {
         model->mtx.BuildMatrix(ang, pos);

@@ -33,8 +33,8 @@ Supervisor::~Supervisor()
     isDelete = true;
     for (size_t i = 0; i < character.size(); i++)
     {
-        character[i].c->AlreadySTORM_DELETE();
-        EntityManager::EraseEntity(character[i].c->GetId());
+        character[i].c->AlreadyDeleted();
+        core.EraseEntity(character[i].c->GetId());
     }
 }
 
@@ -240,7 +240,7 @@ void Supervisor::PostUpdate(float dltTime)
                 break;
             const auto dlt = time - character[curUpdate].lastTime;
             character[curUpdate].lastTime = time;
-            if (EntityManager::GetEntityPointer(character[curUpdate].c->GetId()))
+            if (core.GetEntityPointer(character[curUpdate].c->GetId()))
             {
                 core.Event("CharacterUpdate", "if", character[curUpdate].c->GetId(), dlt);
             }

@@ -30,7 +30,7 @@ LocLife::LocLife()
 
 LocLife::~LocLife()
 {
-    EntityManager::EraseEntity(model);
+    core.EraseEntity(model);
 }
 
 //============================================================================================
@@ -38,9 +38,9 @@ LocLife::~LocLife()
 bool LocLife::Init(Location *loc)
 {
     Assert(loc);
-    if (!(model = EntityManager::CreateEntity("modelr")))
+    if (!(model = core.CreateEntity("modelr")))
         return false;
-    EntityManager::AddToLayer(REALIZE, model, 20);
+    core.AddToLayer(REALIZE, model, 20);
     // Path to textures
     auto *gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
     if (!gs)
@@ -68,7 +68,7 @@ bool LocLife::Init(Location *loc)
     FindPos();
     ay = rand() * (6.28f / RAND_MAX);
     // Animation
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!m)
     {
         location = nullptr;
@@ -101,7 +101,7 @@ void LocLife::Update(float dltTime)
         location->DrawLine(pos, 0xff00ff00, pos + CVECTOR(sinf(ay), 0.0f, cosf(ay)) * 0.5f, 0xff00ff00);
     }
     // Model and location information
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!m)
         return;
     auto *const ani = m->GetAnimation();
@@ -160,7 +160,7 @@ void LocLife::Update(float dltTime)
 
 int32_t LocLife::FindPos()
 {
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!m)
         return -1;
     auto &ptc = location->GetPtcData();
@@ -199,7 +199,7 @@ int32_t LocLife::FindPos()
 void LocLife::StartMove()
 {
     // Model
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!m)
         return;
     // Start playing the animation
@@ -213,7 +213,7 @@ void LocLife::StartMove()
 void LocLife::StopMove()
 {
     node = -1;
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(model));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(model));
     if (!m)
         return;
     // Start playing the animation

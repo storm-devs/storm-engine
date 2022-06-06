@@ -8,7 +8,6 @@ model binded to an animated locator
 ******************************************************************************/
 #pragma once
 
-#include "entity_manager.h"
 #include "collide.h"
 #include "dx9render.h"
 #include "model.h"

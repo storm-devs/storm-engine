@@ -1,17 +1,27 @@
 #pragma once
-#include "attributes.h" // TODO: REMOVE
+
 #include <cstdint>
+
+#include "attributes.h" // TODO: REMOVE
 
 /* typedefs */
 class Entity;
 class MESSAGE;
 using entptr_t = Entity *;
 using entid_t = uint64_t;
+using layer_index_t = uint8_t;
+using priority_t = uint32_t;
+using hash_t = uint32_t;
+using entity_container_cref = const std::vector<entid_t>&;
 
-constexpr auto max_ent_in_layer = 1024;
-constexpr auto max_layers_num = 32;
-constexpr auto max_ent_num = max_ent_in_layer * max_layers_num;
-constexpr entid_t invalid_entity = 0;
+enum class layer_type_t : uint8_t
+{
+    common,
+    execute,
+    realize
+};
+
+constexpr entid_t invalid_entity = {};
 
 /* Entity base class */
 class Entity
@@ -21,7 +31,6 @@ class Entity
   public:
     struct EntitySelfData
     {
-        // const char* name;
         entid_t id;
     };
 
@@ -39,12 +48,6 @@ class Entity
     {
         return data_.id;
     }
-
-    /*[[nodiscard]]
-    auto GetName() const
-    {
-      return data_.name;
-    }*/
 
     Entity() = default;
     Entity(const Entity &) = delete;

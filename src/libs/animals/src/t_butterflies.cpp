@@ -97,7 +97,7 @@ void TButterflies::Execute(uint32_t _dTime)
     butterflies[0].SetCenter(pos);
     int i;
 
-    const auto its = EntityManager::GetEntityIdIterators(SHADOW);
+    const auto its = core.GetEntityIds(SHADOW);
 
     // redefine minY
     yDefineTime += _dTime;

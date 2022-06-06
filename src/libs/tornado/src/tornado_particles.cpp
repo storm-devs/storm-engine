@@ -50,7 +50,7 @@ TornadoParticles::~TornadoParticles()
 
 void TornadoParticles::SetSea()
 {
-    seaID = EntityManager::GetEntityId("sea");
+    seaID = core.GetEntityId("sea");
 }
 
 void TornadoParticles::Update(float dltTime)
@@ -59,7 +59,7 @@ void TornadoParticles::Update(float dltTime)
     auto seaLevel = 0.0f;
     if (txtGroundPrts >= 0 || txtPillarPrts >= 0)
     {
-        auto *sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(seaID));
+        auto *sea = static_cast<SEA_BASE *>(core.GetEntityPointer(seaID));
         if (sea)
         {
             seaLevel = sea->WaveXZ(pillar.GetX(0.0f), pillar.GetZ(0.0f));

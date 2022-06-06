@@ -29,15 +29,15 @@ class COLLIDE : public SERVICE
     ~COLLIDE() override = default;
 
     // creates LocalCollide object which must be deleted after use
-    virtual LOCAL_COLLIDE *CreateLocalCollide(EntityManager::layer_index_t idx) = 0;
+    virtual LOCAL_COLLIDE *CreateLocalCollide(layer_index_t idx) = 0;
 
     virtual float Trace(entid_t entity, const CVECTOR &src, const CVECTOR &dst) = 0;
 
-    virtual float Trace(EntityManager::LayerIterators its, const CVECTOR &src, const CVECTOR &dst,
-                        const entid_t *exclude_list, int32_t entities) = 0;
+    virtual float Trace(entity_container_cref entities, const CVECTOR &src, const CVECTOR &dst,
+                        const entid_t *exclude_list, int32_t exclude_num) = 0;
 
-    virtual bool Clip(EntityManager::LayerIterators its, const PLANE *planes, int32_t nplanes, const CVECTOR &center,
-                      float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, int32_t entities) = 0;
+    virtual bool Clip(entity_container_cref entities, const PLANE *planes, int32_t nplanes, const CVECTOR &center,
+                      float radius, ADD_POLYGON_FUNC addpoly, const entid_t *exclude_list, int32_t exclude_num) = 0;
 
     virtual entid_t GetObjectID() = 0;
 };

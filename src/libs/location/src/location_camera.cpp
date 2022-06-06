@@ -89,18 +89,18 @@ bool LocationCamera::Init()
         throw std::runtime_error("No service: dx9render");
 
     // core.LayerCreate("execute", true, false);
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 0);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
+    core.AddToLayer(EXECUTE, GetId(), 0);
 
     // core.LayerCreate("realize", true, false);
-    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(REALIZE, GetId(), 100000);
+    core.SetLayerType(REALIZE, layer_type_t::realize);
+    core.AddToLayer(REALIZE, GetId(), 100000);
 
     // The sea
-    sea = EntityManager::GetEntityId("sea");
+    sea = core.GetEntityId("sea");
 
     // try to get the location
-    loc = EntityManager::GetEntityId("location");
+    loc = core.GetEntityId("location");
 
     rs->SetPerspective(cameraPerspective);
     // rs->SetPerspective(1.0f);
@@ -317,7 +317,7 @@ void LocationCamera::Realize(uint32_t delta_time)
         isTeleport = false;
     }
     auto realPos = camPos;
-    auto *sb = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea));
+    auto *sb = static_cast<SEA_BASE *>(core.GetEntityPointer(sea));
     if (sb && wmode != cwm_free && location->IsSwimming())
     {
         const auto seaY = sb->WaveXZ(camPos.x, camPos.z) + 1.0f;
@@ -360,7 +360,7 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
     {
     case MSG_CAMERA_SETTARGET:
         chr = message.EntityID();
-        if (EntityManager::GetEntityPointer(chr) == nullptr)
+        if (core.GetEntityPointer(chr) == nullptr)
         {
             core.Trace("LocationCamera -> MSG_CAMERA_SETTARGET -> invalidate character id");
             return 0;
@@ -478,7 +478,7 @@ uint32_t LocationCamera::AttributeChanged(ATTRIBUTES *apnt)
 bool LocationCamera::Set()
 {
     // Character pointer
-    auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(chr));
+    auto *c = static_cast<Character *>(core.GetEntityPointer(chr));
     if (!c)
         return false;
     // Character characteristics
@@ -491,7 +491,7 @@ bool LocationCamera::Set()
     lheight = height * lookHeight;
     chradius = c->GetRadius();
     character = c;
-    location = static_cast<Location *>(EntityManager::GetEntityPointer(loc));
+    location = static_cast<Location *>(core.GetEntityPointer(loc));
     return location != nullptr;
 }
 

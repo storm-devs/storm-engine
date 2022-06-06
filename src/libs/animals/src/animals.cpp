@@ -20,8 +20,8 @@ ANIMALS::~ANIMALS()
 
 bool ANIMALS::Init()
 {
-    EntityManager::AddToLayer(REALIZE, GetId(), 77);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 77);
+    core.AddToLayer(REALIZE, GetId(), 77);
+    core.AddToLayer(EXECUTE, GetId(), 77);
 
     seagulls->Init();
     fishSchools->Init();

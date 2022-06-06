@@ -19,29 +19,29 @@ SailorsEditor::SailorsEditor()
 
 SailorsEditor::~SailorsEditor()
 {
-    EntityManager::EraseEntity(sailors);
-    EntityManager::EraseEntity(shipID);
+    core.EraseEntity(sailors);
+    core.EraseEntity(shipID);
 };
 
 bool SailorsEditor::Init()
 {
     rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
 
-    sailors = EntityManager::CreateEntity("Sailors");
+    sailors = core.CreateEntity("Sailors");
 
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 0);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
+    core.AddToLayer(EXECUTE, GetId(), 0);
 
-    EntityManager::SetLayerType(EDITOR_REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(EDITOR_REALIZE, GetId(), 100000);
+    core.SetLayerType(EDITOR_REALIZE, layer_type_t::realize);
+    core.AddToLayer(EDITOR_REALIZE, GetId(), 100000);
 
     LoadFromIni("SailorsEditor.ini");
 
-    shipID = EntityManager::CreateEntity("MODELR");
+    shipID = core.CreateEntity("MODELR");
     core.Send_Message(shipID, "ls", MSG_MODEL_LOAD_GEO, _shipName.c_str());
 
-    EntityManager::AddToLayer(EDITOR_REALIZE, shipID, 100000);
-    model = static_cast<MODEL *>(EntityManager::GetEntityPointer(shipID));
+    core.AddToLayer(EDITOR_REALIZE, shipID, 100000);
+    model = static_cast<MODEL *>(core.GetEntityPointer(shipID));
 
     model->mtx.BuildMatrix(CVECTOR(0.0f), CVECTOR(0.0f, 0.0f, 0.0f));
 
@@ -50,7 +50,7 @@ bool SailorsEditor::Init()
     ctrl = core.Controls->CreateControl("DeltaMouseV");
     core.Controls->MapControl(ctrl, 257);
 
-    menu.sailrs = static_cast<Sailors *>(EntityManager::GetEntityPointer(sailors));
+    menu.sailrs = static_cast<Sailors *>(core.GetEntityPointer(sailors));
 
     menu.sailrs->editorMode = true;
 

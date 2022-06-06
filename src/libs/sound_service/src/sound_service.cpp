@@ -1131,11 +1131,11 @@ void SoundService::InitAliases()
 
 void SoundService::CreateEntityIfNeed()
 {
-    auto Debugentid_t = EntityManager::GetEntityId("SoundVisualisationEntity");
+    auto Debugentid_t = core.GetEntityId("SoundVisualisationEntity");
     if (!Debugentid_t)
     {
-        Debugentid_t = EntityManager::CreateEntity("SoundVisualisationEntity");
-        auto *pDebugEntity = static_cast<SoundVisualisationEntity *>(EntityManager::GetEntityPointer(Debugentid_t));
+        Debugentid_t = core.CreateEntity("SoundVisualisationEntity");
+        auto *pDebugEntity = static_cast<SoundVisualisationEntity *>(core.GetEntityPointer(Debugentid_t));
         pDebugEntity->SetMasterSoundService(this);
         pDebugEntity->Wakeup();
     }

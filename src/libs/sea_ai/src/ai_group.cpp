@@ -235,7 +235,7 @@ void AIGroup::SailMainGroup(CVECTOR vPos, float fAngle, ATTRIBUTES *pACharacter)
     Assert(pMG);
     AIGroup *pG1 = FindGroup(pACharacter);
 
-    const auto eidSea = EntityManager::GetEntityId("sea");
+    const auto eidSea = core.GetEntityId("sea");
 
     for (auto pAIShip : pMG->aGroupShips)
     {

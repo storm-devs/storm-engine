@@ -15,7 +15,7 @@ BOOL SHIP::BuildContour(CVECTOR *vContour, int32_t &iNumVContour)
     float fY, fRight, fLeft, fUp, fDown, fRes, fZMax, fZMin, fZStep, fZMinStep;
 
     auto bDefaultContour = false;
-    bool bRes = EntityManager::GetEntityPointer(model_id);
+    bool bRes = core.GetEntityPointer(model_id);
     Assert(bRes);
 
     CMatrix mTemp;
@@ -215,9 +215,9 @@ bool SHIP::BuildMasts()
                 pM->fDamage = 1.0f;
                 pM->bBroken = true;
                 entid_t ent;
-                ent = EntityManager::CreateEntity("mast");
+                ent = core.CreateEntity("mast");
                 core.Send_Message(ent, "lpii", MSG_MAST_SETGEOMETRY, pNode, GetId(), GetModelEID());
-                EntityManager::EraseEntity(ent);
+                core.EraseEntity(ent);
                 // iIdx--;
             }
             else
@@ -283,9 +283,9 @@ bool SHIP::BuildHulls()
                 pM->fDamage = 1.0f;
                 pM->bBroken = true;
                 entid_t ent;
-                ent = EntityManager::CreateEntity("hull");
+                ent = core.CreateEntity("hull");
                 core.Send_Message(ent, "lpii", MSG_HULL_SETGEOMETRY, pNode, GetId(), GetModelEID());
-                EntityManager::EraseEntity(ent);
+                core.EraseEntity(ent);
                 // iIdx--;
             }
             else

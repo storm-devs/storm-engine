@@ -24,7 +24,7 @@ bool SINKEFFECT::Init()
 {
     // GUARD(SINKEFFECT::Init)
 
-    sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
+    sea = static_cast<SEA_BASE *>(core.GetEntityPointer(core.GetEntityId("sea")));
 
     renderer = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
 
@@ -48,18 +48,18 @@ uint64_t SINKEFFECT::ProcessMessage(MESSAGE &message)
         auto *const attrs = message.AttributePointer();
         if (attrs)
         {
-            const auto &entities = EntityManager::GetEntityIdVector("ship");
+            auto &&entities = core.GetEntityIds("ship");
             for (auto ent : entities)
             {
                 /*
-                shipBase = (SHIP_BASE *) EntityManager::GetEntityPointer(shipID);
+                shipBase = (SHIP_BASE *) core.GetEntityPointer(shipID);
                 if (shipBase->GetACharacter() == attrs)
                 {
                   TryToAddSink(shipBase->GetPos(), shipBase->GetBoxsize().z / 2.0f);
                   return outValue;
                 }*/
 
-                auto *shipBase = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(ent));
+                auto *shipBase = static_cast<SHIP_BASE *>(core.GetEntityPointer(ent));
                 if (shipBase->GetACharacter() == attrs)
                 {
                     TryToAddSink(shipBase->GetPos(), shipBase->GetBoxsize().z / 2.0f);

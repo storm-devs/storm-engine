@@ -34,9 +34,9 @@ bool LOCATOR::Init()
 
 bool LOCATOR::VerifyParticles()
 {
-    ParticlesID = EntityManager::GetEntityId("particles");
+    ParticlesID = core.GetEntityId("particles");
     if (!ParticlesID)
-        ParticlesID = EntityManager::CreateEntity("particles");
+        ParticlesID = core.CreateEntity("particles");
 
     return static_cast<bool>(ParticlesID);
 }
@@ -333,7 +333,7 @@ uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
           {
             if(!core.FindClass(&ParticlesID,"particles",0))
             {
-              if(!EntityManager::CreateEntity(&ParticlesID,"particles")) return 0;
+              if(!core.CreateEntity(&ParticlesID,"particles")) return 0;
             }
             for(stringIndex = 0; (stringIndex = geo->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
             {
@@ -348,7 +348,7 @@ uint64_t LOCATOR::ProcessMessage(MESSAGE &message)
           {
             if(!core.FindClass(&ParticlesID,"particles",0))
             {
-              if(!EntityManager::CreateEntity(&ParticlesID,"particles")) return 0;
+              if(!core.CreateEntity(&ParticlesID,"particles")) return 0;
             }
             for(stringIndex = 0; (stringIndex = geo->FindLabelG(stringIndex, groupID)) >= 0; stringIndex++)
             {

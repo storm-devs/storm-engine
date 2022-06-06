@@ -9,7 +9,6 @@
 #include "v_s_stack.h"
 #include "storm/fs.h"
 
-#include <string_view>
 #include <algorithm>
 
 #include <fmt/chrono.h>
@@ -32,74 +31,60 @@ CREATE_SCRIPTLIBRIARY(DX9RENDER_SCRIPT_LIBRIARY)
 
 namespace
 {
-    constexpr auto kKeyTakeScreenshot = "TakeScreenshot";
+constexpr auto kKeyTakeScreenshot = "TakeScreenshot";
 
-    D3DXIMAGE_FILEFORMAT GetScreenshotFormat(const std::string &fmt)
+D3DXIMAGE_FILEFORMAT GetScreenshotFormat(const std::string &fmt)
+{
+    if (fmt == "bmp")
     {
-        if (fmt == "bmp")
-        {
-            return D3DXIFF_BMP;
-        }
-        if (fmt == "jpg")
-        {
-            return D3DXIFF_JPG;
-        }
-        if (fmt == "tga")
-        {
-            return D3DXIFF_TGA;
-        }
-        if (fmt == "png")
-        {
-            return D3DXIFF_PNG;
-        }
-        if (fmt == "dds")
-        {
-            return D3DXIFF_DDS;
-        }
-        if (fmt == "ppm")
-        {
-            return D3DXIFF_PPM;
-        }
-        if (fmt == "dib")
-        {
-            return D3DXIFF_DIB;
-        }
-        if (fmt == "hdr")
-        {
-            return D3DXIFF_HDR;
-        }
-        if (fmt == "pfm") 
-        {
-            return D3DXIFF_PFM;
-        }
-
-        return D3DXIFF_FORCE_DWORD;
+        return D3DXIFF_BMP;
+    }
+    if (fmt == "jpg")
+    {
+        return D3DXIFF_JPG;
+    }
+    if (fmt == "tga")
+    {
+        return D3DXIFF_TGA;
+    }
+    if (fmt == "png")
+    {
+        return D3DXIFF_PNG;
+    }
+    if (fmt == "dds")
+    {
+        return D3DXIFF_DDS;
+    }
+    if (fmt == "ppm")
+    {
+        return D3DXIFF_PPM;
+    }
+    if (fmt == "dib")
+    {
+        return D3DXIFF_DIB;
+    }
+    if (fmt == "hdr")
+    {
+        return D3DXIFF_HDR;
+    }
+    if (fmt == "pfm")
+    {
+        return D3DXIFF_PFM;
     }
 
-    void InvokeEntitiesLostRender()
-    {
-        const auto its = EntityManager::GetEntityIdIterators();
-        for (auto it = its.first; it != its.second; ++it)
-        {
-            if (!it->deleted && it->ptr != nullptr)
-            {
-                it->ptr->ProcessStage(Entity::Stage::lost_render);
-            }
-        }
-    }
-
-    void InvokeEntitiesRestoreRender()
-    {
-        const auto its = EntityManager::GetEntityIdIterators();
-        for (auto it = its.first; it != its.second; ++it)
-        {
-            if (!it->deleted && it->ptr != nullptr)
-            {
-                it->ptr->ProcessStage(Entity::Stage::restore_render);
-            }
-        }
-    }
+    return D3DXIFF_FORCE_DWORD;
 }
+
+void InvokeEntitiesLostRender()
+{
+    core.ForEachEntity([](entptr_t entity_ptr) { entity_ptr->ProcessStage(Entity::Stage::lost_render); });
+}
+void InvokeEntitiesRestoreRender()
+{
+    core.ForEachEntity([](entptr_t entity_ptr) { entity_ptr->ProcessStage(Entity::Stage::restore_render); });
+}
+
+} // namespace
 
 DX9RENDER *DX9RENDER::pRS = nullptr;
 
@@ -3844,7 +3829,7 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     {
         if (pVTLcur->hash == newHash && storm::iEquals(pVTLcur->name, sVideoName))
         {
-            if (EntityManager::GetEntityPointer(pVTLcur->videoTexture_id))
+            if (core.GetEntityPointer(pVTLcur->videoTexture_id))
             {
                 pVTLcur->ref++;
                 return pVTLcur->VideoTexture;
@@ -3870,15 +3855,15 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     if ((pVTLcur->name = new char[len]) == nullptr)
         throw std::runtime_error("memory allocate error");
     strcpy_s(pVTLcur->name, len, sVideoName);
-    const entid_t ei = EntityManager::CreateEntity("TextureSequence");
-    pVTLcur->VideoTexture = static_cast<CVideoTexture *>(EntityManager::GetEntityPointer(ei));
+    const entid_t ei = core.CreateEntity("TextureSequence");
+    pVTLcur->VideoTexture = static_cast<CVideoTexture *>(core.GetEntityPointer(ei));
     if (pVTLcur->VideoTexture != nullptr)
     {
         pVTLcur->videoTexture_id = ei;
         if (pVTLcur->VideoTexture->Initialize(this, sVideoName, true) == nullptr)
         {
             delete pVTLcur;
-            EntityManager::EraseEntity(ei);
+            core.EraseEntity(ei);
         }
         else
         {
@@ -3889,7 +3874,7 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     else
     {
         delete pVTLcur;
-        EntityManager::EraseEntity(ei);
+        core.EraseEntity(ei);
     }
 
     return retVal;
@@ -3912,7 +3897,7 @@ void DX9RENDER::ReleaseVideoTexture(CVideoTexture *pVTexture)
                     pVTL = cur->next;
                 else
                     prev->next = cur->next;
-                EntityManager::EraseEntity(cur->videoTexture_id);
+                core.EraseEntity(cur->videoTexture_id);
                 delete cur->name;
                 delete cur;
                 break;
@@ -3926,7 +3911,7 @@ void DX9RENDER::PlayToTexture()
     VideoTextureEntity *cur = pVTL;
     while (cur != nullptr)
     {
-        if (EntityManager::GetEntityPointer(pVTL->videoTexture_id))
+        if (core.GetEntityPointer(pVTL->videoTexture_id))
         {
             cur->VideoTexture->FrameUpdate();
             cur = cur->next;

@@ -66,7 +66,7 @@ class SHIP : public SHIP_BASE
     };
 
     // init parameters
-    inline static EntityManager::layer_index_t RealizeLayer, ExecuteLayer;
+    inline static layer_index_t RealizeLayer, ExecuteLayer;
     char cShipIniName[256];
     int32_t iShipPriorityExecute, iShipPriorityRealize;
     float fGravity;

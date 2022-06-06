@@ -96,9 +96,9 @@ void FLAG::Execute(uint32_t Delta_Time)
         }
 
         // get the wind value
-        if (const auto ei = EntityManager::GetEntityId("weather"))
+        if (const auto ei = core.GetEntityId("weather"))
         {
-            auto *wb = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(ei));
+            auto *wb = static_cast<WEATHER_BASE *>(core.GetEntityPointer(ei));
             globalWind.ang.x = wb->GetFloat(whf_wind_angle);
             globalWind.ang.z = cosf(globalWind.ang.x);
             globalWind.ang.x = sinf(globalWind.ang.x);
@@ -151,7 +151,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
         const auto eidModel = message.EntityID();
         const auto nNation = message.Long();
 
-        MODEL *host_mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(eidModel));
+        MODEL *host_mdl = static_cast<MODEL *>(core.GetEntityPointer(eidModel));
         if (host_mdl == nullptr)
         {
             core.Trace("Missing INIT message to FLAG: bad MODEL");
@@ -181,7 +181,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
             entid_t eidShip = message.EntityID();
             gdata[groupQuantity - 1].ship_id = eidShip;
             gdata[groupQuantity - 1].char_attributes =
-                ((VAI_OBJBASE *)EntityManager::GetEntityPointer(gdata[groupQuantity - 1].ship_id))->GetACharacter();
+                ((VAI_OBJBASE *)core.GetEntityPointer(gdata[groupQuantity - 1].ship_id))->GetACharacter();
         }
 
         NODE *nod;
@@ -218,7 +218,7 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
         int32_t nNation = message.Long();
 
         MODEL *host_mdl;
-        host_mdl = (MODEL *)EntityManager::GetEntityPointer(eidModel);
+        host_mdl = (MODEL *)core.GetEntityPointer(eidModel);
         if (host_mdl == nullptr)
         {
             core.Trace("Missing INIT message to FLAG: bad MODEL");

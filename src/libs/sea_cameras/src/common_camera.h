@@ -24,10 +24,10 @@ class COMMON_CAMERA : public Entity
     {
         Assert(pACharacter);
         // get entity id from loaded ships
-        const auto &entities = EntityManager::GetEntityIdVector("ship");
+        auto &&entities = core.GetEntityIds("ship");
         for (auto ship : entities)
         {
-            auto *pObj = static_cast<VAI_OBJBASE *>(EntityManager::GetEntityPointer(ship));
+            auto *pObj = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(ship));
             if (pObj->GetACharacter() == pACharacter)
             {
                 SetEID(pObj->GetModelEID());
@@ -40,7 +40,7 @@ class COMMON_CAMERA : public Entity
 
     MODEL *GetModelPointer() const
     {
-        return static_cast<MODEL *>(EntityManager::GetEntityPointer(eidObject));
+        return static_cast<MODEL *>(core.GetEntityPointer(eidObject));
     }
 
     void SetAIObj(VAI_OBJBASE *_pAIObj)

@@ -128,14 +128,14 @@ int32_t CharactersGroups::String::GetLen(const char *str)
 bool CharactersGroups::Init()
 {
     // Location Pointer
-    const auto loc = EntityManager::GetEntityId("location");
-    location = static_cast<Location *>(EntityManager::GetEntityPointer(loc));
+    const auto loc = core.GetEntityId("location");
+    location = static_cast<Location *>(core.GetEntityPointer(loc));
     if (!location)
         return false;
     RegistryGroup("");
     // core.LayerCreate("execute", true, false);
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 10);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
+    core.AddToLayer(EXECUTE, GetId(), 10);
     return true;
 }
 
@@ -185,7 +185,7 @@ void CharactersGroups::Execute(uint32_t delta_time)
             size_t n;
             for (n = 0; n < groups[i]->c.size(); n++)
             {
-                auto *cg = static_cast<Character *>(EntityManager::GetEntityPointer(groups[i]->c[n]));
+                auto *cg = static_cast<Character *>(core.GetEntityPointer(groups[i]->c[n]));
                 if (cg && cg->IsSetBlade())
                     break;
             }
@@ -330,7 +330,7 @@ bool CharactersGroups::AddEnemyTarget(Character *chr, Character *enemy, float ma
     // Looking among added
     for (int32_t i = 0; i < chr->numTargets; i++)
     {
-        if (enemy == EntityManager::GetEntityPointer(chr->grpTargets[i].chr))
+        if (enemy == core.GetEntityPointer(chr->grpTargets[i].chr))
         {
             chr->grpTargets[i].time = 0.0f;
             return true;
@@ -376,7 +376,7 @@ bool CharactersGroups::RemoveInvalidTargets(Character *chr, Character *check)
     {
         auto isDelete = true;
         auto &trg = chr->grpTargets[i];
-        auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(trg.chr));
+        auto *c = static_cast<Character *>(core.GetEntityPointer(trg.chr));
         if (c && (trg.time < trg.timemax || trg.timemax < 0.0f))
         {
             if (!c->IsDead())
@@ -537,10 +537,10 @@ bool CharactersGroups::MsgIsValidateTarget(MESSAGE &message)
 {
     const auto chr = message.EntityID();
     const auto trg = message.EntityID();
-    auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(chr));
+    auto *c = static_cast<Character *>(core.GetEntityPointer(chr));
     if (!c)
         return false;
-    auto *en = static_cast<Character *>(EntityManager::GetEntityPointer(trg));
+    auto *en = static_cast<Character *>(core.GetEntityPointer(trg));
     if (!en)
         return false;
     CVECTOR vP1, vP2;
@@ -555,7 +555,7 @@ bool CharactersGroups::MsgIsValidateTarget(MESSAGE &message)
 bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
 {
     const auto chr = message.EntityID();
-    auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(chr));
+    auto *c = static_cast<Character *>(core.GetEntityPointer(chr));
     if (!c)
         return false;
     auto *vd = message.ScriptVariablePointer();
@@ -576,7 +576,7 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
         for (int32_t i = 0; i < c->numTargets; i++)
         {
             // Character pointer
-            auto *nc = static_cast<NPCharacter *>(EntityManager::GetEntityPointer(c->grpTargets[i].chr));
+            auto *nc = static_cast<NPCharacter *>(core.GetEntityPointer(c->grpTargets[i].chr));
             if (!nc)
                 continue;
             if (!nc->IsSetBlade())
@@ -615,7 +615,7 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
         if (s < 0)
             s = 0;
     }
-    c = static_cast<Character *>(EntityManager::GetEntityPointer(c->grpTargets[s].chr));
+    c = static_cast<Character *>(core.GetEntityPointer(c->grpTargets[s].chr));
     // if(!c->IsSetBlade()) return false;
     if (c->AttributesPointer)
     {
@@ -631,8 +631,8 @@ bool CharactersGroups::MsgGetOptimalTarget(MESSAGE &message) const
 // Is this character an enemy
 bool CharactersGroups::MsgIsEnemy(MESSAGE &message)
 {
-    const auto g1 = GetCharacterGroup(static_cast<Character *>(EntityManager::GetEntityPointer(message.EntityID())));
-    const auto g2 = GetCharacterGroup(static_cast<Character *>(EntityManager::GetEntityPointer(message.EntityID())));
+    const auto g1 = GetCharacterGroup(static_cast<Character *>(core.GetEntityPointer(message.EntityID())));
+    const auto g2 = GetCharacterGroup(static_cast<Character *>(core.GetEntityPointer(message.EntityID())));
     if (g1 < 0 || g2 < 0)
         return false;
     auto isSelf = false;
@@ -680,9 +680,9 @@ void CharactersGroups::MsgAddTarget(MESSAGE &message)
 {
     // get characters
     auto eid = message.EntityID();
-    auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(eid));
+    auto *chr = static_cast<Character *>(core.GetEntityPointer(eid));
     eid = message.EntityID();
-    auto *enemy = static_cast<Character *>(EntityManager::GetEntityPointer(eid));
+    auto *enemy = static_cast<Character *>(core.GetEntityPointer(eid));
     if (!chr || !enemy)
         return;
     // Checking for hostility
@@ -721,7 +721,7 @@ void CharactersGroups::MsgAddTarget(MESSAGE &message)
 void CharactersGroups::MsgUpdChrTrg(MESSAGE &message)
 {
     const auto eid = message.EntityID();
-    auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(eid));
+    auto *chr = static_cast<Character *>(core.GetEntityPointer(eid));
     if (chr)
         CharacterVisibleCheck(chr);
 }
@@ -930,7 +930,7 @@ bool CharactersGroups::MsgSetAlarmDown(MESSAGE &message)
 bool CharactersGroups::MoveCharacterToGroup(MESSAGE &message)
 {
     const auto eid = message.EntityID();
-    auto *chr = static_cast<Character *>(EntityManager::GetEntityPointer(eid));
+    auto *chr = static_cast<Character *>(core.GetEntityPointer(eid));
     if (!chr)
         return false;
     // create a group
@@ -1033,7 +1033,7 @@ void CharactersGroups::MsgSetAlarmReaction(MESSAGE &message)
 // Remove character from all groups
 void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
 {
-    auto *const ch = chr ? static_cast<Character *>(EntityManager::GetEntityPointer(chr)) : nullptr;
+    auto *const ch = chr ? static_cast<Character *>(core.GetEntityPointer(chr)) : nullptr;
     // Remove the character from the previous group
     for (int32_t i = 0; i < numGroups; i++)
     {
@@ -1041,7 +1041,7 @@ void CharactersGroups::RemoveCharacterFromAllGroups(entid_t chr)
         auto &cid = g->c;
         for (size_t j = 0; j < g->c.size();)
         {
-            auto *c = static_cast<Character *>(EntityManager::GetEntityPointer(cid[j]));
+            auto *c = static_cast<Character *>(core.GetEntityPointer(cid[j]));
             if (c == nullptr || c == ch)
             {
                 cid[j] = cid.back();

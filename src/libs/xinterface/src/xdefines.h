@@ -6,7 +6,6 @@
 #include "shared/interface/messages.h"
 #include "string_service.h"
 #include "vx_service.h"
-#include <entity_manager.h>
 
 #define ALPHA(x) ((x) >> 24)
 #define RED(x) (((x) >> 16) & 0xFF)

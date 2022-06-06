@@ -328,7 +328,7 @@ class AIShip : public VAI_INNEROBJ
 
     Entity *GetShipPointer() const
     {
-        return EntityManager::GetEntityPointer(GetShipEID());
+        return core.GetEntityPointer(GetShipEID());
     };
 
     SHIP_BASE *GetShipBasePointer() const

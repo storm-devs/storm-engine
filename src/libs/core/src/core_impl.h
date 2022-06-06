@@ -3,19 +3,18 @@
 #include "core_private.h"
 
 #include "compiler.h"
+#include "entity_manager.h"
 #include "services_list.h"
 #include "timer.h"
+#include "v_module_api.h"
 
 #include <windows.h>
 
 #define ENGINE_SCRIPT_VERSION 54128
 
-class CoreImpl : public CorePrivate
+class CoreImpl final : public CorePrivate
 {
   public:
-    CoreImpl() = default;
-    ~CoreImpl() = default;
-
     void Init();
 
     void InitBase();
@@ -119,6 +118,22 @@ class CoreImpl : public CorePrivate
 
     void stopFrameProcessing() override;
 
+    // Entity management
+    void AddToLayer(layer_index_t index, entid_t id, priority_t priority) override;
+    void EraseEntity(entid_t entity) override;
+    entid_t CreateEntity(const char *name, ATTRIBUTES *attr) override;
+    entptr_t GetEntityPointer(entid_t id) const override;
+    entid_t GetEntityId(const char *name) const override;
+    entity_container_cref GetEntityIds(layer_type_t type) const override;
+    entity_container_cref GetEntityIds(layer_index_t index) const override;
+    entity_container_cref GetEntityIds(const char *name) const override;
+    void SetLayerType(layer_index_t index, layer_type_t type) override;
+    void SetLayerFrozen(layer_index_t index, bool freeze) override;
+    void RemoveFromLayer(layer_index_t index, entid_t id) override;
+    hash_t GetClassCode(entid_t id) const override;
+    bool IsLayerFrozen(layer_index_t index) const override;
+    void ForEachEntity(const std::function<void(entptr_t)>& f) override;
+
     void collectCrashInfo() const;
 
     [[nodiscard]] bool initialized() const
@@ -132,8 +147,10 @@ class CoreImpl : public CorePrivate
 
     bool Exit_flag; // true if the program closing
 
-  private:
+private:
     void loadCompatibilitySettings(INIFILE &inifile);
+
+    EntityManager entity_manager_;
 
     storm::ENGINE_VERSION targetVersion_ = storm::ENGINE_VERSION::LATEST;
 

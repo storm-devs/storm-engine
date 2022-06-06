@@ -20,9 +20,9 @@ uint32_t _ShipSailState(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
 
     // find sail class
-    if (const auto eid = EntityManager::GetEntityId("SAIL"))
+    if (const auto eid = core.GetEntityId("SAIL"))
     {
-        const int32_t n = static_cast<SAIL *>(EntityManager::GetEntityPointer(eid))->GetSailStateForCharacter(nChrIdx);
+        const int32_t n = static_cast<SAIL *>(core.GetEntityPointer(eid))->GetSailStateForCharacter(nChrIdx);
         pVR->Set(n);
     }
     else
@@ -173,9 +173,9 @@ uint32_t _RandomHole2Sail(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
 
     SAILONE_BASE *pSail = nullptr;
-    if (const auto ei = EntityManager::GetEntityId("sail"))
+    if (const auto ei = core.GetEntityId("sail"))
     {
-        pSail = static_cast<SAIL_BASE *>(EntityManager::GetEntityPointer(ei))
+        pSail = static_cast<SAIL_BASE *>(core.GetEntityPointer(ei))
                     ->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
     }
 
@@ -235,9 +235,9 @@ uint32_t _DeleteOneSailHole(VS_STACK *pS)
     sscanf(_groupName, "%d", &_groupNum);
 
     SAILONE_BASE *pSail = nullptr;
-    if (const auto ei = EntityManager::GetEntityId("sail"))
+    if (const auto ei = core.GetEntityId("sail"))
     {
-        pSail = static_cast<SAIL_BASE *>(EntityManager::GetEntityPointer(ei))
+        pSail = static_cast<SAIL_BASE *>(core.GetEntityPointer(ei))
                     ->FindSailForCharacter(_chrIdx, _reyName, _groupNum);
     }
 

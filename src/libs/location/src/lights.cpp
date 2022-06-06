@@ -137,10 +137,10 @@ bool Lights::Init()
         return false;
     }
     // start executing
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 10);
-    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(REALIZE, GetId(), -1000);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
+    core.AddToLayer(EXECUTE, GetId(), 10);
+    core.SetLayerType(REALIZE, layer_type_t::realize);
+    core.AddToLayer(REALIZE, GetId(), -1000);
     return true;
 }
 
@@ -257,7 +257,7 @@ void Lights::Realize(uint32_t delta_time)
         // Visibility
         if (collide)
         {
-            const auto dist = collide->Trace(EntityManager::GetEntityIdIterators(SUN_TRACE), pos,
+            const auto dist = collide->Trace(core.GetEntityIds(SUN_TRACE), pos,
                                              CVECTOR(ls.pos.x, ls.pos.y, ls.pos.z), lampModels, numLampModels);
             isVisible = dist > 1.0f;
         }
@@ -404,7 +404,7 @@ void Lights::AddLight(int32_t index, const CVECTOR &pos)
     lights[numLights].intensity = 0;
 
     // Send a message to the lighter
-    if (const auto eid = EntityManager::GetEntityId("Lighter"))
+    if (const auto eid = core.GetEntityId("Lighter"))
     {
         core.Send_Message(eid, "sffffffffffs", "AddLight", pos.x, pos.y, pos.z, types[index].color.r,
                           types[index].color.g, types[index].color.b, types[index].dxLight.Attenuation0,

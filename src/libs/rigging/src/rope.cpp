@@ -158,7 +158,7 @@ void ROPE::Realize(uint32_t Delta_Time)
                         if ((~(gdata[i].pMatWorld->Pos() - cp)) * pr < fMaxRopeDist)
                         // if the distance to the ship is not more than the maximum
                         {
-                            static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))
+                            static_cast<SHIP_BASE *>(core.GetEntityPointer(gdata[i].shipEI))
                                 ->SetLightAndFog(true);
                             RenderService->SetTransform(D3DTS_WORLD, *gdata[i].pMatWorld);
 
@@ -166,7 +166,7 @@ void ROPE::Realize(uint32_t Delta_Time)
                             RenderService->SetMaterial(mat);
                             RenderService->DrawBuffer(vBuf, sizeof(ROPEVERTEX), iBuf, 0, nVert, gdata[i].st,
                                                       gdata[i].nt);
-                            static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(gdata[i].shipEI))
+                            static_cast<SHIP_BASE *>(core.GetEntityPointer(gdata[i].shipEI))
                                 ->RestoreLightAndFog();
                         }
                 while (RenderService->TechniqueExecuteNext())
@@ -199,7 +199,7 @@ uint64_t ROPE::ProcessMessage(MESSAGE &message)
     case MSG_ROPE_INIT: {
         const auto tmp_shipEI = message.EntityID();
         const auto tmp_modelEI = message.EntityID();
-        auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(tmp_modelEI));
+        auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(tmp_modelEI));
         if (mdl == nullptr)
         {
             core.Trace("WARNING!!! Missing INIT message to ROPE - bad ship model");
@@ -729,9 +729,9 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
             rd->angRot = 0.f;
             rd->vDeep = 0.f;
 
-            if (const auto sailEI = EntityManager::GetEntityId("sail"))
+            if (const auto sailEI = core.GetEntityId("sail"))
             {
-                auto *mdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[rd->HostGroup].modelEI));
+                auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(gdata[rd->HostGroup].modelEI));
                 if (mdl == nullptr)
                     rd->btie = rd->etie = false;
                 else
@@ -962,7 +962,7 @@ void ROPE::SetAdd(int firstNum)
         {
             const int32_t gn = rlist[rn]->HostGroup;
             const char *pcModlName = nullptr;
-            auto *pMdl = static_cast<MODEL *>(EntityManager::GetEntityPointer(gdata[gn].modelEI));
+            auto *pMdl = static_cast<MODEL *>(core.GetEntityPointer(gdata[gn].modelEI));
             if (pMdl && pMdl->GetNode(0))
                 pcModlName = pMdl->GetNode(0)->GetName();
 

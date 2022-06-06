@@ -139,11 +139,11 @@ bool WorldMap::Init()
     // GUARD(LocationCamera::Init())
     // Layers
     // core.LayerCreate("execute", true, false);
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
     // core.LayerCreate("realize", true, false);
-    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 10000);
-    EntityManager::AddToLayer(REALIZE, GetId(), 10000);
+    core.SetLayerType(REALIZE, layer_type_t::realize);
+    core.AddToLayer(EXECUTE, GetId(), 10000);
+    core.AddToLayer(REALIZE, GetId(), 10000);
 
     // DX9 render
     rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));

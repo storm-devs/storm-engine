@@ -503,7 +503,7 @@ void SEPS_PS::Execute(uint32_t DeltaTime)
     if(bLinkEmitter)
     {
       COLLISION_OBJECT * pLink;
-      pLink = (COLLISION_OBJECT *)EntityManager::GetEntityPointer(LinkObject);
+      pLink = (COLLISION_OBJECT *)core.GetEntityPointer(LinkObject);
       if(pLink)
       {
         Emitter = pLink->mtx * LinkPos;
@@ -522,7 +522,7 @@ void SEPS_PS::LayOnSurface(uint32_t index)
     COLLISION_OBJECT *pLink;
     CVECTOR from, to;
     float dist;
-    pLink = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(SurfaceID));
+    pLink = static_cast<COLLISION_OBJECT *>(core.GetEntityPointer(SurfaceID));
     if (pLink == nullptr)
         return;
     from = Particle[index].pos;
@@ -544,7 +544,7 @@ void SEPS_PS::Realize(uint32_t DeltaTime)
     if (bLinkEmitter)
     {
         COLLISION_OBJECT *pLink;
-        pLink = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(LinkObject));
+        pLink = static_cast<COLLISION_OBJECT *>(core.GetEntityPointer(LinkObject));
         if (pLink)
         {
             Emitter = pLink->mtx * LinkPos;
@@ -915,7 +915,7 @@ void SEPS_PS::LinkToObject(entid_t id, CVECTOR _LinkPos)
     LinkDirPos = LinkPos + LinkDir;
 
     COLLISION_OBJECT *pLink;
-    pLink = static_cast<COLLISION_OBJECT *>(EntityManager::GetEntityPointer(LinkObject));
+    pLink = static_cast<COLLISION_OBJECT *>(core.GetEntityPointer(LinkObject));
     if (pLink)
         Emitter = pLink->mtx * LinkPos;
 

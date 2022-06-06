@@ -31,15 +31,15 @@ LocEagle::LocEagle()
 
 LocEagle::~LocEagle()
 {
-    EntityManager::EraseEntity(mdl);
+    core.EraseEntity(mdl);
 }
 
 // Initialization
 bool LocEagle::Init()
 {
     // The point we fly around
-    const auto loc = EntityManager::GetEntityId("location");
-    auto *location = static_cast<Location *>(EntityManager::GetEntityPointer(loc));
+    const auto loc = core.GetEntityId("location");
+    auto *location = static_cast<Location *>(core.GetEntityPointer(loc));
     if (!location)
         return false;
     cnt = location->GetPtcData().middle + CVECTOR(0.0f, 30.0f, 0.0f);
@@ -51,9 +51,9 @@ bool LocEagle::Init()
         return false;
     }
     // Model
-    if (!(mdl = EntityManager::CreateEntity("modelr")))
+    if (!(mdl = core.CreateEntity("modelr")))
         return false;
-    EntityManager::AddToLayer(REALIZE, mdl, 20);
+    core.AddToLayer(REALIZE, mdl, 20);
     gs->SetTexturePath("Animals\\");
     if (!core.Send_Message(mdl, "ls", MSG_MODEL_LOAD_GEO, "Animals\\eagle"))
     {
@@ -65,7 +65,7 @@ bool LocEagle::Init()
     if (!core.Send_Message(mdl, "ls", MSG_MODEL_LOAD_ANI, "eagle"))
         return false;
     // Start playing the animation
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(mdl));
     if (!m)
         return false;
     auto *ani = m->GetAnimation();
@@ -77,8 +77,8 @@ bool LocEagle::Init()
         return false;
     // include in the execution list
     // core.LayerCreate("execute", true, false);
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 10);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
+    core.AddToLayer(EXECUTE, GetId(), 10);
     return true;
 }
 
@@ -86,7 +86,7 @@ bool LocEagle::Init()
 void LocEagle::Execute(uint32_t delta_time)
 {
     // Model
-    auto *m = static_cast<MODEL *>(EntityManager::GetEntityPointer(mdl));
+    auto *m = static_cast<MODEL *>(core.GetEntityPointer(mdl));
     if (!m)
         return;
     // Updating position

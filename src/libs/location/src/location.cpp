@@ -66,16 +66,16 @@ Location::~Location()
     auto *const atr = AttributesPointer->FindAClass(AttributesPointer, "locators");
     if (atr)
         AttributesPointer->DeleteAttributeClassX(atr);
-    // EntityManager::EraseEntity(cubeShotMaker);
-    EntityManager::EraseEntity(lighter);
-    EntityManager::EraseEntity(lizards);
-    EntityManager::EraseEntity(rats);
-    EntityManager::EraseEntity(crabs);
-    EntityManager::EraseEntity(eagle);
-    EntityManager::EraseEntity(grass);
-    EntityManager::EraseEntity(lightsid);
-    EntityManager::EraseEntity(loceffectsid);
-    EntityManager::EraseEntity(blood);
+    // core.EraseEntity(cubeShotMaker);
+    core.EraseEntity(lighter);
+    core.EraseEntity(lizards);
+    core.EraseEntity(rats);
+    core.EraseEntity(crabs);
+    core.EraseEntity(eagle);
+    core.EraseEntity(grass);
+    core.EraseEntity(lightsid);
+    core.EraseEntity(loceffectsid);
+    core.EraseEntity(blood);
 
     for (int32_t i = 0; i < numLocators; i++)
         delete locators[i];
@@ -92,20 +92,20 @@ bool Location::Init()
     rs->SetRenderState(D3DRS_LIGHTING, FALSE);
 
     // core.LayerCreate("execute", true, false);
-    EntityManager::SetLayerType(EXECUTE, EntityManager::Layer::Type::execute);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 10);
+    core.SetLayerType(EXECUTE, layer_type_t::execute);
+    core.AddToLayer(EXECUTE, GetId(), 10);
 
     // core.LayerCreate("realize", true, false);
-    EntityManager::SetLayerType(REALIZE, EntityManager::Layer::Type::realize);
-    EntityManager::AddToLayer(REALIZE, GetId(), 100000);
+    core.SetLayerType(REALIZE, layer_type_t::realize);
+    core.AddToLayer(REALIZE, GetId(), 100000);
 
-    lightsid = EntityManager::CreateEntity("Lights");
-    loceffectsid = EntityManager::CreateEntity("LocationEffects");
+    lightsid = core.CreateEntity("Lights");
+    loceffectsid = core.CreateEntity("LocationEffects");
 
     enemyBarsTexture = rs->TextureCreate("LocEfx\\state_bars.tga");
 
-    lighter = EntityManager::CreateEntity("Lighter");
-    // cubeShotMaker = EntityManager::CreateEntity("CubeShotMakerCam");
+    lighter = core.CreateEntity("Lighter");
+    // cubeShotMaker = core.CreateEntity("CubeShotMakerCam");
     return true;
 }
 
@@ -127,7 +127,7 @@ void Location::Execute(uint32_t delta_time)
         message[i].alpha -= dltTime * 0.4f;
     }
     // Updating data for grass
-    auto *grs = static_cast<Grass *>(EntityManager::GetEntityPointer(grass));
+    auto *grs = static_cast<Grass *>(core.GetEntityPointer(grass));
     if (grs)
     {
         grs->characters.resize(supervisor.character.size());
@@ -206,7 +206,7 @@ void Location::Realize(uint32_t delta_time)
 
 void Location::Update(uint32_t delta_time)
 {
-    lights = static_cast<Lights *>(EntityManager::GetEntityPointer(lightsid));
+    lights = static_cast<Lights *>(core.GetEntityPointer(lightsid));
 
     const uint32_t max_delta_time = 500;
     const auto maxDltTime = 0.1f;
@@ -254,7 +254,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
             return 0;
         if (!model.IsValidateIndex(lastLoadStaticModel))
             return 0;
-        if (!EntityManager::GetEntityPointer(model.ID(lastLoadStaticModel)))
+        if (!core.GetEntityPointer(model.ID(lastLoadStaticModel)))
             return 0;
         message.ScriptVariablePointer()->Set(model.ID(lastLoadStaticModel));
         return 1;
@@ -298,7 +298,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
     case MSG_LOCATION_MODEL_LAMPS:
         if (lastLoadStaticModel < 0)
             return 0;
-        lights = static_cast<Lights *>(EntityManager::GetEntityPointer(lightsid));
+        lights = static_cast<Lights *>(core.GetEntityPointer(lightsid));
         if (!lights)
             return 0;
         return lights->AddLampModel(model.ID(lastLoadStaticModel));
@@ -418,7 +418,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         supervisor.DelSavePositions(false);
         break;
     case MSG_LOCATION_ADD_LIGHT: {
-        lights = static_cast<Lights *>(EntityManager::GetEntityPointer(lightsid));
+        lights = static_cast<Lights *>(core.GetEntityPointer(lightsid));
         if (!lights)
             return false;
         const std::string &name = message.String();
@@ -471,7 +471,7 @@ bool Location::CheckIfLocatorExists(const char *lName)
 
 int32_t Location::LoadStaticModel(const char *modelName, const char *tech, int32_t level, bool useDynamicLights)
 {
-    lights = static_cast<Lights *>(EntityManager::GetEntityPointer(lightsid));
+    lights = static_cast<Lights *>(core.GetEntityPointer(lightsid));
     const auto im = model.CreateModel(modelName, tech, level, true, useDynamicLights ? GetLights() : nullptr);
     if (im < 0)
         return -1;
@@ -495,10 +495,10 @@ int32_t Location::LoadStaticModel(const char *modelName, const char *tech, int32
         return -1;
     }
     // Add the model to special layers
-    EntityManager::AddToLayer(SHADOW, mdl->GetId(), 10);
-    EntityManager::AddToLayer(SUN_TRACE, mdl->GetId(), 10);
-    EntityManager::AddToLayer(BLOOD, mdl->GetId(), 100);
-    EntityManager::AddToLayer(RAIN_DROPS, mdl->GetId(), 100);
+    core.AddToLayer(SHADOW, mdl->GetId(), 10);
+    core.AddToLayer(SUN_TRACE, mdl->GetId(), 10);
+    core.AddToLayer(BLOOD, mdl->GetId(), 100);
+    core.AddToLayer(RAIN_DROPS, mdl->GetId(), 100);
     // Reading out all locators
     GEOS::INFO ginfo;
     GEOS::LABEL label;
@@ -578,11 +578,11 @@ bool Location::LoadJumpPatch(const char *modelName)
 
 bool Location::LoadGrass(const char *modelName, const char *texture)
 {
-    EntityManager::EraseEntity(grass);
+    core.EraseEntity(grass);
     if (!modelName || !modelName[0])
         return true;
-    grass = EntityManager::CreateEntity("Grass");
-    auto *grs = static_cast<Grass *>(EntityManager::GetEntityPointer(grass));
+    grass = core.CreateEntity("Grass");
+    auto *grs = static_cast<Grass *>(core.GetEntityPointer(grass));
     if (!grs)
         return false;
     if (texture && texture[0])
@@ -596,7 +596,7 @@ bool Location::LoadGrass(const char *modelName, const char *texture)
     if (grs->LoadData(nm))
         return true;
     core.Trace("Can't load grass data file: %s", nm);
-    EntityManager::EraseEntity(grass);
+    core.EraseEntity(grass);
     return false;
 }
 
@@ -608,7 +608,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     }
     else if (storm::iEquals(name, "AddFlys"))
     {
-        const auto effects = EntityManager::GetEntityId("LocationEffects");
+        const auto effects = core.GetEntityId("LocationEffects");
         const auto x = message.Float();
         const auto y = message.Float();
         const auto z = message.Float();
@@ -617,7 +617,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     }
     else if (storm::iEquals(name, "DelFlys"))
     {
-        const auto effects = EntityManager::GetEntityId("LocationEffects");
+        const auto effects = core.GetEntityId("LocationEffects");
         core.Send_Message(effects, "s", "DelFlys");
         return true;
     }
@@ -639,30 +639,30 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     }
     else if (storm::iEquals(name, "AddEagle"))
     {
-        eagle = EntityManager::CreateEntity("LocEagle");
+        eagle = core.CreateEntity("LocEagle");
         return true;
     }
     else if (storm::iEquals(name, "AddLizards"))
     {
-        lizards = EntityManager::CreateEntity("Lizards");
+        lizards = core.CreateEntity("Lizards");
         return true;
     }
     else if (storm::iEquals(name, "AddRats"))
     {
-        rats = EntityManager::CreateEntity("LocRats");
+        rats = core.CreateEntity("LocRats");
         if (!core.Send_Message(rats, "l", message.Long()))
         {
-            EntityManager::EraseEntity(rats);
+            core.EraseEntity(rats);
             return false;
         }
         return true;
     }
     else if (storm::iEquals(name, "AddCrabs"))
     {
-        crabs = EntityManager::CreateEntity("LocCrabs");
+        crabs = core.CreateEntity("LocCrabs");
         if (!core.Send_Message(crabs, "l", message.Long()))
         {
-            EntityManager::EraseEntity(crabs);
+            core.EraseEntity(crabs);
             return false;
         }
 
@@ -670,11 +670,11 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
     }
     else if (storm::iEquals(name, "AddBlood"))
     {
-        if (!EntityManager::GetEntityPointer(blood))
+        if (!core.GetEntityPointer(blood))
         {
-            blood = EntityManager::CreateEntity("Blood");
-            EntityManager::AddToLayer(EXECUTE, blood, 65540);
-            EntityManager::AddToLayer(REALIZE, blood, 65540);
+            blood = core.CreateEntity("Blood");
+            core.AddToLayer(EXECUTE, blood, 65540);
+            core.AddToLayer(REALIZE, blood, 65540);
         }
         CVECTOR vPos;
         vPos.x = message.Float();
@@ -710,7 +710,7 @@ bool Location::MessageEx(const char *name, MESSAGE &message)
         int32_t layer = message.Long();
         const int32_t n = model.FindModel(modelname.c_str());
         if (n >= 0)
-            // EntityManager::AddToLayer(realize, model.RealizerID(n), layer);
+            // core.AddToLayer(realize, model.RealizerID(n), layer);
             core.Send_Message(model.RealizerID(n), "ll", 2, 1);
     }
     else if (storm::iEquals(name, "SetGrassParams"))

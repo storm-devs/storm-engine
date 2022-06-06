@@ -124,7 +124,7 @@ class SUNGLOW : public Entity
 
     float fBottomClip;
 
-    float LayerTrace(CVECTOR &vSrc, EntityManager::LayerIterators its) const;
+    float LayerTrace(CVECTOR &vSrc, entity_container_cref its) const;
     void GenerateSunGlow();
     void DrawReflection() const;
     void Release();

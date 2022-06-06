@@ -44,10 +44,10 @@ CharacterAnimationKipper::~CharacterAnimationKipper()
 bool CharacterAnimationKipper::Init()
 {
     // check that the it's the only one
-    const auto &entities = EntityManager::GetEntityIdVector("CharacterAnimationKipper");
+    auto &&entities = core.GetEntityIds("CharacterAnimationKipper");
     for (auto eid : entities)
     {
-        if (EntityManager::GetEntityPointer(eid) == this)
+        if (core.GetEntityPointer(eid) == this)
             continue;
 
         core.Trace("CharacterAnimationKipper::Init() -> CharacterAnimationKipper already created");

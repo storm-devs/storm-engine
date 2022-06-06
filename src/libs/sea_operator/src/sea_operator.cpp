@@ -31,8 +31,8 @@ SEA_OPERATOR::~SEA_OPERATOR()
 
 bool SEA_OPERATOR::Init()
 {
-    EntityManager::AddToLayer(REALIZE, GetId(), 1);
-    EntityManager::AddToLayer(EXECUTE, GetId(), 0);
+    core.AddToLayer(REALIZE, GetId(), 1);
+    core.AddToLayer(EXECUTE, GetId(), 0);
 
     renderer = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
 
@@ -62,7 +62,7 @@ uint64_t SEA_OPERATOR::ProcessMessage(MESSAGE &message)
             break;
 
         const auto firedShip = message.EntityID();
-        if (myShip != static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(firedShip)))
+        if (myShip != static_cast<SHIP_BASE *>(core.GetEntityPointer(firedShip)))
             break;
 
         const std::string &bortName = message.String();
@@ -154,9 +154,9 @@ void SEA_OPERATOR::Execute(uint32_t _dTime)
 
 void SEA_OPERATOR::FirstInit()
 {
-    sea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(EntityManager::GetEntityId("sea")));
+    sea = static_cast<SEA_BASE *>(core.GetEntityPointer(core.GetEntityId("sea")));
 
-    const auto &entities = EntityManager::GetEntityIdVector("ship");
+    auto &&entities = core.GetEntityIds("ship");
     for (auto ent : entities)
     {
         SetIfMyShip(ent);
@@ -223,7 +223,7 @@ void SEA_OPERATOR::StartNewAction()
 
 void SEA_OPERATOR::SetIfMyShip(entid_t _shipID)
 {
-    auto *ship = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(_shipID));
+    auto *ship = static_cast<SHIP_BASE *>(core.GetEntityPointer(_shipID));
     if (!ship)
         return;
     auto *attr = ship->GetACharacter();
@@ -267,7 +267,7 @@ void SEA_OPERATOR::HandleShipFire(entid_t _shipID, const char *_bortName, const 
     using std::chrono::system_clock;
 
     auto bort = BORT_FRONT;
-    auto *ship = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(_shipID));
+    auto *ship = static_cast<SHIP_BASE *>(core.GetEntityPointer(_shipID));
 
     if (!strcmp(_bortName, "cannonf"))
         bort = BORT_FRONT;

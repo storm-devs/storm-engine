@@ -83,9 +83,9 @@ void RAIN::GenerateRain()
     uint32_t i;
 
     entid_t ent;
-    if (!(ent = EntityManager::GetEntityId("weather")))
+    if (!(ent = core.GetEntityId("weather")))
         throw std::runtime_error("No found WEATHER entity!");
-    pWeather = static_cast<WEATHER_BASE *>(EntityManager::GetEntityPointer(ent));
+    pWeather = static_cast<WEATHER_BASE *>(core.GetEntityPointer(ent));
     Assert(pWeather);
 
     Release();
@@ -233,8 +233,8 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
 
     entid_t sea_id;
     SEA_BASE *pSea = nullptr;
-    if (sea_id = EntityManager::GetEntityId("sea"))
-        pSea = static_cast<SEA_BASE *>(EntityManager::GetEntityPointer(sea_id));
+    if (sea_id = core.GetEntityId("sea"))
+        pSea = static_cast<SEA_BASE *>(core.GetEntityPointer(sea_id));
 
     fDropsDeltaTime += fDeltaTime;
 
@@ -245,8 +245,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
     if (fDropsDeltaTime < 0.0f)
         fDropsDeltaTime = 0.0f;
 
-    const auto its = EntityManager::GetEntityIdIterators(RAIN_DROPS);
-    if (its.first != its.second)
+    if (auto && entities = core.GetEntityIds(RAIN_DROPS); !entities.empty())
     {
         for (int32_t i = 0; i < iNumNewDrops1 + iNumNewDrops2; i++)
         {
@@ -268,7 +267,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
             vSrc = CVECTOR(vCamPos.x + fR * sinf(fA), vCamPos.y + 75.0f, vCamPos.z + fR * cosf(fA));
             vDst = CVECTOR(vSrc.x, vCamPos.y - 75.0f, vSrc.z);
 
-            auto fTest1 = cs->Trace(its, vSrc, vDst, nullptr, 0);
+            auto fTest1 = cs->Trace(entities, vSrc, vDst, nullptr, 0);
             auto fTest2 = 2.0f;
 
             if (pSea)
@@ -284,9 +283,9 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
 
                 // check - if it's a ship
                 entid_t eid = cs->GetObjectID();
-                if (EntityManager::GetClassCode(eid) == dwShipName)
+                if (core.GetClassCode(eid) == dwShipName)
                 {
-                    pShip = static_cast<SHIP_BASE *>(EntityManager::GetEntityPointer(eid));
+                    pShip = static_cast<SHIP_BASE *>(core.GetEntityPointer(eid));
                 }
             }
             else if (fTest2 <= 1.0f)
@@ -333,7 +332,7 @@ void RAIN::RealizeDrops(uint32_t Delta_Time)
 
     for (int32_t i = 0; i < aShips.size(); i++)
     {
-        if (!EntityManager::GetEntityPointer(aShips[i].eid))
+        if (!core.GetEntityPointer(aShips[i].eid))
         {
             aShips[i].pShip = nullptr;
         }
