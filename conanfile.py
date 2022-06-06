@@ -44,10 +44,6 @@ class StormEngine(ConanFile):
         "mimalloc:override": True
     }
 
-    def configure(self):
-        if self.settings.os == "Windows":
-            self.default_options["sentry-native:transport"] = "winhttp"
-
     def imports(self):
         self.__dest = str(self.options.output_directory) + "/" + getenv("CONAN_IMPORT_PATH", "bin")
         self.__install_folder("/src/techniques", "/resource/techniques")
