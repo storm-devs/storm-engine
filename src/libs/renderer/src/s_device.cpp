@@ -8,7 +8,7 @@
 #include "texture.h"
 #include "v_s_stack.h"
 #include "storm/fs.h"
-#include "portable-snippets/debug-trap.h"
+#include "debug-trap.h"
 
 #include <algorithm>
 

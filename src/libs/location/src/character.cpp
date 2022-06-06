@@ -17,7 +17,7 @@
 #include "sea_base.h"
 #include "shared/messages.h"
 #include "v_sound_service.h"
-#include "portable-snippets/debug-trap.h"
+#include "debug-trap.h"
 
 #include "core.h"
 #include "v_data.h"

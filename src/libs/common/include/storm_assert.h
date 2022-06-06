@@ -1,7 +1,7 @@
 #pragma once
 #include <spdlog/spdlog.h>
 
-#include "portable-snippets/debug-trap.h"
+#include "debug-trap.h"
 
 #define EX_OFF
 

@@ -11,7 +11,7 @@
 #include "animation_imp.h"
 #include "animation_service_imp.h"
 #include "core.h"
-#include "portable-snippets/debug-trap.h"
+#include "debug-trap.h"
 
 //============================================================================================
 

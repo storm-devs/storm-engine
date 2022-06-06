@@ -1,6 +1,6 @@
 #include "compiler.h"
 #include "core_impl.h"
-#include "portable-snippets/debug-trap.h"
+#include "debug-trap.h"
 
 #include <execution>
 

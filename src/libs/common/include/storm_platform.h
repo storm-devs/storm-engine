@@ -6,7 +6,7 @@ const char *convert_path_sep(const char *cPath);
 #include <limits.h>
 
 #include "storm_d3dx9.h"
-#include "wine/winuser.rh"
+#include "winuser.rh"
 #include "safe_types.h"
 #undef EXTERN // fix for token.h:72:5: error: expected identifier EXTERN,
 

@@ -4,7 +4,7 @@
 #include "math3d/matrix.h"
 #include "model.h"
 #include "shared/messages.h"
-#include "portable-snippets/debug-trap.h"
+#include "debug-trap.h"
 
 InterfaceBackScene::LightParam::~LightParam()
 {

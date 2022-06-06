@@ -1,6 +1,6 @@
 #include "island.h"
 #include "inlines.h"
-#include "portable-snippets/debug-trap.h"
+#include "debug-trap.h"
 
 MapZipper::MapZipper()
 {

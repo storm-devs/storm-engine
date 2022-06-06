@@ -13,7 +13,7 @@
 #include "logging.hpp"
 #include "script_cache.h"
 #include "storm_assert.h"
-#include "portable-snippets/debug-trap.h"
+#include "debug-trap.h"
 
 #include <unordered_map>
 
