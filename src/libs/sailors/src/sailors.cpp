@@ -722,27 +722,8 @@ void ShipWalk::CreateNewMan(SailorsPoints &sailorsPoints)
 
     shipMan[current].modelID = core.CreateEntity("MODELR");
 
-    switch (rand() % 6) // 6 different character types
-    {
-    case 0:
-        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_1");
-        break;
-    case 1:
-        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_2");
-        break;
-    case 2:
-        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_3");
-        break;
-    case 3:
-        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_Kamzol_1");
-        break;
-    case 4:
-        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_Kamzol_2");
-        break;
-    case 5:
-        core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, "Lowcharacters\\Lo_Man_Kamzol_3");
-        break;
-    }
+    int modelIdx = rand() % std::size(shipManModels_);
+    core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, shipManModels_[modelIdx].c_str());
 
     core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_ANI, "Lo_Man");
 
@@ -779,7 +760,7 @@ void ShipWalk::DeleteMan(int Index)
     // UN//GUARD_SAILORS
 };
 //------------------------------------------------------------------------------------
-bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType)
+bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType, std::vector<std::string> &shipManModels)
 {
     crewCount = 0;
     bHide = false;
@@ -823,6 +804,11 @@ bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType)
         {
             if (mastsAttr->GetAttributeClass(i)->GetAttributeAsFloat())
                 SetMastBroken(((iNumMasts - 1) - i) + 1); // ??? The masts are opposite ???
+        }
+
+        if (std::size(shipManModels) > 0)
+        {
+            shipManModels_ = std::move(shipManModels);
         }
 
         // people count
@@ -1170,9 +1156,26 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
 
         shipID = message.EntityID();
         const std::string &c = message.String();
+        std::vector<std::string> shipManModels;
+
+        if (message.GetFormat() == "lise")
+        {
+            auto *pvd = message.ScriptVariablePointer();
+
+            if (pvd != nullptr)
+            {
+                const int nq = pvd->GetElementsNum();
+                const char *pstr;
+                for (auto i = 0; i < nq; i++)
+                {
+                    pvd->Get(pstr, i);
+                    shipManModels.push_back(pstr);
+                }
+            }
+        }
 
         shipWalk.emplace_back();
-        if (shipWalk[shipsCount].Init(shipID, editorMode, c.c_str()))
+        if (shipWalk[shipsCount].Init(shipID, editorMode, c.c_str(), shipManModels))
         {
             shipsCount++;
 

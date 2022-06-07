@@ -127,10 +127,13 @@ class ShipWalk
     ShipState shipState; // Ship state
 
     std::vector<ShipMan> shipMan;
+    std::vector<std::string> shipManModels_ = {"Lowcharacters\\Lo_Man_1", "Lowcharacters\\Lo_Man_2",
+                                              "Lowcharacters\\Lo_Man_3", "Lowcharacters\\Lo_Man_Kamzol_1",
+                                              "Lowcharacters\\Lo_Man_Kamzol_2", "Lowcharacters\\Lo_Man_Kamzol_3"};
     void CreateNewMan(SailorsPoints &sailorsPoints);
     void DeleteMan(int Index);
 
-    bool Init(entid_t _shipID, int editorMode, const char *shipType);
+    bool Init(entid_t _shipID, int editorMode, const char *shipType, std::vector<std::string> &shipManModels);
     void CheckPosition(uint32_t &dltTime);
     void SetMastBroken(int iMastIndex);
     void OnHullHit(const CVECTOR &v);
