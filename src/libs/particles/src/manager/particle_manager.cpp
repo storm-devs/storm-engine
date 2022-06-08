@@ -37,13 +37,14 @@ ParticleManager::ParticleManager(ParticleService *service) : IParticleManager(se
 ParticleManager::~ParticleManager()
 {
     DeleteAllSystems();
-    if (pProjectTexture >= 0)
+    pRS = static_cast<VDX9RENDER *>(core.GetService("DX9Render"));
+    if (pProjectTexture >= 0 && pRS != nullptr)
     {
         pRS->TextureRelease(pProjectTexture);
     }
     pProjectTexture = -1;
 
-    if (pProjectTextureNormalMap)
+    if (pProjectTextureNormalMap && pRS != nullptr)
     {
         pRS->TextureRelease(pProjectTextureNormalMap);
     }
