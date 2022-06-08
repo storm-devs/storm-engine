@@ -133,7 +133,7 @@ class ShipWalk
     void CreateNewMan(SailorsPoints &sailorsPoints);
     void DeleteMan(int Index);
 
-    bool Init(entid_t _shipID, int editorMode, const char *shipType, std::vector<std::string> &shipManModels);
+    bool Init(entid_t _shipID, int editorMode, const char *shipType, std::vector<std::string> &&shipManModels);
     void CheckPosition(uint32_t &dltTime);
     void SetMastBroken(int iMastIndex);
     void OnHullHit(const CVECTOR &v);

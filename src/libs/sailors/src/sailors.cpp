@@ -760,7 +760,7 @@ void ShipWalk::DeleteMan(int Index)
     // UN//GUARD_SAILORS
 };
 //------------------------------------------------------------------------------------
-bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType, std::vector<std::string> &shipManModels)
+bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType, std::vector<std::string> &&shipManModels)
 {
     crewCount = 0;
     bHide = false;
@@ -806,7 +806,7 @@ bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType, std::
                 SetMastBroken(((iNumMasts - 1) - i) + 1); // ??? The masts are opposite ???
         }
 
-        if (std::size(shipManModels) > 0)
+        if (!shipManModels.empty())
         {
             shipManModels_ = std::move(shipManModels);
         }
@@ -1164,10 +1164,12 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
 
             if (pvd != nullptr)
             {
-                const int nq = pvd->GetElementsNum();
-                const char *pstr;
+                const auto nq = pvd->GetElementsNum();
+                shipManModels.reserve(nq);
+
                 for (auto i = 0; i < nq; i++)
                 {
+                    const char *pstr;
                     pvd->Get(pstr, i);
                     shipManModels.push_back(pstr);
                 }
@@ -1175,7 +1177,7 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
         }
 
         shipWalk.emplace_back();
-        if (shipWalk[shipsCount].Init(shipID, editorMode, c.c_str(), shipManModels))
+        if (shipWalk[shipsCount].Init(shipID, editorMode, c.c_str(), std::move(shipManModels)))
         {
             shipsCount++;
 
