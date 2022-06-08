@@ -478,31 +478,32 @@ std::string FILE_SERVICE::ConvertPathResource(const char *path)
         ScanResourcePaths();
     }
     std::string conv = convert_path(path);
-    std::string path_lwr = conv;
+    std::string path_lwr = conv; // save original string if we will need to create new file in existing folder
     tolwr(path_lwr.data());
-    if (starts_with(path_lwr, "./"))
-    {
-        string_replace(path_lwr, "./", "");
-    }
+    std::filesystem::path tmp_path = std::filesystem::u8path(path_lwr).lexically_normal(); // remove relative paths
+    path_lwr = tmp_path.string();
     std::string result = ResourcePaths[path_lwr];
     if (result.empty())
     {
-        // if new file is being created in an existing folder, then we need to check ResourcePaths[folder]
-        std::filesystem::path tmp_path = std::filesystem::u8path(path_lwr);
+        // if we need to create new file in existing folder, then we need to check ResourcePaths[parent_folder]
         result = ResourcePaths[tmp_path.parent_path().string()];
         if (result.empty())
         {
+            // no such parent folder
             return path_lwr;
         }
         else
         {
+            // parent folder found
             result = result + PATH_SEP + std::filesystem::u8path(conv).filename().string();
             ResourcePaths[path_lwr] = result;
             return result;
         }
     }
     else
+    {
         return result;
+    }
 }
 
 //=================================================================================================
