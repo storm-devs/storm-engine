@@ -5,21 +5,9 @@
 #include "model.h"
 #include "ship_base.h"
 #include "v_module_api.h"
-
 #include "sea_base.h"
-
-const float RUN_SPEED = 0.30f;
-const float MOVE_SPEED = 0.15f;
-const float CLIMB_SPEED = 0.065f;
-
-const float JUMP_SPEED_X_MASTFALL = 3.0f;
-const float JUMP_SPEED_Y_EXPLOSION = 30.0f;
-
 #include "sailors_way_points.h"
 #include "shared/sea_ai/sea_people.h"
-
-#define CREW2VISIBLE(n) 5.0f * logf(n) //???
-#define SHIP_BLACK_PEARL 164
 
 enum ManMode
 {
@@ -55,11 +43,11 @@ struct ShipState
         mode = SHIP_SAIL;
         dead = false;
     }
-    ;
 };
 
 class ShipMan
 {
+
   public:
     entid_t modelID;
 
@@ -110,6 +98,11 @@ class ShipMan
 class ShipWalk
 {
   public:
+    ~ShipWalk()
+    {
+        Free();
+    }
+
     SHIP_BASE *ship;
     MODEL *shipModel;
     int crewCount; // Number of people
@@ -136,6 +129,7 @@ class ShipWalk
     void OnHullHit(const CVECTOR &v);
     void Reset();
 
+private:
     void Free();
 };
 
@@ -146,11 +140,9 @@ class Sailors : public Entity
 
     std::vector<ShipWalk> shipWalk;
     bool editorMode;
-    int shipsCount;
     bool disabled;
 
     Sailors();
-    ~Sailors() override;
 
     bool Init() override;
     virtual void Realize(uint32_t dltTime);
@@ -167,8 +159,4 @@ class Sailors : public Entity
             break;
         }
     }
-
-    int IsOnDeck;
-
-    void DeleteShip(int i);
 };
