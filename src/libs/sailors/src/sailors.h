@@ -49,6 +49,8 @@ class ShipMan
 {
 
   public:
+    ~ShipMan();
+
     entid_t modelID;
 
     CVECTOR pos, ang; // current position
@@ -91,21 +93,14 @@ class ShipMan
     bool Jump(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &shipState);
 
     void NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint32_t &dltTime);
-    void Free() const;
     int GetNearestEmptyCannon(SailorsPoints &sailorsPoints) const;
 };
 
 class ShipWalk
 {
   public:
-    ~ShipWalk()
-    {
-        Free();
-    }
-
     SHIP_BASE *ship;
     MODEL *shipModel;
-    int crewCount; // Number of people
 
     bool bHide;
 
@@ -121,16 +116,12 @@ class ShipWalk
                                               "Lowcharacters\\Lo_Man_3", "Lowcharacters\\Lo_Man_Kamzol_1",
                                               "Lowcharacters\\Lo_Man_Kamzol_2", "Lowcharacters\\Lo_Man_Kamzol_3"};
     void CreateNewMan(SailorsPoints &sailorsPoints);
-    void DeleteMan(int Index);
 
     bool Init(entid_t _shipID, int editorMode, const char *shipType, std::vector<std::string> &&shipManModels);
     void CheckPosition(uint32_t &dltTime);
     void SetMastBroken(int iMastIndex);
     void OnHullHit(const CVECTOR &v);
     void Reset();
-
-private:
-    void Free();
 };
 
 class Sailors : public Entity

@@ -17,6 +17,11 @@ const float JUMP_SPEED_Y_EXPLOSION = 30.0f;
 
 CREATE_CLASS(Sailors)
 
+ShipMan::~ShipMan()
+{
+    core.EraseEntity(this->modelID);
+}
+
 ShipMan::ShipMan()
     : modelID(0), ptTo(), dir(), targetWayPoint(0), lastTargetPoint(0), moveTo()
 {
@@ -34,10 +39,7 @@ ShipMan::ShipMan()
     jumpSpeedX = jumpSpeedY = 0;
 }
 //------------------------------------------------------------------------------------
-void ShipMan::Free() const
-{
-    core.EraseEntity(this->modelID);
-}
+
 // ----- Building a matrix taking into account the current state ---------------------------------
 void ShipMan::SetPos(MODEL *ship, SHIP_BASE *ship_base, uint32_t &dltTime, ShipState &shipState)
 {
@@ -639,15 +641,6 @@ void ShipMan::UpdatePos(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipSta
 
     SetAnimation(dltTime, shipState);
 };
-
-//------------------------------------------------------------------------------------
-void ShipWalk::Free()
-{
-    for (auto i = 0; i < crewCount; i++)
-    {
-        shipMan[i].Free();
-    }
-}
 // ----- Reset cannon charging flags ---------------------------------------------------
 void ShipWalk::ReloadCannons(int bort)
 {
@@ -662,53 +655,38 @@ void ShipWalk::ReloadCannons(int bort)
 //------------------------------------------------------------------------------------
 void ShipWalk::CreateNewMan(SailorsPoints &sailorsPoints)
 {
-    if (crewCount >= 50 || !sailorsPoints.points.count)
+    if (std::size(shipMan) >= 50 || !sailorsPoints.points.count)
+    {
         return;
+    }
 
-    entid_t manID;
-    shipMan.push_back(ShipMan{});
-
-    const int current = shipMan.size() - 1;
-
-    shipMan[current].modelID = core.CreateEntity("MODELR");
-
+    auto & man = shipMan.emplace_back();
+    man.modelID = core.CreateEntity("MODELR");
     int modelIdx = rand() % std::size(shipManModels_);
-    core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, shipManModels_[modelIdx].c_str());
+    core.Send_Message(man.modelID, "ls", MSG_MODEL_LOAD_GEO, shipManModels_[modelIdx].c_str());
 
-    if(!core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_ANI, "Lo_Man"))
+    if (!core.Send_Message(man.modelID, "ls", MSG_MODEL_LOAD_ANI, "Lo_Man"))
     {
         throw std::runtime_error("cannot load animation 'Lo_Man'");
     }
 
-    shipMan[current].SetAnimation(0, shipState);
+    man.SetAnimation(0, shipState);
 
-    if (sailorsPoints.points.count)
+    if (sailorsPoints.points.count > 0)
     {
-        shipMan[current].newWayPoint = shipMan[current].FindRandomPointWithoutType(sailorsPoints);
+        man.newWayPoint = man.FindRandomPointWithoutType(sailorsPoints);
 
-        shipMan[current].pos.x = sailorsPoints.points.point[shipMan[current].newWayPoint].x;
-        shipMan[current].pos.y = sailorsPoints.points.point[shipMan[current].newWayPoint].y;
-        shipMan[current].pos.z = sailorsPoints.points.point[shipMan[current].newWayPoint].z;
+        man.pos.x = sailorsPoints.points.point[man.newWayPoint].x;
+        man.pos.y = sailorsPoints.points.point[man.newWayPoint].y;
+        man.pos.z = sailorsPoints.points.point[man.newWayPoint].z;
 
         uint32_t dltTime = 0;
-        shipMan[current].NewAction(sailorsPoints, shipState, dltTime);
-    }
-    crewCount++;
-}
-//------------------------------------------------------------------------------------
-void ShipWalk::DeleteMan(int Index)
-{
-    if (Index >= 0 && Index < crewCount)
-    {
-        shipMan[Index].Free();
-        shipMan.erase(shipMan.begin() + Index);
-        crewCount--;
+        man.NewAction(sailorsPoints, shipState, dltTime);
     }
 }
-//------------------------------------------------------------------------------------
-bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType, std::vector<std::string> &&shipManModels)
+
+bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType)
 {
-    crewCount = 0;
     bHide = false;
     shipID = _shipID;
 
@@ -804,94 +782,96 @@ void ShipWalk::SetMastBroken(int iMastIndex)
             sailorsPoints.points.point[i].disabled = true;
     }
 
-    for (auto i = 0; i < crewCount; i++)
-        if (sailorsPoints.points.point[shipMan[i].newWayPoint].disabled ||
-            sailorsPoints.points.point[shipMan[i].lastWayPoint].disabled)
+    for (auto &man : shipMan)
+    {
+        if (sailorsPoints.points.point[man.newWayPoint].disabled ||
+            sailorsPoints.points.point[man.lastWayPoint].disabled)
         {
-            shipMan[i].mode = MAN_JUMP;
-            shipMan[i].jumpSpeedX = JUMP_SPEED_X_MASTFALL;
+            man.mode = MAN_JUMP;
+            man.jumpSpeedX = JUMP_SPEED_X_MASTFALL;
         }
+    }
 }
 // ----- Cannonball hitting the ship ----------------------------------------- --------------
 void ShipWalk::OnHullHit(const CVECTOR &v)
 {
-    for (auto i = 0; i < crewCount; i++)
-        if (10 * rand() / RAND_MAX < 3 && shipMan[i].mode != MAN_JUMP && shipMan[i].mode != MAN_SWIM)
+    for (auto &man : shipMan)
+    {
+        if (10 * rand() / RAND_MAX < 3 && man.mode != MAN_JUMP && man.mode != MAN_SWIM)
         {
             CVECTOR pos;
             if (ship)
-                pos = shipModel->mtx * shipMan[i].pos;
+                pos = shipModel->mtx * man.pos;
             else
-                pos = shipMan[i].pos;
+                pos = man.pos;
 
             if (sqrt((pos.x - v.x) * (pos.x - v.x) + (pos.z - v.z) * (pos.z - v.z)) < 1)
             {
                 // Free the points
-                if (shipMan[i].mode == MAN_CLIMB_DOWN)
+                if (man.mode == MAN_CLIMB_DOWN)
                 {
-                    sailorsPoints.points.point[shipMan[i].lastTargetPoint].buisy = false;
+                    sailorsPoints.points.point[man.lastTargetPoint].buisy = false;
                 }
                 else
                 {
-                    sailorsPoints.points.point[shipMan[i].targetWayPoint].buisy = false;
-                    sailorsPoints.points.point[shipMan[i].newWayPoint].buisy = false;
+                    sailorsPoints.points.point[man.targetWayPoint].buisy = false;
+                    sailorsPoints.points.point[man.newWayPoint].buisy = false;
                 }
 
-                shipMan[i].mode = MAN_JUMP;
-                shipMan[i].jumpSpeedY =
+                man.mode = MAN_JUMP;
+                man.jumpSpeedY =
                     -(JUMP_SPEED_Y_EXPLOSION + rand() * JUMP_SPEED_Y_EXPLOSION / static_cast<float>(RAND_MAX));
-                shipMan[i].jumpSpeedX = -shipMan[i].jumpSpeedY / 10;
+                man.jumpSpeedX = -man.jumpSpeedY / 10;
             }
         }
+    }
 }
 // ----- Bypassing Each Other ------------------------------------------ ---------------------
 void ShipWalk::CheckPosition(uint32_t &dltTime)
 {
-    for (auto m = 0; m < crewCount; m++)
+    for (auto &man : shipMan)
     {
-        shipMan[m].spos.x -= shipMan[m].spos.x / 100.0f * static_cast<float>(dltTime) / 10.0f;
-        shipMan[m].spos.z -= shipMan[m].spos.z / 100.0f * static_cast<float>(dltTime) / 10.0f;
+        man.spos.x -= man.spos.x / 100.0f * static_cast<float>(dltTime) / 10.0f;
+        man.spos.z -= man.spos.z / 100.0f * static_cast<float>(dltTime) / 10.0f;
     }
 
-    float d;
-
-    for (auto m = 0; m < crewCount; m++)
-        for (auto i = 0; i < crewCount; i++)
-
-            if (i != m && Dest(shipMan[m].pos, shipMan[i].pos, 1) &&
-                (shipMan[m].mode == MAN_WALK || shipMan[m].mode == MAN_RUN) &&
-                shipMan[m].path.currentPointPosition >= 0 &&
-                shipMan[m].path.currentPointPosition < shipMan[m].path.length &&
-                shipMan[i].path.currentPointPosition >= 0 &&
-                shipMan[i].path.currentPointPosition < shipMan[i].path.length)
+    for (auto &man1 : shipMan)
+    {
+        for (auto &man2 : shipMan)
+        {
+            if (&man1 != &man2 && Dest(man1.pos, man2.pos, 1) &&
+                (man1.mode == MAN_WALK || man1.mode == MAN_RUN) &&
+                man1.path.currentPointPosition >= 0 &&
+                man1.path.currentPointPosition < man1.path.length && man2.path.currentPointPosition >= 0 &&
+                man2.path.currentPointPosition < man2.path.length)
             {
-                d = Dest(shipMan[m].pos, shipMan[i].pos);
+                float d = Dest(man1.pos, man2.pos);
 
                 if (d < 1.0f)
                 {
                     // if go in different directions
-                    if (shipMan[m].path.point[shipMan[m].path.currentPointPosition] !=
-                        shipMan[i].path.point[shipMan[i].path.currentPointPosition])
+                    if (man1.path.point[man1.path.currentPointPosition] !=
+                        man2.path.point[man2.path.currentPointPosition])
                     {
-                        shipMan[m].spos.x += 0.2f * (+shipMan[m].dir.z * (1 - d) - shipMan[m].spos.x) / 15.0f *
+                        man1.spos.x += 0.2f * (+man1.dir.z * (1 - d) - man1.spos.x) / 15.0f *
                                              static_cast<float>(dltTime) / 20.0f;
-                        shipMan[m].spos.z += 0.2f * (-shipMan[m].dir.x * (1 - d) - shipMan[m].spos.z) / 15.0f *
+                        man1.spos.z += 0.2f * (-man1.dir.x * (1 - d) - man1.spos.z) / 15.0f *
                                              static_cast<float>(dltTime) / 20.0f;
                     }
                     else
                     {
-                        if (m < i)
+                        if (&man1 < &man2)
                         {
-                            shipMan[m].spos.x += 0.2f * (+shipMan[m].dir.z * (1 - d) - shipMan[m].spos.x) / 15.0f *
+                            man1.spos.x += 0.2f * (+man1.dir.z * (1 - d) - man1.spos.x) / 15.0f *
                                                  static_cast<float>(dltTime) / 20.0f;
-                            shipMan[m].spos.z += 0.2f * (-shipMan[m].dir.x * (1 - d) - shipMan[m].spos.z) / 15.0f *
+                            man1.spos.z += 0.2f * (-man1.dir.x * (1 - d) - man1.spos.z) / 15.0f *
                                                  static_cast<float>(dltTime) / 20.0f;
                         }
                         else
                         {
-                            shipMan[m].spos.x += 0.2f * (-shipMan[m].dir.z * (1 - d) - shipMan[m].spos.x) / 15.0f *
+                            man1.spos.x += 0.2f * (-man1.dir.z * (1 - d) - man1.spos.x) / 15.0f *
                                                  static_cast<float>(dltTime) / 20.0f;
-                            shipMan[m].spos.z += 0.2f * (+shipMan[m].dir.x * (1 - d) - shipMan[m].spos.z) / 15.0f *
+                            man1.spos.z += 0.2f * (+man1.dir.x * (1 - d) - man1.spos.z) / 15.0f *
                                                  static_cast<float>(dltTime) / 20.0f;
                         }
                     }
@@ -899,6 +879,8 @@ void ShipWalk::CheckPosition(uint32_t &dltTime)
                     break;
                 }
             }
+        }
+    }
 }
 //------------------------------------------------------------------------------------
 void ShipWalk::Reset(){
@@ -917,7 +899,7 @@ void ShipWalk::Reset(){
 
       for(int i= 0; i< crewCount; i++){
 
-        if (shipMan[i].mode == MAN_SWIM || shipMan[i].mode == MAN_JUMP)
+        if (man2.mode == MAN_SWIM || man2.mode == MAN_JUMP)
         {
           DeleteMan(i);
           result= true;
@@ -930,16 +912,16 @@ void ShipWalk::Reset(){
 
     for(int i= 0; i< crewCount; i++)
     {
-      shipMan[i].newWayPoint= shipMan[i].FindRandomPointWithoutType(sailorsPoints);
+      man2.newWayPoint= man2.FindRandomPointWithoutType(sailorsPoints);
 
-      shipMan[i].pos.x= sailorsPoints.points.point[shipMan[i].newWayPoint].x;
-      shipMan[i].pos.y= sailorsPoints.points.point[shipMan[i].newWayPoint].y;
-      shipMan[i].pos.z= sailorsPoints.points.point[shipMan[i].newWayPoint].z;
+      man2.pos.x= sailorsPoints.points.point[man2.newWayPoint].x;
+      man2.pos.y= sailorsPoints.points.point[man2.newWayPoint].y;
+      man2.pos.z= sailorsPoints.points.point[man2.newWayPoint].z;
 
-      shipMan[i].mode= MAN_WALK;
+      man2.mode= MAN_WALK;
 
       DWORD dltTime= 0;
-      shipMan[i].NewAction(sailorsPoints,shipState,dltTime);
+      man2.NewAction(sailorsPoints,shipState,dltTime);
     };*/
 }
 //------------------------------------------------------------------------------------
@@ -989,7 +971,7 @@ void Sailors::Realize(uint32_t dltTime)
     for (auto walk = std::begin(shipWalk); walk != std::end(shipWalk); ++walk)
     {
         // If the ship and all people are dead then delete the object
-        if (walk->shipState.dead && walk->crewCount <= 0)
+        if (walk->shipState.dead && walk->shipMan.empty())
         {
             shipWalk.erase(walk);
             rs->SetRenderState(D3DRS_LIGHTING, false);
@@ -997,26 +979,26 @@ void Sailors::Realize(uint32_t dltTime)
         }
 
         // Updating and drawing
-        for (auto i = 0; i < walk->shipMan.size(); i++)
+        for (auto &man : walk->shipMan)
         {
-            walk->shipMan[i].UpdatePos(dltTime, walk->sailorsPoints, walk->shipState);
-            walk->shipMan[i].SetPos(walk->shipModel, walk->ship, dltTime, walk->shipState);
+            man.UpdatePos(dltTime, walk->sailorsPoints, walk->shipState);
+            man.SetPos(walk->shipModel, walk->ship, dltTime, walk->shipState);
 
             if (!walk->bHide)
             {
-                if (auto model = static_cast<MODEL *>(core.GetEntityPointer(walk->shipMan[i].modelID)))
+                if (auto model = static_cast<MODEL *>(core.GetEntityPointer(man.modelID)))
                 {
                     model->ProcessStage(Entity::Stage::realize, dltTime);
                 }
             }
         }
 
-        for (auto i = 0; i < walk->shipMan.size(); i++)
+        for (auto man = std::begin(walk->shipMan); man != std::end(walk->shipMan); ++man)
         {
             // If died then delete
-            if (walk->shipMan[i].dieTime > 10 || walk->shipMan[i].pos.y < -100)
+            if (man->dieTime > 10 || man->pos.y < -100)
             {
-                walk->DeleteMan(i);
+                walk->shipMan.erase(man);
                 rs->SetRenderState(D3DRS_LIGHTING, false);
                 return;
             }

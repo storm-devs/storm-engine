@@ -144,7 +144,7 @@ void Menu::Draw(VDX9RENDER *rs, SailorsPoints &sailorsPoints) const
 void Menu::Update(SailorsPoints &sailorsPoints)
 {
     line[0] = "people count <";
-    line[0] += static_cast<int32_t>(sailrs->shipWalk[0].crewCount);
+    line[0] += static_cast<int32_t>(sailrs->shipWalk[0].shipMan.size());
     line[0] += ">";
 
     line[1] = "selected point <";
@@ -169,7 +169,7 @@ void Menu::ChangeControl1(int key, SailorsPoints &sailorsPoints) // Change peopl
 
     if (key == VK_LEFT)
     {
-        if (!sailrs->shipWalk[0].crewCount)
+        if (sailrs->shipWalk[0].shipMan.empty())
         {
             for (auto i = 0; i < 50; i++)
                 sailrs->shipWalk[0].CreateNewMan(sailrs->shipWalk[0].sailorsPoints);
@@ -185,7 +185,7 @@ void Menu::ChangeControl1(int key, SailorsPoints &sailorsPoints) // Change peopl
 
         sailrs->shipWalk[0].sailorsPoints.points.point[sailrs->shipWalk[0].shipMan[0].targetWayPoint].buisy = false;
 
-        sailrs->shipWalk[0].DeleteMan(0);
+        sailrs->shipWalk[0].shipMan.erase(std::begin(sailrs->shipWalk[0].shipMan));
     }
 
     Update(sailorsPoints);
