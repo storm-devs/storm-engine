@@ -639,6 +639,26 @@ bool PCS_CONTROLS::IsKeyPressed(int vk)
         pressed = input_->KeyboardSDLKeyState(SDL_SCANCODE_RETURN) ||
                   input_->KeyboardSDLKeyState(SDL_SCANCODE_KP_ENTER);
     }
+    else if (vk == VK_UP)
+    {
+        pressed = input_->KeyboardSDLKeyState(SDL_SCANCODE_UP) ||
+                  (!input_->KeyboardModState(VK_NUMLOCK) && input_->KeyboardSDLKeyState(SDL_SCANCODE_KP_8));
+    }
+    else if (vk == VK_DOWN)
+    {
+        pressed = input_->KeyboardSDLKeyState(SDL_SCANCODE_DOWN) ||
+                  (!input_->KeyboardModState(VK_NUMLOCK) && input_->KeyboardSDLKeyState(SDL_SCANCODE_KP_2));
+    }
+    else if (vk == VK_LEFT)
+    {
+        pressed = input_->KeyboardSDLKeyState(SDL_SCANCODE_LEFT) ||
+                  (!input_->KeyboardModState(VK_NUMLOCK) && input_->KeyboardSDLKeyState(SDL_SCANCODE_KP_4));
+    }
+    else if (vk == VK_RIGHT)
+    {
+        pressed = input_->KeyboardSDLKeyState(SDL_SCANCODE_RIGHT) ||
+                  (!input_->KeyboardModState(VK_NUMLOCK) && input_->KeyboardSDLKeyState(SDL_SCANCODE_KP_6));
+    }
     else if (vk == VK_NUMLOCK)
         pressed = input_->KeyboardModState(vk);
     else
