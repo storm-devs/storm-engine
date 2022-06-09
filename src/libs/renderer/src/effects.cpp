@@ -1,3 +1,4 @@
+#ifdef _WIN32 // Effects
 #include "effects.h"
 
 #include "core.h"
@@ -146,3 +147,4 @@ ID3DXEffect *Effects::getEffectPointer(const std::string &techniqueName)
     const auto technique = techniques_.find(name_in_lowercase);
     return technique != techniques_.end() ? technique->second.fx : nullptr;
 }
+#endif // _WIN32

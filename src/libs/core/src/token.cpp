@@ -5,6 +5,7 @@
 #include "defines.h"
 #include "utf8.h"
 #include "storm/string_compare.hpp"
+#include "debug-trap.h"
 
 #define DISCARD_DATABUFFER                                                                                             \
     {                                                                                                                  \
@@ -503,7 +504,7 @@ S_TOKEN_TYPE TOKEN::Get(bool bKeepData)
     const auto stt = ProcessToken(Program, bKeepData);
     if (stt == HOLD_COMPILATION)
     {
-        __debugbreak();
+        psnip_trap();
         // stt == HOLD_COMPILATION;
     }
     return stt;

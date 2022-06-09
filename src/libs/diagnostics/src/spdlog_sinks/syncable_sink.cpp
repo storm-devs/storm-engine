@@ -10,6 +10,8 @@
 
 #include <fileapi.h>
 #include <io.h>
+#else
+#include <unistd.h>
 #endif
 
 #include <spdlog/common.h>

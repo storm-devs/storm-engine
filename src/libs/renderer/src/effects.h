@@ -1,3 +1,4 @@
+#ifdef _WIN32 // Effects
 #pragma once
 
 #include <cstdint>
@@ -5,6 +6,7 @@
 #include <d3dx9.h>
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 class Effects final
 {
@@ -53,3 +55,4 @@ class Effects final
     // Get effect pointer by technique name
     ID3DXEffect *getEffectPointer(const std::string &techniqueName);
 };
+#endif // _WIN32

@@ -1,5 +1,7 @@
 #include "storm/xinterface/options_parser.hpp"
 
+#include <SDL2/SDL.h>
+
 #include "xinterface.h"
 #include "back_scene/back_scene.h"
 #include "help_chooser/help_chooser.h"
@@ -9,8 +11,6 @@
 #include "string_service/str_service.h"
 #include "xservice.h"
 #include <cstdio>
-
-#include <direct.h>
 
 #define CHECK_FILE_NAME "PiratesReadme.txt"
 
@@ -1067,13 +1067,22 @@ void XINTERFACE::LoadIni()
     if (!ini)
         throw std::runtime_error("ini file not found!");
 
+#ifdef _WIN32 // FIX_LINUX GetWindowRect
     RECT Screen_Rect;
     GetWindowRect(static_cast<HWND>(core.GetAppHWND()), &Screen_Rect);
+#else
+    int sdlScreenWidth, sdlScreenHeight;
+    SDL_GetWindowSize(reinterpret_cast<SDL_Window *>(core.GetAppHWND()), &sdlScreenWidth, &sdlScreenHeight);
+#endif
 
     fScale = 1.0f;
     const auto screenSize = core.GetScreenSize();
     dwScreenHeight = screenSize.height;
+#ifdef _WIN32 // FIX_LINUX GetWindowRect
     dwScreenWidth = (Screen_Rect.right - Screen_Rect.left) * dwScreenHeight / (Screen_Rect.bottom - Screen_Rect.top);
+#else
+    dwScreenWidth = sdlScreenWidth * dwScreenHeight / sdlScreenHeight;
+#endif
     if (dwScreenWidth < screenSize.width)
         dwScreenWidth = screenSize.width;
     GlobalScreenRect.top = 0;
@@ -1132,9 +1141,11 @@ void XINTERFACE::LoadIni()
     m_idTex = pRenderService->TextureCreate(param2);
     //  RECT Screen_Rect;
     //  GetWindowRect(core.GetAppHWND(), &Screen_Rect);
+#ifdef _WIN32 // FIX_LINUX Cursor
     lock_x = Screen_Rect.left + (Screen_Rect.right - Screen_Rect.left) / 2;
     lock_y = Screen_Rect.top + (Screen_Rect.bottom - Screen_Rect.top) / 2;
     SetCursorPos(lock_x, lock_y);
+#endif
     fXMousePos = static_cast<float>(dwScreenWidth / 2);
     fYMousePos = static_cast<float>(dwScreenHeight / 2);
     for (int i = 0; i < 4; i++)
@@ -1143,7 +1154,9 @@ void XINTERFACE::LoadIni()
     vMouse[2].tu = vMouse[3].tu = 1.f;
     vMouse[0].tv = vMouse[2].tv = 0.f;
     vMouse[1].tv = vMouse[3].tv = 1.f;
+#ifdef _WIN32 // FIX_LINUX Cursor
     ShowCursor(false);
+#endif
 
     // set blind parameters
     m_fBlindSpeed = ini->GetFloat(section, "BlindTime", 1.f);

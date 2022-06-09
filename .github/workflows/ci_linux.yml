@@ -1,0 +1,61 @@
+name: CI Linux
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'tools/**'
+      - '*.md'
+
+jobs:
+  pre_job:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v3.4.1
+        with:
+          # skip concurrent jobs if they are on the same thing
+          concurrent_skipping: 'same_content'
+          # never skip PR, release or manual/scheduled runs
+          do_not_skip: '["pull_request", "release", "workflow_dispatch", "schedule"]'
+
+  build-linux:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug]
+    name: 'build-linux [${{ matrix.configuration}}]'
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - name: Install libs
+      run: |
+        sudo apt-get update && sudo apt-get install meson libstdc++-10-dev libvulkan-dev glslang-tools libsdl2-dev libgl-dev libegl-dev
+        # fix for conan ci
+        sudo apt-get install libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev libxau-dev libxaw7-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxdmcp-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxinerama-dev libxkbfile-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxrender-dev libxres-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxvmc-dev libxxf86vm-dev xtrans-dev libxcb-render0-dev libxcb-render-util0-dev libxcb-xkb-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-xinerama0-dev xkb-data libxcb-dri3-dev uuid-dev libxcb-util-dev
+    - name: Install Conan
+      run: pip install conan
+    - name: Configure with cmake
+      run: |
+        export CC=clang-11
+        export CXX=clang++-11
+        ${CXX} --version
+        mkdir build && cd build
+        cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.configuration}}
+    - name: Build dependencies
+      run: ninja dependencies
+      working-directory: build
+    - name: Build project
+      run: ninja
+      working-directory: build

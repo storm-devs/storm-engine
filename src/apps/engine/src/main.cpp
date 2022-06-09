@@ -119,12 +119,14 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
 int main(int argc, char *argv[])
 {
     // Prevent multiple instances
+#ifdef _WIN32 // CreateEventA
     if (!CreateEventA(nullptr, false, false, "Global\\FBBD2286-A9F1-4303-B60C-743C3D7AA7BE") ||
         GetLastError() == ERROR_ALREADY_EXISTS)
     {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", "Another instance is already running!", nullptr);
         return EXIT_SUCCESS;
     }
+#endif
     mi_register_output(mimalloc_fun, nullptr);
     mi_option_set(mi_option_show_errors, 1);
     mi_option_set(mi_option_show_stats, 0);
@@ -250,7 +252,9 @@ int main(int argc, char *argv[])
     core_private->Event("ExitApplication");
     core_private->CleanUp();
     core_private->ReleaseBase();
+#ifdef _WIN32 // FIX_LINUX Cursor
     ClipCursor(nullptr);
+#endif
     SDL_Quit();
 
     return EXIT_SUCCESS;

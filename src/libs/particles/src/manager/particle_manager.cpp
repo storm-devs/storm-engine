@@ -13,6 +13,7 @@
 #include "defines.h"
 
 #include <filesystem>
+#include <thread>
 
 uint32_t GraphRead = 0;
 

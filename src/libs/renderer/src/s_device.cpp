@@ -8,13 +8,18 @@
 #include "texture.h"
 #include "v_s_stack.h"
 #include "storm/fs.h"
+#include "debug-trap.h"
 
 #include <algorithm>
 
 #include <fmt/chrono.h>
 
+#ifdef _WIN32
 #include <DxErr.h>
 #include <corecrt_io.h>
+#else
+#include <unistd.h>
+#endif
 
 CREATE_SERVICE(DX9RENDER)
 
@@ -33,6 +38,7 @@ namespace
 {
 constexpr auto kKeyTakeScreenshot = "TakeScreenshot";
 
+#ifdef _WIN32 // Screenshot
 D3DXIMAGE_FILEFORMAT GetScreenshotFormat(const std::string &fmt)
 {
     if (fmt == "bmp")
@@ -74,6 +80,7 @@ D3DXIMAGE_FILEFORMAT GetScreenshotFormat(const std::string &fmt)
 
     return D3DXIFF_FORCE_DWORD;
 }
+#endif
 
 void InvokeEntitiesLostRender()
 {
@@ -363,7 +370,11 @@ inline bool ErrorHandler(HRESULT hr, const char *file, unsigned line, const char
 {
     if (hr != D3D_OK)
     {
+#ifdef _WIN32
         core.Trace("[%s:%s:%d] %s: %s (%s)", file, func, line, DXGetErrorStringA(hr), DXGetErrorDescriptionA(hr), expr);
+#else
+        core.Trace("[%s:%s:%d] (%s)", file, func, line, expr);
+#endif
         return true;
     }
 
@@ -485,12 +496,14 @@ bool DX9RENDER::Init()
         screenshotExt = str;
         std::ranges::transform(screenshotExt, screenshotExt.begin(),
                                [](const unsigned char c) { return std::tolower(c); });
+#ifdef _WIN32 // Screenshot
         screenshotFormat = GetScreenshotFormat(str);
         if (screenshotFormat == D3DXIFF_FORCE_DWORD)
         {
             screenshotExt = "jpg";
             screenshotFormat = D3DXIFF_JPG;
         }
+#endif
 
         bShowFps = ini->GetInt(nullptr, "show_fps", 0) == 1;
         bShowExInfo = ini->GetInt(nullptr, "show_exinfo", 0) == 1;
@@ -547,7 +560,12 @@ bool DX9RENDER::Init()
         if (!InitDevice(bWindow, static_cast<HWND>(core.GetAppHWND()), screen_size.x, screen_size.y))
             return false;
 
+#ifdef _WIN32 // Effects
         RecompileEffects();
+#else
+        pTechnique = std::make_unique<CTechnique>(this);
+        pTechnique->DecodeFiles();
+#endif
 
         // get start ini file for fonts
         if (!ini->ReadString(nullptr, "startFontIniFile", str, sizeof(str) - 1, ""))
@@ -790,7 +808,9 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, int32_t width, int32_t hei
             }
         }
     }
+#ifdef _WIN32 // Effects
     effects_.setDevice(d3d9);
+#endif
 
     // Create render targets for POST PROCESS effects
     d3d9->GetRenderTarget(0, &pOriginalScreenSurface);
@@ -1261,12 +1281,14 @@ bool DX9RENDER::DX9EndScene()
         LostRender();
     }
 
+#ifdef _WIN32 // bSafeRendering
     if (bSafeRendering)
     {
         const HDC dc = GetDC(hwnd);
         SetPixel(dc, 0, 0, 0);
         ReleaseDC(hwnd, dc);
     }
+#endif
 
     return true;
 }
@@ -1754,6 +1776,7 @@ bool DX9RENDER::TextureLoad(int32_t t)
 
 bool DX9RENDER::TextureLoadUsingD3DX(const char* path, int32_t t)
 {
+#ifdef _WIN32 // TextureLoadUsingD3DX - used only for loading raw Targa
     // TODO: reimplement the whole thing in a tidy way
     IDirect3DTexture9 *pTex;
     if(CHECKD3DERR(D3DXCreateTextureFromFileA(d3d9, path, &pTex)))
@@ -1774,6 +1797,9 @@ bool DX9RENDER::TextureLoadUsingD3DX(const char* path, int32_t t)
     Textures[t].loaded = true;
 
     return true;
+#else
+    return false;
+#endif
 }
 
 IDirect3DBaseTexture9 *DX9RENDER::GetBaseTexture(int32_t iTexture)
@@ -2518,12 +2544,12 @@ void DX9RENDER::LostRender()
         if (VertexBuffers[b].buff)
         {
             if (VertexBuffers[b].buff->Release() > 0)
-                __debugbreak();
+                psnip_trap();
         }
         if (IndexBuffers[b].buff)
         {
             if (IndexBuffers[b].buff->Release() > 0)
-                __debugbreak();
+                psnip_trap();
         }
     }
 
@@ -2618,7 +2644,12 @@ void DX9RENDER::RestoreRender()
     SetCommonStates();
     d3d9->GetGammaRamp(0, &DefaultRamp);
 
+#ifdef _WIN32 // Effects
     RecompileEffects();
+#else
+    pTechnique = std::make_unique<CTechnique>(this);
+    pTechnique->DecodeFiles();
+#endif
 
     InvokeEntitiesRestoreRender();
 
@@ -2627,6 +2658,7 @@ void DX9RENDER::RestoreRender()
 
 void DX9RENDER::RecompileEffects()
 {
+#ifdef _WIN32 // Effects
     effects_.release();
 
     std::filesystem::path cur_path = std::filesystem::current_path();
@@ -2638,6 +2670,7 @@ void DX9RENDER::RecompileEffects()
             effects_.compile(s.c_str());
         }
     std::filesystem::current_path(cur_path);
+#endif
 }
 
 bool DX9RENDER::ResetDevice()
@@ -2727,7 +2760,12 @@ void DX9RENDER::RunStart()
     if (core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0 && core.Controls->GetDebugAsyncKeyState(VK_F11) < 0)
     {
         InvokeEntitiesLostRender();
+#ifdef _WIN32 // Effects
         RecompileEffects();
+#else
+        pTechnique = std::make_unique<CTechnique>(this);
+        pTechnique->DecodeFiles();
+#endif
         InvokeEntitiesRestoreRender();
     }
 
@@ -3252,7 +3290,9 @@ void DX9RENDER::MakeScreenShot()
         screenshot_path.replace_filename(screenshot_base_filename + "_" + std::to_string(i));
         screenshot_path.replace_extension(screenshotExt);
     }
+#ifdef _WIN32 // Screenshot
     D3DXSaveSurfaceToFile(screenshot_path.c_str(), screenshotFormat, surface, nullptr, nullptr);
+#endif
 
     surface->Release();
     renderTarget->Release();
@@ -3319,16 +3359,30 @@ void DX9RENDER::FindPlanes(IDirect3DDevice9 *d3dDevice)
     viewplane[3].D = (pos.x * viewplane[3].Nx + pos.y * viewplane[3].Ny + pos.z * viewplane[3].Nz);
 }
 
+#ifdef _WIN32 // Effects
 bool DX9RENDER::TechniqueExecuteStart(const char *cBlockName)
 {
     if (!cBlockName)
         return false;
     return effects_.begin(cBlockName);
 }
+#else
+bool DX9RENDER::TechniqueExecuteStart(const char *cBlockName)
+{
+    if (!cBlockName)
+        return false;
+    pTechnique->SetCurrentBlock(cBlockName, 0, nullptr);
+    return pTechnique->ExecutePassStart();
+}
+#endif
 
 bool DX9RENDER::TechniqueExecuteNext()
 {
+#ifdef _WIN32 // Effects
     return effects_.next();
+#else
+    return pTechnique->ExecutePassNext();
+#endif
 }
 
 void DX9RENDER::DrawRects(RS_RECT *pRSR, uint32_t dwRectsNum, const char *cBlockName, uint32_t dwSubTexturesX,
@@ -3676,6 +3730,24 @@ HRESULT DX9RENDER::CreatePixelShader(CONST uint32_t *pFunction, IDirect3DPixelSh
     return CHECKD3DERR(d3d9->CreatePixelShader((const DWORD *)pFunction, ppShader));
 }
 
+HRESULT DX9RENDER::DeleteVertexShader(IDirect3DVertexShader9 *pShader)
+{
+    if (pShader)
+    {
+        return pShader->Release();
+    }
+    return D3D_OK;
+}
+
+HRESULT DX9RENDER::DeletePixelShader(IDirect3DPixelShader9 *pShader)
+{
+    if (pShader)
+    {
+        return pShader->Release();
+    }
+    return D3D_OK;
+}
+
 HRESULT DX9RENDER::GetVertexShader(IDirect3DVertexShader9 **ppShader)
 {
     return CHECKD3DERR(d3d9->GetVertexShader(ppShader));
@@ -3686,10 +3758,12 @@ HRESULT DX9RENDER::GetPixelShader(IDirect3DPixelShader9 **ppShader)
     return CHECKD3DERR(d3d9->GetPixelShader(ppShader));
 }
 
+#ifdef _WIN32 // Effects
 ID3DXEffect *DX9RENDER::GetEffectPointer(const char *techniqueName)
 {
     return effects_.getEffectPointer(techniqueName);
 }
+#endif
 
 HRESULT DX9RENDER::SetTexture(uint32_t Stage, IDirect3DBaseTexture9 *pTexture)
 {
@@ -3737,8 +3811,7 @@ HRESULT DX9RENDER::UpdateSurface(IDirect3DSurface9 *pSourceSurface, CONST RECT *
                                  IDirect3DSurface9 *pDestinationSurface, CONST POINT *pDestPointsArray)
 {
     return CHECKD3DERR(D3DXLoadSurfaceFromSurface(pDestinationSurface, nullptr, nullptr, pSourceSurface, nullptr,
-                                                 nullptr,
-                                      D3DX_DEFAULT, 0));
+                                                  nullptr, D3DX_DEFAULT, 0));
     //return CHECKD3DERR(d3d9->UpdateSurface(pSourceSurface, pSourceRectsArray, pDestinationSurface, pDestPointsArray));
 }
 

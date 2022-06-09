@@ -11,6 +11,7 @@
 #include "animation_imp.h"
 #include "animation_service_imp.h"
 #include "core.h"
+#include "debug-trap.h"
 
 //============================================================================================
 
@@ -374,7 +375,7 @@ void AnimationImp::BuildAnimationMatrices()
         else
         {
             core.Trace("AnimationImp::BuildAnimationMatrices -> Not support mode");
-            __debugbreak();
+            psnip_trap();
             /*_asm int 3;*/
             //    float frame = 0.0f;
             //    for(int32_t j = 0; j < nbones; j++)
@@ -384,11 +385,13 @@ void AnimationImp::BuildAnimationMatrices()
     {
         auto &bn = aniInfo->GetBone(j);
         matrix[j] = CMatrix(bn.start) * CMatrix(bn.matrix);
+#ifdef _WIN32 // FIX_LINUX DirectXMath
         // inverse first column in advance
         matrix[j].matrix[0] = -matrix[j].matrix[0];
         matrix[j].matrix[4] = -matrix[j].matrix[4];
         matrix[j].matrix[8] = -matrix[j].matrix[8];
         matrix[j].matrix[12] = -matrix[j].matrix[12];
+#endif
     }
 }
 

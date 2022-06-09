@@ -1,5 +1,4 @@
 #include "touch.h"
-#include <crtdbg.h>
 
 #include "core.h"
 

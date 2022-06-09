@@ -1,5 +1,6 @@
 #include "island.h"
 #include "inlines.h"
+#include "debug-trap.h"
 
 MapZipper::MapZipper()
 {
@@ -76,7 +77,7 @@ void MapZipper::DoZip(uint8_t *pSrc, uint32_t _dwSizeX)
         for (x = 0; x < _dwSizeX; x++)
         {
             if (Get(x, y) != pSrc[x + y * _dwSizeX])
-                __debugbreak();
+                psnip_trap();
         }
 }
 

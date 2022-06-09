@@ -654,7 +654,7 @@ void SEA::CalculateLOD(const CVECTOR &v1, const CVECTOR &v2, int32_t &iMaxLOD, i
 
 void SEA::AddBlock(int32_t iTX, int32_t iTY, int32_t iSize, int32_t iLOD)
 {
-    aBlocks.emplace_back(0, 0, 0, 0, iSize >> iLOD, iTX, iTY, iSize, iLOD, 0, 0, 0, false, false);
+    aBlocks.emplace_back(SeaBlock{0, 0, 0, 0, iSize >> iLOD, iTX, iTY, iSize, iLOD, 0, 0, 0, false, false});
 }
 
 void SEA::BuildTree(int32_t iTX, int32_t iTY, int32_t iLev)

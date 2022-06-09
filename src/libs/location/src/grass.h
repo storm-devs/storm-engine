@@ -25,6 +25,7 @@ class Character;
 
 class Grass : public Entity
 {
+#ifdef _WIN32 // Effects
     static inline ID3DXEffect *fx_;
     static inline IDirect3DVertexDeclaration9 *vertexDecl_;
     static inline D3DXHANDLE hgVP_;
@@ -36,6 +37,9 @@ class Grass : public Entity
     static inline D3DXHANDLE hlColor_;
     static inline D3DXHANDLE hfDataScale_;
     static inline D3DXHANDLE haSize_;
+#else
+    static inline IDirect3DVertexDeclaration9 *vertexDecl_;
+#endif
 
 #pragma pack(push, 1)
 
@@ -207,8 +211,12 @@ class Grass : public Entity
     float windAng;
     int32_t initForce;
 
+#ifdef _WIN32 // Effects
     D3DXVECTOR3 aAngles[16];
     D3DXVECTOR2 aUV[16];
+#else
+    VSConstant consts[42];
+#endif
 
     char textureName[64];
 
