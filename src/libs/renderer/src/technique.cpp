@@ -761,7 +761,19 @@ bool isEndBracket(char *pStr)
 }
 bool isDigit(char *pStr)
 {
-    return ((pStr) ? (pStr[0] >= '0' && pStr[0] <= '9') : false);
+    return ((pStr) ? (pStr[0] >= '0' && pStr[0] <= '9' || pStr[0] == '-') : false);
+}
+bool hasPoint(const char *pStr)
+{
+    while (*pStr != '\0')
+    {
+        if (*pStr == '.')
+        {
+            return true;
+        }
+        pStr++;
+    }
+    return false;
 }
 
 uint32_t CTechnique::GetSRSIndex(char *pStr)
@@ -825,7 +837,16 @@ uint32_t CTechnique::GetCode(char *pStr, SRSPARAM *pParam, uint32_t dwNumParam, 
 
     if (isDigit(pStr))
     {
-        sscanf(pStr, (SkipToken(pStr, "0x")) ? "%x" : "%d", &dwCode);
+        if (hasPoint(pStr))
+        {
+            float fvalue;
+            sscanf(pStr, "%f", &fvalue);
+            dwCode = F2DW(fvalue);
+        }
+        else
+        {
+            sscanf(pStr, (SkipToken(pStr, "0x")) ? "%x" : "%d", &dwCode);
+        }
         if (pPassCode)
             *pPassCode |= FLAGS_CODE_NUMBER;
         return dwCode;
@@ -934,7 +955,7 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
             uint32_t dwIndex = 0;
             *pPass++ = CODE_SPSCONST | dwAdditionalFlags;
             GetTokenWhile(SkipToken(*pStr, "["), &temp[0], "]");
-            sscanf(temp, "%lu", &dwIndex);
+            sscanf(temp, "%u", &dwIndex);
             *pPass++ = dwIndex;
             *pPass++ = dwInParamIndex;
             // GetTokenWhile(SkipToken(*pStr,"="),temp,";");
@@ -947,7 +968,7 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
             uint32_t dwIndex = 0;
             *pPass++ = CODE_SVSCONST | dwAdditionalFlags;
             GetTokenWhile(SkipToken(*pStr, "["), &temp[0], "]");
-            sscanf(temp, "%lu", &dwIndex);
+            sscanf(temp, "%u", &dwIndex);
             *pPass++ = dwIndex;
             GetTokenWhile(SkipToken(*pStr, "="), temp, ";");
             *pPass++ = GetCode(temp, &MYSETVERTEXSHADERCONSTANT[0],
@@ -1109,7 +1130,7 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
                 // maybe world0-world256
                 if (nullptr == (pTemp = SkipToken(*pStr, WORLD_TRANSFORM_CHECK)))
                     throw std::runtime_error("transform. error!");
-                sscanf(pTemp, "%lu", &dwCode);
+                sscanf(pTemp, "%u", &dwCode);
                 dwCode = (uint32_t)D3DTS_WORLDMATRIX(dwCode);
             }
             *pPass++ = CODE_TRANSFORM;
