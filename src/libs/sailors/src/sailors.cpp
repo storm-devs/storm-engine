@@ -172,13 +172,12 @@ bool ShipMan::RotateToAngle(uint32_t &dltTime, SailorsPoints &sailorsPoints)
 
 int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
 {
-    int ran;
     // If combat mode or reload, then look for free guns
     for (auto m = 0; m < sailorsPoints.points.count; m++)
     {
         for (auto i = 0; i < sailorsPoints.points.count; i++)
         {
-            ran = static_cast<int>(rand() * (sailorsPoints.points.count - 1) / static_cast<float>(RAND_MAX));
+            const int ran = rand() % sailorsPoints.points.count;
 
             if (sailorsPoints.points.point[ran].IsCannon())
             {
@@ -200,7 +199,7 @@ int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
         {
             for (auto i = 0; i < sailorsPoints.points.count; i++)
             {
-                ran = static_cast<int>(rand() * (sailorsPoints.points.count - 1) / static_cast<float>(RAND_MAX));
+                const int ran = rand() % sailorsPoints.points.count;
 
                 if (!sailorsPoints.points.point[ran].disabled)
                 {
@@ -223,7 +222,7 @@ int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
     {
         for (auto i = 0; i < sailorsPoints.points.count; i++)
         {
-            ran = static_cast<int>(rand() * (sailorsPoints.points.count - 1) / static_cast<float>(RAND_MAX));
+            const int ran = rand() % sailorsPoints.points.count;
 
             if (ran != targetWayPoint && !sailorsPoints.points.point[ran].buisy &&
                 sailorsPoints.points.point[ran].pointType == PT_TYPE_NORMAL)
@@ -240,7 +239,6 @@ int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
 int ShipMan::FindRandomPointWithoutType(const SailorsPoints &sailorsPoints) const
 // Find any simple point
 {
-
     for (size_t i = 0; i != sailorsPoints.points.count; ++i)
     {
         const auto idx = rand() % sailorsPoints.points.count;
@@ -479,7 +477,6 @@ void ShipMan::SetAnimation(uint32_t dltTime, ShipState &shipState)
     {
         if (const auto ani = model->GetAnimation(); mode == lastMode && ani && ani->Player(0).IsPlaying())
             return;
-        float ran;
 
         switch (mode)
         {
@@ -488,6 +485,7 @@ void ShipMan::SetAnimation(uint32_t dltTime, ShipState &shipState)
             model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
             model->GetAnimation()->Player(0).Play();
 
+            // TODO: check this
             manSpeed = MOVE_SPEED + rand() * MOVE_SPEED / static_cast<float>(RAND_MAX) / 4.0f -
                        rand() * MOVE_SPEED / static_cast<float>(RAND_MAX) / 4.0f;
 
@@ -501,9 +499,8 @@ void ShipMan::SetAnimation(uint32_t dltTime, ShipState &shipState)
             manSpeed = RUN_SPEED;
             rotSpeed = MOVE_SPEED * 5.0f;
             break;
-        case MAN_STAY:
-
-            ran = rand() / static_cast<float>(RAND_MAX);
+        case MAN_STAY: {
+            float ran = rand() / static_cast<float>(RAND_MAX);
 
             if (ran < 0.25f)
                 model->GetAnimation()->Player(0).SetAction("action1");
@@ -516,6 +513,7 @@ void ShipMan::SetAnimation(uint32_t dltTime, ShipState &shipState)
 
             model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
             model->GetAnimation()->Player(0).Play();
+        }
             break;
         case MAN_TURNLEFT:
             model->GetAnimation()->Player(0).SetAction("turn_left");
@@ -620,9 +618,8 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
 
         switch (shipState.mode)
         {
-        case SHIP_SAIL:
-            float ran;
-            ran = rand() / static_cast<float>(RAND_MAX);
+        case SHIP_SAIL: {
+            float ran = rand() / static_cast<float>(RAND_MAX);
 
             if (mode != MAN_STAY && ran < 0.1f)
                 mode = MAN_RUN;
@@ -630,6 +627,7 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
                 mode = MAN_WALK;
             else
                 mode = MAN_STAY;
+        }
             break;
         case SHIP_WAR:
         case SHIP_STORM:
