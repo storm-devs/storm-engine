@@ -1967,10 +1967,7 @@ bool CTechnique::ExecutePass(bool bStart)
                     break;
                 AddState2Restore3(dwCode, State, dwSaveValue);
             }
-            if (State == D3DRS_SLOPESCALEDEPTHBIAS && dwValue > 100)
-                pRS->SetRenderState(State, F2DW(dwValue * -0.001f));
-            else
-                pRS->SetRenderState(State, dwValue);
+            pRS->SetRenderState(State, dwValue);
         }
         break;
         case CODE_STSS: // SetTextureStageState(
