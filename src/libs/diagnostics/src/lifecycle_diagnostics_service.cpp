@@ -12,13 +12,11 @@
 #include "spdlog_sinks/syncable_sink.hpp"
 #include "watermark.hpp"
 
-#ifdef _UNICODE
-#ifdef _WIN32 // FIX_LINUX sentry_options
+#if defined(_UNICODE) && defined(_WIN32)
 #include <tchar.h>
 #define sentry_options_set_database_path sentry_options_set_database_pathw
 #define sentry_options_set_handler_path sentry_options_set_handler_pathw
 #define sentry_options_add_attachment sentry_options_add_attachmentw
-#endif
 #else
 #include <cstdlib>
 #define _T(x) x
@@ -165,19 +163,21 @@ LifecycleDiagnosticsService::Guard LifecycleDiagnosticsService::initialize(const
 
     if (!initialized_)
     {
-#ifdef _WIN32 // FIX_LINUX sentry_options
         // TODO: make this crossplatform
         auto *options = sentry_options_new();
         sentry_options_set_dsn(options, "https://1798a1bcfb654cbd8ce157b381964525@o572138.ingest.sentry.io/5721165");
         sentry_options_set_release(options, STORM_BUILD_WATERMARK_STRING);
         sentry_options_set_database_path(options, (fs::GetStashPath() / "sentry-db").c_str());
+#ifdef _WIN32
         sentry_options_set_handler_path(options, (getExecutableDir() / "crashpad_handler.exe").c_str());
+#else
+        sentry_options_set_handler_path(options, (getExecutableDir() / "crashpad_handler").c_str());
+#endif
         sentry_options_add_attachment(options, getLogsArchive().c_str());
         sentry_options_set_before_send(options, beforeCrash, this);
         sentry_options_set_system_crash_reporter_enabled(options, enableCrashReports);
 
         initialized_ = sentry_init(options) == 0;
-#endif
     }
 
     return Guard(*this);
@@ -189,9 +189,7 @@ void LifecycleDiagnosticsService::terminate() const
 
     if (initialized_)
     {
-#ifdef _WIN32 // FIX_LINUX sentry_options
         sentry_close();
-#endif
     }
 }
 

@@ -30,6 +30,7 @@ class StormEngine(ConanFile):
         else:
             # conan-center
             self.requires("libsafec/3.6.0")
+            self.requires("openssl/1.1.1o")#TODO: update sentry-native@storm/patched and then remove it
             self.options["sdl"].pulse = False
         if self.options.steam:
             self.requires("steamworks/1.5.1@storm/prebuilt")
@@ -37,6 +38,7 @@ class StormEngine(ConanFile):
     generators = "cmake_multi"
 
     default_options = {
+        "sentry-native:backend": "crashpad",
         "mimalloc:shared": True,
         "mimalloc:override": True
     }
