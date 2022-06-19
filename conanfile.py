@@ -31,14 +31,13 @@ class StormEngine(ConanFile):
             # conan-center
             self.requires("libsafec/3.6.0")
             self.requires("openssl/1.1.1o")
+            self.options["sdl"].pulse = False
         if self.options.steam:
             self.requires("steamworks/1.5.1@storm/prebuilt")
 
     generators = "cmake_multi"
 
     default_options = {
-        "sdl2:sdl2main": False,
-        "sdl2:pulse": False,
         "sentry-native:backend": "crashpad",
         "mimalloc:shared": True,
         "mimalloc:override": True
