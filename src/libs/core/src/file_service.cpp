@@ -39,6 +39,8 @@ FILE_SERVICE::FILE_SERVICE()
     Max_File_Index = 0;
     for (uint32_t n = 0; n < _MAX_OPEN_INI_FILES; n++)
         OpenFiles[n] = nullptr;
+    if (ResourcePathsFirstScan)
+        ScanResourcePaths();
 }
 
 FILE_SERVICE::~FILE_SERVICE()
@@ -48,7 +50,7 @@ FILE_SERVICE::~FILE_SERVICE()
 
 std::fstream FILE_SERVICE::_CreateFile(const char *filename, std::ios::openmode mode)
 {
-    const auto path = filename ? std::filesystem::u8path(filename) : std::filesystem::path();
+    const auto path = filename ? std::filesystem::u8path(ConvertPathResource(filename)) : std::filesystem::path();
     std::fstream fileS(path, mode);
     return fileS;
 }
@@ -65,7 +67,7 @@ void FILE_SERVICE::_SetFilePointer(std::fstream &fileS, std::streamoff off, std:
 
 bool FILE_SERVICE::_DeleteFile(const char *filename)
 {
-    std::filesystem::path path = std::filesystem::u8path(filename);
+    std::filesystem::path path = std::filesystem::u8path(ConvertPathResource(filename));
     return std::filesystem::remove(path);
 }
 
@@ -101,7 +103,7 @@ bool FILE_SERVICE::_ReadFile(std::fstream &fileS, void *s, std::streamsize count
 
 bool FILE_SERVICE::_FileOrDirectoryExists(const char *p)
 {
-    std::filesystem::path path = std::filesystem::u8path(p);
+    std::filesystem::path path = std::filesystem::u8path(ConvertPathResource(p));
     auto ec = std::error_code{};
     bool result = std::filesystem::exists(path, ec);
     if (ec)
@@ -177,7 +179,7 @@ std::vector<std::filesystem::path> FILE_SERVICE::_GetFsPathsByMask(const char *s
     }
     else
     {
-        srcPath = std::filesystem::u8path(sourcePath);
+        srcPath = std::filesystem::u8path(ConvertPathResource(sourcePath));
     }
 
     std::error_code ec;
@@ -203,7 +205,7 @@ std::time_t FILE_SERVICE::_ToTimeT(std::filesystem::file_time_type tp)
 
 std::filesystem::file_time_type FILE_SERVICE::_GetLastWriteTime(const char *filename)
 {
-    std::filesystem::path path = std::filesystem::u8path(filename);
+    std::filesystem::path path = std::filesystem::u8path(ConvertPathResource(filename));
     return std::filesystem::last_write_time(path);
 }
 
@@ -227,25 +229,25 @@ std::string FILE_SERVICE::_GetExecutableDirectory()
 
 std::uintmax_t FILE_SERVICE::_GetFileSize(const char *filename)
 {
-    std::filesystem::path path = std::filesystem::u8path(filename);
+    std::filesystem::path path = std::filesystem::u8path(ConvertPathResource(filename));
     return std::filesystem::file_size(path);
 }
 
 void FILE_SERVICE::_SetCurrentDirectory(const char *pathName)
 {
-    std::filesystem::path path = std::filesystem::u8path(pathName);
+    std::filesystem::path path = std::filesystem::u8path(ConvertPathResource(pathName));
     std::filesystem::current_path(path);
 }
 
 bool FILE_SERVICE::_CreateDirectory(const char *pathName)
 {
-    std::filesystem::path path = std::filesystem::u8path(pathName);
+    std::filesystem::path path = std::filesystem::u8path(ConvertPathResource(pathName));
     return std::filesystem::create_directories(path);
 }
 
 std::uintmax_t FILE_SERVICE::_RemoveDirectory(const char *pathName)
 {
-    std::filesystem::path path = std::filesystem::u8path(pathName);
+    std::filesystem::path path = std::filesystem::u8path(ConvertPathResource(pathName));
     return std::filesystem::remove_all(path);
 }
 
@@ -380,6 +382,134 @@ bool FILE_SERVICE::LoadFile(const char *file_name, char **ppBuffer, uint32_t *dw
     _ReadFile(fileS, *ppBuffer, dwLowSize);
     _CloseFile(fileS);
     return true;
+}
+
+//------------------------------------------------------------------------------------------------
+// Resource paths
+//
+
+void terminate_with_char(std::string &buffer, const char chr)
+{
+    // Check if already has
+    if (!buffer.empty() && buffer[buffer.length() - 1] != chr)
+    {
+        // Append to end and store
+        buffer += chr;
+    }
+}
+
+std::string get_dir_iterator_path(const std::filesystem::path &path)
+{
+    std::string path_str = path.string();
+    size_t pos = path_str.find(std::string(".") + PATH_SEP);
+    if (pos != std::string::npos && pos == 0)
+    {
+        path_str.erase(0, 2);
+    }
+    return path_str;
+}
+
+void string_replace(std::string &input, const char *find, const char *paste)
+{
+    size_t pos = 0;
+    while (true)
+    {
+        pos = input.find(find, pos);
+        if (pos >= input.size())
+            break;
+        input.replace(pos, strlen(find), paste);
+        pos += strlen(paste);
+    }
+}
+
+std::string convert_path(const char *path)
+{
+    std::string conv;
+    size_t size = strlen(path);
+    for (int i = 0; i < size; ++i)
+    {
+        conv.push_back(path[i] == WRONG_PATH_SEP ? PATH_SEP : path[i]);
+    }
+    return conv;
+}
+
+void FILE_SERVICE::AddEntryToResourcePaths(const std::filesystem::directory_entry &entry, std::string &CheckingPath)
+{
+    if (entry.is_regular_file() || entry.is_directory())
+    {
+        std::string path = get_dir_iterator_path(entry.path());
+        std::string path_lwr = convert_path(path.c_str());
+        tolwr(path_lwr.data());
+        if (starts_with(path_lwr, CheckingPath + "program") || starts_with(path_lwr, CheckingPath + "resource") ||
+            starts_with(path_lwr, CheckingPath + "save") || ends_with(path_lwr, ".ini"))
+        {
+            ResourcePaths[path_lwr] = path;
+        }
+    }
+}
+
+void FILE_SERVICE::ScanResourcePaths()
+{
+#ifndef _WIN32
+    if (ResourcePathsFirstScan)
+    {
+        // Seems like if static code calls us we need to do this manually to avoid any bugs
+        ResourcePaths = std::unordered_map<std::string, std::string>();
+    }
+    ResourcePaths.clear();
+    std::string ExePath = "";
+    for (const auto &entry : std::filesystem::recursive_directory_iterator("."))
+    {
+        AddEntryToResourcePaths(entry, ExePath);
+    }
+    ExePath = fio->_GetExecutableDirectory();
+    auto it = std::filesystem::recursive_directory_iterator(ExePath);
+    tolwr(ExePath.data());
+    for (const auto &entry : it)
+    {
+        AddEntryToResourcePaths(entry, ExePath);
+    }
+#endif
+    ResourcePathsFirstScan = false;
+}
+
+std::string FILE_SERVICE::ConvertPathResource(const char *path)
+{
+#ifdef _WIN32
+    return std::string(path);
+#else
+    if (ResourcePathsFirstScan)
+    {
+        ScanResourcePaths();
+    }
+    std::string conv = convert_path(path);
+    std::string path_lwr = conv; // save original string if we will need to create new file in existing folder
+    tolwr(path_lwr.data());
+    std::filesystem::path tmp_path = std::filesystem::u8path(path_lwr).lexically_normal(); // remove relative paths
+    path_lwr = tmp_path.string();
+    std::string result = ResourcePaths[path_lwr];
+    if (result.empty())
+    {
+        // if we need to create new file in existing folder, then we need to check ResourcePaths[parent_folder]
+        result = ResourcePaths[tmp_path.parent_path().string()];
+        if (result.empty())
+        {
+            // no such parent folder
+            return path_lwr;
+        }
+        else
+        {
+            // parent folder found
+            result = result + PATH_SEP + std::filesystem::u8path(conv).filename().string();
+            ResourcePaths[path_lwr] = result;
+            return result;
+        }
+    }
+    else
+    {
+        return result;
+    }
+#endif
 }
 
 //=================================================================================================
