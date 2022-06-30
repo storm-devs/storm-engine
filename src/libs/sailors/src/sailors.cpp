@@ -1,9 +1,3 @@
-//------------------------------------------------------------------------------------
-//    Sailors, SailorsWayPoints, SailorsEditor, SailorsMenu, ShipWalk.c, SailorsMain
-//    BattleInterface.c, ShipDead.c, sea_people.h
-//------------------------------------------------------------------------------------
-// micuss, 2004
-//------------------------------------------------------------------------------------
 #include "sailors.h"
 
 #include "shared/messages.h"
@@ -11,100 +5,141 @@
 
 CREATE_CLASS(Sailors)
 
-//#define //GUARD_SAILORS(block)    { static const TCHAR block_name[] = TEXT(#block); try {
-//#define //UN//GUARD_SAILORS            } catch(...) { core.Trace("ERROR in Sailors.dll : block '%s'",
-//(char*)block_name); throw _EXS(FATAL,"unknown"); }}
-
-//------------------------------------------------------------------------------------
-ShipMan::ShipMan()
-    : modelID(0), model(nullptr), ptTo(), dir(), targetWayPoint(0), lastTargetPoint(0), moveTo()
+namespace
 {
-    // GUARD_SAILORS(ShipMan::ShipMan())
 
+constexpr float RUN_SPEED = 0.30f;
+constexpr float MOVE_SPEED = 0.15f;
+constexpr float CLIMB_SPEED = 0.065f;
+
+constexpr float JUMP_SPEED_X_MASTFALL = 3.0f;
+constexpr float JUMP_SPEED_Y_EXPLOSION = 30.0f;
+
+}
+
+ShipMan::ShipMan(ShipMan &&other) noexcept: modelID{other.modelID},
+                                            pos{std::move(other.pos)},
+                                            ang{std::move(other.ang)},
+                                            ptTo{std::move(other.ptTo)},
+                                            angTo{std::move(other.angTo)},
+                                            dir{std::move(other.dir)},
+                                            spos{std::move(other.spos)},
+                                            dieTime{other.dieTime},
+                                            inWater{other.inWater},
+                                            jumpSpeedX{other.jumpSpeedX},
+                                            jumpSpeedY{other.jumpSpeedY},
+                                            path{std::move(other.path)},
+                                            mode{other.mode},
+                                            lastMode{other.lastMode},
+                                            newWayPoint{other.newWayPoint},
+                                            lastWayPoint{other.lastWayPoint},
+                                            targetWayPoint{other.targetWayPoint},
+                                            lastTargetPoint{other.lastTargetPoint},
+                                            moveTo{other.moveTo},
+                                            manSpeed{other.manSpeed},
+                                            rotSpeed{other.rotSpeed}
+{
+    other.modelID = invalid_entity;
+}
+
+ShipMan & ShipMan::operator=(ShipMan &&other) noexcept
+{
+    if (this == &other)
+        return *this;
+    modelID = other.modelID;
+    pos = std::move(other.pos);
+    ang = std::move(other.ang);
+    ptTo = std::move(other.ptTo);
+    angTo = std::move(other.angTo);
+    dir = std::move(other.dir);
+    spos = std::move(other.spos);
+    dieTime = other.dieTime;
+    inWater = other.inWater;
+    jumpSpeedX = other.jumpSpeedX;
+    jumpSpeedY = other.jumpSpeedY;
+    path = std::move(other.path);
+    mode = other.mode;
+    lastMode = other.lastMode;
+    newWayPoint = other.newWayPoint;
+    lastWayPoint = other.lastWayPoint;
+    targetWayPoint = other.targetWayPoint;
+    lastTargetPoint = other.lastTargetPoint;
+    moveTo = other.moveTo;
+    manSpeed = other.manSpeed;
+    rotSpeed = other.rotSpeed;
+
+    other.modelID = invalid_entity;
+    return *this;
+}
+
+ShipMan::ShipMan()
+{
     pos = CVECTOR(0.0f, 11.0f, 30.0f);
-    ang.x = ang.y = ang.z = 0;
-    angTo.x = angTo.y = angTo.z = 0;
-    spos.x = spos.y = spos.z = 0;
     manSpeed = 0.1f;
     rotSpeed = 0.5f;
     mode = MAN_WALK;
     lastMode = MAN_OFF;
-    newWayPoint = lastWayPoint = 0;
-    dieTime = 0;
-    inWater = false;
-    jumpSpeedX = jumpSpeedY = 0;
-
-    // UN//GUARD_SAILORS
 }
-;
-//------------------------------------------------------------------------------------
-void ShipMan::Free() const
+
+ShipMan::~ShipMan()
 {
-    // GUARD_SAILORS(ShipMan::Free())
-
     core.EraseEntity(this->modelID);
+}
 
-    // UN//GUARD_SAILORS
-};
-// ----- Building a matrix taking into account the current state ---------------------------------
 void ShipMan::SetPos(MODEL *ship, SHIP_BASE *ship_base, uint32_t &dltTime, ShipState &shipState)
 {
-    // GUARD_SAILORS(ShipMan::SetPos())
-
-    if (ship_base && (shipState.dead || jumpSpeedY))
+    if (auto model = static_cast<MODEL *>(core.GetEntityPointer(modelID)))
     {
-        // If got in the water - detach from the ship and swim
-        if (!inWater && model->mtx.Pos().y < shipState.sea->WaveXZ(model->mtx.Pos().x, model->mtx.Pos().z) - 1.4f)
+        if (ship_base && (shipState.dead || jumpSpeedY))
         {
-            inWater = true;
+            // If got in the water - detach from the ship and swim
+            if (!inWater && model->mtx.Pos().y < shipState.sea->WaveXZ(model->mtx.Pos().x, model->mtx.Pos().z) - 1.4f)
+            {
+                inWater = true;
 
-            model->GetAnimation()->Player(0).SetAction("crawl");
-            model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
-            model->GetAnimation()->Player(0).SetSpeed(model->GetAnimation()->Player(0).GetSpeed() / 2);
-            model->GetAnimation()->Player(0).Play();
+                model->GetAnimation()->Player(0).SetAction("crawl");
+                model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
+                model->GetAnimation()->Player(0).SetSpeed(model->GetAnimation()->Player(0).GetSpeed() / 2);
+                model->GetAnimation()->Player(0).Play();
 
-            pos = model->mtx.Pos();
+                pos = model->mtx.Pos();
 
-            ang.y += ship_base->GetAng().y;
-            ang.x = ang.z = 0;
-            angTo.y = static_cast<float>(rand()) * PI * 2.0f / static_cast<float>(RAND_MAX);
+                ang.y += ship_base->GetAng().y;
+                ang.x = ang.z = 0;
+                angTo.y = static_cast<float>(rand()) * PI * 2.0f / static_cast<float>(RAND_MAX);
 
-            rotSpeed = MOVE_SPEED;
-            mode = MAN_SWIM;
+                rotSpeed = MOVE_SPEED;
+                mode = MAN_SWIM;
+            }
         }
-    }
 
-    if (!inWater)
-    {
-        CMatrix mPos, mRot, m1, m2;
-
-        mPos.BuildMatrix(CVECTOR(ang.x, ang.y, ang.z),
-                         pos + spos /*CVECTOR(pos.x+ spos.x, pos.y+ spos.y, pos.z+ spos.z)*/);
-
-        if (ship_base)
+        if (!inWater)
         {
-            model->mtx = mPos * (*ship_base->GetMatrix());
+            CMatrix mPos, mRot, m1, m2;
+
+            mPos.BuildMatrix(CVECTOR(ang.x, ang.y, ang.z),
+                             pos + spos /*CVECTOR(pos.x+ spos.x, pos.y+ spos.y, pos.z+ spos.z)*/);
+
+            if (ship_base)
+            {
+                model->mtx = mPos * (*ship_base->GetMatrix());
+            }
+            else
+            {
+                model->mtx = mRot * mPos;
+            }
         }
         else
         {
-            model->mtx = mRot * mPos;
+            CMatrix mpos, mrot;
+            mrot.BuildMatrix(this->ang);
+            mpos.BuildPosition(this->pos.x, this->pos.y, this->pos.z);
+            model->mtx = mrot * mpos;
         }
     }
-    else
-    {
-        CMatrix mpos, mrot;
-        mrot.BuildMatrix(this->ang);
-        mpos.BuildPosition(this->pos.x, this->pos.y, this->pos.z);
-        model->mtx = mrot * mpos;
-    }
-
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
+}
 bool ShipMan::RotateToAngle(uint32_t &dltTime, SailorsPoints &sailorsPoints)
 {
-    // GUARD_SAILORS(ShipMan::RotateToAngle())
-
     if (fabs(angTo.y - ang.y))
     {
         if (fabs(ang.y - angTo.y) < PI)
@@ -127,29 +162,25 @@ bool ShipMan::RotateToAngle(uint32_t &dltTime, SailorsPoints &sailorsPoints)
         if (ang.y < 0)
             ang.y += PI * 2;
 
-        if (fabs(static_cast<float>(angTo.y - ang.y)) < rotSpeed * dltTime / 100.0f)
+        if (fabs(angTo.y - ang.y) < rotSpeed * dltTime / 100.0f)
             ang = angTo;
 
         return false;
     }
-
-    // UN//GUARD_SAILORS
     return true;
-};
-// ----- Find New Target ---------------------------------------- -----------------
+}
+
 int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
 {
-    // GUARD_SAILORS(ShipMan::FindRandomPoint())
-
-    int ran;
     // If combat mode or reload, then look for free guns
     for (auto m = 0; m < sailorsPoints.points.count; m++)
+    {
         for (auto i = 0; i < sailorsPoints.points.count; i++)
         {
-            ran = static_cast<int>(rand() * (sailorsPoints.points.count - 1) / static_cast<float>(RAND_MAX));
+            const int ran = rand() % sailorsPoints.points.count;
 
             if (sailorsPoints.points.point[ran].IsCannon())
-
+            {
                 if (ran != targetWayPoint && !sailorsPoints.points.point[ran].buisy &&
                     (!sailorsPoints.points.point[ran].cannonReloaded || shipState.mode == SHIP_WAR))
                 {
@@ -157,33 +188,41 @@ int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
                     moveTo = MOVE_TO_CANNON;
                     return ran;
                 }
+            }
         }
+    }
 
     // Looking for free masts
     if (shipState.dead || rand() * 30 / static_cast<float>(RAND_MAX) <= 1)
-
+    {
         for (auto m = 0; m < sailorsPoints.points.count; m++)
+        {
             for (auto i = 0; i < sailorsPoints.points.count; i++)
             {
-                ran = static_cast<int>(rand() * (sailorsPoints.points.count - 1) / static_cast<float>(RAND_MAX));
+                const int ran = rand() % sailorsPoints.points.count;
 
                 if (!sailorsPoints.points.point[ran].disabled)
-
+                {
                     if (sailorsPoints.points.point[ran].IsMast())
-
+                    {
                         if (ran != targetWayPoint && (shipState.dead || !sailorsPoints.points.point[ran].buisy))
                         {
                             sailorsPoints.points.point[ran].buisy = true;
                             moveTo = MOVE_TO_TOP;
                             return ran;
                         }
+                    }
+                }
             }
+        }
+    }
 
     // Looking for simple unoccupied points
     for (auto m = 0; m < sailorsPoints.points.count; m++)
+    {
         for (auto i = 0; i < sailorsPoints.points.count; i++)
         {
-            ran = static_cast<int>(rand() * (sailorsPoints.points.count - 1) / static_cast<float>(RAND_MAX));
+            const int ran = rand() % sailorsPoints.points.count;
 
             if (ran != targetWayPoint && !sailorsPoints.points.point[ran].buisy &&
                 sailorsPoints.points.point[ran].pointType == PT_TYPE_NORMAL)
@@ -192,32 +231,28 @@ int ShipMan::FindRandomPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
                 return ran;
             }
         }
-    // UN//GUARD_SAILORS
+    }
+
     return newWayPoint;
-};
-// ----- Find new target point without type -------------------------------------- ----------
-int ShipMan::FindRandomPointWithoutType(SailorsPoints &sailorsPoints) const
+}
+
+int ShipMan::FindRandomPointWithoutType(const SailorsPoints &sailorsPoints) const
 // Find any simple point
 {
-    // GUARD_SAILORS(ShipMan::FindRandomPointWithoutType())
-
-    int ran;
-    for (auto m = 0; m < sailorsPoints.points.count; m++)
-        for (auto i = 0; i < sailorsPoints.points.count; i++)
-
-            ran = static_cast<int>(rand() * (sailorsPoints.points.count - 1) / static_cast<float>(RAND_MAX));
-    if (sailorsPoints.points.point[ran].pointType == PT_TYPE_NORMAL)
-        return ran;
+    for (size_t i = 0; i != sailorsPoints.points.count; ++i)
+    {
+        const auto idx = rand() % sailorsPoints.points.count;
+        if (sailorsPoints.points.point[idx].pointType == PT_TYPE_NORMAL)
+        {
+            return idx;
+        }
+    }
 
     return newWayPoint;
+}
 
-    // UN//GUARD_SAILORS
-};
-// ----- Find the next waypoint / new route ------------------------------------------
 void ShipMan::FindNextPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
 {
-    // GUARD_SAILORS(ShipMan::FindNextPoint())
-
     // Find the nearest unloaded cannon
     if (moveTo != MOVE_TO_CANNON)
     {
@@ -295,13 +330,10 @@ void ShipMan::FindNextPoint(SailorsPoints &sailorsPoints, ShipState &shipState)
                                  sailorsPoints.points.point[newWayPoint].z),
                          (sailorsPoints.points.point[newWayPoint].pointType == PT_TYPE_NORMAL));
     }
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
+}
+
 void ShipMan::ApplyTargetPoint(CVECTOR pt, bool randomWalk)
 {
-    // GUARD_SAILORS(ShipMan::ApplyTargetPoint())
-
     if (randomWalk)
     {
         // spread - 0.50
@@ -321,51 +353,50 @@ void ShipMan::ApplyTargetPoint(CVECTOR pt, bool randomWalk)
     {
         angTo.y = Vector2Angle(dir);
     }
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
+}
+
 bool ShipMan::MoveToPosition(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &shipState)
 {
-    // GUARD_SAILORS(ShipMan::MoveToPosition())
-
-    const auto dNow = static_cast<float>(SQR(pos.x - ptTo.x)) + SQR(pos.y - ptTo.y) + SQR(pos.z - ptTo.z);
-
-    const auto dFuture = static_cast<float>(SQR(pos.x + manSpeed * dir.x - ptTo.x)) +
-                         SQR(pos.y + manSpeed * dir.y - ptTo.y) + SQR(pos.z + manSpeed * dir.z - ptTo.z);
-
-    if (shipState.dead && mode == MAN_CLIMB_UP && dNow < sailorsPoints.points.point[newWayPoint].climbPosition * 10 + 1)
+    if (const auto model = static_cast<MODEL *>(core.GetEntityPointer(modelID)))
     {
-        model->GetAnimation()->Player(0).Pause();
-        sailorsPoints.points.point[newWayPoint].climbPosition++;
-        mode = MAN_OFF;
-        return false;
-    }
+        const auto dNow = SQR(pos.x - ptTo.x) + SQR(pos.y - ptTo.y) + SQR(pos.z - ptTo.z);
 
-    if (dFuture < dNow)
-    {
-        if (RotateToAngle(dltTime, sailorsPoints) || mode == MAN_RUN ||
-            (mode == MAN_WALK && fabs(angTo.y - ang.y) < PI / 8))
+        const auto dFuture = SQR(pos.x + manSpeed * dir.x - ptTo.x) +
+                             SQR(pos.y + manSpeed * dir.y - ptTo.y) + SQR(pos.z + manSpeed * dir.z - ptTo.z);
+
+        if (shipState.dead && mode == MAN_CLIMB_UP &&
+            dNow < sailorsPoints.points.point[newWayPoint].climbPosition * 10 + 1)
         {
-            pos.x += manSpeed * dir.x * dltTime / 100.0f;
-            pos.y += manSpeed * dir.y * dltTime / 100.0f;
-            pos.z += manSpeed * dir.z * dltTime / 100.0f;
+            model->GetAnimation()->Player(0).Pause();
+            sailorsPoints.points.point[newWayPoint].climbPosition++;
+            mode = MAN_OFF;
+            return false;
         }
 
-        return false;
+        if (dFuture < dNow)
+        {
+            if (RotateToAngle(dltTime, sailorsPoints) || mode == MAN_RUN ||
+                (mode == MAN_WALK && fabs(angTo.y - ang.y) < PI / 8))
+            {
+                pos.x += manSpeed * dir.x * dltTime / 100.0f;
+                pos.y += manSpeed * dir.y * dltTime / 100.0f;
+                pos.z += manSpeed * dir.z * dltTime / 100.0f;
+            }
+
+            return false;
+        }
+
+        pos = ptTo;
+        ang.y = angTo.y;
+
+        return true;
     }
 
-    pos = ptTo;
-    ang.y = angTo.y;
+    return false;
+}
 
-    return true;
-
-    // UN//GUARD_SAILORS
-};
-// ----- Find the nearest cannon ------------------------------------------ ----------------
 int ShipMan::GetNearestEmptyCannon(SailorsPoints &sailorsPoints) const
 {
-    // GUARD_SAILORS(ShipMan::GetNearestEmptyCannon())
-
     float minDest = 999;
     float dest;
     auto minIndex = -1;
@@ -387,13 +418,10 @@ int ShipMan::GetNearestEmptyCannon(SailorsPoints &sailorsPoints) const
 
     return minIndex;
 
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
+}
+
 bool ShipMan::Swim(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &shipState)
 {
-    // GUARD_SAILORS(ShipMan::Swim())
-
     if (dieTime < 9)
     {
         pos.y += ((shipState.sea->WaveXZ(pos.x, pos.z) - 1.4f) - pos.y) * dltTime / 200.0f;
@@ -410,31 +438,25 @@ bool ShipMan::Swim(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &s
     if (dieTime >= 10)
         return true;
     return false;
+}
 
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
 bool ShipMan::Stay(uint32_t &dltTime, SailorsPoints &sailorsPoints) const
 {
-    // GUARD_SAILORS(ShipMan::Stay())
+    if (const auto model = static_cast<MODEL *>(core.GetEntityPointer(modelID)))
+    {
+        return (!model->GetAnimation()->Player(0).IsPlaying());
+    }
 
-    return (!model->GetAnimation()->Player(0).IsPlaying());
+    return false;
+}
 
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
 bool ShipMan::Turn(uint32_t &dltTime, SailorsPoints &sailorsPoints)
 {
-    // GUARD_SAILORS(ShipMan::Turn())
-
     return RotateToAngle(dltTime, sailorsPoints);
+}
 
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
 bool ShipMan::Jump(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &shipState)
 {
-    // GUARD_SAILORS(ShipMan::Jump())
     pos.y -= jumpSpeedY * dltTime / 1500.0f;
 
     pos.x += sin(ang.y + PI) * jumpSpeedX * dltTime / 350.0f;
@@ -447,111 +469,107 @@ bool ShipMan::Jump(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &s
         pos.y -= jumpSpeedY * static_cast<float>(dltTime) / 1000.0f;
 
     return false;
+}
 
-    // UN//GUARD_SAILORS
-};
-// ----- Update animation and speed ----------------------------------------- ----------
 void ShipMan::SetAnimation(uint32_t dltTime, ShipState &shipState)
 {
-    // GUARD_SAILORS(ShipMan::SetAnimation())
-
-    if (auto ani = model->GetAnimation(); mode == lastMode && ani && ani->Player(0).IsPlaying())
-        return;
-    float ran;
-
-    switch (mode)
+    if (const auto model = static_cast<MODEL *>(core.GetEntityPointer(modelID)))
     {
-    case MAN_WALK:
-        model->GetAnimation()->Player(0).SetAction("walk");
-        model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
-        model->GetAnimation()->Player(0).Play();
+        if (const auto ani = model->GetAnimation(); mode == lastMode && ani && ani->Player(0).IsPlaying())
+            return;
 
-        manSpeed = MOVE_SPEED + rand() * MOVE_SPEED / static_cast<float>(RAND_MAX) / 4.0f -
-                   rand() * MOVE_SPEED / static_cast<float>(RAND_MAX) / 4.0f;
-
-        rotSpeed = MOVE_SPEED * 3.0f;
-        break;
-    case MAN_RUN:
-        model->GetAnimation()->Player(0).SetAction("run");
-        model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
-        model->GetAnimation()->Player(0).Play();
-
-        manSpeed = RUN_SPEED;
-        rotSpeed = MOVE_SPEED * 5.0f;
-        break;
-    case MAN_STAY:
-
-        ran = rand() / static_cast<float>(RAND_MAX);
-
-        if (ran < 0.25f)
-            model->GetAnimation()->Player(0).SetAction("action1");
-        else if (ran < 0.50f)
-            model->GetAnimation()->Player(0).SetAction("action2");
-        else if (ran < 0.75f)
-            model->GetAnimation()->Player(0).SetAction("action3");
-        else if (ran < 1.00f)
-            model->GetAnimation()->Player(0).SetAction("action4");
-
-        model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
-        model->GetAnimation()->Player(0).Play();
-        break;
-    case MAN_TURNLEFT:
-        model->GetAnimation()->Player(0).SetAction("turn_left");
-        model->GetAnimation()->Player(0).SetPosition(0);
-        model->GetAnimation()->Player(0).Play();
-        break;
-    case MAN_TURNRIGHT:
-        model->GetAnimation()->Player(0).SetAction("turn_right");
-        model->GetAnimation()->Player(0).SetPosition(0);
-        model->GetAnimation()->Player(0).Play();
-        break;
-    case MAN_CLIMB_UP:
-
-        manSpeed = CLIMB_SPEED;
-        rotSpeed = MOVE_SPEED * 10.0f;
-
-        model->GetAnimation()->Player(0).SetAction("crawl");
-        model->GetAnimation()->Player(0).SetPosition(0);
-        model->GetAnimation()->Player(0).Play();
-
-        if (shipState.dead || shipState.mode == SHIP_WAR || shipState.mode == SHIP_STORM)
+        switch (mode)
         {
-            manSpeed *= 2;
-            model->GetAnimation()->Player(0).SetSpeed(model->GetAnimation()->Player(0).GetSpeed() * 2);
+        case MAN_WALK:
+            model->GetAnimation()->Player(0).SetAction("walk");
+            model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
+            model->GetAnimation()->Player(0).Play();
+
+            // TODO: check this
+            manSpeed = MOVE_SPEED + rand() * MOVE_SPEED / static_cast<float>(RAND_MAX) / 4.0f -
+                       rand() * MOVE_SPEED / static_cast<float>(RAND_MAX) / 4.0f;
+
+            rotSpeed = MOVE_SPEED * 3.0f;
+            break;
+        case MAN_RUN:
+            model->GetAnimation()->Player(0).SetAction("run");
+            model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
+            model->GetAnimation()->Player(0).Play();
+
+            manSpeed = RUN_SPEED;
+            rotSpeed = MOVE_SPEED * 5.0f;
+            break;
+        case MAN_STAY: {
+            float ran = rand() / static_cast<float>(RAND_MAX);
+
+            if (ran < 0.25f)
+                model->GetAnimation()->Player(0).SetAction("action1");
+            else if (ran < 0.50f)
+                model->GetAnimation()->Player(0).SetAction("action2");
+            else if (ran < 0.75f)
+                model->GetAnimation()->Player(0).SetAction("action3");
+            else if (ran < 1.00f)
+                model->GetAnimation()->Player(0).SetAction("action4");
+
+            model->GetAnimation()->Player(0).SetPosition(rand() / static_cast<float>(RAND_MAX));
+            model->GetAnimation()->Player(0).Play();
+        }
+            break;
+        case MAN_TURNLEFT:
+            model->GetAnimation()->Player(0).SetAction("turn_left");
+            model->GetAnimation()->Player(0).SetPosition(0);
+            model->GetAnimation()->Player(0).Play();
+            break;
+        case MAN_TURNRIGHT:
+            model->GetAnimation()->Player(0).SetAction("turn_right");
+            model->GetAnimation()->Player(0).SetPosition(0);
+            model->GetAnimation()->Player(0).Play();
+            break;
+        case MAN_CLIMB_UP:
+
+            manSpeed = CLIMB_SPEED;
+            rotSpeed = MOVE_SPEED * 10.0f;
+
+            model->GetAnimation()->Player(0).SetAction("crawl");
+            model->GetAnimation()->Player(0).SetPosition(0);
+            model->GetAnimation()->Player(0).Play();
+
+            if (shipState.dead || shipState.mode == SHIP_WAR || shipState.mode == SHIP_STORM)
+            {
+                manSpeed *= 2;
+                model->GetAnimation()->Player(0).SetSpeed(model->GetAnimation()->Player(0).GetSpeed() * 2);
+            }
+
+            break;
+        case MAN_CLIMB_DOWN:
+
+            manSpeed = CLIMB_SPEED;
+            rotSpeed = MOVE_SPEED * 10.0f;
+
+            model->GetAnimation()->Player(0).SetAction("crawl_down");
+            model->GetAnimation()->Player(0).SetPosition(0);
+            model->GetAnimation()->Player(0).Play();
+
+            if (shipState.dead || shipState.mode == SHIP_WAR || shipState.mode == SHIP_STORM)
+            {
+                manSpeed *= 2;
+                model->GetAnimation()->Player(0).SetSpeed(model->GetAnimation()->Player(0).GetSpeed() * 2);
+            }
+            break;
+        case MAN_CANNONRELOAD:
+
+            model->GetAnimation()->Player(0).SetAction("reload");
+            model->GetAnimation()->Player(0).SetPosition(0);
+            model->GetAnimation()->Player(0).Play();
+            break;
         }
 
-        break;
-    case MAN_CLIMB_DOWN:
-
-        manSpeed = CLIMB_SPEED;
-        rotSpeed = MOVE_SPEED * 10.0f;
-
-        model->GetAnimation()->Player(0).SetAction("crawl_down");
-        model->GetAnimation()->Player(0).SetPosition(0);
-        model->GetAnimation()->Player(0).Play();
-
-        if (shipState.dead || shipState.mode == SHIP_WAR || shipState.mode == SHIP_STORM)
-        {
-            manSpeed *= 2;
-            model->GetAnimation()->Player(0).SetSpeed(model->GetAnimation()->Player(0).GetSpeed() * 2);
-        }
-        break;
-    case MAN_CANNONRELOAD:
-
-        model->GetAnimation()->Player(0).SetAction("reload");
-        model->GetAnimation()->Player(0).SetPosition(0);
-        model->GetAnimation()->Player(0).Play();
-        break;
+        lastMode = mode;
     }
+}
 
-    lastMode = mode;
-
-    // UN//GUARD_SAILORS
-};
-// ----- Select a new action ------------------------------------------ ---------------
 void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint32_t &dltTime)
 {
-    // GUARD_SAILORS(ShipMan::NewAction())
     if (!sailorsPoints.links.count)
         return;
 
@@ -600,9 +618,8 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
 
         switch (shipState.mode)
         {
-        case SHIP_SAIL:
-            float ran;
-            ran = rand() / static_cast<float>(RAND_MAX);
+        case SHIP_SAIL: {
+            float ran = rand() / static_cast<float>(RAND_MAX);
 
             if (mode != MAN_STAY && ran < 0.1f)
                 mode = MAN_RUN;
@@ -610,6 +627,7 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
                 mode = MAN_WALK;
             else
                 mode = MAN_STAY;
+        }
             break;
         case SHIP_WAR:
         case SHIP_STORM:
@@ -636,14 +654,10 @@ void ShipMan::NewAction(SailorsPoints &sailorsPoints, ShipState &shipState, uint
         if (lastTargetPoint >= 0 && lastTargetPoint < sailorsPoints.points.count)
             sailorsPoints.points.point[lastTargetPoint].buisy = false;
     }
+}
 
-    // UN//GUARD_SAILORS
-};
-// ----- Main function -----------------------------------------------------
 void ShipMan::UpdatePos(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipState &shipState)
 {
-    // GUARD_SAILORS(ShipMan::UpdatePos())
-
     switch (mode)
     {
     case MAN_WALK:
@@ -677,27 +691,10 @@ void ShipMan::UpdatePos(uint32_t &dltTime, SailorsPoints &sailorsPoints, ShipSta
     }
 
     SetAnimation(dltTime, shipState);
+}
 
-    // UN//GUARD_SAILORS
-};
-
-//------------------------------------------------------------------------------------
-void ShipWalk::Free()
-{
-    // GUARD_SAILORS(ShipWalk::Free())
-
-    for (auto i = 0; i < crewCount; i++)
-    {
-        shipMan[i].Free();
-    }
-
-    // UN//GUARD_SAILORS
-};
-// ----- Reset cannon charging flags ---------------------------------------------------
 void ShipWalk::ReloadCannons(int bort)
 {
-    // GUARD_SAILORS(ShipWalk::ReloadCannons())
-
     for (auto i = 0; i < sailorsPoints.points.count; i++)
         if ((sailorsPoints.points.point[i].pointType == PT_TYPE_CANNON_L && (bort == 0 || bort == 1)) ||
             (sailorsPoints.points.point[i].pointType == PT_TYPE_CANNON_R && (bort == 0 || bort == 2)) ||
@@ -705,64 +702,42 @@ void ShipWalk::ReloadCannons(int bort)
             (sailorsPoints.points.point[i].pointType == PT_TYPE_CANNON_B && (bort == 0 || bort == 4)))
             sailorsPoints.points.point[i].cannonReloaded = false;
 
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
+}
+
 void ShipWalk::CreateNewMan(SailorsPoints &sailorsPoints)
 {
-    // GUARD_SAILORS(ShipWalk::CreateNewMan())
-
-    if (crewCount >= 50 || !sailorsPoints.points.count)
-        return;
-
-    entid_t manID;
-    shipMan.push_back(ShipMan{});
-
-    const int current = shipMan.size() - 1;
-
-    shipMan[current].modelID = core.CreateEntity("MODELR");
-
-    int modelIdx = rand() % std::size(shipManModels_);
-    core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_GEO, shipManModels_[modelIdx].c_str());
-
-    core.Send_Message(shipMan[current].modelID, "ls", MSG_MODEL_LOAD_ANI, "Lo_Man");
-
-    shipMan[current].model = static_cast<MODEL *>(core.GetEntityPointer(shipMan[current].modelID));
-    shipMan[current].SetAnimation(0, shipState);
-
-    if (sailorsPoints.points.count)
+    if (std::size(shipMan) >= 50 || !sailorsPoints.points.count)
     {
-        shipMan[current].newWayPoint = shipMan[current].FindRandomPointWithoutType(sailorsPoints);
+        return;
+    }
 
-        shipMan[current].pos.x = sailorsPoints.points.point[shipMan[current].newWayPoint].x;
-        shipMan[current].pos.y = sailorsPoints.points.point[shipMan[current].newWayPoint].y;
-        shipMan[current].pos.z = sailorsPoints.points.point[shipMan[current].newWayPoint].z;
+    auto & man = shipMan.emplace_back();
+    man.modelID = core.CreateEntity("MODELR");
+    int modelIdx = rand() % std::size(shipManModels_);
+    core.Send_Message(man.modelID, "ls", MSG_MODEL_LOAD_GEO, shipManModels_[modelIdx].c_str());
+
+    if (!core.Send_Message(man.modelID, "ls", MSG_MODEL_LOAD_ANI, "Lo_Man"))
+    {
+        throw std::runtime_error("cannot load animation 'Lo_Man'");
+    }
+
+    man.SetAnimation(0, shipState);
+
+    if (sailorsPoints.points.count > 0)
+    {
+        man.newWayPoint = man.FindRandomPointWithoutType(sailorsPoints);
+
+        man.pos.x = sailorsPoints.points.point[man.newWayPoint].x;
+        man.pos.y = sailorsPoints.points.point[man.newWayPoint].y;
+        man.pos.z = sailorsPoints.points.point[man.newWayPoint].z;
 
         uint32_t dltTime = 0;
-        shipMan[current].NewAction(sailorsPoints, shipState, dltTime);
+        man.NewAction(sailorsPoints, shipState, dltTime);
     }
-    crewCount++;
+}
 
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
-void ShipWalk::DeleteMan(int Index)
-{
-    // GUARD_SAILORS(ShipWalk::DeleteMan())
-
-    if (Index >= 0 && Index < crewCount)
-    {
-        shipMan[Index].Free();
-        shipMan.erase(shipMan.begin() + Index);
-        crewCount--;
-    }
-
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
 bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType, std::vector<std::string> &&shipManModels)
 {
-    crewCount = 0;
     bHide = false;
     shipID = _shipID;
 
@@ -790,7 +765,7 @@ bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType, std::
 
         // Find broken masts
         auto *attr = ship->GetACharacter();
-        auto *mastsAttr = attr->FindAClass(attr, "Ship.Masts");
+        const auto *mastsAttr = attr->FindAClass(attr, "Ship.Masts");
 
         if (mastsAttr == nullptr)
         {
@@ -813,7 +788,7 @@ bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType, std::
 
         // people count
         // ATTRIBUTES *att = ship->GetACharacter();
-        auto *paShip = ship->GetAShip();
+        const auto *paShip = ship->GetAShip();
         auto peopleCount = 5;
         if (paShip)
         {
@@ -836,12 +811,10 @@ bool ShipWalk::Init(entid_t _shipID, int editorMode, const char *shipType, std::
     }
 
     return true;
-};
-// ----- Turn off points of broken mast ----------------------------------------- ------
+}
+
 void ShipWalk::SetMastBroken(int iMastIndex)
 {
-    // GUARD_SAILORS(ShipWalk::SetMastBroken())
-
     for (auto i = 0; i < sailorsPoints.points.count; i++)
     {
         if (sailorsPoints.points.point[i].pointType == PT_TYPE_MAST_1 && iMastIndex == 1)
@@ -860,100 +833,96 @@ void ShipWalk::SetMastBroken(int iMastIndex)
             sailorsPoints.points.point[i].disabled = true;
     }
 
-    for (auto i = 0; i < crewCount; i++)
-        if (sailorsPoints.points.point[shipMan[i].newWayPoint].disabled ||
-            sailorsPoints.points.point[shipMan[i].lastWayPoint].disabled)
+    for (auto &man : shipMan)
+    {
+        if (sailorsPoints.points.point[man.newWayPoint].disabled ||
+            sailorsPoints.points.point[man.lastWayPoint].disabled)
         {
-            shipMan[i].mode = MAN_JUMP;
-            shipMan[i].jumpSpeedX = JUMP_SPEED_X_MASTFALL;
+            man.mode = MAN_JUMP;
+            man.jumpSpeedX = JUMP_SPEED_X_MASTFALL;
         }
-    // UN//GUARD_SAILORS
-};
-// ----- Cannonball hitting the ship ----------------------------------------- --------------
+    }
+}
+
 void ShipWalk::OnHullHit(const CVECTOR &v)
 {
-    // GUARD_SAILORS(ShipWalk::OnHullHit())
-    for (auto i = 0; i < crewCount; i++)
-        if (10 * rand() / RAND_MAX < 3 && shipMan[i].mode != MAN_JUMP && shipMan[i].mode != MAN_SWIM)
+    for (auto &man : shipMan)
+    {
+        if (10 * rand() / RAND_MAX < 3 && man.mode != MAN_JUMP && man.mode != MAN_SWIM)
         {
             CVECTOR pos;
             if (ship)
-                pos = shipModel->mtx * shipMan[i].pos;
+                pos = shipModel->mtx * man.pos;
             else
-                pos = shipMan[i].pos;
+                pos = man.pos;
 
             if (sqrt((pos.x - v.x) * (pos.x - v.x) + (pos.z - v.z) * (pos.z - v.z)) < 1)
             {
                 // Free the points
-                if (shipMan[i].mode == MAN_CLIMB_DOWN)
+                if (man.mode == MAN_CLIMB_DOWN)
                 {
-                    sailorsPoints.points.point[shipMan[i].lastTargetPoint].buisy = false;
+                    sailorsPoints.points.point[man.lastTargetPoint].buisy = false;
                 }
                 else
                 {
-                    sailorsPoints.points.point[shipMan[i].targetWayPoint].buisy = false;
-                    sailorsPoints.points.point[shipMan[i].newWayPoint].buisy = false;
+                    sailorsPoints.points.point[man.targetWayPoint].buisy = false;
+                    sailorsPoints.points.point[man.newWayPoint].buisy = false;
                 }
 
-                shipMan[i].mode = MAN_JUMP;
-                shipMan[i].jumpSpeedY =
+                man.mode = MAN_JUMP;
+                man.jumpSpeedY =
                     -(JUMP_SPEED_Y_EXPLOSION + rand() * JUMP_SPEED_Y_EXPLOSION / static_cast<float>(RAND_MAX));
-                shipMan[i].jumpSpeedX = -shipMan[i].jumpSpeedY / 10;
+                man.jumpSpeedX = -man.jumpSpeedY / 10;
             }
         }
+    }
+}
 
-    // UN//GUARD_SAILORS
-};
-// ----- Bypassing Each Other ------------------------------------------ ---------------------
-void ShipWalk::CheckPosition(uint32_t &dltTime)
+void ShipWalk::CheckPosition(const uint32_t &dltTime)
 {
-    // GUARD_SAILORS(ShipWalk::CheckPosition())
-
-    for (auto m = 0; m < crewCount; m++)
+    for (auto &man : shipMan)
     {
-        shipMan[m].spos.x -= shipMan[m].spos.x / 100.0f * static_cast<float>(dltTime) / 10.0f;
-        shipMan[m].spos.z -= shipMan[m].spos.z / 100.0f * static_cast<float>(dltTime) / 10.0f;
+        man.spos.x -= man.spos.x / 100.0f * static_cast<float>(dltTime) / 10.0f;
+        man.spos.z -= man.spos.z / 100.0f * static_cast<float>(dltTime) / 10.0f;
     }
 
-    float d;
-
-    for (auto m = 0; m < crewCount; m++)
-        for (auto i = 0; i < crewCount; i++)
-
-            if (i != m && Dest(shipMan[m].pos, shipMan[i].pos, 1) &&
-                (shipMan[m].mode == MAN_WALK || shipMan[m].mode == MAN_RUN) &&
-                shipMan[m].path.currentPointPosition >= 0 &&
-                shipMan[m].path.currentPointPosition < shipMan[m].path.length &&
-                shipMan[i].path.currentPointPosition >= 0 &&
-                shipMan[i].path.currentPointPosition < shipMan[i].path.length)
+    for (auto &man1 : shipMan)
+    {
+        for (auto &man2 : shipMan)
+        {
+            if (&man1 != &man2 && Dest(man1.pos, man2.pos, 1) &&
+                (man1.mode == MAN_WALK || man1.mode == MAN_RUN) &&
+                man1.path.currentPointPosition >= 0 &&
+                man1.path.currentPointPosition < man1.path.length && man2.path.currentPointPosition >= 0 &&
+                man2.path.currentPointPosition < man2.path.length)
             {
-                d = Dest(shipMan[m].pos, shipMan[i].pos);
+                const float d = Dest(man1.pos, man2.pos);
 
                 if (d < 1.0f)
                 {
                     // if go in different directions
-                    if (shipMan[m].path.point[shipMan[m].path.currentPointPosition] !=
-                        shipMan[i].path.point[shipMan[i].path.currentPointPosition])
+                    if (man1.path.point[man1.path.currentPointPosition] !=
+                        man2.path.point[man2.path.currentPointPosition])
                     {
-                        shipMan[m].spos.x += 0.2f * (+shipMan[m].dir.z * (1 - d) - shipMan[m].spos.x) / 15.0f *
+                        man1.spos.x += 0.2f * (+man1.dir.z * (1 - d) - man1.spos.x) / 15.0f *
                                              static_cast<float>(dltTime) / 20.0f;
-                        shipMan[m].spos.z += 0.2f * (-shipMan[m].dir.x * (1 - d) - shipMan[m].spos.z) / 15.0f *
+                        man1.spos.z += 0.2f * (-man1.dir.x * (1 - d) - man1.spos.z) / 15.0f *
                                              static_cast<float>(dltTime) / 20.0f;
                     }
                     else
                     {
-                        if (m < i)
+                        if (&man1 < &man2)
                         {
-                            shipMan[m].spos.x += 0.2f * (+shipMan[m].dir.z * (1 - d) - shipMan[m].spos.x) / 15.0f *
+                            man1.spos.x += 0.2f * (+man1.dir.z * (1 - d) - man1.spos.x) / 15.0f *
                                                  static_cast<float>(dltTime) / 20.0f;
-                            shipMan[m].spos.z += 0.2f * (-shipMan[m].dir.x * (1 - d) - shipMan[m].spos.z) / 15.0f *
+                            man1.spos.z += 0.2f * (-man1.dir.x * (1 - d) - man1.spos.z) / 15.0f *
                                                  static_cast<float>(dltTime) / 20.0f;
                         }
                         else
                         {
-                            shipMan[m].spos.x += 0.2f * (-shipMan[m].dir.z * (1 - d) - shipMan[m].spos.x) / 15.0f *
+                            man1.spos.x += 0.2f * (-man1.dir.z * (1 - d) - man1.spos.x) / 15.0f *
                                                  static_cast<float>(dltTime) / 20.0f;
-                            shipMan[m].spos.z += 0.2f * (+shipMan[m].dir.x * (1 - d) - shipMan[m].spos.z) / 15.0f *
+                            man1.spos.z += 0.2f * (+man1.dir.x * (1 - d) - man1.spos.z) / 15.0f *
                                                  static_cast<float>(dltTime) / 20.0f;
                         }
                     }
@@ -961,97 +930,29 @@ void ShipWalk::CheckPosition(uint32_t &dltTime)
                     break;
                 }
             }
+        }
+    }
+}
 
-    // UN//GUARD_SAILORS
-};
-//------------------------------------------------------------------------------------
-void ShipWalk::Reset(){
-    /*
-    for(int i= 0; i< sailorsPoints.points.count; i++)
-    {
-      sailorsPoints.points.point[i].buisy= false;
-      sailorsPoints.points.point[i].cannonReloaded= true;
-    };
-
-    bool result= true;
-
-    while (result)
-    {
-      result= false;
-
-      for(int i= 0; i< crewCount; i++){
-
-        if (shipMan[i].mode == MAN_SWIM || shipMan[i].mode == MAN_JUMP)
-        {
-          DeleteMan(i);
-          result= true;
-          break;
-        };
-
-      };
-    };
-
-
-    for(int i= 0; i< crewCount; i++)
-    {
-      shipMan[i].newWayPoint= shipMan[i].FindRandomPointWithoutType(sailorsPoints);
-
-      shipMan[i].pos.x= sailorsPoints.points.point[shipMan[i].newWayPoint].x;
-      shipMan[i].pos.y= sailorsPoints.points.point[shipMan[i].newWayPoint].y;
-      shipMan[i].pos.z= sailorsPoints.points.point[shipMan[i].newWayPoint].z;
-
-      shipMan[i].mode= MAN_WALK;
-
-      DWORD dltTime= 0;
-      shipMan[i].NewAction(sailorsPoints,shipState,dltTime);
-    };*/
-};
-//------------------------------------------------------------------------------------
 Sailors::Sailors()
     : rs(nullptr)
 {
-    // GUARD_SAILORS(Sailors::Sailors():shipWalk())
-
-    shipsCount = 0;
     editorMode = false;
     disabled = false;
-    IsOnDeck = 0;
-
-    // UN//GUARD_SAILORS
-}
-;
-//------------------------------------------------------------------------------------
-Sailors::~Sailors()
-{
-    // GUARD_SAILORS(Sailors::~Sailors())
-
-    for (auto i = 0; i < shipsCount; i++)
-    {
-        shipWalk[i].Free();
-    }
-    // UN//GUARD_SAILORS
 }
 
-//------------------------------------------------------------------------------------
 bool Sailors::Init()
 {
-    // GUARD_SAILORS(Sailors :: Init())
-
     rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
 
     core.SetLayerType(SEA_REALIZE, layer_type_t::realize);
     core.AddToLayer(SEA_REALIZE, GetId(), 65530);
 
-    // UN//GUARD_SAILORS
-
     return true;
 }
 
-//------------------------------------------------------------------------------------
 void Sailors::Realize(uint32_t dltTime)
 {
-    // GUARD_SAILORS(Sailors :: Realize())
-
     if (dltTime > 500)
     {
         dltTime = 500;
@@ -1074,93 +975,78 @@ void Sailors::Realize(uint32_t dltTime)
     }
 #endif
 
-    for (auto m = 0; m < shipsCount; m++)
+    for (auto walk = std::begin(shipWalk); walk != std::end(shipWalk); ++walk)
     {
         // If the ship and all people are dead then delete the object
-        if (shipWalk[m].shipState.dead && shipWalk[m].crewCount <= 0)
+        if (walk->shipState.dead && walk->shipMan.empty())
         {
-            DeleteShip(m);
+            shipWalk.erase(walk);
             rs->SetRenderState(D3DRS_LIGHTING, false);
             return;
         }
 
         // Updating and drawing
-        for (auto i = 0; i < shipWalk[m].shipMan.size(); i++)
+        for (auto &man : walk->shipMan)
         {
-            shipWalk[m].shipMan[i].UpdatePos(dltTime, shipWalk[m].sailorsPoints, shipWalk[m].shipState);
-            shipWalk[m].shipMan[i].SetPos(shipWalk[m].shipModel, shipWalk[m].ship, dltTime, shipWalk[m].shipState);
+            man.UpdatePos(dltTime, walk->sailorsPoints, walk->shipState);
+            man.SetPos(walk->shipModel, walk->ship, dltTime, walk->shipState);
 
-            if (!shipWalk[m].bHide)
-                shipWalk[m].shipMan[i].model->ProcessStage(Stage::realize, dltTime);
+            if (!walk->bHide)
+            {
+                if (const auto model = static_cast<MODEL *>(core.GetEntityPointer(man.modelID)))
+                {
+                    model->ProcessStage(Entity::Stage::realize, dltTime);
+                }
+            }
         }
 
-        for (auto i = 0; i < shipWalk[m].shipMan.size(); i++)
+        for (auto man = std::begin(walk->shipMan); man != std::end(walk->shipMan); ++man)
         {
             // If died then delete
-            if (shipWalk[m].shipMan[i].dieTime > 10 || shipWalk[m].shipMan[i].pos.y < -100)
+            if (man->dieTime > 10 || man->pos.y < -100)
             {
-                shipWalk[m].DeleteMan(i);
+                walk->shipMan.erase(man);
                 rs->SetRenderState(D3DRS_LIGHTING, false);
                 return;
             }
         }
 
         // Setting ship state
-        if (!shipWalk[m].shipState.dead)
+        if (!walk->shipState.dead)
         {
-            shipWalk[m].CheckPosition(dltTime);
+            walk->CheckPosition(dltTime);
 
-            if (shipWalk[m].ship && !shipWalk[m].shipState.dead && !editorMode)
+            if (walk->ship && !walk->shipState.dead && !editorMode)
             {
-                /// shipState
-                auto *shipAttr = shipWalk[m].ship->GetACharacter();
-                auto *shipModeAttr = shipAttr->FindAClass(shipAttr, "ship.POS.mode");
-
+                // shipState
+                auto *shipAttr = walk->ship->GetACharacter();
+                const auto *shipModeAttr = shipAttr->FindAClass(shipAttr, "ship.POS.mode");
                 if (shipModeAttr)
                 {
-                    shipWalk[m].shipState.mode = shipModeAttr->GetAttributeAsDword();
+                    walk->shipState.mode = shipModeAttr->GetAttributeAsDword();
                 }
             }
         }
     }
 
     rs->SetRenderState(D3DRS_LIGHTING, false);
-    // UN//GUARD_SAILORS
 }
 
-//------------------------------------------------------------------------------------
-void Sailors::DeleteShip(int i)
-{
-    // GUARD_SAILORS(Sailors::DeleteShip)
-
-    shipWalk[i].Free();
-    shipWalk.erase(shipWalk.begin() + i);
-    shipsCount--;
-
-    // UN//GUARD_SAILORS
-}
-
-//------------------------------------------------------------------------------------
 uint64_t Sailors::ProcessMessage(MESSAGE &message)
 {
-    // GUARD_SAILORS(Sailors::ProcessMessage())
-
-    const auto code = message.Long();
-    const uint32_t outValue = 0;
-    entid_t shipID;
-
-    switch (code)
+    const auto msgId = message.Long();
+    switch (msgId)
     {
-        // Add people to the ship
+    // Add people to the ship
     case AI_MESSAGE_ADD_SHIP: {
 
-        shipID = message.EntityID();
+        const auto shipID = message.EntityID();
         const std::string &c = message.String();
         std::vector<std::string> shipManModels;
 
         if (message.GetFormat() == "lise")
         {
-            auto *pvd = message.ScriptVariablePointer();
+            auto* pvd = message.ScriptVariablePointer();
 
             if (pvd != nullptr)
             {
@@ -1169,163 +1055,137 @@ uint64_t Sailors::ProcessMessage(MESSAGE &message)
 
                 for (auto i = 0; i < nq; i++)
                 {
-                    const char *pstr;
+                    const char* pstr;
                     pvd->Get(pstr, i);
                     shipManModels.push_back(pstr);
                 }
             }
         }
 
-        shipWalk.emplace_back();
-        if (shipWalk[shipsCount].Init(shipID, editorMode, c.c_str(), std::move(shipManModels)))
-        {
-            shipsCount++;
-
-            if (!editorMode)
-                if (!shipWalk[shipsCount - 1].sailorsPoints.points.count ||
-                    !shipWalk[shipsCount - 1].sailorsPoints.links.count)
-                {
-                    DeleteShip(shipsCount - 1);
-                    core.Trace("Sailors: sailors ship %s deleted", &c[0]);
-                    return 0;
-                }
-        }
-        else
+        auto & walk = shipWalk.emplace_back();
+        if (!walk.Init(shipID, editorMode, c.c_str(), std::move(shipManModels)))
         {
             shipWalk.pop_back();   
+            core.Trace("Sailors: cannot init %s", c.c_str());
+            return 0;
         }
         break;
     }
 
-        // Reloading the cannons
+    // Reloading the cannons
     case AI_MESSAGE_CANNON_RELOAD: {
-        shipID = message.EntityID();
+        auto shipID = message.EntityID();
         const std::string &bortName = message.String();
 
-        for (auto i = 0; i < shipsCount; i++)
-            if (shipID == shipWalk[i].shipID)
+        const auto walk = std::ranges::find_if(shipWalk,
+                                               [shipID](const auto &walk) { return walk.shipID == shipID;
+                                               });
+        if (walk != std::end(shipWalk))
+        {
+            if (!strcmp(bortName.c_str(), "cannonl"))
             {
-                if (!strcmp(bortName.c_str(), "cannonl"))
-                {
-                    shipWalk[i].ReloadCannons(1);
-                    return outValue;
-                }
-
-                if (!strcmp(bortName.c_str(), "cannonr"))
-                {
-                    shipWalk[i].ReloadCannons(2);
-                    return outValue;
-                }
-
-                if (!strcmp(bortName.c_str(), "cannonf"))
-                {
-                    shipWalk[i].ReloadCannons(3);
-                    return outValue;
-                }
-
-                if (!strcmp(bortName.c_str(), "cannonb"))
-                {
-                    shipWalk[i].ReloadCannons(4);
-                    return outValue;
-                }
-
-                shipWalk[i].ReloadCannons(0);
-                break;
+                walk->ReloadCannons(1);
             }
+            else if (!strcmp(bortName.c_str(), "cannonr"))
+            {
+                walk->ReloadCannons(2);
+            }
+            else if(!strcmp(bortName.c_str(), "cannonf"))
+            {
+                walk->ReloadCannons(3);
+            }
+            else if(!strcmp(bortName.c_str(), "cannonb"))
+            {
+                walk->ReloadCannons(4);
+            }
+            else
+            {
+                walk->ReloadCannons(0);
+            }
+        }
 
         break;
     }
-        // Fall of the mast
+
+    // Fall of the mast
     case MSG_PEOPLES_ON_SHIP_MASTFALL: {
-        auto *const attrs = message.AttributePointer();
-        if (!attrs)
-            return 0;
-
-        for (auto m = 0; m < shipsCount; m++)
-            if (attrs == shipWalk[m].ship->GetACharacter())
+        if (auto *const attrs = message.AttributePointer())
+        {
+            const auto walk = std::ranges::find_if(shipWalk,
+                                                   [attrs](const auto &walk) { return walk.ship->GetACharacter() == attrs; });
+            if (walk != std::end(shipWalk))
             {
-                shipWalk[m].SetMastBroken(message.Long());
-                return outValue;
+                walk->SetMastBroken(message.Long());
             }
-
+        }
         break;
     }
 
-        // Cannonball hit the ship
+    // Cannonball hit the ship
     case MSG_PEOPLES_ON_SHIP_HULLHIT: {
-        auto *const attrs = message.AttributePointer();
-        if (!attrs)
-            return 0;
-
-        for (auto m = 0; m < shipsCount; m++)
-            if (attrs == shipWalk[m].ship->GetACharacter())
+        if (auto *const attrs = message.AttributePointer())
+        {
+            const auto walk = std::ranges::find_if(shipWalk,
+                                                   [attrs](const auto &walk) { return walk.ship->GetACharacter() == attrs; });
+            if (walk != std::end(shipWalk))
             {
                 const auto x = message.Float();
                 const auto y = message.Float();
                 const auto z = message.Float();
 
-                shipWalk[m].OnHullHit(CVECTOR(x, y, z));
-                return outValue;
+                walk->OnHullHit(CVECTOR(x, y, z));
             }
+        }
 
         break;
     }
 
-        // Removing a ship
+    // Removing a ship
     case MSG_SHIP_DELETE: {
-        auto *const attrs = message.AttributePointer();
-        if (attrs)
-            for (auto m = 0; m < shipsCount; m++)
-                if (attrs == shipWalk[m].ship->GetACharacter())
-                {
-                    shipWalk[m].shipState.dead = true;
-                    shipWalk[m].shipState.mode = SHIP_STORM;
-
-                    return outValue;
-                }
+        
+        if (auto *const attrs = message.AttributePointer())
+        {
+            const auto walk = std::ranges::find_if(shipWalk,
+                                                   [attrs](const auto &walk) { return walk.ship->GetACharacter() == attrs; });
+            if (walk != std::end(shipWalk))
+            {
+                walk->shipState.dead = true;
+                walk->shipState.mode = SHIP_STORM;
+            }
+        }
         break;
     }
+    default: ;
+        break;
     }
 
-    return outValue;
+    return 0;
+}
 
-    // UN//GUARD_SAILORS
-};
-
-//------------------------------------------------------------------------------------
-uint32_t Sailors::AttributeChanged(ATTRIBUTES *_newAttr)
+uint32_t Sailors::AttributeChanged(ATTRIBUTES *attr)
 {
-    // GUARD_SAILORS(Sailors::AttributeChanged())
-
     // Remove people from deck
-    if (*_newAttr == "IsOnDeck")
+    if (*attr == "IsOnDeck")
     {
-        IsOnDeck = this->AttributesPointer->GetAttributeAsDword("IsOnDeck") != 0;
-
-        if (IsOnDeck)
+        if (attr->GetAttributeAsDword() != 0)
         {
-            for (auto i = 0; i < shipsCount; i++)
+            const auto walk = std::ranges::find_if(shipWalk, [](const auto &walk) {
+                return walk.ship->GetACharacter()->GetAttribute("MainCharacter");
+            });
+            if (walk != std::end(shipWalk))
             {
-                if (shipWalk[i].ship->GetACharacter()->GetAttribute("MainCharacter"))
-                {
-                    shipWalk[i].bHide = true;
-                    shipWalk[i].Reset();
-                    break;
-                }
+                walk->bHide = true;
             }
         }
         else
         {
-            for (auto i = 0; i < shipsCount; i++)
+            for (auto & walk : shipWalk)
             {
-                shipWalk[i].bHide = false;
+                walk.bHide = false;
             }
         }
         return 0;
     }
 
-    // UN//GUARD_SAILORS
-
     return 0;
 };
-//-----end----------------------------------------------------------------------------

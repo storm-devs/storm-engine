@@ -86,13 +86,13 @@ void Menu::Draw(VDX9RENDER *rs, SailorsPoints &sailorsPoints) const
         if (sailorsPoints.links.selected >= 0 && sailorsPoints.links.selected < sailorsPoints.links.count)
         {
             std::string s1 = "point 1= ";
-            s1 += static_cast<int32_t>(sailorsPoints.links.link[sailorsPoints.links.selected].first);
+            s1 += sailorsPoints.links.link[sailorsPoints.links.selected].first;
             s1 += "('F2')";
 
             rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 140, "%s", s1.c_str());
 
             s1 = "point 2= ";
-            s1 += static_cast<int32_t>(sailorsPoints.links.link[sailorsPoints.links.selected].next);
+            s1 += sailorsPoints.links.link[sailorsPoints.links.selected].next;
             s1 += "('F3')";
 
             rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 160, "%s", s1.c_str());
@@ -123,9 +123,9 @@ void Menu::Draw(VDX9RENDER *rs, SailorsPoints &sailorsPoints) const
         }
 
     std::string s1 = "F10 - Reload cannons(";
-    s1 += static_cast<int32_t>(reloaded);
+    s1 += reloaded;
     s1 += "/";
-    s1 += static_cast<int32_t>(count);
+    s1 += count;
     s1 += ")";
 
     rs->Print(rs->GetCurFont(), D3DCOLOR_XRGB(200, 200, 200), 10, 470, "%s", s1.c_str());
@@ -144,19 +144,19 @@ void Menu::Draw(VDX9RENDER *rs, SailorsPoints &sailorsPoints) const
 void Menu::Update(SailorsPoints &sailorsPoints)
 {
     line[0] = "people count <";
-    line[0] += static_cast<int32_t>(sailrs->shipWalk[0].crewCount);
+    line[0] += static_cast<int32_t>(sailrs->shipWalk[0].shipMan.size());
     line[0] += ">";
 
     line[1] = "selected point <";
-    line[1] += static_cast<int32_t>(sailorsPoints.points.selected);
+    line[1] += sailorsPoints.points.selected;
     line[1] += ">(";
-    line[1] += static_cast<int32_t>(sailorsPoints.points.count);
+    line[1] += sailorsPoints.points.count;
     line[1] += ")";
 
     line[2] = "selected path <";
-    line[2] += static_cast<int32_t>(sailorsPoints.links.selected);
+    line[2] += sailorsPoints.links.selected;
     line[2] += ">(";
-    line[2] += static_cast<int32_t>(sailorsPoints.links.count);
+    line[2] += sailorsPoints.links.count;
     line[2] += ")";
 };
 
@@ -169,7 +169,7 @@ void Menu::ChangeControl1(int key, SailorsPoints &sailorsPoints) // Change peopl
 
     if (key == VK_LEFT)
     {
-        if (!sailrs->shipWalk[0].crewCount)
+        if (sailrs->shipWalk[0].shipMan.empty())
         {
             for (auto i = 0; i < 50; i++)
                 sailrs->shipWalk[0].CreateNewMan(sailrs->shipWalk[0].sailorsPoints);
@@ -185,7 +185,7 @@ void Menu::ChangeControl1(int key, SailorsPoints &sailorsPoints) // Change peopl
 
         sailrs->shipWalk[0].sailorsPoints.points.point[sailrs->shipWalk[0].shipMan[0].targetWayPoint].buisy = false;
 
-        sailrs->shipWalk[0].DeleteMan(0);
+        sailrs->shipWalk[0].shipMan.erase(std::begin(sailrs->shipWalk[0].shipMan));
     }
 
     Update(sailorsPoints);

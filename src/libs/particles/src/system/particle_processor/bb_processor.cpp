@@ -71,8 +71,12 @@ BillBoardProcessor::~BillBoardProcessor()
 {
     delete pMemArray;
 
-    pRS->ReleaseVertexBuffer(pVBuffer);
-    pRS->ReleaseIndexBuffer(pIBuffer);
+    pRS = static_cast<VDX9RENDER *>(core.GetService("DX9Render"));
+    if (pRS != nullptr)
+    {
+        pRS->ReleaseVertexBuffer(pVBuffer);
+        pRS->ReleaseIndexBuffer(pIBuffer);
+    }
 
     pVBuffer = -1;
     pIBuffer = -1;
