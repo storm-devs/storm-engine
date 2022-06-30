@@ -174,6 +174,18 @@ void ShipLights::AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos)
     aLights.push_back(light);
 }
 
+bool ShipLights::SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr)
+{
+    pL->pNode = pModel->FindNode(pStr);
+    if (!pL->pNode)
+        return false;
+
+    CMatrix mNode = pL->pNode->glob_mtx;
+    mNode.Transposition();
+    pL->vPos = mNode * pL->vPos;
+    return true;
+}
+
 void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, const GEOS::LABEL &label)
 {
     CMatrix m;
@@ -189,6 +201,7 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
     memcpy(m, label.m, sizeof(m));
 
     pL->pNode = nullptr;
+    pL->vPos = m.Pos();
 
     if (str[0] != 'f' && !bLight)
         return;
@@ -229,17 +242,11 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
             }
         }
 
-        pL->pNode = pModel->FindNode(str2);
-        if (!pL->pNode)
+        if (!SetLabel(pL, pModel, str2))
         {
             aLights.pop_back();
             return;
         }
-        // lights & flares position transform
-        pL->vPos = m.Pos();
-        CMatrix mNode = pL->pNode->glob_mtx;
-        mNode.Transposition();
-        pL->vPos = mNode * pL->vPos;	
     }
 
     LightType *pLT = FindLightType((bLight) ? "default" : "flare");
