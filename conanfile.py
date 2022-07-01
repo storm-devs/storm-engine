@@ -60,7 +60,7 @@ class StormEngine(ConanFile):
             if self.options.steam:
                 self.__install_lib("steam_api64.dll")
 
-            self.__install_lib("mimalloc-redirect.dll")
+            self.__install_bin("mimalloc-redirect.dll")
             if self.settings.build_type == "Debug":
                 self.__install_bin("mimalloc-debug.dll")
             else:
