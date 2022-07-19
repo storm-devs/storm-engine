@@ -1,7 +1,7 @@
 #include "dialog.h"
-#include "v_sound_service.h"
 #include "core.h"
 #include "defines.h"
+#include "v_sound_service.h"
 
 #include "v_file_service.h"
 
@@ -70,14 +70,15 @@ void DIALOG::DlgTextDescribe::ChangeText(const char *pcText)
             memcpy(&pcTmp[n - i], "...", 4 * sizeof(char));
             i = n + 2;
             n++;
-            AddToStringArrayLimitedByWidth(pcTmp, nFontID, fScale, nWindowWidth, asText, &anPageEndIndex,
+            AddToStringArrayLimitedByWidth(pcTmp, nFontID, fScale, nWindowWidth, asText, RenderService, &anPageEndIndex,
                                            nShowQuantity);
             if (anPageEndIndex.size() == 0 || anPageEndIndex[anPageEndIndex.size() - 1] != asText.size())
                 anPageEndIndex.push_back(asText.size());
             delete[] pcTmp;
         }
     }
-    AddToStringArrayLimitedByWidth(&pcText[i], nFontID, fScale, nWindowWidth, asText, &anPageEndIndex, nShowQuantity);
+    AddToStringArrayLimitedByWidth(&pcText[i], nFontID, fScale, nWindowWidth, asText, RenderService, &anPageEndIndex,
+                                   nShowQuantity);
     //    if( anPageEndIndex.size()!=0 && anPageEndIndex[anPageEndIndex.size()-1]!=asText.size() )
     //        anPageEndIndex.Add( asText.size() );
     nStartIndex = 0;
@@ -202,7 +203,8 @@ void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
                 nEditVarIndex = pA->GetAttributeAsDword("edit", 0);
                 nEditCharIndex = 0;
             }
-            AddToStringArrayLimitedByWidth(pA->GetThisAttr(), nFontID, fScale, nWindowWidth, asText, nullptr, 100);
+            AddToStringArrayLimitedByWidth(pA->GetValue(), nFontID, fScale, nWindowWidth, asText, RenderService,
+                                           nullptr, 100);
             anLineEndIndex.push_back(asText.size());
         }
     }
@@ -440,8 +442,8 @@ DIALOG::~DIALOG()
 void DIALOG::CreateBack()
 {
     const int32_t nSquareQuantity = 9 + 3 + 1; // 9-for back, 3-for name & 1-for divider
-    m_nIQntBack = 6 * nSquareQuantity;      // 6 indices in one rectangle
-    m_nVQntBack = 4 * nSquareQuantity;      // 4 vertices in one rectangle
+    m_nIQntBack = 6 * nSquareQuantity;         // 6 indices in one rectangle
+    m_nVQntBack = 4 * nSquareQuantity;         // 4 vertices in one rectangle
 
     if (m_idVBufBack == -1)
         m_idVBufBack =
@@ -777,77 +779,73 @@ void DIALOG::GetPointFromIni(INIFILE *ini, const char *pcSection, const char *pc
     sscanf(param, "%f,%f", &fpoint.x, &fpoint.y);
 }
 
-void DIALOG::AddToStringArrayLimitedByWidth(const char *pcSrcText, int32_t nFontID, float fScale, int32_t nLimitWidth,
-                                            std::vector<std::string> &asOutTextList, std::vector<int32_t> *panPageIndices,
+void DIALOG::AddToStringArrayLimitedByWidth(const std::string_view &text, int32_t nFontID, float fScale,
+                                            int32_t nLimitWidth, std::vector<std::string> &asOutTextList,
+                                            VDX9RENDER *renderService, std::vector<int32_t> *panPageIndices,
                                             int32_t nPageSize)
 {
-    if (!pcSrcText)
+    if (text.empty())
         return;
     if (nLimitWidth < 20)
         nLimitWidth = 20;
 
-    int32_t n = 0;
-    char param[1024];
-    int32_t nCur = 0;
-    int32_t nPrevIdx = 0;
-    if (panPageIndices && panPageIndices->size() > 0)
+    size_t nPrevIdx = 0;
+    if (panPageIndices && !panPageIndices->empty())
         nPrevIdx = panPageIndices->back();
-    while (true)
+
+    size_t current_offset = 0;
+    std::string_view current_span = text;
+    for (;;)
     {
-        if ((pcSrcText[nCur] == 0x20 && pcSrcText[nCur + 1] != 0) || pcSrcText[nCur] == 0) // space
+        const size_t next_space = current_span.find_first_of(" \\", current_offset);
+
+        if (next_space != std::string_view::npos)
         {
-            // boal fix space at the end of the line
-            param[n] = 0;
-            const int32_t nW = RenderService->StringWidth(param, nFontID, fScale);
-            if (nW < nLimitWidth && pcSrcText[nCur] != 0)
+            const std::string_view text_section = current_span.substr(0, next_space);
+            const int32_t nW = renderService->StringWidth(text_section, nFontID, fScale);
+            if (nW > nLimitWidth)
             {
-                // have not yet exceeded the width limit
-                param[n++] = 0x20;
+                const size_t last_space = text_section.find_last_of(" \\");
+                asOutTextList.emplace_back(text_section.substr(0, last_space));
+
+                if (current_span[last_space] == '\\' && current_span.size() > last_space + 1 &&
+                    current_span[last_space + 1] == 'n')
+                {
+                    current_span = current_span.substr(last_space);
+                    current_offset = 0;
+                }
+                else
+                {
+                    current_span = current_span.substr(last_space + 1u);
+                    current_offset = 0;
+                }
+            }
+            else if (current_span[next_space] == '\\' && current_span.size() > next_space + 1 &&
+                     current_span[next_space + 1] == 'n')
+            {
+                asOutTextList.emplace_back(text_section.substr(0, next_space));
+                current_span = current_span.substr(next_space + 2u);
+                current_offset = 0;
             }
             else
             {
-                if (nW > nLimitWidth)
-                {
-                    // find prev space;
-                    int32_t nPrev = nCur;
-                    while (nPrev > 0 && pcSrcText[nPrev - 1] != 0x20)
-                        nPrev--;
-                    if (nPrev <= 0) // no spaces
-                    {
-                        // looking for the first character set in the range
-                        while (n > 0 && RenderService->StringWidth(param, nFontID, fScale) > nLimitWidth)
-                        {
-                            int dec = utf8::u8_dec(param + n);
-                            n -= dec;
-                            nCur -= dec;
-                            param[n] = 0;
-                        }
-                    }
-                    else
-                    {
-                        n -= nCur - nPrev;
-                        Assert(n > 0);
-                        param[n] = 0;
-                        nCur = nPrev;
-                    }
-                }
-                asOutTextList.push_back(param);
-                n = 0;
-
-                if (panPageIndices && asOutTextList.size() - nPrevIdx == nPageSize)
-                {
-                    nPrevIdx = asOutTextList.size();
-                    panPageIndices->push_back(nPrevIdx);
-                }
+                current_offset = next_space + 1;
             }
-            while (pcSrcText[nCur] == 0x20 && pcSrcText[nCur + 1] != 0)
-                nCur++; // boal fix
-            if (pcSrcText[nCur] == 0)
-                break;
         }
         else
         {
-            param[n++] = pcSrcText[nCur++];
+            asOutTextList.emplace_back(current_span);
+        }
+
+        if (panPageIndices && asOutTextList.size() - nPrevIdx == nPageSize)
+        {
+            nPrevIdx = asOutTextList.size();
+            panPageIndices->push_back(static_cast<long>(nPrevIdx));
+        }
+
+        if (next_space == std::string_view::npos)
+        {
+            break;
         }
     }
 }
@@ -972,7 +970,8 @@ void DIALOG::Realize(uint32_t Delta_Time)
         {
             if (m_DlgLinks.nSelectLine > 0)
                 m_DlgLinks.nSelectLine--;
-            const int32_t nTmp = (m_DlgLinks.nSelectLine > 0) ? m_DlgLinks.anLineEndIndex[m_DlgLinks.nSelectLine - 1] : 0;
+            const int32_t nTmp =
+                (m_DlgLinks.nSelectLine > 0) ? m_DlgLinks.anLineEndIndex[m_DlgLinks.nSelectLine - 1] : 0;
             if (m_DlgLinks.nStartIndex > nTmp)
             {
                 m_DlgLinks.nStartIndex = nTmp;
@@ -1048,7 +1047,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
                 pA = pA->GetAttributeClass(m_DlgLinks.nSelectLine);
             if (pA)
             {
-                const char* goName = pA->GetAttribute("go");
+                const char *goName = pA->GetAttribute("go");
                 if (!goName || storm::iEquals(goName, selectedLinkName))
                     EmergencyExit();
                 else
@@ -1082,7 +1081,8 @@ void DIALOG::Realize(uint32_t Delta_Time)
 
     m_DlgText.Show(textViewport.Y);
     if (m_DlgText.IsLastPage())
-        m_DlgLinks.Show(static_cast<int32_t>(textViewport.Y + m_BackParams.nDividerOffsetY + m_BackParams.nDividerHeight));
+        m_DlgLinks.Show(
+            static_cast<int32_t>(textViewport.Y + m_BackParams.nDividerOffsetY + m_BackParams.nDividerHeight));
 
     if (snd && !snd->SoundIsPlaying(curSnd))
     {
@@ -1189,7 +1189,7 @@ void DIALOG::UpdateDlgViewport()
 
     textViewport.Height = nAllHeight;
     textViewport.Y = static_cast<uint32_t>(static_cast<int32_t>(m_BackParams.m_frBorderInt.bottom) - nAllHeight -
-                                                GetScrHeight(DIALOG_BOTTOM_LINESPACE));
+                                           GetScrHeight(DIALOG_BOTTOM_LINESPACE));
 
     const float fTopBorder = textViewport.Y - GetScrHeight(DIALOG_TOP_LINESPACE);
     if (m_BackParams.m_frBorderInt.top != fTopBorder)
