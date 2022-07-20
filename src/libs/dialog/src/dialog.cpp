@@ -1,4 +1,4 @@
-#include "dialog.h"
+#include "dialog.hpp"
 #include "core.h"
 #include "defines.h"
 #include "v_sound_service.h"
