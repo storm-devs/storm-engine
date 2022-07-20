@@ -11,7 +11,7 @@ struct ScreenScale
     float y = 1.f;
 };
 
-class LegacyDialog final : Entity
+class LegacyDialog final : public Entity
 {
   public:
     static VDX9RENDER *RenderService;
@@ -35,8 +35,13 @@ class LegacyDialog final : Entity
 
     void CreateBackBuffers();
     void UpdateBackBuffers();
+    void DrawBackground(size_t start, size_t count);
+
+    void UpdateHeadModel(const std::string &headModelPath);
+    void DrawHeadModel(uint32_t deltaTime);
 
     std::string characterName_;
+    std::string headModelPath_;
 
     ScreenScale screenScale_{};
 
@@ -50,6 +55,8 @@ class LegacyDialog final : Entity
 
     int32_t backVertexBuffer_{};
     int32_t backIndexBuffer_{};
+
+    entid_t headModel_;
 
     bool backNeedsUpdate_ = true;
 };

@@ -4,6 +4,9 @@
 
 #include <core.h>
 #include <defines.h>
+#include <geometry.h>
+#include <model.h>
+#include <shared/messages.h>
 #include <v_module_api.h>
 
 #include <array>
@@ -165,9 +168,9 @@ void LegacyDialog::Realize(uint32_t deltaTime)
         UpdateBackBuffers();
     }
 
-    RenderService->TextureSet(0, interfaceTexture_);
-    RenderService->DrawBuffer(backVertexBuffer_, sizeof(XI_TEX_VERTEX), backIndexBuffer_, 0, SPRITE_COUNT * 4, 0,
-                              SPRITE_COUNT * 2, "texturedialogfon");
+    DrawBackground(2, (SPRITE_COUNT - 2 - 1));
+
+    DrawHeadModel(deltaTime);
 
     if (!characterName_.empty())
     {
@@ -175,14 +178,23 @@ void LegacyDialog::Realize(uint32_t deltaTime)
                                 static_cast<int32_t>(screenScale_.x * 168), static_cast<int32_t>(screenScale_.y * 28),
                                 characterName_.c_str());
     }
+
+    // Head overlay
+    DrawBackground(0, 2);
 }
 
 uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
 {
-    if (storm::iEquals(attributes->GetThisName(), "texture"))
+    const std::string_view attributeName = attributes->GetThisName();
+
+    if (storm::iEquals(attributeName, "texture"))
     {
         RenderService->TextureRelease(interfaceTexture_);
         interfaceTexture_ = RenderService->TextureCreate(attributes->GetThisAttr());
+    }
+    else if (storm::iEquals(attributeName, "headModel"))
+    {
+        UpdateHeadModel(attributes->GetValue());
     }
 
     return Entity::AttributeChanged(attributes);
@@ -323,4 +335,117 @@ void LegacyDialog::UpdateBackBuffers()
     RenderService->UnLockVertexBuffer(backVertexBuffer_);
 
     backNeedsUpdate_ = false;
+}
+
+void LegacyDialog::DrawBackground(size_t start, size_t count)
+{
+    RenderService->TextureSet(0, interfaceTexture_);
+    RenderService->DrawBuffer(backVertexBuffer_, sizeof(XI_TEX_VERTEX), backIndexBuffer_, 0, SPRITE_COUNT * 4,
+                              start * 6, count * 2, "texturedialogfon");
+}
+
+void LegacyDialog::UpdateHeadModel(const std::string &headModelPath)
+{
+    core.EraseEntity(headModel_);
+
+    const std::string newHeadModelPath = fmt::format("Heads/{}", headModelPath);
+
+    if (headModelPath_ != newHeadModelPath)
+    {
+        headModelPath_ = newHeadModelPath;
+        headModel_ = core.CreateEntity("MODELR");
+        auto gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
+        gs->SetTexturePath("characters\\");
+
+        core.Send_Message(headModel_, "ls", MSG_MODEL_LOAD_GEO, headModelPath_.c_str());
+        core.Send_Message(headModel_, "ls", MSG_MODEL_LOAD_ANI, headModelPath_.c_str());
+
+        const auto model = dynamic_cast<MODEL *>(core.GetEntityPointer(headModel_));
+
+        static CMatrix mtx;
+        mtx.BuildPosition(0.f, 0.025f, 0.f);
+
+        static CMatrix mtx2;
+        mtx2.m[0][0] = 1.0f;
+        mtx2.m[1][1] = 1.0f;
+        mtx2.m[2][2] = 1.0f;
+
+        static CMatrix mtx3;
+        mtx3.BuildMatrix(0.1f, PI - 0.1f, 0.0f);
+
+        static CMatrix mtx4;
+        mtx4.BuildPosition(0.f, 0.f, 4.f);
+
+        model->mtx = mtx * mtx2 * mtx3 * mtx4;
+
+        model->GetAnimation()->CopyPlayerState(0, 1);
+        model->GetAnimation()->Player(0).SetAction("dialog_all");
+        model->GetAnimation()->Player(0).Play();
+        model->GetAnimation()->Player(0).SetAutoStop(false);
+
+        gs->SetTexturePath("");
+    }
+}
+
+void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
+{
+    if (headModel_)
+    {
+        D3DVIEWPORT9 viewport;
+        RenderService->GetViewport(&viewport);
+
+        CMatrix mtx, view, prj;
+        uint32_t lightingState, zenableState;
+        RenderService->GetTransform(D3DTS_VIEW, view);
+        RenderService->GetTransform(D3DTS_PROJECTION, prj);
+        RenderService->GetRenderState(D3DRS_LIGHTING, &lightingState);
+        RenderService->GetRenderState(D3DRS_ZENABLE, &zenableState);
+
+        mtx.BuildViewMatrix(CVECTOR(0.0f, 0.0f, 0.0f), CVECTOR(0.0f, 0.0f, 1.0f), CVECTOR(0.0f, 1.0f, 0.0f));
+        RenderService->SetTransform(D3DTS_VIEW, (D3DXMATRIX *)&mtx);
+
+        mtx.BuildProjectionMatrix(PId2 - 1.49f, screenScale_.x * 116, screenScale_.y * 158, 1.0f, 10.0f);
+        RenderService->SetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&mtx);
+
+        D3DVIEWPORT9 headViewport{};
+        headViewport.X = static_cast<int32_t>(screenScale_.x * 31);
+        headViewport.Y = static_cast<int32_t>(screenScale_.y * 28);
+        headViewport.Width = static_cast<int32_t>(screenScale_.x * 115);
+        headViewport.Height = static_cast<int32_t>(screenScale_.y * 157);
+        headViewport.MinZ = 0.0f;
+        headViewport.MaxZ = 1.0f;
+
+        RenderService->SetViewport(&headViewport);
+        RenderService->Clear(0, 0, D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
+        RenderService->SetRenderState(D3DRS_LIGHTING, TRUE);
+        RenderService->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+
+        D3DLIGHT9 oldLight{};
+        BOOL oldLightEnabled = FALSE;
+        RenderService->GetLight(0, &oldLight);
+        RenderService->GetLightEnable(0, &oldLightEnabled);
+
+        D3DLIGHT9 headLight{};
+        headLight.Type = D3DLIGHT_DIRECTIONAL;
+        headLight.Diffuse.r = 1.f;
+        headLight.Diffuse.g = 1.f;
+        headLight.Diffuse.b = 1.f;
+        headLight.Diffuse.a = 1.f;
+        headLight.Direction.x = -1.f;
+        headLight.Direction.y = -1.f;
+        headLight.Direction.z = 2.f;
+
+        RenderService->SetLight(0, &headLight);
+        RenderService->LightEnable(0, TRUE);
+        const auto model = dynamic_cast<MODEL *>(core.GetEntityPointer(headModel_));
+        model->ProcessStage(Entity::Stage::realize, deltaTime);
+
+        RenderService->SetLight(0, &oldLight);
+        RenderService->LightEnable(0, oldLightEnabled);
+        RenderService->SetTransform(D3DTS_VIEW, (D3DXMATRIX *)&view);
+        RenderService->SetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&prj);
+        RenderService->SetViewport(&viewport);
+        RenderService->SetRenderState(D3DRS_LIGHTING, lightingState);
+        RenderService->SetRenderState(D3DRS_ZENABLE, zenableState);
+    }
 }
