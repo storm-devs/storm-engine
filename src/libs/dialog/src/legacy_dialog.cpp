@@ -130,6 +130,8 @@ bool LegacyDialog::Init()
     RenderService = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     Assert(RenderService != nullptr);
 
+    UpdateScreenSize();
+
     LoadIni();
 
     const char *texture = this->AttributesPointer->GetAttribute("texture");
@@ -156,11 +158,23 @@ void LegacyDialog::ProcessStage(Stage stage, uint32_t delta)
 
 void LegacyDialog::Realize(uint32_t deltaTime)
 {
-    UpdateBackBuffers();
+    UpdateScreenSize();
+
+    if (backNeedsUpdate_)
+    {
+        UpdateBackBuffers();
+    }
 
     RenderService->TextureSet(0, interfaceTexture_);
     RenderService->DrawBuffer(backVertexBuffer_, sizeof(XI_TEX_VERTEX), backIndexBuffer_, 0, SPRITE_COUNT * 4, 0,
                               SPRITE_COUNT * 2, "texturedialogfon");
+
+    if (!characterName_.empty())
+    {
+        RenderService->ExtPrint(nameFont_, COLOR_NORMAL, 0, PR_ALIGN_LEFT, true, fontScale_, 0, 0,
+                                static_cast<int32_t>(screenScale_.x * 168), static_cast<int32_t>(screenScale_.y * 28),
+                                characterName_.c_str());
+    }
 }
 
 uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
@@ -174,6 +188,32 @@ uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
     return Entity::AttributeChanged(attributes);
 }
 
+uint64_t LegacyDialog::ProcessMessage(MESSAGE &msg)
+{
+    switch (msg.Long())
+    {
+    case 0: {
+        // Get character ID
+        // persId = msg.EntityID();
+        // persMdl = msg.EntityID();
+        break;
+    }
+    case 1: {
+        // Get person ID
+        const entid_t charId = msg.EntityID();
+        const entid_t charModel = msg.EntityID();
+        const auto name_attr = core.Entity_GetAttribute(charId, "name");
+        const auto last_name_attr = core.Entity_GetAttribute(charId, "lastname");
+        const std::string_view name = name_attr ? name_attr : "";
+        const std::string_view last_name = last_name_attr ? last_name_attr : "";
+        characterName_ = fmt::format("{} {}", name, last_name);
+        std::transform(characterName_.begin(), characterName_.end(), characterName_.begin(), ::toupper);
+        break;
+    }
+    }
+    return 0;
+}
+
 void LegacyDialog::LoadIni()
 {
     auto ini = fio->OpenIniFile(DIALOG_INI_FILE_PATH.data());
@@ -183,6 +223,26 @@ void LegacyDialog::LoadIni()
     subFont_ = LoadFont("subfont", *ini, *RenderService);
 
     ini.reset();
+}
+
+void LegacyDialog::UpdateScreenSize()
+{
+    D3DVIEWPORT9 viewport;
+    RenderService->GetViewport(&viewport);
+    const auto screenSize = core.GetScreenSize();
+
+    const auto hScale = static_cast<float>(viewport.Width) / static_cast<float>(screenSize.width);
+    const auto vScale = static_cast<float>(viewport.Height) / static_cast<float>(screenSize.height);
+
+    if (fabs(screenScale_.x - hScale) > 1e-3f || fabs(screenScale_.y - vScale) > 1e-3f)
+    {
+        screenScale_.x = hScale;
+        screenScale_.y = vScale;
+
+        backNeedsUpdate_ = true;
+    }
+
+    fontScale_ = static_cast<float>(viewport.Height) / 600.f;
 }
 
 void LegacyDialog::CreateBackBuffers()
@@ -199,12 +259,8 @@ void LegacyDialog::CreateBackBuffers()
 
 void LegacyDialog::UpdateBackBuffers()
 {
-    D3DVIEWPORT9 viewport;
-    RenderService->GetViewport(&viewport);
-    const auto screenSize = core.GetScreenSize();
-
-    float hScale = static_cast<float>(viewport.Width) / static_cast<float>(screenSize.width);
-    float vScale = static_cast<float>(viewport.Height) / static_cast<float>(screenSize.height);
+    float hScale = screenScale_.x;
+    float vScale = screenScale_.y;
 
     auto createSpriteMesh = [hScale, vScale](const SpriteInfo &sprite) {
         const std::array mesh = {
@@ -265,4 +321,6 @@ void LegacyDialog::UpdateBackBuffers()
         pV[vi++] = vertices[3];
     }
     RenderService->UnLockVertexBuffer(backVertexBuffer_);
+
+    backNeedsUpdate_ = false;
 }
