@@ -31,7 +31,8 @@ class StormEngine(ConanFile):
             # conan-center
             self.requires("libsafec/3.6.0")
             self.requires("openssl/1.1.1o")#TODO: update sentry-native@storm/patched and then remove it
-            self.options["sdl"].pulse = False
+            # don't change options["sdl"] if you want to use prebuilt package from https://conan.io/center/sdl?version=2.0.18&tab=configuration&os=Linux
+            #self.options["sdl"].pulse = False
         if self.options.steam:
             self.requires("steamworks/1.5.1@storm/prebuilt")
 

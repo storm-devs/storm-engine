@@ -12,6 +12,8 @@ set(SYSTEM_DEPS
     "dbghelp"
     "winhttp"
 )
+else()
+set(SYSTEM_DEPS "ffi")
 endif()
 
 STORM_SETUP(
