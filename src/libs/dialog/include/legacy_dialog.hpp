@@ -16,8 +16,20 @@ class LegacyDialog final : Entity
 
     void Realize(uint32_t deltaTime);
 
+    uint32_t AttributeChanged(ATTRIBUTES *attributes) override;
+
   private:
+    void LoadIni();
+
+    void CreateBackBuffers();
+    void UpdateBackBuffers();
+
     int32_t mainFont_{};
     int32_t nameFont_{};
     int32_t subFont_{};
+
+    int32_t interfaceTexture_{};
+
+    int32_t backVertexBuffer_;
+    int32_t backIndexBuffer_;
 };
