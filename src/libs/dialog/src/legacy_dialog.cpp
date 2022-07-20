@@ -20,6 +20,7 @@ constexpr std::string_view DIALOG_INI_FILE_PATH = "Resource/Ini/dialog.ini";
 const char *DEFAULT_INTERFACE_TEXTURE = "dialog/dialog.tga";
 
 constexpr const uint32_t COLOR_NORMAL = 0xFFFFFFFF;
+constexpr const uint32_t COLOR_LINK_UNSELECTED = ARGB(255, 127, 127, 127);
 
 int32_t LoadFont(const std::string_view &fontName, INIFILE &ini, VDX9RENDER &renderService)
 {
@@ -133,6 +134,8 @@ bool LegacyDialog::Init()
     RenderService = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     Assert(RenderService != nullptr);
 
+    soundService_ = static_cast<VSoundService *>(core.GetService("SoundService"));
+
     UpdateScreenSize();
 
     LoadIni();
@@ -163,6 +166,8 @@ void LegacyDialog::Realize(uint32_t deltaTime)
 {
     UpdateScreenSize();
 
+    ProcessControls();
+
     if (backNeedsUpdate_)
     {
         UpdateBackBuffers();
@@ -178,6 +183,8 @@ void LegacyDialog::Realize(uint32_t deltaTime)
                                 static_cast<int32_t>(screenScale_.x * 168), static_cast<int32_t>(screenScale_.y * 28),
                                 characterName_.c_str());
     }
+
+    DrawLinks();
 
     // Head overlay
     DrawBackground(0, 2);
@@ -195,6 +202,10 @@ uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
     else if (storm::iEquals(attributeName, "headModel"))
     {
         UpdateHeadModel(attributes->GetValue());
+    }
+    else
+    {
+        UpdateLinks();
     }
 
     return Entity::AttributeChanged(attributes);
@@ -447,5 +458,94 @@ void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
         RenderService->SetViewport(&viewport);
         RenderService->SetRenderState(D3DRS_LIGHTING, lightingState);
         RenderService->SetRenderState(D3DRS_ZENABLE, zenableState);
+    }
+}
+
+void LegacyDialog::UpdateLinks()
+{
+    links_.clear();
+    formattedLinks_.clear();
+    ATTRIBUTES *links_attr = AttributesPointer->GetAttributeClass("Links");
+    if (links_attr)
+    {
+        D3DVIEWPORT9 vp;
+        RenderService->GetViewport(&vp);
+
+        const auto text_width_limit = static_cast<int32_t>(570.f * (vp.Width / 640.f));
+
+        const size_t number_of_links = links_attr->GetAttributesNum();
+        for (size_t i = 0; i < number_of_links; ++i)
+        {
+            const std::string_view link_text = links_attr->GetAttributeClass(i)->GetValue();
+            links_.emplace_back(link_text);
+
+            std::vector<std::string> link_texts;
+            DIALOG::AddToStringArrayLimitedByWidth(link_text, subFont_, fontScale_, text_width_limit, link_texts,
+                                                   RenderService, nullptr, 0);
+
+            for (const auto &text : link_texts)
+            {
+                formattedLinks_.emplace_back(text, static_cast<int32_t>(i));
+            }
+        }
+    }
+}
+
+void LegacyDialog::DrawLinks()
+{
+    const auto line_height =
+        static_cast<int32_t>(static_cast<float>(RenderService->CharHeight(mainFont_)) * fontScale_);
+
+    int32_t line_offset = 0;
+    int32_t offset = line_height * static_cast<int32_t>(formattedLinks_.size());
+    for (auto &link : formattedLinks_)
+    {
+        const bool isSelected = link.lineIndex == selectedLink_;
+        RenderService->ExtPrint(subFont_, isSelected ? COLOR_NORMAL : COLOR_LINK_UNSELECTED, 0, PR_ALIGN_LEFT, true,
+                                fontScale_, 0, 0, static_cast<int32_t>(screenScale_.x * 35),
+                                static_cast<int32_t>(screenScale_.y * 450 - offset) + line_offset, link.text.c_str());
+        line_offset += line_height;
+    }
+}
+
+void LegacyDialog::ProcessControls()
+{
+    CONTROL_STATE cs;
+    core.Controls->GetControlState("DlgUp", cs);
+    if (cs.state == CST_ACTIVATED && selectedLink_ > 0)
+    {
+        PlayTick();
+        --selectedLink_;
+    }
+    core.Controls->GetControlState("DlgDown", cs);
+    if (cs.state == CST_ACTIVATED && selectedLink_ < links_.size() - 1)
+    {
+        PlayTick();
+        ++selectedLink_;
+    }
+    core.Controls->GetControlState("DlgAction", cs);
+    if (cs.state == CST_ACTIVATED)
+    {
+        PlayTick();
+        ATTRIBUTES *links_attr = AttributesPointer->GetAttributeClass("Links");
+        if (links_attr)
+        {
+            ATTRIBUTES *selected_attr = links_attr->GetAttributeClass(selectedLink_);
+            if (selected_attr)
+            {
+                const char *go = selected_attr->GetAttribute("go");
+                AttributesPointer->SetAttribute("CurrentNode", go);
+                selectedLink_ = 0;
+                core.Event("DialogEvent");
+            }
+        }
+    }
+}
+
+void LegacyDialog::PlayTick()
+{
+    if (soundService_)
+    {
+        soundService_->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
     }
 }

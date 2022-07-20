@@ -2,6 +2,7 @@
 
 #include <dx9render.h>
 #include <entity.h>
+#include <v_sound_service.h>
 
 #include <string>
 
@@ -40,12 +41,31 @@ class LegacyDialog final : public Entity
     void UpdateHeadModel(const std::string &headModelPath);
     void DrawHeadModel(uint32_t deltaTime);
 
+    void UpdateLinks();
+    void DrawLinks();
+
+    void ProcessControls();
+
+    void PlayTick();
+
+    struct LinkEntry
+    {
+        std::string text;
+        int32_t lineIndex{};
+    };
+    std::vector<std::string> links_;
+    std::vector<LinkEntry> formattedLinks_;
+
     std::string characterName_;
     std::string headModelPath_;
 
     ScreenScale screenScale_{};
 
+    VSoundService *soundService_ = nullptr;
+
     float fontScale_{};
+
+    int32_t selectedLink_{};
 
     int32_t mainFont_{};
     int32_t nameFont_{};
