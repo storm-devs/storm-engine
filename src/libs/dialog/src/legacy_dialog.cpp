@@ -65,7 +65,7 @@ struct SpriteInfo
 
 constexpr const size_t DIALOG_MAX_LINES = 8;
 constexpr const float DIVIDER_HEIGHT = 14;
-constexpr const float DIALOG_LINE_HEIGHT = 26;
+constexpr const int32_t DIALOG_LINE_HEIGHT = 26;
 
 constexpr std::array SPRITE_DATA = {
     // Head overlay
@@ -592,15 +592,14 @@ void LegacyDialog::DrawDialogText()
     if (!dialogText_.empty())
     {
         int32_t line_offset = 0;
-        int32_t offset = lineHeight_ * static_cast<int32_t>(formattedLinks_.size()) +
-                         lineHeight_ * static_cast<int32_t>(formattedDialogText_.size());
-        // Add offset for divider
-        offset += formattedLinks_.empty() ? 0 : static_cast<int32_t>(DIVIDER_HEIGHT * screenScale_.y);
+
+        const auto offset =
+            static_cast<int32_t>(screenScale_.y * static_cast<float>(445 - textureLines_ * DIALOG_LINE_HEIGHT));
+
         for (const std::string &text : formattedDialogText_)
         {
             RenderService->ExtPrint(mainFont_, COLOR_NORMAL, 0, PR_ALIGN_LEFT, true, fontScale_, 0, 0,
-                                    static_cast<int32_t>(screenScale_.x * 35),
-                                    static_cast<int32_t>(screenScale_.y * 450 - offset) + line_offset, text.c_str());
+                                    static_cast<int32_t>(screenScale_.x * 35), offset + line_offset, text.c_str());
             line_offset += lineHeight_;
         }
     }
