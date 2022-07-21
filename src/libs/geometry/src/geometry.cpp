@@ -266,7 +266,7 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
         return;
     }
 
-    if (mt.texture_type[1] != GEOS::TEXTURE_NONE)
+    if (mt.texture_type[1] != GEOMETRY_TEXTURE_TYPE::TEXTURE_NONE)
     {
         // path BASE texture through
         RenderService->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG2);

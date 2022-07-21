@@ -457,10 +457,10 @@ void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
         RenderService->GetRenderState(D3DRS_ZENABLE, &zenableState);
 
         mtx.BuildViewMatrix(CVECTOR(0.0f, 0.0f, 0.0f), CVECTOR(0.0f, 0.0f, 1.0f), CVECTOR(0.0f, 1.0f, 0.0f));
-        RenderService->SetTransform(D3DTS_VIEW, (D3DXMATRIX *)&mtx);
+        RenderService->SetTransform(D3DTS_VIEW, (D3DMATRIX *)&mtx);
 
         mtx.BuildProjectionMatrix(PId2 - 1.49f, screenScale_.x * 116, screenScale_.y * 158, 1.0f, 10.0f);
-        RenderService->SetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&mtx);
+        RenderService->SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&mtx);
 
         D3DVIEWPORT9 headViewport{};
         headViewport.X = static_cast<int32_t>(screenScale_.x * 31);

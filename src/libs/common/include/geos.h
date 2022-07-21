@@ -13,6 +13,15 @@ Import library main header
 #include <cstdint>
 #include <fstream>
 
+enum class GEOMETRY_TEXTURE_TYPE
+{
+    TEXTURE_NONE = 0,
+    TEXTURE_BASE,
+    TEXTURE_NORMAL,
+    TEXTURE_LIGHTMAP,
+    TEXTURE_FORCEDWORD = 0x7FFFFFFF
+};
+
 class GEOS
 {
   public:
@@ -112,24 +121,12 @@ class GEOS
     virtual void GetLabel(int32_t l, LABEL &lb) const = 0;
     virtual void SetLabel(int32_t l, const LABEL &lb) = 0;
 
-    //-----------------------------------------
-    // materials
-    //-----------------------------------------
-    enum TEXTURE_TYPE
-    {
-        TEXTURE_NONE = 0,
-        TEXTURE_BASE,
-        TEXTURE_NORMAL,
-        TEXTURE_LIGHTMAP,
-        TEXTURE_FORCEDWORD = 0x7FFFFFFF
-    };
-
     struct MATERIAL
     {
-        float diffuse;                // 0 - no diffuse material
-        float specular, gloss;        // spec=0 - no specular, gloss is a power of cosine
-        float selfIllum;              // for area light sources
-        TEXTURE_TYPE texture_type[4]; // type of texture
+        float diffuse;                         // 0 - no diffuse material
+        float specular, gloss;                 // spec=0 - no specular, gloss is a power of cosine
+        float selfIllum;                       // for area light sources
+        GEOMETRY_TEXTURE_TYPE texture_type[4]; // type of texture
         int32_t texture[4];
         char *group_name;
         char *name;
