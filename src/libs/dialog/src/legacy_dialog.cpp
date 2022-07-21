@@ -65,6 +65,7 @@ struct SpriteInfo
 
 constexpr const size_t DIALOG_MAX_LINES = 8;
 constexpr const float DIVIDER_HEIGHT = 14;
+constexpr const float DIALOG_LINE_HEIGHT = 26;
 
 constexpr std::array SPRITE_DATA = {
     // Head overlay
@@ -100,17 +101,19 @@ constexpr std::array SPRITE_DATA = {
     },
     // Dialog lines
     SpriteInfo{
-        .position = {-39, static_cast<float>(479 - 67 + 39 - 26), 639 + 39, static_cast<float>(479 - 67 + 39)},
+        .position = {-39, static_cast<float>(479 - 67 + 39 - DIALOG_LINE_HEIGHT), 639 + 39,
+                     static_cast<float>(479 - 67 + 39)},
         .uv = ScaleUv({209, 155, 1023, 186}),
     },
     SpriteInfo{
-        .position = {-39, static_cast<float>(479 - 67 + 39 - (26 * (DIALOG_MAX_LINES + 1))), 639 + 39,
-                     static_cast<float>(479 - 67 + 39 - (26 * DIALOG_MAX_LINES))},
+        .position = {-39, static_cast<float>(479 - 67 + 39 - DIALOG_LINE_HEIGHT), 639 + 39,
+                     static_cast<float>(479 - 67 + 39)},
         .uv = ScaleUv({209, 119, 1023, 156}),
     },
     // Divider
     SpriteInfo{
-        .position = {35, static_cast<float>(479 - 67 + 39 - DIVIDER_HEIGHT), 605, static_cast<float>(479 - 67 + 39)},
+        .position = {35, static_cast<float>(450 - (DIVIDER_HEIGHT / 2)), 605,
+                     static_cast<float>(450 + (DIVIDER_HEIGHT + 2))},
         .uv = ScaleUv({209, 94, 602, 116}),
     },
 };
@@ -136,9 +139,9 @@ bool LegacyDialog::Init()
 
     soundService_ = static_cast<VSoundService *>(core.GetService("SoundService"));
 
-    UpdateScreenSize();
-
     LoadIni();
+
+    UpdateScreenSize();
 
     const char *texture = this->AttributesPointer->GetAttribute("texture");
     if (texture == nullptr)
@@ -173,7 +176,9 @@ void LegacyDialog::Realize(uint32_t deltaTime)
         UpdateBackBuffers();
     }
 
-    DrawBackground(2, (SPRITE_COUNT - 2 - 1));
+    const bool shouldDrawDivider = !formattedLinks_.empty();
+    DrawBackground(2, 5 + textureLines_);
+    DrawBackground(7 + DIALOG_MAX_LINES, shouldDrawDivider ? 2 : 1);
 
     DrawHeadModel(deltaTime);
 
@@ -185,6 +190,7 @@ void LegacyDialog::Realize(uint32_t deltaTime)
     }
 
     DrawLinks();
+    DrawDialogText();
 
     // Head overlay
     DrawBackground(0, 2);
@@ -206,6 +212,7 @@ uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
     else
     {
         UpdateLinks();
+        UpdateDialogText();
     }
 
     return Entity::AttributeChanged(attributes);
@@ -265,7 +272,12 @@ void LegacyDialog::UpdateScreenSize()
         backNeedsUpdate_ = true;
     }
 
+    const float oldFontScale = fontScale_;
     fontScale_ = static_cast<float>(viewport.Height) / 600.f;
+    if (fabs(fontScale_ - oldFontScale) > 1e-3f)
+    {
+        lineHeight_ = static_cast<int32_t>(static_cast<float>(RenderService->CharHeight(mainFont_)) * fontScale_);
+    }
 }
 
 void LegacyDialog::CreateBackBuffers()
@@ -322,27 +334,59 @@ void LegacyDialog::UpdateBackBuffers()
         pV[vi++] = vertices[3];
     }
 
+    SpriteInfo sprite_data{};
+
     for (size_t i = 0; i < DIALOG_MAX_LINES; ++i)
     {
-        auto spriteData = SPRITE_DATA[7];
-        const auto offset = static_cast<float>(26 * i);
-        spriteData.position.top -= offset;
-        spriteData.position.bottom -= offset;
+        sprite_data = SPRITE_DATA[7];
+        const auto offset = static_cast<float>(DIALOG_LINE_HEIGHT * i);
+        sprite_data.position.top -= offset;
+        sprite_data.position.bottom -= offset;
 
-        const auto &vertices = createSpriteMesh(spriteData);
+        const auto &vertices = createSpriteMesh(sprite_data);
         pV[vi++] = vertices[0];
         pV[vi++] = vertices[1];
         pV[vi++] = vertices[2];
         pV[vi++] = vertices[3];
     }
-    for (size_t i = 0; i < 2; ++i)
+
+    // Top of main dialog
     {
-        const auto &vertices = createSpriteMesh(SPRITE_DATA[8 + i]);
+        const size_t text_lines = formattedDialogText_.size() + formattedLinks_.size();
+        textureLines_ = static_cast<int32_t>(
+            std::floor(static_cast<double>((5 + text_lines * lineHeight_) / vScale) / DIALOG_LINE_HEIGHT));
+
+        if (!formattedLinks_.empty())
+        {
+            textureLines_ += 1;
+        }
+
+        sprite_data = SPRITE_DATA[8];
+        const auto offset = DIALOG_LINE_HEIGHT * static_cast<float>(textureLines_);
+        sprite_data.position.top -= offset;
+        sprite_data.position.bottom -= offset;
+
+        const auto &vertices = createSpriteMesh(sprite_data);
         pV[vi++] = vertices[0];
         pV[vi++] = vertices[1];
         pV[vi++] = vertices[2];
         pV[vi++] = vertices[3];
     }
+
+    // Divider
+    {
+        sprite_data = SPRITE_DATA[9];
+        const auto offset = static_cast<float>(formattedLinks_.size()) * static_cast<float>(lineHeight_) / vScale;
+        sprite_data.position.top -= offset;
+        sprite_data.position.bottom -= offset;
+
+        const auto &vertices = createSpriteMesh(sprite_data);
+        pV[vi++] = vertices[0];
+        pV[vi++] = vertices[1];
+        pV[vi++] = vertices[2];
+        pV[vi++] = vertices[3];
+    }
+
     RenderService->UnLockVertexBuffer(backVertexBuffer_);
 
     backNeedsUpdate_ = false;
@@ -463,6 +507,8 @@ void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
 
 void LegacyDialog::UpdateLinks()
 {
+    const size_t previous_link_lines = formattedLinks_.size();
+
     links_.clear();
     formattedLinks_.clear();
     ATTRIBUTES *links_attr = AttributesPointer->GetAttributeClass("Links");
@@ -489,22 +535,74 @@ void LegacyDialog::UpdateLinks()
             }
         }
     }
+
+    if (previous_link_lines != formattedLinks_.size())
+    {
+        backNeedsUpdate_ = true;
+    }
 }
 
 void LegacyDialog::DrawLinks()
 {
-    const auto line_height =
-        static_cast<int32_t>(static_cast<float>(RenderService->CharHeight(mainFont_)) * fontScale_);
-
-    int32_t line_offset = 0;
-    int32_t offset = line_height * static_cast<int32_t>(formattedLinks_.size());
-    for (auto &link : formattedLinks_)
+    if (!formattedLinks_.empty())
     {
-        const bool isSelected = link.lineIndex == selectedLink_;
-        RenderService->ExtPrint(subFont_, isSelected ? COLOR_NORMAL : COLOR_LINK_UNSELECTED, 0, PR_ALIGN_LEFT, true,
-                                fontScale_, 0, 0, static_cast<int32_t>(screenScale_.x * 35),
-                                static_cast<int32_t>(screenScale_.y * 450 - offset) + line_offset, link.text.c_str());
-        line_offset += line_height;
+        int32_t line_offset = 0;
+        int32_t offset = lineHeight_ * static_cast<int32_t>(formattedLinks_.size());
+        for (auto &link : formattedLinks_)
+        {
+            const bool isSelected = link.lineIndex == selectedLink_;
+            RenderService->ExtPrint(subFont_, isSelected ? COLOR_NORMAL : COLOR_LINK_UNSELECTED, 0, PR_ALIGN_LEFT, true,
+                                    fontScale_, 0, 0, static_cast<int32_t>(screenScale_.x * 35),
+                                    static_cast<int32_t>(screenScale_.y * 450 - offset) + line_offset,
+                                    link.text.c_str());
+            line_offset += lineHeight_;
+        }
+    }
+}
+
+void LegacyDialog::UpdateDialogText()
+{
+    const size_t previous_lines = formattedDialogText_.size();
+
+    const char *text_attr = AttributesPointer->GetAttribute("Text");
+    if (text_attr)
+    {
+        dialogText_ = text_attr;
+    }
+    formattedDialogText_.clear();
+    if (!dialogText_.empty())
+    {
+        D3DVIEWPORT9 vp;
+        RenderService->GetViewport(&vp);
+
+        const int32_t text_width_limit = static_cast<int32_t>(570.f * (vp.Width / 640.f));
+
+        DIALOG::AddToStringArrayLimitedByWidth(dialogText_, mainFont_, fontScale_, text_width_limit,
+                                               formattedDialogText_, RenderService, nullptr, 0);
+    }
+
+    if (previous_lines != formattedDialogText_.size())
+    {
+        backNeedsUpdate_ = true;
+    }
+}
+
+void LegacyDialog::DrawDialogText()
+{
+    if (!dialogText_.empty())
+    {
+        int32_t line_offset = 0;
+        int32_t offset = lineHeight_ * static_cast<int32_t>(formattedLinks_.size()) +
+                         lineHeight_ * static_cast<int32_t>(formattedDialogText_.size());
+        // Add offset for divider
+        offset += formattedLinks_.empty() ? 0 : static_cast<int32_t>(DIVIDER_HEIGHT * screenScale_.y);
+        for (const std::string &text : formattedDialogText_)
+        {
+            RenderService->ExtPrint(mainFont_, COLOR_NORMAL, 0, PR_ALIGN_LEFT, true, fontScale_, 0, 0,
+                                    static_cast<int32_t>(screenScale_.x * 35),
+                                    static_cast<int32_t>(screenScale_.y * 450 - offset) + line_offset, text.c_str());
+            line_offset += lineHeight_;
+        }
     }
 }
 

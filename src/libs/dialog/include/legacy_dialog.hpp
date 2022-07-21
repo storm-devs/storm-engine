@@ -44,6 +44,9 @@ class LegacyDialog final : public Entity
     void UpdateLinks();
     void DrawLinks();
 
+    void UpdateDialogText();
+    void DrawDialogText();
+
     void ProcessControls();
 
     void PlayTick();
@@ -56,6 +59,9 @@ class LegacyDialog final : public Entity
     std::vector<std::string> links_;
     std::vector<LinkEntry> formattedLinks_;
 
+    std::vector<std::string> formattedDialogText_;
+    std::string dialogText_;
+
     std::string characterName_;
     std::string headModelPath_;
 
@@ -64,6 +70,9 @@ class LegacyDialog final : public Entity
     VSoundService *soundService_ = nullptr;
 
     float fontScale_{};
+
+    int32_t lineHeight_{};
+    int32_t textureLines_{};
 
     int32_t selectedLink_{};
 
