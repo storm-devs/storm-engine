@@ -14,8 +14,7 @@ geometry file format
 
 #include <cstdint>
 
-#include <c_vector.h>
-#include <geos.h>
+#include "c_vector.h"
 
 /*
 
@@ -84,6 +83,13 @@ struct RDF_TEXTURE
 //------------------------------------------------------------
 // material
 //------------------------------------------------------------
+enum RDF_TEXTURE_TYPE
+{
+    TEXTURE_NONE = 0,
+    TEXTURE_BASE,
+    TEXTURE_NORMAL,
+    TEXTURE_FORCE_DWORD = 0x7FFFFFFF
+};
 
 struct RDF_MATERIAL
 {
@@ -92,7 +98,7 @@ struct RDF_MATERIAL
     float diffuse;         // 0 - no diffuse material
     float specular, gloss; // spec=0 - no specular, gloss is a power of cosine
     float selfIllum;       // for area light sources
-    GEOMETRY_TEXTURE_TYPE texture_type[4];
+    RDF_TEXTURE_TYPE texture_type[4];
     int32_t texture[4];
 };
 

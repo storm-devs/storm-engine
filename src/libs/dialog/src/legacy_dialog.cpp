@@ -497,8 +497,8 @@ void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
 
         RenderService->SetLight(0, &oldLight);
         RenderService->LightEnable(0, oldLightEnabled);
-        RenderService->SetTransform(D3DTS_VIEW, (D3DXMATRIX *)&view);
-        RenderService->SetTransform(D3DTS_PROJECTION, (D3DXMATRIX *)&prj);
+        RenderService->SetTransform(D3DTS_VIEW, (D3DMATRIX *)&view);
+        RenderService->SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&prj);
         RenderService->SetViewport(&viewport);
         RenderService->SetRenderState(D3DRS_LIGHTING, lightingState);
         RenderService->SetRenderState(D3DRS_ZENABLE, zenableState);

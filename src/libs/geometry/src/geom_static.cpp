@@ -218,8 +218,8 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, int32_t
         // relink textures
         for (int32_t tl = 0; tl < 4; tl++)
         {
-            material[m].texture_type[tl] = rmat[m].texture_type[tl];
-            if (rmat[m].texture_type[tl] != GEOMETRY_TEXTURE_TYPE::TEXTURE_NONE)
+            material[m].texture_type[tl] = static_cast<TEXTURE_TYPE>(rmat[m].texture_type[tl]);
+            if (rmat[m].texture_type[tl] != TEXTURE_NONE)
                 material[m].texture[tl] = tlookup[rmat[m].texture[tl]];
             else
                 material[m].texture[tl] = -1;
