@@ -335,7 +335,7 @@ void LegacyDialog::UpdateBackBuffers()
         pV[vi++] = vertices[2];
         pV[vi++] = vertices[3];
     }
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < 2; ++i)
     {
         const auto &vertices = createSpriteMesh(SPRITE_DATA[8 + i]);
         pV[vi++] = vertices[0];
