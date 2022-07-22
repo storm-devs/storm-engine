@@ -531,7 +531,7 @@ void LegacyDialog::UpdateLinks()
 
             for (const auto &text : link_texts)
             {
-                formattedLinks_.emplace_back(text, static_cast<int32_t>(i));
+                formattedLinks_.emplace_back(LinkEntry{text, static_cast<int32_t>(i)});
             }
         }
     }
