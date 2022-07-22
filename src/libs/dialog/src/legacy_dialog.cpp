@@ -22,6 +22,8 @@ const char *DEFAULT_INTERFACE_TEXTURE = "dialog/dialog.tga";
 constexpr const uint32_t COLOR_NORMAL = 0xFFFFFFFF;
 constexpr const uint32_t COLOR_LINK_UNSELECTED = ARGB(255, 127, 127, 127);
 
+constexpr const uint32_t UNFADE_TIME = 1000;
+
 int32_t LoadFont(const std::string_view &fontName, INIFILE &ini, VDX9RENDER &renderService)
 {
     std::array<char, MAX_PATH> string_buffer{};
@@ -64,7 +66,7 @@ struct SpriteInfo
 };
 
 constexpr const size_t DIALOG_MAX_LINES = 8;
-constexpr const float DIVIDER_HEIGHT = 14;
+constexpr const float DIVIDER_HEIGHT = 10;
 constexpr const int32_t DIALOG_LINE_HEIGHT = 26;
 
 constexpr std::array SPRITE_DATA = {
@@ -126,6 +128,8 @@ VDX9RENDER *LegacyDialog::RenderService = nullptr;
 
 LegacyDialog::~LegacyDialog() noexcept
 {
+    core.SetTimeScale(1.f);
+
     if (interfaceTexture_)
     {
         RenderService->TextureRelease(interfaceTexture_);
@@ -138,6 +142,8 @@ bool LegacyDialog::Init()
     Assert(RenderService != nullptr);
 
     soundService_ = static_cast<VSoundService *>(core.GetService("SoundService"));
+
+    core.SetTimeScale(0.f);
 
     LoadIni();
 
@@ -167,6 +173,8 @@ void LegacyDialog::ProcessStage(Stage stage, uint32_t delta)
 
 void LegacyDialog::Realize(uint32_t deltaTime)
 {
+    Unfade();
+
     UpdateScreenSize();
 
     ProcessControls();
@@ -644,5 +652,18 @@ void LegacyDialog::PlayTick()
     if (soundService_)
     {
         soundService_->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
+    }
+}
+
+void LegacyDialog::Unfade()
+{
+    // delayed exit from pause
+    if (fadeTime_ <= UNFADE_TIME)
+    {
+        fadeTime_ += static_cast<int>(core.GetRDeltaTime());
+        float timeK = static_cast<float>(fadeTime_) / UNFADE_TIME;
+        if (timeK > 1.f)
+            timeK = 1.f;
+        core.SetTimeScale(timeK);
     }
 }

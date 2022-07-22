@@ -50,6 +50,7 @@ class LegacyDialog final : public Entity
     void ProcessControls();
 
     void PlayTick();
+    void Unfade();
 
     struct LinkEntry
     {
@@ -84,6 +85,8 @@ class LegacyDialog final : public Entity
 
     int32_t backVertexBuffer_{};
     int32_t backIndexBuffer_{};
+
+    int32_t fadeTime_{};
 
     entid_t headModel_;
 
