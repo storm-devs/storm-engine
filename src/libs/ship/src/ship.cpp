@@ -1429,11 +1429,23 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     char temp_str[1024];
     sprintf_s(temp_str, "ships\\%s\\%s", cShipIniName, cShipIniName);
 
+    VGEOMETRY *gs = nullptr;
+    if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::PIRATES_OF_THE_CARIBBEAN)
+    {
+        gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
+    }
+
+    if (gs)
+        gs->SetTexturePath("Ships\\");
+
     model_id = core.CreateEntity("MODELR");
     core.Send_Message(GetModelEID(), "ls", MSG_MODEL_LOAD_GEO, temp_str);
     core.AddToLayer(HULL_TRACE, GetModelEID(), 10);
     core.AddToLayer(SUN_TRACE, GetModelEID(), 10);
     core.AddToLayer(MAST_SHIP_TRACE, GetId(), 10);
+
+    if (gs)
+        gs->SetTexturePath("");
 
     // sails
     if (sail_id = core.GetEntityId("sail"))
