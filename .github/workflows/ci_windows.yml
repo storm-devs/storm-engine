@@ -38,7 +38,7 @@ jobs:
         include:
           - enable_steam: true
             configuration: msvc-release
-    name: 'build-windows [${{ matrix.configuration}}, steam: ${{ matrix.enable_steam }}]'
+    name: 'windows [${{ matrix.configuration}}, steam: ${{ matrix.enable_steam }}]'
     steps:
     - uses: actions/checkout@v2
       with:

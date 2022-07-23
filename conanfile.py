@@ -30,9 +30,9 @@ class StormEngine(ConanFile):
         else:
             # conan-center
             self.requires("libsafec/3.6.0")
-            self.requires("openssl/1.1.1o")#TODO: update sentry-native@storm/patched and then remove it
-            # don't change options["sdl"] if you want to use prebuilt package from https://conan.io/center/sdl?version=2.0.18&tab=configuration&os=Linux
-            #self.options["sdl"].pulse = False
+            self.requires("wayland/1.20.0#ae7daf789db25b25ad2e22969fd9ae9d")#fix for error: Could not find WAYLAND_SCANNER using the following names: wayland-scanner
+            self.requires("libiconv/1.17")#fix for error: 'gettext/0.21' requires 'libiconv/1.17' while 'pulseaudio/14.2' requires 'libiconv/1.16'
+            self.requires("openssl/1.1.1n")#fix for error: 'sentry-crashpad/0.4.13' requires 'openssl/1.1.1n' while 'pulseaudio/14.2' requires 'openssl/1.1.1q'
         if self.options.steam:
             self.requires("steamworks/1.5.1@storm/prebuilt")
 
