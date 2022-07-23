@@ -1766,7 +1766,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV->Get(pChar);
         UnloadSegment(pChar);
         break;
-    case FUNC_SEGMENT_IS_LOADED:
+    case FUNC_SEGMENT_IS_LOADED: {
         pV = SStack.Pop();
         if (!pV)
         {
@@ -1774,14 +1774,15 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             break;
         }
         pV->Get(pChar);
+        const bool isLoaded = BC_SegmentIsLoaded(pChar);
         pV = SStack.Push();
-        if (BC_SegmentIsLoaded(pChar))
+        if (isLoaded)
             pV->Set(1);
         else
             pV->Set(0);
         pVResult = pV;
         break;
-        //
+    }
     case FUNC_STOP:
         bCompleted = true;
         break;
