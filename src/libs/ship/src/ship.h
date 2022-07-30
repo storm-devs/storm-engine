@@ -94,6 +94,7 @@ class SHIP : public SHIP_BASE
 
     // Ships lights
     entid_t shipLights;
+    entid_t flagEntity_{};
 
     // Fire places
     std::vector<FirePlace> aFirePlaces;

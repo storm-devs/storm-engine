@@ -1,11 +1,11 @@
 #include "flag.h"
-#include "entity.h"
-#include "weather_base.h"
 #include "core.h"
 #include "defines.h"
+#include "entity.h"
 #include "shared/sail_msg.h"
 #include "ship_base.h"
 #include "v_file_service.h"
+#include "weather_base.h"
 
 static const char *RIGGING_INI_FILE = "resource\\ini\\rigging.ini";
 
@@ -211,12 +211,6 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
                     int groupNumber = atoi(group_name.substr(5).data());
                     AddLabel(gl, nod, true, true, groupNumber);
                 }
-                else if (group_name.starts_with("penn"))
-                {
-                    // pennant
-                    int groupNumber = atoi(group_name.substr(4).data());
-                    AddLabel(gl, nod, true, true, groupNumber);
-                }
                 else if (group_name.starts_with("flag"))
                 {
                     // ordinary flag
@@ -326,7 +320,7 @@ void FLAG::SetTextureCoordinate()
         {
             for (auto fn = 0; fn < flagQuantity; fn++)
             {
-                if (flist[fn] == nullptr)
+                if (flist[fn] == nullptr || flist[fn]->bDisabled)
                     continue;
                 sIdx = flist[fn]->sv;
                 addtu = 1.f / static_cast<float>(FlagTextureQuantity);
@@ -367,7 +361,7 @@ void FLAG::SetTextureCoordinate()
 
 void FLAG::DoMove(FLAGDATA *pr, float delta_time) const
 {
-    if (pr == nullptr)
+    if (pr == nullptr || pr->bDisabled)
         return;
     CVECTOR cPos;
     cPos = *pr->pMatWorld * pr->spos;
@@ -560,7 +554,7 @@ void FLAG::SetTreangle() const
     {
         for (auto fn = 0; fn < flagQuantity; fn++)
         {
-            if (flist[fn] == nullptr)
+            if (flist[fn] == nullptr || flist[fn]->bDisabled)
                 continue;
             idx = flist[fn]->st;
             for (i = 0; i < static_cast<int>(flist[fn]->nt); i++)
@@ -861,24 +855,16 @@ void FLAG::SetAdd(int flagNum)
             int32_t curTexNumR = 0;
 
             // set texture number
-            if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
+            if (flist[fn]->isShip) // ship
             {
-                pvdat = core.Event("GetRiggingData", "slll", "GetFlagTexNum", flist[fn]->triangle,
-                                   gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
+                pvdat = core.Event("GetRiggingData", "sllla", "GetShipFlagTexNum", flist[fn]->triangle,
+                                   gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag,
+                                   gdata[flist[fn]->HostGroup].char_attributes);
             }
             else
             {
-                if (flist[fn]->isShip) // ship
-                {
-                    pvdat = core.Event("GetRiggingData", "sllla", "GetShipFlagTexNum", flist[fn]->triangle,
-                                       gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag,
-                                       gdata[flist[fn]->HostGroup].char_attributes);
-                }
-                else
-                {
-                    pvdat = core.Event("GetRiggingData", "slll", "GetTownFlagTexNum", flist[fn]->triangle,
-                                       gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
-                }
+                pvdat = core.Event("GetRiggingData", "slll", "GetTownFlagTexNum", flist[fn]->triangle,
+                                   gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
             }
             if (pvdat == nullptr)
             {
@@ -899,31 +885,40 @@ void FLAG::SetAdd(int flagNum)
                 }
             }
 
-            flist[fn]->texNumC = curTexNumC;
-            flist[fn]->texNumR = curTexNumR;
-
-            flist[fn]->vectQuant = (int)(len / FLAGVECTORLEN); // number of flag segments
-            if (flist[fn]->vectQuant < MinSegmentQuantity)
-                flist[fn]->vectQuant = MinSegmentQuantity;
-            // compute flag increment
-            flist[fn]->dv = (empos - bmpos) / static_cast<float>(flist[fn]->vectQuant);
-            if (flist[fn]->triangle)
-                flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant);
-            else
-                flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant + 1);
-
-            flist[fn]->sv = nVert;
-            flist[fn]->st = nIndx;
-            flist[fn]->vectQuant; // TODO: check this ~!~
-            if (flist[fn]->triangle)
+            if (curTexNumC == -1 || curTexNumR == -1)
             {
-                nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 3);
-                nIndx += (flist[fn]->nt = flist[fn]->vectQuant * 2 + 1) * 3;
+                flist[fn]->bDisabled = true;
             }
             else
             {
-                nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 2);
-                nIndx += (flist[fn]->nt = flist[fn]->vectQuant * 2) * 3;
+                flist[fn]->bDisabled = false;
+
+                flist[fn]->texNumC = curTexNumC;
+                flist[fn]->texNumR = curTexNumR;
+
+                flist[fn]->vectQuant = (int)(len / FLAGVECTORLEN); // number of flag segments
+                if (flist[fn]->vectQuant < MinSegmentQuantity)
+                    flist[fn]->vectQuant = MinSegmentQuantity;
+                // compute flag increment
+                flist[fn]->dv = (empos - bmpos) / static_cast<float>(flist[fn]->vectQuant);
+                if (flist[fn]->triangle)
+                    flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant);
+                else
+                    flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant + 1);
+
+                flist[fn]->sv = nVert;
+                flist[fn]->st = nIndx;
+                flist[fn]->vectQuant; // TODO: check this ~!~
+                if (flist[fn]->triangle)
+                {
+                    nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 3);
+                    nIndx += (flist[fn]->nt = flist[fn]->vectQuant * 2 + 1) * 3;
+                }
+                else
+                {
+                    nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 2);
+                    nIndx += (flist[fn]->nt = flist[fn]->vectQuant * 2) * 3;
+                }
             }
         }
     }

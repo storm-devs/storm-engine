@@ -128,6 +128,7 @@ class FLAG : public Entity
 
         int HostGroup;
         bool bDeleted;
+        bool bDisabled = false;
     };
 
     int flagQuantity;
