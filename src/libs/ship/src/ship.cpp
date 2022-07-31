@@ -1290,10 +1290,23 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         // boal 20.08.06 redrawing the flag -->
     case MSG_SHIP_FLAG_REFRESH:
         core.Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
-        if (flag_id = core.GetEntityId("flag"))
+        if (flagEntity_ != invalid_entity) {
+            flag_id = flagEntity_;
+        }
+        else {
+            flag_id = core.GetEntityId("flag");
+        }
+        if (flag_id)
             core.Send_Message(flag_id, "lili", MSG_FLAG_INIT, GetModelEID(), GetNation(GetACharacter()), GetId());
         break;
         // boal 20.08.06 redrawing the flag <--
+    case MSG_SHIP_SET_CUSTOM_FLAG: {
+        const entid_t flag_entity = message.EntityID();
+        if (flag_entity != invalid_entity) {
+            flagEntity_ = flag_entity;
+        }
+        break;
+    }
     case MSG_SHIP_LIGHTSRESET: {
         const auto bLight = message.Long() != 0;
         if (const auto pShipsLights = static_cast<IShipLights *>(core.GetEntityPointer(shipLights)))
@@ -1444,7 +1457,13 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
         core.Send_Message(rope_id, "lii", MSG_ROPE_INIT, GetId(), GetModelEID());
 
     // flags
-    if (flag_id = core.GetEntityId("flag"))
+    if (flagEntity_ != invalid_entity) {
+        flag_id = flagEntity_;
+    }
+    else {
+        flag_id = core.GetEntityId("flag");
+    }
+    if (flag_id)
         core.Send_Message(flag_id, "lili", MSG_FLAG_INIT, GetModelEID(), GetNation(GetACharacter()), GetId());
 
     // vants

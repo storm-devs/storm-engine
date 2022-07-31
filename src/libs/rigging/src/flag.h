@@ -45,8 +45,9 @@ class FLAG : public Entity
 
     bool bUse;
     bool bFirstRun;
+    bool verticesNeedUpdate_ = true;
     VDX9RENDER *RenderService;
-    char *TextureName;
+    std::string textureName_;
     int32_t texl;
 
     struct WIND
@@ -89,6 +90,8 @@ class FLAG : public Entity
         }
     }
 
+    uint32_t AttributeChanged(ATTRIBUTES *attributes) override;
+
   private:
     struct FLAGDATA
     {
@@ -125,6 +128,7 @@ class FLAG : public Entity
 
         int HostGroup;
         bool bDeleted;
+        bool bDisabled = false;
     };
 
     int flagQuantity;
@@ -144,16 +148,17 @@ class FLAG : public Entity
     GROUPDATA *gdata;
 
     void FirstRun();
-    void SetTextureCoordinate() const;
+    void SetTextureCoordinate();
     void SetTreangle() const;
     void DoMove(FLAGDATA *pr, float delta_time) const;
-    void AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip);
+    void AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip, int groupNumber);
     void SetAll();
     void LoadIni();
     void GroupSTORM_DELETE(entid_t m_id);
     void DoSTORM_DELETE();
     void SetAdd(int flagNum);
     void MoveOtherHost(entid_t newm_id, int32_t flagNum, entid_t oldm_id);
+    void UpdateTexture(const std::string_view &texturePath);
 
     FLAGLXVERTEX *vertBuf;
     uint16_t *indxBuf;
