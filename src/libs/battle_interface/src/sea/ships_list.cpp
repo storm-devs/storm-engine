@@ -185,7 +185,7 @@ void SHIP_DESCRIBE_LIST::Release(int32_t charIdx)
 }
 
 void SHIP_DESCRIBE_LIST::Add(int32_t mainChrIndex, int32_t chIdx, ATTRIBUTES *pChAttr, ATTRIBUTES *pShipAttr, bool bMyShip,
-                             int32_t relation, uint32_t dwShipColor)
+                             bool bTransferableShip, int32_t relation, uint32_t dwShipColor)
 {
     assert(pChAttr != NULL);
     assert(pShipAttr != NULL);
@@ -199,6 +199,7 @@ void SHIP_DESCRIBE_LIST::Add(int32_t mainChrIndex, int32_t chIdx, ATTRIBUTES *pC
     pr->maxHP = pShipAttr->GetAttributeAsDword("HP");
     pr->maxSP = pShipAttr->GetAttributeAsDword("SP");
     pr->isMyShip = bMyShip;
+    pr->isTransferableShip = bTransferableShip;
     pr->relation = relation;
     pr->isDead = false;
     pr->pShip = nullptr;
