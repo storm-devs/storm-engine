@@ -665,7 +665,15 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     if (nNation >= 0 && nNation < m_aNationUV.size())
     {
         if (m_Nation.pImage)
+        {
+            m_Nation.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
             m_Nation.pImage->SetUV(m_aNationUV[nNation]);
+        }
+    }
+    else
+    {
+        if (m_Nation.pImage)
+            m_Nation.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
 
     if (nCharge >= 0 && nCharge < m_aChargeUV.size())
@@ -719,6 +727,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     else
     {
+        m_TextCaptainFencing.sText.clear();
         if (m_ImgCaptainFencing.pImage)
             m_ImgCaptainFencing.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
@@ -732,6 +741,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     else
     {
+        m_TextCaptainCannon.sText.clear();
         if (m_ImgCaptainCannon.pImage)
             m_ImgCaptainCannon.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
@@ -744,6 +754,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     else
     {
+        m_TextCaptainAccuracy.sText.clear();
         if (m_ImgCaptainAccuracy.pImage)
             m_ImgCaptainAccuracy.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
@@ -756,6 +767,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     else
     {
+        m_TextCaptainNavigation.sText.clear();
         if (m_ImgCaptainNavigation.pImage)
             m_ImgCaptainNavigation.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
@@ -768,6 +780,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     else
     {
+        m_TextCaptainBoarding.sText.clear();
         if (m_ImgCaptainBoarding.pImage)
             m_ImgCaptainBoarding.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
