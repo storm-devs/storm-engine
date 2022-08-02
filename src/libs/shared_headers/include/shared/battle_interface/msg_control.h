@@ -33,7 +33,7 @@
 #define BI_MSG_SET_ISLAND 46003            // "s" (modelName)
 #define BI_MSG_NOT_ENOUGH_BALLS_FLAG 46004 // "l"
 #define BI_IN_DEAD_SHIP 46009              // "l" (character index)
-// "laall" (character index,character attributes, base ship attributes, is my ship flag, relation)
+// "laallll" (character index,character attributes, base ship attributes, is my ship flag, relation, ship color, is transferable ship flag)
 #define BI_IN_CREATE_SHIP 46011
 #define BI_IN_DELETE_SHIP 46012      // "l" (character index)
 #define BI_IN_SET_COMMAND_MODE 46013 // "lll" (command mode, command icon number, character index)
