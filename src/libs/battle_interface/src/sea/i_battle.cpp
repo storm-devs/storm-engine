@@ -351,7 +351,7 @@ void BATTLE_INTERFACE::CheckSeaState()
         if (ps == main_sd)
             continue;
         bSailTo = true;
-        if (ps->isTransferableShip && !ps->isDead)
+        if (ps->isTransferableShip)
         {
             float curRad;
             if ((curRad = ~(ps->pShip->GetPos() - main_sd->pShip->GetPos())) < sqrRadius)
