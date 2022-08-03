@@ -9,7 +9,7 @@ namespace storm
 class SDLWindow : public OSWindow
 {
   public:
-    SDLWindow(int width, int height, bool fullscreen);
+    SDLWindow(int width, int height, int preferred_display, bool fullscreen, bool bordered);
     ~SDLWindow() override;
 
     void Show() override;
