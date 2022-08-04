@@ -177,7 +177,9 @@ int main(int argc, char *argv[])
     uint32_t dwMaxFPS = 0;
     bool bSteam = false;
     int width = 1024, height = 768;
+    int preferred_display = 0;
     bool fullscreen = false;
+    bool show_borders = false;
 
     if (ini)
     {
@@ -190,7 +192,9 @@ int main(int argc, char *argv[])
         }
         width = ini->GetInt(nullptr, "screen_x", 1024);
         height = ini->GetInt(nullptr, "screen_y", 768);
-        fullscreen = ini->GetInt(nullptr, "full_screen", false) ? true : false;
+        preferred_display = ini->GetInt(nullptr, "display", 0);
+        fullscreen = ini->GetInt(nullptr, "full_screen", false);
+        show_borders = ini->GetInt(nullptr, "window_borders", false);
         bSteam = ini->GetInt(nullptr, "Steam", 1) != 0;
     }
 
@@ -205,7 +209,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    std::shared_ptr<storm::OSWindow> window = storm::OSWindow::Create(width, height, fullscreen);
+    std::shared_ptr<storm::OSWindow> window =
+        storm::OSWindow::Create(width, height, preferred_display, fullscreen, show_borders);
     window->SetTitle("Sea Dogs");
     core_private->Set_Hwnd(static_cast<HWND>(window->OSHandle()));
     window->Subscribe(HandleWindowEvent);
