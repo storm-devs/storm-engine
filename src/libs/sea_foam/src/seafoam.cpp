@@ -425,14 +425,15 @@ void SEAFOAM::RealizeShipFoam_Particles(tShipFoamInfo &_shipFoamInfo, uint32_t _
 
     if (soundService && (_shipFoamInfo.doSplash))
     {
+        auto pos = _shipFoamInfo.shipModel->mtx * CVECTOR(0.f, 0.f, _shipFoamInfo.hullInfo.boxsize.z / 2.f);
+        pos.y = sea->WaveXZ(pos.x, pos.z);
+
         if (!_shipFoamInfo.sound || !soundService->SoundIsPlaying(_shipFoamInfo.sound))
-            _shipFoamInfo.sound = soundService->SoundPlay("ship_bow", PCM_3D, VOLUME_FX, false, false, true);
-        //_shipFoamInfo.sound = soundService->SoundPlay("ship_bow", PCM_3D, VOLUME_FX, false, true, true);
-        if (_shipFoamInfo.sound)
         {
-            auto pos = _shipFoamInfo.shipModel->mtx * CVECTOR(0.f, 0.f, _shipFoamInfo.hullInfo.boxsize.z / 2.f);
-            pos.y = sea->WaveXZ(pos.x, pos.z);
-            // soundService->SoundSetVolume(_shipFoamInfo.sound, _shipFoamInfo.splashFactor);
+            _shipFoamInfo.sound = soundService->SoundPlay("ship_bow", PCM_3D, VOLUME_FX, false, false, true, 0, &pos);
+        }
+        else if (_shipFoamInfo.sound)
+        {
             soundService->SoundSet3DParam(_shipFoamInfo.sound, SM_POSITION, &pos);
         }
     }
