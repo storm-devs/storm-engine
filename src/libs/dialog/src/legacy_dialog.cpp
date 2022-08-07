@@ -362,7 +362,7 @@ void LegacyDialog::UpdateBackBuffers()
     {
         const size_t text_lines = formattedDialogText_.size() + formattedLinks_.size();
         textureLines_ = static_cast<int32_t>(
-            std::floor(static_cast<double>((5 + text_lines * lineHeight_) / vScale) / DIALOG_LINE_HEIGHT));
+            std::floor(static_cast<double>((text_lines * lineHeight_) / vScale) / DIALOG_LINE_HEIGHT));
 
         if (!formattedLinks_.empty())
         {
@@ -459,10 +459,12 @@ void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
 
         CMatrix mtx, view, prj;
         uint32_t lightingState, zenableState;
+        uint32_t zWriteState{};
         RenderService->GetTransform(D3DTS_VIEW, view);
         RenderService->GetTransform(D3DTS_PROJECTION, prj);
         RenderService->GetRenderState(D3DRS_LIGHTING, &lightingState);
         RenderService->GetRenderState(D3DRS_ZENABLE, &zenableState);
+        RenderService->GetRenderState(D3DRS_ZWRITEENABLE, &zWriteState);
 
         mtx.BuildViewMatrix(CVECTOR(0.0f, 0.0f, 0.0f), CVECTOR(0.0f, 0.0f, 1.0f), CVECTOR(0.0f, 1.0f, 0.0f));
         RenderService->SetTransform(D3DTS_VIEW, (D3DMATRIX *)&mtx);
@@ -482,6 +484,7 @@ void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
         RenderService->Clear(0, 0, D3DCLEAR_ZBUFFER, 0, 1.0f, 0);
         RenderService->SetRenderState(D3DRS_LIGHTING, TRUE);
         RenderService->SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
+        RenderService->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 
         D3DLIGHT9 oldLight{};
         BOOL oldLightEnabled = FALSE;
@@ -510,6 +513,7 @@ void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
         RenderService->SetViewport(&viewport);
         RenderService->SetRenderState(D3DRS_LIGHTING, lightingState);
         RenderService->SetRenderState(D3DRS_ZENABLE, zenableState);
+        RenderService->SetRenderState(D3DRS_ZWRITEENABLE, zWriteState);
     }
 }
 
