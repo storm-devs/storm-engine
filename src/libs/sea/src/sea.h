@@ -72,6 +72,7 @@ class SEA : public SEA_BASE
 
     uint32_t dwMaxDim, dwMinDim;
     float fMaxSeaHeight;
+    float fMaxSeaDistance;
     float fGridStep;
     float fLodScale;
     float fBumpScale, fBumpSpeed;
