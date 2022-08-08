@@ -2678,7 +2678,7 @@ bool COMPILER::CreateMessage(MESSAGE *pMs, uint32_t s_off, uint32_t var_offset, 
             break;
         case 'i':
             pV = pV->GetVarPointer();
-            if (!(pV->GetType() == VAR_OBJECT || pV->GetType() == VAR_AREFERENCE))
+            if (pV == nullptr || !(pV->GetType() == VAR_OBJECT || pV->GetType() == VAR_AREFERENCE))
             {
                 SetError("CreateMessage: Invalid Data");
                 return false;
