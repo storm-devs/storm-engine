@@ -57,7 +57,7 @@ class LifecycleDiagnosticsService final
     std::unique_ptr<LoggingService> loggingService_;
     crash_info_collector collectCrashInfo_;
 
-    static sentry_value_t beforeCrash(sentry_value_t event, void *hint, void *closure);
+    static sentry_value_t beforeCrash(const sentry_ucontext_t *uctx, sentry_value_t event, void *closure);
 };
 
 } // namespace storm::diag
