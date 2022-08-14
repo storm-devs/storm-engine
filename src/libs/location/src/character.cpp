@@ -542,6 +542,8 @@ Character::Character()
     fgtCurIndex = fgtSetIndex = -1;
     isParryState = false;
     isFeintState = false;
+	isRecoilState = false; // EvgAnat - add recoil state
+    isFireState = false; // EvgAnat - add fire state to improve npc logic
     isMove = false;
     isBack = false;
     isRun = false;
@@ -1622,10 +1624,38 @@ void Character::Recoil()
         return;
     if (!GetLocation()->IsSwimming())
         return;
-    fgtSetType = fgt_recoil;
-    fgtSetIndex = 0;
-    recoilWait = 0.8f;
-    isTurnLock = false;
+	// EvgAnat - recoil energy cost -->
+	VDATA *res = nullptr;
+	res = core.Event("ChrCheckEnergy", "is", GetId(), "recoil");
+    if (res)
+    {
+        int32_t isEnable = 1;
+        if (res->Get(isEnable))
+        {
+            if (!isEnable)
+            {
+                res = nullptr;
+            }
+        }
+        else
+        {
+            res = nullptr;
+        }
+    }
+	if (res)
+    {
+		
+        fgtSetType = fgt_recoil;
+		fgtSetIndex = 0;
+		recoilWait = 0.8f;
+		isTurnLock = false;
+    }
+    else
+    {
+        fgtSetType = fgt_none;
+        fgtSetIndex = -1;
+    }
+	// EvgAnat - recoil energy cost <--
 }
 
 // Jump left
@@ -1639,10 +1669,38 @@ void Character::StrafeLeft()
         return;
     if (!GetLocation()->IsSwimming())
         return;
-    strafeWait = 0.8f;
-    fgtSetType = fgt_strafe_l;
-    fgtSetIndex = 0;
-    isTurnLock = false;
+    // EvgAnat - strafe left energy cost -->
+	VDATA *res = nullptr;
+	res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_l");
+    if (res)
+    {
+        int32_t isEnable = 1;
+        if (res->Get(isEnable))
+        {
+            if (!isEnable)
+            {
+                res = nullptr;
+            }
+        }
+        else
+        {
+            res = nullptr;
+        }
+    }
+	if (res)
+    {
+        strafeWait = 0.8f;
+		fgtSetType = fgt_strafe_l;
+		fgtSetIndex = 0;
+		isTurnLock = false;
+    }
+    else
+    {
+        fgtSetType = fgt_none;
+        fgtSetIndex = -1;
+    }
+	// EvgAnat - strafe left energy cost <--
+
     // impulse += 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay))
 }
 
@@ -1657,10 +1715,38 @@ void Character::StrafeRight()
         return;
     if (!GetLocation()->IsSwimming())
         return;
-    strafeWait = 0.8f;
-    fgtSetType = fgt_strafe_r;
-    fgtSetIndex = 0;
-    isTurnLock = false;
+    // EvgAnat - strafe right energy cost -->
+	VDATA *res = nullptr;
+	res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_r");
+    if (res)
+    {
+        int32_t isEnable = 1;
+        if (res->Get(isEnable))
+        {
+            if (!isEnable)
+            {
+                res = nullptr;
+            }
+        }
+        else
+        {
+            res = nullptr;
+        }
+    }
+	if (res)
+    {
+        strafeWait = 0.8f;
+		fgtSetType = fgt_strafe_r;
+		fgtSetIndex = 0;
+		isTurnLock = false;
+    }
+    else
+    {
+        fgtSetType = fgt_none;
+        fgtSetIndex = -1;
+    }
+	// EvgAnat - strafe right energy cost <--
+	
     // impulse -= 15.0f*CVECTOR(-cosf(ay), 0.0f, sinf(ay));
 }
 
@@ -2750,22 +2836,40 @@ void Character::ActionEvent(Animation *animation, int32_t playerIndex, const cha
     {
         isParryState = true;
         isFeintState = false;
+		isRecoilState = false; // EvgAnat - recoil event
     }
     else if (storm::iEquals(eventName, "Parry end"))
     {
         isParryState = false;
         isFeintState = false;
+		isRecoilState = false; // EvgAnat - recoil event
     }
     else if (storm::iEquals(eventName, "Feint start"))
     {
         isParryState = false;
         isFeintState = true;
+		isRecoilState = false; // EvgAnat - recoil event
     }
     else if (storm::iEquals(eventName, "Feint end"))
     {
         isParryState = false;
         isFeintState = false;
+		isRecoilState = false; // EvgAnat - recoil event
     }
+	// EvgAnat - recoil event -->
+	else if (storm::iEquals(eventName, "Recoil start"))
+	{
+        isParryState = false;
+        isFeintState = false;
+		isRecoilState = true; 
+    }	
+	else if (storm::iEquals(eventName, "Recoil end"))
+    {
+        isParryState = false;
+        isFeintState = false;
+		isRecoilState = false; 
+    }
+	// EvgAnat - recoil event <--
     else /*
 if(storm::iEquals(eventName, "sound_pistol"))
 {
@@ -2833,21 +2937,38 @@ if(storm::iEquals(eventName, "Blade to belt"))
                 else if (storm::iEquals(eventName, CHARACTER_FIGHT_GUNHAND))
                 {
                     core.Send_Message(blade, "l", MSG_BLADE_GUNHAND);
+                    isFireState = true;
                 }
                 else if (storm::iEquals(eventName, CHARACTER_FIGHT_GUNFIRE))
                 {
+                    isFireState = false;
                     core.Send_Message(blade, "l", MSG_BLADE_GUNFIRE);
                     // PlaySound("pistol_shot");
                     isFired = true;
                     float kDist;
                     Character *chr = FindGunTarget(kDist, CheckShotOnlyEnemyTest());
                     entid_t enemy{};
+					int32_t resHit = 0; // EvgAnat: 0 - null target, 1 - miss, 2 - hit
                     if (chr)
                     {
                         enemy = chr->GetId();
-                        chr->Hit(fgt_hit_fire);
+						// EvgAnat - new script event for missing chance -->
+						resHit = 1;
+						VDATA *vd = core.Event("Check_ChrHitFire", "iilf", GetId(), enemy, static_cast<int32_t>(chr->isRecoilState), kDist);
+						if (vd && vd->Get(resHit))
+						{
+							if (resHit == 2)
+							{
+								core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 1);
+								chr->Hit(fgt_hit_fire);
+							}
+						}					
                     }
-                    core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, chr != nullptr);
+					if (resHit <= 1)
+					{
+						core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 0);
+					}
+					// EvgAnat - new script event for missing chance <--
                 }
             }
         }
@@ -4220,6 +4341,7 @@ void Character::UpdateAnimation()
             {
                 isParryState = false;
                 isFeintState = false;
+				isRecoilState = false; // EvgAnat - recoil state
                 /*
                         if(storm::iEquals(characterID, "Blaze"))
                         {
@@ -4927,6 +5049,7 @@ inline void Character::CheckAttackHit(bool isGunBlade)
         return;
     // go through all the enemies
     bool isParry = false;
+	bool isDodge = false; // EvgAnat - recoil dodging
     bool isHrrrSound = true;
     bool isUseEnergy = true; // remove energy once boal
     for (size_t i = 0; i < fndCharacter.size(); i++)
@@ -4935,7 +5058,20 @@ inline void Character::CheckAttackHit(bool isGunBlade)
         Supervisor::FindCharacter &fc = fndCharacter[i];
         if (fc.c->liveValue < 0 || fc.c->deadName || fc.d2 <= 0.0f)
             continue;
-
+		// EvgAnat - recoil dodging event -->
+		if (fc.c->isRecoilState)
+		{
+			int32_t resHit = 0;
+			VDATA *vd = core.Event("Check_ChrHitAttack", "iil", GetId(), fc.c->GetId(), static_cast<int32_t>(fc.c->isRecoilState));
+			if(vd && vd->Get(resHit))
+			{
+				if (resHit == 0)
+				{
+					isDodge = true;
+				}
+			}
+		}
+		// EvgAnat - recoil dodging event <--
         if (fc.c->fgtCurType == fgt_parry && fc.c->isParryState)
         {
             isParry = true;
@@ -4950,8 +5086,8 @@ inline void Character::CheckAttackHit(bool isGunBlade)
             fc.c->Attack(this, fgt_attack_feintc);
             fc.c->UpdateAnimation(); // boal
             // fc.c->PlaySound("fgt_feint");
-        }
-        else
+        }	
+        else if(!isDodge) // EvgAnat - check dodging
         {
             bool isBlocked = (fc.c->fgtCurType == fgt_block || fc.c->fgtCurType == fgt_blockhit);
             if (isBlockBreak)

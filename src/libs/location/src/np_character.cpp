@@ -858,11 +858,60 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     }
     // collect everyone around
     auto *const location = GetLocation();
-    auto fndCharacter = location->supervisor.FindCharacters(this, CHARACTER_ATTACK_DIST, 0.0f, 0.01f, 0.0f, false);
+	
+	//EvgAnat - recoil against fire -->
+	bool isEnemyFire = false;
+	auto fndCharacter = location->supervisor.FindCharacters(this, 25.0f, 60.0f, 0.4f, 30.0f, false);
+	const int32_t grpIndex = chrGroup->FindGroupIndex(group);
+	if (!fndCharacter.empty())
+	{
+		for (size_t i = 0; i < fndCharacter.size(); i++)
+		{
+			Supervisor::FindCharacter &fc = fndCharacter[i];
+			auto chr = static_cast<NPCharacter *>(fc.c);
+			if (chr->liveValue < 0 || chr->deadName || fc.d2 <= 0.0f || chr == this)
+				continue;
+			const int32_t grp = chrGroup->FindGroupIndex(chr->group);
+			if (chrGroup->FindRelation(grpIndex, grp).curState != CharactersGroups::rs_enemy)
+				continue;
+            if (chr->isFireState)
+            {
+				auto checkCharacter = location->supervisor.FindCharacters(chr, 25.0f, 15.0f, 0.4f, 30.0f, false);
+				for (size_t j = 0; j < checkCharacter.size(); j++)
+				{
+					Supervisor::FindCharacter &fch = checkCharacter[j];
+					auto chr2 = static_cast<NPCharacter *>(fch.c);
+					if (chr2 == this)
+					{
+						isEnemyFire = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+	if (isEnemyFire)
+	{
+		int32_t isDodge = 0;
+		vd = core.Event("NPC_IsDodge", "i", GetId());
+		if (vd)
+			vd->Get(isDodge);
+		if (isDodge)
+		{
+			switch(rand() % 3)
+			{
+				case 0:	Recoil();		break;
+				case 1:	StrafeLeft();	break;
+				case 2:	StrafeRight();	break;
+			}
+			return;
+		}
+	}
+	// EvgAnat - recoil against fire <--
+	
+    fndCharacter = location->supervisor.FindCharacters(this, CHARACTER_ATTACK_DIST, 0.0f, 0.01f, 0.0f, false);
     if (fndCharacter.empty())
         return;
-    // our group
-    const int32_t grpIndex = chrGroup->FindGroupIndex(group);
     // Enemy table
     auto enemies = std::vector<EnemyState>();
     // Our direction
