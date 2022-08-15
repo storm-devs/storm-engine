@@ -2,7 +2,7 @@
 
 #include "s_import_func.h"
 #include "s_vartab.h"
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 #include <unordered_map>
 #include <vector>
 

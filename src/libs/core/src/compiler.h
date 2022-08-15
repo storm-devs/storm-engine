@@ -19,7 +19,7 @@
 #include "logging.hpp"
 #include "script_cache.h"
 
-#include "storm/ringbuffer_stack.hpp"
+#include "ringbuffer_stack.hpp"
 
 #define BCODE_BUFFER_BLOCKSIZE 4096
 #define IOBUFFER_SIZE 65535

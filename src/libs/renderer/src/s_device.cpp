@@ -7,7 +7,7 @@
 #include "s_import_func.h"
 #include "texture.h"
 #include "v_s_stack.h"
-#include "storm/fs.h"
+#include "fs.h"
 #include "debug-trap.h"
 
 #include <algorithm>

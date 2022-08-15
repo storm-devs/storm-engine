@@ -8,7 +8,7 @@
 #include "data_string.h"
 #include "data_uv.h"
 #include "defines.h"
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 
 FieldList::FieldList()
 {

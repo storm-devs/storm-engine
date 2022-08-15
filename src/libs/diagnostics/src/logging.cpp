@@ -3,7 +3,7 @@
 #include <spdlog/spdlog.h>
 
 #include "spdlog_sinks/syncable_sink.hpp"
-#include "storm/fs.h"
+#include "fs.h"
 
 namespace
 {

@@ -10,7 +10,7 @@
 
 #include "locator_array.h"
 
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 
 // ============================================================================================
 // Construction, destruction

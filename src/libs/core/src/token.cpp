@@ -4,7 +4,7 @@
 
 #include "defines.h"
 #include "utf8.h"
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 #include "debug-trap.h"
 
 #define DISCARD_DATABUFFER                                                                                             \

@@ -1,7 +1,7 @@
 #include "file_service.h"
 #include "core_impl.h"
 #include "storm_assert.h"
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 
 #include <SDL2/SDL.h>
 #include <exception>
