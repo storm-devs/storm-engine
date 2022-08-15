@@ -1,8 +1,7 @@
 #pragma once
 
-//#include <windows.h>
-#include "c_vector.h"
-#include "entity.h"
+#include <c_vector.h>
+#include <entity.h>
 
 class VPARTICLE_SYSTEM
 {

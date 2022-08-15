@@ -4,7 +4,7 @@
 #include "character.h"
 #include "sd2_h/cannon_trace.h"
 #include "vma.hpp"
-#include "v_particle_system.h"
+#include <v_particle_system.h>
 
 struct BALL_PARAMS
 {

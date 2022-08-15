@@ -4,7 +4,7 @@
 #include "model.h"
 #include "sea_base.h"
 #include "ship_base.h"
-#include "v_particle_system.h"
+#include <v_particle_system.h>
 
 #include <string>
 

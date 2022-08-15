@@ -5,7 +5,7 @@
 #include "geometry.h"
 #include "v_file_service.h"
 #include "vma.hpp"
-#include "v_particle_system.h"
+#include <v_particle_system.h>
 
 #define MAX_PS_TEXTURES 8
 #define VERTEXS_ON_PARTICLE 6

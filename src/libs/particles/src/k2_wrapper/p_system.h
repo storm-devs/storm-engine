@@ -3,7 +3,7 @@
 #include "c_vector.h"
 #include "matrix.h"
 #include "vma.hpp"
-#include "v_particle_system.h"
+#include <v_particle_system.h>
 
 class IParticleSystem;
 class PARTICLES;
