@@ -2,7 +2,7 @@
 #include "bi_defines.h"
 #include "core.h"
 #include "shared/battle_interface/msg_control.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 #include <exception>
 
 ActivePerkShower::ActivePerkShower()

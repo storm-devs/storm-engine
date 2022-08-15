@@ -8,7 +8,7 @@
 #include "data_string.h"
 
 #include "../../i_common/names.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #define HEADER "PSYS"
 #define VERSION "v3.5"

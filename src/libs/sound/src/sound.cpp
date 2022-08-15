@@ -4,7 +4,7 @@
 #include "sound.h"
 
 #include "core.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 CREATE_CLASS(SOUND)
 

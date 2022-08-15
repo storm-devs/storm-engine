@@ -12,7 +12,7 @@
 
 #include "core.h"
 #include "storm_assert.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 // ============================================================================================
 // Construction, destruction

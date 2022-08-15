@@ -6,7 +6,7 @@
 #include "core.h"
 #include "object.h"
 #include "types3d.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 class LOCAL_COLLIDE
 {

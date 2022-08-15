@@ -3,7 +3,7 @@
 #include "core.h"
 
 #include "image/img_render.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 // extern data
 entid_t BIUtils::idBattleInterface;

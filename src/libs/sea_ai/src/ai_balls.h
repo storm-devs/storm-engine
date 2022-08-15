@@ -3,7 +3,7 @@
 #include "ai_helper.h"
 #include "character.h"
 #include "sd2_h/cannon_trace.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 #include "v_particle_system.h"
 
 struct BALL_PARAMS

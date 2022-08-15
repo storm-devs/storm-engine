@@ -13,7 +13,7 @@
 #include "matrix.h"
 #include "path_tracks.h"
 #include "dx9render.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 #include <string>
 #include <vector>
 

@@ -4,7 +4,7 @@
 #include "defines.h"
 #include "storm_assert.h"
 #include "v_file_service.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #include <algorithm>
 #include <string>

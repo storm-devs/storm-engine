@@ -13,7 +13,7 @@
 #include "animation.h"
 #include "matrix.h"
 #include "model.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 #include <string>
 
 class Location;

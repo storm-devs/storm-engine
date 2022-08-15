@@ -6,7 +6,7 @@
 #include "dx9render.h"
 #include "editor/editor.h"
 #include "inode.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #include <filesystem>
 

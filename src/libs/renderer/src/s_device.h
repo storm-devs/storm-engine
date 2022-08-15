@@ -9,7 +9,7 @@
 #include "video_texture.h"
 #include "defines.h"
 #include "dx9render.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #include "d3d9types.h"
 #include "script_libriary.h"

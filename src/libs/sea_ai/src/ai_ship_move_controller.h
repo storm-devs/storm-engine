@@ -2,7 +2,7 @@
 
 #include "ai_flow_graph.h"
 #include "sd2_h/vai_objbase.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 // ============================================================================
 // master class AIShipMoveController

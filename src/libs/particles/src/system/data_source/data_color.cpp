@@ -2,7 +2,7 @@
 
 #include "../../i_common/graph_time.h"
 #include "storm_assert.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 // constructor / destructor
 DataColor::DataColor() : ZeroColor(0xFFFFFFFF)

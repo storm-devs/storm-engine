@@ -1,6 +1,6 @@
 #include "texture_sequence.h"
 #include "defines.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #include "core.h"
 

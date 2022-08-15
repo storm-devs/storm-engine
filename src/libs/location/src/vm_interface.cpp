@@ -16,7 +16,7 @@
 #include "np_character.h"
 #include "player.h"
 #include "wide_screen.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 CREATE_CLASS(Location)
 

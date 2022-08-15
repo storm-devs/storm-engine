@@ -1,7 +1,7 @@
 #include "battle_man_command.h"
 #include "core.h"
 #include "shared/battle_interface/msg_control.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 BIManCommandList::BIManCommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs) : BICommandList(eid, pA, rs)
 {

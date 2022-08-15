@@ -1,7 +1,7 @@
 #pragma once
 
 #include "service.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 class VSTRSERVICE : public SERVICE
 {

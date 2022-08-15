@@ -2,7 +2,7 @@
 
 #include "dx9render.h"
 #include "matrix.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 //#include "iimage.h"
 
 #define USED_CODES 0x2070 // end of https://unicode-table.com/en/blocks/general-punctuation/

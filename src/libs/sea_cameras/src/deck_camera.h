@@ -6,7 +6,7 @@
 #include "common_camera.h"
 #include "dx9render.h"
 #include "model.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #define D3DFVF_VERTEX (D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 #define AIM_SIZE 0.05f

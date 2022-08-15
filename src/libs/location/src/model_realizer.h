@@ -2,7 +2,7 @@
 
 #include "dx9render.h"
 #include "geometry.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 class Lights;
 

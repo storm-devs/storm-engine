@@ -13,7 +13,7 @@
 #include "controls.h"
 #include "core.h"
 
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #define WDM_CAMERASTDCTRL_MAXDLT 400
 

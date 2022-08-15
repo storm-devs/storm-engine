@@ -3,6 +3,7 @@
 #include "i_battle.h"
 
 #include "core.h"
+#include "vma.hpp"
 
 #include "ship_pointer.h"
 #include "battle_ship_sign.h"

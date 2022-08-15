@@ -7,7 +7,7 @@
 
 #include "core.h"
 #include "shared/bimanager/messages.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 BI_InterfaceManager::BI_InterfaceManager()
 {

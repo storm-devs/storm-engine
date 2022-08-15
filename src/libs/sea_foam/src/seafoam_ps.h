@@ -4,7 +4,7 @@
 #include "dx9render.h"
 #include "geometry.h"
 #include "v_file_service.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 #include "v_particle_system.h"
 
 #define MAX_PS_TEXTURES 8

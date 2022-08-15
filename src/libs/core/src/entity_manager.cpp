@@ -6,7 +6,7 @@
 #include <ranges>
 #include <type_traits>
 
-#include "v_module_api.h"
+#include "vma.hpp"
 
 namespace
 {
