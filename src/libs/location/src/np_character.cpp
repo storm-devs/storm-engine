@@ -858,11 +858,11 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     }
     // collect everyone around
     auto *const location = GetLocation();
+	const int32_t grpIndex = chrGroup->FindGroupIndex(group);
 	
 	//EvgAnat - recoil against fire -->
 	bool isEnemyFire = false;
-	auto fndCharacter = location->supervisor.FindCharacters(this, 25.0f, 60.0f, 0.4f, 30.0f, false);
-	const int32_t grpIndex = chrGroup->FindGroupIndex(group);
+	auto fndCharacter = location->supervisor.FindCharacters(this, 25.0f, 60.0f, 0.4f, 30.0f, false);	
 	if (!fndCharacter.empty())
 	{
 		for (size_t i = 0; i < fndCharacter.size(); i++)
