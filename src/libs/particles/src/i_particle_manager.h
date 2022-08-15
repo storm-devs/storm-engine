@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../dx9render.h"
+#include <dx9render.h>
 
 class ParticleService;
 class IParticleSystem;

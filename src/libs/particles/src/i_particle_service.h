@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../service.h"
+#include <service.h>
 
 class IParticleManager;
 
