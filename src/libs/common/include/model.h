@@ -1,10 +1,10 @@
 #pragma once
 
-#include "animation.h"
 #include "matrix.h"
 #include "geos.h"
 #include "object.h"
 
+class Animation;
 class NODER;
 
 class NODE

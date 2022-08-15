@@ -1,5 +1,6 @@
 #include "sailors.h"
 
+#include "animation.h"
 #include "shared/messages.h"
 #include "shared/sea_ai/script_defines.h"
 

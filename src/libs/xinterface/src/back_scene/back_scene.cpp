@@ -1,4 +1,6 @@
 #include "back_scene.h"
+
+#include "animation.h"
 #include "../xinterface.h"
 #include "geometry.h"
 #include "math3d/matrix.h"

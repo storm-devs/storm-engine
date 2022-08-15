@@ -9,6 +9,8 @@
 //============================================================================================
 
 #include "loc_eagle.h"
+
+#include "animation.h"
 #include "entity.h"
 #include "location.h"
 #include "core.h"
