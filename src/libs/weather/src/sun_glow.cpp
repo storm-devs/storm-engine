@@ -1,4 +1,6 @@
 #include "sun_glow.h"
+
+#include "core.h"
 #include "sky.h"
 
 SUNGLOW::SUNGLOW()

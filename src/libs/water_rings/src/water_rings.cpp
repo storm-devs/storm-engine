@@ -1,4 +1,6 @@
 #include "water_rings.h"
+
+#include "core.h"
 #include "rands.h"
 
 #include "defines.h"

@@ -1,4 +1,6 @@
 #include "mast.h"
+
+#include "core.h"
 #include "island_base.h"
 #include "shared/mast_msg.h"
 #include "shared/sail_msg.h"

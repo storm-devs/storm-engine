@@ -1,3 +1,4 @@
+#include "core.h"
 #include "vcollide.h"
 
 CREATE_SERVICE(COLL)

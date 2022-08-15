@@ -1,4 +1,5 @@
 #include "astronomy.h"
+#include "core.h"
 #include "weather_base.h"
 #include "v_file_service.h"
 

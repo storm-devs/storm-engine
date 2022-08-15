@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME ship
     TYPE storm_module
-    DEPENDENCIES common core sea_ai particles
+    DEPENDENCIES common core sea_ai particles renderer
 )

@@ -1,4 +1,7 @@
 #include "water_flare.h"
+
+#include "core.h"
+
 #include <stdio.h>
 
 #define WATERFLARE_DIR "WEATHER\\SEA\\FLARE\\"

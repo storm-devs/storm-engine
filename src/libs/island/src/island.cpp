@@ -1,4 +1,6 @@
 #include "island.h"
+
+#include "core.h"
 #include "foam.h"
 #include "weather_base.h"
 #include "inlines.h"

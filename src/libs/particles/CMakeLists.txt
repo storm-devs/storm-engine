@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME particles
     TYPE storm_module
-    DEPENDENCIES common core util
+    DEPENDENCIES common core renderer util
 )

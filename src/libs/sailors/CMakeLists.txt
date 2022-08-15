@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME sailors
     TYPE storm_module
-    DEPENDENCIES animation common core
+    DEPENDENCIES animation common core renderer
 )

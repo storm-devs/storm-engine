@@ -1,5 +1,7 @@
 #include "astronomy.h"
 
+#include "core.h"
+
 VDX9RENDER *Astronomy::pRS = nullptr;
 VGEOMETRY *Astronomy::pGS = nullptr;
 

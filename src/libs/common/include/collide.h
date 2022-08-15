@@ -3,8 +3,8 @@
 #include "c_vector.h"
 
 #include "entity.h"
-#include "core.h"
 #include "object.h"
+#include "service.h"
 #include "types3d.h"
 #include "vma.hpp"
 

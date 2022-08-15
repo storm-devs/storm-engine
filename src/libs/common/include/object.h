@@ -1,8 +1,9 @@
 #pragma once
 
 #include "matrix.h"
-#include "dx9render.h"
+#include "entity.h"
 #include "triangle.h"
+#include "types3d.h"
 
 using ADD_POLYGON_FUNC = bool (*)(const CVECTOR *v, int32_t nv);
 
