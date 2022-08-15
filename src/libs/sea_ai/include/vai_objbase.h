@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../c_vector.h"
-#include "../matrix.h"
-#include "../model.h"
+#include "c_vector.h"
+#include "matrix.h"
+#include "model.h"
 #include "cannon_trace.h"
 
 class CSaveLoad;

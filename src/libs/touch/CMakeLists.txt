@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME touch
     TYPE storm_module
-    DEPENDENCIES common core renderer
+    DEPENDENCIES common core island renderer
 )

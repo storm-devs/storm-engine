@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME weather
     TYPE storm_module
-    DEPENDENCIES common core renderer
+    DEPENDENCIES collide common core renderer sea
 )

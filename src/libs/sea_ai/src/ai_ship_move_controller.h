@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ai_flow_graph.h"
-#include "sd2_h/vai_objbase.h"
+#include "vai_objbase.h"
 #include "vma.hpp"
 
 // ============================================================================

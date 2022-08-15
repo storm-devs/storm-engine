@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cannon_trace.h"
+#include "vma.hpp"
 
 class SEA_BASE : public CANNON_TRACE_BASE
 {

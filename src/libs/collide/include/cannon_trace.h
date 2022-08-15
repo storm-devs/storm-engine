@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../object.h"
+#include "object.h"
 
 class CANNON_TRACE_BASE : public COLLISION_OBJECT
 {

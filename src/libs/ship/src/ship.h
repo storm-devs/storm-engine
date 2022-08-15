@@ -12,7 +12,7 @@
 #include "fire_place.h"
 #include "ship_lights.h"
 
-#include "sd2_h/save_load.h"
+#include "save_load.h"
 #include "d_timer.h"
 #include "ship_msg.h"
 #include <vector>
