@@ -1,5 +1,6 @@
 #include "weather.h"
 #include "astronomy.h"
+#include "core.h"
 #include "lightning.h"
 #include "sun_glow.h"
 #include "water_flare.h"
