@@ -2,7 +2,7 @@
 
 #define MAX_CANNON_NAME_LENGTH 100
 
-using ship_t = struct
+struct ship_t
 {
     int32_t iClass;
     float fSpeedRate, fTurnRate;
