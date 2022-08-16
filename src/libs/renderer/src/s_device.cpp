@@ -925,8 +925,6 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, int32_t width, int32_t hei
 
     m_fHeightDeformator = (float)(height * 4.0f) / (float)(width * 3.0f);
 
-    d3d9->GetGammaRamp(0, &DefaultRamp);
-
     // UNGUARD
     return true;
 }
@@ -957,9 +955,6 @@ bool DX9RENDER::ReleaseDevice()
             Textures[t].ref = NULL;
             delete Textures[t].name;
         }
-
-    if (d3d9)
-        d3d9->SetGammaRamp(0, D3DSGR_NO_CALIBRATION, &DefaultRamp);
 
     if (d3d9 != nullptr && CHECKD3DERR(d3d9->Release()) == false)
         res = false;
@@ -2643,7 +2638,6 @@ void DX9RENDER::RestoreRender()
         CHECKD3DERR(d3d9->LightEnable(i, false));
     }
     SetCommonStates();
-    d3d9->GetGammaRamp(0, &DefaultRamp);
 
 #ifdef _WIN32 // Effects
     RecompileEffects();
@@ -4386,21 +4380,15 @@ void DX9RENDER::EndProgressView()
 
 void DX9RENDER::SetColorParameters(float fGamma, float fBrightness, float fContrast)
 {
-    D3DGAMMARAMP ramp;
-
+    uint16_t rgb[256];
     for (uint32_t i = 0; i < 256; i++)
     {
-        float fRamp =
-            fContrast * 255.0f * 256.0f * powf(static_cast<float>(i / 255.0f), 1.0f / fGamma) + fBrightness * 256.0f;
-        if (fRamp < 0.0f)
-            fRamp = 0.0f;
-        if (fRamp > 65535.0f)
-            fRamp = 65535.0f;
-        ramp.red[i] = static_cast<uint16_t>(fRamp);
-        ramp.green[i] = static_cast<uint16_t>(fRamp);
-        ramp.blue[i] = static_cast<uint16_t>(fRamp);
+        float fRamp = std::clamp(fContrast * 255.0f * 256.0f * powf(static_cast<float>(i / 255.0f), 1.0f / fGamma) +
+                                     fBrightness * 256.0f,
+                                 0.0f, 65535.0f);
+        rgb[i] = static_cast<uint16_t>(fRamp);
     }
-    d3d9->SetGammaRamp(0, D3DSGR_NO_CALIBRATION, &ramp);
+    core.GetWindow()->SetGamma(rgb, rgb, rgb);
 }
 
 void DX9RENDER::MakeDrawVector(RS_LINE *pLines, uint32_t dwNumSubLines, const CMatrix &mMatrix, CVECTOR vUp, CVECTOR v1,
