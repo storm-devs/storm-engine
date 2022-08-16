@@ -52,7 +52,8 @@ auto assembleArchiveCmd()
 
 void log_sentry(sentry_level_t level, const char *message, va_list args, void *)
 {
-    spdlog::level::level_enum log_level = spdlog::level::critical;
+    // TODO:
+    /* spdlog::level::level_enum log_level = spdlog::level::critical;
     switch (level)
     {
     case SENTRY_LEVEL_DEBUG:
@@ -76,7 +77,7 @@ void log_sentry(sentry_level_t level, const char *message, va_list args, void *)
     if (vsnprintf(text, std::size(text), message, args) > 0)
     {
         spdlog::log(log_level, text);
-    }
+    }*/
 }
 
 }
