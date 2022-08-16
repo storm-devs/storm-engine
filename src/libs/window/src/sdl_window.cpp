@@ -81,6 +81,11 @@ void SDLWindow::SetTitle(const std::string &title)
     SDL_SetWindowTitle(window_.get(), title.c_str());
 }
 
+void SDLWindow::SetGamma(const uint16_t (&red)[256], const uint16_t (&green)[256], const uint16_t (&blue)[256])
+{
+    SDL_SetWindowGammaRamp(window_.get(), red, green, blue);
+}
+
 int SDLWindow::Subscribe(const EventHandler &handler)
 {
     int id = 1;
@@ -114,12 +119,12 @@ void *SDLWindow::OSHandle()
 #endif
 }
 
-SDL_Window *SDLWindow::SDLHandle()
+SDL_Window *SDLWindow::SDLHandle() const
 {
     return window_.get();
 }
 
-void SDLWindow::ProcessEvent(const SDL_WindowEvent &evt)
+void SDLWindow::ProcessEvent(const SDL_WindowEvent &evt) const
 {
     Event winEvent;
     switch (evt.event)

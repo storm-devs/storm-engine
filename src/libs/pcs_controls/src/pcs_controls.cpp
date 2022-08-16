@@ -433,7 +433,7 @@ void PCS_CONTROLS::Update(uint32_t DeltaTime)
     nMouseDy = point.y - nMouseYPrev;
 
     RECT r;
-    GetWindowRect(static_cast<HWND>(core.GetAppHWND()), &r);
+    GetWindowRect(static_cast<HWND>(core.GetWindow()->OSHandle()), &r);
     nMouseXPrev = r.left + (r.right - r.left) / 2;
     nMouseYPrev = r.top + (r.bottom - r.top) / 2;
     SetCursorPos(nMouseXPrev, nMouseYPrev);

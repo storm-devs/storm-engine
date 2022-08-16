@@ -81,11 +81,15 @@ void CoreImpl::CleanUp()
     delete[] State_file_name;
 }
 
+void CoreImpl::SetWindow(std::shared_ptr<storm::OSWindow> window)
+{
+    window_ = std::move(window);
+}
+
 void CoreImpl::Init()
 {
     Initialized = false;
     bEngineIniProcessed = false;
-    App_Hwnd = nullptr;
     State_file_name = nullptr;
     Exit_flag = false;
     State_loading = false;
@@ -321,12 +325,9 @@ void CoreImpl::Exit()
     Exit_flag = true;
 }
 
-//------------------------------------------------------------------------------------------------
-// return application window handle
-//
-void* CoreImpl::GetAppHWND()
+storm::OSWindow * CoreImpl::GetWindow()
 {
-    return App_Hwnd;
+    return window_.get();
 }
 
 #ifdef _WIN32 // HINSTANCE

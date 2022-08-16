@@ -10,8 +10,8 @@
 #include "logging.hpp"
 #include "os_window.hpp"
 #include "steam_api.hpp"
-#include "v_sound_service.h"
 #include "storm/fs.h"
+#include "v_sound_service.h"
 #include "watermark.hpp"
 
 namespace
@@ -53,7 +53,6 @@ void RunFrameWithOverflowCheck()
 #else
 #define RunFrameWithOverflowCheck RunFrame
 #endif
-
 
 void mimalloc_fun(const char *msg, void *arg)
 {
@@ -212,9 +211,9 @@ int main(int argc, char *argv[])
     std::shared_ptr<storm::OSWindow> window =
         storm::OSWindow::Create(width, height, preferred_display, fullscreen, show_borders);
     window->SetTitle("Sea Dogs");
-    core_private->Set_Hwnd(static_cast<HWND>(window->OSHandle()));
     window->Subscribe(HandleWindowEvent);
     window->Show();
+    core_private->SetWindow(window);
 
     // Init core
     core_private->InitBase();
