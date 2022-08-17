@@ -1072,7 +1072,7 @@ void XINTERFACE::LoadIni()
     GetWindowRect(static_cast<HWND>(core.GetWindow()->OSHandle()), &Screen_Rect);
 #else
     int sdlScreenWidth, sdlScreenHeight;
-    SDL_GetWindowSize(reinterpret_cast<SDL_Window *>(core.GetAppHWND()), &sdlScreenWidth, &sdlScreenHeight);
+    SDL_GetWindowSize(reinterpret_cast<SDL_Window *>(core.GetWindow()->OSHandle()), &sdlScreenWidth, &sdlScreenHeight);
 #endif
 
     fScale = 1.0f;
