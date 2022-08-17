@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME sea_operator
     TYPE storm_module
-    DEPENDENCIES common core renderer sea ship
+    DEPENDENCIES common core geometry renderer sea ship
 )
