@@ -4,10 +4,10 @@
 
 #include "c_vector.h"
 #include "math3d/matrix.h"
-#include <d3d9.h>
-#ifdef _WIN32 // for Effects (see libs/location/src/grass.cpp)
-#include <d3dx9.h>
-#endif
+
+struct _D3DMATRIX;
+typedef _D3DMATRIX D3DMATRIX;
+struct D3DXMATRIX;
 
 //============================================================================================
 

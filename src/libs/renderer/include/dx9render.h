@@ -2,6 +2,9 @@
 
 #include <cstdint>
 #include <d3d9.h>
+#ifdef _WIN32
+#include <d3dx9.h>
+#endif
 
 #include "entity.h"
 #include "matrix.h"
