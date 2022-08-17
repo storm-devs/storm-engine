@@ -187,7 +187,7 @@ class MESSAGE final
     template<typename... Args>
     void Reset(const std::string_view &format, Args... args)
     {
-        assert(format.size() == sizeof...(args));
+        Assert(format.size() == sizeof...(args));
         index = 0;
         format_ = format;
         params_ = {storm::detail::convertMessageParam(args)... };
@@ -254,7 +254,7 @@ class MESSAGE final
             return std::string(ptr);
         }
         default:
-            throw std::runtime_error(fmt::format("Unknown message format: '{}'", c));
+            throw std::runtime_error(std::format("Unknown message format: '{}'", c));
         }
     }
 

@@ -9,6 +9,8 @@
 #include "string_compare.hpp"
 #include "vma.hpp"
 
+#include <functional>
+
 namespace
 {
 

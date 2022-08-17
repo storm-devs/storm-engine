@@ -1,26 +1,20 @@
 #pragma once
-#include <spdlog/spdlog.h>
 
+#ifdef EX_OFF
 #include "debug-trap.h"
-
-#define EX_OFF
+#else
+#include <stdexcept>
+#include <format>
+#endif
 
 inline void __Storm_Assert__(bool expression, const char *file, int32_t line, const char *str)
 {
     if (!expression)
     {
-        if (str)
-        {
-            spdlog::critical("Assert failed in {} line {}, expression string {}", file, line, str);
-        }
-        else
-        {
-            spdlog::critical("Assert failed in {} line {}", file, line);
-        }
 #ifdef EX_OFF
         psnip_trap();
 #else
-        throw std::runtime_error("assert");
+        throw std::runtime_error(std::format("Assert failed in {} line {}, expression string {}", file, line, str ? str : ""));
 #endif
     }
 }

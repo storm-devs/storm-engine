@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include <array>
 #include <cstdint>
 #include <vector>
@@ -8,6 +10,7 @@
 
 #include "entity.h"
 #include "entity_container_cache.h"
+
 
 class EntityManager final
 {

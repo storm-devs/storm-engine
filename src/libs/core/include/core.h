@@ -2,6 +2,8 @@
 
 #include <functional>
 
+#include <spdlog/spdlog.h>
+
 // common includes
 #include "controls.h"
 #include "message.h"
