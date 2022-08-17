@@ -1,7 +1,7 @@
 #include "xi_table.h"
 
 #include "string_compare.hpp"
-#include "str_utils.h"
+#include "../str_utils.h"
 #include "xi_scroller.h"
 #include "xi_util.h"
 #include <stdio.h>
