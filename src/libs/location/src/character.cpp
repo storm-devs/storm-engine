@@ -20,6 +20,7 @@
 #include "debug-trap.h"
 
 #include "core.h"
+#include "string_compare.hpp"
 #include "v_data.h"
 
 

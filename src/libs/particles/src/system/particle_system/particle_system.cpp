@@ -1,4 +1,6 @@
 #include "particle_system.h"
+
+#include "string_compare.hpp"
 #include "../emitters/point.h"
 
 // Global GUID to assign to emitters

@@ -1,6 +1,6 @@
 #include "data_string.h"
 #include "vma.hpp"
-#include "storm_platform.h"
+#include "platform/platform.hpp"
 
 // constructor / destructor
 DataString::DataString()

@@ -28,6 +28,7 @@
 #include "wdm_wind_ui.h"
 #include "defines.h"
 #include "entity.h"
+#include "string_compare.hpp"
 
 #ifdef GetObject
 #undef GetObject

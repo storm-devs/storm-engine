@@ -6,6 +6,7 @@
 #include "back_scene/back_scene.h"
 #include "help_chooser/help_chooser.h"
 #include "info_handler.h"
+#include "string_compare.hpp"
 #include "nodes/all_xi_node.h"
 #include "string_service/obj_str_service.h"
 #include "string_service/str_service.h"

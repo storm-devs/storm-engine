@@ -12,6 +12,7 @@
 #include "entity.h"
 #include "core.h"
 #include "geometry.h"
+#include "string_compare.hpp"
 #include "shared/messages.h"
 
 CREATE_CLASS(Sharks)

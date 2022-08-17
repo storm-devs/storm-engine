@@ -1,6 +1,7 @@
 #include "utils.h"
 
 #include "core.h"
+#include "string_compare.hpp"
 
 #include "image/img_render.h"
 #include "vma.hpp"

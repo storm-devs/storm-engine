@@ -14,6 +14,7 @@
 
 #include "defines.h"
 #include "geometry.h"
+#include "string_compare.hpp"
 
 //============================================================================================
 

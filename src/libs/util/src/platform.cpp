@@ -4,10 +4,11 @@ const char *convert_path_sep(const char *cPath)
     return cPath;
 }
 #else
+#include "platform.hpp"
 
 #include <cstring>
 
-#include "safe_str_lib.h"
+#include <safe_str_lib.h>
 
 char *convert_path_sep(const char *cPath)
 {

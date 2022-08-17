@@ -11,6 +11,7 @@
 #include "lights.h"
 
 #include "core.h"
+#include "string_compare.hpp"
 
 // ============================================================================================
 // Construction, destruction

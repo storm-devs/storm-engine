@@ -1,6 +1,6 @@
 #ifndef _WIN32
 
-#include "storm_d3dx9.h"
+#include "platform/d3dx9.hpp"
 
 #include <algorithm>
 

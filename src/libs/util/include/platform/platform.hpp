@@ -7,11 +7,13 @@ const char *convert_path_sep(const char *cPath);
 
 #else // NOT _WIN32
 
-#include <limits.h>
+#include <climits>
 
-#include "storm_d3dx9.h"
+#include "d3dx9.hpp"
 #include "winuser.rh"
-#include "safe_types.h"
+
+#include <safe_types.h>
+
 #undef EXTERN // fix for token.h:72:5: error: expected identifier EXTERN,
 
 #define MAX_PATH PATH_MAX

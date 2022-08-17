@@ -1,6 +1,7 @@
 #include "core.h"
 
 #include "geometry_r.h"
+#include "string_compare.hpp"
 
 CREATE_SERVICE(GEOMETRY)
 

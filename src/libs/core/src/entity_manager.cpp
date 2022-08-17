@@ -6,6 +6,7 @@
 #include <ranges>
 #include <type_traits>
 
+#include "string_compare.hpp"
 #include "vma.hpp"
 
 namespace

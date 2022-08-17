@@ -1,15 +1,12 @@
 #pragma once
 
 #include <cstdint>
-#include <cstdio>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "storm_assert.h"
-#include "string_compare.hpp"
-#include "storm_platform.h"
 
 class VSTRING_CODEC
 {

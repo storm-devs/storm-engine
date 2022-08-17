@@ -1,4 +1,7 @@
 #include "xi_str_collection.h"
+
+#include "string_compare.hpp"
+
 #include <stdio.h>
 
 CXI_STRCOLLECTION::CXI_STRCOLLECTION()

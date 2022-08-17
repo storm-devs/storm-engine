@@ -7,6 +7,7 @@
 #include "model.h"
 #include "shared/messages.h"
 #include "debug-trap.h"
+#include "string_compare.hpp"
 
 InterfaceBackScene::LightParam::~LightParam()
 {

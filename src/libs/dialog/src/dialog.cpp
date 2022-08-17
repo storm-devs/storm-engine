@@ -2,6 +2,7 @@
 #include "v_sound_service.h"
 #include "core.h"
 #include "defines.h"
+#include "string_compare.hpp"
 
 #include "v_file_service.h"
 

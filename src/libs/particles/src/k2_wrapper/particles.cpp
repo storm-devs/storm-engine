@@ -5,6 +5,7 @@
 #include "defines.h"
 #include "entity.h"
 #include "p_system.h"
+#include "string_compare.hpp"
 #include "shared/messages.h"
 
 PARTICLES::PARTICLES()

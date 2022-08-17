@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "shared/sail_msg.h"
 #include "ship_base.h"
+#include "string_compare.hpp"
 #include "v_file_service.h"
 #include "weather_base.h"
 

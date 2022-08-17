@@ -6,6 +6,7 @@
 #include "data_float.h"
 #include "data_graph.h"
 #include "data_string.h"
+#include "string_compare.hpp"
 
 #include "../../i_common/names.h"
 #include "vma.hpp"

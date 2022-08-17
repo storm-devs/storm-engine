@@ -2,6 +2,7 @@
 #include <defines.h>
 
 #include "storm_assert.h"
+#include "string_compare.hpp"
 
 //////////////////////////////////////////////
 ///    DEFINE GLOBAL DATA                 ////

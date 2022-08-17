@@ -2,6 +2,7 @@
 #include "core_impl.h"
 #include "storm_assert.h"
 #include "string_compare.hpp"
+#include "platform/platform.hpp"
 
 #include <SDL2/SDL.h>
 #include <exception>

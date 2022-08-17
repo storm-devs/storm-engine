@@ -24,6 +24,7 @@
 #include "../interface_manager/interface_manager.h"
 
 #include "ship_info_images.h"
+#include "string_compare.hpp"
 
 CREATE_CLASS(BATTLE_INTERFACE)
 

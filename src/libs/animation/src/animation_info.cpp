@@ -11,7 +11,7 @@
 #include "animation_info.h"
 
 #include "string_compare.hpp"
-#include "storm_platform.h"
+#include "platform/platform.hpp"
 
 // ============================================================================================
 // Construction, destruction

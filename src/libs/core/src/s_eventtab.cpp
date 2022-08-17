@@ -1,4 +1,6 @@
 #include "s_eventtab.h"
+
+#include "string_compare.hpp"
 #define HASHT_INDEX(x) (uint8_t)(x >> 24)
 #define HASHT_CODE(x) (x & 0xffffff)
 #define HASH2INDEX(x) (uint8_t)(x & 0x2f)

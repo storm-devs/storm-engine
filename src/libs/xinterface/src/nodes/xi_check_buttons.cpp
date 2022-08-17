@@ -1,4 +1,6 @@
 #include "xi_check_buttons.h"
+
+#include "string_compare.hpp"
 #include "xi_util.h"
 #include <stdio.h>
 

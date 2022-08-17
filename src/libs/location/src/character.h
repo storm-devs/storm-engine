@@ -13,6 +13,7 @@
 #include "animation.h"
 #include "matrix.h"
 #include "model.h"
+#include "string_compare.hpp"
 #include "vma.hpp"
 #include <string>
 

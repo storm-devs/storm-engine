@@ -10,6 +10,7 @@
 #include "../particle_system/particle_system.h"
 #include "defines.h"
 #include "physic.h"
+#include "string_compare.hpp"
 
 // How many billboards can there be
 #define MAX_BILLBOARDS 4096

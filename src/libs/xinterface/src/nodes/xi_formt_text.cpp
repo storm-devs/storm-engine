@@ -1,6 +1,7 @@
 #include "xi_formt_text.h"
 #include "../xinterface.h"
 #include "entity.h"
+#include "string_compare.hpp"
 #include "utf8.h"
 #include "xi_scroller.h"
 

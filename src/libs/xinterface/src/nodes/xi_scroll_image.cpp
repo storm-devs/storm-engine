@@ -1,5 +1,7 @@
 #include "xi_scroll_image.h"
 
+#include "string_compare.hpp"
+
 #define MAXIMAGEQUANTITY 100
 
 int32_t GetTexFromEvent(VDATA *vdat)
