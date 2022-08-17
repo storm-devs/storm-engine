@@ -2,7 +2,7 @@
 #include "technique.h"
 #include "core.h"
 #include "defines.h"
-#include "inlines.h"
+#include "math_inlines.h"
 
 #define USE_FX // Will load techniques from fx files
 
@@ -871,7 +871,7 @@ uint32_t CTechnique::AddShader(char *pShaderName)
     const auto len = strlen(pShaderName) + 1;
     pS->pName = new char[len];
     memcpy(pS->pName, pShaderName, len);
-    pS->dwHashName = hash_string(pShaderName);
+    pS->dwHashName = MakeHashValue(pShaderName);
     pS->pVertexDecl = nullptr;
     pS->pVertexShader = nullptr;
     pS->pPixelShader = nullptr;
@@ -1652,7 +1652,7 @@ uint32_t CTechnique::ProcessBlock(char *pFile, uint32_t dwSize, char **pStr)
 #endif
     strcpy_s(sCurrentBlockName, pName);
     GetTokenWhile(pName, &temp[0], "(");
-    pB->dwHashBlockName = hash_string(temp);
+    pB->dwHashBlockName = MakeHashValue(temp);
     const auto len = strlen(temp) + 1;
     pB->pBlockName = new char[len];
     memcpy(pB->pBlockName, temp, len);
@@ -2224,7 +2224,7 @@ void CTechnique::SetCurrentBlock(const char *name, uint32_t _dwNumParams, void *
 
         strcpy_s(sCurrentBlockName, name);
         tolwr(sCurrentBlockName);
-        // dwHashCode = hash_string(sCurrentBlockName);
+        // dwHashCode = MakeHashValue(sCurrentBlockName);
         dwCurNumParams = _dwNumParams;
 
         if (dwCurNumParams > dwCurParamsMax)

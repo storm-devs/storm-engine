@@ -1,6 +1,6 @@
 #include "ai_ship.h"
 #include "ai_fort.h"
-#include "inlines.h"
+#include "math_inlines.h"
 
 std::vector<AIShip *> AIShip::AIShips;
 std::vector<AIShip::can_fire_t> AIShip::aShipFire;

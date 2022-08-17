@@ -1,22 +1,10 @@
 #pragma once
 
-#include "dx9render.h"
+#include <cstdint>
+#include <cmath>
 
-inline uint32_t hash_string(const char *str)
-{
-    uint32_t hval = 0;
-    while (*str != '\0')
-    {
-        hval = (hval << 4) + static_cast<uint32_t>(*str++);
-        const auto g = hval & (static_cast<uint32_t>(0xf) << (32 - 4));
-        if (g != 0)
-        {
-            hval ^= g >> (32 - 8);
-            hval ^= g;
-        }
-    }
-    return hval;
-}
+#include "c_vector.h"
+#include "types3d.h"
 
 inline void RotateAroundY(float &x, float &z, float cos, float sin)
 {
@@ -77,36 +65,4 @@ inline bool IntersectLines2D(const CVECTOR &v1, const CVECTOR &v2, const CVECTOR
         return false;
 
     return true;
-}
-
-inline void FillRectVertex(RS_RECT &pV, float x, float y, float z, float fSize, float fAngle = 0.0f,
-                           uint32_t dwColor = 0xFFFFFF, uint32_t dwSubTexture = 0)
-{
-    pV.vPos.x = x;
-    pV.vPos.y = y;
-    pV.vPos.z = z;
-    pV.dwColor = dwColor;
-    pV.dwSubTexture = dwSubTexture;
-    pV.fAngle = fAngle;
-    pV.fSize = fSize;
-}
-
-inline void FillSpriteVertex(RS_SPRITE &pV, float x, float y, float z = 1.0f, uint32_t dwColor = 0xFFFFFF,
-                             float tu = 0.0f, float tv = 0.0f)
-{
-    pV.vPos.x = x;
-    pV.vPos.y = y;
-    pV.vPos.z = z;
-    pV.dwColor = dwColor;
-    pV.rhw = 0.5f;
-    pV.tu = tu;
-    pV.tv = tv;
-}
-
-inline uint32_t Number2Shift(uint32_t dwNumber)
-{
-    for (uint32_t i = 0; i < 31; i++)
-        if (static_cast<uint32_t>(1 << i) == dwNumber)
-            return i;
-    return 0;
 }

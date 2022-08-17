@@ -4,7 +4,7 @@
 
 #include "ai_flow_graph.h"
 #include "track.h"
-#include "inlines.h"
+#include "math_inlines.h"
 #include "shared/mast_msg.h"
 #include "shared/messages.h"
 #include "shared/sail_msg.h"

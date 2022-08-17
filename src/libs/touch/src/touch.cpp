@@ -4,7 +4,7 @@
 
 #include "character.h"
 #include "entity.h"
-#include "inlines.h"
+#include "math_inlines.h"
 #include "shared/messages.h"
 #include "shared/sea_ai/script_defines.h"
 

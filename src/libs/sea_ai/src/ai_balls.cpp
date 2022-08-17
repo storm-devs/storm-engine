@@ -1,6 +1,6 @@
 #include "ai_balls.h"
 #include "ai_fort.h"
-#include "inlines.h"
+#include "math_inlines.h"
 #include "shared/messages.h"
 
 

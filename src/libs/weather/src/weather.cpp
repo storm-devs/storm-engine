@@ -4,7 +4,7 @@
 #include "lightning.h"
 #include "sun_glow.h"
 #include "water_flare.h"
-#include "inlines.h"
+#include "math_inlines.h"
 
 CREATE_CLASS(WEATHER)
 

@@ -3,7 +3,7 @@
 #include "core.h"
 
 #include "entity.h"
-#include "inlines.h"
+#include "math_inlines.h"
 #include "s_import_func.h"
 #include "texture.h"
 #include "v_s_stack.h"
@@ -1358,7 +1358,7 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
 
         toupr(_fname);
 
-        const uint32_t hf = hash_string(_fname);
+        const uint32_t hf = MakeHashValue(_fname);
 
         int32_t t;
         for (t = 0; t < MAX_STEXTURES; t++)
@@ -2948,7 +2948,7 @@ int32_t DX9RENDER::LoadFont(const char *fontName)
         sDup[sizeof(sDup) - 1] = 0;
     }
     fontName = toupr(sDup);
-    const uint32_t hashVal = hash_string(fontName);
+    const uint32_t hashVal = MakeHashValue(fontName);
 
     int32_t i;
     for (i = 0; i < nFontQuantity; i++)
@@ -2999,7 +2999,7 @@ bool DX9RENDER::UnloadFont(const char *fontName)
         sDup[sizeof(sDup) - 1] = 0;
     }
     fontName = toupr(sDup);
-    const uint32_t hashVal = hash_string(fontName);
+    const uint32_t hashVal = MakeHashValue(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)
         if (FontList[i].hash == hashVal && storm::iEquals(FontList[i].name, fontName))
@@ -3052,7 +3052,7 @@ bool DX9RENDER::SetCurFont(const char *fontName)
         sDup[sizeof(sDup) - 1] = 0;
     }
     fontName = toupr(sDup);
-    const uint32_t hashVal = hash_string(fontName);
+    const uint32_t hashVal = MakeHashValue(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)
         if (FontList[i].hash == hashVal)
@@ -3896,7 +3896,7 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     VideoTextureEntity *pVTLcur = pVTL;
 
     // check already loaded
-    const uint32_t newHash = hash_string(sVideoName);
+    const uint32_t newHash = MakeHashValue(sVideoName);
     while (pVTLcur != nullptr)
     {
         if (pVTLcur->hash == newHash && storm::iEquals(pVTLcur->name, sVideoName))

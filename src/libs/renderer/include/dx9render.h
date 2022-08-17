@@ -59,12 +59,25 @@ struct RS_SPRITE
     float tu, tv;
 };
 
+inline void FillSpriteVertex(RS_SPRITE &pV, float x, float y, float z = 1.0f, uint32_t dwColor = 0xFFFFFF,
+                             float tu = 0.0f, float tv = 0.0f)
+{
+    pV.vPos.x = x;
+    pV.vPos.y = y;
+    pV.vPos.z = z;
+    pV.dwColor = dwColor;
+    pV.rhw = 0.5f;
+    pV.tu = tu;
+    pV.tv = tv;
+}
+
 struct RS_LINE2D
 {
     CVECTOR vPos;
     float rhw;
     uint32_t dwColor;
 };
+
 
 class CVideoTexture;
 

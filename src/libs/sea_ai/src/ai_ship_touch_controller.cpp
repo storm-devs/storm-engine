@@ -1,5 +1,5 @@
 #include "ai_ship.h"
-#include "inlines.h"
+#include "math_inlines.h"
 
 AIShipTouchController::AIShipTouchController(AIShip *_pAIShip)
 {
