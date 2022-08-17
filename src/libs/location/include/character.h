@@ -3,22 +3,6 @@
 #include "attributes.h"
 #include "storm_assert.h"
 
-inline const char *GetFirstName(ATTRIBUTES *pACharacter)
-{
-    Assert(pACharacter);
-    const char *pName = pACharacter->GetAttribute("name");
-    Assert(pName);
-    return pName;
-}
-
-inline const char *GetLastName(ATTRIBUTES *pACharacter)
-{
-    Assert(pACharacter);
-    const char *pName = pACharacter->GetAttribute("name");
-    Assert(pName);
-    return pName;
-}
-
 inline int32_t GetIndex(ATTRIBUTES *pACharacter)
 {
     Assert(pACharacter);
