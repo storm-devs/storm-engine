@@ -12,7 +12,6 @@
 
 #include "c_vector.h"
 #include "ptc.h"
-#include "vma.hpp"
 
 #define PTCDATA_MAXSTEPS 32
 

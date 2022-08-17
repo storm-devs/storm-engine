@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME worldmap
     TYPE storm_module
-    DEPENDENCIES common core geometry renderer util
+    DEPENDENCIES common core geometry location renderer util
 )
