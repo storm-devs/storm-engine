@@ -7,6 +7,7 @@
 #include "c_vector4.h"
 #include "dx9render.h"
 #include "defines.h"
+#include "vma.hpp"
 
 
 class SEA : public SEA_BASE
