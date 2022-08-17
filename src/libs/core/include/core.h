@@ -3,8 +3,8 @@
 #include <functional>
 
 // common includes
-#include "message.h"
 #include "controls.h"
+#include "message.h"
 #include "engine_version.hpp"
 #include "v_data.h"
 #include "v_file_service.h"

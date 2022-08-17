@@ -1,3 +1,4 @@
+#include "utf8.h"
 #ifdef _WIN32 // Effects
 #include "effects.h"
 

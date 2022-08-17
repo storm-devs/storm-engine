@@ -1,3 +1,4 @@
+#include "utf8.h"
 #ifdef _WIN32 // S_DEBUG
 #include "s_debug.h"
 #include "compiler.h"
