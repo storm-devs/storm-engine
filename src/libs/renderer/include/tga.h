@@ -1,6 +1,6 @@
 #pragma once
 
-using TGA_H = struct tagTGA_H
+struct TGA_H
 {
     uint8_t byte1; // = 0
     uint8_t byte2; // = 0
