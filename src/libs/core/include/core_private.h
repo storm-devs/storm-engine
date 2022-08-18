@@ -20,5 +20,5 @@ public:
 
     virtual void collectCrashInfo() const = 0;
 
-    virtual void Set_Hwnd(HWND _hwnd) = 0;
+    virtual void SetWindow(std::shared_ptr<storm::OSWindow> window) = 0;
 };

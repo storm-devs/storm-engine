@@ -578,7 +578,6 @@ private:
 
     uint32_t dwNumDrawPrimitive, dwNumLV, dwNumLI;
     float fG, fB, fC;
-    D3DGAMMARAMP DefaultRamp;
 
     float fNearClipPlane, fFarClipPlane;
 
