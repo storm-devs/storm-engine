@@ -9,6 +9,7 @@
 #include "string_compare.hpp"
 #include "vma.hpp"
 
+#include <chrono>
 #include <functional>
 
 namespace

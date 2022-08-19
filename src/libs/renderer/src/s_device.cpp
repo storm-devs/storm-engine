@@ -10,7 +10,6 @@
 #include "fs.h"
 #include "debug-trap.h"
 #include "string_compare.hpp"
-#include "platform/platform.hpp"
 
 #include <algorithm>
 #include <SDL_timer.h>

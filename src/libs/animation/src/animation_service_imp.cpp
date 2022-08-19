@@ -16,7 +16,6 @@
 #include "an_file.h"
 #include "string_compare.hpp"
 #include "v_file_service.h"
-#include "platform/platform.hpp"
 
 CREATE_SERVICE(AnimationServiceImp)
 

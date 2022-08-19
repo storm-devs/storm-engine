@@ -1,5 +1,6 @@
 #include "entity_container_cache.h"
 
+#include <algorithm>
 #include <ranges>
 
 void EntityContainerCache::Add(hash_t hash, entid_t id)
