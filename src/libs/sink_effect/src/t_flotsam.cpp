@@ -1,7 +1,7 @@
 #include "t_flotsam.h"
 #include "entity.h"
 #include "core.h"
-#include "defines.h"
+#include "math_inlines.h"
 #include "rands.h"
 #include "shared/messages.h"
 

@@ -206,8 +206,7 @@ void CXI_GLOWCURSOR::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
     m_pTexVert[4].tv = m_pTexVert[6].tv = m_pTexVert[12].tv = 0.f;
     m_pTexVert[8].tv = m_pTexVert[10].tv = 1.f;
 
-    XYRECT rectXY;
-    PZERO(&rectXY, sizeof(rectXY));
+    XYRECT rectXY{};
     SetRectanglesToPosition(rectXY);
 }
 

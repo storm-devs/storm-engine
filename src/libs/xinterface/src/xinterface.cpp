@@ -1432,8 +1432,7 @@ void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const ch
                         if ((nSubCommand = FindCommand(sSubCommand)) == -1)
                             continue;
 
-                        auto *pHead = new CINODE::COMMAND_REDIRECT;
-                        PZERO(pHead, sizeof(CINODE::COMMAND_REDIRECT));
+                        auto *pHead = new CINODE::COMMAND_REDIRECT{};
                         if (pHead == nullptr)
                             throw std::runtime_error("allocate memory error");
                         pHead->next = pNewNod->m_pCommands[nComNum].pNextControl;
@@ -2632,7 +2631,7 @@ uint32_t XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
             {
                 throw std::runtime_error("Allocation memory error");
             }
-            PZERO(pImList, sizeof(IMAGE_Entity));
+            *pImList = {};
             const auto len = strlen(sImageName) + 1;
             if ((pImList->sImageName = new char[len]) == nullptr)
             {

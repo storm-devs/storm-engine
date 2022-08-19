@@ -182,8 +182,8 @@ class SAILONE : public SAILONE_BASE
     ~SAILONE();
     bool SetSail();
     void releaseAll();
-    SAILSTATE ss;
-    SAILTIME tm;
+    SAILSTATE ss{};
+    SAILTIME tm{};
 
     void FillIndex(uint16_t *pt); // filling an array of triangles
     void ClearVertex(SAILVERTEX *pv, uint32_t maxIdx);
@@ -206,7 +206,7 @@ class SAILONE : public SAILONE_BASE
     float sailWidth, sailHeight;
 
   private:
-    SAILGEOMETRY sgeo;
+    SAILGEOMETRY sgeo{};
     void GoVWave(SAILVERTEX *pv);
     void GoTWave(SAILVERTEX *pv);
     void DoSRollSail(SAILVERTEX *pv);
@@ -240,7 +240,7 @@ class SAILONE : public SAILONE_BASE
     float SumWind, MaxSumWind;
     bool bFreeSail; // free sails - when falling or flying
 
-    CVECTOR SailPnt[20];
+    CVECTOR SailPnt[20]{};
 
     // ------------------------------------
     // Unfolding the sail
@@ -256,7 +256,7 @@ class SAILONE : public SAILONE_BASE
     NODE *hostNode;     // host
     CMatrix *pMatWorld; // the matrix of this node
 
-    SAILTIEROPE sailtrope;
+    SAILTIEROPE sailtrope{};
     float oldWindAngl;
 
     // physics of influence on ship speed
@@ -264,7 +264,7 @@ class SAILONE : public SAILONE_BASE
     float curSpeed; // Current speed
 
     // wind
-    CVECTOR sailWind;
+    CVECTOR sailWind{};
     void CalculateSailWind();
 
     int wind_incr, wind_add;

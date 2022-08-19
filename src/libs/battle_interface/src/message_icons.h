@@ -41,7 +41,7 @@ class MESSAGE_ICONS
     int32_t m_nHorzTextureSize; // size in icons
     int32_t m_nVertTextureSize; // size in icons
 
-    ATTRIBUTES *m_pIconsAttr[MESSAGE_ICONS_COLUMN_QUANTITY];
+    ATTRIBUTES *m_pIconsAttr[MESSAGE_ICONS_COLUMN_QUANTITY]{};
 
     float m_fNormalStateTime; // Icon highlighting time, sec
     float m_fBlendTime;       // Icon disappearance time, sec

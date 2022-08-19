@@ -1,5 +1,6 @@
 #include "astronomy.h"
 #include "core.h"
+#include "math_inlines.h"
 #include "weather_base.h"
 #include "v_file_service.h"
 
@@ -14,8 +15,6 @@ Astronomy::STARS::STARS()
     iVertexBuffer = -1;
     iVertexBufferColors = -1;
     fPrevFov = -1.0f;
-
-    ZERO(Spectr);
 
     fFadeValue = 1.f;
     fFadeTimeStart = -1.f;
@@ -73,9 +72,10 @@ void Astronomy::STARS::Init(ATTRIBUTES *pAP)
             char str[2];
             str[0] = pAS->GetThisName()[0];
             str[1] = 0;
-            toupr(str);
+            std::ranges::for_each(str, [](char &c) { c = std::toupper(c); });
             Spectr[str[0]] = pAS->GetAttributeAsDword();
-            tolwr(str);
+
+            std::ranges::for_each(str, [](char &c) { c = std::tolower(c); });
             Spectr[str[0]] = pAS->GetAttributeAsDword();
         }
     }

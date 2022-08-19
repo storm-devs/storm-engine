@@ -35,8 +35,6 @@ ISLAND::ISLAND()
     bDrawReflections = false;
 
     fCurrentImmersion = 0.0f;
-
-    ZERO(AIFortEID);
 }
 
 ISLAND::~ISLAND()
@@ -150,7 +148,7 @@ void ISLAND::Realize(uint32_t Delta_Time)
         pRS->GetLight(0, &ltold);
         if (!dynamicLightsOn)
         {
-            ZERO(lt);
+            lt = {};
             lt.Type = D3DLIGHT_POINT;
             lt.Diffuse.a = 0.0f;
             lt.Diffuse.r = 1.0f;
@@ -734,9 +732,7 @@ bool ISLAND::CreateHeightMap(const std::string_view &pDir, const std::string_vie
 
 bool ISLAND::SaveTga8(char *fname, uint8_t *pBuffer, uint32_t dwSizeX, uint32_t dwSizeY)
 {
-    TGA_H tga_head;
-
-    ZERO(tga_head);
+    TGA_H tga_head{};
 
     tga_head.type = 3;
     tga_head.width = static_cast<uint16_t>(dwSizeX);

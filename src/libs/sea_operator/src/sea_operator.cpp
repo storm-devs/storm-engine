@@ -3,8 +3,8 @@
 #include <chrono>
 
 #include "core.h"
-#include "defines.h"
 #include "entity.h"
+#include "math_inlines.h"
 #include "rands.h"
 #include "shared/messages.h"
 

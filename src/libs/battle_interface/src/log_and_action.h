@@ -1,7 +1,6 @@
 #pragma once
 
 #include "utils.h"
-#include "defines.h"
 
 class ILogAndActions : public Entity
 {

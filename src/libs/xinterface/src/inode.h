@@ -3,7 +3,6 @@
 #include "nodes/xi_tooltips.h"
 #include "video_texture.h"
 #include "core.h"
-#include "defines.h"
 #include "dx9render.h"
 #include "v_file_service.h"
 #include "vma.hpp"
@@ -357,7 +356,7 @@ class CINODE
     CINODE *m_next;
     CINODE *m_list;
 
-    COMMAND_ACTION m_pCommands[COMMAND_QUANTITY];
+    COMMAND_ACTION m_pCommands[COMMAND_QUANTITY]{};
     char *m_nodeName;
 
     XYPOINT m_MousePoint;

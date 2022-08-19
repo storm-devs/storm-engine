@@ -2,7 +2,6 @@
 
 #include <cstdio>
 
-#include "defines.h"
 #include "utf8.h"
 #include "string_compare.hpp"
 #include "debug-trap.h"
@@ -297,7 +296,6 @@ TOKEN::TOKEN()
     pTokenData = nullptr;
     eTokenType = UNKNOWN;
     TokenDataBufferSize = 0;
-    PZERO(ProgramSteps, sizeof(ProgramSteps));
     ProgramStepsNum = 0;
     Program = nullptr;
     ProgramBase = nullptr;
@@ -325,7 +323,7 @@ void TOKEN::SetProgram(char *pProgramBase, char *pProgramControl)
 {
     Program = pProgramControl;
     ProgramBase = pProgramBase;
-    PZERO(ProgramSteps, sizeof(ProgramSteps));
+    std::ranges::fill(ProgramSteps, std::ptrdiff_t{});
     ProgramStepsNum = 0;
 }
 
@@ -350,7 +348,7 @@ void TOKEN::Reset()
     pTokenData = nullptr;
     eTokenType = UNKNOWN;
     TokenDataBufferSize = 0;
-    PZERO(ProgramSteps, sizeof(ProgramSteps));
+    std::ranges::fill(ProgramSteps, std::ptrdiff_t{});
     ProgramStepsNum = 0;
     Program = nullptr;
     ProgramBase = nullptr;
@@ -365,9 +363,12 @@ bool TOKEN::Is(S_TOKEN_TYPE ttype)
 
 void TOKEN::LowCase()
 {
-    if (pTokenData[0] == 0)
-        return;
-    tolwr(pTokenData);
+    char *c = pTokenData;
+    while (*c != '\0')
+    {
+        *c = std::tolower(*c);
+        ++c;
+    }
 }
 
 const char *TOKEN::GetData()

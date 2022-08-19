@@ -1,5 +1,4 @@
 #include "xservice.h"
-#include "defines.h"
 #include "dx9render.h"
 #include "string_compare.hpp"
 #include "v_file_service.h"
@@ -123,7 +122,7 @@ bool XSERVICE::GetTexturePos(int32_t pictureNum, FXYRECT &texRect)
         }
     }
 
-    PZERO(&texRect, sizeof(texRect));
+    texRect = {};
     return false;
 }
 
@@ -135,7 +134,7 @@ bool XSERVICE::GetTexturePos(int32_t pictureNum, XYRECT &texRect)
         return true;
     }
 
-    PZERO(&texRect, sizeof(texRect));
+    texRect = {};
     return false;
 }
 
@@ -187,7 +186,7 @@ bool XSERVICE::GetTexturePos(int nTextureModify, int32_t pictureNum, FXYRECT &te
         }
     }
 
-    PZERO(&texRect, sizeof(texRect));
+    texRect = {};
     return false;
 }
 

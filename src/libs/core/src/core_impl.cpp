@@ -12,6 +12,11 @@
 
 Core& core = core_internal;
 
+uint64_t get_performance_counter()
+{
+    return SDL_GetPerformanceCounter();
+}
+
 namespace storm
 {
 namespace

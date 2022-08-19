@@ -1,7 +1,7 @@
 #include "t_fish_schools.h"
 #include "entity.h"
 #include "core.h"
-#include "defines.h"
+#include "math_inlines.h"
 #include "rands.h"
 #include "shared/messages.h"
 #include "v_file_service.h"

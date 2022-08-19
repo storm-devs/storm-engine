@@ -1,6 +1,5 @@
 #pragma once
 
-#include "defines.h"
 #define HASH_TABLE_SIZE 512 // must be power of 2
 
 struct HTSUBELEMENT
@@ -21,13 +20,12 @@ class STRING_CODEC : public VSTRING_CODEC
     uint32_t nHTEIndex;
     uint32_t nStringsNum;
 
-    HTELEMENT HTable[HASH_TABLE_SIZE];
+    HTELEMENT HTable[HASH_TABLE_SIZE]{};
 
   public:
     STRING_CODEC() : nHTIndex(0), nHTEIndex(0)
     {
         nStringsNum = 0;
-        PZERO(HTable, sizeof(HTable));
     }
 
     ~STRING_CODEC() override

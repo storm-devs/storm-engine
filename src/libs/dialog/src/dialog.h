@@ -4,7 +4,6 @@
 #include "matrix.h"
 #include "vma.hpp"
 
-#include "defines.h"
 #include <string>
 #include <vector>
 

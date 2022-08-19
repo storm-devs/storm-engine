@@ -49,7 +49,7 @@ class ISLAND : public ISLAND_BASE
     std::vector<entid_t> aSpheres;
     std::vector<entid_t> aForts;
     AIFlowGraph AIPath;
-    entid_t AIFortEID;
+    entid_t AIFortEID{};
 
     FRECT rIsland;
     bool bForeignModels;

@@ -14,13 +14,13 @@ class TM_LIST
     HWND hMain;
     HWND hOwn;
     HWND hEdit;
-    RECT Pos;
+    RECT Pos{};
     uint32_t Columns_Num;
     uint32_t Items_Num;
     uint32_t Bind_Mask;
     int32_t edit_item;
     int32_t edit_subitem;
-    char CharID[MAX_PATH];
+    char CharID[MAX_PATH]{};
     char SearchName[MAX_PATH];
     uint32_t EditMask;
     HFONT hFont;

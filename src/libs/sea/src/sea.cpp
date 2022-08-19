@@ -5,6 +5,7 @@
 #include <thread>
 
 #include "core.h"
+#include "math3d.h"
 #include "sse.h"
 #include "math_inlines.h"
 #include "shared/sea_ai/script_defines.h"

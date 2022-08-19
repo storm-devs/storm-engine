@@ -1,7 +1,6 @@
 #ifndef _WIN32 // Effects
 #include "technique.h"
 #include "core.h"
-#include "defines.h"
 #include "math_inlines.h"
 
 #define USE_FX // Will load techniques from fx files
@@ -98,6 +97,22 @@
 
 // common defines
 #define SAVED_STATES_ADD 128
+
+namespace
+{
+
+inline char *tolwr(char *str)
+{
+    char *result = str;
+    while (*str != '\0')
+    {
+        *str = tolower(*str);
+        str++;
+    }
+    return result;
+}
+
+}
 
 char *SkipToken(char *str, const char *cmp)
 {
@@ -622,7 +637,7 @@ CTechnique::CTechnique(VDX9RENDER *_pRS)
 
     pRS = _pRS;
 
-    ZERO(sDelimTable);
+    sDelimTable = {};
     char sDelimeters[] = " ,.[]-+\0\n\r\t";
     size_t len = strlen(sDelimeters);
     for (uint32_t i = 0; i < len; i++)
@@ -867,7 +882,7 @@ uint32_t CTechnique::AddShader(char *pShaderName)
             return i;
     pShaders = (shader_t *)realloc(pShaders, sizeof(shader_t) * (dwNumShaders + 1));
     shader_t *pS = &pShaders[dwNumShaders];
-    ZERO(pShaders[dwNumShaders]);
+    pShaders[dwNumShaders] = {};
     const auto len = strlen(pShaderName) + 1;
     pS->pName = new char[len];
     memcpy(pS->pName, pShaderName, len);
@@ -885,7 +900,7 @@ uint32_t CTechnique::ProcessPass(char *pFile, uint32_t dwSize, char **pStr)
     technique_t *pTechniques = &pB->pTechniques[pB->dwNumTechniques];
 
     pTechniques->pPasses = (pass_t *)realloc(pTechniques->pPasses, sizeof(pass_t) * (pTechniques->dwNumPasses + 1));
-    PZERO(&pTechniques->pPasses[pTechniques->dwNumPasses], sizeof(pass_t));
+    pTechniques->pPasses[pTechniques->dwNumPasses] = {};
 
     uint32_t *pPass = pPassStorage;
     uint32_t *pPassBegin = pPass;
@@ -1187,7 +1202,7 @@ uint32_t CTechnique::ProcessTechnique(char *pFile, uint32_t dwSize, char **pStr)
 {
     block_t *pB = &pBlocks[dwNumBlocks];
     pB->pTechniques = (technique_t *)realloc(pB->pTechniques, sizeof(technique_t) * (pB->dwNumTechniques + 1));
-    PZERO(&pB->pTechniques[pB->dwNumTechniques], sizeof(technique_t));
+    pB->pTechniques[pB->dwNumTechniques] = {};
     // clear STSS and SRS bUse
     ClearSRS_STSS_bUse();
     // search for pass and '}'
@@ -1640,7 +1655,7 @@ uint32_t CTechnique::ProcessBlock(char *pFile, uint32_t dwSize, char **pStr)
     pBlocks = (block_t *)realloc(pBlocks, sizeof(block_t) * (dwNumBlocks + 1));
 
     block_t *pB = &pBlocks[dwNumBlocks];
-    PZERO(pB, sizeof(block_t));
+    *pB = {};
 
     dwNumParams = 0;
 

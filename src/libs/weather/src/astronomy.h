@@ -109,7 +109,7 @@ class Astronomy : public Entity
             CVECTOR vPos;
         };
 
-        uint32_t Spectr[256];
+        uint32_t Spectr[256]{};
         std::vector<Star> aStars;
 
         float fFadeValue;

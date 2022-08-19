@@ -1,7 +1,7 @@
 #include "t_seagulls.h"
 #include "entity.h"
 #include "core.h"
-#include "defines.h"
+#include "math_inlines.h"
 #include "model.h"
 #include "rands.h"
 #include "shared/messages.h"

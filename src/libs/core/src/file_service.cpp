@@ -440,7 +440,7 @@ void FILE_SERVICE::AddEntryToResourcePaths(const std::filesystem::directory_entr
     {
         std::string path = get_dir_iterator_path(entry.path());
         std::string path_lwr = convert_path(path.c_str());
-        tolwr(path_lwr.data());
+        std::ranges::for_each(path_lwr, [](char &c) { c = std::tolower(c); });
         if (starts_with(path_lwr, CheckingPath + "program") || starts_with(path_lwr, CheckingPath + "resource") ||
             starts_with(path_lwr, CheckingPath + "save") || ends_with(path_lwr, ".ini"))
         {
@@ -465,7 +465,7 @@ void FILE_SERVICE::ScanResourcePaths()
     }
     ExePath = fio->_GetExecutableDirectory();
     auto it = std::filesystem::recursive_directory_iterator(ExePath);
-    tolwr(ExePath.data());
+    std::ranges::for_each(ExePath, [](char &c) { c = std::tolower(c); });
     for (const auto &entry : it)
     {
         AddEntryToResourcePaths(entry, ExePath);
@@ -485,7 +485,7 @@ std::string FILE_SERVICE::ConvertPathResource(const char *path)
     }
     std::string conv = convert_path(path);
     std::string path_lwr = conv; // save original string if we will need to create new file in existing folder
-    tolwr(path_lwr.data());
+    std::ranges::for_each(path_lwr, [](char &c) { c = std::tolower(c); });
     std::filesystem::path tmp_path = std::filesystem::u8path(path_lwr).lexically_normal(); // remove relative paths
     path_lwr = tmp_path.string();
     std::string result = ResourcePaths[path_lwr];

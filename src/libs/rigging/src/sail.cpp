@@ -3,8 +3,9 @@
 #include "core.h"
 
 #include "weather_base.h"
-#include "defines.h"
 #include "entity.h"
+#include "math3d.h"
+#include "math_inlines.h"
 #include "shared/battle_interface/msg_control.h"
 #include "shared/mast_msg.h"
 #include "shared/sail_msg.h"

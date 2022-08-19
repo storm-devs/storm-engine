@@ -3,7 +3,7 @@
 #include "vma.hpp"
 
 #include "script_libriary.h"
-#include "string_service.h"
+#include "../string_service.h"
 
 //-----------SDEVICE-----------
 class STRSERVICE : public VSTRSERVICE

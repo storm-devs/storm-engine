@@ -1,4 +1,6 @@
 #include "string_node.h"
+
+#include "core.h"
 #include "../../image/img_render.h"
 
 BI_StringNode::BI_StringNode(BI_ManagerBase *pManager, const char *text, const char *font, uint32_t color, float scale,

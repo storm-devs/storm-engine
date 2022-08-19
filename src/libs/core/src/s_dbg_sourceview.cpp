@@ -2,7 +2,6 @@
 #include "s_dbg_sourceview.h"
 #include "core_impl.h"
 #include "data.h"
-#include "defines.h"
 #include "resource.h"
 #include "s_debug.h"
 #include <algorithm>
@@ -398,7 +397,7 @@ char SOURCE_VIEW::cDelimTable[256];
 
 void SOURCE_VIEW::SetCharacterMap(char *pMap, const char *pStr)
 {
-    PZERO(pMap, 256);
+    memset(pMap, 0, 256);
     const uint32_t dwLen = strlen(pStr);
     for (uint32_t i = 0; i < dwLen; i++)
         pMap[pStr[i]] = true;
@@ -1191,8 +1190,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     case WM_INITDIALOG: {
         HWND hwndList = GetDlgItem(hwndDlg, IDC_XLIST);
 
-        LVCOLUMN col;
-        PZERO(&col, sizeof(col));
+        LVCOLUMN col{};
         col.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH;
         col.fmt = LVCFMT_LEFT;
         col.cx = 378;
@@ -1205,8 +1203,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
         for (int32_t i = 0; i < CDebug->SourceView->aStrings.size(); i++)
         {
-            LVITEM item;
-            PZERO(&item, sizeof(item));
+            LVITEM item{};
             item.mask = LVIF_TEXT;
             item.iItem = 0;
             item.iSubItem = 0;
@@ -1243,8 +1240,7 @@ INT_PTR CALLBACK VarChangeDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 return false;
             }
 
-            LVITEM item;
-            PZERO(&item, sizeof(item));
+            LVITEM item{};
             item.mask = LVIF_TEXT;
             item.iItem = 0;
             item.iSubItem = 0;

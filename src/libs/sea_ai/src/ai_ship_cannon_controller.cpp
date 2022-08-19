@@ -657,8 +657,7 @@ void AIShipCannonController::Realize(float fDeltaTime)
             const float fDA = PId2 / 36.0f;
             for (float fAng = fDir - fRastr / 2.0f; fAng < fDir + fRastr / 2.0f; fAng += fDA)
             {
-                CVECTOR v[3];
-                ZERO(v);
+                CVECTOR v[3]{};
                 const float R = fDist;
                 v[0].x = vPosTemp.x;
                 v[0].z = vPosTemp.z;

@@ -2,6 +2,8 @@
 #include "save_load.h"
 #include "ship_camera.h"
 
+#include "math_inlines.h"
+
 #define SCMR_BOXSCALE_X 1.6f
 #define SCMR_BOXSCALE_Y 1.3f
 #define SCMR_BOXSCALE_Z 1.4f

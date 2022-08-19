@@ -79,6 +79,93 @@ struct RS_LINE2D
 };
 
 
+struct IPOINT
+{
+    int32_t x, y;
+};
+
+struct FPOINT
+{
+    float x, y;
+};
+
+struct FRECT
+{
+    union {
+        struct
+        {
+            float x1, y1, x2, y2;
+        };
+
+        struct
+        {
+            float xs, ys, xe, ye;
+        };
+
+        struct
+        {
+            float x_start, y_start, x_end, y_end;
+        };
+
+        struct
+        {
+            float left, top, right, bottom;
+        };
+    };
+};
+
+
+//TODO: remove
+#define COLOR2VECTOR(a) CVECTOR(float((a & 0xFF0000) >> 0x10), float((a & 0xFF00) >> 0x8), float(a & 0xFF));
+#define COLOR2VECTOR4(a)                                                                                               \
+    CVECTOR4(float((a & 0xFF0000) >> 0x10) / 255.0f, float((a & 0xFF00) >> 0x8) / 255.0f, float(a & 0xFF) / 255.0f,    \
+             float((a & 0xFF000000) >> 0x18) / 255.0f);
+#define ARGB(a, r, g, b) (uint32_t(b) | (uint32_t(g) << 8L) | (uint32_t(r) << 16L) | (uint32_t(a) << 24L))
+constexpr auto makeRGB(uint32_t r, uint32_t g, uint32_t b)
+{
+    return b | g << 8L | r << 16L;
+}
+inline uint32_t F2DW(float f)
+{
+    return *reinterpret_cast<uint32_t *>(&f);
+}
+#define TEXTURE_RELEASE(rs, idtex)                                                                                     \
+    {                                                                                                                  \
+        if (rs != NULL && idtex != -1)                                                                                 \
+        {                                                                                                              \
+            rs->TextureRelease(idtex);                                                                                 \
+            idtex = -1;                                                                                                \
+        }                                                                                                              \
+    }
+
+#define FONT_RELEASE(rs, font)                                                                                         \
+    {                                                                                                                  \
+        if (rs != NULL && font != -1)                                                                                  \
+        {                                                                                                              \
+            rs->UnloadFont(font);                                                                                      \
+            font = -1;                                                                                                 \
+        }                                                                                                              \
+    }
+
+#define VERTEX_BUFFER_RELEASE(rs, vb)                                                                                  \
+    {                                                                                                                  \
+        if (rs != NULL && vb != -1)                                                                                    \
+        {                                                                                                              \
+            rs->ReleaseVertexBuffer(vb);                                                                               \
+            vb = -1;                                                                                                   \
+        }                                                                                                              \
+    }
+
+#define INDEX_BUFFER_RELEASE(rs, ib)                                                                                   \
+    {                                                                                                                  \
+        if (rs != NULL && ib != -1)                                                                                    \
+        {                                                                                                              \
+            rs->ReleaseIndexBuffer(ib);                                                                                \
+            ib = -1;                                                                                                   \
+        }                                                                                                              \
+    }
+//
+
 class CVideoTexture;
 
 class VDX9RENDER : public SERVICE

@@ -2,8 +2,8 @@
 
 #include "../particles.h"
 #include "core.h"
-#include "defines.h"
 #include "entity.h"
+#include "math_inlines.h"
 #include "p_system.h"
 #include "string_compare.hpp"
 #include "shared/messages.h"

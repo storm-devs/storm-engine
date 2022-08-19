@@ -1,4 +1,5 @@
 #pragma once
+#include "math_inlines.h"
 
 class DTimer
 {

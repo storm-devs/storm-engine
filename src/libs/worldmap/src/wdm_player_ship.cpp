@@ -11,12 +11,12 @@
 #include "wdm_player_ship.h"
 
 #include "core.h"
+#include "math_inlines.h"
 
 #include "wdm_enemy_ship.h"
 #include "wdm_islands.h"
 #include "wdm_storm.h"
 #include "world_map.h"
-#include "defines.h"
 
 // ============================================================================================
 // Construction, destruction

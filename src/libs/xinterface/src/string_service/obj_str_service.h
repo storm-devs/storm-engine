@@ -1,7 +1,7 @@
 #pragma once
 
 #include "entity.h"
-#include "string_service.h"
+#include "../string_service.h"
 
 class OBJ_STRSERVICE : public Entity
 {

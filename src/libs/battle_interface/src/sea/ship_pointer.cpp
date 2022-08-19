@@ -2,6 +2,7 @@
 #include "../bi_defines.h"
 #include "entity.h"
 #include "core.h"
+#include "math_inlines.h"
 #include "message.h"
 #include "shared/battle_interface/msg_control.h"
 #include "ship_base.h"

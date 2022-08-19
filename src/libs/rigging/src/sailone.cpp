@@ -6,7 +6,7 @@
 #include "entity.h"
 #include "vai_objbase.h"
 #include "core.h"
-#include "defines.h"
+#include "math_inlines.h"
 #include "sail.h"
 
 extern int32_t g_iBallOwnerIdx;
@@ -19,12 +19,6 @@ SAILONE::SAILONE()
 {
     RenderService = nullptr;
 
-    ZERO(tm);
-    ZERO(ss);
-    ZERO(sgeo);
-    ZERO(sailWind);
-    ZERO(sailtrope);
-    ZERO(SailPnt);
     WindUp = false;
     wind_incr = 1; // increment in the array after each sail calculation
     wind_add = 1;  // winds by 1

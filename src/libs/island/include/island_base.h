@@ -1,7 +1,8 @@
 #pragma once
 
-#include "defines.h"
 #include "cannon_trace.h"
+
+struct FRECT;
 
 class ISLAND_BASE : public CANNON_TRACE_BASE
 {

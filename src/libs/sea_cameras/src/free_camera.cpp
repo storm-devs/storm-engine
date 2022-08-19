@@ -15,7 +15,6 @@ FREE_CAMERA::FREE_CAMERA()
 
     pIslandBase = nullptr;
     pRS = nullptr;
-    ZERO2(vPos, vAng);
     vPos.z = 250.0f;
     vPos.y = 3.0f;
     fFov = FOV;

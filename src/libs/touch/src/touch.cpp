@@ -48,8 +48,7 @@ uint64_t TOUCH::ProcessMessage(MESSAGE &message)
     switch (message.Long())
     {
     case MSG_SHIP_CREATE:
-        pShips[iNumShips] = new TOUCH_SHIP;
-        PZERO(pShips[iNumShips], sizeof(TOUCH_SHIP));
+        pShips[iNumShips] = new TOUCH_SHIP{};
         pShips[iNumShips]->eID = message.EntityID();
         iNumShips++;
         break;
@@ -429,9 +428,7 @@ BOOL TOUCH::IsIntersectShipsReal(int32_t idx, int32_t cidx, CVECTOR *vPos, CVECT
 
 int32_t TOUCH::ProcessImpulse(int32_t iOurIdx, CVECTOR vPos, CVECTOR vDir, float fPowerApplied)
 {
-    STRENGTH strength;
-
-    ZERO(strength);
+    STRENGTH strength{};
     strength.bInertia = false;
 
     auto *pS1 = pShips[iOurIdx];

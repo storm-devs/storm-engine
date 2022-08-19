@@ -1575,7 +1575,7 @@ int CXI_SCROLLIMAGE::FindTexGroupFromOld(char **pGroupList, const char *groupNam
 
 void CXI_SCROLLIMAGE::IMAGEDESCRIBE::Clear()
 {
-    std::fill(slots.begin(), slots.end(), ImageSlot{});
+    slots.clear();
 
     str1 = -1;
     str2 = -1;

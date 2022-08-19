@@ -1,21 +1,19 @@
 #pragma once
 
-#include "character.h"
-#include "island_base.h"
+#include <array>
+#include <vector>
+
 #include "collide.h"
+#include "d_timer.h"
 #include "dx9render.h"
+#include "fire_place.h"
 #include "geometry.h"
+#include "island_base.h"
 #include "model.h"
+#include "save_load.h"
 #include "sea_base.h"
 #include "ship_base.h"
-
-#include "fire_place.h"
-#include "ship_lights.h"
-
-#include "save_load.h"
-#include "d_timer.h"
 #include "ship_msg.h"
-#include <vector>
 
 #define DELTA_TIME(x) ((x)*0.001f)
 #define DELTA_TIME_ROTATE(x) ((x)*1.0f / 10.0f)
@@ -39,7 +37,7 @@ class SHIP : public SHIP_BASE
     {
         NODE *pNode;        // node pointer in model
         CVECTOR vSrc, vDst; // src and dest vectors
-        int32_t iMastNum;      // mast number
+        int32_t iMastNum;   // mast number
         bool bBroken;       // if mast is broken then pNode = 0
         float fDamage;
     };
@@ -48,7 +46,7 @@ class SHIP : public SHIP_BASE
     {
         NODE *pNode;        // node pointer in model
         CVECTOR vSrc, vDst; // src and dest vectors
-        int32_t iHullNum;      // hull detail number
+        int32_t iHullNum;   // hull detail number
         bool bBroken;       // if hull detail is broken then pNode = 0
         float fDamage;
     };
@@ -105,7 +103,7 @@ class SHIP : public SHIP_BASE
     bool bMassaShow;
     int32_t uniIDX;
     bool bUse;
-    ship_point_t ShipPoints[16][16];
+    std::array<std::array<ship_point_t, 16>, 16> ShipPoints;
 
     // executed parameters
     CVECTOR vSpeedAccel;
@@ -131,7 +129,7 @@ class SHIP : public SHIP_BASE
     bool bPerkTurnActive;
     float fInitialPerkAngle, fResultPerkAngle;
 
-    STRENGTH Strength[MAX_STRENGTH];
+    std::array<STRENGTH, MAX_STRENGTH> Strength;
 
     DTimer dtMastTrace, dtUpdateParameters;
 
@@ -212,7 +210,8 @@ class SHIP : public SHIP_BASE
     // inherit functions COLLISION_OBJECT
     float Trace(const CVECTOR &src, const CVECTOR &dst) override;
 
-    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
+    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius,
+              ADD_POLYGON_FUNC addpoly) override
     {
         return false;
     };

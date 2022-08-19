@@ -26,7 +26,7 @@ AIShip::AIShip(AI_OBJTYPE shiptype)
 
 AIShip::~AIShip()
 {
-    DELETE_Entity(eidShip);
+    core.EraseEntity(eidShip);  
 
     STORM_DELETE(pMoveController);
     STORM_DELETE(pTaskController);
@@ -581,10 +581,10 @@ void AIShip::SwapShips(AIShip *pOtherShip)
     SetDead(pOtherShip->isDead());
     pOtherShip->SetDead(bThisDead);
 
-    Swap(pMoveController, pOtherShip->pMoveController);
-    Swap(pRotateController, pOtherShip->pRotateController);
-    Swap(pSpeedController, pOtherShip->pSpeedController);
-    Swap(pTaskController, pOtherShip->pTaskController);
+    std::swap(pMoveController, pOtherShip->pMoveController);
+    std::swap(pRotateController, pOtherShip->pRotateController);
+    std::swap(pSpeedController, pOtherShip->pSpeedController);
+    std::swap(pTaskController, pOtherShip->pTaskController);
 
     pCannonController->SetAIShip(this);
     if (pCameraController)

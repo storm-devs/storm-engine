@@ -2,7 +2,6 @@
 
 #include "matrix.h"
 #include "collide.h"
-#include "defines.h"
 #include "dx9render.h"
 #include "entity.h"
 #include "geometry.h"

@@ -1,5 +1,4 @@
 #include "texture_sequence.h"
-#include "defines.h"
 #include "vma.hpp"
 
 #include "core.h"

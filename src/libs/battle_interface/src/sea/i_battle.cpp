@@ -8,6 +8,7 @@
 #include "ship_pointer.h"
 #include "battle_ship_sign.h"
 #include "island_descr.h"
+#include "math_inlines.h"
 
 #include "../land/i_boarding_status.h"
 #include "../land/battle_land.h"

@@ -1,5 +1,6 @@
 #include "astronomy.h"
 #include "core.h"
+#include "math_inlines.h"
 #include "weather_base.h"
 
 Astronomy::PLANETS::PLANETS()

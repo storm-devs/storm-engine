@@ -33,7 +33,7 @@ void BI_SeaGroup::Init()
         color = pA->GetAttributeAsDword("color");
         FULLRECT(uv);
         BIUtils::ReadRectFromAttr(pA, "uv", uv, uv);
-        ZERO(pos);
+        pos = {};
         BIUtils::ReadRectFromAttr(pA, "pos", pos, pos);
 
         auto *const pNod = Manager()->CreateImageNode(texture, uv, pos, color, BIImagePrioritet_Group_Beg);
