@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME touch
     TYPE storm_module
-    DEPENDENCIES common core geometry island location renderer ship
+    DEPENDENCIES core geometry island location renderer ship
 )

@@ -25,7 +25,6 @@ STORM_SETUP(
 
     # internal
     core
-    common
     diagnostics
     util
     window

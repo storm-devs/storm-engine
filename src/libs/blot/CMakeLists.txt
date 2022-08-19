@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME blot
     TYPE storm_module
-    DEPENDENCIES common core geometry model renderer
+    DEPENDENCIES core geometry model renderer
 )

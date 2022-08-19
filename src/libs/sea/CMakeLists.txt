@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME sea
     TYPE storm_module
-    DEPENDENCIES common core renderer sea_ai
+    DEPENDENCIES core renderer sea_ai
 )

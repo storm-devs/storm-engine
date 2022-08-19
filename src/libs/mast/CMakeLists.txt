@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME mast
     TYPE storm_module
-    DEPENDENCIES collide common core geometry island model renderer ship
+    DEPENDENCIES collide core geometry island model renderer ship
 )
