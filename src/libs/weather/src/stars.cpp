@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "astronomy.h"
 #include "core.h"
 #include "math_inlines.h"

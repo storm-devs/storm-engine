@@ -18,6 +18,7 @@
 #include "token.h"
 #include "logging.hpp"
 #include "script_cache.h"
+#include "platform/platform.hpp"
 
 #include "ringbuffer_stack.hpp"
 

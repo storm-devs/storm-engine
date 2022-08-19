@@ -1,5 +1,7 @@
 #pragma once
 
+#include "platform/platform.hpp"
+
 #define HASH_TABLE_SIZE 512 // must be power of 2
 
 struct HTSUBELEMENT

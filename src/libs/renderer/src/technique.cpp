@@ -1,7 +1,11 @@
 #ifndef _WIN32 // Effects
 #include "technique.h"
+
 #include "core.h"
+#include "debug-trap.h"
 #include "math_inlines.h"
+#include "string_compare.hpp"
+#include "vma.hpp"
 
 #define USE_FX // Will load techniques from fx files
 
@@ -637,7 +641,7 @@ CTechnique::CTechnique(VDX9RENDER *_pRS)
 
     pRS = _pRS;
 
-    sDelimTable = {};
+    *sDelimTable = {};
     char sDelimeters[] = " ,.[]-+\0\n\r\t";
     size_t len = strlen(sDelimeters);
     for (uint32_t i = 0; i < len; i++)

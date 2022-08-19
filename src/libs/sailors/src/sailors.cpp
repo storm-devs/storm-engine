@@ -1,5 +1,7 @@
 #include "sailors.h"
 
+#include <algorithm>
+
 #include "animation.h"
 #include "core.h"
 #include "shared/messages.h"

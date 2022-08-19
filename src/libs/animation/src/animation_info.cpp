@@ -11,6 +11,7 @@
 #include "animation_info.h"
 
 #include "string_compare.hpp"
+#include "platform/platform.hpp"
 
 // ============================================================================================
 // Construction, destruction

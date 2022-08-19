@@ -14,6 +14,7 @@
 #include "matrix.h"
 #include "wdm_ship.h"
 #include "storm_assert.h"
+#include "platform/platform.hpp"
 
 //============================================================================================
 

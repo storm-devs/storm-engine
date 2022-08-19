@@ -1,5 +1,7 @@
 #include "ship_lights.h"
 
+#include <algorithm>
+
 #include "math3d.h"
 #include "shared/messages.h"
 #include "ship.h"

@@ -1,5 +1,6 @@
 #include "services_list.h"
 #include <cstdint>
+#include <cstring>
 #include <stdexcept>
 
 SERVICES_LIST::SERVICES_LIST()

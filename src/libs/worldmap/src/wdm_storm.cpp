@@ -9,10 +9,12 @@
 //============================================================================================
 
 #include "wdm_storm.h"
+
 #include "wdm_camera.h"
 #include "wdm_cloud.h"
 #include "wdm_render_model.h"
 #include "world_map.h"
+#include "platform/platform.hpp"
 
 //============================================================================================
 

@@ -1,5 +1,6 @@
 #include "sea_group.h"
 #include "../../utils.h"
+#include "platform/platform.hpp"
 
 BI_SeaGroup::BI_SeaGroup(BI_ManagerBase *pManager) : BI_BaseGroup(pManager)
 {

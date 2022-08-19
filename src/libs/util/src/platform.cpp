@@ -4,7 +4,7 @@ const char *convert_path_sep(const char *cPath)
     return cPath;
 }
 #else
-#include "platform.hpp"
+#include "platform/platform.hpp"
 
 #include <cstring>
 
