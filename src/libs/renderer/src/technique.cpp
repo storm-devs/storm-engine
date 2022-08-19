@@ -7,6 +7,9 @@
 #include "string_compare.hpp"
 #include "vma.hpp"
 
+#include <algorithm>
+#include <ranges>
+
 #define USE_FX // Will load techniques from fx files
 
 #ifdef USE_FX
@@ -641,7 +644,7 @@ CTechnique::CTechnique(VDX9RENDER *_pRS)
 
     pRS = _pRS;
 
-    *sDelimTable = {};
+    std::ranges::fill(sDelimTable, 0);
     char sDelimeters[] = " ,.[]-+\0\n\r\t";
     size_t len = strlen(sDelimeters);
     for (uint32_t i = 0; i < len; i++)
