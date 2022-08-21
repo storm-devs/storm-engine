@@ -49,10 +49,11 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
     if (!pSea)
         return;
 
-    for (auto &aGood : aGoods)
-        for (uint32_t j = 0; j < aGood->aItems.size(); j++)
+    for (size_t i = 0; i < aGoods.size(); i++)
+    {
+        for (size_t j = 0; j < aGoods[i]->aItems.size(); j++)
         {
-            auto *pI = &aGood->aItems[j];
+            auto *pI = &aGoods[i]->aItems[j];
             pI->fTime -= fDeltaTime;
 
             pI->vPos.y = pSea->WaveXZ(pI->vPos.x, pI->vPos.z, &pI->vNormal);
@@ -62,9 +63,9 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                 pI->vPos.y -= fabsf(pI->fTime) * 0.05f;
                 if (pI->fTime < -20.0f)
                 {
-                    // aGoods[i]->aItems.ExtractNoShift(j);
-                    aGood->aItems[j] = aGood->aItems.back();
-                    aGood->aItems.pop_back();
+                    // aGoods[i]s[i]->aItems.ExtractNoShift(j);
+                    aGoods[i]->aItems[j] = aGoods[i]->aItems.back();
+                    aGoods[i]->aItems.pop_back();
                     j--;
                     continue;
                 }
@@ -93,9 +94,9 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                                                   pI->sGoodName, pI->iQuantity);
                         if (pVData->GetInt() || bDeleteGoodAnyway)
                         {
-                            // aGoods[i]->aItems.ExtractNoShift(j);
-                            aGood->aItems[j] = aGood->aItems.back();
-                            aGood->aItems.pop_back();
+                            // aGoods[i]s[i]->aItems.ExtractNoShift(j);
+                            aGoods[i]->aItems[j] = aGoods[i]->aItems.back();
+                            aGoods[i]->aItems.pop_back();
                             j--;
                             break;
                         }
@@ -103,6 +104,7 @@ void AISeaGoods::Execute(uint32_t dwDeltaTime)
                 }
             }
         }
+    }
 }
 
 void AISeaGoods::Realize(uint32_t dwDeltaTime)
