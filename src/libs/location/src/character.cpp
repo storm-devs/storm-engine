@@ -2963,31 +2963,35 @@ if(storm::iEquals(eventName, "Blade to belt"))
                     if (chr)
                     {
                         enemy = chr->GetId();
-						// EvgAnat - new script event for missing chance -->
-						resHit = 1;
-						VDATA *vd = core.Event("Check_ChrHitFire", "iilf", GetId(), enemy, static_cast<int32_t>(chr->isRecoilState), kDist);
-						if(vd)
-						{
-							if(vd->Get(resHit))
-							{
-								if(resHit == 2)
-								{
-									core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 1);
-									chr->Hit(fgt_hit_fire);
-								}
-							}
-						}
-						else
-						{
-							core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 1);
-							chr->Hit(fgt_hit_fire);
-						}
+			// EvgAnat - new script event for missing chance -->
+			resHit = 1;
+			VDATA *vd = core.Event("Check_ChrHitFire", "iilf", GetId(), enemy, static_cast<int32_t>(chr->isRecoilState), kDist);
+			if(vd)
+			{
+				if(vd->Get(resHit))
+				{
+					if(resHit == 2)
+					{
+						core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 1);
+						chr->Hit(fgt_hit_fire);
 					}
 					else
 					{
-						core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 0);
+						core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 0);	// EvgAnat fix
 					}
-					// EvgAnat - new script event for missing chance <--
+				}
+			}
+			else
+			{
+				core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 1);
+				chr->Hit(fgt_hit_fire);
+			}
+		     }
+		     else
+		     {
+			core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 0);
+		      }
+			// EvgAnat - new script event for missing chance <--
                 }
             }
         }
