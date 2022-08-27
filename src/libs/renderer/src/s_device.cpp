@@ -545,7 +545,7 @@ bool DX9RENDER::Init()
         // new renderer settings
         vSyncEnabled = ini->GetInt(nullptr, "vsync", 0);
 
-        msaa = ini->GetInt(nullptr, "msaa", D3DMULTISAMPLE_16_SAMPLES);
+        msaa = ini->GetInt(nullptr, "msaa", D3DMULTISAMPLE_NONE);
         if (msaa != D3DMULTISAMPLE_NONE)
         {
             if (msaa < D3DMULTISAMPLE_2_SAMPLES || msaa > D3DMULTISAMPLE_16_SAMPLES)
