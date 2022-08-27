@@ -216,7 +216,8 @@ uint32_t SHIP_CAMERA::AttributeChanged(ATTRIBUTES *pAttr)
 
 void SHIP_CAMERA::ShipsCollision(CVECTOR &pos)
 {
-    for (auto &&entities = core.GetEntityIds("ship"); const auto ent : entities)
+    auto &&entities = core.GetEntityIds("ship");
+    for (const auto ent : entities)
     {
         // Object pointer
         auto *ship = static_cast<VAI_OBJBASE *>(core.GetEntityPointer(ent));
