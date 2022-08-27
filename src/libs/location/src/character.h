@@ -427,7 +427,7 @@ class Character : public Entity
     float GetAniPlayTime();
     bool SetPriorityAction(const char *action);
     // Check another character for hit by us
-    void CheckAttackHit();
+    void CheckAttackHit(bool isGunBlade);
     // Refresh weapon state
     void UpdateWeapons();
     // Get direction towards the enemy to bounce on hit
