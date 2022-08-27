@@ -3230,9 +3230,9 @@ bool Character::zSetBlade(MESSAGE &message)
     }
 
     // sabergun
-    if (nBladeIdx == 1 && !name.empty())
+    if (nBladeIdx == 1)
     {
-        isGunSet = true;
+        isGunSet = !name.empty();
     }
 
     const float t = message.Float();
