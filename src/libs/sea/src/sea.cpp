@@ -57,6 +57,7 @@ SEA::SEA()
     dwMinDim = 128;
 
     fMaxSeaHeight = 20.0f;
+    fMaxSeaDistance = 1600.0f;
     fGridStep = 0.06f;
     fLodScale = 0.4f;
 
@@ -702,7 +703,7 @@ void SEA::SSE_WaveXZ(SeaVertex **pArray)
         int32_t iX11, iX12, iX21, iX22, iY11, iY12, iY21, iY22;
 
         float fDistance = Sqr(pArray[i]->vPos.x - vCamPos.x) + Sqr(pArray[i]->vPos.z - vCamPos.z);
-        if (fDistance > 1600.0f * 1600.0f)
+        if (fDistance > fMaxSeaDistance * fMaxSeaDistance)
         {
             vNormal[i].x = 0.0f;
             nY1[i] = 1.0f;
@@ -833,7 +834,7 @@ float SEA::WaveXZ(float x, float z, CVECTOR *pNormal)
     int32_t iX11, iX12, iX21, iX22, iY11, iY12, iY21, iY22;
 
     const float fDistance = Sqr(x - vCamPos.x) + Sqr(z - vCamPos.z);
-    if (fDistance > 1600.0f * 1600.0f)
+    if (fDistance > fMaxSeaDistance * fMaxSeaDistance)
     {
         if (pNormal)
             *pNormal = CVECTOR(0.0f, 1.0f, 0.0f);
@@ -1985,6 +1986,11 @@ uint32_t SEA::AttributeChanged(ATTRIBUTES *pAttribute)
 
         fAmp1 = _fAmp1 * fScale;
         fAmp2 = _fAmp2 * fScale;
+    }
+
+    if (*pAttribute == "MaxSeaDistance")
+    {
+        fMaxSeaDistance = AttributesPointer->GetAttributeAsFloat("MaxSeaDistance");
     }
 
     return 0;

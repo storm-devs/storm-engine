@@ -9,6 +9,7 @@
 #include "v_data.h"
 #include "v_file_service.h"
 #include "shared/layers.h"
+#include "os_window.hpp"
 
 struct IFUNCINFO;
 
@@ -23,8 +24,8 @@ class Core
   public:
     virtual ~Core() = default;
 
-    // return application handle
-    virtual void* GetAppHWND() = 0;
+    // return application window
+    virtual storm::OSWindow *GetWindow() = 0;
     // set time scale; affect on std entity functions DeltaTime parameter
     virtual void SetTimeScale(float _scale) = 0;
     // write message to system log file

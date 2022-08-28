@@ -49,6 +49,8 @@ class OSWindow
     virtual void Resize(int width, int height) = 0;
     //! Set window title
     virtual void SetTitle(const std::string &title) = 0;
+    //! Set window gamma
+    virtual void SetGamma(const uint16_t (&red)[256], const uint16_t (&green)[256], const uint16_t (&blue)[256]) = 0;
 
     //! Subscribe for events
     //! \param handler event callback
@@ -62,6 +64,7 @@ class OSWindow
     virtual void *OSHandle() = 0;
 
     //! Create new window
-    static std::shared_ptr<OSWindow> Create(int width, int height, bool fullscreen);
+    static std::shared_ptr<OSWindow> Create(int width, int height, int preferred_display, bool fullscreen,
+                                            bool bordered);
 };
 } // namespace storm

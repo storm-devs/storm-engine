@@ -5,8 +5,6 @@
 #include "shared/battle_interface/log_msg.h"
 #include <stdio.h>
 
-static entid_t g_ILogAndActions;
-
 #define BI_FAST_COMMANDS "BIFastCommand"
 
 //#define SPECIAL_VERSION
@@ -49,7 +47,6 @@ bool ILogAndActions::Init()
     D3DVIEWPORT9 vp;
     rs->GetViewport(&vp);
     core.Event("SetWindowSize", "lll", static_cast<int32_t>(vp.Width), static_cast<int32_t>(vp.Height), false);
-    g_ILogAndActions = GetId();
     return true;
 }
 
@@ -283,7 +280,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
     m_bShowLogStrings = bLogStringShow;
 
     // Set parameters for the active action icon
-    auto *pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    auto *pA = AttributesPointer->GetAttributeClass("ActiveActions");
     if (pA != nullptr)
     {
         m_idIconTexture = rs->TextureCreate(pA->GetAttribute("TextureName"));
@@ -320,7 +317,7 @@ void ILogAndActions::Create(bool bFastComShow, bool bLogStringShow)
     m_IconVertex[1].tv = m_IconVertex[3].tv = 1.f / static_cast<float>(m_vertDiv);
 
     // set parameters for the previous action lines
-    pA = core.Entity_GetAttributeClass(g_ILogAndActions, "Log");
+    pA = AttributesPointer->GetAttributeClass("Log");
     if (pA != nullptr)
     {
         m_nWindowWidth = pA->GetAttributeAsDword("width", 200);
@@ -362,7 +359,7 @@ void ILogAndActions::ActionChange(bool bFastComShow, bool bLogStringShow)
     TEXTURE_RELEASE(rs, m_idIconTexture);
 
     // Set parameters for the active action icon
-    ATTRIBUTES *pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    ATTRIBUTES *pA = AttributesPointer->GetAttributeClass("ActiveActions");
     if (pA != nullptr)
     {
         m_idIconTexture = rs->TextureCreate(pA->GetAttribute("TextureName"));
@@ -493,7 +490,7 @@ void ILogAndActions::SetAction(const char *actionName)
         core.Trace("Action name: %s  - overup size of name");
         return;
     }
-    pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    pA = AttributesPointer->GetAttributeClass("ActiveActions");
     if (pA != nullptr)
         pA = pA->GetAttributeClass(actionName);
     if (pA == nullptr)
@@ -514,7 +511,7 @@ void ILogAndActions::SetAction(const char *actionName)
     m_IconVertex[0].tv = m_IconVertex[2].tv = texRect.top;
     m_IconVertex[1].tv = m_IconVertex[3].tv = texRect.bottom;
 
-    pA = core.Entity_GetAttributeClass(g_ILogAndActions, "ActiveActions");
+    pA = AttributesPointer->GetAttributeClass("ActiveActions");
     if (pA)
     {
         m_ActionHint1.Init(rs, pA->GetAttributeClass("text1"));

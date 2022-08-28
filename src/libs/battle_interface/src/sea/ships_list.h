@@ -9,6 +9,7 @@ class SHIP_DESCRIBE_LIST
     struct SHIP_DESCR
     {
         bool isMyShip;
+        bool isTransferableShip;
         bool isDead;
         int32_t relation;
         int32_t characterIndex;
@@ -29,8 +30,8 @@ class SHIP_DESCRIBE_LIST
     SHIP_DESCRIBE_LIST();
     ~SHIP_DESCRIBE_LIST();
 
-    void Add(int32_t mainChrIndex, int32_t chIdx, ATTRIBUTES *pChAttr, ATTRIBUTES *pShipAttr, bool bMyShip, int32_t relation,
-             uint32_t dwShipColor);
+    void Add(int32_t mainChrIndex, int32_t chIdx, ATTRIBUTES *pChAttr, ATTRIBUTES *pShipAttr, bool bMyShip,
+             bool bTransferableShip, int32_t relation, uint32_t dwShipColor);
 
     SHIP_DESCR *GetMainCharacterShip() const
     {

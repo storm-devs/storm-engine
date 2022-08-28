@@ -9,7 +9,7 @@ namespace storm
 class SDLWindow : public OSWindow
 {
   public:
-    SDLWindow(int width, int height, bool fullscreen);
+    SDLWindow(int width, int height, int preferred_display, bool fullscreen, bool bordered);
     ~SDLWindow() override;
 
     void Show() override;
@@ -24,14 +24,15 @@ class SDLWindow : public OSWindow
     void SetFullscreen(bool fullscreen) override;
     void Resize(int width, int height) override;
     void SetTitle(const std::string &title) override;
+    void SetGamma(const uint16_t (&red)[256], const uint16_t (&green)[256], const uint16_t (&blue)[256]) override;
 
     int Subscribe(const EventHandler &handler) override;
     void Unsubscribe(int id) override;
 
     void *OSHandle() override;
 
-    SDL_Window *SDLHandle();
-    void ProcessEvent(const SDL_WindowEvent &evt);
+    SDL_Window *SDLHandle() const;
+    void ProcessEvent(const SDL_WindowEvent &evt) const;
 
   private:
     static int SDLCALL SDLEventHandler(void *userdata, SDL_Event *evt);

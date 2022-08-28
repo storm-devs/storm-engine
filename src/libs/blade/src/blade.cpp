@@ -390,15 +390,20 @@ void BLADE::GunFire()
     CMatrix perMtx;
     int32_t sti;
 
+    const char *currentGunLocName = gunLocName;
+
     auto *obj = static_cast<MODEL *>(core.GetEntityPointer(gun));
     if (obj == nullptr) // no pistol - look for saber pistol
+    {
         obj = static_cast<MODEL *>(core.GetEntityPointer(blade[1].eid));
+        currentGunLocName = blade[1].locatorName;
+    }
 
     if (obj != nullptr)
     {
         auto *gunNode = obj->GetNode(0);
         sti = -1;
-        auto idGun = manNode->geo->FindName(gunLocName);
+        auto idGun = manNode->geo->FindName(currentGunLocName);
 
         if ((sti = manNode->geo->FindLabelN(sti + 1, idGun)) > -1)
         {

@@ -2739,7 +2739,11 @@ void Character::ActionEvent(Animation *animation, int32_t playerIndex, const cha
     }
     else if (storm::iEquals(eventName, "Attack"))
     {
-        CheckAttackHit();
+        CheckAttackHit(false);
+    }
+    else if (storm::iEquals(eventName, "GBAttack"))
+    {
+        CheckAttackHit(true);
     }
     else if (storm::iEquals(eventName, "Parry start"))
     {
@@ -3224,6 +3228,13 @@ bool Character::zSetBlade(MESSAGE &message)
         isBladeSet = false;
         SetFightMode(false);
     }
+
+    // sabergun
+    if (nBladeIdx == 1)
+    {
+        isGunSet = !name.empty();
+    }
+
     const float t = message.Float();
     const int32_t s = message.Long();
     const int32_t e = message.Long();
@@ -4853,7 +4864,7 @@ bool Character::SetPriorityAction(const char *action)
     return true;
 }
 
-inline void Character::CheckAttackHit()
+inline void Character::CheckAttackHit(bool isGunBlade)
 {
     // Get the name of the attack and the reaction
     bool isBlockBreak = false;
@@ -4966,8 +4977,8 @@ inline void Character::CheckAttackHit()
                 }
             }
             fc.c->Hit(hitReaction);
-            core.Event("Location_CharacterAttack", "iisl", GetId(), fc.c->GetId(), aname,
-                       static_cast<int32_t>(isBlocked));
+            core.Event("Location_CharacterAttack", "iisll", GetId(), fc.c->GetId(), aname,
+                       static_cast<int32_t>(isBlocked), static_cast<int32_t>(isGunBlade));
             // boal 09/12/06 energy consumption after impact -->
             if (isUseEnergy && fgtCurType != fgt_attack_feintc)
             {

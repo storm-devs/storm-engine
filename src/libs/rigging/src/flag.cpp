@@ -1,11 +1,11 @@
 #include "flag.h"
-#include "entity.h"
-#include "weather_base.h"
 #include "core.h"
 #include "defines.h"
+#include "entity.h"
 #include "shared/sail_msg.h"
 #include "ship_base.h"
 #include "v_file_service.h"
+#include "weather_base.h"
 
 static const char *RIGGING_INI_FILE = "resource\\ini\\rigging.ini";
 
@@ -13,7 +13,6 @@ FLAG::FLAG()
 {
     bUse = false;
     RenderService = nullptr;
-    TextureName = nullptr;
     bFirstRun = true;
     texl = -1;
     flist = nullptr;
@@ -29,7 +28,6 @@ FLAG::FLAG()
 FLAG::~FLAG()
 {
     TEXTURE_RELEASE(RenderService, texl);
-    STORM_DELETE(TextureName);
     STORM_DELETE(gdata);
     VERTEX_BUFFER_RELEASE(RenderService, vBuf);
     INDEX_BUFFER_RELEASE(RenderService, iBuf);
@@ -63,7 +61,7 @@ void FLAG::SetDevice()
     globalWind.ang.z = 1.f;
     globalWind.base = 1.f;
     LoadIni();
-    texl = RenderService->TextureCreate(TextureName);
+    texl = RenderService->TextureCreate(textureName_.c_str());
 }
 
 bool FLAG::CreateState(ENTITY_STATE_GEN *state_gen)
@@ -79,7 +77,14 @@ bool FLAG::LoadState(ENTITY_STATE *state)
 void FLAG::Execute(uint32_t Delta_Time)
 {
     if (bFirstRun)
+    {
         FirstRun();
+    }
+    else
+    {
+        SetTextureCoordinate();
+    }
+
     if (bYesDeleted)
         DoSTORM_DELETE();
     if (bUse)
@@ -198,14 +203,19 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
             for (i = 0; i < gi.nlabels; i++)
             {
                 nod->geo->GetLabel(i, gl);
-                if (!strncmp(gl.group_name, "sflag", 5)) // special flag
+
+                const std::string_view &group_name = gl.group_name;
+
+                if (group_name.starts_with("sflag")) // special flag
                 {
-                    AddLabel(gl, nod, 1, 1);
+                    int groupNumber = atoi(group_name.substr(5).data());
+                    AddLabel(gl, nod, true, true, groupNumber);
                 }
-                else
+                else if (group_name.starts_with("flag"))
                 {
-                    if (!strncmp(gl.group_name, "flag", 4)) // ordinary flag
-                        AddLabel(gl, nod, 0, 1);
+                    // ordinary flag
+                    int groupNumber = atoi(group_name.substr(4).data());
+                    AddLabel(gl, nod, false, true, groupNumber);
                 }
             }
         }
@@ -260,14 +270,19 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
             for (i = 0; i < gi.nlabels; i++)
             {
                 nod->geo->GetLabel(i, gl);
-                if (!strncmp(gl.group_name, "sflag", 5)) // special flag
+
+                const std::string_view &group_name = gl.group_name;
+
+                if (group_name.starts_with("sflag")) // special flag
                 {
-                    AddLabel(gl, nod, 1, 0);
+                    int groupNumber = atoi(group_name.substr(5).data());
+                    AddLabel(gl, nod, true, false, groupNumber);
                 }
-                else
+                else if (group_name.starts_with("flag"))
                 {
-                    if (!strncmp(gl.group_name, "flag", 4)) // ordinary flag
-                        AddLabel(gl, nod, 0, 0);
+                    // ordinary flag
+                    int groupNumber = atoi(group_name.substr(4).data());
+                    AddLabel(gl, nod, false, false, groupNumber);
                 }
             }
         }
@@ -291,9 +306,9 @@ uint64_t FLAG::ProcessMessage(MESSAGE &message)
     return 0;
 }
 
-void FLAG::SetTextureCoordinate() const
+void FLAG::SetTextureCoordinate()
 {
-    if (bUse)
+    if (bUse && verticesNeedUpdate_)
     {
         int i;
         int32_t sIdx;
@@ -305,7 +320,7 @@ void FLAG::SetTextureCoordinate() const
         {
             for (auto fn = 0; fn < flagQuantity; fn++)
             {
-                if (flist[fn] == nullptr)
+                if (flist[fn] == nullptr || flist[fn]->bDisabled)
                     continue;
                 sIdx = flist[fn]->sv;
                 addtu = 1.f / static_cast<float>(FlagTextureQuantity);
@@ -339,13 +354,14 @@ void FLAG::SetTextureCoordinate() const
                 }
             }
             RenderService->UnLockVertexBuffer(vBuf);
+            verticesNeedUpdate_ = false;
         }
     }
 }
 
 void FLAG::DoMove(FLAGDATA *pr, float delta_time) const
 {
-    if (pr == nullptr)
+    if (pr == nullptr || pr->bDisabled)
         return;
     CVECTOR cPos;
     cPos = *pr->pMatWorld * pr->spos;
@@ -443,24 +459,18 @@ void FLAG::DoMove(FLAGDATA *pr, float delta_time) const
     }
 }
 
-void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
+void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip, int groupNumber)
 {
     FLAGDATA *fd;
-    int grNum;
 
     // for fail parameters do not set of data
     if (nod == nullptr)
         return;
 
-    if (isSpecialFlag)
-        grNum = atoi(&gl.group_name[5]);
-    else
-        grNum = atoi(&gl.group_name[4]);
-
     int fn;
     for (fn = 0; fn < flagQuantity; fn++)
-        if (flist[fn] != nullptr && flist[fn]->HostGroup == groupQuantity - 1 && flist[fn]->grNum == grNum &&
-            flist[fn]->nod == nod)
+        if (flist[fn] != nullptr && flist[fn]->HostGroup == groupQuantity - 1 && flist[fn]->grNum == groupNumber &&
+            flist[fn]->nod == nod && flist[fn]->isSpecialFlag == isSpecialFlag)
         {
             fd = flist[fn];
             break;
@@ -477,7 +487,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip)
         fd->isShip = isShip;
         fd->pMatWorld = &nod->glob_mtx;
         fd->nod = nod;
-        fd->grNum = grNum;
+        fd->grNum = groupNumber;
         fd->Alfa = 0.f;
         fd->Beta = 0.f;
         fd->HostGroup = groupQuantity - 1;
@@ -544,7 +554,7 @@ void FLAG::SetTreangle() const
     {
         for (auto fn = 0; fn < flagQuantity; fn++)
         {
-            if (flist[fn] == nullptr)
+            if (flist[fn] == nullptr || flist[fn]->bDisabled)
                 continue;
             idx = flist[fn]->st;
             for (i = 0; i < static_cast<int>(flist[fn]->nt); i++)
@@ -581,24 +591,7 @@ void FLAG::LoadIni()
     int tmp;
     // load texture parameters
     ini->ReadString(section, "TextureName", param, sizeof(param) - 1, "flagall.tga");
-    if (TextureName != nullptr)
-    {
-        if (strcmp(TextureName, param))
-        {
-            delete TextureName;
-            const auto len = strlen(param) + 1;
-            TextureName = new char[len];
-            memcpy(TextureName, param, len);
-            RenderService->TextureRelease(texl);
-            texl = RenderService->TextureCreate(TextureName);
-        }
-    }
-    else
-    {
-        const auto len = strlen(param) + 1;
-        TextureName = new char[len];
-        memcpy(TextureName, param, len);
-    }
+    UpdateTexture(param);
 
     if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
     {
@@ -611,6 +604,7 @@ void FLAG::LoadIni()
         FlagTextureQuantityRow = static_cast<int>(ini->GetInt(section, "TextureCountRow", 8));
     }
 
+    verticesNeedUpdate_ = true;
     SetTextureCoordinate();
 
     // flag segment length
@@ -645,6 +639,28 @@ void FLAG::LoadIni()
     // UNGUARD
 }
 
+uint32_t FLAG::AttributeChanged(ATTRIBUTES *attributes)
+{
+    const std::string_view attributeName = attributes->GetThisName();
+
+    if (storm::iEquals(attributeName, "texture"))
+    {
+        UpdateTexture(attributes->GetValue());
+    }
+    else if (storm::iEquals(attributeName, "textureColumns"))
+    {
+        FlagTextureQuantity = atoll(attributes->GetValue().c_str());
+        verticesNeedUpdate_ = true;
+    }
+    else if (storm::iEquals(attributeName, "textureRows"))
+    {
+        FlagTextureQuantityRow = atoll(attributes->GetValue().c_str());
+        verticesNeedUpdate_ = true;
+    }
+
+    return Entity::AttributeChanged(attributes);
+}
+
 void FLAG::FirstRun()
 {
     if (wFlagLast)
@@ -662,6 +678,7 @@ void FLAG::FirstRun()
         iBuf = RenderService->CreateIndexBuffer(nIndx * 2);
         SetTreangle();
         vBuf = RenderService->CreateVertexBuffer(FLAGLXVERTEX_FORMAT, nVert * sizeof(FLAGLXVERTEX), D3DUSAGE_WRITEONLY);
+        verticesNeedUpdate_ = true;
         SetTextureCoordinate();
         nIndx /= 3;
     }
@@ -775,6 +792,7 @@ void FLAG::DoSTORM_DELETE()
             gdata = oldgdata;
 
         SetTreangle();
+        verticesNeedUpdate_ = true;
         SetTextureCoordinate();
     }
 
@@ -837,24 +855,16 @@ void FLAG::SetAdd(int flagNum)
             int32_t curTexNumR = 0;
 
             // set texture number
-            if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::CITY_OF_ABANDONED_SHIPS)
+            if (flist[fn]->isShip) // ship
             {
-                pvdat = core.Event("GetRiggingData", "sll", "GetFlagTexNum", flist[fn]->triangle,
-                                   gdata[flist[fn]->HostGroup].nation);
+                pvdat = core.Event("GetRiggingData", "sllla", "GetShipFlagTexNum", flist[fn]->triangle,
+                                   gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag,
+                                   gdata[flist[fn]->HostGroup].char_attributes);
             }
             else
             {
-                if (flist[fn]->isShip) // ship
-                {
-                    pvdat = core.Event("GetRiggingData", "sllla", "GetShipFlagTexNum", flist[fn]->triangle,
-                                       gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag,
-                                       gdata[flist[fn]->HostGroup].char_attributes);
-                }
-                else
-                {
-                    pvdat = core.Event("GetRiggingData", "slll", "GetTownFlagTexNum", flist[fn]->triangle,
-                                       gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
-                }
+                pvdat = core.Event("GetRiggingData", "slll", "GetTownFlagTexNum", flist[fn]->triangle,
+                                   gdata[flist[fn]->HostGroup].nation, flist[fn]->isSpecialFlag);
             }
             if (pvdat == nullptr)
             {
@@ -875,31 +885,40 @@ void FLAG::SetAdd(int flagNum)
                 }
             }
 
-            flist[fn]->texNumC = curTexNumC;
-            flist[fn]->texNumR = curTexNumR;
-
-            flist[fn]->vectQuant = (int)(len / FLAGVECTORLEN); // number of flag segments
-            if (flist[fn]->vectQuant < MinSegmentQuantity)
-                flist[fn]->vectQuant = MinSegmentQuantity;
-            // compute flag increment
-            flist[fn]->dv = (empos - bmpos) / static_cast<float>(flist[fn]->vectQuant);
-            if (flist[fn]->triangle)
-                flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant);
-            else
-                flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant + 1);
-
-            flist[fn]->sv = nVert;
-            flist[fn]->st = nIndx;
-            flist[fn]->vectQuant; // TODO: check this ~!~
-            if (flist[fn]->triangle)
+            if (curTexNumC == -1 || curTexNumR == -1)
             {
-                nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 3);
-                nIndx += (flist[fn]->nt = flist[fn]->vectQuant * 2 + 1) * 3;
+                flist[fn]->bDisabled = true;
             }
             else
             {
-                nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 2);
-                nIndx += (flist[fn]->nt = flist[fn]->vectQuant * 2) * 3;
+                flist[fn]->bDisabled = false;
+
+                flist[fn]->texNumC = curTexNumC;
+                flist[fn]->texNumR = curTexNumR;
+
+                flist[fn]->vectQuant = (int)(len / FLAGVECTORLEN); // number of flag segments
+                if (flist[fn]->vectQuant < MinSegmentQuantity)
+                    flist[fn]->vectQuant = MinSegmentQuantity;
+                // compute flag increment
+                flist[fn]->dv = (empos - bmpos) / static_cast<float>(flist[fn]->vectQuant);
+                if (flist[fn]->triangle)
+                    flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant);
+                else
+                    flist[fn]->ddhv = (p2 - p0 - empos + bmpos) / static_cast<float>(flist[fn]->vectQuant + 1);
+
+                flist[fn]->sv = nVert;
+                flist[fn]->st = nIndx;
+                flist[fn]->vectQuant; // TODO: check this ~!~
+                if (flist[fn]->triangle)
+                {
+                    nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 3);
+                    nIndx += (flist[fn]->nt = flist[fn]->vectQuant * 2 + 1) * 3;
+                }
+                else
+                {
+                    nVert += (flist[fn]->nv = flist[fn]->vectQuant * 2 + 2);
+                    nIndx += (flist[fn]->nt = flist[fn]->vectQuant * 2) * 3;
+                }
             }
         }
     }
@@ -949,4 +968,14 @@ void FLAG::MoveOtherHost(entid_t newm_id, int32_t flagNum, entid_t oldm_id)
     // reassign its owner to the new owner
     if (fn < flagQuantity)
         flist[fn]->HostGroup = newgn;
+}
+
+void FLAG::UpdateTexture(const std::string_view &texturePath)
+{
+    if (textureName_ != texturePath)
+    {
+        textureName_ = texturePath;
+        RenderService->TextureRelease(texl);
+        texl = RenderService->TextureCreate(textureName_.c_str());
+    }
 }

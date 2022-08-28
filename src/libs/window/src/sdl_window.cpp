@@ -1,22 +1,23 @@
 #include "sdl_window.hpp"
 
 #include <SDL2/SDL_syswm.h>
-#include <map>
 
 namespace storm
 {
-SDLWindow::SDLWindow(int width, int height, bool fullscreen) : fullscreen_(fullscreen)
+SDLWindow::SDLWindow(int width, int height, int preferred_display, bool fullscreen, bool bordered)
+    : fullscreen_(fullscreen)
 {
     uint32_t flags = (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN;
 #ifndef _WIN32 // DXVK-Native
     flags |= SDL_WINDOW_VULKAN;
 #endif
     window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>>(
-        SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags),
+        SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED_DISPLAY(preferred_display),
+                         SDL_WINDOWPOS_CENTERED_DISPLAY(preferred_display), width, height, flags),
         [](SDL_Window *w) { SDL_DestroyWindow(w); });
 
     sdlID_ = SDL_GetWindowID(window_.get());
-    SDL_SetWindowBordered(window_.get(), SDL_FALSE);
+    SDL_SetWindowBordered(window_.get(), bordered ? SDL_TRUE : SDL_FALSE);
     SDL_AddEventWatch(&SDLEventHandler, this);
 }
 
@@ -80,6 +81,11 @@ void SDLWindow::SetTitle(const std::string &title)
     SDL_SetWindowTitle(window_.get(), title.c_str());
 }
 
+void SDLWindow::SetGamma(const uint16_t (&red)[256], const uint16_t (&green)[256], const uint16_t (&blue)[256])
+{
+    SDL_SetWindowGammaRamp(window_.get(), red, green, blue);
+}
+
 int SDLWindow::Subscribe(const EventHandler &handler)
 {
     int id = 1;
@@ -113,12 +119,12 @@ void *SDLWindow::OSHandle()
 #endif
 }
 
-SDL_Window *SDLWindow::SDLHandle()
+SDL_Window *SDLWindow::SDLHandle() const
 {
     return window_.get();
 }
 
-void SDLWindow::ProcessEvent(const SDL_WindowEvent &evt)
+void SDLWindow::ProcessEvent(const SDL_WindowEvent &evt) const
 {
     Event winEvent;
     switch (evt.event)
@@ -143,9 +149,9 @@ void SDLWindow::ProcessEvent(const SDL_WindowEvent &evt)
         handler.second(winEvent);
 }
 
-std::shared_ptr<OSWindow> OSWindow::Create(int width, int height, bool fullscreen)
+std::shared_ptr<OSWindow> OSWindow::Create(int width, int height, int preferred_display, bool fullscreen, bool bordered)
 {
-    return std::make_shared<SDLWindow>(width, height, fullscreen);
+    return std::make_shared<SDLWindow>(width, height, preferred_display, fullscreen, bordered);
 }
 
 int SDLWindow::SDLEventHandler(void *userdata, SDL_Event *evt)

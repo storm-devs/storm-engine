@@ -22,10 +22,7 @@ class CoreImpl final : public CorePrivate
 
     void CleanUp();
 
-    void Set_Hwnd(HWND _hwnd)
-    {
-        App_Hwnd = _hwnd;
-    };
+    void SetWindow(std::shared_ptr<storm::OSWindow> window) override;
     bool Initialize();
     void ResetCore();
     bool Run();
@@ -60,7 +57,7 @@ class CoreImpl final : public CorePrivate
     // shutdown core, delete all objects and close programm
     void Exit();
     // return application handle
-    void* GetAppHWND() override;
+    storm::OSWindow *GetWindow() override;
 #ifdef _WIN32 // HINSTANCE
     HINSTANCE GetAppInstance();
 #endif
@@ -163,7 +160,7 @@ private:
     bool Root_flag;
     bool Initialized; // initialized flag (false at startup or after Reset())
     bool bEngineIniProcessed;
-    HWND App_Hwnd;             // application handle
+    std::shared_ptr<storm::OSWindow> window_; // application handle
     char gstring[MAX_PATH]{}; // general purpose string
     bool State_loading;
     bool bEnableTimeScale{};

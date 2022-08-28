@@ -34,7 +34,8 @@ jobs:
       fail-fast: false
       matrix:
         configuration: [Debug]
-    name: 'build-linux [${{ matrix.configuration}}]'
+        clang_version: [11, 12]
+    name: 'linux [${{ matrix.configuration}}] [clang-${{matrix.clang_version}}]'
     steps:
     - uses: actions/checkout@v2
       with:
@@ -48,8 +49,8 @@ jobs:
       run: pip install conan
     - name: Configure with cmake
       run: |
-        export CC=clang-11
-        export CXX=clang++-11
+        export CC=clang-${{matrix.clang_version}}
+        export CXX=clang++-${{matrix.clang_version}}
         ${CXX} --version
         mkdir build && cd build
         cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.configuration}}

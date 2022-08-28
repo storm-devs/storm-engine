@@ -217,6 +217,11 @@ class MESSAGE final
         return format_;
     }
 
+    [[nodiscard]] bool ParamValid() const
+    {
+        return index < format_.length();
+    }
+
   private:
     static storm::MessageParam GetParamValue(const char c, va_list &args)
     {

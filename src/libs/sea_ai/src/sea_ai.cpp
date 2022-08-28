@@ -45,9 +45,12 @@ void SEA_AI::Execute(uint32_t Delta_Time)
         bFirstInit = false;
     }
 
-    for (auto &i : AIGroup::AIGroups)
+    // Don't use range-based for loop here. AIGroup::AIGroups can be pushed to while executing, potentially invalidating
+    // any iterators
+    for (size_t i = 0; i < AIGroup::AIGroups.size(); ++i)
     {
-        i->Execute(fDeltaTime);
+        const auto group = AIGroup::AIGroups[i];
+        group->Execute(fDeltaTime);
     }
 
     RDTSC_E(dwRDTSC);

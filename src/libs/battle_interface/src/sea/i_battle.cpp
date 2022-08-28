@@ -252,16 +252,17 @@ uint64_t BATTLE_INTERFACE::ProcessMessage(MESSAGE &message)
         g_IslandDescr.SetIsland(message.AttributePointer());
         m_bMyShipView = false;
         break;
-    case BI_IN_CREATE_SHIP: // "laall"
+    case BI_IN_CREATE_SHIP: // "laallll"
     {
         const auto chIdx = message.Long();
         auto *const pChAttr = message.AttributePointer();
         auto *const pShipAttr = message.AttributePointer();
         const auto bMyShip = (message.Long() != 0L);
         const auto relation = message.Long();
-        const uint32_t dwShipColor = message.GetCurrentFormatType() ? message.Long() : 0;
+        const uint32_t dwShipColor = message.ParamValid() ? message.Long() : 0;
+        const bool bTransferableShip = message.ParamValid() ? (message.Long() != 0) : bMyShip;
         g_ShipList.Add(AttributesPointer ? AttributesPointer->GetAttributeAsDword("MainChrIndex", -1) : -1, chIdx,
-                       pChAttr, pShipAttr, bMyShip, relation, dwShipColor);
+                       pChAttr, pShipAttr, bMyShip, bTransferableShip, relation, dwShipColor);
         if (m_pShipIcon)
             m_pShipIcon->SetUpdate();
     }
@@ -350,9 +351,8 @@ void BATTLE_INTERFACE::CheckSeaState()
         if (ps == main_sd)
             continue;
         bSailTo = true;
-        if (ps->isMyShip)
+        if (ps->isTransferableShip)
         {
-            bDefend = true;
             float curRad;
             if ((curRad = ~(ps->pShip->GetPos() - main_sd->pShip->GetPos())) < sqrRadius)
             {
@@ -364,6 +364,8 @@ void BATTLE_INTERFACE::CheckSeaState()
                 }
             }
         }
+        if (ps->isMyShip)
+            bDefend = true;
         else
         {
             if (ps->relation == BI_RELATION_ENEMY)

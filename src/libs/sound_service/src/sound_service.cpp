@@ -452,10 +452,12 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
                                                                           _maxDistance * DISTANCEFACTOR));
 
         FMOD_VECTOR vVelocity = {0.0f, 0.0f, 0.0f};
-        FMOD_VECTOR vPosition;
-        vPosition.x = _startPosition->x;
-        vPosition.y = _startPosition->y;
-        vPosition.z = _startPosition->z;
+        FMOD_VECTOR vPosition{};
+        if (_startPosition != nullptr) {
+            vPosition.x = _startPosition->x;
+            vPosition.y = _startPosition->y;
+            vPosition.z = _startPosition->z;
+        }
         CHECKFMODERR(PlayingSounds[SoundIdx].channel->set3DAttributes(&vPosition, &vVelocity));
     }
 
