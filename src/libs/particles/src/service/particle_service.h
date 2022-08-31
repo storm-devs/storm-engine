@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "particles/i_particle_service.h"
+#include "../particles.h"
 #include <string>
 #include <vector>
 

@@ -18,7 +18,6 @@
 #include "lights.h"
 
 #include "c_vector4.h"
-#include "defines.h"
 #include "shared/messages.h"
 
 float fCausticScale, fCausticDelta, fFogDensity, fCausticDistance;

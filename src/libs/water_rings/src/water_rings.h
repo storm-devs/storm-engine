@@ -4,7 +4,7 @@
 #include "dx9render.h"
 #include "model.h"
 #include "sea_base.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 //#include "..\geom_lib\geos.h"
 #include "iv_buffer_manager.h"
 

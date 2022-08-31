@@ -1,6 +1,7 @@
 #include "str_service.h"
 
 #include "core.h"
+#include "string_compare.hpp"
 
 #include "../xinterface.h"
 #include "s_import_func.h"

@@ -1,9 +1,10 @@
 #include "flag.h"
 #include "core.h"
-#include "defines.h"
 #include "entity.h"
+#include "math_inlines.h"
 #include "shared/sail_msg.h"
 #include "ship_base.h"
+#include "string_compare.hpp"
 #include "v_file_service.h"
 #include "weather_base.h"
 
@@ -478,10 +479,7 @@ void FLAG::AddLabel(GEOS::LABEL &gl, NODE *nod, bool isSpecialFlag, bool isShip,
     if (fn == flagQuantity)
     {
         // create new flag
-        fd = new FLAGDATA;
-        if (fd == nullptr)
-            throw std::runtime_error("Not memory allocation");
-        PZERO(fd, sizeof(FLAGDATA));
+        fd = new FLAGDATA{};
         fd->triangle = true; // this is Vimpel
         fd->isSpecialFlag = isSpecialFlag;
         fd->isShip = isShip;

@@ -1,8 +1,9 @@
 #include "active_perk_shower.h"
 #include "bi_defines.h"
 #include "core.h"
+#include "string_compare.hpp"
 #include "shared/battle_interface/msg_control.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 #include <exception>
 
 ActivePerkShower::ActivePerkShower()

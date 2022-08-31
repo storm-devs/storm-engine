@@ -2,14 +2,17 @@
 
 #include <functional>
 
+#include <spdlog/spdlog.h>
+
 // common includes
-#include "message.h"
 #include "controls.h"
 #include "engine_version.hpp"
+#include "message.h"
+#include "os_window.hpp"
+#include "platform/platform.hpp"
+#include "shared/layers.h"
 #include "v_data.h"
 #include "v_file_service.h"
-#include "shared/layers.h"
-#include "os_window.hpp"
 
 struct IFUNCINFO;
 
@@ -18,6 +21,30 @@ struct ScreenSize
     size_t width{};
     size_t height{};
 };
+
+// TODO: move to another place
+#define STORM_DELETE(x)                                                                                                \
+    {                                                                                                                  \
+        delete x;                                                                                                      \
+        x = 0;                                                                                                         \
+    }
+#define RELEASE(x)                                                                                                     \
+    {                                                                                                                  \
+        if (x)                                                                                                         \
+            x->Release();                                                                                              \
+        x = 0;                                                                                                         \
+    }
+
+uint64_t get_performance_counter();
+#define RDTSC_B(x)                                                                                                     \
+    {                                                                                                                  \
+        x = get_performance_counter();                                                                                 \
+    }
+#define RDTSC_E(x)                                                                                                     \
+    {                                                                                                                  \
+        x = get_performance_counter() - x;                                                                             \
+    }
+//
 
 class Core
 {
@@ -60,14 +87,14 @@ class Core
     virtual uint32_t GetRDeltaTime() = 0;
     //
     virtual VDATA *Event(const std::string_view &event_name) = 0;
-    template<typename... Args>
+    template <typename... Args>
     VDATA *Event(const std::string_view &event_name, const std::string_view &format, Args... args)
     {
         MESSAGE message;
         message.Reset(format, args...);
         return Event(event_name, message);
     }
-    virtual VDATA *Event(const std::string_view &event_name, MESSAGE& message) = 0;
+    virtual VDATA *Event(const std::string_view &event_name, MESSAGE &message) = 0;
     virtual uint32_t PostEvent(const char *Event_name, uint32_t post_time, const char *Format, ...) = 0;
 
     virtual void *GetSaveData(const char *file_name, int32_t &data_size) = 0;
@@ -102,7 +129,7 @@ class Core
     virtual bool IsLayerFrozen(layer_index_t index) const = 0;
     virtual void ForEachEntity(const std::function<void(entptr_t)> &f) = 0;
 
-    CONTROLS* Controls{};
+    CONTROLS *Controls{};
 };
 
 extern Core &core;

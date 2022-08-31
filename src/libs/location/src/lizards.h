@@ -11,7 +11,7 @@
 #pragma once
 
 #include "dx9render.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #include "lizard.h"
 

@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <map>
 
-#include "storm_platform.h"
+#include "platform/platform.hpp"
 
 namespace storm
 {

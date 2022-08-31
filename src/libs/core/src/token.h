@@ -164,7 +164,7 @@ class TOKEN
     std::ptrdiff_t TokenDataBufferSize;
     int32_t Lines_in_token;
     char *pTokenData;
-    std::ptrdiff_t ProgramSteps[PROGRAM_STEPS_CACHE];
+    std::ptrdiff_t ProgramSteps[PROGRAM_STEPS_CACHE]{};
     int32_t ProgramStepsNum;
     char *Program;
     char *ProgramBase;

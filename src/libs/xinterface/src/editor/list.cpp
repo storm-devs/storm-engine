@@ -1,7 +1,6 @@
 #include "list.h"
 #include "../nodes/xi_image.h"
 #include "editor_defines.h"
-#include <defines.h>
 
 #include "controls.h"
 #include "core.h"

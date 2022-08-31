@@ -9,10 +9,12 @@
 //============================================================================================
 
 #include "wdm_sea.h"
+
+#include "math_inlines.h"
 #include "matrix.h"
 #include "wdm_ship.h"
-#include "defines.h"
 #include "storm_assert.h"
+#include "platform/platform.hpp"
 
 //============================================================================================
 

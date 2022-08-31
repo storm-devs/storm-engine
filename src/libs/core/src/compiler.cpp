@@ -15,6 +15,7 @@
 #include "storm_assert.h"
 #include "debug-trap.h"
 
+#include <SDL_timer.h>
 #include <unordered_map>
 
 #define SKIP_COMMENT_TRACING
@@ -930,7 +931,7 @@ bool COMPILER::ProcessDebugExpression0(const char *pExpression, DATA &Result)
 
     bDebugExpressionRun = true;
 
-    PZERO(&Segment, sizeof(Segment));
+    Segment = {};
     Segment.name = "Debug Expression";
     Segment.id = RunningSegmentID;
     Segment.bUnload = false;

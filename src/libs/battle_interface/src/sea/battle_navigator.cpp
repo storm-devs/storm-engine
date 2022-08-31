@@ -6,6 +6,7 @@
 #include "../utils.h"
 #include "entity.h"
 #include "island_base.h"
+#include "math_inlines.h"
 #include "shared/battle_interface/msg_control.h"
 #include "ship_base.h"
 #include "ships_list.h"
@@ -1362,7 +1363,7 @@ void BATTLE_NAVIGATOR::SetIsland()
                         rs->GetTransform(D3DTS_VIEW, oldmatv);
                         rs->SetTransform(D3DTS_VIEW, matv);
                         rs->GetTransform(D3DTS_PROJECTION, &oldmatp);
-                        ZERO(matp);
+                        matp = {};
                         matp._11 = matp._22 = 2.f / islSize;
                         matp._33 = 1.f / islSize;
                         matp._44 = 1.f;

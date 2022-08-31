@@ -1,6 +1,7 @@
 #include "bb_processor.h"
 
 #include "core.h"
+#include "math_inlines.h"
 
 #include "../../i_common/i_emitter.h"
 #include "../../i_common/names.h"
@@ -8,8 +9,8 @@
 #include "../data_source/data_graph.h"
 #include "../data_source/data_uv.h"
 #include "../particle_system/particle_system.h"
-#include "defines.h"
 #include "physic.h"
+#include "string_compare.hpp"
 
 // How many billboards can there be
 #define MAX_BILLBOARDS 4096

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "matrix.h"
-#include "sd2_h/cannon_trace.h"
+#include "cannon_trace.h"
 #include "blast.h"
 #include "dx9render.h"
 #include "geometry.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 using GEOPARTICLE = struct
 {

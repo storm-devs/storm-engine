@@ -7,7 +7,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include "storm/fs.h"
+#include "fs.h"
 #include "v_file_service.h"
 #include "spdlog_sinks/syncable_sink.hpp"
 #include "watermark.hpp"

@@ -1,9 +1,9 @@
 #include "t_butterfly.h"
 #include "matrix.h"
 #include "core.h"
+#include "math_inlines.h"
 #include "rands.h"
 
-#include "defines.h"
 
 CVECTOR TButterfly::center;
 

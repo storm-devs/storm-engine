@@ -1,4 +1,6 @@
 #include "xi_pc_edit_box.h"
+
+#include "string_compare.hpp"
 #include "xi_image.h"
 #include "xi_util.h"
 #include <stdio.h>

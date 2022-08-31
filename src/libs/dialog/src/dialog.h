@@ -2,9 +2,8 @@
 
 #include "dx9render.h"
 #include "matrix.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
-#include "defines.h"
 #include <string>
 #include <vector>
 

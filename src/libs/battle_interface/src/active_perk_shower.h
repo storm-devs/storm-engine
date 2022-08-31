@@ -1,6 +1,5 @@
 #pragma once
 
-#include "defines.h"
 #include "dx9render.h"
 
 class ActivePerkShower : public Entity

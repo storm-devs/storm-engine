@@ -2,8 +2,8 @@
 
 #include "core.h"
 
-#include "defines.h"
 #include "pcs_controls.h"
+#include "string_compare.hpp"
 #include "v_file_service.h"
 
 CREATE_CLASS(TMPTELEPORT)

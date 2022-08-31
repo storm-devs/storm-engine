@@ -10,8 +10,8 @@
 
 #include "wdm_cloud.h"
 #include "wdm_objects.h"
-#include "defines.h"
 #include "core.h"
+#include "math_inlines.h"
 
 #define WdmStormCloudHeight 40.0f
 #define WdmStormSizeMin 40.0f

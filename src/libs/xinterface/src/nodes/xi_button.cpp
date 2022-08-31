@@ -1,5 +1,7 @@
 #include "xi_button.h"
 
+#include "string_compare.hpp"
+
 CXI_BUTTON::CXI_BUTTON()
 {
     m_rs = nullptr;

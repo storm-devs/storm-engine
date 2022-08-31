@@ -3,7 +3,7 @@
 #include <cstring>
 #include <stdexcept>
 
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 
 STRINGS_LIST::STRINGS_LIST()
 {

@@ -2,9 +2,9 @@
 
 #include "core.h"
 
-#include "sd2_h/save_load.h"
+#include "save_load.h"
 #include "controls.h"
-#include "defines.h"
+#include "math_inlines.h"
 #include "shared/messages.h"
 
 #define DISCR_F_VAL 0.00001f
@@ -15,9 +15,7 @@ DECK_CAMERA::DECK_CAMERA()
 {
     vb_id = 0;
     RenderService = nullptr;
-    PZERO(&camera_pos, sizeof(camera_pos));
     camera_pos.y = 1.0f;
-    PZERO(&camera_ang, sizeof(camera_ang));
     pACharacter = nullptr;
     pathNode = nullptr;
     bLoad = false;

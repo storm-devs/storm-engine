@@ -12,7 +12,6 @@
 #include "characters_groups.h"
 #include "lights.h"
 
-#include "defines.h"
 #include "geometry.h"
 #include "sea_base.h"
 #include "shared/messages.h"
@@ -20,6 +19,8 @@
 #include "debug-trap.h"
 
 #include "core.h"
+#include "math_inlines.h"
+#include "string_compare.hpp"
 #include "v_data.h"
 
 

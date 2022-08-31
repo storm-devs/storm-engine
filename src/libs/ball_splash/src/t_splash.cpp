@@ -1,5 +1,7 @@
 #include "t_splash.h"
 #include "ball_splash_defines.h"
+#include "core.h"
+#include "math_inlines.h"
 
 VDX9RENDER *TSplash::renderer = nullptr;
 bool TSplash::startRender = true;

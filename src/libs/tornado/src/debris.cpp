@@ -9,8 +9,10 @@
 //============================================================================================
 
 #include "debris.h"
-#include "entity.h"
+
 #include "core.h"
+#include "dx9render.h"
+#include "entity.h"
 #include "geometry.h"
 #include "shared/messages.h"
 #include "ship_base.h"

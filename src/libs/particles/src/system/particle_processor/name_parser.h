@@ -1,6 +1,8 @@
 #pragma once
 
-#include <string.h>
+#include <cstring>
+
+#include "platform/platform.hpp"
 
 #define MAX_STRING_SIZE 8192
 

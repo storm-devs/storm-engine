@@ -1,7 +1,6 @@
 #pragma once
 
 #include "c_vector.h"
-#include "defines.h"
 #include "dx9render.h"
 #include "sea_base.h"
 

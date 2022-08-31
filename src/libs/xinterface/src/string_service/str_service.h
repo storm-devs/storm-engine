@@ -1,9 +1,9 @@
 #pragma once
 
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #include "script_libriary.h"
-#include "string_service.h"
+#include "../string_service.h"
 
 //-----------SDEVICE-----------
 class STRSERVICE : public VSTRSERVICE

@@ -60,7 +60,7 @@ class BIString : public IBIString
     float m_fScale;
     int32_t m_nFontID;
 
-    POINT m_pntOutPos;
+    POINT m_pntOutPos{};
 
     bool m_bUpdateString;
 };

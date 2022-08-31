@@ -4,7 +4,7 @@
 
 #include "../k2_wrapper/particles.h"
 #include "../manager/particle_manager.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 CREATE_SERVICE(ParticleService)
 

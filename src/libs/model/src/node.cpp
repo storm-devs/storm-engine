@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "core.h"
 #include "modelr.h"
+#include "string_compare.hpp"
 
 VGEOMETRY *NODER::gs = nullptr;
 VDX9RENDER *NODER::rs = nullptr;

@@ -1,6 +1,6 @@
 #include "ifs.h"
 #include "core_impl.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #define COMMENT ';'
 #define SECTION_A '['

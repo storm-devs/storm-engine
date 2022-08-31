@@ -10,8 +10,8 @@
 #include "logging.hpp"
 #include "os_window.hpp"
 #include "steam_api.hpp"
-#include "storm/fs.h"
 #include "v_sound_service.h"
+#include "fs.h"
 #include "watermark.hpp"
 
 namespace

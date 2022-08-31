@@ -1,6 +1,7 @@
 #pragma once
 
 #include "message.h"
+#include "platform/platform.hpp"
 
 class S_EVENTMSG
 {

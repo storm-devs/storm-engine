@@ -1,5 +1,7 @@
 #include "xi_scroll_image.h"
 
+#include "string_compare.hpp"
+
 #define MAXIMAGEQUANTITY 100
 
 int32_t GetTexFromEvent(VDATA *vdat)
@@ -1573,7 +1575,7 @@ int CXI_SCROLLIMAGE::FindTexGroupFromOld(char **pGroupList, const char *groupNam
 
 void CXI_SCROLLIMAGE::IMAGEDESCRIBE::Clear()
 {
-    std::fill(slots.begin(), slots.end(), ImageSlot{});
+    slots.clear();
 
     str1 = -1;
     str2 = -1;

@@ -13,7 +13,7 @@
 #include "entity.h"
 #include "locator_array.h"
 #include "core.h"
-#include "defines.h"
+#include "math_inlines.h"
 
 // ============================================================================================
 // Construction, destruction

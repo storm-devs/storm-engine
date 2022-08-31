@@ -1,4 +1,7 @@
 #include "xi_glower.h"
+
+#include "math_inlines.h"
+
 #include <stdio.h>
 
 CXI_GLOWER::CXI_GLOWER()

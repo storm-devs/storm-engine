@@ -1,9 +1,10 @@
 #include "utils.h"
 
 #include "core.h"
+#include "string_compare.hpp"
 
 #include "image/img_render.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 // extern data
 entid_t BIUtils::idBattleInterface;
@@ -477,8 +478,7 @@ void BIImagesInfo::Init(VDX9RENDER *rs, ATTRIBUTES *pA)
         FRECT rUV;
         FULLRECT(rUV);
         BIUtils::ReadRectFromAttr(pAImg, "uv", rUV, rUV);
-        RECT rPos;
-        ZERO(rPos);
+        RECT rPos{};
         BIUtils::ReadRectFromAttr(pAImg, "pos", rPos, rPos);
         IBIImage *pCurImg =
             pImgRender->CreateImage(BIType_square, pAImg->GetAttribute("texture"),

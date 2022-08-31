@@ -12,7 +12,10 @@
 #include "entity.h"
 #include "core.h"
 #include "geometry.h"
+#include "string_compare.hpp"
 #include "shared/messages.h"
+
+#include <SDL_timer.h>
 
 CREATE_CLASS(Sharks)
 

@@ -12,7 +12,7 @@
 
 #include "animation.h"
 #include "entity.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 class VDX9RENDER;
 

@@ -2,6 +2,7 @@
 #include <cstdarg>
 
 #include "core.h"
+#include "string_compare.hpp"
 
 CINODE::CINODE()
 {
@@ -18,7 +19,6 @@ CINODE::CINODE()
     m_bBreakPress = false;
     m_bMouseSelect = false;
     m_nodeName = nullptr;
-    PZERO(m_pCommands, sizeof(COMMAND_ACTION) * COMMAND_QUANTITY);
     m_bShowGlowCursor = true;
     m_strHelpTextureFile = nullptr;
     m_bUseUserGlowCursor = false;

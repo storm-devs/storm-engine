@@ -5,8 +5,9 @@
 #include <thread>
 
 #include "core.h"
+#include "math3d.h"
 #include "sse.h"
-#include "inlines.h"
+#include "math_inlines.h"
 #include "shared/sea_ai/script_defines.h"
 #include "tga.h"
 #include "v_file_service.h"

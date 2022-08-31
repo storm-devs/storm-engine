@@ -1,7 +1,6 @@
 #ifdef _WIN32 // S_DEBUG
 #include "tm_list.h"
 
-#include "defines.h"
 #include "s_debug.h"
 
 #include <windows.h>
@@ -17,13 +16,11 @@ TM_LIST::TM_LIST()
     hMain = nullptr;
     hOwn = nullptr;
     hEdit = nullptr;
-    PZERO(&Pos, sizeof(Pos));
     Columns_Num = 0;
     Items_Num = 0;
     Bind_Mask = 0;
     edit_item = -1;
     edit_subitem = -1;
-    PZERO(CharID, sizeof(CharID));
     EditMask = 0;
     hFont = nullptr;
 }
@@ -42,8 +39,7 @@ void TM_LIST::Initialize(HWND hwnd, HINSTANCE hinst, uint32_t style, uint32_t st
     hInst = hinst;
     hMain = hwnd;
 
-    INITCOMMONCONTROLSEX icc;
-    PZERO(&icc, sizeof(icc));
+    INITCOMMONCONTROLSEX icc{};
     icc.dwSize = sizeof(icc);
     icc.dwICC = ICC_LISTVIEW_CLASSES;
     InitCommonControlsEx(&icc);
@@ -105,11 +101,10 @@ void TM_LIST::Initialize(HWND hwnd, HINSTANCE hinst, uint32_t style, uint32_t st
 
 void TM_LIST::AddColumn(const char *name, int32_t length)
 {
-    LVCOLUMN lvc;
 
     wchar_t string[MAX_STR_SIZE];
-    PZERO(&lvc, sizeof(lvc));
 
+    LVCOLUMN lvc;{}
     lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM; // | LVCF_ORDER ;
     lvc.fmt = LVCFMT_LEFT;
     lvc.cx = length;
@@ -173,10 +168,9 @@ void TM_LIST::GetItemText(int32_t Item_index, int32_t Subitem_index, const char 
 
 void TM_LIST::SetItemImage(int32_t Item_index, int32_t Subitem_index, int32_t image_code)
 {
-    LVITEM lvi;
     if (image_code < 0)
         return;
-    PZERO(&lvi, sizeof(lvi));
+    LVITEM lvi{};
     lvi.mask = LVIF_IMAGE;
     lvi.iItem = Item_index;
     lvi.iSubItem = Subitem_index;
@@ -287,7 +281,7 @@ void TM_LIST::ProcessMessageBase(uint64_t iMsg, uint64_t wParam, uint64_t lParam
 
                         for (int32_t i = 0; i < static_cast<int32_t>(lines); i++)
                         {
-                            PZERO(&TextEditBuffer[0], MAX_STR_SIZE);
+                            std::ranges::fill(TextEditBuffer, '\0');
                             *(uint16_t *)TextEditBuffer = MAX_STR_SIZE - 2;
                             const int32_t chars =
                                 SendMessage(hEdit, EM_GETLINE, i, (LPARAM) static_cast<LPCSTR>(TextEditBuffer));

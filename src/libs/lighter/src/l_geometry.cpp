@@ -9,6 +9,7 @@
 //============================================================================================
 
 #include "l_geometry.h"
+#include "dx9render.h"
 #include "entity.h"
 #include "core.h"
 

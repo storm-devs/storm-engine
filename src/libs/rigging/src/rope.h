@@ -37,7 +37,7 @@ class ROPE : public ROPE_BASE
     float VAR_ROTATE_ANGL;   // rope swing angle
     // -------------------------------------
 
-    D3DMATERIAL9 mat;
+    D3DMATERIAL9 mat{};
 
     bool bUse;
     bool bFirstRun;

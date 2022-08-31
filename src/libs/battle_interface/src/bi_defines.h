@@ -1,6 +1,5 @@
 #pragma once
 
-#include "defines.h"
 #include "dx9render.h"
 #include "storm_assert.h"
 #include "v_data.h"

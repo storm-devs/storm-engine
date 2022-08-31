@@ -1,4 +1,4 @@
-#include "storm/xinterface/options_parser.hpp"
+#include "options_parser.hpp"
 
 namespace storm
 {

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "matrix.h"
 #include "storm_assert.h"
 

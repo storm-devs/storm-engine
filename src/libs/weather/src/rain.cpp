@@ -1,5 +1,8 @@
 #include "rain.h"
 
+#include "core.h"
+#include "math_inlines.h"
+
 RAIN::RAIN()
 {
     aRects.reserve(512);

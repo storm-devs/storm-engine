@@ -1,4 +1,7 @@
 #include "xi_str_collection.h"
+
+#include "string_compare.hpp"
+
 #include <stdio.h>
 
 CXI_STRCOLLECTION::CXI_STRCOLLECTION()
@@ -88,7 +91,7 @@ void CXI_STRCOLLECTION::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2,
         for (i = 0; i < m_nStr; i++)
         {
             // set all parameters to zero
-            PZERO(&m_pStrDescr[i], sizeof(STRINGDESCR));
+            m_pStrDescr[i] = {};
             m_pStrDescr[i].nFontNum = -1;
 
             // read same parameters
@@ -411,7 +414,7 @@ CXI_STRCOLLECTION::STRINGDESCR *CXI_STRCOLLECTION::CreateNewDinamicString(const 
     if (pOld && i)
         memcpy(m_pStrDescr, pOld, sizeof(STRINGDESCR) * i);
     delete pOld;
-    PZERO(&m_pStrDescr[i], sizeof(STRINGDESCR));
+    m_pStrDescr[i] = {};
     m_pStrDescr[i].nFontNum = -1;
     const auto len1 = strlen(strID) + 1;
     const auto len2 = strlen(strStr) + 1;

@@ -1,5 +1,6 @@
 #include "shared/mast_msg.h"
 #include "ship.h"
+#include "string_compare.hpp"
 
 #define MAST_IDENTIFY "mast"
 #define MAST_FIRST 1

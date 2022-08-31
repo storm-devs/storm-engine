@@ -1,4 +1,4 @@
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 
 #define CATCH_CONFIG_MAIN
 

@@ -1,3 +1,4 @@
+#include "utf8.h"
 #ifdef _WIN32 // S_DEBUG
 #include "s_debug.h"
 #include "compiler.h"
@@ -83,7 +84,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
                     if (n < CDebug->nRFMOffset || n >= (CDebug->nRFMOffset + CDebug->nRecentFilesNum))
                         continue;
 
-                    PZERO(&mii, sizeof(mii));
+                    mii = {};
                     mii.cbSize = sizeof(mii);
                     mii.fMask = MIIM_TYPE;
                     mii.fType = MFT_STRING;
@@ -153,7 +154,7 @@ LRESULT CALLBACK DebugWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
         }
         break;
         case ID_FORMAT_ALLDIALOGS:
-            PZERO(&bi, sizeof(bi));
+            bi = {};
             bi.hwndOwner = hwnd;
             bi.pidlRoot = nullptr;
             bi.pszDisplayName = BufferW;
@@ -561,10 +562,9 @@ bool S_DEBUG::BrowseFile(char *buffer, const char *filter)
 {
     auto DirectoryName = fio->_GetCurrentDirectory();
     wchar_t FilenameW[MAX_PATH];
-    OPENFILENAME ofn;
+    OPENFILENAME ofn{};
     FilenameW[0] = 0;
     std::wstring FilterW = utf8::ConvertUtf8ToWide(filter);
-    PZERO(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
     ofn.hInstance = hInst;
     ofn.hwndOwner = hMain;
@@ -593,10 +593,9 @@ bool S_DEBUG::BrowseFileWP(char *buffer, const char *filter)
 {
     auto DirectoryName = fio->_GetCurrentDirectory();
     wchar_t FilenameW[MAX_PATH];
-    OPENFILENAME ofn;
+    OPENFILENAME ofn{};
     FilenameW[0] = 0;
     std::wstring FilterW = utf8::ConvertUtf8ToWide(filter);
-    PZERO(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
     ofn.hInstance = hInst;
     ofn.hwndOwner = hMain;
@@ -739,7 +738,7 @@ void S_DEBUG::Add2RecentFiles(const char *pFileName)
         {
             std::wstring FileNameW = utf8::ConvertUtf8ToWide(pFileName);
             hFileSubMenu = GetSubMenu(hMenu, 0);
-            PZERO(&mii, sizeof(mii));
+            mii = {};
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_TYPE | MIIM_ID;
             mii.fType = MFT_STRING;
@@ -764,7 +763,7 @@ void S_DEBUG::Add2RecentFiles(const char *pFileName)
         {
             std::wstring FileNameW = utf8::ConvertUtf8ToWide(pFileName);
             hFileSubMenu = GetSubMenu(hMenu, 0);
-            PZERO(&mii, sizeof(mii));
+            mii = {};
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_TYPE | MIIM_ID;
             mii.fType = MFT_STRING;
@@ -775,7 +774,7 @@ void S_DEBUG::Add2RecentFiles(const char *pFileName)
         }
         if (nRecentFilesNum == 1)
         {
-            PZERO(&mii, sizeof(mii));
+            mii = {};
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_TYPE;
             mii.fType = MFT_SEPARATOR;
@@ -849,7 +848,7 @@ bool S_DEBUG::ProcessRegistry_Open()
 
             std::wstring BufferW = utf8::ConvertUtf8ToWide(buffer);
 
-            PZERO(&mii, sizeof(mii));
+            mii = {};
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_TYPE | MIIM_ID;
             mii.fType = MFT_STRING;
@@ -862,7 +861,7 @@ bool S_DEBUG::ProcessRegistry_Open()
 
         if (nRecentFilesNum)
         {
-            PZERO(&mii, sizeof(mii));
+            mii = {};
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_TYPE;
             mii.fType = MFT_SEPARATOR;

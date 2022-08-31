@@ -1,6 +1,5 @@
 #include "font.h"
 #include "core.h"
-#include "defines.h"
 #include "utf8.h"
 
 static char Buffer1024[1024];
@@ -12,8 +11,6 @@ FONT::FONT()
     VBuffer = nullptr;
     TextureID = -1;
     Color = oldColor = 0xffffffff;
-    PZERO(CharT, sizeof(CharT));
-    PZERO(&Pos, sizeof(Pos));
     bInverse = bOldInverse = false;
     techniqueName = nullptr;
     textureName = nullptr;

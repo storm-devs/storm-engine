@@ -5,6 +5,7 @@
 #include "entity.h"
 #include "fader.h"
 #include "core.h"
+#include "string_compare.hpp"
 #include "s_import_func.h"
 #include "v_s_stack.h"
 

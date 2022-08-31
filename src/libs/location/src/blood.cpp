@@ -1,6 +1,7 @@
 #include "blood.h"
 #include "character.h"
-#include "defines.h"
+#include "core.h"
+#include "math_inlines.h"
 
 #define BLOOD_RADIUS 1.f        // blood stain size
 #define BLOOD_LIVE_TIME 5.5f    // sec

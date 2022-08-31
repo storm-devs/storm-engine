@@ -10,7 +10,7 @@
 
 #include "np_character.h"
 #include "characters_groups.h"
-#include "defines.h"
+#include "math_inlines.h"
 #include "shared/messages.h"
 
 //============================================================================================

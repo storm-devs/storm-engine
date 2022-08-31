@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "dx9render.h"
 #include "matrix.h"
 #include "pillar.h"
 #include "sea_base.h"

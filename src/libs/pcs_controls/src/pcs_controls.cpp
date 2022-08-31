@@ -1,6 +1,7 @@
 #include "pcs_controls.h"
 
 #include "core.h"
+#include "string_compare.hpp"
 
 #include "v_file_service.h"
 

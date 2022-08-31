@@ -1,6 +1,7 @@
 #include "core.h"
 
 #include "entity.h"
+#include "math_inlines.h"
 #include "sea.h"
 #include "shared/messages.h"
 

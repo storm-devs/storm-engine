@@ -1,4 +1,8 @@
 #include "ship_lights.h"
+
+#include <algorithm>
+
+#include "math3d.h"
 #include "shared/messages.h"
 #include "ship.h"
 
@@ -160,7 +164,7 @@ void ShipLights::AddDynamicLights(VAI_OBJBASE *pObject, const CVECTOR &vPos)
     light.fBrokenTime = 0.0f;
     light.bDead = false;
     light.fTotalBrokenTime = 0.0f;
-    ZERO(light.Light);
+    light.Light = {};
     light.Light.Type = D3DLIGHT_POINT;
     light.Light.Diffuse.r = pLT->cLightColor.r;
     light.Light.Diffuse.g = pLT->cLightColor.g;
@@ -189,12 +193,11 @@ bool ShipLights::SetLabel(ShipLight *pL, MODEL *pModel, const char *pStr)
 void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, const GEOS::LABEL &label)
 {
     CMatrix m;
-    char str[256], str2[256];
-    ZERO(str);
+    char str[256]{}, str2[256];
     if (!label.name)
         return;
     strcpy_s(str, label.name);
-    tolwr(str);
+    std::ranges::for_each(str, [](char &c) { c = std::tolower(c); });
 
     aLights.push_back(ShipLight{});
     ShipLight *pL = &aLights.back();
@@ -269,7 +272,7 @@ void ShipLights::AddFlare(VAI_OBJBASE *pObject, bool bLight, MODEL *pModel, cons
 
     if (bLight)
     {
-        ZERO(pL->Light);
+        pL->Light = {};
         pL->bCoronaOnly = false;
         pL->Light.Type = D3DLIGHT_POINT;
         pL->Light.Diffuse.r = pLT->cLightColor.r;

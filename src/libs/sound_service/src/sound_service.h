@@ -3,8 +3,8 @@
 #include "c_vector.h"
 #include "sound_defines.h"
 #include "v_sound_service.h"
-#include "v_module_api.h"
-#include <dx9render.h>
+#include "vma.hpp"
+#include "dx9render.h"
 #include <fmod.hpp>
 
 #include <string>

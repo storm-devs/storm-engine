@@ -1,5 +1,5 @@
 #include "free_camera.h"
-#include "sd2_h/save_load.h"
+#include "save_load.h"
 #include "collide.h"
 
 #define SENSITIVITY 0.0015f
@@ -15,7 +15,6 @@ FREE_CAMERA::FREE_CAMERA()
 
     pIslandBase = nullptr;
     pRS = nullptr;
-    ZERO2(vPos, vAng);
     vPos.z = 250.0f;
     vPos.y = 3.0f;
     fFov = FOV;

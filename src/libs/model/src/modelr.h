@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "animation.h"
 #include "dx9render.h"
 #include "geometry.h"
 #include "model.h"

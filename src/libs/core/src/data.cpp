@@ -3,7 +3,7 @@
 #include <charconv>
 
 #include "core_impl.h"
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 
 #include <fast_float/fast_float.h>
 

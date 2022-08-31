@@ -2,6 +2,7 @@
 #include "../xdefines.h"
 
 #include "core.h"
+#include "string_compare.hpp"
 
 #define SS_TEXTURE_WIDTH 128
 #define SS_TEXTURE_HEIGHT 128

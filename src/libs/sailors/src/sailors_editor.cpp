@@ -1,5 +1,6 @@
 #include "sailors_editor.h"
 
+#include "core.h"
 #include "shared/messages.h"
 #include "shared/sea_ai/script_defines.h"
 

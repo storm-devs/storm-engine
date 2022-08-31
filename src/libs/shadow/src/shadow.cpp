@@ -8,6 +8,8 @@ Comments:
 dynamic shadow cpp file
 ******************************************************************************/
 #include "shadow.h"
+
+#include "core.h"
 #include "shared/messages.h"
 
 CREATE_CLASS(Shadow)
