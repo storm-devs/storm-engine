@@ -54,7 +54,7 @@ void IVBufferManager::FreeElement(size_t i)
 //--------------------------------------------------------------------
 void IVBufferManager::FreeAll()
 {
-    std::fill(std::begin(used_), std::end(used_), false);
+    used_.clear();
 }
 
 //--------------------------------------------------------------------

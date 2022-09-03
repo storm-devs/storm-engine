@@ -3,14 +3,16 @@
 #include "core.h"
 
 #include "entity.h"
-#include "inlines.h"
+#include "math_inlines.h"
 #include "s_import_func.h"
 #include "texture.h"
 #include "v_s_stack.h"
-#include "storm/fs.h"
+#include "fs.h"
 #include "debug-trap.h"
+#include "string_compare.hpp"
 
 #include <algorithm>
+#include <SDL_timer.h>
 
 #include <fmt/chrono.h>
 
@@ -424,14 +426,11 @@ DX9RENDER::DX9RENDER()
 
     bTrace = true;
     iSetupPath = 0;
-    ZERO(TexPaths);
 
     bDropVideoConveyor = false;
     pDropConveyorVBuffer = nullptr;
 
     aspectRatio = -1.0f;
-    PZERO(FontList, sizeof(FontList));
-    PZERO(Textures, sizeof(Textures));
 
     bMakeShoot = false;
     bShowFps = false;
@@ -713,7 +712,7 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, int32_t width, int32_t hei
         return false;
     }
 
-    PZERO(&d3dpp, sizeof(d3dpp));
+    d3dpp = {};
     d3dpp.BackBufferWidth = width;
     d3dpp.BackBufferHeight = height;
     d3dpp.BackBufferFormat = screen_bpp;
@@ -906,8 +905,7 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, int32_t width, int32_t hei
 
     SetCamera(CVECTOR(0.0f, 0.0f, 0.0f), CVECTOR(0.0f, 0.0f, 0.0f), 1.0f);
 
-    D3DLIGHT9 l;
-    ZERO(l);
+    D3DLIGHT9 l{};
     l.Type = D3DLIGHT_POINT;
     l.Range = 100.0f;
     l.Attenuation0 = 1.0f;
@@ -1354,9 +1352,9 @@ int32_t DX9RENDER::TextureCreate(const char *fname)
             strcpy_s(_fname, fname);
         }
 
-        toupr(_fname);
+        std::ranges::for_each(_fname, [](char &c) { c = std::toupper(c); });
 
-        const uint32_t hf = hash_string(_fname);
+        const uint32_t hf = MakeHashValue(_fname);
 
         int32_t t;
         for (t = 0; t < MAX_STEXTURES; t++)
@@ -2112,8 +2110,7 @@ bool DX9RENDER::SetPerspective(float perspective, float fAspectRatio)
     const float h = 1.0f / tanf(fov_vert * 0.5f);
     const float Q = far_plane / (far_plane - near_plane);
 
-    D3DMATRIX mtx;
-    PZERO(&mtx, sizeof(mtx));
+    D3DMATRIX mtx{};
 
     mtx._11 = w;
     mtx._22 = h;
@@ -2627,8 +2624,7 @@ void DX9RENDER::RestoreRender()
     // set base texture and diffuse+specular lighting
     SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
     SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_ADDSIGNED);
-    D3DLIGHT9 l;
-    ZERO(l);
+    D3DLIGHT9 l{};
     l.Type = D3DLIGHT_POINT;
     l.Range = 100.0f;
     l.Attenuation0 = 1.0f;
@@ -2954,8 +2950,11 @@ int32_t DX9RENDER::LoadFont(const char *fontName)
         strncpy_s(sDup, fontName, sizeof(sDup) - 1);
         sDup[sizeof(sDup) - 1] = 0;
     }
-    fontName = toupr(sDup);
-    const uint32_t hashVal = hash_string(fontName);
+
+    std::ranges::for_each(sDup, [](char &c) { c = std::toupper(c); });
+    fontName = sDup;
+
+    const uint32_t hashVal = MakeHashValue(fontName);
 
     int32_t i;
     for (i = 0; i < nFontQuantity; i++)
@@ -3005,8 +3004,9 @@ bool DX9RENDER::UnloadFont(const char *fontName)
         strncpy_s(sDup, fontName, sizeof(sDup) - 1);
         sDup[sizeof(sDup) - 1] = 0;
     }
-    fontName = toupr(sDup);
-    const uint32_t hashVal = hash_string(fontName);
+    std::ranges::for_each(sDup, [](char &c) { c = std::toupper(c); });
+    fontName = sDup;
+    const uint32_t hashVal = MakeHashValue(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)
         if (FontList[i].hash == hashVal && storm::iEquals(FontList[i].name, fontName))
@@ -3058,8 +3058,9 @@ bool DX9RENDER::SetCurFont(const char *fontName)
         strncpy_s(sDup, fontName, sizeof(sDup) - 1);
         sDup[sizeof(sDup) - 1] = 0;
     }
-    fontName = toupr(sDup);
-    const uint32_t hashVal = hash_string(fontName);
+    std::ranges::for_each(sDup, [](char &c) { c = std::toupper(c); });
+    fontName = sDup;
+    const uint32_t hashVal = MakeHashValue(fontName);
 
     for (int i = 0; i < nFontQuantity; i++)
         if (FontList[i].hash == hashVal)
@@ -3903,7 +3904,7 @@ CVideoTexture *DX9RENDER::GetVideoTexture(const char *sVideoName)
     VideoTextureEntity *pVTLcur = pVTL;
 
     // check already loaded
-    const uint32_t newHash = hash_string(sVideoName);
+    const uint32_t newHash = MakeHashValue(sVideoName);
     while (pVTLcur != nullptr)
     {
         if (pVTLcur->hash == newHash && storm::iEquals(pVTLcur->name, sVideoName))

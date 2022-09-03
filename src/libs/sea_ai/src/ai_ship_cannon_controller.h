@@ -1,6 +1,7 @@
 #pragma once
 
 #define INVALID_BORT_INDEX 0xFFFFFFFF
+#include "string_compare.hpp"
 
 class AIShip;
 class VAI_INNEROBJ;

@@ -6,7 +6,7 @@
 #include "entity_manager.h"
 #include "services_list.h"
 #include "timer.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #include <windows.h>
 

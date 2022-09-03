@@ -26,8 +26,9 @@
 #include "wdm_storm.h"
 #include "wdm_warring_ship.h"
 #include "wdm_wind_ui.h"
-#include "defines.h"
 #include "entity.h"
+#include "math_inlines.h"
+#include "string_compare.hpp"
 
 #ifdef GetObject
 #undef GetObject

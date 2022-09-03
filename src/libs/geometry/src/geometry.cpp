@@ -1,6 +1,7 @@
 #include "core.h"
 
 #include "geometry_r.h"
+#include "string_compare.hpp"
 
 CREATE_SERVICE(GEOMETRY)
 
@@ -295,76 +296,7 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
     RenderService->SetTextureStageState(2, D3DTSS_COLORARG1, D3DTA_CURRENT);
     RenderService->SetTextureStageState(2, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 
-    // block for Sea Dogs: Return Of the legend -->
-    // RenderService->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-
-    RenderService->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-
-    RenderService->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-    RenderService->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-
-    RenderService->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
-    RenderService->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
-    RenderService->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-
-    RenderService->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-    RenderService->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
-
-    RenderService->SetTextureStageState(2, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-    RenderService->SetTextureStageState(2, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
-    // block for Sea Dogs: Return Of the legend <--
-    /*if(core.Controls->GetAsyncKeyState(0xc0)<0)
-    {
-      //RenderService->TextureSet(0, 0);
-      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MAGFILTER, D3DTEXF_POINT);
-      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MINFILTER, D3DTEXF_NONE);
-      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MIPFILTER, D3DTEXF_POINT);
-    }
-    else
-    {
-      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MAGFILTER, D3DTEXF_LINEAR);
-      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MINFILTER, D3DTEXF_ANISOTROPIC);
-      RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MIPFILTER, D3DTEXF_LINEAR);
-    }*/
-
-    /*RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MAGFILTER, D3DTEXF_LINEAR);
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MINFILTER, D3DTEXF_ANISOTROPIC);
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MIPFILTER, D3DTEXF_LINEAR);
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_MAXANISOTROPY, 3);
-
-    //unchanged texture stage states - both for base and detal texture
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_COLORARG1, D3DTA_DIFFUSE);
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_COLORARG2, D3DTA_TEXTURE);
-    RenderService->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_CURRENT);
-    RenderService->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-    RenderService->SetTextureStageState(2, D3DTSS_COLORARG1, D3DTA_CURRENT);
-    RenderService->SetTextureStageState(2, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_ALPHAARG1, D3DTA_DIFFUSE);
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_ALPHAARG2, D3DTA_TEXTURE);
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_ALPHAOP, D3DTOP_DISABLE);
-
-    //general
-    RenderService->SetRenderState(D3DRS_FOGENABLE, false);
-
-    RenderService->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
     RenderService->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-    RenderService->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-    RenderService->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-    RenderService->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-    RenderService->SetRenderState(D3DRS_ALPHAREF, 0xa0);
-    RenderService->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-
-    //lighting effects
-    RenderService->SetRenderState(D3DRS_AMBIENT, 0xa0a0a0);
-    RenderService->SetRenderState(D3DRS_LIGHTING, FALSE);//TRUE);
-    RenderService->SetRenderState(D3DRS_COLORVERTEX, TRUE);
-    RenderService->SetRenderState(D3DRS_SPECULARENABLE, FALSE);//TRUE);
-
-    //path BASE texture through
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_COLORARG1, D3DTA_DIFFUSE);
-    RenderService->SetTextureStageState(0, D3DSAMP_COLOROPP_COLOROP, D3DTOP_SELECTARG1);
-    RenderService->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);//*/
 
     D3DMATERIAL9 m;
     m.Diffuse.r = m.Diffuse.g = m.Diffuse.b = mt.diffuse;
@@ -376,7 +308,6 @@ void GEOM_SERVICE_R::SetMaterial(const GEOS::MATERIAL &mt)
     m.Power = mt.gloss;
 
     RenderService->SetMaterial(m);
-    // RenderService->SetRenderState(D3DRS_LIGHTING,false);
 }
 
 void GEOM_SERVICE_R::ReleaseTexture(GEOS::ID tex)

@@ -10,9 +10,11 @@
 
 #pragma once
 
+#include "animation.h"
 #include "matrix.h"
 #include "model.h"
-#include "v_module_api.h"
+#include "string_compare.hpp"
+#include "vma.hpp"
 #include <string>
 
 class Location;

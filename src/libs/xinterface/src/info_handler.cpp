@@ -2,7 +2,7 @@
 
 #include "core.h"
 
-#include "v_module_api.h"
+#include "vma.hpp"
 
 InfoHandler::InfoHandler() : m_rs(nullptr), tex(nullptr)
 {

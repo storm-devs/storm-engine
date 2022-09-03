@@ -3,7 +3,7 @@
 #include "matrix.h"
 #include "dx9render.h"
 #include "geos.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #include <filesystem>
 

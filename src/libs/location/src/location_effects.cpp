@@ -11,6 +11,7 @@
 #include "location_effects.h"
 #include "core.h"
 #include "dx9render.h"
+#include "string_compare.hpp"
 
 #define LFX_SPLASHES_NUM (sizeof(chrSplash) / sizeof(ChrSplash))
 #define LFX_SPLASHES_P_NUM 64 // fix boal for intel cpp (sizeof(LocationEffects::ChrSplash::prt)/sizeof(ParticleSplash))

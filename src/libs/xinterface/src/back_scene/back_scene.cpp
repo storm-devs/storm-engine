@@ -1,10 +1,14 @@
 #include "back_scene.h"
+
+#include "animation.h"
 #include "../xinterface.h"
 #include "geometry.h"
 #include "math3d/matrix.h"
 #include "model.h"
 #include "shared/messages.h"
 #include "debug-trap.h"
+#include "math_inlines.h"
+#include "string_compare.hpp"
 
 InterfaceBackScene::LightParam::~LightParam()
 {
@@ -660,7 +664,7 @@ void InterfaceBackScene::InitLight(ATTRIBUTES *pAParam)
 
     m_aLights.push_back(pLight);
 
-    ZERO(pLight->lightSource);
+    pLight->lightSource = {};
     pLight->lightSource.Type = D3DLIGHT_POINT;
     pLight->lightSource.Attenuation0 = 0.0f;
     pLight->lightSource.Attenuation1 = 0.0f;

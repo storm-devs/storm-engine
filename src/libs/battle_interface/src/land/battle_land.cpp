@@ -2,6 +2,7 @@
 #include "battle_man_sign.h"
 #include "core.h"
 #include "message.h"
+#include "string_compare.hpp"
 #include "shared/battle_interface/msg_control.h"
 
 BATTLE_LAND_INTERFACE::BATTLE_LAND_INTERFACE() : m_bShowCommandos(false)

@@ -1,6 +1,8 @@
 #ifndef _WIN32 // Effects
 #pragma once
 
+#include <unordered_map>
+
 #include "dx9render.h"
 
 struct SRSPARAM

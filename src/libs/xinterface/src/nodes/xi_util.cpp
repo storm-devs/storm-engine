@@ -1,4 +1,6 @@
 #include "xi_util.h"
+
+#include "string_compare.hpp"
 #include "../inode.h"
 #include <stdio.h>
 

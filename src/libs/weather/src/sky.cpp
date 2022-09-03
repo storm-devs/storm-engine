@@ -2,6 +2,7 @@
 #include "sun_glow.h"
 #include "core.h"
 #include "attributes.h"
+#include "math_inlines.h"
 
 namespace
 {

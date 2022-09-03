@@ -6,7 +6,7 @@
 #include "dx9render.h"
 #include "geometry.h"
 #include "model.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 class MapZipper
 {
@@ -49,7 +49,7 @@ class ISLAND : public ISLAND_BASE
     std::vector<entid_t> aSpheres;
     std::vector<entid_t> aForts;
     AIFlowGraph AIPath;
-    entid_t AIFortEID;
+    entid_t AIFortEID{};
 
     FRECT rIsland;
     bool bForeignModels;

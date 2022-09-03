@@ -14,7 +14,6 @@ BIString::BIString(BIImageRender *pImgRender, VDX9RENDER *rs)
     m_nFontID = -1;
     m_dwColor = 0xFFFFFFFF;
     m_fScale = 1.f;
-    ZERO(m_pntOutPos);
 }
 
 BIString::~BIString()

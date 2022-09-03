@@ -3,8 +3,10 @@
 #include <chrono>
 
 #include "ai_flow_graph.h"
+#include "character.h"
 #include "track.h"
-#include "inlines.h"
+#include "math_inlines.h"
+#include "ship_lights.h"
 #include "shared/mast_msg.h"
 #include "shared/messages.h"
 #include "shared/sail_msg.h"
@@ -95,8 +97,12 @@ bool SHIP::Init()
     using std::chrono::milliseconds;
     using std::chrono::system_clock;
 
-    ZERO3(State, SP, vPos);
-    ZERO3(vAng, ShipPoints, Strength);
+    State = {};
+    SP = {};
+    vPos = {};
+    vAng = {};
+    ShipPoints = {};
+    Strength = {};
     fXOffset = fZOffset = 0.f;
 
     Strength[STRENGTH_MAIN].bInertia = true;
@@ -2067,7 +2073,7 @@ void SHIP::Load(CSaveLoad *pSL)
                        aFirePlaces[i].GetBallCharacterIndex(), i, aFirePlaces[i].GetRunTime());
     }
 
-    ZERO(ShipPoints);
+    ShipPoints = {};
 }
 
 void SHIP::SetFixedSpeed(bool _bSetFixed, float _fFixedSpeed)

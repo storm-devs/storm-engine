@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "particles/i_particle_manager.h"
+#include "../i_particle_manager.h"
 
 #include "../system/particle_processor/bb_processor.h"
 #include "../system/particle_processor/mdl_processor.h"

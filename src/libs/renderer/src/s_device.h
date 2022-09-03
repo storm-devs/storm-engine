@@ -7,9 +7,9 @@
 #endif
 #include "font.h"
 #include "video_texture.h"
-#include "defines.h"
 #include "dx9render.h"
-#include "v_module_api.h"
+#include "vma.hpp"
+#include "platform/platform.hpp"
 
 #include "d3d9types.h"
 #include "script_libriary.h"
@@ -475,7 +475,7 @@ private:
 
     char *fontIniFileName;
     int32_t nFontQuantity;
-    FONTEntity FontList[MAX_FONTS];
+    FONTEntity FontList[MAX_FONTS]{};
     int32_t idFontCurrent;
 
     VideoTextureEntity *pVTL;
@@ -490,9 +490,9 @@ private:
 
     PLANE viewplane[4];
 
-    STEXTURE Textures[MAX_STEXTURES];
-    INDEX_BUFFER IndexBuffers[MAX_BUFFERS];
-    VERTEX_BUFFER VertexBuffers[MAX_BUFFERS];
+    STEXTURE Textures[MAX_STEXTURES]{};
+    INDEX_BUFFER IndexBuffers[MAX_BUFFERS]{};
+    VERTEX_BUFFER VertexBuffers[MAX_BUFFERS]{};
 
     bool MakeAvi;
     IDirect3DSurface9 *ImageBuffer;
@@ -587,7 +587,7 @@ private:
     bool bTrace;
     int32_t iSetupPath;
     uint64_t dwSetupNumber;
-    texpaths_t TexPaths[4];
+    texpaths_t TexPaths[4]{};
 
     bool bDropVideoConveyor;
 

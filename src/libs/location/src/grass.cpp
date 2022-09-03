@@ -13,7 +13,6 @@
 #include "core.h"
 
 #include "character.h"
-#include "defines.h"
 #include "entity.h"
 
 // ============================================================================================

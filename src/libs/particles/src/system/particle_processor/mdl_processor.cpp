@@ -6,9 +6,10 @@
 #include "../../i_common/names.h"
 #include "../data_source/data_graph.h"
 #include "../particle_system/particle_system.h"
-#include "defines.h"
 #include "geos.h"
+#include "math_inlines.h"
 #include "physic.h"
+#include "string_compare.hpp"
 
 // how many models there can be
 #define MAX_MODELS 8192

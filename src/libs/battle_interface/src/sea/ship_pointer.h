@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sd2_h/vai_objbase.h"
+#include "vai_objbase.h"
 
 class SHIPPOINTER : public Entity
 {

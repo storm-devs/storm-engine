@@ -1,3 +1,4 @@
+#include "core.h"
 #include "vcollide.h"
 
 LCOLL::LCOLL(layer_index_t idx) : boxRadius(0)

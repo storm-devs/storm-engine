@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #define TRND_PI 3.141592654f
 

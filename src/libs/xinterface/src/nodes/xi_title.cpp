@@ -156,7 +156,7 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     if (ReadIniString(ini1, name1, ini2, name2, "titleCenter", param, sizeof(param), ""))
         pPictureService->GetTexturePos(m_sGroupName, param, centerRect);
     else
-        PZERO(&centerRect, sizeof(centerRect));
+        centerRect = {};
     if (ReadIniString(ini1, name1, ini2, name2, "titleMedium", param, sizeof(param), ""))
     {
         pPictureService->GetTexturePos(m_sGroupName, param, mediumRect);
@@ -164,8 +164,8 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     }
     else
     {
-        PZERO(&mediumRect, sizeof(mediumRect));
-        PZERO(&m_mRect, sizeof(m_mRect));
+        mediumRect = {};
+        m_mRect = {};
     }
     if (ReadIniString(ini1, name1, ini2, name2, "titleTiled", param, sizeof(param), ""))
     {
@@ -174,8 +174,8 @@ void CXI_TITLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     }
     else
     {
-        PZERO(&tiledRect, sizeof(tiledRect));
-        PZERO(&m_tRect, sizeof(m_tRect));
+        tiledRect = {};
+        m_mRect = {};
     }
 
     // create vertex buffer and index buffer for title image

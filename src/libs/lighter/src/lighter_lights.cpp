@@ -10,7 +10,7 @@
 
 #include "lighter_lights.h"
 
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 
 // ============================================================================================
 // Construction, destruction

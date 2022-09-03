@@ -1,7 +1,9 @@
 #include "foam.h"
 #include "core.h"
-#include "inlines.h"
+#include "math_inlines.h"
 #include "math3d/plane.h"
+#include "dx9render.h"
+#include "math3d.h"
 
 CoastFoam::CoastFoam()
 {

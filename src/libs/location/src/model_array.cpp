@@ -10,9 +10,11 @@
 
 #include "geometry.h"
 
+#include "dx9render.h"
 #include "model_array.h"
 #include "core.h"
 #include "entity.h"
+#include "string_compare.hpp"
 #include "shared/messages.h"
 
 // ============================================================================================

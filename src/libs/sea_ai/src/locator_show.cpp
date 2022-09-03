@@ -1,5 +1,7 @@
 #include "locator_show.h"
 
+#include "math_inlines.h"
+
 #include <thread>
 
 CREATE_CLASS(SeaLocatorShow)

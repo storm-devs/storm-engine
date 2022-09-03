@@ -1,5 +1,6 @@
 #include "animals.h"
 
+#include "core.h"
 #include "shared/messages.h"
 
 CREATE_CLASS(ANIMALS)

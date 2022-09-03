@@ -2,7 +2,7 @@
 
 #include "../bi_defines.h"
 #include "animation.h"
-#include "v_particle_system.h"
+#include <v_particle_system.h>
 #include <string>
 
 class MODEL;

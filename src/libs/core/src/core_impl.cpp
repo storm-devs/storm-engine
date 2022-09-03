@@ -2,15 +2,20 @@
 
 #include "compiler.h"
 #include "controls.h"
-#include "storm/fs.h"
+#include "fs.h"
 #include "steam_api.hpp"
 
 #include <fstream>
 
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
 #include <SDL2/SDL.h>
 
 Core& core = core_internal;
+
+uint64_t get_performance_counter()
+{
+    return SDL_GetPerformanceCounter();
+}
 
 namespace storm
 {

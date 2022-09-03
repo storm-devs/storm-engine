@@ -13,7 +13,7 @@ Import library main file
 #include <cstring>
 #include <vector>
 
-#include "../../util/include/storm/string_compare.hpp"
+#include "../../util/include/string_compare.hpp"
 
 namespace
 {

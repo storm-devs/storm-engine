@@ -1,8 +1,8 @@
 #include "track.h"
 #include "entity.h"
 #include "core.h"
-#include "defines.h"
-#include "inlines.h"
+#include "math3d.h"
+#include "math_inlines.h"
 
 VDX9RENDER *ShipTracks::ShipTrack::pRS = nullptr;
 SEA_BASE *ShipTracks::ShipTrack::pSea = nullptr;

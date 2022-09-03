@@ -1,9 +1,11 @@
 #include "water_rings.h"
+
+#include "core.h"
 #include "rands.h"
 
-#include "defines.h"
 
 #include "iv_buffer_manager.h"
+#include "math_inlines.h"
 
 CREATE_CLASS(WaterRings)
 

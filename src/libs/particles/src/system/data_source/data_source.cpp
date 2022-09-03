@@ -6,9 +6,10 @@
 #include "data_float.h"
 #include "data_graph.h"
 #include "data_string.h"
+#include "string_compare.hpp"
 
 #include "../../i_common/names.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #define HEADER "PSYS"
 #define VERSION "v3.5"

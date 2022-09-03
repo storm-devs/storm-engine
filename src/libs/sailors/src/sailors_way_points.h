@@ -1,8 +1,9 @@
 #pragma once
 
 #include "matrix.h"
-#include "defines.h"
 #include "dx9render.h"
+#include "math_inlines.h"
+
 #include <string>
 #include <vector>
 

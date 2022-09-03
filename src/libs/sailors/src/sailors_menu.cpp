@@ -1,5 +1,7 @@
 #include "sailors_menu.h"
 
+#include "core.h"
+
 void Menu::Draw(VDX9RENDER *rs, SailorsPoints &sailorsPoints) const
 {
     for (auto i = 0; i < count; i++)

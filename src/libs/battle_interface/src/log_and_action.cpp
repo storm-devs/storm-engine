@@ -2,6 +2,7 @@
 #include "controls.h"
 #include "core.h"
 #include "message.h"
+#include "string_compare.hpp"
 #include "shared/battle_interface/log_msg.h"
 #include <stdio.h>
 

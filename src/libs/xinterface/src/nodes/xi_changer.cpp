@@ -97,9 +97,7 @@ void CXI_CHANGER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const
     if (m_nPlaceQuantity > 0)
     {
         m_pPlace = new XYRECT[m_nPlaceQuantity];
-        if (m_pPlace == nullptr)
-            throw std::runtime_error("Allocate memory error");
-        PZERO(m_pPlace, sizeof(XYRECT) * m_nPlaceQuantity);
+        std::memset(m_pPlace, 0, sizeof(XYRECT) * m_nPlaceQuantity);
     }
 
     // get rectangle positions

@@ -14,8 +14,8 @@
 
 #include "animation_imp.h"
 #include "an_file.h"
+#include "string_compare.hpp"
 #include "v_file_service.h"
-#include "storm_platform.h"
 
 CREATE_SERVICE(AnimationServiceImp)
 

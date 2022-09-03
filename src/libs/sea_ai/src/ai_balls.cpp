@@ -1,6 +1,6 @@
 #include "ai_balls.h"
 #include "ai_fort.h"
-#include "inlines.h"
+#include "math_inlines.h"
 #include "shared/messages.h"
 
 
@@ -244,10 +244,12 @@ void AIBalls::Execute(uint32_t Delta_Time)
             auto &&entities = core.GetEntityIds(SHIP_CANNON_TRACE);
             for (auto ent_id : entities)
             {
-                auto *pShip = static_cast<CANNON_TRACE_BASE *>(core.GetEntityPointer(ent_id));
-                fRes = pShip->Cannon_Trace(pBall->iBallOwner, vSrc, vDst);
-                if (fRes <= 1.0f)
-                    break;
+                if (auto *pShip = static_cast<CANNON_TRACE_BASE *>(core.GetEntityPointer(ent_id)))
+                {
+                    fRes = pShip->Cannon_Trace(pBall->iBallOwner, vSrc, vDst);
+                    if (fRes <= 1.0f)
+                        break;
+                }
             }
 
             // fort trace

@@ -7,8 +7,8 @@
 #include "data_position.h"
 #include "data_string.h"
 #include "data_uv.h"
-#include "defines.h"
-#include "storm/string_compare.hpp"
+#include "string_compare.hpp"
+#include "vma.hpp"
 
 FieldList::FieldList()
 {
@@ -82,7 +82,7 @@ void FieldList::CreateEmptyBoolField(const char *Name, bool def_value)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_BOOL;
     Fields.push_back(pDesc);
@@ -97,7 +97,7 @@ void FieldList::CreateEmptyFloatField(const char *Name, float def_value)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_FLOAT;
     Fields.push_back(pDesc);
@@ -112,7 +112,7 @@ void FieldList::CreateEmptyGraphField(const char *Name, float def_value_min, flo
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_GRAPH;
     Fields.push_back(pDesc);
@@ -127,7 +127,7 @@ void FieldList::CreateEmptyPositionField(const char *Name, const Vector &def_val
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_POSITION;
     Fields.push_back(pDesc);
@@ -142,7 +142,7 @@ void FieldList::CreateEmptyStringField(const char *Name, const char *def_value)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_STRING;
     Fields.push_back(pDesc);
@@ -158,7 +158,7 @@ void FieldList::CreateEmptyUVField(const char *Name)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_UV;
     Fields.push_back(pDesc);
@@ -178,7 +178,7 @@ void FieldList::CreateEmptyColorField(const char *Name, uint32_t def_value)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_COLOR;
     Fields.push_back(pDesc);
@@ -192,7 +192,7 @@ void FieldList::CreateBoolField(MemFile *pMemFile)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_BOOL;
     Fields.push_back(pDesc);
@@ -206,7 +206,7 @@ void FieldList::CreateFloatField(MemFile *pMemFile)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_FLOAT;
     Fields.push_back(pDesc);
@@ -220,7 +220,7 @@ void FieldList::CreateGraphField(MemFile *pMemFile)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_GRAPH;
     Fields.push_back(pDesc);
@@ -234,7 +234,7 @@ void FieldList::CreatePositionField(MemFile *pMemFile)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_POSITION;
     Fields.push_back(pDesc);
@@ -248,7 +248,7 @@ void FieldList::CreateStringField(MemFile *pMemFile)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_STRING;
     Fields.push_back(pDesc);
@@ -262,7 +262,7 @@ void FieldList::CreateUVField(MemFile *pMemFile)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_UV;
     Fields.push_back(pDesc);
@@ -276,7 +276,7 @@ void FieldList::CreateColorField(MemFile *pMemFile)
     FieldDesc pDesc;
     pDesc.MarkForDelete = false;
     pDesc.Name = Field->GetName();
-    pDesc.HashValue = TOREMOVE::HashNoCase(pDesc.Name.c_str());
+    pDesc.HashValue = MakeHashValue(pDesc.Name.c_str());
     pDesc.pPointer = Field;
     pDesc.Type = FIELD_COLOR;
     Fields.push_back(pDesc);
@@ -294,7 +294,7 @@ void FieldList::DelAll()
 
 DataColor *FieldList::FindColor(const char *AttrName)
 {
-    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    const uint32_t SearchHash = MakeHashValue(AttrName);
     for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_COLOR)
@@ -314,7 +314,7 @@ DataColor *FieldList::FindColor(const char *AttrName)
 
 DataBool *FieldList::FindBool(const char *AttrName)
 {
-    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    const uint32_t SearchHash = MakeHashValue(AttrName);
     for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_BOOL)
@@ -334,7 +334,7 @@ DataBool *FieldList::FindBool(const char *AttrName)
 
 DataFloat *FieldList::FindFloat(const char *AttrName)
 {
-    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    const uint32_t SearchHash = MakeHashValue(AttrName);
     for (uint32_t n = 0; n < Fields.size(); n++)
     {
         if (Fields[n].Type == FIELD_FLOAT)
@@ -354,7 +354,7 @@ DataFloat *FieldList::FindFloat(const char *AttrName)
 
 DataGraph *FieldList::FindGraph(const char *AttrName)
 {
-    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    const uint32_t SearchHash = MakeHashValue(AttrName);
 
     for (uint32_t n = 0; n < Fields.size(); n++)
     {
@@ -375,7 +375,7 @@ DataGraph *FieldList::FindGraph(const char *AttrName)
 
 DataString *FieldList::FindString(const char *AttrName)
 {
-    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    const uint32_t SearchHash = MakeHashValue(AttrName);
 
     for (uint32_t n = 0; n < Fields.size(); n++)
     {
@@ -396,7 +396,7 @@ DataString *FieldList::FindString(const char *AttrName)
 
 DataPosition *FieldList::FindPosition(const char *AttrName)
 {
-    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    const uint32_t SearchHash = MakeHashValue(AttrName);
 
     for (uint32_t n = 0; n < Fields.size(); n++)
     {
@@ -417,7 +417,7 @@ DataPosition *FieldList::FindPosition(const char *AttrName)
 
 DataUV *FieldList::FindUV(const char *AttrName)
 {
-    const uint32_t SearchHash = TOREMOVE::HashNoCase(AttrName);
+    const uint32_t SearchHash = MakeHashValue(AttrName);
 
     for (uint32_t n = 0; n < Fields.size(); n++)
     {
@@ -437,7 +437,7 @@ DataUV *FieldList::FindUV(const char *AttrName)
 
 FieldList::FieldDesc *FieldList::FindField(const char *Name)
 {
-    const uint32_t SearchHash = TOREMOVE::HashNoCase(Name);
+    const uint32_t SearchHash = MakeHashValue(Name);
 
     for (uint32_t n = 0; n < Fields.size(); n++)
     {

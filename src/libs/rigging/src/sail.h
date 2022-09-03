@@ -5,7 +5,7 @@
 #include "geos.h"
 #include "model.h"
 #include "sail_base.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 #include <filesystem>
 

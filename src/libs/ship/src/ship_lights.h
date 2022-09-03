@@ -1,8 +1,8 @@
 #pragma once
 
 #include "collide.h"
-#include "defines.h"
 #include "dx9render.h"
+#include "math_inlines.h"
 #include "sea_base.h"
 #include <ship_lights.h>
 

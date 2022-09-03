@@ -2,7 +2,7 @@
 
 #include "dx9render.h"
 #include "matrix.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 //#include "iimage.h"
 
 #include <string_view>
@@ -54,8 +54,8 @@ class FONT
     int32_t TextureID;
     uint32_t Color, oldColor;
     float fScale, fOldScale;
-    FLOAT_RECT Pos;
-    FONT_SYMBOL CharT[USED_CODES];
+    FLOAT_RECT Pos{};
+    FONT_SYMBOL CharT[USED_CODES]{};
     int32_t Height;
     int32_t Texture_XSize;
     int32_t Texture_YSize;

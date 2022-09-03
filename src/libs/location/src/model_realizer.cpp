@@ -1,4 +1,6 @@
 #include "model_realizer.h"
+
+#include "core.h"
 #include "c_vector4.h"
 #include "lights.h"
 

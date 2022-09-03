@@ -6,8 +6,9 @@
 #include "interface_group/sea_group.h"
 
 #include "core.h"
+#include "string_compare.hpp"
 #include "shared/bimanager/messages.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 BI_InterfaceManager::BI_InterfaceManager()
 {

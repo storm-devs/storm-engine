@@ -5,7 +5,7 @@
 #include "collide.h"
 #include "model.h"
 #include "sea_base.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 enum FOAMTYPE
 {

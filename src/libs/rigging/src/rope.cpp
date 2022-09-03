@@ -1,7 +1,7 @@
 #include "rope.h"
 #include "entity.h"
 #include "core.h"
-#include "defines.h"
+#include "math_inlines.h"
 #include "shared/sail_msg.h"
 #include "ship_base.h"
 
@@ -21,8 +21,7 @@ ROPE::ROPE()
     TextureName = nullptr;
     texl = -1;
     bFirstRun = true;
-
-    ZERO(mat);
+    
     mat.Diffuse.r = 1.f;
     mat.Diffuse.g = 1.f;
     mat.Diffuse.b = 1.f;
@@ -229,7 +228,7 @@ uint64_t ROPE::ProcessMessage(MESSAGE &message)
             }
         }
 
-        ZERO(gdata[groupQuantity - 1]);
+        gdata[groupQuantity - 1] = {};
         gdata[groupQuantity - 1].shipEI = tmp_shipEI;
         gdata[groupQuantity - 1].modelEI = tmp_modelEI;
         gdata[groupQuantity - 1].pMatWorld = &mdl->mtx;
@@ -590,8 +589,7 @@ void ROPE::AddLabel(GEOS::LABEL &lbl, NODE *nod, bool bDontSage)
             delete oldrlist;
             ropeQuantity++;
         }
-        rd = rlist[ropeQuantity - 1] = new ROPEDATA;
-        PZERO(rd, sizeof(ROPEDATA));
+        rd = rlist[ropeQuantity - 1] = new ROPEDATA{};
         rd->ropeNum = ropeNum;
         rd->HostGroup = groupQuantity - 1;
         rd->btie = rd->etie = false;

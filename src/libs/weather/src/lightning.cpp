@@ -1,5 +1,7 @@
 #include "lightning.h"
 
+#include "core.h"
+
 LIGHTNING::LIGHTNING()
 {
     iLightningTexture = -1;

@@ -1,7 +1,7 @@
 #include "vant.h"
 #include "entity.h"
 #include "core.h"
-#include "defines.h"
+#include "math_inlines.h"
 #include "shared/sail_msg.h"
 #include "ship_base.h"
 #include "v_file_service.h"
@@ -166,7 +166,7 @@ uint64_t VANT_BASE::ProcessMessage(MESSAGE &message)
             delete oldgdata;
             groupQuantity++;
         }
-        ZERO(gdata[groupQuantity - 1]);
+        gdata[groupQuantity - 1] = {};
         gdata[groupQuantity - 1].shipEI = message.EntityID();
         gdata[groupQuantity - 1].model_id = message.EntityID();
         MODEL *mdl;
@@ -512,10 +512,7 @@ void VANT_BASE::AddLabel(GEOS::LABEL &lbl, NODE *nod)
     if (vn == vantQuantity)
     {
         // create a new guy
-        vd = new VANTDATA;
-        if (vd == nullptr)
-            throw std::runtime_error("Not memory allocate");
-        PZERO(vd, sizeof(VANTDATA));
+        vd = new VANTDATA{};
         vd->bDeleted = false;
         vd->vantNum = vantNum;
         vd->pUpMatWorld = vd->pDownMatWorld = nullptr;

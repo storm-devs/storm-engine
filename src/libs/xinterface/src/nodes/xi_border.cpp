@@ -259,8 +259,7 @@ void CXI_BORDER::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const 
 
     if (m_pCaptionImage && m_nCaptionHeight > 0)
     {
-        XYRECT rCapRect;
-        ZERO(rCapRect);
+        XYRECT rCapRect{};
         m_rCapRect = GetIniLongRect(ini1, name1, ini2, name2, "captionoffset", rCapRect);
         rCapRect = m_rCapRect;
         rCapRect.top += m_rect.top;

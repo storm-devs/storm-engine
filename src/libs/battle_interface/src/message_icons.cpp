@@ -9,8 +9,6 @@ MESSAGE_ICONS::MESSAGE_ICONS()
     m_idMsgIconsTexture = -1;
     m_vMsgIconBufID = -1;
     m_iMsgIconBufID = -1;
-
-    PZERO(m_pIconsAttr, sizeof(m_pIconsAttr));
 }
 
 MESSAGE_ICONS::~MESSAGE_ICONS()

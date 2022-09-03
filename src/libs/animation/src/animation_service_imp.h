@@ -12,7 +12,7 @@
 
 #include "animation.h"
 #include "animation_info.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 //============================================================================================
 

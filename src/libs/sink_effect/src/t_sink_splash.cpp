@@ -1,7 +1,8 @@
 #include "t_sink_splash.h"
+
+#include "math_inlines.h"
 #include "sink_splash_defines.h"
 
-#include "defines.h"
 #include "rands.h"
 
 //--------------------------------------------------------------------

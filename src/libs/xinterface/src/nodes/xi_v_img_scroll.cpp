@@ -1,6 +1,7 @@
 #include "xi_v_img_scroll.h"
 
 #include "core.h"
+#include "string_compare.hpp"
 
 #define MAXIMAGEQUANTITY 100
 

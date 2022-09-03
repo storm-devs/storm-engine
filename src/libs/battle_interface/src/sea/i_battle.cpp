@@ -3,10 +3,12 @@
 #include "i_battle.h"
 
 #include "core.h"
+#include "vma.hpp"
 
 #include "ship_pointer.h"
 #include "battle_ship_sign.h"
 #include "island_descr.h"
+#include "math_inlines.h"
 
 #include "../land/i_boarding_status.h"
 #include "../land/battle_land.h"
@@ -23,6 +25,7 @@
 #include "../interface_manager/interface_manager.h"
 
 #include "ship_info_images.h"
+#include "string_compare.hpp"
 
 CREATE_CLASS(BATTLE_INTERFACE)
 

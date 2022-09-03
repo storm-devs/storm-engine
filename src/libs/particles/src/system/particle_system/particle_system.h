@@ -3,8 +3,7 @@
 #include "../../i_common/types.h"
 #include "../../manager/particle_manager.h"
 #include "../data_source/data_source.h"
-#include "particles/i_particle_system.h"
-#include "v_module_api.h"
+#include "../../i_particle_system.h"
 
 class IEmitter;
 

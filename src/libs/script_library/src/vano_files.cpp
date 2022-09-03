@@ -1,11 +1,11 @@
 #include "vano_files.h"
 
 #include "core.h"
+#include "math_inlines.h"
 
-#include "defines.h"
 #include "s_import_func.h"
 #include "v_s_stack.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 uint32_t _RDTSC_B(VS_STACK *pS)
 {

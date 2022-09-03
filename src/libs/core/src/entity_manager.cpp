@@ -6,7 +6,11 @@
 #include <ranges>
 #include <type_traits>
 
-#include "v_module_api.h"
+#include "string_compare.hpp"
+#include "vma.hpp"
+
+#include <chrono>
+#include <functional>
 
 namespace
 {

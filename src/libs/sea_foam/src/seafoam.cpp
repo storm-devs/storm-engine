@@ -3,7 +3,8 @@
 
 #include "entity.h"
 #include "core.h"
-#include "defines.h"
+#include "math_inlines.h"
+#include "string_compare.hpp"
 
 CREATE_CLASS(SEAFOAM)
 

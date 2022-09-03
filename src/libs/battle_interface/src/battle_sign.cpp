@@ -2,7 +2,7 @@
 #include "utils.h"
 #include "controls.h"
 #include "core.h"
-#include "v_module_api.h"
+#include "vma.hpp"
 
 BISignIcon::BISignIcon(entid_t BIEntityID, VDX9RENDER *pRS)
 {
