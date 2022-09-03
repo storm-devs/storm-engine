@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME dialog
     TYPE storm_module
-    DEPENDENCIES core renderer sound_service
+    DEPENDENCIES core geometry model renderer sound_service
 )

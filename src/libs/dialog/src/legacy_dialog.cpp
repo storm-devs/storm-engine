@@ -2,12 +2,14 @@
 
 #include "dialog.hpp"
 
+#include <animation.h>
 #include <core.h>
-#include <defines.h>
 #include <geometry.h>
+#include <math_inlines.h>
 #include <model.h>
 #include <shared/messages.h>
-#include <v_module_api.h>
+#include <string_compare.hpp>
+#include <vma.hpp>
 
 #include <array>
 
