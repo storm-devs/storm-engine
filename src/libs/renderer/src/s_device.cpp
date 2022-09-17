@@ -2835,6 +2835,15 @@ int32_t DX9RENDER::Print(int32_t nFontNum, uint32_t color, int32_t x, int32_t y,
 
 int32_t DX9RENDER::StringWidth(const char *string, int32_t nFontNum, float fScale, int32_t scrWidth)
 {
+    if (string == nullptr)
+    {
+        return 0;
+    }
+    return StringWidth(std::string_view(string), nFontNum, fScale, scrWidth);
+}
+
+int32_t DX9RENDER::StringWidth(const std::string_view &string, int32_t nFontNum, float fScale, int32_t scrWidth)
+{
     if (nFontNum < 0 || nFontNum >= nFontQuantity)
         return 0;
     FONT *pFont = FontList[nFontNum].font;
