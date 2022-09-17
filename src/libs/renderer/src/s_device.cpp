@@ -2825,10 +2825,7 @@ int32_t DX9RENDER::Print(int32_t nFontNum, uint32_t color, int32_t x, int32_t y,
     vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
-    FontList[nFontNum].font->StoreFontParameters();
-    FontList[nFontNum].font->SetColor(color);
-    const int32_t retVal = FontList[nFontNum].font->Print(x, y, Buff_4k);
-    FontList[nFontNum].font->RestoreFontParameters();
+    const int32_t retVal = FontList[nFontNum].font->Print(x, y, Buff_4k, {.color = color});
     return retVal;
     // UNGUARD
 }
@@ -2850,17 +2847,13 @@ int32_t DX9RENDER::StringWidth(const std::string_view &string, int32_t nFontNum,
     if (FontList[nFontNum].ref == 0 || pFont == nullptr)
         return 0;
 
-    pFont->StoreFontParameters();
 
     const int32_t xs = screen_size.x;
     if (scrWidth == 0)
         scrWidth = xs;
     if (xs != scrWidth)
         fScale *= static_cast<float>(xs) / scrWidth;
-    pFont->SetScale(fScale);
-
-    const int32_t retVal = pFont->GetStringWidth(string);
-    pFont->RestoreFontParameters();
+    const int32_t retVal = pFont->GetStringWidth(string, fScale);
     return retVal;
 }
 
@@ -2896,8 +2889,6 @@ int32_t DX9RENDER::ExtPrint(int32_t nFontNum, uint32_t foreColor, uint32_t backC
     vsnprintf(Buff_4k, sizeof(Buff_4k), format, args);
     va_end(args);
 
-    pFont->StoreFontParameters();
-
     IDirect3DSurface9 *pRenderTarget;
     GetRenderTarget(&pRenderTarget);
     D3DSURFACE_DESC dscrSurface;
@@ -2928,12 +2919,12 @@ int32_t DX9RENDER::ExtPrint(int32_t nFontNum, uint32_t foreColor, uint32_t backC
         break;
     }
 
-    pFont->SetColor(foreColor);
-    pFont->SetShadow(bShadow);
-    pFont->SetScale(fScale);
-    const int32_t retVal = pFont->Print(x, y, Buff_4k);
-
-    pFont->RestoreFontParameters();
+    const int32_t retVal = pFont->Print(x, y, Buff_4k,
+                                        {
+                                            .scale = fScale,
+                                            .color = foreColor,
+                                            .shadow = bShadow,
+                                        });
     return retVal;
     // UNGUARD
 }
@@ -2971,9 +2962,9 @@ int32_t DX9RENDER::LoadFont(const char *fontName)
         }
     if (nFontQuantity < MAX_FONTS)
     {
-        if ((FontList[i].font = new FONT) == nullptr)
+        if ((FontList[i].font = new FONT(*this, *d3d9)) == nullptr)
             throw std::runtime_error("allocate memory error");
-        if (!FontList[i].font->Init(fontName, fontIniFileName, d3d9, this))
+        if (!FontList[i].font->Init(fontName, fontIniFileName))
         {
             delete FontList[i].font;
             core.Trace("Can't init font %s", fontName);
@@ -3112,9 +3103,9 @@ bool DX9RENDER::SetFontIniFileName(const char *iniName)
     {
         delete FontList[n].font;
 
-        if ((FontList[n].font = new FONT) == nullptr)
+        if ((FontList[n].font = new FONT(*this, *d3d9)) == nullptr)
             throw std::runtime_error("allocate memory error");
-        FontList[n].font->Init(FontList[n].name, fontIniFileName, d3d9, this);
+        FontList[n].font->Init(FontList[n].name, fontIniFileName);
         if (FontList[n].ref == 0)
             FontList[n].font->TempUnload();
     }
