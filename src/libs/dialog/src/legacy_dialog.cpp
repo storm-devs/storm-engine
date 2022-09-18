@@ -235,6 +235,11 @@ uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
     {
         UpdateHeadModel(attributes->GetValue());
     }
+    else if (storm::iEquals(attributeName, "mood"))
+    {
+        const std::string mood = attributes->GetThisAttr();
+        mood_ = mood;
+    }
     else if (storm::iEquals(attributeName, "greeting"))
     {
         const std::string soundName = attributes->GetThisAttr();
@@ -436,11 +441,18 @@ void LegacyDialog::SetAction(std::string action)
     if (!headModel_)
         return;
 
+    std::string preparedAction = action;
+
     const auto model = dynamic_cast<MODEL *>(core.GetEntityPointer(headModel_));
+
+    if (mood_ != "normal")
+    {
+        preparedAction += "_" + mood_;
+    };
 
     model->GetAnimation()->CopyPlayerState(0, 1);
 
-    model->GetAnimation()->Player(0).SetAction(action.c_str());
+    model->GetAnimation()->Player(0).SetAction(preparedAction.c_str());
     model->GetAnimation()->Player(0).Play();
 
     model->GetAnimation()->Timer(0).ResetTimer();

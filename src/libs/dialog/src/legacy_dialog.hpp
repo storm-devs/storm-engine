@@ -99,6 +99,8 @@ class LegacyDialog final : public Entity
 
     entid_t headModel_;
 
+    std::string mood_ = "normal";
+
     int32_t soundState_ = SOUND_STOPPED;
     int32_t currentSound_ = 0;
     std::string soundName_;
