@@ -169,9 +169,7 @@ uint16_t SoundService::FreeSound(const uint16_t idx)
     PlayingSounds[idx].bFree = true;
     if (idx >= 2 && idx < numActiveSounds)
     {
-        std::swap(PlayingSounds[idx], PlayingSounds[numActiveSounds - 1]);
-        --numActiveSounds;
-        return idx - 1;
+        freeSounds.push(idx);
     }
 
     return idx;
@@ -255,6 +253,13 @@ void SoundService::RunStart()
 
 bool SoundService::AllocateSound(TSD_ID &id)
 {
+    if (!freeSounds.empty())
+    {
+        id = TSD_ID::createId(freeSounds.top());
+        freeSounds.pop();
+        return true;
+    }
+
     if (numActiveSounds > MAX_SOUNDS_SLOTS)
     {
         core.Trace("SoundService::AllocateSound(): no empty slots!");

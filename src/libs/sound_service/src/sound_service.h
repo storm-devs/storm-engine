@@ -1,12 +1,13 @@
 #pragma once
 
 #include "c_vector.h"
+#include "dx9render.h"
 #include "sound_defines.h"
 #include "v_sound_service.h"
 #include "vma.hpp"
-#include "dx9render.h"
 #include <fmod.hpp>
 
+#include <stack>
 #include <string>
 
 #define MAX_SOUNDS_SLOTS 4095
@@ -37,8 +38,7 @@ class SoundService : public VSoundService
         float fTimeFromLastPlay;
         eSoundType type;
 
-        tSoundCache()
-            : type()
+        tSoundCache() : type()
         {
             dwNameHash = 0;
             sound = nullptr;
@@ -63,8 +63,7 @@ class SoundService : public VSoundService
         uint16_t stamp;
         bool bFree;
 
-        tPlayedSound()
-            : sound_type(), fSoundVolume(0)
+        tPlayedSound() : sound_type(), fSoundVolume(0)
         {
             channel = nullptr;
             type = VOLUME_FX;
@@ -79,6 +78,7 @@ class SoundService : public VSoundService
     };
 
     tPlayedSound PlayingSounds[MAX_SOUNDS_SLOTS];
+    std::stack<uint16_t> freeSounds;
     uint16_t numActiveSounds{};
 
     struct PlayedOGG
@@ -163,7 +163,7 @@ class SoundService : public VSoundService
 
     //----------------------------------------------------------------------------
 
-    bool AllocateSound(TSD_ID & id);
+    bool AllocateSound(TSD_ID &id);
 
     float fFXVolume;
     float fMusicVolume;
