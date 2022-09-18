@@ -24,7 +24,9 @@ enum class MouseKey
 {
     Left,
     Right,
-    Middle
+    Middle,
+    Special1,
+    Special2
 };
 
 //! Controller axes

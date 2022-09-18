@@ -113,6 +113,14 @@ bool PCS_CONTROLS::GetSystemControlDesc(int32_t code, SYSTEM_CONTROL_DESC &_cont
         _control_desc_struct.ControlType = SYSTEM_CONTROL_DESC::CT_BUTTON;
         _control_desc_struct.pControlName = "Mouse middle button";
         break;
+    case VK_XBUTTON1:
+        _control_desc_struct.ControlType = SYSTEM_CONTROL_DESC::CT_BUTTON;
+        _control_desc_struct.pControlName = "Mouse special button 1";
+        break;
+    case VK_XBUTTON2:
+        _control_desc_struct.ControlType = SYSTEM_CONTROL_DESC::CT_BUTTON;
+        _control_desc_struct.pControlName = "Mouse special button 2";
+        break;
     default:
         _control_desc_struct.ControlType = SYSTEM_CONTROL_DESC::CT_BUTTON;
         _control_desc_struct.pControlName = "Keyboard button";
@@ -626,6 +634,10 @@ bool PCS_CONTROLS::IsKeyPressed(int vk)
         pressed = input_->MouseKeyState(MouseKey::Right);
     else if (vk == VK_MBUTTON)
         pressed = input_->MouseKeyState(MouseKey::Middle);
+    else if (vk == VK_XBUTTON1)
+        pressed = input_->MouseKeyState(MouseKey::Special1);
+    else if (vk == VK_XBUTTON2)
+        pressed = input_->MouseKeyState(MouseKey::Special2);
     else if (vk == VK_TAB)
     {
         if (!input_->KeyboardKeyState(VK_MENU))
