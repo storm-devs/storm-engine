@@ -52,7 +52,6 @@ class SoundService : public VSoundService
         float fFaderCurrentVolume;
         float fFaderDeltaInSec;
 
-        bool bFree;
         FMOD::Channel *channel;
         eVolumeType type;
         eSoundType sound_type;
@@ -61,21 +60,26 @@ class SoundService : public VSoundService
         // temp
         std::string Name;
 
+        uint16_t stamp;
+        bool bFree;
+
         tPlayedSound()
             : sound_type(), fSoundVolume(0)
         {
-            bFree = true;
             channel = nullptr;
             type = VOLUME_FX;
 
             fFaderNeedVolume = 0;
             fFaderCurrentVolume = 0;
             fFaderDeltaInSec = 0;
+
+            stamp = 0;
+            bFree = true;
         }
     };
 
     tPlayedSound PlayingSounds[MAX_SOUNDS_SLOTS];
-    TSD_ID SoundsActive{};
+    uint16_t numActiveSounds{};
 
     struct PlayedOGG
     {
@@ -159,7 +163,7 @@ class SoundService : public VSoundService
 
     //----------------------------------------------------------------------------
 
-    TSD_ID FindEmptySlot();
+    bool AllocateSound(TSD_ID & id);
 
     float fFXVolume;
     float fMusicVolume;
@@ -219,8 +223,7 @@ class SoundService : public VSoundService
                       const char *format, ...) const;
     void Draw2DCircle(const CVECTOR &center, uint32_t dwColor, float fRadius, uint32_t dwColor2, float fRadius2) const;
 
-    void ProcessFader(int idx);
+    void ProcessFader(uint16_t idx);
 
-    void FreeSound(TSD_ID idx);
-    [[nodiscard]] bool IsFree(TSD_ID idx) const;
+    uint16_t FreeSound(uint16_t idx);
 };
