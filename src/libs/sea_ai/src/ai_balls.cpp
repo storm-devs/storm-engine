@@ -3,12 +3,11 @@
 #include "math_inlines.h"
 #include "shared/messages.h"
 
-
 AIBalls *AIBalls::pAIBalls = nullptr;
 
 AIBalls::AIBalls()
-    : pSail(nullptr), pSea(nullptr), pFort(nullptr), pIsland(nullptr),
-      fDeltaTimeMultiplier(1.0f), fBallFlySoundDistance(1.0f), dwFireBallFromCameraTime(0)
+    : pSail(nullptr), pSea(nullptr), pFort(nullptr), pIsland(nullptr), fDeltaTimeMultiplier(1.0f),
+      fBallFlySoundDistance(1.0f), dwFireBallFromCameraTime(0)
 {
     pAIBalls = this;
 }
@@ -141,10 +140,11 @@ void AIBalls::AddBall(ATTRIBUTES *pABall)
     const auto fDir = pABall->GetAttributeAsFloat("Dir");
     pBall->fDirX = cosf(fDir);
     pBall->fDirZ = sinf(fDir);
+    pBall->fRawAng = pABall->GetAttributeAsFloat("RawAng");
     pBall->pParticle = nullptr;
 
     pBall->sBallEvent = to_string(pABall->GetAttribute("Event"));
-    
+
     if (aBallTypes[i].sParticleName.size())
     {
         entid_t eidParticle;
@@ -198,10 +198,21 @@ void AIBalls::Execute(uint32_t Delta_Time)
             pBall->fTime += fDeltaTime * fDeltaTimeMultiplier * pBall->fTimeSpeedMultiply;
             // update positions
             float fsX = pBall->fSpeedV0 * pBall->fTime * pBall->fCosAngle;
-            float fsY = pBall->fHeightMultiply * (pBall->fSpeedV0 * pBall->fTime * pBall->fSinAngle -
-                                                  AIHelper::fGravity * SQR(pBall->fTime) / 2.0f);
-            pBall->vPos = CVECTOR(0.0f, fsY, fsX);
+            float fsY =
+                (pBall->fSpeedV0 * pBall->fTime * pBall->fSinAngle - AIHelper::fGravity * SQR(pBall->fTime) / 2.0f);
+
+            // HeightMultiply
+            float fCosRaw = cosf(pBall->fRawAng);
+            float fSinRaw = sinf(pBall->fRawAng);
+            float fProjX = fsX * fCosRaw + fsY * fSinRaw;
+            float fProjY = -fsX * fSinRaw + fsY * fCosRaw;
+            fProjY *= pBall->fHeightMultiply;
+            float fX = fProjX * fCosRaw - fProjY * fSinRaw;
+            float fY = fProjX * fSinRaw + fProjY * fCosRaw;
+
+            pBall->vPos = CVECTOR(0.0f, fY, fX);
             RotateAroundY(pBall->vPos.x, pBall->vPos.z, pBall->fDirX, pBall->fDirZ);
+
             pBall->vPos += pBall->vFirstPos;
 
             vDst = pBall->vPos;
@@ -240,7 +251,7 @@ void AIBalls::Execute(uint32_t Delta_Time)
             // sail trace
             if (pSail)
                 pSail->Cannon_Trace(pBall->iBallOwner, vSrc, vDst);
-            
+
             auto &&entities = core.GetEntityIds(SHIP_CANNON_TRACE);
             for (auto ent_id : entities)
             {
@@ -440,6 +451,7 @@ void BALL_PARAMS::Save(CSaveLoad *pSL)
     pSL->SaveFloat(fSizeMultiply);
     pSL->SaveFloat(fTimeSpeedMultiply);
     pSL->SaveFloat(fMaxFireDistance);
+    pSL->SaveFloat(fRawAng);
     pSL->SaveDword(dwCannonType);
 }
 
@@ -460,7 +472,7 @@ void BALL_PARAMS::Load(CSaveLoad *pSL)
 {
     vFirstPos = pSL->LoadVector();
     vPos = pSL->LoadVector();
-    //pParticle = reinterpret_cast<VPARTICLE_SYSTEM *>(pSL->LoadDword());
+    // pParticle = reinterpret_cast<VPARTICLE_SYSTEM *>(pSL->LoadDword());
     pParticle = reinterpret_cast<VPARTICLE_SYSTEM *>(pSL->LoadQword());
     sBallEvent = pSL->LoadString();
     iBallOwner = pSL->LoadLong();
@@ -474,6 +486,7 @@ void BALL_PARAMS::Load(CSaveLoad *pSL)
     fSizeMultiply = pSL->LoadFloat();
     fTimeSpeedMultiply = pSL->LoadFloat();
     fMaxFireDistance = pSL->LoadFloat();
+    fRawAng = pSL->LoadFloat();
     dwCannonType = pSL->LoadDword();
 }
 
