@@ -622,20 +622,77 @@ void LegacyDialog::DrawDialogText()
 void LegacyDialog::ProcessControls()
 {
     CONTROL_STATE cs;
+    bool bDoUp = false;
+    bool bDoDown = false;
+    bool bDoAction = false;
+
     core.Controls->GetControlState("DlgUp", cs);
-    if (cs.state == CST_ACTIVATED && selectedLink_ > 0)
+    if (cs.state == CST_ACTIVATED)
+    {
+        bDoUp = true;
+    }
+
+    core.Controls->GetControlState("DlgUp2", cs);
+    if (cs.state == CST_ACTIVATED)
+    {
+        bDoUp = true;
+    }
+
+    core.Controls->GetControlState("DlgUp3", cs);
+    if (cs.state == CST_ACTIVATED)
+    {
+        bDoUp = true;
+    }
+
+    if (bDoUp && selectedLink_ > 0)
     {
         PlayTick();
         --selectedLink_;
     }
+
     core.Controls->GetControlState("DlgDown", cs);
-    if (cs.state == CST_ACTIVATED && selectedLink_ < links_.size() - 1)
+    if (cs.state == CST_ACTIVATED)
+    {
+        bDoDown = true;
+    }
+
+    core.Controls->GetControlState("DlgDown2", cs);
+    if (cs.state == CST_ACTIVATED)
+    {
+        bDoDown = true;
+    }
+
+    core.Controls->GetControlState("DlgDown3", cs);
+    if (cs.state == CST_ACTIVATED)
+    {
+        bDoDown = true;
+    }
+
+    if (bDoDown && selectedLink_ < links_.size() - 1)
     {
         PlayTick();
         ++selectedLink_;
     }
+
     core.Controls->GetControlState("DlgAction", cs);
     if (cs.state == CST_ACTIVATED)
+    {
+        bDoAction = true;
+    }
+
+    core.Controls->GetControlState("DlgAction1", cs);
+    if (cs.state == CST_ACTIVATED)
+    {
+        bDoAction = true;
+    }
+
+    core.Controls->GetControlState("DlgAction2", cs);
+    if (cs.state == CST_ACTIVATED)
+    {
+        bDoAction = true;
+    }
+
+    if (bDoAction)
     {
         PlayTick();
         ATTRIBUTES *links_attr = AttributesPointer->GetAttributeClass("Links");
