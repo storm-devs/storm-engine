@@ -202,7 +202,6 @@ class NPCharacter : public AICharacter
     float fMusketerTime, fMusketerFireTime, fMusketerCheckFireTime;
     bool bMusketerNoMove; //~!~
     bool bTryAnyTarget;
-	
 
     void SetEscapeTask(Character *c);
 };
