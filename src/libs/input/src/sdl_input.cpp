@@ -437,6 +437,10 @@ bool SDLInput::MouseKeyState(const MouseKey &key) const
         return btn & SDL_BUTTON_RMASK ? true : false;
     else if (key == MouseKey::Middle)
         return btn & SDL_BUTTON_MMASK ? true : false;
+    else if (key == MouseKey::Special1)
+        return btn & SDL_BUTTON_X1MASK ? true : false;
+    else if (key == MouseKey::Special2)
+        return btn & SDL_BUTTON_X2MASK ? true : false;
 
     return false;
 }
