@@ -597,8 +597,8 @@ class Character : public Entity
     int32_t fgtSetIndex;         // Set action index
     bool isParryState;        // Parry condition
     bool isFeintState;        // Parry condition
-	bool isRecoilState;		// EvgAnat - recoil event condition
-    bool isFireState;   // EvgAnat - fire state to improve npc logic
+    bool isRecoilState;       // ability for dodging
+    bool isFireState;         // fire state to improve npc logic
     bool isFired;             // Is a shot fired
     bool isLockIdleForCamera; //
     float recoilWait;         // Delay after jump
