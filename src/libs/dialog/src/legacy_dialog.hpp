@@ -6,6 +6,13 @@
 
 #include <string>
 
+enum eSoundState
+{
+    SOUND_STARTING,
+    SOUND_PLAYING,
+    SOUND_STOPPED
+};
+
 struct ScreenScale
 {
     float x = 1.f;
@@ -40,6 +47,8 @@ class LegacyDialog final : public Entity
 
     void UpdateHeadModel(const std::string &headModelPath);
     void DrawHeadModel(uint32_t deltaTime);
+
+    void SetAction(std::string action);
 
     void UpdateLinks();
     void DrawLinks();
@@ -89,6 +98,12 @@ class LegacyDialog final : public Entity
     int32_t fadeTime_{};
 
     entid_t headModel_;
+
+    std::string mood_ = "normal";
+
+    int32_t soundState_ = SOUND_STOPPED;
+    int32_t currentSound_ = 0;
+    std::string soundName_;
 
     bool backNeedsUpdate_ = true;
 };

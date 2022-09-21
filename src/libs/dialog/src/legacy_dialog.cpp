@@ -177,6 +177,16 @@ void LegacyDialog::Realize(uint32_t deltaTime)
 {
     Unfade();
 
+    if (soundState_ == SOUND_STARTING && !soundName_.empty() && soundService_)
+    {
+        currentSound_ = soundService_->SoundPlay(soundName_.c_str(), PCM_STEREO, VOLUME_SPEECH);
+        if (currentSound_)
+        {
+            SetAction("dialog_all");
+            soundState_ = SOUND_PLAYING;
+        }
+    }
+
     UpdateScreenSize();
 
     ProcessControls();
@@ -204,6 +214,12 @@ void LegacyDialog::Realize(uint32_t deltaTime)
 
     // Head overlay
     DrawBackground(0, 2);
+
+    if (soundState_ == SOUND_PLAYING && soundService_ && !soundService_->SoundIsPlaying(currentSound_))
+    {
+        SetAction("dialog_idle");
+        soundState_ = SOUND_STOPPED;
+    }
 }
 
 uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
@@ -218,6 +234,17 @@ uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
     else if (storm::iEquals(attributeName, "headModel"))
     {
         UpdateHeadModel(attributes->GetValue());
+    }
+    else if (storm::iEquals(attributeName, "mood"))
+    {
+        const std::string mood = attributes->GetThisAttr();
+        mood_ = mood;
+    }
+    else if (storm::iEquals(attributeName, "greeting"))
+    {
+        const std::string soundName = attributes->GetThisAttr();
+        soundName_ = soundName;
+        soundState_ = SOUND_STARTING;
     }
     else
     {
@@ -409,6 +436,33 @@ void LegacyDialog::DrawBackground(size_t start, size_t count)
                               start * 6, count * 2, "texturedialogfon");
 }
 
+void LegacyDialog::SetAction(std::string action)
+{
+    if (!headModel_)
+        return;
+
+    std::string preparedAction = action;
+
+    const auto model = dynamic_cast<MODEL *>(core.GetEntityPointer(headModel_));
+
+    if (mood_ != "normal")
+    {
+        preparedAction += "_" + mood_;
+    };
+
+    model->GetAnimation()->CopyPlayerState(0, 1);
+
+    model->GetAnimation()->Player(0).SetAction(preparedAction.c_str());
+    model->GetAnimation()->Player(0).Play();
+
+    model->GetAnimation()->Timer(0).ResetTimer();
+    model->GetAnimation()->Timer(0).Start(0.2f);
+    model->GetAnimation()->Player(0).SetAutoStop(false);
+    model->GetAnimation()->Player(1).SetAutoStop(true);
+    model->GetAnimation()->Timer(0).SetPlayer(0, false);
+    model->GetAnimation()->Timer(0).SetPlayer(1, true);
+}
+
 void LegacyDialog::UpdateHeadModel(const std::string &headModelPath)
 {
     core.EraseEntity(headModel_);
@@ -443,10 +497,7 @@ void LegacyDialog::UpdateHeadModel(const std::string &headModelPath)
 
         model->mtx = mtx * mtx2 * mtx3 * mtx4;
 
-        model->GetAnimation()->CopyPlayerState(0, 1);
-        model->GetAnimation()->Player(0).SetAction("dialog_all");
-        model->GetAnimation()->Player(0).Play();
-        model->GetAnimation()->Player(0).SetAutoStop(false);
+        SetAction("dialog_idle");
 
         gs->SetTexturePath("");
     }
