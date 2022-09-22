@@ -2955,29 +2955,14 @@ if(storm::iEquals(eventName, "Blade to belt"))
 			VDATA *vd = core.Event("Check_ChrHitFire", "iilf", GetId(), enemy, static_cast<int32_t>(chr->isRecoilState), kDist);
 			if(vd)
 			{
-                            if(vd->Get(resHit))
-                            {
-                                if(resHit == 2)
-                                {
-                                    core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 1);
-                                    chr->Hit(fgt_hit_fire);
-                                }
-                                else
-                                {
-                                    core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 0);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 1);
-                            chr->Hit(fgt_hit_fire);
+                            vd->Get(resHit);
                         }
                     }
-                    else
-                    {
-                        core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, 0);
-                    }
+		    core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist, resHit);
+		    if(resHit == 1)
+		    {
+		        chr->Hit(fgt_hit_fire);
+		    }
                 }
             }
         }
