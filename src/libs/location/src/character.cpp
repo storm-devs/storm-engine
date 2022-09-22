@@ -2947,7 +2947,7 @@ if(storm::iEquals(eventName, "Blade to belt"))
                     float kDist;
                     Character *chr = FindGunTarget(kDist, CheckShotOnlyEnemyTest());
                     entid_t enemy{};
-                    int32_t resHit = 0; // EvgAnat: 0 - null target, 1 - miss, 2 - hit
+                    int32_t resHit = 0;
                     if (chr)
                     {
                         enemy = chr->GetId();
