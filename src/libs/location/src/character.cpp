@@ -5093,7 +5093,7 @@ inline void Character::CheckAttackHit(bool isGunBlade)
             fc.c->Attack(this, fgt_attack_feintc);
             fc.c->UpdateAnimation(); // boal
             // fc.c->PlaySound("fgt_feint");
-        }	
+        }
         else if(!isDodge)
         {
             bool isBlocked = (fc.c->fgtCurType == fgt_block || fc.c->fgtCurType == fgt_blockhit);
