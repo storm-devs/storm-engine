@@ -4314,6 +4314,8 @@ void Character::UpdateAnimation()
                 {
                     pWeaponID = pdat->GetString();
                 }
+                VDATA *vd = nullptr;
+                float recoilDist;
 
                 switch (fgtSetType)
                 {
@@ -4557,8 +4559,14 @@ void Character::UpdateAnimation()
                 case fgt_recoil: // Bounce back
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     PlaySound("recoil", true);
-                    impulse.x -= 2.0f * sinf(ay);
-                    impulse.z -= 2.0f * cosf(ay);
+    	            vd = core.Event("GetCharacterRecoilDistance", "is", GetId(), "recoil");
+		    recoilDist = 2.0f;
+		    if(vd)
+		    {
+	                vd->Get(recoilDist);
+	            }
+                    impulse.x -= recoilDist * sinf(ay);
+                    impulse.z -= recoilDist * cosf(ay);
                     priorityAction.SetName(recoil.name); // to check the end of the animation
                     if (!(isSet = SetAction(recoil.name, recoil.tblend, -3.0f, 0.0f)))
                     {
@@ -4568,7 +4576,13 @@ void Character::UpdateAnimation()
                 case fgt_strafe_l: // Bounce to the left
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     recoilSound = SOUND_INVALID_ID; // PlaySound("recoil", true);
-                    impulse += 10.0f * CVECTOR(-cosf(ay), 0.0f, sinf(ay));
+    	            vd = core.Event("GetCharacterRecoilDistance", "is", GetId(), "strafe");
+		    recoilDist = 15.0f;
+		    if(vd)
+		    {
+	                vd->Get(recoilDist);
+	            }
+                    impulse += recoilDist * CVECTOR(-cosf(ay), 0.0f, sinf(ay));
                     if (!(isSet = SetAction(strafe_l.name, strafe_l.tblend, 0.0f, 0.0f)))
                     {
                         core.Trace("Character animation: not set recoil action: \"%s\"", strafe_l.name);
@@ -4577,7 +4591,13 @@ void Character::UpdateAnimation()
                 case fgt_strafe_r: // Bounce to the left
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     recoilSound = SOUND_INVALID_ID; // PlaySound("recoil", true);
-                    impulse -= 10.0f * CVECTOR(-cosf(ay), 0.0f, sinf(ay));
+    	            vd = core.Event("GetCharacterRecoilDistance", "is", GetId(), "strafe");
+		    recoilDist = 15.0f;
+		    if(vd)
+		    {
+	                vd->Get(recoilDist);
+	            }
+                    impulse -= recoilDist * CVECTOR(-cosf(ay), 0.0f, sinf(ay));
                     if (!(isSet = SetAction(strafe_r.name, strafe_r.tblend, 0.0f, 0.0f)))
                     {
                         core.Trace("Character animation: not set recoil action: \"%s\"", strafe_l.name);
