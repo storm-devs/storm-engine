@@ -1626,36 +1626,22 @@ void Character::Recoil()
         return;
     VDATA *res = nullptr;
     res = core.Event("ChrCheckEnergy", "is", GetId(), "recoil");
+    int32_t isEnable = 1;
     if(res)
     {
-        int32_t isEnable = 1;
-        if (res->Get(isEnable))
-        {
-            if(isEnable)
-            {
-                fgtSetType = fgt_recoil;
-                fgtSetIndex = 0;
-                recoilWait = 0.8f;
-                isTurnLock = false;
-            }
-            else
-            {
-                fgtSetType = fgt_none;
-                fgtSetIndex = -1;
-            }
-        }
-        else
-        {
-            fgtSetType = fgt_none;
-            fgtSetIndex = -1;
-        }
+        res->Get(isEnable);
     }
-    else
+    if(isEnable)
     {
         fgtSetType = fgt_recoil;
         fgtSetIndex = 0;
         recoilWait = 0.8f;
         isTurnLock = false;
+    }
+    else
+    {
+        fgtSetType = fgt_none;
+        fgtSetIndex = -1;
     }
 }
 
@@ -1672,36 +1658,22 @@ void Character::StrafeLeft()
         return;
     VDATA *res = nullptr;
     res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_l");
+    int32_t isEnable = 1;
     if(res)
     {
-        int32_t isEnable = 1;
-        if (res->Get(isEnable))
-        {
-            if(isEnable)
-            {
-                fgtSetType = fgt_strafe_l;
-                fgtSetIndex = 0;
-                strafeWait = 0.8f;
-                isTurnLock = false;
-            }
-            else
-            {
-                fgtSetType = fgt_none;
-                fgtSetIndex = -1;
-            }
-        }
-        else
-        {
-            fgtSetType = fgt_none;
-            fgtSetIndex = -1;
-        }
+        res->Get(isEnable);
     }
-    else
+    if(isEnable)
     {
         fgtSetType = fgt_strafe_l;
         fgtSetIndex = 0;
         strafeWait = 0.8f;
         isTurnLock = false;
+    }
+    else
+    {
+        fgtSetType = fgt_none;
+        fgtSetIndex = -1;
     }
 }
 
@@ -1718,36 +1690,22 @@ void Character::StrafeRight()
         return;
     VDATA *res = nullptr;
     res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_r");
+    int32_t isEnable = 1;
     if(res)
     {
-        int32_t isEnable = 1;
-        if (res->Get(isEnable))
-        {
-            if(isEnable)
-            {
-                fgtSetType = fgt_strafe_r;
-                fgtSetIndex = 0;
-                strafeWait = 0.8f;
-                isTurnLock = false;
-            }
-            else
-            {
-                fgtSetType = fgt_none;
-                fgtSetIndex = -1;
-            }
-        }
-        else
-        {
-            fgtSetType = fgt_none;
-            fgtSetIndex = -1;
-        }
+        res->Get(isEnable);
     }
-    else
+    if(isEnable)
     {
         fgtSetType = fgt_strafe_r;
         fgtSetIndex = 0;
         strafeWait = 0.8f;
         isTurnLock = false;
+    }
+    else
+    {
+        fgtSetType = fgt_none;
+        fgtSetIndex = -1;
     }
 }
 
