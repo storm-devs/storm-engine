@@ -1624,8 +1624,7 @@ void Character::Recoil()
         return;
     if (!GetLocation()->IsSwimming())
         return;
-    VDATA *res = nullptr;
-    res = core.Event("ChrCheckEnergy", "is", GetId(), "recoil");
+    VDATA *res = core.Event("ChrCheckEnergy", "is", GetId(), "recoil");
     int32_t isActionPossible = 1;
     if (res)
     {
@@ -1656,8 +1655,7 @@ void Character::StrafeLeft()
         return;
     if (!GetLocation()->IsSwimming())
         return;
-    VDATA *res = nullptr;
-    res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_l");
+    VDATA *res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_l");
     int32_t isActionPossible = 1;
     if (res)
     {
@@ -1688,8 +1686,7 @@ void Character::StrafeRight()
         return;
     if (!GetLocation()->IsSwimming())
         return;
-    VDATA *res = nullptr;
-    res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_r");
+    VDATA *res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_r");
     int32_t isActionPossible = 1;
     if (res)
     {
