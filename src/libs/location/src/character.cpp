@@ -1627,11 +1627,11 @@ void Character::Recoil()
     VDATA *res = nullptr;
     res = core.Event("ChrCheckEnergy", "is", GetId(), "recoil");
     int32_t isActionPossible = 1;
-    if(res)
+    if (res)
     {
         res->Get(isActionPossible);
     }
-    if(isActionPossible)
+    if (isActionPossible)
     {
         fgtSetType = fgt_recoil;
         fgtSetIndex = 0;
@@ -1659,11 +1659,11 @@ void Character::StrafeLeft()
     VDATA *res = nullptr;
     res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_l");
     int32_t isActionPossible = 1;
-    if(res)
+    if (res)
     {
         res->Get(isActionPossible);
     }
-    if(isActionPossible)
+    if (isActionPossible)
     {
         fgtSetType = fgt_strafe_l;
         fgtSetIndex = 0;
@@ -1691,11 +1691,11 @@ void Character::StrafeRight()
     VDATA *res = nullptr;
     res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_r");
     int32_t isActionPossible = 1;
-    if(res)
+    if (res)
     {
         res->Get(isActionPossible);
     }
-    if(isActionPossible)
+    if (isActionPossible)
     {
         fgtSetType = fgt_strafe_r;
         fgtSetIndex = 0;
@@ -4560,7 +4560,7 @@ void Character::UpdateAnimation()
                     PlaySound("recoil", true);
     	            vd = core.Event("GetCharacterRecoilDistance", "is", GetId(), "recoil");
 		    recoilDist = 2.0f;
-		    if(vd)
+		    if (vd)
 		    {
 	                vd->Get(recoilDist);
 	            }
@@ -4577,7 +4577,7 @@ void Character::UpdateAnimation()
                     recoilSound = SOUND_INVALID_ID; // PlaySound("recoil", true);
     	            vd = core.Event("GetCharacterRecoilDistance", "is", GetId(), "strafe");
 		    recoilDist = 15.0f;
-		    if(vd)
+		    if (vd)
 		    {
 	                vd->Get(recoilDist);
 	            }
@@ -4592,7 +4592,7 @@ void Character::UpdateAnimation()
                     recoilSound = SOUND_INVALID_ID; // PlaySound("recoil", true);
     	            vd = core.Event("GetCharacterRecoilDistance", "is", GetId(), "strafe");
 		    recoilDist = 15.0f;
-		    if(vd)
+		    if (vd)
 		    {
 	                vd->Get(recoilDist);
 	            }
@@ -5033,7 +5033,7 @@ inline void Character::CheckAttackHit(bool isGunBlade)
         {
             int32_t resHit = 0;
             VDATA *vd = core.Event("Check_ChrHitAttack", "iil", GetId(), fc.c->GetId(), static_cast<int32_t>(fc.c->isRecoilState));
-            if(vd && vd->Get(resHit))
+            if (vd && vd->Get(resHit))
             {
                 if (resHit == 0)
                 {
@@ -5056,7 +5056,7 @@ inline void Character::CheckAttackHit(bool isGunBlade)
             fc.c->UpdateAnimation(); // boal
             // fc.c->PlaySound("fgt_feint");
         }
-        else if(!isDodge)
+        else if (!isDodge)
         {
             bool isBlocked = (fc.c->fgtCurType == fgt_block || fc.c->fgtCurType == fgt_blockhit);
             if (isBlockBreak)
