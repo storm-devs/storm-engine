@@ -1626,12 +1626,12 @@ void Character::Recoil()
         return;
     VDATA *res = nullptr;
     res = core.Event("ChrCheckEnergy", "is", GetId(), "recoil");
-    int32_t isEnable = 1;
+    int32_t isActionPossible = 1;
     if(res)
     {
-        res->Get(isEnable);
+        res->Get(isActionPossible);
     }
-    if(isEnable)
+    if(isActionPossible)
     {
         fgtSetType = fgt_recoil;
         fgtSetIndex = 0;
@@ -1658,12 +1658,12 @@ void Character::StrafeLeft()
         return;
     VDATA *res = nullptr;
     res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_l");
-    int32_t isEnable = 1;
+    int32_t isActionPossible = 1;
     if(res)
     {
-        res->Get(isEnable);
+        res->Get(isActionPossible);
     }
-    if(isEnable)
+    if(isActionPossible)
     {
         fgtSetType = fgt_strafe_l;
         fgtSetIndex = 0;
@@ -1690,12 +1690,12 @@ void Character::StrafeRight()
         return;
     VDATA *res = nullptr;
     res = core.Event("ChrCheckEnergy", "is", GetId(), "strafe_r");
-    int32_t isEnable = 1;
+    int32_t isActionPossible = 1;
     if(res)
     {
-        res->Get(isEnable);
+        res->Get(isActionPossible);
     }
-    if(isEnable)
+    if(isActionPossible)
     {
         fgtSetType = fgt_strafe_r;
         fgtSetIndex = 0;
