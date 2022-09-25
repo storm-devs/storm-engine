@@ -71,7 +71,7 @@ ATTRIBUTES::LegacyProxy ATTRIBUTES::GetThisAttr() const
 
 void ATTRIBUTES::SetName(const std::string_view &new_name)
 {
-    nameCode_ = stringCodec_.Convert(new_name.data());
+    nameCode_ = stringCodec_.Convert(new_name);
 }
 
 void ATTRIBUTES::SetValue(const char *new_value)
@@ -240,12 +240,12 @@ ATTRIBUTES * ATTRIBUTES::CreateAttribute(const std::string_view &name, const cha
 
 size_t ATTRIBUTES::SetAttribute(const std::string_view &name, const char *attribute)
 {
-    return SetAttribute(stringCodec_.Convert(name.data()), attribute);
+    return SetAttribute(stringCodec_.Convert(name), attribute);
 }
 
 size_t ATTRIBUTES::SetAttribute(const std::string_view &name, const std::string_view &attribute)
 {
-    return SetAttribute(stringCodec_.Convert(name.data()), attribute);
+    return SetAttribute(stringCodec_.Convert(name), attribute);
 }
 
 bool ATTRIBUTES::DeleteAttributeClassX(ATTRIBUTES *pA)
@@ -296,7 +296,7 @@ ATTRIBUTES * ATTRIBUTES::CreateSubAClass(ATTRIBUTES *pRoot, const char *access_s
         switch (access_string[n])
         {
         case '.':
-            dwNameCode = stringCodec_.Convert(access_string, n);
+            dwNameCode = stringCodec_.Convert(std::string_view(access_string, n));
             pTemp = pRoot->GetAttributeClassByCode(dwNameCode);
             if (!pTemp)
                 pTemp = pRoot->CreateNewAttribute(dwNameCode);
@@ -330,7 +330,7 @@ ATTRIBUTES * ATTRIBUTES::FindAClass(ATTRIBUTES *pRoot, const char *access_string
         switch (access_string[n])
         {
         case '.':
-            pTemp = pRoot->GetAttributeClassByCode(stringCodec_.Convert(access_string, n));
+            pTemp = pRoot->GetAttributeClassByCode(stringCodec_.Convert(std::string_view(access_string, n)));
             if (!pTemp)
                 return nullptr;
             pResult = FindAClass(pTemp, &access_string[n + 1]);
@@ -450,7 +450,7 @@ ATTRIBUTES::ATTRIBUTES(VSTRING_CODEC &p) : ATTRIBUTES(p, nullptr, "root")
 }
 
 ATTRIBUTES::ATTRIBUTES(VSTRING_CODEC &string_codec, ATTRIBUTES *parent, const std::string_view &name)
-    : ATTRIBUTES(string_codec, parent, string_codec.Convert(name.data()))
+    : ATTRIBUTES(string_codec, parent, string_codec.Convert(name))
 {
 }
 

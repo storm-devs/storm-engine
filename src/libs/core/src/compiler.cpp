@@ -122,7 +122,6 @@ void COMPILER::Release()
     SStack.Release();
     EventTab.Release();
     EventMsg.Release();
-    SCodec.Release();
     LibriaryFuncs.clear();
 
     delete[] pDebExpBuffer;
