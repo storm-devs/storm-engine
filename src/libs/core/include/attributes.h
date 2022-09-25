@@ -16,7 +16,7 @@ class VSTRING_CODEC
 
     [[nodiscard]] virtual uint32_t GetNum() const = 0;
     virtual uint32_t Convert(const std::string_view &pString) = 0;
-    [[nodiscard]] virtual const char *Convert(uint32_t code) const = 0;
+    [[nodiscard]] virtual std::string_view Convert(uint32_t code) const = 0;
 
     virtual void VariableChanged() = 0;
 };

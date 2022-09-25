@@ -69,7 +69,7 @@ uint32_t STRING_CODEC::Convert(const std::string_view &pString)
     return MakeStringCode(table_index, n);
 }
 
-const char *STRING_CODEC::Convert(uint32_t code) const
+std::string_view STRING_CODEC::Convert(uint32_t code) const
 {
     uint32_t table_index = code >> 16;
     if (table_index >= HASH_TABLE_SIZE)
@@ -81,7 +81,7 @@ const char *STRING_CODEC::Convert(uint32_t code) const
     {
         return "INVALID SCC";
     }
-    return hashTable_[table_index].elements[n].string.c_str();
+    return hashTable_[table_index].elements[n].string;
 }
 
 const char *STRING_CODEC::Get()

@@ -22,9 +22,9 @@ class TestStringCodec : public VSTRING_CODEC
         return hash;
     }
 
-    const char *Convert(uint32_t code) const override
+    std::string_view Convert(uint32_t code) const override
     {
-        return map_[code].c_str();
+        return map_[code];
     }
 
     void VariableChanged() override

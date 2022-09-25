@@ -50,7 +50,7 @@ bool ATTRIBUTES::operator==(const char *str) const
 
 const char *ATTRIBUTES::GetThisName() const
 {
-    return stringCodec_.Convert(nameCode_);
+    return stringCodec_.Convert(nameCode_).data();
 }
 
 bool ATTRIBUTES::HasValue() const noexcept

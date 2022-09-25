@@ -23,7 +23,7 @@ class STRING_CODEC final : public VSTRING_CODEC
 
     [[nodiscard]] uint32_t GetNum() const override;
     uint32_t Convert(const std::string_view &pString) override;
-    [[nodiscard]] const char *Convert(uint32_t code) const override;
+    [[nodiscard]] std::string_view Convert(uint32_t code) const override;
 
     void VariableChanged() override;
 
