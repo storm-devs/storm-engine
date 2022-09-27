@@ -1,5 +1,7 @@
 #include "iv_buffer_manager.h"
 
+#include <algorithm>
+
 //--------------------------------------------------------------------
 IVBufferManager::IVBufferManager(VDX9RENDER *renderer_, int32_t vertex_type, int vertex_size, size_t index_count,
                                  size_t vertex_count, size_t max_size)
@@ -54,7 +56,7 @@ void IVBufferManager::FreeElement(size_t i)
 //--------------------------------------------------------------------
 void IVBufferManager::FreeAll()
 {
-    used_.clear();
+    std::fill(std::begin(used_), std::end(used_), false);
 }
 
 //--------------------------------------------------------------------
