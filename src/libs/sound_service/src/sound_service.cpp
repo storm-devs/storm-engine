@@ -90,7 +90,7 @@ bool SoundService::Init()
         return false;
     }
     core.Trace("Using FMOD %08x", FMOD_VERSION);
-    CHECKFMODERR(system->setSoftwareChannels(64));
+    CHECKFMODERR(system->setSoftwareChannels(MAX_SOUNDS_SLOTS));
     CHECKFMODERR(system->setOutput(FMOD_OUTPUTTYPE_AUTODETECT));
     CHECKFMODERR(system->init(MAX_SOUNDS_SLOTS, FMOD_INIT_NORMAL, nullptr));
     CHECKFMODERR(system->set3DSettings(1.0, DISTANCEFACTOR, 1.0f));
