@@ -323,7 +323,7 @@ void NPCharacter::Update(float dltTime)
                 if (atr->HasValue())
                 {
                     location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "tmpl(%s)",
-                                    static_cast<const char*>(atr->GetThisAttr()));
+                                    static_cast<const char *>(atr->GetThisAttr()));
                 }
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.type");
@@ -339,7 +339,7 @@ void NPCharacter::Update(float dltTime)
                 }
                 if (atr->HasValue())
                     location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "type(%s)",
-                                    static_cast<const char*>(atr->GetThisAttr()));
+                                    static_cast<const char *>(atr->GetThisAttr()));
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.group");
             if (atr)
@@ -860,7 +860,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     auto *const location = GetLocation();
     const int32_t grpIndex = chrGroup->FindGroupIndex(group);
     bool isEnemyFire = false;
-    auto fndCharacter = location->supervisor.FindCharacters(this, 25.0f, 60.0f, 0.4f, 30.0f, false);	
+    auto fndCharacter = location->supervisor.FindCharacters(this, 25.0f, 60.0f, 0.4f, 30.0f, false);
     if (!fndCharacter.empty())
     {
         for (size_t i = 0; i < fndCharacter.size(); i++)
@@ -896,21 +896,21 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
             vd->Get(isDodge);
         if (isDodge)
         {
-            switch(rand() % 3)
+            switch (rand() % 3)
             {
-                case 0:
-                    Recoil();
+            case 0:
+                Recoil();
                 break;
-                case 1:
-                    StrafeLeft();
+            case 1:
+                StrafeLeft();
                 break;
-                case 2:
-                    StrafeRight();
+            case 2:
+                StrafeRight();
                 break;
             }
             return;
         }
-    }	
+    }
     fndCharacter = location->supervisor.FindCharacters(this, CHARACTER_ATTACK_DIST, 0.0f, 0.01f, 0.0f, false);
     if (fndCharacter.empty())
         return;
