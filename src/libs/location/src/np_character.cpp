@@ -863,9 +863,9 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     vd = core.Event("NPC_IsDodgeEnabled", "i", GetId());
     if (vd)
     {
-        vd->Get(IsDodgeEnabled);
+        vd->Get(isDodgeEnabled);
     }
-    if (IsDodgeEnabled)
+    if (isDodgeEnabled)
     {
         bool isEnemyFire = false;
         auto fndChr = location->supervisor.FindCharacters(this, 25.0f, 60.0f, 0.4f, 30.0f, false);
