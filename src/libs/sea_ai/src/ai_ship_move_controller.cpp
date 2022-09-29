@@ -65,7 +65,7 @@ void AIShipMoveController::Execute(float fDeltaTime)
     if (fabsf(fBrakingDistance - fDist) < 10.0f)
         fSpeed = 0.0f;
     GetAIShip()->GetSpeedController()->AddSpeed(fSpeed);
-    // pShip->SetSpeed(fSpeed);
+    // pShip->SetSailState(fSpeed);
 
     const auto fRotationAngle = pShip->GetRotationAngle(&fTime);
 

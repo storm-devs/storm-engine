@@ -164,6 +164,8 @@ class SHIP : public SHIP_BASE
         return bVisible;
     };
 
+    void InitSailState();
+
   public:
     ~SHIP() override;
     SHIP();
@@ -190,8 +192,8 @@ class SHIP : public SHIP_BASE
     void SetLightAndFog(bool bSetLight) override;
     void RestoreLightAndFog() override;
 
-    void SetSpeed(float fSpeed) override;
-    float GetSpeed() override;
+    void SetSailState(float fSpeed) override;
+    float GetSailState() override;
 
     void SetRotate(float fRotSpeed) override;
     float GetRotate() override;
