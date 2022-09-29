@@ -860,7 +860,7 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     auto *const location = GetLocation();
     const int32_t grpIndex = chrGroup->FindGroupIndex(group);
     int32_t isDodgeEnabled = 0;
-    vd = core.Event("NPC_IsDodgeEnabled", "i", GetId());
+    vd = core.Event("NPC_IsDodgeEnabled");
     if (vd)
     {
         vd->Get(isDodgeEnabled);
