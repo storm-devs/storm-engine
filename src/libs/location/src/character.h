@@ -26,7 +26,7 @@ class VSoundService;
 
 #define CHARACTER_ATTACK_DIST 2.4f // Maximum attack distance (m)
 #define CHARACTER_ATTACK_ANG 60.0f // Maximum angle of attack (degrees)
-#define CHARACTER_BLOCK_ANG 50.0f // Maximum angle of block (degrees)
+#define CHARACTER_BLOCK_ANG 50.0f  // Maximum angle of block (degrees)
 #define CHARACTER_MAX_JMP_STEPS 50
 
 class Character : public Entity
@@ -505,8 +505,8 @@ class Character : public Entity
     bool isNFHit;         // Out of combat mode
     float movecs;         // Cosine of the angle of inclination of the plane
     const char *deadName; // Death action name
-    int32_t jumpSound;       // The sound of clothing when jumping
-    int32_t recoilSound;     // The sound of recoil
+    int32_t jumpSound;    // The sound of clothing when jumping
+    int32_t recoilSound;  // The sound of recoil
 
     float noBlendTime;
 
@@ -559,44 +559,46 @@ class Character : public Entity
     ActionMove fightbackrun;  // Running back in combat mode
     // Attacks
     ActionCharacter attackFast[4];   // Rapid attacks
-    int32_t numAttackFast;              // Number of quick attacks
+    int32_t numAttackFast;           // Number of quick attacks
     ActionCharacter attackForce[4];  // Power attacks
-    int32_t numAttackForce;             // Number of power attacks
+    int32_t numAttackForce;          // Number of power attacks
     ActionCharacter attackRound[4];  // Circular attack
-    int32_t numAttackRound;             // Number of circular attacks
+    int32_t numAttackRound;          // Number of circular attacks
     ActionCharacter attackBreak[4];  // Providing attacks
-    int32_t numAttackBreak;             // Number of piercing attacks
+    int32_t numAttackBreak;          // Number of piercing attacks
     ActionCharacter attackFeint[4];  // Feint
     ActionCharacter attackFeintC[4]; // Attacking continuation of the feint
-    int32_t numAttackFeint;             // Number of feints
+    int32_t numAttackFeint;          // Number of feints
     ActionCharacter parry[4];        // Parry
-    int32_t numParry;                   // Number of parries
+    int32_t numParry;                // Number of parries
     // Remote attacks
     ActionCharacter shot; // Pistol shot
     // Reactions
     ActionCharacter hit[4];   // Character hit
-    int32_t numHits;             // Number of hit options
+    int32_t numHits;          // Number of hit options
     ActionCharacter hitFeint; // Reaction to feint
     ActionCharacter hitParry; // Parry reaction
     ActionCharacter hitRound; // Knockback reaction with a circular hit
     ActionCharacter hitFire;  // Shot reaction
     // Protection
-    ActionCharacter block;       // Block
-    ActionCharacter blockaxe;    // Block with an ax
-    ActionCharacter blockhit;    // Hitting a character in a block
-    ActionCharacter blockaxehit; // Hitting a character in a block with an ax
-    ActionCharacter blockbreak;  // Punching the block
-    ActionCharacter recoil;      // Bounce back
-    ActionCharacter strafe_l;    // Bounce to the left
-    ActionCharacter strafe_r;    // Bounce to the right
-    std::optional<int32_t> stunChance;             // Is the stun allowed after the enemy's blow
+    ActionCharacter block;             // Block
+    ActionCharacter blockaxe;          // Block with an ax
+    ActionCharacter blockhit;          // Hitting a character in a block
+    ActionCharacter blockaxehit;       // Hitting a character in a block with an ax
+    ActionCharacter blockbreak;        // Punching the block
+    ActionCharacter recoil;            // Bounce back
+    ActionCharacter strafe_l;          // Bounce to the left
+    ActionCharacter strafe_r;          // Bounce to the right
+    std::optional<int32_t> stunChance; // Is the stun allowed after the enemy's blow
     // Logical state
     FightAction fgtCurType;   // Current action type
-    int32_t fgtCurIndex;         // Current Activity Index
+    int32_t fgtCurIndex;      // Current Activity Index
     FightAction fgtSetType;   // Set action type
-    int32_t fgtSetIndex;         // Set action index
+    int32_t fgtSetIndex;      // Set action index
     bool isParryState;        // Parry condition
     bool isFeintState;        // Parry condition
+    bool isRecoilState;       // ability for dodging
+    bool isFireState;         // fire state to improve npc logic
     bool isFired;             // Is a shot fired
     bool isLockIdleForCamera; //
     float recoilWait;         // Delay after jump
@@ -705,8 +707,8 @@ class Character : public Entity
     };
 
     GrpTarget grpTargets[32]; // Goal list
-    int32_t numTargets;          // Number of targets
-    int32_t groupID;             // Group index for faster search
+    int32_t numTargets;       // Number of targets
+    int32_t groupID;          // Group index for faster search
     char group[128];          // Current group name
 
   private:

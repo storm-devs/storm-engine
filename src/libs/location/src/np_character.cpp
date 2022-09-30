@@ -323,7 +323,7 @@ void NPCharacter::Update(float dltTime)
                 if (atr->HasValue())
                 {
                     location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "tmpl(%s)",
-                                    static_cast<const char*>(atr->GetThisAttr()));
+                                    static_cast<const char *>(atr->GetThisAttr()));
                 }
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.type");
@@ -339,7 +339,7 @@ void NPCharacter::Update(float dltTime)
                 }
                 if (atr->HasValue())
                     location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "type(%s)",
-                                    static_cast<const char*>(atr->GetThisAttr()));
+                                    static_cast<const char *>(atr->GetThisAttr()));
             }
             atr = AttributesPointer->FindAClass(AttributesPointer, "chr_ai.group");
             if (atr)
@@ -858,11 +858,71 @@ void NPCharacter::DoFightActionAnalysisNone(float dltTime, NPCharacter *enemy)
     }
     // collect everyone around
     auto *const location = GetLocation();
+    const int32_t grpIndex = chrGroup->FindGroupIndex(group);
+    int32_t isDodgeEnabled = 0;
+    vd = core.Event("NPC_IsDodgeEnabled");
+    if (vd)
+    {
+        vd->Get(isDodgeEnabled);
+    }
+    if (isDodgeEnabled)
+    {
+        bool isEnemyFire = false;
+        auto fndChr = location->supervisor.FindCharacters(this, 25.0f, 60.0f, 0.4f, 30.0f, false);
+        if (!fndChr.empty())
+        {
+            for (size_t i = 0; i < fndChr.size(); i++)
+            {
+                Supervisor::FindCharacter &fc = fndChr[i];
+                auto chr = static_cast<NPCharacter *>(fc.c);
+                if (chr->liveValue < 0 || chr->deadName || fc.d2 <= 0.0f || chr == this)
+                    continue;
+                const int32_t grp = chrGroup->FindGroupIndex(chr->group);
+                if (chrGroup->FindRelation(grpIndex, grp).curState != CharactersGroups::rs_enemy)
+                    continue;
+                if (chr->isFireState)
+                {
+                    auto checkChr = location->supervisor.FindCharacters(chr, 25.0f, 15.0f, 0.4f, 30.0f, false);
+                    for (size_t j = 0; j < checkChr.size(); j++)
+                    {
+                        Supervisor::FindCharacter &fch = checkChr[j];
+                        auto chrAim = static_cast<NPCharacter *>(fch.c);
+                        if (chrAim == this)
+                        {
+                            isEnemyFire = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (isEnemyFire)
+        {
+            int32_t isDodge = 0;
+            vd = core.Event("NPC_IsDodge", "i", GetId());
+            if (vd)
+                vd->Get(isDodge);
+            if (isDodge)
+            {
+                switch (rand() % 3)
+                {
+                case 0:
+                    Recoil();
+                    break;
+                case 1:
+                    StrafeLeft();
+                    break;
+                case 2:
+                    StrafeRight();
+                    break;
+                }
+                return;
+            }
+        }
+    }
     auto fndCharacter = location->supervisor.FindCharacters(this, CHARACTER_ATTACK_DIST, 0.0f, 0.01f, 0.0f, false);
     if (fndCharacter.empty())
         return;
-    // our group
-    const int32_t grpIndex = chrGroup->FindGroupIndex(group);
     // Enemy table
     auto enemies = std::vector<EnemyState>();
     // Our direction
