@@ -338,6 +338,10 @@ void CXI_PCEDITBOX::UpdateString(std::string &str)
                         if (m_nEditPos > 0)
                             m_nEditPos--;
                         break;
+                    case VK_RIGHT:
+                        if (m_nEditPos < strLength)
+                            m_nEditPos++;
+                        break;
                     }
                 }
                 else
