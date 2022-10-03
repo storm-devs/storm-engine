@@ -127,4 +127,6 @@ class FILE_SERVICE : public VFILE_SERVICE
     void AddEntryToResourcePaths(const std::filesystem::directory_entry &entry, std::string &CheckingPath);
     void ScanResourcePaths() override;
     std::string ConvertPathResource(const char *path) override;
+
+    uint64_t GetPathFingerprint(const std::filesystem::path &path) override;
 };

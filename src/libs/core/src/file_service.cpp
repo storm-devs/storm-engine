@@ -512,6 +512,29 @@ std::string FILE_SERVICE::ConvertPathResource(const char *path)
 #endif
 }
 
+uint64_t FILE_SERVICE::GetPathFingerprint(const std::filesystem::path &path)
+{
+    uint64_t result = 0U;
+
+    if (exists(path))
+    {
+        if (is_directory(path))
+        {
+            for (const auto &entry : std::filesystem::directory_iterator(path))
+            {
+                result += GetPathFingerprint(entry);
+            }
+        }
+        else if (is_regular_file(path))
+        {
+            const auto timestamp = last_write_time(path).time_since_epoch().count();
+            result += timestamp;
+        }
+    }
+    
+    return result;
+}
+
 //=================================================================================================
 
 INIFILE_T::~INIFILE_T()

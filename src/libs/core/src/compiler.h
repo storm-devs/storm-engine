@@ -234,7 +234,7 @@ class COMPILER : public VIRTUAL_COMPILER
 
     void CopyOffsets(SEGMENT_DESC &Segment, STRINGS_LIST &srclist, STRINGS_LIST &dstlist, const char *sname);
 
-    void FormatDialog(char *file_name);
+    void FormatDialog(const char *file_name);
     void FormatAllDialog(const char *directory_name);
 
     // bool SetSaveData(const char * file_name, const char * save_data);
@@ -270,23 +270,23 @@ class COMPILER : public VIRTUAL_COMPILER
 private:
     [[nodiscard]] std::filesystem::path GetSegmentCachePath(const SEGMENT_DESC &segment) const;
 
+    uint64_t cache_fingerprint_{};
+    
     bool LoadSegmentFromCache(SEGMENT_DESC &segment);
-    bool LoadFilesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
-    void LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
-    void LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
-    void LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
-    void LoadScriptLibrariesFromCache(storm::script_cache::Reader &reader);
-    void LoadEventHandlersFromCache(storm::script_cache::Reader &reader);
-    void LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment);
+    void LoadDefinesFromCache(storm::script_cache::BufferReader &reader, SEGMENT_DESC &segment);
+    void LoadVariablesFromCache(storm::script_cache::BufferReader &reader, SEGMENT_DESC &segment);
+    void LoadFunctionsFromCache(storm::script_cache::BufferReader &reader, SEGMENT_DESC &segment);
+    void LoadScriptLibrariesFromCache(storm::script_cache::BufferReader &reader);
+    void LoadEventHandlersFromCache(storm::script_cache::BufferReader &reader);
+    void LoadByteCodeFromCache(storm::script_cache::BufferReader &reader, SEGMENT_DESC &segment);
 
     void SaveSegmentToCache(const SEGMENT_DESC &segment);
-    void SaveFilesToCache(storm::script_cache::Writer &writer);
-    void SaveDefinesToCache(storm::script_cache::Writer &writer);
-    void SaveVariablesToCache(storm::script_cache::Writer &writer);
-    void SaveFunctionsToCache(storm::script_cache::Writer &writer);
-    void SaveScriptLibrariesToCache(storm::script_cache::Writer &writer);
-    void SaveEventHandlersToCache(storm::script_cache::Writer &writer);
-    void SaveByteCodeToCache(storm::script_cache::Writer &writer, const SEGMENT_DESC &segment);
+    void SaveDefinesToCache(storm::script_cache::BufferWriter &writer);
+    void SaveVariablesToCache(storm::script_cache::BufferWriter &writer);
+    void SaveFunctionsToCache(storm::script_cache::BufferWriter &writer);
+    void SaveScriptLibrariesToCache(storm::script_cache::BufferWriter &writer);
+    void SaveEventHandlersToCache(storm::script_cache::BufferWriter &writer);
+    void SaveByteCodeToCache(storm::script_cache::BufferWriter &writer, const SEGMENT_DESC &segment);
 
     COMPILER_STAGE CompilerStage;
     STRINGS_LIST LabelTable;
@@ -366,6 +366,6 @@ private:
     storm::ringbuffer_stack<std::tuple<const char *, size_t, const char *>, CALLSTACK_SIZE> callStack_;
 
     // attempt to read/write script cache?
-    bool use_script_cache_;
+    int script_cache_mode_;
     storm::ScriptCache script_cache_;
 };
