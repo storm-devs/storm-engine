@@ -58,6 +58,8 @@ class CXI_TEXTBUTTON : public CINODE
     uint32_t m_dwPressedFaceColor; // active key color
     uint32_t m_dwFontColor;        // font color
     uint32_t m_dwUnselFontColor;   // font color for unavailable key
+    uint32_t m_dwPressedFontColor; // font color for pressed button
+    uint32_t m_dwSelectedFontColor;// font color for selected button
     float m_fFontScale;
 
     float m_fXShadow;      // X offset for normal key shadow
