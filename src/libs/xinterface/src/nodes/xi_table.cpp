@@ -159,7 +159,7 @@ void XI_TableCellDescribe::Draw(float fLeft, float fTop)
     {
         if (m_aStrings[n].offset.y != NOTUSE_OFFSET)
             fY = m_aStrings[n].offset.y;
-        const auto fNewY = fY + m_pTable->m_rs->CharHeight(m_nFontID) * m_fScale;
+        const auto fNewY = fY + m_pTable->m_rs->CharHeight(m_nFontID) * m_fScale * line_space_modifier;
         if (fNewY >= m_pLine->GetLineHeight())
             break; // no longer fits into the table
 
@@ -223,6 +223,7 @@ void XI_TableCellDescribe::SetData(int32_t nColIndex, ATTRIBUTES *pAttr, bool bH
     m_dwColor =
         pAttr->GetAttributeAsDword("color", bHeader ? m_pTable->m_dwFontTitleColor : m_pTable->m_dwFontCellColor);
     m_fScale = pAttr->GetAttributeAsFloat("scale", bHeader ? m_pTable->m_fFontTitleScale : m_pTable->m_fFontCellScale);
+    line_space_modifier = pAttr->GetAttributeAsFloat("line_space_modifier", 1.0);
     m_nFontID = bHeader ? m_pTable->m_nFontTitleID : m_pTable->m_nFontCellID;
     m_nFontIndex = pAttr->GetAttributeAsDword("fontidx", -1);
     if (m_nFontIndex < 0 || m_nFontIndex >= m_pTable->m_anFontList.size())
