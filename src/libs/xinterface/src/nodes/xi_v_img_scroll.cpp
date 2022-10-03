@@ -278,7 +278,7 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected, uint32_t Delta_Time)
                                     static_cast<int32_t>(pScroll->pCenter.y + m_pStrParam[l].m_nStrY),
                                     pStringService->GetString(m_Image[pScroll->imageNum].strNum[l]),
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
-                                    static_cast<int>(-24 * m_pStrParam[l].m_fScale));
+                                    static_cast<int>(-m_pStrParam[l].line_space * m_pStrParam[l].m_fScale));
                             else if (m_Image[pScroll->imageNum].strSelf[l] != nullptr)
                                 ptrOwner->PrintIntoWindow(
                                     m_rect.left - m_leftTextLimit, m_rect.right + m_rightTextLimit,
@@ -288,7 +288,7 @@ void CXI_VIMAGESCROLL::Draw(bool bSelected, uint32_t Delta_Time)
                                     static_cast<int32_t>(pScroll->pCenter.y + m_pStrParam[l].m_nStrY),
                                     m_Image[pScroll->imageNum].strSelf[l],
                                     static_cast<int>(m_ImageSize.x * pScroll->fCurScale),
-                                    static_cast<int>(-24 * m_pStrParam[l].m_fScale));
+                                    static_cast<int>(-m_pStrParam[l].line_space * m_pStrParam[l].m_fScale));
                         }
                         pScroll = pScroll->next;
                     }
@@ -429,6 +429,8 @@ void CXI_VIMAGESCROLL::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, 
         m_pStrParam[i].m_dwForeColor = GetIniARGB(ini1, name1, ini2, name2, param1, 0xFFFFFFFF);
         sprintf_s(param1, sizeof(param1), "dwBackColor%d", i + 1);
         m_pStrParam[i].m_dwBackColor = GetIniARGB(ini1, name1, ini2, name2, param1, 0);
+        sprintf_s(param1, sizeof(param1), "line_space%d", i + 1);
+        m_pStrParam[i].line_space = GetIniLong(ini1, name1, ini2, name2, param1, 24);
     }
 
     auto *pAttribute = core.Entity_GetAttributeClass(g_idInterface, m_nodeName);
