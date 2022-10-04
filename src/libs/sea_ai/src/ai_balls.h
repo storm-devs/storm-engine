@@ -24,6 +24,7 @@ struct BALL_PARAMS
     float fSizeMultiply;      // Size of ball multiply
     float fTimeSpeedMultiply; // Time speed multiply
     float fMaxFireDistance;
+    float fRawAng;
     uint32_t dwCannonType; // Additional parameter
 };
 
