@@ -1,7 +1,7 @@
 #include "compiler.h"
 
-#include <cstdio>
 #include <chrono>
+#include <cstdio>
 
 #include <zlib.h>
 
@@ -10,10 +10,11 @@
 #else
 #include "core_impl.h"
 #endif
+#include "debug-trap.h"
+#include "fs.h"
 #include "logging.hpp"
 #include "script_cache.h"
 #include "storm_assert.h"
-#include "debug-trap.h"
 
 #include <SDL_timer.h>
 #include <unordered_map>
@@ -29,13 +30,65 @@
 #define SBUPDATE 4
 #define DEF_COMPILE_EXPRESSIONS
 
-
 #ifdef _WIN32 // S_DEBUG
 namespace
 {
 S_DEBUG s_debug;
 }
 #endif
+
+namespace
+{
+enum CacheMode : int
+{
+    kCacheDisabled = 0,             // Disable script caching
+    kCacheEnabled = 1,              // Enable script caching and integrity checks
+    kCacheEnabledNoRuntimeCheck = 2 // Enable script caching; only check integrity once - should be used if no
+                                    // changes(e.g. in the interface scripts) are expected during the session
+};
+
+auto GetCacheFolder()
+{
+    static std::filesystem::path cache_folder = fs::GetStashPath() / "Cache";
+    return cache_folder;
+}
+constexpr auto kCacheStateFile = "state";
+
+bool ReadCacheFingerprint(uint64_t &fingerprint)
+{
+    std::ifstream cache_state(GetCacheFolder() / kCacheStateFile, std::ifstream::binary);
+    if (!cache_state)
+    {
+        return false;
+    }
+    cache_state.exceptions(std::ifstream::badbit | std::ifstream::eofbit);
+
+    uint64_t cache_fingerprint;
+    try
+    {
+        cache_state.read(reinterpret_cast<char *>(&cache_fingerprint), sizeof(cache_fingerprint));
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    fingerprint = cache_fingerprint;
+    return true;
+}
+
+void WipeCache(const uint64_t fingerprint)
+{
+    remove_all(GetCacheFolder());
+    create_directory(GetCacheFolder());
+    std::ofstream cache_state(GetCacheFolder() / kCacheStateFile, std::ofstream::binary);
+    if (cache_state)
+    {
+        cache_state.write(reinterpret_cast<const char *>(&fingerprint), sizeof(fingerprint));
+    }
+}
+
+} // namespace
 
 // extern char * FuncNameTable[];
 extern INTFUNCDESC IntFuncTable[];
@@ -49,13 +102,14 @@ using std::chrono::milliseconds;
 using std::chrono::system_clock;
 
 COMPILER::COMPILER()
-    : bBreakOnError(false), pRunCodeBase(nullptr), CompilerStage(CS_SYSTEM), pEventMessage(nullptr), SegmentsNum(0), InstructionPointer(0),
-      pBuffer(nullptr), ProgramDirectory(nullptr), bCompleted(false), bEntityUpdate(true),
-      pDebExpBuffer(nullptr), nDebExpBufferSize(0), pRun_fi(nullptr), bRuntimeLog(false), nRuntimeLogEventsBufferSize(0),
-      nRuntimeLogEventsNum(0), nRuntimeTicks(0), bFirstRun(true), bWriteCodeFile(false),
+    : bBreakOnError(false), pRunCodeBase(nullptr), CompilerStage(CS_SYSTEM), pEventMessage(nullptr), SegmentsNum(0),
+      InstructionPointer(0), pBuffer(nullptr), ProgramDirectory(nullptr), bCompleted(false), bEntityUpdate(true),
+      pDebExpBuffer(nullptr), nDebExpBufferSize(0), pRun_fi(nullptr), bRuntimeLog(false),
+      nRuntimeLogEventsBufferSize(0), nRuntimeLogEventsNum(0), nRuntimeTicks(0), bFirstRun(true), bWriteCodeFile(false),
       bDebugInfo(false), DebugSourceLine(0), pCompileTokenTempBuffer(nullptr), bDebugExpressionRun(false),
-      bTraceMode(true), nDebugTraceLineCode(0), nIOBufferSize(0), pIOBuffer(nullptr), rAP(nullptr), use_script_cache_(false)
-    
+      bTraceMode(true), nDebugTraceLineCode(0), nIOBufferSize(0), pIOBuffer(nullptr), rAP(nullptr),
+      script_cache_mode_(kCacheDisabled)
+
 {
     LabelTable.SetStringDataSize(sizeof(uint32_t));
     LabelUpdateTable.SetStringDataSize(sizeof(DOUBLE_DWORD));
@@ -405,7 +459,11 @@ void COMPILER::LoadPreprocess()
         else
             bRuntimeLog = true;
 
-        use_script_cache_ = engine_ini->GetInt("script", "use_cache", false);
+        script_cache_mode_ = engine_ini->GetInt("script", "cache_mode", kCacheDisabled);
+        if (script_cache_mode_ < kCacheDisabled || script_cache_mode_ > kCacheEnabledNoRuntimeCheck)
+        {
+            script_cache_mode_ = kCacheDisabled;
+        }
 
         // if(engine_ini->GetInt("script","tracefiles",0) == 0) bScriptTrace = false;
         // else bScriptTrace = true;
@@ -724,7 +782,8 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
     RDTSC_E(dwRDTSC);
 
     // VANO CHANGES - remove in release
-    if (core_internal.Controls->GetDebugAsyncKeyState('5') < 0 && core_internal.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
+    if (core_internal.Controls->GetDebugAsyncKeyState('5') < 0 &&
+        core_internal.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
     {
         core_internal.Trace("evnt: %d, %s", dwRDTSC, event_name);
     }
@@ -854,11 +913,30 @@ bool COMPILER::BC_LoadSegment(const char *file_name)
 
     SegmentTable[index].Files_list = new STRINGS_LIST;
     SegmentTable[index].Files_list->SetStringDataSize(sizeof(OFFSET_INFO));
-    auto result = false;
-    if (use_script_cache_)
+    bool result = false;
+    if (script_cache_mode_ != kCacheDisabled)
     {
-        // attempt to load from cache first
-        result = LoadSegmentFromCache(SegmentTable[index]);
+        static bool is_calculated;
+        static uint64_t calculated_fingerprint;
+        if (!is_calculated)
+        {
+            is_calculated = true;
+            calculated_fingerprint = fio->GetPathFingerprint(ProgramDirectory);
+        }
+        else if (script_cache_mode_ == kCacheEnabled)
+        {
+            calculated_fingerprint = fio->GetPathFingerprint(ProgramDirectory);
+        }
+
+        if (ReadCacheFingerprint(cache_fingerprint_) && cache_fingerprint_ == calculated_fingerprint)
+        {
+            // attempt to load from cache first
+            result = LoadSegmentFromCache(SegmentTable[index]);
+        }
+        else
+        {
+            WipeCache(calculated_fingerprint);
+        }
     }
 
     if (!result)
@@ -1239,10 +1317,9 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
         pProgram = nullptr;
         Program_size = 0;
         pSegmentSource = LoadFile(file_name, SegmentSize);
-        if (is_new && use_script_cache_)
+        if (is_new && script_cache_mode_ != kCacheDisabled)
         {
             script_cache_.files.emplace_back(file_name);
-            script_cache_.crc = storm::script_cache::ComputeCRC(0, {pSegmentSource, SegmentSize});
         }
         AppendProgram(pProgram, Program_size, pSegmentSource, SegmentSize, true);
         Segment.pData = pProgram;
@@ -1337,10 +1414,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
             //-----------------------------------------------------
             // check if already loaded
             auto name = std::string_view(Token.GetData());
-            auto comparator = [name](const auto &library)
-            {
-                return storm::iEquals(library.name, name);
-            };
+            auto comparator = [&name](const auto &library) { return storm::iEquals(library.name, name); };
 
             if (std::ranges::find_if(LibriaryFuncs, comparator) != LibriaryFuncs.end())
             {
@@ -1360,7 +1434,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                 pLib->Init();
 
             LibriaryFuncs.emplace_back(pLib, Token.GetData());
-            if (use_script_cache_)
+            if (script_cache_mode_ != kCacheDisabled)
             {
                 script_cache_.script_libs.emplace_back(Token.GetData());
             }
@@ -1378,11 +1452,9 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     SetError("can't load file: %s", Token.GetData());
                     return false;
                 }
-                if (use_script_cache_)
+                if (script_cache_mode_ != kCacheDisabled)
                 {
                     script_cache_.files.emplace_back(Token.GetData());
-                    script_cache_.crc =
-                        storm::script_cache::ComputeCRC(script_cache_.crc, {pApend_file, Append_file_size});
                 }
                 if (bDebugInfo)
                 {
@@ -1448,7 +1520,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     SetError("define redefinition: %s", di.name);
                     return false;
                 }
-                if (use_script_cache_)
+                if (script_cache_mode_ != kCacheDisabled)
                 {
                     script_cache_.defines.emplace_back(storm::script_cache::Define{di.name, di.deftype, di.data4b});
                 }
@@ -1535,7 +1607,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
 
                             return false;
                         }
-                        if (use_script_cache_)
+                        if (script_cache_mode_ != kCacheDisabled)
                         {
                             script_cache_.functions.emplace_back(storm::script_cache::Function{
                                 fi, std::vector<storm::script_cache::FunctionLocalVariable>{}});
@@ -1759,7 +1831,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                             }
                         }
 
-                        if (use_script_cache_)
+                        if (script_cache_mode_ != kCacheDisabled)
                         {
                             auto &cached_var = script_cache_.variables.emplace_back(vi);
                             cached_var.value = std::make_unique<DATA>();
@@ -1781,7 +1853,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                     else
                         FuncTab.AddFuncArg(func_code, lvi);
 
-                    if (use_script_cache_)
+                    if (script_cache_mode_ != kCacheDisabled)
                     {
                         script_cache_.functions.back().arguments.emplace_back(
                             storm::script_cache::FunctionLocalVariable{lvi, bExtern});
@@ -1847,7 +1919,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
                         return false;
                     }
 
-                    if (use_script_cache_)
+                    if (script_cache_mode_ != kCacheDisabled)
                     {
                         script_cache_.functions.back().local_variables.emplace_back(lvi);
                     }
@@ -1931,7 +2003,7 @@ bool COMPILER::Compile(SEGMENT_DESC &Segment, char *pInternalCode, uint32_t pInt
             fio->_CloseFile(fileS);
         }
     }
-    if (use_script_cache_)
+    if (script_cache_mode_ != kCacheDisabled)
     {
         SaveSegmentToCache(Segment);
     }
@@ -2168,7 +2240,7 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
                 }
                 // SetEventHandler(gs,Token.GetData(),1,true);
                 SetEventHandler(gs, Token.GetData(), 0, true);
-                if (use_script_cache_)
+                if (script_cache_mode_ != kCacheDisabled)
                 {
                     script_cache_.event_handlers.emplace_back(storm::script_cache::EventHandler{gs, Token.GetData()});
                 }
@@ -4338,8 +4410,8 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             SetError("Incorrect instruction code");
             return false;
 
-        case CALL:                                               // undetermined function call
-            vtype = BC_TokenGet();                               // read variable
+        case CALL:                                                  // undetermined function call
+            vtype = BC_TokenGet();                                  // read variable
             var_code = *((int32_t *)&pRunCodeBase[TLR_DataOffset]); // var code
             if (vtype == VARIABLE)
             {
@@ -6577,7 +6649,7 @@ bool COMPILER::SaveState(std::fstream &fileS)
     const uint32_t nVarNum = VarTab.GetVarNum();
     WriteVDword(nVarNum);
 
-    const VarInfo *last_var{ nullptr };
+    const VarInfo *last_var{nullptr};
     for (n = 0; n < nVarNum; n++)
     {
         const VarInfo *real_var = VarTab.GetVar(n);
@@ -6649,11 +6721,11 @@ bool COMPILER::LoadState(std::fstream &fileS)
 
     // save specific data (name, time, etc)
     // DWORD nSDataSize = ReadVDword();
-    // if(nSDataSize) ReadData(0,nSDataSize);
+    // if(nSDataSize) Read(0,nSDataSize);
 
     // skip ext data header
     // EXTDATA_HEADER edh;
-    // ReadData(&edh, sizeof(edh));
+    // Read(&edh, sizeof(edh));
 
     // 1. Program Directory
     ProgramDirectory = ReadString();
@@ -6849,7 +6921,7 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, int32_t data_
 //    hSaveFileFileHandle = fh;
 
     // read save header
-    ReadData(&exdh,sizeof(exdh));
+    Read(&exdh,sizeof(exdh));
 
     // calc org data size
     if(exdh.dwExtDataSize != 0)
@@ -6871,7 +6943,7 @@ bool COMPILER::SetSaveData(const char *file_name, void *save_data, int32_t data_
     }
 
     // buffering org data
-    ReadData(pOrgData,dwOrgDataSize);
+    Read(pOrgData,dwOrgDataSize);
 
     fio->_CloseHandle(fh);
 
@@ -6983,7 +7055,7 @@ void *COMPILER::GetSaveData(const char *file_name, int32_t &data_size)
     // read save header
 
     memset(&exdh,0,sizeof(exdh));
-    if(!ReadData(&exdh,sizeof(exdh)))
+    if(!Read(&exdh,sizeof(exdh)))
     {
         fio->_CloseHandle(fh);
         return 0;
@@ -7016,7 +7088,7 @@ void *COMPILER::GetSaveData(const char *file_name, int32_t &data_size)
     }
 
     // read ext data
-    ReadData(pExtData,exdh.dwExtDataSize);
+    Read(pExtData,exdh.dwExtDataSize);
 
     // cleanup
     fio->_CloseHandle(fh);
@@ -7229,17 +7301,17 @@ void COMPILER::PrintoutUsage()
     }
 }
 
-void COMPILER::LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+void COMPILER::LoadVariablesFromCache(storm::script_cache::BufferReader &reader, SEGMENT_DESC &segment)
 {
-    const auto size = *reader.ReadData<size_t>();
+    const auto size = reader.Read<size_t>();
     for (size_t i = 0; i < size; ++i)
     {
         auto vi = VarInfo();
 
         vi.segment_id = segment.id;
-        vi.name = reader.ReadBytes();
-        vi.type = *reader.ReadData<decltype(vi.type)>();
-        vi.elements = *reader.ReadData<decltype(vi.elements)>();
+        vi.name = reader.ReadArray();
+        vi.type = reader.Read<decltype(vi.type)>();
+        vi.elements = reader.Read<decltype(vi.elements)>();
 
         const auto var_code = VarTab.AddVar(vi);
         const auto real_var = VarTab.GetVarX(var_code);
@@ -7258,58 +7330,58 @@ void COMPILER::LoadVariablesFromCache(storm::script_cache::Reader &reader, SEGME
     }
 }
 
-void COMPILER::LoadFunctionsFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+void COMPILER::LoadFunctionsFromCache(storm::script_cache::BufferReader &reader, SEGMENT_DESC &segment)
 {
-    const auto size = *reader.ReadData<size_t>();
+    const auto size = reader.Read<size_t>();
     for (size_t i = 0; i < size; ++i)
     {
         auto fi = FuncInfo();
         fi.segment_id = segment.id;
 
-        fi.name = reader.ReadBytes();
-        fi.offset = *reader.ReadData<decltype(fi.offset)>();
-        fi.return_type = *reader.ReadData<decltype(fi.return_type)>();
-        fi.decl_file_name = reader.ReadBytes();
-        fi.decl_line = *reader.ReadData<decltype(fi.decl_line)>();
+        fi.name = reader.ReadArray();
+        fi.offset = reader.Read<decltype(fi.offset)>();
+        fi.return_type = reader.Read<decltype(fi.return_type)>();
+        fi.decl_file_name = reader.ReadArray();
+        fi.decl_line = reader.Read<decltype(fi.decl_line)>();
 
         auto func_code = FuncTab.AddFunc(fi);
 
         // args
-        auto count = *reader.ReadData<size_t>();
+        auto count = reader.Read<size_t>();
         for (size_t j = 0; j < count; ++j)
         {
             auto lvi = LocalVarInfo();
 
-            lvi.name = reader.ReadBytes();
-            lvi.type = *reader.ReadData<decltype(lvi.type)>();
-            lvi.elements = *reader.ReadData<decltype(lvi.elements)>();
+            lvi.name = reader.ReadArray();
+            lvi.type = reader.Read<decltype(lvi.type)>();
+            lvi.elements = reader.Read<decltype(lvi.elements)>();
 
-            auto is_extern = reader.ReadData<bool>();
+            auto is_extern = reader.Read<bool>();
 
-            FuncTab.AddFuncArg(func_code, lvi, *is_extern);
+            FuncTab.AddFuncArg(func_code, lvi, is_extern);
         }
 
         // local variables
-        count = *reader.ReadData<size_t>();
+        count = reader.Read<size_t>();
         for (size_t j = 0; j < count; ++j)
         {
             auto lvi = LocalVarInfo();
 
-            lvi.name = reader.ReadBytes();
-            lvi.type = *reader.ReadData<decltype(lvi.type)>();
-            lvi.elements = *reader.ReadData<decltype(lvi.elements)>();
+            lvi.name = reader.ReadArray();
+            lvi.type = reader.Read<decltype(lvi.type)>();
+            lvi.elements = reader.Read<decltype(lvi.elements)>();
 
             FuncTab.AddFuncVar(func_code, lvi);
         }
     }
 }
 
-void COMPILER::LoadScriptLibrariesFromCache(storm::script_cache::Reader &reader)
+void COMPILER::LoadScriptLibrariesFromCache(storm::script_cache::BufferReader &reader)
 {
-    const auto size = *reader.ReadData<size_t>();
+    const auto size = reader.Read<size_t>();
     for (size_t i = 0; i < size; ++i)
     {
-        auto name = std::string(reader.ReadBytes());
+        auto name = std::string(reader.ReadArray());
 
         auto cls = core_internal.FindVMA(name.c_str());
         if (!cls)
@@ -7328,21 +7400,21 @@ void COMPILER::LoadScriptLibrariesFromCache(storm::script_cache::Reader &reader)
     }
 }
 
-void COMPILER::LoadEventHandlersFromCache(storm::script_cache::Reader &reader)
+void COMPILER::LoadEventHandlersFromCache(storm::script_cache::BufferReader &reader)
 {
-    const auto size = *reader.ReadData<size_t>();
+    const auto size = reader.Read<size_t>();
     for (size_t i = 0; i < size; ++i)
     {
-        auto event = std::string(reader.ReadBytes());
-        auto name = std::string(reader.ReadBytes());
+        auto event = std::string(reader.ReadArray());
+        auto name = std::string(reader.ReadArray());
 
         SetEventHandler(event.c_str(), name.c_str(), 0, true);
     }
 }
 
-void COMPILER::LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+void COMPILER::LoadByteCodeFromCache(storm::script_cache::BufferReader &reader, SEGMENT_DESC &segment)
 {
-    const auto code = reader.ReadBytes();
+    const auto code = reader.ReadArray();
     segment.BCode_Program_size = segment.BCode_Buffer_size = code.size();
     segment.pCode = new char[segment.BCode_Buffer_size];
     std::ranges::copy(code, segment.pCode);
@@ -7352,38 +7424,37 @@ void COMPILER::LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMEN
     auto variables = std::unordered_map<uint32_t, std::string>();
     auto functions = std::unordered_map<uint32_t, std::string>();
 
-    auto size = *reader.ReadData<size_t>();
+    auto size = reader.Read<size_t>();
     strings.reserve(size);
     for (size_t i = 0; i < size; ++i)
     {
-        auto string_code = *reader.ReadData<uint32_t>();
-        auto string = reader.ReadBytes();
+        auto string_code = reader.Read<uint32_t>();
+        auto string = reader.ReadArray();
         strings.emplace(string_code, string);
     }
 
-    size = *reader.ReadData<size_t>();
+    size = reader.Read<size_t>();
     variables.reserve(size);
     for (size_t i = 0; i < size; ++i)
     {
-        auto variable_code = *reader.ReadData<uint32_t>();
-        auto name = reader.ReadBytes();
+        auto variable_code = reader.Read<uint32_t>();
+        auto name = reader.ReadArray();
         variables.emplace(variable_code, name);
     }
 
-    size = *reader.ReadData<size_t>();
+    size = reader.Read<size_t>();
     functions.reserve(size);
     for (size_t i = 0; i < size; ++i)
     {
-        auto function_code = *reader.ReadData<uint32_t>();
-        auto name = reader.ReadBytes();
+        auto function_code = reader.Read<uint32_t>();
+        auto name = reader.ReadArray();
         functions.emplace(function_code, name);
     }
 
     // apply relocations
     pRunCodeBase = segment.pCode;
     InstructionPointer = 0;
-    auto token_type = S_TOKEN_TYPE();
-
+    S_TOKEN_TYPE token_type = END_OF_PROGRAMM;
     do
     {
         token_type = BC_TokenGet();
@@ -7409,17 +7480,17 @@ void COMPILER::LoadByteCodeFromCache(storm::script_cache::Reader &reader, SEGMEN
 
 std::filesystem::path COMPILER::GetSegmentCachePath(const SEGMENT_DESC &segment) const
 {
-    auto path = std::filesystem::path(ProgramDirectory) / "__cache__" / segment.name;
+    auto path = GetCacheFolder() / segment.name;
     path.replace_extension(".b");
     return path;
 }
 
-void COMPILER::SaveVariablesToCache(storm::script_cache::Writer &writer)
+void COMPILER::SaveVariablesToCache(storm::script_cache::BufferWriter &writer)
 {
     writer.WriteData(script_cache_.variables.size());
     for (auto &vi : script_cache_.variables)
     {
-        writer.WriteBytes(vi.name);
+        writer.WriteArray(vi.name);
         writer.WriteData(vi.type);
         writer.WriteData(vi.elements);
 
@@ -7437,21 +7508,21 @@ void COMPILER::SaveVariablesToCache(storm::script_cache::Writer &writer)
     }
 }
 
-void COMPILER::SaveFunctionsToCache(storm::script_cache::Writer &writer)
+void COMPILER::SaveFunctionsToCache(storm::script_cache::BufferWriter &writer)
 {
     writer.WriteData(script_cache_.functions.size());
     for (auto &[fi, arguments, local_variables] : script_cache_.functions)
     {
-        writer.WriteBytes(fi.name);
+        writer.WriteArray(fi.name);
         writer.WriteData(fi.offset);
         writer.WriteData(fi.return_type);
-        writer.WriteBytes(fi.decl_file_name);
+        writer.WriteArray(fi.decl_file_name);
         writer.WriteData(fi.decl_line);
 
         writer.WriteData(arguments.size());
         for (auto &[lvi, is_extern] : arguments)
         {
-            writer.WriteBytes(lvi.name);
+            writer.WriteArray(lvi.name);
             writer.WriteData(lvi.type);
             writer.WriteData(lvi.elements);
             writer.WriteData(is_extern);
@@ -7460,36 +7531,36 @@ void COMPILER::SaveFunctionsToCache(storm::script_cache::Writer &writer)
         writer.WriteData(local_variables.size());
         for (auto &lvi : local_variables)
         {
-            writer.WriteBytes(lvi.name);
+            writer.WriteArray(lvi.name);
             writer.WriteData(lvi.type);
             writer.WriteData(lvi.elements);
         }
     }
 }
 
-void COMPILER::SaveScriptLibrariesToCache(storm::script_cache::Writer &writer)
+void COMPILER::SaveScriptLibrariesToCache(storm::script_cache::BufferWriter &writer)
 {
     writer.WriteData(script_cache_.script_libs.size());
     for (auto &lib_name : script_cache_.script_libs)
     {
-        writer.WriteBytes(lib_name);
+        writer.WriteArray(lib_name);
     }
 }
 
-void COMPILER::SaveEventHandlersToCache(storm::script_cache::Writer &writer)
+void COMPILER::SaveEventHandlersToCache(storm::script_cache::BufferWriter &writer)
 {
     writer.WriteData(script_cache_.event_handlers.size());
     for (auto &[event, handler] : script_cache_.event_handlers)
     {
-        writer.WriteBytes(event);
-        writer.WriteBytes(handler);
+        writer.WriteArray(event);
+        writer.WriteArray(handler);
     }
 }
 
-void COMPILER::SaveByteCodeToCache(storm::script_cache::Writer &writer, const SEGMENT_DESC &segment)
+void COMPILER::SaveByteCodeToCache(storm::script_cache::BufferWriter &writer, const SEGMENT_DESC &segment)
 {
     auto code = std::string_view(segment.pCode, segment.pCode + segment.BCode_Program_size);
-    writer.WriteBytes(code);
+    writer.WriteArray(code);
 
     // relocations
     auto strings = std::unordered_map<uint32_t, std::string>();
@@ -7525,21 +7596,21 @@ void COMPILER::SaveByteCodeToCache(storm::script_cache::Writer &writer, const SE
     for (auto &[string_code, string] : strings)
     {
         writer.WriteData(string_code);
-        writer.WriteBytes(string);
+        writer.WriteArray(string);
     }
 
     writer.WriteData(variables.size());
     for (auto &[variable_code, name] : variables)
     {
         writer.WriteData(variable_code);
-        writer.WriteBytes(name);
+        writer.WriteArray(name);
     }
 
     writer.WriteData(functions.size());
     for (auto &[function_code, name] : functions)
     {
         writer.WriteData(function_code);
-        writer.WriteBytes(name);
+        writer.WriteArray(name);
     }
 }
 
@@ -7547,17 +7618,13 @@ void COMPILER::SaveSegmentToCache(const SEGMENT_DESC &segment)
 {
     const auto path = GetSegmentCachePath(segment);
     create_directories(path.parent_path());
-    auto stream = std::ofstream(path, std::ios::binary);
-
-    if (!stream.is_open())
+    std::ofstream stream(path, std::ios::binary);
+    if (!stream)
     {
         return;
     }
 
-    auto writer = storm::script_cache::Writer();
-
-    // save files lists and total crc
-    SaveFilesToCache(writer);
+    storm::script_cache::BufferWriter writer;
 
     // defines (in case of new compiled code depending on defines from cache)
     SaveDefinesToCache(writer);
@@ -7577,33 +7644,16 @@ void COMPILER::SaveSegmentToCache(const SEGMENT_DESC &segment)
     // bytecode
     SaveByteCodeToCache(writer, segment);
 
-    auto &data = writer.GetData();
-
-    // save cache's crc first in case of file corruption
-    const auto cache_crc = storm::script_cache::ComputeCRC(0, {data.data(), data.size()});
-    stream.write(reinterpret_cast<const char *>(&cache_crc), sizeof(cache_crc));
-
-    stream.write(data.data(), data.size());
+    const auto data = writer.GetDataBuffer();
+    stream.write(std::data(data), std::size(data));
 }
 
-void COMPILER::SaveFilesToCache(storm::script_cache::Writer &writer)
-{
-    // save crc for verification
-    writer.WriteData(script_cache_.crc);
-
-    writer.WriteData(script_cache_.files.size());
-    for (auto &file_name : script_cache_.files)
-    {
-        writer.WriteBytes(file_name);
-    }
-}
-
-void COMPILER::SaveDefinesToCache(storm::script_cache::Writer &writer)
+void COMPILER::SaveDefinesToCache(storm::script_cache::BufferWriter &writer)
 {
     writer.WriteData(script_cache_.defines.size());
     for (auto &[name, type, value] : script_cache_.defines)
     {
-        writer.WriteBytes(name);
+        writer.WriteArray(name);
         writer.WriteData(type);
         switch (type)
         {
@@ -7616,7 +7666,7 @@ void COMPILER::SaveDefinesToCache(storm::script_cache::Writer &writer)
             break;
 
         case STRING:
-            writer.WriteBytes(reinterpret_cast<const char*>(value));
+            writer.WriteArray(reinterpret_cast<const char *>(value));
             break;
         }
     }
@@ -7631,37 +7681,21 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
     }
 
     const auto cache_size = file_size(path);
-    if (cache_size < sizeof(uint32_t))
+    if (cache_size == 0)
     {
         return false;
     }
 
-    auto stream = std::ifstream(path, std::ios::binary);
-
-    if (!stream.is_open())
+    std::ifstream stream(path, std::ios::binary);
+    if (!stream)
     {
         return false;
     }
 
-    auto data = std::vector<char>(cache_size);
-    stream.read(data.data(), cache_size);
+    std::vector<char> data(cache_size);
+    stream.read(std::data(data), cache_size);
 
-    const auto &cache_crc = *reinterpret_cast<uint32_t*>(data.data());
-    const auto data_view = std::string_view(data.begin() + sizeof(cache_crc), data.end());
-
-    const auto computed_crc = storm::script_cache::ComputeCRC(0, data_view);
-    if (cache_crc != computed_crc)
-    {
-        return false;
-    }
-
-    auto reader = storm::script_cache::Reader(data_view);
-
-    // verify that script files were not modified
-    if (!LoadFilesFromCache(reader, segment))
-    {
-        return false;
-    }
+    storm::script_cache::BufferReader reader(std::move(data));
 
     // defines (in case of new compiled code depending on defines from cache)
     LoadDefinesFromCache(reader, segment);
@@ -7684,48 +7718,30 @@ bool COMPILER::LoadSegmentFromCache(SEGMENT_DESC &segment)
     return true;
 }
 
-bool COMPILER::LoadFilesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
+void COMPILER::LoadDefinesFromCache(storm::script_cache::BufferReader &reader, SEGMENT_DESC &segment)
 {
-    const auto loaded_crc = *reader.ReadData<uint32_t>();
-    auto computed_crc = uint32_t();
-
-    const auto files_count = *reader.ReadData<size_t>();
-    for (size_t i = 0; i < files_count; ++i)
-    {
-        auto file_name = std::string(reader.ReadBytes());
-        auto file_size = uint32_t();
-        auto file_data = LoadFile(file_name.c_str(), file_size);
-        computed_crc = storm::script_cache::ComputeCRC(computed_crc, {file_data, file_size});
-        delete[] file_data;
-    }
-
-    return computed_crc == loaded_crc;
-}
-
-void COMPILER::LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT_DESC &segment)
-{
-    const auto size = *reader.ReadData<size_t>();
+    const auto size = reader.Read<size_t>();
     for (size_t i = 0; i < size; ++i)
     {
         auto di = DEFINFO();
 
         di.segment_id = segment.id;
-        auto name = std::string(reader.ReadBytes());
+        auto name = std::string(reader.ReadArray());
         di.name = const_cast<char *>(name.c_str());
-        di.deftype = *reader.ReadData<uint32_t>();
+        di.deftype = reader.Read<uint32_t>();
 
         switch (di.deftype)
         {
         case NUMBER:
-            di.data4b = static_cast<uintptr_t>(*reader.ReadData<int32_t>());
+            di.data4b = static_cast<uintptr_t>(reader.Read<int32_t>());
             break;
 
         case FLOAT_NUMBER:
-            di.data4b = static_cast<uintptr_t>(*reader.ReadData<float>());
+            di.data4b = static_cast<uintptr_t>(reader.Read<float>());
             break;
 
         case STRING: {
-            auto value = reader.ReadBytes();
+            auto value = reader.ReadArray();
             const auto new_ptr = new char[value.size() + 1];
             std::ranges::copy(value, new_ptr);
             new_ptr[value.size()] = '\0';
@@ -7741,15 +7757,13 @@ void COMPILER::LoadDefinesFromCache(storm::script_cache::Reader &reader, SEGMENT
 void COMPILER::FormatAllDialog(const char *directory_name)
 {
     const auto vPaths = fio->_GetPathsOrFilenamesByMask(directory_name, "*.c", true);
-    char sFileName[MAX_PATH];
-    for (std::string curPath : vPaths)
+    for (const std::string &curPath : vPaths)
     {
-        sprintf(sFileName, curPath.c_str());
-        FormatDialog(sFileName);
+        FormatDialog(curPath.c_str());
     }
 }
 
-void COMPILER::FormatDialog(char *file_name)
+void COMPILER::FormatDialog(const char *file_name)
 {
     uint32_t FileSize;
     TOKEN Token;
@@ -7804,7 +7818,7 @@ void COMPILER::FormatDialog(char *file_name)
         if (file_name[n] == '\\')
             break;
     }
-    sprintf_s(sFileName, "DIALOGS%s", static_cast<char *>(file_name + n));
+    sprintf_s(sFileName, "DIALOGS%s", file_name + n);
     sFileName[strlen(sFileName) - 1] = 0;
     strcat_s(sFileName, "h");
 
