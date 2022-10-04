@@ -33,7 +33,7 @@ void AIShipSpeedController::Execute(float fDeltaTime)
         fSpeedSmooth = Clamp(fSpeedSmooth / static_cast<float>(dwSpeedNum));
         if (fSpeedSmooth > fTopSpeed)
             fSpeedSmooth = fTopSpeed;
-        GetAIShip()->GetShipBasePointer()->SetSpeed(fGlobalMultiply * fSpeed);
+        GetAIShip()->GetShipBasePointer()->SetSailState(fGlobalMultiply * fSpeed);
         fSpeedTime = 0.0f;
         fSpeedSmooth = 0.0f;
         dwSpeedNum = 0;

@@ -209,7 +209,7 @@ void AIShipTouchController::Execute(float fDeltaTime)
         fClosed *= 1.6f;
         fSpeedFactor = 1.0f - fClosed / (aTouchRays.size() / 2.0f);
         fSpeedFactor = CLAMP(fSpeedFactor);
-        // pShip->SetSpeed(fSpeedFactor);
+        // pShip->SetSailState(fSpeedFactor);
     }
     else
     {
