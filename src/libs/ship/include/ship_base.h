@@ -61,8 +61,8 @@ class SHIP_BASE : public VAI_OBJBASE
     virtual float GetMaxSpeedY() = 0;
     virtual float GetWindAgainst() = 0;
 
-    virtual void SetSpeed(float fSpeed) = 0;
-    virtual float GetSpeed() = 0;
+    virtual void SetSailState(float fSpeed) = 0;
+    virtual float GetSailState() = 0;
 
     virtual void SetRotate(float fRotSpeed) = 0;
     virtual float GetRotate() = 0;
