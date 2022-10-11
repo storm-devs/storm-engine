@@ -334,9 +334,9 @@ void WdmShip::UpdateWaterMark(float dltTime)
     if (ka > 1.0f)
         ka = 1.0f;
     float ks = inrtSize * dltTime;
-    if (ks > 10.0f)
-        ks = 10.0f;
     ks *= modelW05 * 1.33f;
+    if (ks > 1.0f)
+        ks = 1.0f;
     for (int32_t i = 1; i < WDM_SHIP_WMSZ; i++)
     {
         lines[i].x += (lines[i - 1].x - lines[i].x) * kp;

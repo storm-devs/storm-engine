@@ -83,42 +83,6 @@ WorldMap::WorldMap() : rs{}, aDate{}
 
 WorldMap::~WorldMap()
 {
-    if (AttributesPointer)
-    {
-        AttributesPointer->SetAttribute("WindData", wdmObjects->GetWindSaveString(bufForSave));
-    }
-    // leave the encounter parameters intact
-    for (int32_t i = 0; i < wdmObjects->ships.size(); i++)
-    {
-        if (wdmObjects->ships[i] == wdmObjects->playerShip)
-            continue;
-        static_cast<WdmEnemyShip *>(wdmObjects->ships[i])->SetSaveAttribute(nullptr);
-    }
-    for (int32_t i = 0; i < wdmObjects->storms.size(); i++)
-    {
-        wdmObjects->storms[i]->SetSaveAttribute(nullptr);
-    }
-    // Player's ship
-    if (wdmObjects->playerShip)
-    {
-        float x, z, ay;
-        wdmObjects->playerShip->GetPosition(x, z, ay);
-        AttributesPointer->CreateSubAClass(AttributesPointer, "playerShipX");
-        AttributesPointer->CreateSubAClass(AttributesPointer, "playerShipZ");
-        AttributesPointer->CreateSubAClass(AttributesPointer, "playerShipAY");
-        AttributesPointer->SetAttributeUseFloat("playerShipX", x);
-        AttributesPointer->SetAttributeUseFloat("playerShipZ", z);
-        AttributesPointer->SetAttributeUseFloat("playerShipAY", ay);
-    }
-    // Camera
-    if (wdmObjects->camera)
-    {
-        AttributesPointer->CreateSubAClass(AttributesPointer, "wdmCameraY");
-        AttributesPointer->CreateSubAClass(AttributesPointer, "wdmCameraAY");
-        AttributesPointer->SetAttributeUseFloat("wdmCameraY", wdmObjects->camera->pos.y);
-        AttributesPointer->SetAttributeUseFloat("wdmCameraAY", wdmObjects->camera->ang.y);
-    }
-    ResetScriptInterfaces();
     /*for(; firstObject >= 0; firstObject = object[firstObject].next)
     {
       delete object[firstObject].ro;
@@ -495,7 +459,11 @@ void WorldMap::Realize(uint32_t delta_time)
         strcpy_s(wdmObjects->attrYear, tmp);
     //---------------------------------------------------------
     if (camera && !wdmObjects->isPause)
+    {
         camera->Move(dltTime, rs);
+        AttributesPointer->SetAttributeUseFloat("wdmCameraY", camera->pos.y);
+        AttributesPointer->SetAttributeUseFloat("wdmCameraAY", camera->ang.y);
+    }
     auto isKill = false;
     // execute all objects
     for (auto i = firstObject; i >= 0; i = object[i].next)

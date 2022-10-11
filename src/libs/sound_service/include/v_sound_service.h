@@ -1,20 +1,64 @@
 #pragma once
 
 #include "c_vector.h"
+#include "service.h"
 #include "sound_defines.h"
 #include "v_sound_service.h"
-#include "service.h"
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////
 // DEFINES & TYPES
 ///////////////////////////////////////////////////////////////////
 
-using TSD_ID = int32_t;
+class TSD_ID
+{
+  public:
+    TSD_ID() : id_(0xFFFFFFFF)
+    {
+    }
+
+    TSD_ID(uint32_t id) : id_(id)
+    {
+    }
+
+    TSD_ID(int32_t id) : id_(id)
+    {
+    }
+
+    bool master()
+    {
+        return id_ == 0;
+    }
+
+    uint16_t index() const
+    {
+        return (id_ & 0xFFFF) - 1;
+    }
+
+    uint16_t stamp() const
+    {
+        return (id_ >> 16) & 0xFFFF;
+    }
+
+    static TSD_ID createId(uint16_t index)
+    {
+        static uint16_t stamp_counter;
+        return (index + 1) | (static_cast<uint32_t>(++stamp_counter) << 16);
+    }
+
+    operator int32_t()
+    {
+        return id_;
+    }
+
+  private:
+    uint32_t id_;
+};
 
 using tSoundStatistics = struct
 {
-    int32_t soundsCount, maxSoundsCount, bytesInBuffers, maxBytesInBuffers, bytesCached, maxBytesCached, totalMem, freeMem;
+    int32_t soundsCount, maxSoundsCount, bytesInBuffers, maxBytesInBuffers, bytesCached, maxBytesCached, totalMem,
+        freeMem;
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -40,7 +84,7 @@ class VSoundService : public SERVICE
                              bool _simpleCache = false, // cache only, not play
                              bool _looped = false,      // looped?
                              bool _cached = false,      // unload after stoppping?
-                             int32_t _time = 0,            // fade in, if _time > 0
+                             int32_t _time = 0,         // fade in, if _time > 0
                              const CVECTOR *_startPosition = nullptr, float _minDistance = -1.0f,
                              float _maxDistance = -1.0f, int32_t _loopPauseTime = 0, float _volume = 1.0f,
                              int32_t _prior = 128) = 0;

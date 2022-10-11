@@ -203,6 +203,7 @@ void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
                 nEditVarIndex = pA->GetAttributeAsDword("edit", 0);
                 nEditCharIndex = 0;
             }
+            Assert(pA->HasValue());
             AddToStringArrayLimitedByWidth(pA->GetValue(), nFontID, fScale, nWindowWidth, asText, RenderService,
                                            nullptr, 100);
             anLineEndIndex.push_back(asText.size());
@@ -784,8 +785,6 @@ void DIALOG::AddToStringArrayLimitedByWidth(const std::string_view &text, int32_
                                             VDX9RENDER *renderService, std::vector<int32_t> *panPageIndices,
                                             int32_t nPageSize)
 {
-    if (text.empty())
-        return;
     if (nLimitWidth < 20)
         nLimitWidth = 20;
 
