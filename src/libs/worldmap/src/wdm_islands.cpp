@@ -382,7 +382,8 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         // Check for sufficiency
         if (!id || !text || !locator || !locator[0])
         {
-            core.Trace("World map: label \"%s\" will be skipping...", apnt->GetAttributeName(i));
+            const std::string message = fmt::format("World map: label \"{}\" will be skipping...", apnt->GetAttributeName(i));
+            core.Trace(message.c_str());
             continue;
         }
         // looking for a label among existing
@@ -392,8 +393,9 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
         {
             if (!LabelsFindLocator(locator, pos))
             {
-                core.Trace("World map: locator \"%s\" in label \"%s\" not found...", locator,
-                           apnt->GetAttributeName(i));
+
+                const std::string message = fmt::format("World map: locator \"{}\" in label \"{}\" not found...", locator, apnt->GetAttributeName(i));
+                core.Trace(message.c_str());
                 continue;
             }
             // Adding a new label

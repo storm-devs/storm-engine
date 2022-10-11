@@ -757,7 +757,9 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
                 if (pRoot == nullptr)
                 {
                     value->Set("");
-                    SetError("missed attribute: %s", SCodec.Convert(*((int32_t *)&pRunCodeBase[TLR_DataOffset])).data());
+                    std::string error_message = fmt::format(
+                        "missed attribute: {}", SCodec.Convert(*((int32_t *)&pRunCodeBase[TLR_DataOffset])));
+                    SetError(error_message.c_str());
                     while (TokenType() == ACCESS_WORD_CODE || TokenType() == ACCESS_WORD || TokenType() == ACCESS_VAR)
                     {
                         BC_TokenGet();
@@ -768,7 +770,9 @@ void COMPILER::BC_ProcessExpression_L7(DATA *value, bool bSkip)
                 if (pRoot == nullptr)
                 {
                     value->Set("");
-                    SetError("missed attribute: %s", SCodec.Convert(*((int32_t *)&pRunCodeBase[TLR_DataOffset])).data());
+                    std::string error_message = fmt::format(
+                        "missed attribute: {}", SCodec.Convert(*((int32_t *)&pRunCodeBase[TLR_DataOffset])));
+                    SetError(error_message.c_str());
                     while (TokenType() == ACCESS_WORD_CODE || TokenType() == ACCESS_WORD || TokenType() == ACCESS_VAR)
                     {
                         BC_TokenGet();

@@ -73,32 +73,26 @@ int32_t BIUtils::GetTextureFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *
     return rs->TextureCreate(sname);
 }
 
-bool BIUtils::ReadRectFromAttr(ATTRIBUTES *pA, const char *name, FRECT &rOut, FRECT &rDefault)
+bool BIUtils::ReadRectFromAttr(ATTRIBUTES *pA, const std::string_view &name, FRECT &rOut, FRECT &rDefault)
 {
     rOut = rDefault;
-    if (pA && name)
+    if (pA)
     {
-        const char *pcStr = pA->GetAttribute(name);
-        if (pcStr)
-        {
-            sscanf(pcStr, "%f,%f,%f,%f", &rOut.left, &rOut.top, &rOut.right, &rOut.bottom);
-            return true;
-        }
+        const std::string str_value = pA->GetAttribute(name);
+        sscanf(str_value.c_str(), "%f,%f,%f,%f", &rOut.left, &rOut.top, &rOut.right, &rOut.bottom);
+        return true;
     }
     return false;
 }
 
-bool BIUtils::ReadRectFromAttr(ATTRIBUTES *pA, const char *name, RECT &rOut, RECT &rDefault)
+bool BIUtils::ReadRectFromAttr(ATTRIBUTES *pA, const std::string_view &name, RECT &rOut, RECT &rDefault)
 {
     rOut = rDefault;
-    if (pA && name)
+    if (pA)
     {
-        const char *pcStr = pA->GetAttribute(name);
-        if (pcStr)
-        {
-            sscanf(pcStr, "%d,%d,%d,%d", &rOut.left, &rOut.top, &rOut.right, &rOut.bottom);
-            return true;
-        }
+        const std::string str_value = pA->GetAttribute(name);
+        sscanf(str_value.c_str(), "%d,%d,%d,%d", &rOut.left, &rOut.top, &rOut.right, &rOut.bottom);
+        return true;
     }
     return false;
 }

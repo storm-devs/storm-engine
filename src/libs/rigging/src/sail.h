@@ -187,7 +187,7 @@ class SAIL : public SAIL_BASE
     void DeleteSailGroup();
     int FindGroupForCharacter(int chrIdx) const;
     int GetCharacterForGroup(int grNum) const;
-    SAILONE *FindSailFromData(int gn, const char *nodeName, const char *grName) const;
+    SAILONE *FindSailFromData(int gn, const std::string_view &nodeName, const std::string_view &grName) const;
     void SetSailTextures(int32_t grNum, VDATA *pvd) const;
     void DoRandomsSailsDmg(int chrIdx, int gn, float fDmg);
     void GetSailStatus(int chrIdx, int gn);

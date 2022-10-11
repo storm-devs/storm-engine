@@ -2452,11 +2452,16 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pA = pV->GetAClass();
         if (pA)
-            pChar = pA->GetThisName();
+        {
+            const auto attr_name = std::string(pA->GetThisName());
+            pV = SStack.Push();
+            pV->Set(attr_name.c_str());
+        }
         else
-            pChar = "AClass ERROR n1";
-        pV = SStack.Push();
-        pV->Set(pChar);
+        {
+            pV = SStack.Push();
+            pV->Set("AClass ERROR n1");
+        }
         pVResult = pV;
         return pV;
     case FUNC_DUMP_ATTRIBUTES:
@@ -2566,7 +2571,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
 
         std::sort(std::execution::seq, std::begin(pA->attributes_), std::end(pA->attributes_),
                   [](const std::unique_ptr<ATTRIBUTES> &lhs, const std::unique_ptr<ATTRIBUTES> &rhs) {
-                      return strcmp(lhs->GetThisName(), rhs->GetThisName()) < 0;
+                      return lhs->GetThisName().compare(rhs->GetThisName()) < 0;
                   });
 
         break;
@@ -2588,7 +2593,9 @@ void COMPILER::DumpAttributes(ATTRIBUTES *pA, int32_t level)
 
     for (uint32_t n = 0; n < pA->GetAttributesNum(); n++)
     {
-        DTrace("%s%s = %s", buffer, pA->GetAttributeName(n), static_cast<const char*>(pA->GetAttribute(n)));
+        const auto attr_name = std::string(pA->GetAttributeName(n));
+        const auto attr_value = to_string(pA->GetAttribute(n));
+        DTrace("%s%s = %s", buffer, attr_name.c_str(), attr_value.c_str());
         DumpAttributes(pA->GetAttributeClass(pA->GetAttributeName(n)), level + 2);
     }
 }

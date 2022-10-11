@@ -48,7 +48,7 @@ class WdmEnemyShip : public WdmShip
     bool canSkip;
 
     // Get attribute name
-    const char *GetAttributeName() const;
+    std::string_view GetAttributeName() const;
 
   protected:
     // Find the pulling force in the desired direction

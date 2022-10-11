@@ -40,8 +40,8 @@ class ATTRIBUTES final
 
     void SetBreak(bool set_break);
     [[nodiscard]] ATTRIBUTES *GetParent() const;
-    bool operator==(const char *str) const;
-    [[nodiscard]] const char *GetThisName() const;
+    bool operator==(const std::string_view &str) const;
+    [[nodiscard]] std::string_view GetThisName() const;
     [[nodiscard]] bool HasValue() const noexcept;
     [[nodiscard]] const std::string &GetValue() const;
     [[nodiscard]] LegacyProxy GetThisAttr() const;
@@ -54,7 +54,7 @@ class ATTRIBUTES final
     [[nodiscard]] ATTRIBUTES *VerifyAttributeClass(const std::string_view &name);
     [[nodiscard]] LegacyProxy GetAttribute(size_t n) const;
     [[nodiscard]] LegacyProxy GetAttribute(const std::string_view &name) const;
-    [[nodiscard]] const char *GetAttributeName(size_t n) const;
+    [[nodiscard]] std::string_view GetAttributeName(size_t n) const;
     [[nodiscard]] uint32_t GetAttributeAsDword(const char *name = nullptr, uint32_t def = 0) const;
     [[nodiscard]] uintptr_t GetAttributeAsPointer(const char *name = nullptr, uintptr_t def = 0) const;
     [[nodiscard]] float GetAttributeAsFloat(const char *name = nullptr, float def = 0) const;
