@@ -4,14 +4,14 @@
 
 #include "ai_flow_graph.h"
 #include "character.h"
-#include "track.h"
 #include "math_inlines.h"
-#include "ship_lights.h"
 #include "shared/mast_msg.h"
 #include "shared/messages.h"
 #include "shared/sail_msg.h"
 #include "shared/sea_ai/script_defines.h"
 #include "shared/sound.h"
+#include "ship_lights.h"
+#include "track.h"
 
 CREATE_CLASS(SHIP)
 
@@ -32,7 +32,7 @@ SHIP::SHIP()
     uniIDX = 0;
     bUse = false;
     bDead = false;
-    fSailState = 0.0f;
+    fSailState = NAN;
     bShip2Strand = false;
     bSetLightAndFog = false;
     iNumMasts = 0;
@@ -67,6 +67,28 @@ SHIP::SHIP()
 
     bModelUpperShip = false;
     pModelUpperShip = nullptr;
+}
+
+void SHIP::InitSailState()
+{
+    // some legacy stuff
+    // should've been done from scripts
+    float fNewSailState = 0.0f;
+    ATTRIBUTES *pAShipStopped = GetACharacter()->FindAClass(GetACharacter(), "ship.stopped");
+    if (pAShipStopped && pAShipStopped->GetAttributeAsDword())
+    {
+        fNewSailState = 0.0f;
+    }
+    else
+    {
+        auto *pASpeedZ = GetACharacter()->FindAClass(GetACharacter(), "Ship.Speed.z");
+        if (pASpeedZ && pASpeedZ->GetAttributeAsFloat() > 0.0f)
+        {
+            fNewSailState = 1.0f;
+        }
+    }
+
+    SetSailState(fNewSailState);
 }
 
 SHIP::~SHIP()
@@ -1204,11 +1226,11 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         LoadPositionFromAttributes();
         break;
     case MSG_SHIP_SET_SAIL_STATE:
-        SetSpeed(message.Float());
+        SetSailState(message.Float());
         break;
     case MSG_SHIP_GET_SAIL_STATE: {
         auto *pV = message.ScriptVariablePointer();
-        pV->Set(GetSpeed());
+        pV->Set(GetSailState());
     }
     break;
     case MSG_SHIP_SET_POS:
@@ -1296,10 +1318,12 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         // boal 20.08.06 redrawing the flag -->
     case MSG_SHIP_FLAG_REFRESH:
         core.Send_Message(flag_id, "li", MSG_FLAG_DEL_GROUP, GetModelEID());
-        if (flagEntity_ != invalid_entity) {
+        if (flagEntity_ != invalid_entity)
+        {
             flag_id = flagEntity_;
         }
-        else {
+        else
+        {
             flag_id = core.GetEntityId("flag");
         }
         if (flag_id)
@@ -1308,7 +1332,8 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         // boal 20.08.06 redrawing the flag <--
     case MSG_SHIP_SET_CUSTOM_FLAG: {
         const entid_t flag_entity = message.EntityID();
-        if (flag_entity != invalid_entity) {
+        if (flag_entity != invalid_entity)
+        {
             flagEntity_ = flag_entity;
         }
         break;
@@ -1377,7 +1402,8 @@ void SHIP::FakeFire(const char *sBort, float fRandTime)
                 CVECTOR vDirTemp = mRot * vDir;
                 float fDir = NormalizeAngle(atan2f(vDirTemp.x, vDirTemp.z));
 
-                core.PostEvent("Ship_FakeFire", (uint32_t)(1000 * fRandTime * rand() / RAND_MAX), "ffff", vCurPos.x, vCurPos.y, vCurPos.z, fDir); 
+                core.PostEvent("Ship_FakeFire", (uint32_t)(1000 * fRandTime * rand() / RAND_MAX), "ffff", vCurPos.x,
+                               vCurPos.y, vCurPos.z, fDir);
             }
         }
         dwIdx++;
@@ -1401,6 +1427,11 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     Assert(_pAShip);
     pAShip = _pAShip;
 
+    if (isnan(fSailState))
+    {
+        InitSailState();
+    }
+
     core.Event("Ship_StartLoad", "a", GetACharacter());
     core.Event(SEA_GET_LAYERS, "i", GetId());
 
@@ -1417,8 +1448,9 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     {
         core.Trace("SHIP::Mount : Can't find attribute name in ShipsTypes %d, char: %d, %s, %s, %s",
                    GetAShip()->GetAttributeAsDword("index"), GetACharacter()->GetAttributeAsDword("index"),
-                   static_cast<const char*>(GetACharacter()->GetAttribute("name")), static_cast<const char*>(GetACharacter()->GetAttribute("lastname")),
-                   static_cast<const char*>(GetACharacter()->GetAttribute("id")));
+                   static_cast<const char *>(GetACharacter()->GetAttribute("name")),
+                   static_cast<const char *>(GetACharacter()->GetAttribute("lastname")),
+                   static_cast<const char *>(GetACharacter()->GetAttribute("id")));
         // GetACharacter()->Dump(GetACharacter(), 0);
         bMounted = false;
         return false;
@@ -1426,15 +1458,7 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
 
     strcpy_s(cShipIniName, pName);
 
-    // core.Trace("Create ship with type = %s", cShipIniName);
-
-    auto *pASpeedZ = GetACharacter()->FindAClass(GetACharacter(), "Ship.Speed.z");
-    float fNewSailState = (pASpeedZ) ? pASpeedZ->GetAttributeAsFloat() : 0.0f;
-    ATTRIBUTES *pAShipStopped = GetACharacter()->FindAClass(GetACharacter(), "ship.stopped");
-    if (pAShipStopped && pAShipStopped->GetAttributeAsDword())
-        fNewSailState = 0.0f;
-    SetSpeed(fNewSailState);
-
+    // TODO: wtf?
     uniIDX = GetACharacter()->GetAttributeAsDword("index");
     if (uniIDX >= 900)
         uniIDX = uniIDX - 900 + 2;
@@ -1456,17 +1480,19 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
 
     // sails
     if (sail_id = core.GetEntityId("sail"))
-        core.Send_Message(sail_id, "liil", MSG_SAIL_INIT, GetId(), GetModelEID(), GetSpeed() ? 1 : 0);
+        core.Send_Message(sail_id, "liil", MSG_SAIL_INIT, GetId(), GetModelEID(), GetSailState() ? 1 : 0);
 
     // ropes
     if (rope_id = core.GetEntityId("rope"))
         core.Send_Message(rope_id, "lii", MSG_ROPE_INIT, GetId(), GetModelEID());
 
     // flags
-    if (flagEntity_ != invalid_entity) {
+    if (flagEntity_ != invalid_entity)
+    {
         flag_id = flagEntity_;
     }
-    else {
+    else
+    {
         flag_id = core.GetEntityId("flag");
     }
     if (flag_id)
@@ -1494,7 +1520,6 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
 
     const entid_t temp_id = GetId();
     core.Send_Message(touch_id, "li", MSG_SHIP_CREATE, temp_id);
-    // TODO: this is wrong
     core.Send_Message(sea_id, "lic", MSG_SHIP_CREATE, temp_id,
                       CVECTOR(State.vPos.x + fXOffset, State.vPos.y, State.vPos.z + fZOffset));
 
@@ -1563,7 +1588,8 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
         pShipsLights->AddLights(this, GetModel(), bLights, bFlares);
         pShipsLights->ProcessStage(Stage::execute, 0);
     }
-    else {
+    else
+    {
         spdlog::warn("Mounted ship with no active ShipsLights");
     }
 
@@ -1573,9 +1599,9 @@ bool SHIP::Mount(ATTRIBUTES *_pAShip)
     if (pFDay && pFNight)
         ((bLights) ? pFDay : pFNight)->flags &= (~NODE::VISIBLE);
 
-    if(bLights && bFlares) 
+    if (bLights && bFlares)
     {
-        const auto pShipsLights = static_cast<IShipLights *>(core.GetEntityPointer(shipLights));	
+        const auto pShipsLights = static_cast<IShipLights *>(core.GetEntityPointer(shipLights));
         pShipsLights->ResetLights(this, bLights);
     }
 
@@ -1785,8 +1811,8 @@ float SHIP::Cannon_Trace(int32_t iBallOwner, const CVECTOR &vSrc, const CVECTOR 
                 {
                     const CVECTOR v1 = vSrc + fRes * (vDst - vSrc);
 
-                    VDATA *pV = core.Event(SHIP_HULL_DAMAGE, "llffffas", SHIP_HULL_TOUCH_BALL, pM->iHullNum, v1.x,
-                                           v1.y, v1.z, pM->fDamage, GetACharacter(), pM->pNode->GetName());
+                    VDATA *pV = core.Event(SHIP_HULL_DAMAGE, "llffffas", SHIP_HULL_TOUCH_BALL, pM->iHullNum, v1.x, v1.y,
+                                           v1.z, pM->fDamage, GetACharacter(), pM->pNode->GetName());
                     if (pV)
                     {
                         pM->fDamage = Clamp(pV->GetFloat());
@@ -1798,7 +1824,7 @@ float SHIP::Cannon_Trace(int32_t iBallOwner, const CVECTOR &vSrc, const CVECTOR 
                     }
                 }
             }
-        }
+    }
 
     float fRes = pModel->Trace(vSrc, vDst);
     if (fRes <= 1.0f)
@@ -1879,12 +1905,12 @@ void SHIP::SetPos(const CVECTOR &vNewPos)
     RecalculateWorldOffset();
 }
 
-void SHIP::SetSpeed(float fSpeed)
+void SHIP::SetSailState(float fSpeed)
 {
     fSailState = fSpeed;
 }
 
-float SHIP::GetSpeed()
+float SHIP::GetSailState()
 {
     return fSailState;
 }
