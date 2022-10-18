@@ -122,10 +122,11 @@ class CXI_VIMAGESCROLL : public CINODE
         float m_fScale;
         int m_nFont;
         int m_nAlign;           // alignment string
-        int32_t m_nStrX;           // Offset from rectangle center for X coordinate
-        int32_t m_nStrY;           // Offset from top rectangle of list for Y coordinate of string1
+        int32_t m_nStrX;        // Offset from rectangle center for X coordinate
+        int32_t m_nStrY;        // Offset from top rectangle of list for Y coordinate of string1
         uint32_t m_dwForeColor; // Font foreground color for first string
         uint32_t m_dwBackColor; // Font background color for first string
+        int32_t line_space;     // Space between lines
     };
 
     int32_t m_nStringQuantity;

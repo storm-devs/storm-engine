@@ -1989,6 +1989,9 @@ uint32_t SEA::AttributeChanged(ATTRIBUTES *pAttribute)
         fAmp2 = _fAmp2 * fScale;
     }
 
+    if (*pAttribute == "MaxDim")        { dwMaxDim = pAttribute->GetAttributeAsDword(); return 0; }
+    if (*pAttribute == "MinDim")        { dwMinDim = pAttribute->GetAttributeAsDword(); return 0; }
+
     if (*pAttribute == "MaxSeaDistance")
     {
         fMaxSeaDistance = AttributesPointer->GetAttributeAsFloat("MaxSeaDistance");
