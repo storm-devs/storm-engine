@@ -53,6 +53,9 @@ jobs:
         export CXX=clang++-${{matrix.clang_version}}
         ${CXX} --version
         mkdir build && cd build
+        conan profile new default --detect
+        conan profile update conf.tools.system.package_manager:mode=install default
+        conan profile update conf.tools.system.package_manager:sudo=True default
         cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.configuration}}
     - name: Build dependencies
       run: ninja dependencies
