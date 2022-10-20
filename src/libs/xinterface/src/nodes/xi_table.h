@@ -57,6 +57,7 @@ class XI_TableCellDescribe
     float m_fScale;
     int32_t m_nAlignment;
     int32_t m_nVAlignment;
+    float line_space_modifier;
 
     int32_t m_nLeftLineWidth;
     int32_t m_nTopLineHeight;

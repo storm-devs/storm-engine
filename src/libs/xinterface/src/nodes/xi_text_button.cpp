@@ -185,7 +185,7 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
         if (m_idString != -1 || m_sString != nullptr)
             if (m_nPressedDelay > 0)
             {
-                m_rs->ExtPrint(m_nFontNum, m_dwFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
+                m_rs->ExtPrint(m_nFontNum, m_dwPressedFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
                                m_screenSize.y, (m_rect.left + m_rect.right) / 2 + static_cast<int>(m_fXDeltaPress),
                                m_rect.top + m_dwStrOffset + static_cast<int>(m_fYDeltaPress), "%s",
                                m_idString != -1 ? pStringService->GetString(m_idString) : m_sString);
@@ -193,9 +193,20 @@ void CXI_TEXTBUTTON::Draw(bool bSelected, uint32_t Delta_Time)
             else
             {
                 if (m_bSelected)
-                    m_rs->ExtPrint(m_nFontNum, m_dwFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
-                                   m_screenSize.y, (m_rect.left + m_rect.right) / 2, m_rect.top + m_dwStrOffset, "%s",
-                                   m_idString != -1 ? pStringService->GetString(m_idString) : m_sString);
+                {
+                    if(m_bCurrentSelected)
+                    {    
+                        m_rs->ExtPrint(m_nFontNum, m_dwSelectedFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
+                                       m_screenSize.y, (m_rect.left + m_rect.right) / 2, m_rect.top + m_dwStrOffset, "%s",
+                                       m_idString != -1 ? pStringService->GetString(m_idString) : m_sString);
+                    }
+                    else
+                    {
+                        m_rs->ExtPrint(m_nFontNum, m_dwFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale, m_screenSize.x,
+                                       m_screenSize.y, (m_rect.left + m_rect.right) / 2, m_rect.top + m_dwStrOffset, "%s",
+                                       m_idString != -1 ? pStringService->GetString(m_idString) : m_sString);
+            }
+    }
                 else
                     m_rs->ExtPrint(m_nFontNum, m_dwUnselFontColor, 0, PR_ALIGN_CENTER, true, m_fFontScale,
                                    m_screenSize.x, m_screenSize.y, (m_rect.left + m_rect.right) / 2,
@@ -235,6 +246,12 @@ void CXI_TEXTBUTTON::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, co
 
     // get font color
     m_dwFontColor = GetIniARGB(ini1, name1, ini2, name2, "fontColor", ARGB(255, 255, 255, 255));
+
+    // get font color for pressed button
+    m_dwPressedFontColor = GetIniARGB(ini1, name1, ini2, name2, "fontColorPressed", m_dwFontColor);
+
+    // get font color for selected button
+    m_dwSelectedFontColor = GetIniARGB(ini1, name1, ini2, name2, "fontColorSelected", m_dwFontColor);
 
     m_fFontScale = GetIniFloat(ini1, name1, ini2, name2, "fontScale", 1.f);
 

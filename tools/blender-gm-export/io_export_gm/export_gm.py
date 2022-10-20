@@ -315,6 +315,8 @@ def export_gm(context, file_path="", triangulate=False):
     x_is_mirrored = not is_animated
 
     bpy.context.scene.frame_set(0)
+	
+    bpy.context.scene.cursor.location = root.location
 
     for object in objects:
         if bpy.context.view_layer.objects.get(object.name):
@@ -323,6 +325,10 @@ def export_gm(context, file_path="", triangulate=False):
             bpy.ops.uv.select_all(action='SELECT')
             bpy.ops.uv.seams_from_islands()
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+			
+            object.select_set(True)
+            bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+            object.select_set(False)
 
     bpy.context.view_layer.objects.active = root
 
