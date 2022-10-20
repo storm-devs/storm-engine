@@ -6073,6 +6073,7 @@ ATTRIBUTES *COMPILER::TraceARoot(ATTRIBUTES *pA, const char *&pAccess)
     char *pAS = new char[slen];
 
     std::copy(std::begin(attr_name), std::end(attr_name), pAS);
+    pAS[slen - 1] = '\0';
 
     if (pAccess == nullptr)
     {

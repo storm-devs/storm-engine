@@ -2636,6 +2636,7 @@ uint32_t XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
                 throw std::runtime_error("Allocate memory error");
             }
             std::copy(std::begin(sImageName), std::end(sImageName), pImList->sImageName);
+            pImList->sImageName[len - 1] = '\0';
             // insert that into images list
             pImList->next = m_imgLists;
             m_imgLists = pImList;
@@ -3569,6 +3570,7 @@ void CONTROLS_CONTAINER::AddControlsToContainer(const char *container, const std
     if (!pCont->pControls->controlName)
         throw std::runtime_error("allocate memory error");
     std::copy(std::begin(controlName), std::end(controlName), pCont->pControls->controlName);
+    pCont->pControls->controlName[len - 1] = '\0';
 }
 
 CONTROLS_CONTAINER::CONTEINER_DESCR *CONTROLS_CONTAINER::FindContainer(const char *sContainer)
