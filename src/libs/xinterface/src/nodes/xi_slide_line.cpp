@@ -184,12 +184,18 @@ void CXI_SLIDELINE::DoMouseControl()
     if (m_bDoChangeSlider)
     {
         if (fmp.x < m_rect.left + m_nBaseLeft)
-            SetNewValue(0);
+        {    
+            SetNewValue(m_nCurValue - 1);
+        }    
         else if (fmp.x > m_rect.right - m_nBaseLeft)
-            SetNewValue(m_nGrateQuantity);
+        {    
+            SetNewValue(m_nCurValue + 1);
+        }    
         else
+        {    
             SetNewValue(static_cast<int32_t>((fmp.x - m_rect.left - m_nBaseLeft) /
                                           (m_rect.right - m_rect.left - m_nBaseLeft - m_nBaseLeft) * m_nGrateQuantity));
+        }
     }
 }
 
