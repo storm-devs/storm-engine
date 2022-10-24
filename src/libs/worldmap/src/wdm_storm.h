@@ -35,7 +35,7 @@ class WdmStorm : public WdmRenderObject
     void Update(float dltTime) override;
     void LRender(VDX9RENDER *rs) override;
 
-    const char *GetId() const;
+    std::string_view GetId() const;
 
   public:
     // Setting parameters

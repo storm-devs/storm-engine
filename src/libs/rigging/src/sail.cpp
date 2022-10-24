@@ -2084,16 +2084,13 @@ void sailPrint(VDX9RENDER *rs, const CVECTOR &pos3D, float rad, int32_t line, co
                  static_cast<int32_t>(vrt.y), buf);
 }
 
-SAILONE *SAIL::FindSailFromData(int gn, const char *nodeName, const char *grName) const
+SAILONE *SAIL::FindSailFromData(int gn, const std::string_view &nodeName, const std::string_view &grName) const
 {
-    if (nodeName == nullptr || grName == nullptr)
-        return nullptr;
-    int grNum;
-    sscanf(grName, "%d", &grNum);
+    int grNum = std::stoi(std::string(grName));
     for (int i = 0; i < gdata[gn].sailQuantity; i++)
     {
         const int sn = gdata[gn].sailIdx[i];
-        if (slist[sn]->hostNode != nullptr && strcmp(slist[sn]->hostNode->GetName(), nodeName) == 0 &&
+        if (slist[sn]->hostNode != nullptr && nodeName.compare(slist[sn]->hostNode->GetName()) == 0 &&
             slist[sn]->groupNum == grNum)
             return slist[sn];
     }

@@ -1099,15 +1099,12 @@ uint32_t DIALOG::AttributeChanged(ATTRIBUTES *pA)
     ATTRIBUTES *par = pA->GetParent();
     if (par != nullptr)
     {
-        const char *parname = par->GetThisName();
-        if (parname != nullptr && storm::iEquals(parname, "Links"))
+        if (storm::iEquals(par->GetThisName(), "Links"))
             parLinks = true;
     }
 
-    const char *nm = pA->GetThisName();
-
     // play sound d.speech
-    if (!parLinks && nm && storm::iEquals(nm, "greeting")) // was "snd"
+    if (!parLinks && storm::iEquals(pA->GetThisName(), "greeting")) // was "snd"
     {
         strcpy_s(soundName, pA->GetThisAttr());
         if (start)

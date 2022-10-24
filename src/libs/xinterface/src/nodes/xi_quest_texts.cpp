@@ -343,9 +343,6 @@ void CXI_QUESTTEXTS::StartQuestShow(ATTRIBUTES *pA, int qn)
 
     const auto cFlag = pAttr->GetAttributeAsDword("Complete", 0) != 0;
     auto *pATextList = pAttr->GetAttributeClass("Text");
-    const char *questLogName = pAttr->GetAttribute("LogName");
-    if (!questLogName)
-        questLogName = pAttr->GetThisName();
 
     std::vector<std::string> asStringList;
     if (ptrOwner->QuestFileReader() && pATextList)

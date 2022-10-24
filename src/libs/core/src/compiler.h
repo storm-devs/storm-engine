@@ -4,7 +4,9 @@
 #include <tuple>
 
 #include "data.h"
+#include "logging.hpp"
 #include "message.h"
+#include "platform/platform.hpp"
 #include "s_deftab.h"
 #include "s_eventmsg.h"
 #include "s_eventtab.h"
@@ -12,13 +14,11 @@
 #include "s_postevents.h"
 #include "s_stack.h"
 #include "s_vartab.h"
+#include "script_cache.h"
 #include "script_libriary.h"
-#include "string_codec.h"
+#include "string_codec.hpp"
 #include "strings_list.h"
 #include "token.h"
-#include "logging.hpp"
-#include "script_cache.h"
-#include "platform/platform.hpp"
 
 #include "ringbuffer_stack.hpp"
 

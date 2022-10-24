@@ -836,7 +836,7 @@ uint32_t Character::AttributeChanged(ATTRIBUTES *apnt)
 {
     if (deadName || liveValue < 0)
         return 0;
-    if (!apnt || !apnt->GetThisName())
+    if (!apnt)
         return 0;
     if (storm::iEquals(apnt->GetThisName(), "model"))
     {

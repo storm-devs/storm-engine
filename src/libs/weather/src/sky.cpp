@@ -519,10 +519,10 @@ void SKY::FillSkyDirArray(ATTRIBUTES *pAttribute)
     {
         for (int32_t n = 0; n < q; n++)
         {
-            const auto *const attrName = pAttribute->GetAttributeName(n);
-            if (attrName && attrName[0] == 'd' && attrName[1] >= '0' && attrName[1] <= '9')
+            const auto attrName = std::string(pAttribute->GetAttributeName(n));
+            if (attrName.length() >= 2 && attrName[0] == 'd' && attrName[1] >= '0' && attrName[1] <= '9')
             {
-                const auto i = atol(&attrName[1]);
+                const auto i = atol(attrName.c_str() + 1);
                 if (i < q)
                     aSkyDirArray[i] = to_string(pAttribute->GetAttribute(n));
             }

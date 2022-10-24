@@ -9,12 +9,12 @@ namespace
 class TestStringCodec : public VSTRING_CODEC
 {
   public:
-    uint32_t GetNum() override
+    uint32_t GetNum() const override
     {
         return map_.size();
     }
 
-    uint32_t Convert(const char *pString) override
+    uint32_t Convert(const std::string_view &pString) override
     {
         std::string str(pString);
         const uint32_t hash = std::hash<std::string>{}(str);
@@ -22,17 +22,9 @@ class TestStringCodec : public VSTRING_CODEC
         return hash;
     }
 
-    uint32_t Convert(const char *pString, int32_t iLen) override
+    [[nodiscard]] std::string_view Convert(uint32_t code) const override
     {
-        std::string str(pString, iLen);
-        const uint32_t hash = std::hash<std::string>{}(str);
-        map_.emplace(hash, str);
-        return hash;
-    }
-
-    const char *Convert(uint32_t code) override
-    {
-        return map_[code].c_str();
+        return map_.at(code);
     }
 
     void VariableChanged() override

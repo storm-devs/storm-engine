@@ -90,8 +90,8 @@ class BIUtils
     static bool ReadStringFromAttr(ATTRIBUTES *pA, const char *name, char *buf, int32_t bufSize, const char *defVal);
     static const char *GetStringFromAttr(ATTRIBUTES *pA, const char *name, const char *defVal);
     static int32_t GetTextureFromAttr(VDX9RENDER *rs, ATTRIBUTES *pA, const char *sAttrName);
-    static bool ReadRectFromAttr(ATTRIBUTES *pA, const char *name, FRECT &rOut, FRECT &rDefault);
-    static bool ReadRectFromAttr(ATTRIBUTES *pA, const char *name, RECT &rOut, RECT &rDefault);
+    static bool ReadRectFromAttr(ATTRIBUTES *pA, const std::string_view &name, FRECT &rOut, FRECT &rDefault);
+    static bool ReadRectFromAttr(ATTRIBUTES *pA, const std::string_view &name, RECT &rOut, RECT &rDefault);
     static bool ReadPosFromAttr(ATTRIBUTES *pA, const char *name, float &fX, float &fY, float fXDef, float fYDef);
     static bool ReadPosFromAttr(ATTRIBUTES *pA, const char *name, int32_t &nX, int32_t &nY, int32_t nXDef, int32_t nYDef);
     static int32_t GetAlignmentFromAttr(ATTRIBUTES *pA, const char *name, int32_t nDefAlign);

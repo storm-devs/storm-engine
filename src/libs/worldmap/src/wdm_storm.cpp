@@ -379,7 +379,7 @@ void WdmStorm::UpdateSaveData()
     saveAttribute->SetAttribute("year", wdmObjects->attrYear);
 }
 
-const char *WdmStorm::GetId() const
+std::string_view WdmStorm::GetId() const
 {
     if (saveAttribute)
     {
