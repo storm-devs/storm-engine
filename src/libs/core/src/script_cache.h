@@ -1,10 +1,9 @@
 #pragma once
 #include "s_functab.h"
 
-#include <vector>
 #include "data.h"
-
-#include <zlib.h>
+#include <stdexcept>
+#include <vector>
 
 namespace storm
 {
@@ -36,127 +35,66 @@ struct Define
     uintptr_t value;
 };
 
-class Reader final
+class ReaderException : public std::runtime_error
 {
-public:
-    explicit Reader(std::string_view data)
-        : data_(data), offset_(0)
-    {
-    }
-
-    template <typename T>
-    const T *ReadData()
-    {
-        const auto size = sizeof(T);
-        if (offset_ + size > data_.size())
-        {
-            return nullptr;
-        }
-
-        auto address = data_.data() + offset_;
-        offset_ += size;
-        return reinterpret_cast<const T *>(address);
-    }
-
-    std::string_view ReadBytes()
-    {
-        auto size = ReadData<size_t>();
-        if (!size)
-        {
-            return {};
-        }
-
-        if (offset_ + *size > data_.size())
-        {
-            return {};
-        }
-
-        const auto address = data_.data() + offset_;
-        offset_ += *size;
-        return {address, *size};
-    }
-
-private:
-    std::string_view data_;
-    size_t offset_;
+  public:
+    ReaderException();
 };
 
-class Writer
+class BufferReader final
 {
-public:
-    template <typename T>
-    void WriteData(const T &data)
+  public:
+    explicit BufferReader(std::vector<char> &&buffer);
+
+    template <typename To> std::enable_if_t<!std::is_enum_v<To>, To> Read()
     {
-        auto data_bytes = std::string_view(reinterpret_cast<const char *>(&data), sizeof(data));
-        std::ranges::copy(data_bytes, std::back_inserter(data_));
+        static_assert(std::is_trivially_copyable_v<To>);
+
+        To to;
+        if (cur_pointer_ + sizeof(to) > std::size(buffer_))
+        {
+            throw ReaderException();
+        }
+
+        const auto from = std::data(buffer_) + cur_pointer_;
+        std::copy_n(from, sizeof(to), reinterpret_cast<char *>(&to));
+        cur_pointer_ += sizeof(to);
+
+        return to;
     }
 
-    void WriteBytes(std::string_view data)
+    template <typename To> std::enable_if_t<std::is_enum_v<To>, To> Read()
     {
-        WriteData(data.size());
-        std::ranges::copy(data, std::back_inserter(data_));
+        return static_cast<To>(Read<std::underlying_type_t<To>>());
     }
 
-    auto &GetData() const noexcept
-    {
-        return data_;
-    }
+    [[nodiscard]] std::string_view ReadArray();
 
-private:
-    std::vector<char> data_;
+  private:
+    std::vector<char> buffer_;
+    size_t cur_pointer_;
 };
 
-inline void ReadScriptData(Reader &reader, S_TOKEN_TYPE type, DATA *data)
+class BufferWriter
 {
-    switch (type)
+  public:
+    template <typename T> void WriteData(const T &buffer)
     {
-    case VAR_INTEGER: {
-        const auto value = reader.ReadData<int32_t>();
-        data->Set(*value);
-        break;
+        buffer_.reserve(sizeof(buffer_) + sizeof(buffer));
+        std::copy_n(reinterpret_cast<const char *>(&buffer), sizeof(buffer), std::back_inserter(buffer_));
     }
 
-    case VAR_FLOAT: {
-        const auto value = reader.ReadData<float>();
-        data->Set(*value);
-        break;
-    }
-    case VAR_STRING: {
-        const auto value = reader.ReadBytes();
-        data->Set(std::string(value));
-        break;
-    }
-    }
-}
+    void WriteArray(std::string_view data);
 
-inline void WriteScriptData(Writer &writer, S_TOKEN_TYPE type, DATA *data)
-{
-    switch (type)
-    {
-    case VAR_INTEGER: {
-        const auto value = data->GetInt();
-        writer.WriteData(value);
-        break;
-    }
+    [[nodiscard]] std::string_view GetDataBuffer() const noexcept;
 
-    case VAR_FLOAT: {
-        const auto value = data->GetFloat();
-        writer.WriteData(value);
-        break;
-    }
-    case VAR_STRING: {
-        const auto value = data->GetString();
-        writer.WriteBytes(value);
-        break;
-    }
-    }
-}
+  private:
+    std::vector<char> buffer_;
+};
 
-inline uint32_t ComputeCRC(uint32_t crc, std::string_view data)
-{
-    return crc32(crc, reinterpret_cast<const Bytef *>(data.data()), data.size());
-}
-}
+void ReadScriptData(BufferReader &reader, S_TOKEN_TYPE type, DATA *data);
+void WriteScriptData(BufferWriter &writer, S_TOKEN_TYPE type, DATA *data);
+} // namespace script_cache
 
 struct ScriptCache
 {
@@ -166,6 +104,5 @@ struct ScriptCache
     std::vector<script_cache::Function> functions;
     std::vector<VarInfo> variables;
     std::vector<script_cache::EventHandler> event_handlers;
-    uint32_t crc;
 };
-}
+} // namespace storm
