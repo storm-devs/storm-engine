@@ -277,7 +277,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     DrawRects(buf, 1, "WdmDrawMapBlend");
 
     // write the number of supplies
-    float foodRumSpacing = rum ? 24.0f : 0.0f;
+    float foodRumSpacing = 24.0f;
 
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i%s", food > 99999 ? 99999 : food, food > 99999 ? "+" : "");
     tbuf[sizeof(tbuf) - 1] = 0;
@@ -286,16 +286,12 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
                  int32_t(cx - foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
 
-    // write the amount of rum
-    if (rum)
-    {
-        snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum.value());
-        tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
+    snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum.value());
+    tbuf[sizeof(tbuf) - 1] = 0;
+    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
 
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
-                     int32_t(cx + foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
-    }
+    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
+                 int32_t(cx + foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
 
     if (!wdmObjects->coordinate.empty())
     {
