@@ -1,5 +1,5 @@
 #include "material.h"
-#include "../bi_defines.h"
+#include "bi_defines.h"
 #include "image.h"
 #include "img_render.h"
 

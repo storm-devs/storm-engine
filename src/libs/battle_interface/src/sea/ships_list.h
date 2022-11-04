@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../bi_defines.h"
+#include "bi_defines.h"
 #include "vai_objbase.h"
 
 class SHIP_DESCRIBE_LIST

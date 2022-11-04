@@ -1,5 +1,5 @@
 #include "item_entity.h"
-#include "../utils.h"
+#include "utils.h"
 #include "entity.h"
 #include "core.h"
 #include "message.h"
