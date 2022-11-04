@@ -1,5 +1,5 @@
 #include "string.h"
-#include "../bi_defines.h"
+#include "bi_defines.h"
 #include "img_render.h"
 
 BIString::BIString(BIImageRender *pImgRender, VDX9RENDER *rs)

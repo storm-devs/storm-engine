@@ -1,5 +1,5 @@
 #include "spyglass.h"
-#include "../utils.h"
+#include "utils.h"
 #include "../image/image.h"
 #include "../image/img_render.h"
 #include "../sea/ships_list.h"

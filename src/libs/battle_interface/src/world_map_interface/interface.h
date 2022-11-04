@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../bi_defines.h"
+#include "bi_defines.h"
 
 class WMShipIcon;
 class WMShipCommandList;

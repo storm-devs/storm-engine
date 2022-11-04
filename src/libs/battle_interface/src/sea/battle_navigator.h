@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../bi_defines.h"
+#include "bi_defines.h"
 #include "weather_base.h"
 
 #define RADIAL_QUANTITY 36
