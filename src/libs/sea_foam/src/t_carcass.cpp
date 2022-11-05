@@ -151,7 +151,8 @@ void TCarcass::RebuildLevels(tCarcassVertex *_vBuffer, const CVECTOR *_starts, u
         }
     }
 
-    std::vector<tCarcassVertex> tempVertices(vertices);
+    tCarcassVertex tempVertices[MAX_MEASURE_POINTS * MAX_LEVELS];
+    std::copy(vertices.begin(), vertices.end(), tempVertices);
 
     for (auto level = 0; level < levelsCount; level++)
     {
@@ -162,7 +163,7 @@ void TCarcass::RebuildLevels(tCarcassVertex *_vBuffer, const CVECTOR *_starts, u
         }
     }
 
-    memcpy(_vBuffer, tempVertices.data(), levelsCount * measure.pointsCount * sizeof(tCarcassVertex));
+    memcpy(_vBuffer, tempVertices, levelsCount * measure.pointsCount * sizeof(tCarcassVertex));
 }
 
 //--------------------------------------------------------------------
