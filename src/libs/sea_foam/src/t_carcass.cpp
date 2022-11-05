@@ -97,67 +97,72 @@ void TCarcass::RebuildIndexes(uint16_t *_iBuffer)
 }
 
 //--------------------------------------------------------------------
-void TCarcass::RebuildLevels(tCarcassVertex *_vBuffer, bool _firstDraw, uint32_t _dTime)
+void TCarcass::RebuildLevels(tCarcassVertex *_vBuffer, const CVECTOR *_starts, uint32_t _dTime)
 {
-    tCarcassVertex *tempVertex;
-    float lengthK;
-
-    if (_firstDraw)
-        lengthK = 0.2f * sqrtf(~(levelStarts[(levelsCount - 1) /**measure.pointsCount*/] - levelStarts[0]));
-
-    for (auto level = 0; level < (levelsCount); level++)
+    if (vertices.empty())
     {
-        const auto levelK = static_cast<float>(level) / (levelsCount - 1);
-        for (auto measurePoint = 0; measurePoint < measure.pointsCount; measurePoint++)
+        vertices.resize(levelsCount * measure.pointsCount);
+
+        float lengthK = 0.2f * sqrtf(~(_starts[(levelsCount - 1) /**measure.pointsCount*/] - _starts[0]));
+
+        for (auto level = 0; level < levelsCount; level++)
         {
-            tempVertex = &_vBuffer[level * measure.pointsCount + measurePoint];
-            float heightK;
-            if (level <= FRONT_FADE_LEVEL)
-                heightK = 1.f + 1.35f * static_cast<float>(level) / FRONT_FADE_LEVEL;
-            else
-                heightK = 1.f + (1.f - levelK);
-            // tempVertex->pos = sceneMatrix * (levelStarts[level] + CVECTOR((1.f +
-            // WIDEN_K*levelK)*measure.deltaPointX[measurePoint],
-            // heightK*measure.deltaPointY[measurePoint], 0.f));
-            tempVertex->pos =
-                (levelStarts[level] + CVECTOR((1.f + WIDEN_K * levelK) * measure.deltaPointX[measurePoint],
-                                              heightK * measure.deltaPointY[measurePoint], 0.f));
-            tempVertex->pos.y += .01f;
-
-            auto measureK = 0.f;
-            //((float) abs(measurePoint - (measure.pointsCount >> 1))) / ((measure.pointsCount >> 1));
-            if (!measurePoint)
-                measureK = 1.f;
-            // if (measurePoint == (measure.pointsCount-1))
-            //    measureK = 1.f;
-
-            auto levelA = 1.f;
-            if (level <= FRONT_FADE_LEVEL)
-                levelA = static_cast<float>(level) / FRONT_FADE_LEVEL;
-            else
-                levelA = (1.f - levelK);
-
-            if (_firstDraw)
+            const auto levelK = static_cast<float>(level) / (levelsCount - 1);
+            for (auto measurePoint = 0; measurePoint < measure.pointsCount; measurePoint++)
             {
-                auto a = 3.f * speedA * sqrtf(levelA) * (1.f - measureK);
-                if (a > 1.f)
-                    a = 1.f;
+                tCarcassVertex* tempVertex = &vertices[level * measure.pointsCount + measurePoint];
+
+                float heightK;
+                if (level <= FRONT_FADE_LEVEL)
+                    heightK = 1.f + 1.35f * static_cast<float>(level) / FRONT_FADE_LEVEL;
+                else
+                    heightK = 1.f + (1.f - levelK);
+
+                tempVertex->pos = CVECTOR((1.f + WIDEN_K * levelK) * measure.deltaPointX[measurePoint],
+                                          heightK * measure.deltaPointY[measurePoint], 0.f);
+                tempVertex->pos.y += .01f;
+
+                auto measureK = 0.f;
+                if (!measurePoint)
+                    measureK = 1.f;
+
+                auto levelA = 1.f;
+                if (level <= FRONT_FADE_LEVEL)
+                    levelA = static_cast<float>(level) / FRONT_FADE_LEVEL;
+                else
+                    levelA = (1.f - levelK);
+
+                auto a = speedA * sqrtf(levelA) * (1.f - measureK);
                 tempVertex->color = (static_cast<uint32_t>(a * 0xFF) << 24) | 0x00FFFFFF;
                 tempVertex->u = lengthK * (1.f - levelK);
-                tempVertex->v =
-                    1.f - static_cast<float>(measurePoint) / (measure.pointsCount - 1) + tempVertex->u * V_DIAGONAL_K;
-            }
-            else
-            {
-                tempVertex->color =
-                    (static_cast<uint32_t>(speedA * sqrtf(levelA) * (1.f - measureK) * 0xFF) << 24) | 0x00FFFFFF;
-                const auto dv = fmodf(_dTime * vSpeed, 1.f);
-                const auto du = fmodf(_dTime * uSpeed, 1.f);
-                tempVertex->u = tempVertex->u + du;
-                tempVertex->v = tempVertex->v - dv;
+                tempVertex->v = 1.f - static_cast<float>(measurePoint) / (measure.pointsCount - 1) + tempVertex->u * V_DIAGONAL_K;
             }
         }
     }
+    else
+    {
+        const auto dv = fmodf(_dTime * vSpeed, 1.f);
+        const auto du = fmodf(_dTime * uSpeed, 1.f);
+        for (auto index = 0; index < levelsCount * measure.pointsCount; index++)
+        {
+            tCarcassVertex* tempVertex = &vertices[index];
+            tempVertex->u = tempVertex->u + du;
+            tempVertex->v = tempVertex->v - dv;
+        }
+    }
+
+    std::vector<tCarcassVertex> tempVertices(vertices);
+
+    for (auto level = 0; level < levelsCount; level++)
+    {
+        for (auto measurePoint = 0; measurePoint < measure.pointsCount; measurePoint++)
+        {
+            tCarcassVertex* tempVertex = &tempVertices[level * measure.pointsCount + measurePoint];
+            tempVertex->pos += _starts[level];
+        }
+    }
+
+    memcpy(_vBuffer, tempVertices.data(), levelsCount * measure.pointsCount * sizeof(tCarcassVertex));
 }
 
 //--------------------------------------------------------------------
@@ -175,20 +180,17 @@ void TCarcass::Uninitialize()
 void TCarcass::Execute(uint32_t _dTime, CMatrix &_mtx, const CVECTOR *_starts)
 {
     sceneMatrix = _mtx;
-    for (auto level = 0; level < levelsCount; level++)
-        levelStarts[level] = _starts[level];
 
     auto *vBufferPointer = static_cast<tCarcassVertex *>(renderer->LockVertexBuffer(vBuffer));
     auto *iBufferPointer = static_cast<uint16_t *>(renderer->LockIndexBuffer(iBuffer));
 
-    if (indexesCreated)
-        RebuildLevels(vBufferPointer, false, _dTime);
-    else
+    if (!indexesCreated)
     {
         RebuildIndexes(iBufferPointer);
-        RebuildLevels(vBufferPointer, true, _dTime);
         indexesCreated = true;
     }
+
+    RebuildLevels(vBufferPointer, _starts, _dTime);
 
     renderer->UnLockVertexBuffer(vBuffer);
     renderer->UnLockIndexBuffer(iBuffer);

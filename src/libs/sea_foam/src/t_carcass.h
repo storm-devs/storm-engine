@@ -46,12 +46,13 @@ class TCarcass
     void SetSpeed(float _uSpeed, float _vSpeed, float _speedA);
 
   private:
-    void RebuildLevels(tCarcassVertex *_vBuffer, bool _firstDraw, uint32_t dTime);
+    void RebuildLevels(tCarcassVertex *_vBuffer, const CVECTOR *_starts, uint32_t dTime);
     void RebuildIndexes(uint16_t *_iBuffer);
+
+    std::vector<tCarcassVertex> vertices;
 
     bool normalsInverted;
     tMeasure measure;
-    CVECTOR levelStarts[MAX_LEVELS];
     int levelsCount;
     CMatrix sceneMatrix;
     int32_t ivElementIndex;
