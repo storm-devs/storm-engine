@@ -323,7 +323,6 @@ void PARTICLES::PauseAllActive(bool bPaused)
 {
     for (uint32_t n = 0; n < CreatedSystems.size(); n++)
     {
-        CreatedSystems[n].pSystem->GetSystem()->Restart(0);
         CreatedSystems[n].pSystem->Pause(bPaused);
     }
 }
