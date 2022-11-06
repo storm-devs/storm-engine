@@ -13,6 +13,7 @@
 #include "core.h"
 #include "math_inlines.h"
 
+#include "shared/events.h"
 #include "wdm_enemy_ship.h"
 #include "wdm_islands.h"
 #include "wdm_storm.h"
@@ -208,19 +209,19 @@ void WdmPlayerShip::Update(float dltTime)
         switch (wdmObjects->enemyShip->shipType)
         {
         case wdmest_unknow:
-            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", 0);
+            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", WORLDMAP_ENCOUNTER_TYPE_UNKNOWN);
             break;
         case wdmest_merchant:
-            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", 1);
+            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", WORLDMAP_ENCOUNTER_TYPE_MERCHANT);
             break;
         case wdmest_warring:
-            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", 2);
+            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", WORLDMAP_ENCOUNTER_TYPE_WARRING);
             break;
         case wdmest_follow:
-            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", 3);
+            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", WORLDMAP_ENCOUNTER_TYPE_FOLLOW);
             break;
         default:
-            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", -1);
+            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", WORLDMAP_ENCOUNTER_TYPE_INVALID);
         }
     }
     else
@@ -228,11 +229,11 @@ void WdmPlayerShip::Update(float dltTime)
         // mark hitting the storm
         if (wdmObjects->playarInStorm)
         {
-            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", 4);
+            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", WORLDMAP_ENCOUNTER_TYPE_STORM);
         }
         else
         {
-            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", -1);
+            wdmObjects->wm->AttributesPointer->SetAttributeUseDword("encounter_type", WORLDMAP_ENCOUNTER_TYPE_INVALID);
         }
     }
     if (nOldIslandVal != wdmObjects->wm->AttributesPointer->GetAttributeAsDword("encounter_island", 0) ||
