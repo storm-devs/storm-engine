@@ -140,6 +140,64 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
         nationFlagWidth = ap->GetAttributeAsFloat("width", nationFlagWidth);
         nationFlagHeight = ap->GetAttributeAsFloat("height", nationFlagHeight);
     }
+
+    // Try to search additional UI data
+    BITextInfo tempTI;
+    ap = apnt->FindAClass(apnt, "uiDate");
+    if (ap)
+    {
+        if (!wdmObjects->uiDate.has_value())
+        {
+            tempTI.Init(wdmObjects->rs, ap);
+            wdmObjects->uiDate.emplace(tempTI);
+        }
+        else
+            wdmObjects->uiDate->Init(wdmObjects->rs, ap);
+    }
+    ap = apnt->FindAClass(apnt, "uiFood");
+    if (ap)
+    {
+        if (!wdmObjects->uiFood.has_value())
+        {
+            tempTI.Init(wdmObjects->rs, ap);
+            wdmObjects->uiFood.emplace(tempTI);
+        }
+        else
+            wdmObjects->uiFood->Init(wdmObjects->rs, ap);
+    }
+    ap = apnt->FindAClass(apnt, "uiRum");
+    if (ap)
+    {
+        if (!wdmObjects->uiRum.has_value())
+        {
+            tempTI.Init(wdmObjects->rs, ap);
+            wdmObjects->uiRum.emplace(tempTI);
+        }
+        else
+            wdmObjects->uiRum->Init(wdmObjects->rs, ap);
+    }
+    ap = apnt->FindAClass(apnt, "uiStCoord");
+    if (ap)
+    {
+        if (!wdmObjects->uiStCoord.has_value())
+        {
+            tempTI.Init(wdmObjects->rs, ap);
+            wdmObjects->uiStCoord.emplace(tempTI);
+        }
+        else
+            wdmObjects->uiStCoord->Init(wdmObjects->rs, ap);
+    }
+    ap = apnt->FindAClass(apnt, "uiCoord");
+    if (ap)
+    {
+        if (!wdmObjects->uiCoord.has_value())
+        {
+            tempTI.Init(wdmObjects->rs, ap);
+            wdmObjects->uiCoord.emplace(tempTI);
+        }
+        else
+            wdmObjects->uiCoord->Init(wdmObjects->rs, ap);
+    }
 }
 
 // Rendering
@@ -239,18 +297,31 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmDrawMapBlend");
+
+    int32_t font;
+    int32_t fw;
+    int32_t fh;
+
     // writing a date
     char tbuf[128];
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i %s %i", wdmObjects->wm->day, month[wdmObjects->wm->mon - 1],
               wdmObjects->wm->year);
     tbuf[sizeof(tbuf) - 1] = 0;
-    int32_t font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
-    int32_t fw = rs->StringWidth(tbuf, font);
-    int32_t fh = rs->CharHeight(font);
+    if (wdmObjects->uiDate)
+    {
+        wdmObjects->uiDate->Print(tbuf);
+        font = wdmObjects->uiDate->nFont;
+    }
+    else
+    {
+        font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
+        fw = rs->StringWidth(tbuf, font);
+        fh = rs->CharHeight(font);
 
-    // rs->Print(font, 0xffffffff, int32_t(cx - fw*0.5f), int32_t(cy + 98.0f - fh*0.5f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
-                 int32_t(cy + (98.0f - fh * 0.5f) * resizeRatio), tbuf);
+        // rs->Print(font, 0xffffffff, int32_t(cx - fw*0.5f), int32_t(cy + 98.0f - fh*0.5f), tbuf);
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
+                     int32_t(cy + (98.0f - fh * 0.5f) * resizeRatio), tbuf);
+    }
 
     // Centre
     // cy += 128.0f + 32.0f;
@@ -281,20 +352,33 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
 
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i%s", food > 99999 ? 99999 : food, food > 99999 ? "+" : "");
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
+    if (wdmObjects->uiFood)
+    {
+        wdmObjects->uiFood->Print(tbuf);
+    }
+    else
+    {
+        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
 
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
-                 int32_t(cx - foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
-
+        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
+                     int32_t(cx - foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
+    }
     // write the amount of rum
     if (rum)
     {
         snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum.value());
         tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
+        if (wdmObjects->uiRum)
+        {
+            wdmObjects->uiRum->Print(tbuf);
+        }
+        else
+        {
+            fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
 
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
-                     int32_t(cx + foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
+            rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
+                         int32_t(cx + foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
+        }
     }
 
     if (!wdmObjects->coordinate.empty())
@@ -309,22 +393,38 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         FillRectColor(buf, 0xffffffff);
         DrawRects(buf, 1, "WdmDrawMapBlend");
 
+        // display label/title above coordinates
+        if (wdmObjects->uiStCoord)
+        {
+            // static label, should be set in scripts
+            wdmObjects->uiStCoord->Print();
+        }
+        else
+        {
+            snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
+            tbuf[sizeof(tbuf) - 1] = 0;
+            fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
+            fh = rs->CharHeight(font);
+
+            rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
+                         int32_t(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
+        }
+
         // display a line with coordinates
         snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate.c_str());
         tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-        fh = rs->CharHeight(font);
+        if (wdmObjects->uiCoord)
+        {
+            wdmObjects->uiCoord->Print(tbuf);
+        }
+        else
+        {
+            fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
+            fh = rs->CharHeight(font);
 
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
-                     int32_t(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
-
-        snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
-        tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-        fh = rs->CharHeight(font);
-
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
-                     int32_t(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
+            rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
+                         int32_t(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
+        }
     }
 
     if (wdmObjects->nationFlagIndex)

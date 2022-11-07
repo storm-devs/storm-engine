@@ -14,6 +14,7 @@
 #include "dx9render.h"
 
 #include "wdm_objects_wind.h"
+#include "utils.h"
 
 #include <string>
 #include <vector>
@@ -139,6 +140,11 @@ class WdmObjects
     float resizeRatio; // for resizing interfaces
     float worldSizeX;  // The size of the world by X
     float worldSizeZ;  // The size of the world by Z
+    std::optional<BITextInfo> uiDate;    // font, scale and position for Date in UI
+    std::optional<BITextInfo> uiFood;    // font, scale and position for Food in UI
+    std::optional<BITextInfo> uiRum;     // font, scale and position for Rum in UI
+    std::optional<BITextInfo> uiStCoord; // same for label/title above coordinates
+    std::optional<BITextInfo> uiCoord;   // same for coordinate values
 
     std::vector<Model> models; // Models
     int32_t entryModels[1024];    // Geometry Quick Find Table
