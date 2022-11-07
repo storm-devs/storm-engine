@@ -299,8 +299,6 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     DrawRects(buf, 1, "WdmDrawMapBlend");
 
     int32_t font;
-    int32_t fw;
-    int32_t fh;
 
     // writing a date
     char tbuf[128];
@@ -315,8 +313,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     else
     {
         font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
-        fw = rs->StringWidth(tbuf, font);
-        fh = rs->CharHeight(font);
+        int32_t fh = rs->CharHeight(font);
 
         // rs->Print(font, 0xffffffff, int32_t(cx - fw*0.5f), int32_t(cy + 98.0f - fh*0.5f), tbuf);
         rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
@@ -358,8 +355,6 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     }
     else
     {
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-
         rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
                      int32_t(cx - foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
     }
@@ -374,8 +369,6 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         }
         else
         {
-            fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-
             rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
                          int32_t(cx + foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
         }
@@ -403,9 +396,6 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         {
             snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
             tbuf[sizeof(tbuf) - 1] = 0;
-            fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-            fh = rs->CharHeight(font);
-
             rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
                          int32_t(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
         }
@@ -419,9 +409,6 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         }
         else
         {
-            fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-            fh = rs->CharHeight(font);
-
             rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
                          int32_t(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
         }
