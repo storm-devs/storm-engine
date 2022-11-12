@@ -135,26 +135,68 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     skyWidth = 128.0f * resizeRatio;
     skyHeight = 128.0f * resizeRatio;
     skyColor = 0x80ffffff;
+    ap = apnt->FindAClass(apnt, "sky");
+    if (ap)
+    {
+        skyLeftPos = ap->GetAttributeAsFloat("leftPos", skyLeftPos);
+        skyTopPos = ap->GetAttributeAsFloat("topPos", skyTopPos);
+        skyWidth = ap->GetAttributeAsFloat("width", skyWidth);
+        skyHeight = ap->GetAttributeAsFloat("height", skyHeight);
+        skyColor = ap->GetAttributeAsDword("color", skyColor);
+    }
 
     windPointerLeftPos = cx - 16.0f * resizeRatio;
     windPointerTopPos = cy - 64.0f * resizeRatio;
     windPointerWidth = 32.0f * resizeRatio;
     windPointerHeight = 128.0f * resizeRatio;
     windPointerColor = 0xffffffff;
+    ap = apnt->FindAClass(apnt, "windPointer");
+    if (ap)
+    {
+        windPointerLeftPos = ap->GetAttributeAsFloat("leftPos", windPointerLeftPos);
+        windPointerTopPos = ap->GetAttributeAsFloat("topPos", windPointerTopPos);
+        windPointerWidth = ap->GetAttributeAsFloat("width", windPointerWidth);
+        windPointerHeight = ap->GetAttributeAsFloat("height", windPointerHeight);
+        windPointerColor = ap->GetAttributeAsDword("color", windPointerColor);
+    }
 
     windBarLeftPos = cx - 64.0f * resizeRatio;
     windBarTopPos = cy;
     windBarWidth = 128.0f * resizeRatio;
     windBarHeight = 128.0f * resizeRatio;
     windBarColor = 0xffffffff;
+    ap = apnt->FindAClass(apnt, "windBar");
+    if (ap)
+    {
+        windBarLeftPos = ap->GetAttributeAsFloat("leftPos", windBarLeftPos);
+        windBarTopPos = ap->GetAttributeAsFloat("topPos", windBarTopPos);
+        windBarWidth = ap->GetAttributeAsFloat("width", windBarWidth);
+        windBarHeight = ap->GetAttributeAsFloat("height", windBarHeight);
+        windBarColor = ap->GetAttributeAsDword("color", windBarColor);
+    }
 
     frameLeftPos = cx - 64.0f * resizeRatio;
     frameTopPos = cy - 128.0f * resizeRatio;
     frameWidth = 128.0f * resizeRatio;
     frameHeight = 256.0f * resizeRatio;
     frameColor = 0xffffffff;
+    ap = apnt->FindAClass(apnt, "frame");
+    if (ap)
+    {
+        frameLeftPos = ap->GetAttributeAsFloat("leftPos", frameLeftPos);
+        frameTopPos = ap->GetAttributeAsFloat("topPos", frameTopPos);
+        frameWidth = ap->GetAttributeAsFloat("width", frameWidth);
+        frameHeight = ap->GetAttributeAsFloat("height", frameHeight);
+        frameColor = ap->GetAttributeAsDword("color", frameColor);
+    }
 
     int32_t font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
+    ap = apnt->FindAClass(apnt, "dateText");
+    if (ap)
+    {
+        dateText.Init(wdmObjects->rs, ap);
+    }
+    else
     {
         int32_t fh = wdmObjects->rs->CharHeight(font);
         dateText.pRS = wdmObjects->rs;
@@ -167,15 +209,30 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     }
 
     // Centre
-    cy += 128.0f * resizeRatio + 32.0f;
+    cy = cy + 128.0f * resizeRatio + 32.0f;
 
     moraleLeftPos = cx - 64.0f * resizeRatio;
     moraleTopPos = cy - 32.0f * resizeRatio;
     moraleWidth = 128.0f * resizeRatio;
     moraleHeight = 64.0f * resizeRatio;
     moraleColor = 0xffffffff;
+    ap = apnt->FindAClass(apnt, "morale");
+    if (ap)
+    {
+        moraleLeftPos = ap->GetAttributeAsFloat("leftPos", moraleLeftPos);
+        moraleTopPos = ap->GetAttributeAsFloat("topPos", moraleTopPos);
+        moraleWidth = ap->GetAttributeAsFloat("width", moraleWidth);
+        moraleHeight = ap->GetAttributeAsFloat("height", moraleHeight);
+        moraleColor = ap->GetAttributeAsDword("color", moraleColor);
+    }
 
     float foodRumSpacing = rum ? 24.0f : 0.0f;
+    ap = apnt->FindAClass(apnt, "foodText");
+    if (ap)
+    {
+        foodText.Init(wdmObjects->rs, ap);
+    }
+    else
     {
         foodText.pRS = wdmObjects->rs;
         foodText.pARefresh = nullptr;
@@ -186,7 +243,12 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
         foodText.pos.y = int32_t(cy + 30.0f * resizeRatio);
     }
 
-    if (rum)
+    ap = apnt->FindAClass(apnt, "rumText");
+    if (ap)
+    {
+        rumText.Init(wdmObjects->rs, ap);
+    }
+    else if (rum)
     {
         rumText.pRS = wdmObjects->rs;
         rumText.pARefresh = nullptr;
@@ -202,7 +264,22 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     coordWidth = 128.0f * resizeRatio;
     coordHeight = 64.0f * resizeRatio;
     coordColor = 0xffffffff;
+    ap = apnt->FindAClass(apnt, "coord");
+    if (ap)
+    {
+        coordLeftPos = ap->GetAttributeAsFloat("leftPos", coordLeftPos);
+        coordTopPos = ap->GetAttributeAsFloat("topPos", coordTopPos);
+        coordWidth = ap->GetAttributeAsFloat("width", coordWidth);
+        coordHeight = ap->GetAttributeAsFloat("height", coordHeight);
+        coordColor = ap->GetAttributeAsDword("color", coordColor);
+    }
 
+    ap = apnt->FindAClass(apnt, "stCoordText");
+    if (ap)
+    {
+        stCoordText.Init(wdmObjects->rs, ap);
+    }
+    else
     {
         stCoordText.pRS = wdmObjects->rs;
         stCoordText.pARefresh = nullptr;
@@ -214,6 +291,12 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
         stCoordText.sText = wdmObjects->stCoordinate;
     }
 
+    ap = apnt->FindAClass(apnt, "coordText");
+    if (ap)
+    {
+        coordText.Init(wdmObjects->rs, ap);
+    }
+    else
     {
         coordText.pRS = wdmObjects->rs;
         coordText.pARefresh = nullptr;
@@ -243,8 +326,11 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
             }
         }
         nationFlagCount = ap->GetAttributeAsDword("count", nationFlagCount);
+        nationFlagLeftPos = ap->GetAttributeAsFloat("leftPos", nationFlagLeftPos);
+        nationFlagTopPos = ap->GetAttributeAsFloat("topPos", nationFlagTopPos);
         nationFlagWidth = ap->GetAttributeAsFloat("width", nationFlagWidth);
         nationFlagHeight = ap->GetAttributeAsFloat("height", nationFlagHeight);
+        nationFlagColor = ap->GetAttributeAsDword("color", nationFlagColor);
     }
 }
 
