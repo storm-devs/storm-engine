@@ -122,10 +122,116 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
         }
     }
 
+    resizeRatio = wdmObjects->resizeRatio;
+    // Screen parameters
+    float w, h;
+    wdmObjects->GetVPSize(w, h);
+    // Center of the thing
+    float cx = w - 128.0f * resizeRatio - 16.0f + 64.0f;
+    float cy = -40.0f + 128.0f * resizeRatio;
+
+    skyLeftPos = cx - 64.0f * resizeRatio;
+    skyTopPos = cy - 64.0f * resizeRatio;
+    skyWidth = 128.0f * resizeRatio;
+    skyHeight = 128.0f * resizeRatio;
+    skyColor = 0x80ffffff;
+
+    windPointerLeftPos = cx - 16.0f * resizeRatio;
+    windPointerTopPos = cy - 64.0f * resizeRatio;
+    windPointerWidth = 32.0f * resizeRatio;
+    windPointerHeight = 128.0f * resizeRatio;
+    windPointerColor = 0xffffffff;
+
+    windBarLeftPos = cx - 64.0f * resizeRatio;
+    windBarTopPos = cy;
+    windBarWidth = 128.0f * resizeRatio;
+    windBarHeight = 128.0f * resizeRatio;
+    windBarColor = 0xffffffff;
+
+    frameLeftPos = cx - 64.0f * resizeRatio;
+    frameTopPos = cy - 128.0f * resizeRatio;
+    frameWidth = 128.0f * resizeRatio;
+    frameHeight = 256.0f * resizeRatio;
+    frameColor = 0xffffffff;
+
+    int32_t font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
+    {
+        int32_t fh = wdmObjects->rs->CharHeight(font);
+        dateText.pRS = wdmObjects->rs;
+        dateText.pARefresh = nullptr;
+        dateText.nFont = font;
+        dateText.fScale = resizeRatio;
+        dateText.dwColor = 0xffffffff;
+        dateText.pos.x = int32_t(cx);
+        dateText.pos.y = int32_t(cy + (98.0f - fh * 0.5f) * resizeRatio);
+    }
+
+    // Centre
+    cy += 128.0f * resizeRatio + 32.0f;
+
+    moraleLeftPos = cx - 64.0f * resizeRatio;
+    moraleTopPos = cy - 32.0f * resizeRatio;
+    moraleWidth = 128.0f * resizeRatio;
+    moraleHeight = 64.0f * resizeRatio;
+    moraleColor = 0xffffffff;
+
+    float foodRumSpacing = rum ? 24.0f : 0.0f;
+    {
+        foodText.pRS = wdmObjects->rs;
+        foodText.pARefresh = nullptr;
+        foodText.nFont = font;
+        foodText.fScale = resizeRatio;
+        foodText.dwColor = 0xffffffff;
+        foodText.pos.x = int32_t(cx - foodRumSpacing * resizeRatio);
+        foodText.pos.y = int32_t(cy + 30.0f * resizeRatio);
+    }
+
+    if (rum)
+    {
+        rumText.pRS = wdmObjects->rs;
+        rumText.pARefresh = nullptr;
+        rumText.nFont = font;
+        rumText.fScale = resizeRatio;
+        rumText.dwColor = 0xffffffff;
+        rumText.pos.x = int32_t(cx + foodRumSpacing * resizeRatio);
+        rumText.pos.y = int32_t(cy + 30.0f * resizeRatio);
+    }
+
+    coordLeftPos = cx - 64.0f * resizeRatio;
+    coordTopPos = cy + 64.0f * resizeRatio;
+    coordWidth = 128.0f * resizeRatio;
+    coordHeight = 64.0f * resizeRatio;
+    coordColor = 0xffffffff;
+
+    {
+        stCoordText.pRS = wdmObjects->rs;
+        stCoordText.pARefresh = nullptr;
+        stCoordText.nFont = font;
+        stCoordText.fScale = resizeRatio;
+        stCoordText.dwColor = 0xffffffff;
+        stCoordText.pos.x = int32_t(cx);
+        stCoordText.pos.y = int32_t(cy + (64.0f + 13.0f) * resizeRatio);
+        stCoordText.sText = wdmObjects->stCoordinate;
+    }
+
+    {
+        coordText.pRS = wdmObjects->rs;
+        coordText.pARefresh = nullptr;
+        coordText.nFont = font;
+        coordText.fScale = resizeRatio;
+        coordText.dwColor = 0xffffffff;
+        coordText.pos.x = int32_t(cx);
+        coordText.pos.y = int32_t(cy + (64.0f + 32.0f) * resizeRatio);
+    }
+
+    nationFlagWidth = 48.0f * resizeRatio;
+    nationFlagHeight = 48.0f * resizeRatio;
+    nationFlagLeftPos = cx - nationFlagWidth / 2.0f;
+    nationFlagTopPos = cy + 150.0f * resizeRatio;
+    nationFlagColor = 0xffffffff;
     ap = apnt->FindAClass(apnt, "nationFlag");
     if (ap)
     {
-        // Font
         const char *texName = ap->GetAttribute("texName");
         if (texName)
         {
@@ -178,45 +284,31 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     resizeRatio = wdmObjects->resizeRatio;
     const auto widForce = wdmObjects->GetWind(x, y, windDir);
     const auto ang = static_cast<float>(atan2(windDir.x, windDir.z));
-    // Screen parameters
-    float w, h;
-    wdmObjects->GetVPSize(w, h);
-    auto kDef = rs->GetHeightDeformator();
-    // Center of the thing
-    // float cx = (w - 128.0f - 16.0f) + 64.0f;
-    float cx = w - (128.0f) * resizeRatio - 16.0f + 64.0f;
-    // float cy = (-40.0f) + 128.0f;
-    float cy = -40.0f + 128.0f * resizeRatio;
     // Buffer for drawing
     Vertex buf[(3 * 2) * 2];
+
     // Sky
     rs->TextureSet(0, txSky);
     rs->TextureSet(1, txSkyMask);
-
-    // FillRectCoord(buf, cx - 64.0f, cy - 64.0f, 128.0f, 128.0f);
-    FillRectCoord(buf, cx - (64.0f * resizeRatio), cy - (64.0f * resizeRatio), 128.0f * resizeRatio,
-                  128.0f * resizeRatio);
+    FillRectCoord(buf, skyLeftPos, skyTopPos, skyWidth, skyHeight);
 
     FillRectUV(buf, (wdmObjects->wm->hour * (1.0f / 24.0f) - 0.125f), 0.0f, 0.25f, 1.0f);
     FillRectUV1(buf, 0.0f, 0.0f, 1.0f, 1.0f);
-    FillRectColor(buf, 0x80ffffff);
+    FillRectColor(buf, skyColor);
     DrawRects(buf, 1, "WdmInterfaceDrawSky");
+
     // Direction of the wind
     rs->TextureSet(0, txWindPointer);
-
-    // FillRectCoord(buf, cx - 16.0f, cy - 64.0f, 32.0f, 128.0f, ang);
-    FillRectCoord(buf, cx - (16.0f * resizeRatio), cy - (64.0f * resizeRatio), 32.0f * resizeRatio,
-                  128.0f * resizeRatio, ang);
+    FillRectCoord(buf, windPointerLeftPos, windPointerTopPos, windPointerWidth, windPointerHeight, ang);
 
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
-    FillRectColor(buf, 0xffffffff);
+    FillRectColor(buf, windPointerColor);
     DrawRects(buf, 1, "WdmDrawMapBlend");
+
     // Wind force
     rs->TextureSet(0, txBar);
     rs->TextureSet(1, txBarMask);
-
-    // FillRectCoord(buf, cx - 64.0f, cy, 128.0f, 128.0f);
-    FillRectCoord(buf, cx - (64.0f * resizeRatio), cy, 128.0f * resizeRatio, 128.0f * resizeRatio);
+    FillRectCoord(buf, windBarLeftPos, windBarTopPos, windBarWidth, windBarHeight);
 
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectUV1(buf, -0.5f, 0.0f, 1.0f, 1.0f);
@@ -228,116 +320,82 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
         buf[i].tu1 = vrot.x;
         buf[i].tv1 = vrot.z;
     }
-    FillRectColor(buf, 0xffffffff);
+    FillRectColor(buf, windBarColor);
     DrawRects(buf, 1, "WdmInterfaceDrawSky");
+
     // Frame
     rs->TextureSet(0, txBack);
-
-    // FillRectCoord(buf, cx - 64.0f, cy - 128.0f, 128.0f, 256.0f);
-    FillRectCoord(buf, cx - 64.0f * resizeRatio, cy - 128.0f * resizeRatio, 128.0f * resizeRatio, 256.0f * resizeRatio);
+    FillRectCoord(buf, frameLeftPos, frameTopPos, frameWidth, frameHeight);
 
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
     FillRectColor(buf, 0xffffffff);
     DrawRects(buf, 1, "WdmDrawMapBlend");
+
     // writing a date
     char tbuf[128];
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i %s %i", wdmObjects->wm->day, month[wdmObjects->wm->mon - 1],
               wdmObjects->wm->year);
     tbuf[sizeof(tbuf) - 1] = 0;
-    int32_t font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
-    int32_t fw = rs->StringWidth(tbuf, font);
-    int32_t fh = rs->CharHeight(font);
+    dateText.Print(tbuf);
 
-    // rs->Print(font, 0xffffffff, int32_t(cx - fw*0.5f), int32_t(cy + 98.0f - fh*0.5f), tbuf);
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
-                 int32_t(cy + (98.0f - fh * 0.5f) * resizeRatio), tbuf);
-
-    // Centre
-    // cy += 128.0f + 32.0f;
-    cy += 128.0f * resizeRatio + 32.0f;
     // Drawing a moral bar
     rs->TextureSet(0, txMoraleBar);
     rs->TextureSet(1, txMoraleMask);
-
-    // FillRectCoord(buf, cx - 64.0f, cy - 32.0f, 128.0f, 64.0f);
-    FillRectCoord(buf, cx - 64.0f * resizeRatio, cy - 32.0f * resizeRatio, 128.0f * resizeRatio, 64.0f * resizeRatio);
+    FillRectCoord(buf, moraleLeftPos, moraleTopPos, moraleWidth, moraleHeight);
 
     FillRectUV(buf, morale * 0.28f, 0.0f, 1.0f, 1.0f);
     FillRectUV1(buf, 0.0f, 0.0f, 1.0f, 1.0f);
-    FillRectColor(buf, 0xffffffff);
+    FillRectColor(buf, moraleColor);
     DrawRects(buf, 1, "WdmInterfaceDrawSky");
+
     // Drawing a moral block
     rs->TextureSet(0, txMorale);
-
-    // FillRectCoord(buf, cx - 64.0f, cy - 32.0f, 128.0f, 64.0f);
-    FillRectCoord(buf, cx - 64.0f * resizeRatio, cy - 32.0f * resizeRatio, 128.0f * resizeRatio, 64.0f * resizeRatio);
+    FillRectCoord(buf, moraleLeftPos, moraleTopPos, moraleWidth, moraleHeight);
 
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
-    FillRectColor(buf, 0xffffffff);
+    FillRectColor(buf, moraleColor);
     DrawRects(buf, 1, "WdmDrawMapBlend");
 
     // write the number of supplies
-    float foodRumSpacing = rum ? 24.0f : 0.0f;
-
     sprintf_s(tbuf, sizeof(tbuf) - 1, "%i%s", food > 99999 ? 99999 : food, food > 99999 ? "+" : "");
     tbuf[sizeof(tbuf) - 1] = 0;
-    fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-
-    rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
-                 int32_t(cx - foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
+    foodText.Print(tbuf);
 
     // write the amount of rum
     if (rum)
     {
         snprintf(tbuf, sizeof(tbuf) - 1, "%i", rum.value());
         tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0,
-                     int32_t(cx + foodRumSpacing * resizeRatio), int32_t(cy + 30.0f * resizeRatio), tbuf);
+        rumText.Print(tbuf);
     }
 
     if (!wdmObjects->coordinate.empty())
     {
         // Coordinate frame
         rs->TextureSet(0, txCoord);
-
-        FillRectCoord(buf, cx - 64.0f * resizeRatio, cy + 64.0f * resizeRatio, 128.0f * resizeRatio,
-                      64.0f * resizeRatio);
+        FillRectCoord(buf, coordLeftPos, coordTopPos, coordWidth, coordHeight);
 
         FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
-        FillRectColor(buf, 0xffffffff);
+        FillRectColor(buf, coordColor);
         DrawRects(buf, 1, "WdmDrawMapBlend");
 
         // display a line with coordinates
+        stCoordText.Print(); // static label, should be set in scripts
+
         snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->coordinate.c_str());
         tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-        fh = rs->CharHeight(font);
-
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
-                     int32_t(cy + (64.0f + 32.0f) * resizeRatio), tbuf);
-
-        snprintf(tbuf, sizeof(tbuf) - 1, "%s", wdmObjects->stCoordinate);
-        tbuf[sizeof(tbuf) - 1] = 0;
-        fw = rs->StringWidth(tbuf, font, resizeRatio, static_cast<int32_t>(w));
-        fh = rs->CharHeight(font);
-
-        rs->ExtPrint(font, 0xffffffff, 0x00000000, PR_ALIGN_CENTER, true, resizeRatio, 0, 0, int32_t(cx),
-                     int32_t(cy + (64.0f + 13.0f) * resizeRatio), tbuf);
+        coordText.Print(tbuf);
     }
 
     if (wdmObjects->nationFlagIndex)
     {
         // National flag
         rs->TextureSet(0, nationFlagTx);
-        FillRectCoord(buf, cx - nationFlagWidth/2.0f * resizeRatio, cy + 150.0f * resizeRatio,
-                      nationFlagWidth * resizeRatio,
-                      nationFlagHeight * resizeRatio);
+        FillRectCoord(buf, nationFlagLeftPos, nationFlagTopPos, nationFlagWidth, nationFlagHeight);
 
         const float addtu = 1.0f / static_cast<float>(nationFlagCount);
         FillRectUV(buf, wdmObjects->nationFlagIndex.value() * addtu, 0.0f, addtu, 1.0f);
-        FillRectColor(buf, 0xffffffff);
+        FillRectColor(buf, nationFlagColor);
         DrawRects(buf, 1, "WdmDrawMapBlend");
     }
 }

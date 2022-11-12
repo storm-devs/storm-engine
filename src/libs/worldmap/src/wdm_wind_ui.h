@@ -11,6 +11,7 @@
 #pragma once
 
 #include "wdm_interface_object.h"
+#include "utils.h"
 
 #include <optional>
 
@@ -32,21 +33,45 @@ class WdmWindUI : public WdmInterfaceObject
     // --------------------------------------------------------------------------------------------
   private:
     int32_t txBack;
+    float frameLeftPos, frameTopPos, frameWidth, frameHeight;
+    uint32_t frameColor;
+
     int32_t txSky, txSkyMask;
+    float skyLeftPos, skyTopPos, skyWidth, skyHeight;
+    uint32_t skyColor;
+
     int32_t txBar, txBarMask;
+    float windBarLeftPos, windBarTopPos, windBarWidth, windBarHeight;
+    uint32_t windBarColor;
+
     int32_t txWindPointer;
+    float windPointerLeftPos, windPointerTopPos, windPointerWidth, windPointerHeight;
+    uint32_t windPointerColor;
+
     int32_t txMorale, txMoraleMask, txMoraleBar;
+    float moraleLeftPos, moraleTopPos, moraleWidth, moraleHeight;
+    uint32_t moraleColor;
+
     int32_t dateFont;
     float morale{};
     int32_t food{};
     std::optional<int32_t> rum;
     char month[12][128];
+
     int32_t txCoord;
+    float coordLeftPos, coordTopPos, coordWidth, coordHeight;
+    uint32_t coordColor;
+
+    BITextInfo dateText;    // font, scale and position for Date text in UI
+    BITextInfo foodText;    // font, scale and position for Food text in UI
+    BITextInfo rumText;     // font, scale and position for Rum text in UI
+    BITextInfo stCoordText; // same for label/title above coordinates
+    BITextInfo coordText;   // same for coordinates text
 
     int32_t nationFlagTx;
     uint32_t nationFlagCount{8U};
-    float nationFlagWidth{48.0f};
-    float nationFlagHeight{48.0f};
+    float nationFlagLeftPos, nationFlagTopPos, nationFlagWidth, nationFlagHeight;
+    uint32_t nationFlagColor;
 
     float resizeRatio;
 };
