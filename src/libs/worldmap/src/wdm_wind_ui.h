@@ -32,23 +32,23 @@ class WdmWindUI : public WdmInterfaceObject
     // Encapsulation
     // --------------------------------------------------------------------------------------------
   private:
-    int32_t txBack;
+    int32_t frameTx;
     float frameLeftPos, frameTopPos, frameWidth, frameHeight;
     uint32_t frameColor;
 
-    int32_t txSky, txSkyMask;
+    int32_t skyTx, skyMaskTx;
     float skyLeftPos, skyTopPos, skyWidth, skyHeight;
     uint32_t skyColor;
 
-    int32_t txBar, txBarMask;
+    int32_t windBarTx, windBarMaskTx;
     float windBarLeftPos, windBarTopPos, windBarWidth, windBarHeight;
     uint32_t windBarColor;
 
-    int32_t txWindPointer;
+    int32_t windPointerTx;
     float windPointerLeftPos, windPointerTopPos, windPointerWidth, windPointerHeight;
     uint32_t windPointerColor;
 
-    int32_t txMorale, txMoraleMask, txMoraleBar;
+    int32_t moraleTx, moraleMaskTx, moraleBarTx;
     float moraleLeftPos, moraleTopPos, moraleWidth, moraleHeight;
     uint32_t moraleColor;
 
@@ -58,7 +58,7 @@ class WdmWindUI : public WdmInterfaceObject
     std::optional<int32_t> rum;
     char month[12][128];
 
-    int32_t txCoord;
+    int32_t coordTx;
     float coordLeftPos, coordTopPos, coordWidth, coordHeight;
     uint32_t coordColor;
 

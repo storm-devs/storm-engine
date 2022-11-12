@@ -33,16 +33,16 @@ WdmWindUI::WdmWindUI()
     strcpy_s(month[9], "october");
     strcpy_s(month[10], "november");
     strcpy_s(month[11], "december");
-    txBack = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\back.tga");
-    txSky = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\sky.tga");
-    txSkyMask = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\sky_mask.tga");
-    txBar = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\bar.tga");
-    txBarMask = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\bar_mask.tga");
-    txWindPointer = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\wind_pointer.tga");
-    txMorale = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale.tga");
-    txMoraleMask = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_mask.tga");
-    txMoraleBar = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_bar.tga");
-    txCoord = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\coord.tga");
+    frameTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\back.tga");
+    skyTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\sky.tga");
+    skyMaskTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\sky_mask.tga");
+    windBarTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\bar.tga");
+    windBarMaskTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\bar_mask.tga");
+    windPointerTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\wind_pointer.tga");
+    moraleTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale.tga");
+    moraleMaskTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_mask.tga");
+    moraleBarTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_bar.tga");
+    coordTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\coord.tga");
     nationFlagTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\WorldMapEnsigns.tga");
     dateFont = -1;
     morale = 0.0f;
@@ -51,26 +51,26 @@ WdmWindUI::WdmWindUI()
 
 WdmWindUI::~WdmWindUI()
 {
-    if (txBack >= 0)
-        wdmObjects->rs->TextureRelease(txBack);
-    if (txSky >= 0)
-        wdmObjects->rs->TextureRelease(txSky);
-    if (txSkyMask >= 0)
-        wdmObjects->rs->TextureRelease(txSkyMask);
-    if (txBar >= 0)
-        wdmObjects->rs->TextureRelease(txBar);
-    if (txBarMask >= 0)
-        wdmObjects->rs->TextureRelease(txBarMask);
-    if (txWindPointer >= 0)
-        wdmObjects->rs->TextureRelease(txWindPointer);
-    if (txMorale >= 0)
-        wdmObjects->rs->TextureRelease(txMorale);
-    if (txMoraleMask >= 0)
-        wdmObjects->rs->TextureRelease(txMoraleMask);
-    if (txMoraleBar >= 0)
-        wdmObjects->rs->TextureRelease(txMoraleBar);
-    if (txCoord >= 0)
-        wdmObjects->rs->TextureRelease(txCoord);
+    if (frameTx >= 0)
+        wdmObjects->rs->TextureRelease(frameTx);
+    if (skyTx >= 0)
+        wdmObjects->rs->TextureRelease(skyTx);
+    if (skyMaskTx >= 0)
+        wdmObjects->rs->TextureRelease(skyMaskTx);
+    if (windBarTx >= 0)
+        wdmObjects->rs->TextureRelease(windBarTx);
+    if (windBarMaskTx >= 0)
+        wdmObjects->rs->TextureRelease(windBarMaskTx);
+    if (windPointerTx >= 0)
+        wdmObjects->rs->TextureRelease(windPointerTx);
+    if (moraleTx >= 0)
+        wdmObjects->rs->TextureRelease(moraleTx);
+    if (moraleMaskTx >= 0)
+        wdmObjects->rs->TextureRelease(moraleMaskTx);
+    if (moraleBarTx >= 0)
+        wdmObjects->rs->TextureRelease(moraleBarTx);
+    if (coordTx >= 0)
+        wdmObjects->rs->TextureRelease(coordTx);
     if (nationFlagTx >= 0)
         wdmObjects->rs->TextureRelease(nationFlagTx);
 }
@@ -374,8 +374,8 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     Vertex buf[(3 * 2) * 2];
 
     // Sky
-    rs->TextureSet(0, txSky);
-    rs->TextureSet(1, txSkyMask);
+    rs->TextureSet(0, skyTx);
+    rs->TextureSet(1, skyMaskTx);
     FillRectCoord(buf, skyLeftPos, skyTopPos, skyWidth, skyHeight);
 
     FillRectUV(buf, (wdmObjects->wm->hour * (1.0f / 24.0f) - 0.125f), 0.0f, 0.25f, 1.0f);
@@ -384,7 +384,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     DrawRects(buf, 1, "WdmInterfaceDrawSky");
 
     // Direction of the wind
-    rs->TextureSet(0, txWindPointer);
+    rs->TextureSet(0, windPointerTx);
     FillRectCoord(buf, windPointerLeftPos, windPointerTopPos, windPointerWidth, windPointerHeight, ang);
 
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -392,8 +392,8 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     DrawRects(buf, 1, "WdmDrawMapBlend");
 
     // Wind force
-    rs->TextureSet(0, txBar);
-    rs->TextureSet(1, txBarMask);
+    rs->TextureSet(0, windBarTx);
+    rs->TextureSet(1, windBarMaskTx);
     FillRectCoord(buf, windBarLeftPos, windBarTopPos, windBarWidth, windBarHeight);
 
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -410,7 +410,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     DrawRects(buf, 1, "WdmInterfaceDrawSky");
 
     // Frame
-    rs->TextureSet(0, txBack);
+    rs->TextureSet(0, frameTx);
     FillRectCoord(buf, frameLeftPos, frameTopPos, frameWidth, frameHeight);
 
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -425,8 +425,8 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     dateText.Print(tbuf);
 
     // Drawing a moral bar
-    rs->TextureSet(0, txMoraleBar);
-    rs->TextureSet(1, txMoraleMask);
+    rs->TextureSet(0, moraleBarTx);
+    rs->TextureSet(1, moraleMaskTx);
     FillRectCoord(buf, moraleLeftPos, moraleTopPos, moraleWidth, moraleHeight);
 
     FillRectUV(buf, morale * 0.28f, 0.0f, 1.0f, 1.0f);
@@ -435,7 +435,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     DrawRects(buf, 1, "WdmInterfaceDrawSky");
 
     // Drawing a moral block
-    rs->TextureSet(0, txMorale);
+    rs->TextureSet(0, moraleTx);
     FillRectCoord(buf, moraleLeftPos, moraleTopPos, moraleWidth, moraleHeight);
 
     FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
@@ -458,7 +458,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     if (!wdmObjects->coordinate.empty())
     {
         // Coordinate frame
-        rs->TextureSet(0, txCoord);
+        rs->TextureSet(0, coordTx);
         FillRectCoord(buf, coordLeftPos, coordTopPos, coordWidth, coordHeight);
 
         FillRectUV(buf, 0.0f, 0.0f, 1.0f, 1.0f);
