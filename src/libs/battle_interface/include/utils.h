@@ -16,6 +16,7 @@ class BITextInfo final
     void Release();
     void Init(VDX9RENDER *rs, ATTRIBUTES *pA);
     void Print();
+    void Print(std::string outputText);
 
     VDX9RENDER *pRS;
     std::string sText;

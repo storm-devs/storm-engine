@@ -368,6 +368,15 @@ void BITextInfo::Print()
     }
 }
 
+void BITextInfo::Print(std::string outputText)
+{
+    if (nFont != -1 && !outputText.empty())
+    {
+        pRS->ExtPrint(nFont, dwColor, 0, PR_ALIGN_CENTER, bShadow, fScale, 0, 0, pos.x, pos.y, "%s",
+                      outputText.c_str());
+    }
+}
+
 BILinesInfo::BILinesInfo()
 {
     pRS = nullptr;
