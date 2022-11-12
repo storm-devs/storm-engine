@@ -33,17 +33,6 @@ WdmWindUI::WdmWindUI()
     strcpy_s(month[9], "october");
     strcpy_s(month[10], "november");
     strcpy_s(month[11], "december");
-    frameTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\back.tga");
-    skyTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\sky.tga");
-    skyMaskTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\sky_mask.tga");
-    windBarTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\bar.tga");
-    windBarMaskTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\bar_mask.tga");
-    windPointerTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\wind_pointer.tga");
-    moraleTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale.tga");
-    moraleMaskTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_mask.tga");
-    moraleBarTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\morale_bar.tga");
-    coordTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\coord.tga");
-    nationFlagTx = wdmObjects->rs->TextureCreate("WorldMap\\Interfaces\\WorldMapEnsigns.tga");
     dateFont = -1;
     morale = 0.0f;
     resizeRatio = 1.0f;
@@ -123,6 +112,9 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     }
 
     resizeRatio = wdmObjects->resizeRatio;
+    const char *txPath;
+    const char *barTxPath;
+    const char *maskTxPath;
     // Screen parameters
     float w, h;
     wdmObjects->GetVPSize(w, h);
@@ -130,6 +122,8 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     float cx = w - 128.0f * resizeRatio - 16.0f + 64.0f;
     float cy = -40.0f + 128.0f * resizeRatio;
 
+    txPath = "WorldMap\\Interfaces\\sky.tga";
+    maskTxPath = "WorldMap\\Interfaces\\sky_mask.tga";
     skyLeftPos = cx - 64.0f * resizeRatio;
     skyTopPos = cy - 64.0f * resizeRatio;
     skyWidth = 128.0f * resizeRatio;
@@ -138,13 +132,18 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     ap = apnt->FindAClass(apnt, "sky");
     if (ap)
     {
+        txPath = BIUtils::GetStringFromAttr(ap, "texture", txPath);
+        maskTxPath = BIUtils::GetStringFromAttr(ap, "maskTexture", maskTxPath);
         skyLeftPos = ap->GetAttributeAsFloat("leftPos", skyLeftPos);
         skyTopPos = ap->GetAttributeAsFloat("topPos", skyTopPos);
         skyWidth = ap->GetAttributeAsFloat("width", skyWidth);
         skyHeight = ap->GetAttributeAsFloat("height", skyHeight);
         skyColor = ap->GetAttributeAsDword("color", skyColor);
     }
+    skyTx = wdmObjects->rs->TextureCreate(txPath);
+    skyMaskTx = wdmObjects->rs->TextureCreate(maskTxPath);
 
+    txPath = "WorldMap\\Interfaces\\wind_pointer.tga";
     windPointerLeftPos = cx - 16.0f * resizeRatio;
     windPointerTopPos = cy - 64.0f * resizeRatio;
     windPointerWidth = 32.0f * resizeRatio;
@@ -153,13 +152,17 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     ap = apnt->FindAClass(apnt, "windPointer");
     if (ap)
     {
+        txPath = BIUtils::GetStringFromAttr(ap, "texture", txPath);
         windPointerLeftPos = ap->GetAttributeAsFloat("leftPos", windPointerLeftPos);
         windPointerTopPos = ap->GetAttributeAsFloat("topPos", windPointerTopPos);
         windPointerWidth = ap->GetAttributeAsFloat("width", windPointerWidth);
         windPointerHeight = ap->GetAttributeAsFloat("height", windPointerHeight);
         windPointerColor = ap->GetAttributeAsDword("color", windPointerColor);
     }
+    windPointerTx = wdmObjects->rs->TextureCreate(txPath);
 
+    txPath = "WorldMap\\Interfaces\\bar.tga";
+    maskTxPath = "WorldMap\\Interfaces\\bar_mask.tga";
     windBarLeftPos = cx - 64.0f * resizeRatio;
     windBarTopPos = cy;
     windBarWidth = 128.0f * resizeRatio;
@@ -168,13 +171,18 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     ap = apnt->FindAClass(apnt, "windBar");
     if (ap)
     {
+        txPath = BIUtils::GetStringFromAttr(ap, "texture", txPath);
+        maskTxPath = BIUtils::GetStringFromAttr(ap, "maskTexture", maskTxPath);
         windBarLeftPos = ap->GetAttributeAsFloat("leftPos", windBarLeftPos);
         windBarTopPos = ap->GetAttributeAsFloat("topPos", windBarTopPos);
         windBarWidth = ap->GetAttributeAsFloat("width", windBarWidth);
         windBarHeight = ap->GetAttributeAsFloat("height", windBarHeight);
         windBarColor = ap->GetAttributeAsDword("color", windBarColor);
     }
+    windBarTx = wdmObjects->rs->TextureCreate(txPath);
+    windBarMaskTx = wdmObjects->rs->TextureCreate(maskTxPath);
 
+    txPath = "WorldMap\\Interfaces\\back.tga";
     frameLeftPos = cx - 64.0f * resizeRatio;
     frameTopPos = cy - 128.0f * resizeRatio;
     frameWidth = 128.0f * resizeRatio;
@@ -183,12 +191,14 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     ap = apnt->FindAClass(apnt, "frame");
     if (ap)
     {
+        txPath = BIUtils::GetStringFromAttr(ap, "texture", txPath);
         frameLeftPos = ap->GetAttributeAsFloat("leftPos", frameLeftPos);
         frameTopPos = ap->GetAttributeAsFloat("topPos", frameTopPos);
         frameWidth = ap->GetAttributeAsFloat("width", frameWidth);
         frameHeight = ap->GetAttributeAsFloat("height", frameHeight);
         frameColor = ap->GetAttributeAsDword("color", frameColor);
     }
+    frameTx = wdmObjects->rs->TextureCreate(txPath);
 
     int32_t font = dateFont >= 0 ? dateFont : FONT_DEFAULT;
     ap = apnt->FindAClass(apnt, "dateText");
@@ -211,6 +221,9 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     // Centre
     cy = cy + 128.0f * resizeRatio + 32.0f;
 
+    txPath     = "WorldMap\\Interfaces\\morale.tga";
+    barTxPath  = "WorldMap\\Interfaces\\morale_bar.tga";
+    maskTxPath = "WorldMap\\Interfaces\\morale_mask.tga";
     moraleLeftPos = cx - 64.0f * resizeRatio;
     moraleTopPos = cy - 32.0f * resizeRatio;
     moraleWidth = 128.0f * resizeRatio;
@@ -219,12 +232,18 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     ap = apnt->FindAClass(apnt, "morale");
     if (ap)
     {
+        txPath = BIUtils::GetStringFromAttr(ap, "texture", txPath);
+        barTxPath = BIUtils::GetStringFromAttr(ap, "barTexture", barTxPath);
+        maskTxPath = BIUtils::GetStringFromAttr(ap, "maskTexture", maskTxPath);
         moraleLeftPos = ap->GetAttributeAsFloat("leftPos", moraleLeftPos);
         moraleTopPos = ap->GetAttributeAsFloat("topPos", moraleTopPos);
         moraleWidth = ap->GetAttributeAsFloat("width", moraleWidth);
         moraleHeight = ap->GetAttributeAsFloat("height", moraleHeight);
         moraleColor = ap->GetAttributeAsDword("color", moraleColor);
     }
+    moraleTx = wdmObjects->rs->TextureCreate(txPath);
+    moraleBarTx = wdmObjects->rs->TextureCreate(barTxPath);
+    moraleMaskTx = wdmObjects->rs->TextureCreate(maskTxPath);
 
     float foodRumSpacing = rum ? 24.0f : 0.0f;
     ap = apnt->FindAClass(apnt, "foodText");
@@ -259,6 +278,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
         rumText.pos.y = int32_t(cy + 30.0f * resizeRatio);
     }
 
+    txPath = "WorldMap\\Interfaces\\coord.tga";
     coordLeftPos = cx - 64.0f * resizeRatio;
     coordTopPos = cy + 64.0f * resizeRatio;
     coordWidth = 128.0f * resizeRatio;
@@ -267,12 +287,14 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     ap = apnt->FindAClass(apnt, "coord");
     if (ap)
     {
+        txPath = BIUtils::GetStringFromAttr(ap, "texture", txPath);
         coordLeftPos = ap->GetAttributeAsFloat("leftPos", coordLeftPos);
         coordTopPos = ap->GetAttributeAsFloat("topPos", coordTopPos);
         coordWidth = ap->GetAttributeAsFloat("width", coordWidth);
         coordHeight = ap->GetAttributeAsFloat("height", coordHeight);
         coordColor = ap->GetAttributeAsDword("color", coordColor);
     }
+    coordTx = wdmObjects->rs->TextureCreate(txPath);
 
     ap = apnt->FindAClass(apnt, "stCoordText");
     if (ap)
@@ -307,6 +329,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
         coordText.pos.y = int32_t(cy + (64.0f + 32.0f) * resizeRatio);
     }
 
+    txPath = "WorldMap\\Interfaces\\WorldMapEnsigns.tga";
     nationFlagWidth = 48.0f * resizeRatio;
     nationFlagHeight = 48.0f * resizeRatio;
     nationFlagLeftPos = cx - nationFlagWidth / 2.0f;
@@ -315,16 +338,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
     ap = apnt->FindAClass(apnt, "nationFlag");
     if (ap)
     {
-        const char *texName = ap->GetAttribute("texName");
-        if (texName)
-        {
-            const auto newTxNationFlag = wdmObjects->rs->TextureCreate(texName);
-            if (newTxNationFlag >= 0)
-            {
-                wdmObjects->rs->TextureRelease(nationFlagTx);
-                nationFlagTx = newTxNationFlag;
-            }
-        }
+        txPath = BIUtils::GetStringFromAttr(ap, "texture", txPath);
         nationFlagCount = ap->GetAttributeAsDword("count", nationFlagCount);
         nationFlagLeftPos = ap->GetAttributeAsFloat("leftPos", nationFlagLeftPos);
         nationFlagTopPos = ap->GetAttributeAsFloat("topPos", nationFlagTopPos);
@@ -332,6 +346,7 @@ void WdmWindUI::SetAttributes(ATTRIBUTES *apnt)
         nationFlagHeight = ap->GetAttributeAsFloat("height", nationFlagHeight);
         nationFlagColor = ap->GetAttributeAsDword("color", nationFlagColor);
     }
+    nationFlagTx = wdmObjects->rs->TextureCreate(txPath);
 }
 
 // Rendering
