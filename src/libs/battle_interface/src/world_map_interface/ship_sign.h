@@ -1,6 +1,6 @@
 #pragma once
 
-#include "battle_sign.h"
+#include "../battle_sign.h"
 #include "bi_defines.h"
 
 #define MAX_SHIP_QUANTITY 8

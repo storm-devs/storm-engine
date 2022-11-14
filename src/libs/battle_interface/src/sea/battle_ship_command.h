@@ -1,6 +1,6 @@
 #pragma once
 
-#include "battle_command.h"
+#include "../battle_command.h"
 
 class BIShipCommandList : public BICommandList
 {
