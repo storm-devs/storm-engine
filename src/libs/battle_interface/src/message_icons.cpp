@@ -1,5 +1,5 @@
 #include "message_icons.h"
-#include "utils.h"
+#include "bi_utils.h"
 
 MESSAGE_ICONS::MESSAGE_ICONS()
 {

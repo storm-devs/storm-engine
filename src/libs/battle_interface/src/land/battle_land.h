@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils.h"
+#include "bi_utils.h"
 #include "bi_defines.h"
 
 class BIManSign;

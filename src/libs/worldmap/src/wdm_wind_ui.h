@@ -11,7 +11,7 @@
 #pragma once
 
 #include "wdm_interface_object.h"
-#include "utils.h"
+#include "bi_utils.h"
 
 #include <optional>
 

@@ -1,5 +1,5 @@
 #include "battle_sign.h"
-#include "utils.h"
+#include "bi_utils.h"
 #include "controls.h"
 #include "core.h"
 #include "vma.hpp"

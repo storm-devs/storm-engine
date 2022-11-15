@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils.h"
+#include "bi_utils.h"
 #include "bi_defines.h"
 #include "battle_navigator.h"
 #include "dx9render.h"
