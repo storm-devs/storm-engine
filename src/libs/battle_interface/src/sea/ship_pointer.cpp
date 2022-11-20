@@ -1,5 +1,5 @@
 #include "ship_pointer.h"
-#include "../bi_defines.h"
+#include "bi_defines.h"
 #include "entity.h"
 #include "core.h"
 #include "math_inlines.h"

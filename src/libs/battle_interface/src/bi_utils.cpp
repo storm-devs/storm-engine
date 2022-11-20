@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "bi_utils.h"
 
 #include "core.h"
 #include "string_compare.hpp"
@@ -365,6 +365,15 @@ void BITextInfo::Print()
         }
         if (!sText.empty())
             pRS->ExtPrint(nFont, dwColor, 0, PR_ALIGN_CENTER, bShadow, fScale, 0, 0, pos.x, pos.y, "%s", sText.c_str());
+    }
+}
+
+void BITextInfo::Print(std::string outputText)
+{
+    if (nFont != -1 && !outputText.empty())
+    {
+        pRS->ExtPrint(nFont, dwColor, 0, PR_ALIGN_CENTER, bShadow, fScale, 0, 0, pos.x, pos.y, "%s",
+                      outputText.c_str());
     }
 }
 

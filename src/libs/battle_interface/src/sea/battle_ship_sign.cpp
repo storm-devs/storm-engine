@@ -2,7 +2,7 @@
 
 #include "core.h"
 
-#include "../utils.h"
+#include "bi_utils.h"
 #include "battle_ship_command.h"
 #include "controls.h"
 #include "shared/battle_interface/msg_control.h"

@@ -1,5 +1,5 @@
 #include "ship_info_images.h"
-#include "../utils.h"
+#include "bi_utils.h"
 #include "ship_base.h"
 
 // define the vertices

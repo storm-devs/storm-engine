@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../bi_defines.h"
+#include "bi_defines.h"
 
 // location type - drop-off points
 #define ISLAND_LOCATOR_LAND 1

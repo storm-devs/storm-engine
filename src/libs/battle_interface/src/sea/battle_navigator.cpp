@@ -3,7 +3,7 @@
 
 #include "core.h"
 
-#include "../utils.h"
+#include "bi_utils.h"
 #include "entity.h"
 #include "island_base.h"
 #include "math_inlines.h"

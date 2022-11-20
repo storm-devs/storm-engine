@@ -1,5 +1,5 @@
 #include "mouse_pointer.h"
-#include "../utils.h"
+#include "bi_utils.h"
 #include "../image/img_render.h"
 #include "core.h"
 #include "vma.hpp"

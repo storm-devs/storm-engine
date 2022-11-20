@@ -14,8 +14,8 @@
 #include "../land/battle_land.h"
 
 #include "../active_perk_shower.h"
-#include "../item_entity/item_entity.h"
 #include "../log_and_action.h"
+#include "../item_entity/item_entity.h"
 #include "../world_map_interface/interface.h"
 #include "../spyglass/spyglass.h"
 #include "../timer/timer.h"

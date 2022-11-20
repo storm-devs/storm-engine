@@ -1,5 +1,5 @@
 #include "battle_command.h"
-#include "utils.h"
+#include "bi_utils.h"
 #include "core.h"
 #include "image/img_render.h"
 #include "sea/ships_list.h"

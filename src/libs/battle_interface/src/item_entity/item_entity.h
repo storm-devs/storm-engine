@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../bi_defines.h"
+#include "bi_defines.h"
 #include "animation.h"
 #include <v_particle_system.h>
 #include <string>
