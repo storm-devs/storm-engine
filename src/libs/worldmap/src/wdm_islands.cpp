@@ -462,6 +462,12 @@ void WdmIslands::SetIslandsData(ATTRIBUTES *apnt, bool isChange)
             labels[index].textX = 0.0f;
             labels[index].textY = 0.0f;
         }
+
+        // Store locator position as label attribute
+        auto* position_attr = a->VerifyAttributeClass("position");
+        position_attr->SetAttributeUseFloat("x", pos.x);
+        position_attr->SetAttributeUseFloat("y", pos.y);
+        position_attr->SetAttributeUseFloat("z", pos.z);
     }
 }
 
