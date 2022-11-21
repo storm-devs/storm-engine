@@ -4,8 +4,7 @@
 
 uint64_t dwTmpRDTSC;
 
-AICannon::AICannon()
-    : pAHolder(nullptr), eidParent(0), vPos(), vDir(), fSpeedV0(0), vEnemyPos()
+AICannon::AICannon() : pAHolder(nullptr), eidParent(0), vPos(), vDir(), fSpeedV0(0), vEnemyPos()
 {
     bLoad = false;
     bEmpty = true;
@@ -125,8 +124,15 @@ void AICannon::RealFire()
 
     const auto vDirTemp = mRot * vDir;
     const auto fDirY = NormalizeAngle(atan2f(vDirTemp.x, vDirTemp.z));
-    core.Event(CANNON_FIRE, "affffffff", pAHolder->GetACharacter(), vPosTemp.x, vPosTemp.y, vPosTemp.z, fSpeedV0,
-               fFireDirection, fFireHeightAngle, fDirY, fMaxFireDistance);
+
+    // raw angle
+    const CVECTOR vFlatEnemyDir = !(CVECTOR(vEnemyPos.x, vPosTemp.y, vEnemyPos.z) - vPosTemp);
+    float fAngle = acosf(vFlatEnemyDir | vEnemyDir);
+    if (vEnemyPos.y < vPosTemp.y)
+        fAngle = -fAngle;
+
+    core.Event(CANNON_FIRE, "afffffffff", pAHolder->GetACharacter(), vPosTemp.x, vPosTemp.y, vPosTemp.z, fSpeedV0,
+               fFireDirection, fFireHeightAngle, fDirY, fMaxFireDistance, fAngle);
 
     pAIObj->Fire(*pAIObj->GetMatrix() * (vPos + vDir));
 
