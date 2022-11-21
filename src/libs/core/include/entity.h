@@ -68,6 +68,16 @@ class Entity
         return {};
     }
 
+#ifdef DEBUG_ENTITIES
+    const char *GetName()
+    {
+        return name_;
+    }
+#endif
   private:
     EntitySelfData data_{};
+
+#ifdef DEBUG_ENTITIES
+    const char *name_{};
+#endif
 };

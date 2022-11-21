@@ -141,6 +141,9 @@ entid_t EntityManager::CreateEntity(const char *name, ATTRIBUTES *attr)
     ptr->data_.id = id;
     ptr->AttributesPointer = attr;
 
+#ifdef DEBUG_ENTITIES
+    ptr->name_ = pClass->GetName();
+#endif
     // add to cache
     cache_.UpdateAdd(hash, id);
 

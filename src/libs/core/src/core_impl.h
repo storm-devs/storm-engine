@@ -175,6 +175,23 @@ private:
     char *State_file_name;
 
     float fTimeScale;
+
+#ifdef DEBUG_ENTITIES
+    struct PerfStats
+    {
+        struct CallsTime
+        {
+            size_t callsNumber{};
+            uint64_t time{};
+            uint64_t timeMax{};
+        };
+
+        std::unordered_map<std::string, CallsTime> execute;
+        std::unordered_map<std::string, CallsTime> realize;
+    };
+
+    PerfStats stats;
+#endif
 };
 
 inline CoreImpl core_internal;

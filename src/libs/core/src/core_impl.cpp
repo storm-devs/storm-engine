@@ -529,17 +529,28 @@ void CoreImpl::Trace(const char *format, ...)
 //
 void CoreImpl::ProcessExecute()
 {
-    uint64_t ticks;
-
     ProcessRunStart(SECTION_EXECUTE);
 
     const auto deltatime = Timer.GetDeltaTime();
-    const auto &entIds = core.GetEntityIds(layer_type_t::execute);
+    const auto &entIds = GetEntityIds(layer_type_t::execute);
     for (auto id : entIds)
     {
-        if (auto *ptr = core.GetEntityPointer(id))
+        if (auto *ptr = GetEntityPointer(id))
         {
+#ifdef DEBUG_ENTITIES
+            const auto begin = SDL_GetTicks();
+#endif
             ptr->ProcessStage(Entity::Stage::execute, deltatime);
+#ifdef DEBUG_ENTITIES
+            const auto end = SDL_GetTicks() - begin;
+            auto &[calls, time, timeMax] = stats.execute[ptr->GetName()];
+            ++calls;
+            time += end;
+            if (end > timeMax)
+            {
+                timeMax = end;
+            }
+#endif
         }
     }
 
@@ -548,16 +559,28 @@ void CoreImpl::ProcessExecute()
 
 void CoreImpl::ProcessRealize()
 {
-    uint64_t ticks;
     ProcessRunStart(SECTION_REALIZE);
 
     const auto deltatime = Timer.GetDeltaTime();
-    const auto &entIds = core.GetEntityIds(layer_type_t::realize);
+    const auto &entIds = GetEntityIds(layer_type_t::realize);
     for (auto id : entIds)
     {
-        if (auto *ptr = core.GetEntityPointer(id))
+        if (auto *ptr = GetEntityPointer(id))
         {
+#ifdef DEBUG_ENTITIES
+            const auto begin = SDL_GetTicks();
+#endif
             ptr->ProcessStage(Entity::Stage::realize, deltatime);
+#ifdef DEBUG_ENTITIES
+            const auto end = SDL_GetTicks() - begin;
+            auto &[calls, time, timeMax] = stats.realize[ptr->GetName()];
+            ++calls;
+            time += end;
+            if (end > timeMax)
+            {
+                timeMax = end;
+            }
+#endif
         }
     }
 
@@ -653,6 +676,31 @@ void CoreImpl::ProcessRunEnd(uint32_t section_code)
         }
         service_PTR = Services_List.GetServiceNext(class_code);
     }
+
+#ifdef DEBUG_ENTITIES
+    if (Controls->GetDebugAsyncKeyState(VK_F4))
+    {
+        spdlog::debug("===PERF STATS===");
+        spdlog::debug("===EXECUTE===");
+        for (auto &[name, stats] : stats.execute)
+        {
+            spdlog::debug("{:12}: calls: {:10.5f} avg: {:12} max: {:12} total: {:12}", name, stats.callsNumber,
+                          stats.time * 1.0f / stats.callsNumber, stats.timeMax, stats.time);
+        }
+        spdlog::debug("===REALIZE===");
+        for (auto &[name, stats] : stats.realize)
+        {
+            spdlog::debug("{:12}: calls: {:10.5f} avg: {:12} max: {:12} total: {:12}", name, stats.callsNumber,
+                          stats.time * 1.0f / stats.callsNumber, stats.timeMax, stats.time);
+        }
+        spdlog::debug("===END===");
+
+        stats.execute.clear();
+        stats.realize.clear();
+
+        Sleep(100);
+    }
+#endif
 }
 
 uint32_t CoreImpl::EngineFps()
