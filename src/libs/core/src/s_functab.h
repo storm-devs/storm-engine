@@ -91,6 +91,7 @@ class FuncTable
 
     bool AddTime(size_t func_index, uint64_t time);
     bool AddCall(size_t func_index);
+    void ResetTimeAndCalls();
 
     void Release(); // clear table
 
