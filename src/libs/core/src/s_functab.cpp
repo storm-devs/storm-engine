@@ -232,6 +232,15 @@ bool FuncTable::AddCall(size_t func_index)
     return true;
 }
 
+void FuncTable::ResetTimeAndCalls()
+{
+    for (auto &func : funcs_)
+    {
+        func.usage_time = 0;
+        func.number_of_calls = 0;
+    }
+}
+
 void FuncTable::Release()
 {
     funcs_.clear();
