@@ -118,6 +118,7 @@ class Core
     virtual void EraseEntity(entid_t entity) = 0;
     virtual entid_t CreateEntity(const char *name, ATTRIBUTES *attr = nullptr) = 0;
     virtual entptr_t GetEntityPointer(entid_t entity) const = 0;
+    virtual entptr_t GetEntityPointerSafe(entid_t entity) const = 0;
     virtual entid_t GetEntityId(const char *name) const = 0;
     virtual entity_container_cref GetEntityIds(layer_type_t index) const = 0;
     virtual entity_container_cref GetEntityIds(layer_index_t index) const = 0;

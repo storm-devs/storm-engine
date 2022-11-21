@@ -353,7 +353,7 @@ void CoreImpl::SetTimeScale(float _scale)
 uint64_t CoreImpl::Send_Message(entid_t Destination, const char *Format, ...)
 {
     MESSAGE message;
-    auto *const ptr = core.GetEntityPointer(Destination); // check for valid destination
+    auto *const ptr = GetEntityPointerSafe(Destination); // check for valid destination
     if (!ptr)
         return 0;
 
@@ -439,7 +439,7 @@ VDATA *CoreImpl::Event(const std::string_view &event_name)
     return Compiler->ProcessEvent(event_name.data(), message);
 }
 
-VDATA *CoreImpl::Event(const std::string_view &event_name, MESSAGE& message)
+VDATA *CoreImpl::Event(const std::string_view &event_name, MESSAGE &message)
 {
     return Compiler->ProcessEvent(event_name.data(), message);
 }
@@ -677,7 +677,7 @@ uint32_t CoreImpl::GetRDeltaTime()
 
 ATTRIBUTES *CoreImpl::Entity_GetAttributeClass(entid_t id_PTR, const char *name)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return nullptr;
     if (pE->AttributesPointer == nullptr)
@@ -687,7 +687,7 @@ ATTRIBUTES *CoreImpl::Entity_GetAttributeClass(entid_t id_PTR, const char *name)
 
 const char *CoreImpl::Entity_GetAttribute(entid_t id_PTR, const char *name)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return nullptr;
     if (pE->AttributesPointer == nullptr)
@@ -697,7 +697,7 @@ const char *CoreImpl::Entity_GetAttribute(entid_t id_PTR, const char *name)
 
 uint32_t CoreImpl::Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, uint32_t def)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return def;
     if (pE->AttributesPointer == nullptr)
@@ -707,7 +707,7 @@ uint32_t CoreImpl::Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, 
 
 FLOAT CoreImpl::Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT def)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return def;
     if (pE->AttributesPointer == nullptr)
@@ -717,7 +717,7 @@ FLOAT CoreImpl::Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLO
 
 bool CoreImpl::Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return false;
     if (pE->AttributesPointer == nullptr)
@@ -727,7 +727,7 @@ bool CoreImpl::Entity_SetAttribute(entid_t id_PTR, const char *name, const char 
 
 bool CoreImpl::Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_t val)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return false;
     if (pE->AttributesPointer == nullptr)
@@ -737,7 +737,7 @@ bool CoreImpl::Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uin
 
 bool CoreImpl::Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return false;
     if (pE->AttributesPointer == nullptr)
@@ -747,7 +747,7 @@ bool CoreImpl::Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLO
 
 void CoreImpl::Entity_SetAttributePointer(entid_t id_PTR, ATTRIBUTES *pA)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return;
     pE->AttributesPointer = pA;
@@ -755,7 +755,7 @@ void CoreImpl::Entity_SetAttributePointer(entid_t id_PTR, ATTRIBUTES *pA)
 
 uint32_t CoreImpl::Entity_AttributeChanged(entid_t id_PTR, ATTRIBUTES *pA)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return 0;
     return pE->AttributeChanged(pA);
@@ -763,7 +763,7 @@ uint32_t CoreImpl::Entity_AttributeChanged(entid_t id_PTR, ATTRIBUTES *pA)
 
 ATTRIBUTES *CoreImpl::Entity_GetAttributePointer(entid_t id_PTR)
 {
-    Entity *pE = core.GetEntityPointer(id_PTR);
+    Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
         return nullptr;
     return pE->AttributesPointer;
@@ -958,6 +958,11 @@ entid_t CoreImpl::CreateEntity(const char *name, ATTRIBUTES *attr)
 entptr_t CoreImpl::GetEntityPointer(entid_t id) const
 {
     return entity_manager_.GetEntityPointer(id);
+}
+
+entptr_t CoreImpl::GetEntityPointerSafe(entid_t id) const
+{
+    return entity_manager_.IsEntityValid(id) ? GetEntityPointer(id) : nullptr;
 }
 
 entid_t CoreImpl::GetEntityId(const char *name) const
