@@ -131,8 +131,8 @@ void AICannon::RealFire()
     if (vEnemyPos.y < vPosTemp.y)
         fAngle = -fAngle;
 
-    core.Event(CANNON_FIRE, "affffffff", pAHolder->GetACharacter(), vPosTemp.x, vPosTemp.y, vPosTemp.z, fSpeedV0,
-               fFireDirection, fFireHeightAngle, fAngle, fMaxFireDistance);
+    core.Event(CANNON_FIRE, "afffffffff", pAHolder->GetACharacter(), vPosTemp.x, vPosTemp.y, vPosTemp.z, fSpeedV0,
+               fFireDirection, fFireHeightAngle, fDirY, fMaxFireDistance, fAngle);
 
     pAIObj->Fire(*pAIObj->GetMatrix() * (vPos + vDir));
 
