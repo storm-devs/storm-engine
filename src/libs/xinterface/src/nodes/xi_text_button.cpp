@@ -584,7 +584,6 @@ bool CXI_TEXTBUTTON::IsClick(int buttonID, int32_t xPos, int32_t yPos)
 void CXI_TEXTBUTTON::ChangePosition(XYRECT &rNewPos)
 {
     m_rect = rNewPos;
-    GetAbsoluteRect(m_rect, m_nAbsoluteRectVal);
     FillPositionIntoVertices();
 }
 
