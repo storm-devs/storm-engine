@@ -2651,16 +2651,12 @@ void DX9RENDER::RecompileEffects()
 {
 #ifdef _WIN32 // Effects
     effects_.release();
-
-    std::filesystem::path cur_path = std::filesystem::current_path();
-    std::filesystem::current_path(std::filesystem::u8path(fio->_GetExecutableDirectory()));
     for (const auto &p : std::filesystem::recursive_directory_iterator("resource/techniques"))
         if (is_regular_file(p) && p.path().extension() == ".fx")
         {
             auto s = p.path().string(); // hug microsoft
             effects_.compile(s.c_str());
         }
-    std::filesystem::current_path(cur_path);
 #endif
 }
 
