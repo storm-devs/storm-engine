@@ -18,7 +18,7 @@ endif()
 
 STORM_SETUP(
     TARGET_NAME engine
-    TYPE executable
+    TYPE executable-engine
     DEPENDENCIES
 
     ${MIMALLOC_DEP}

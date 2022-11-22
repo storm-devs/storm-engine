@@ -183,7 +183,7 @@ macro(STORM_SETUP)
     set(lib_scope PUBLIC)
   endif()
 
-  if(${_SETUP_TYPE} STREQUAL "executable")
+  if(${_SETUP_TYPE} MATCHES "executable.*")
     add_executable("${_SETUP_TARGET_NAME}" WIN32 ${SRCS})
     _set_ide_folder("${_SETUP_TARGET_NAME}" "Executables")
   elseif(${_SETUP_TYPE} STREQUAL "library")
@@ -217,8 +217,8 @@ macro(STORM_SETUP)
     "${_SETUP_TARGET_NAME}" PROPERTIES OUTPUT_NAME ${_SETUP_TARGET_NAME} VERSION
                                                                          "1")
 
-  # link storm modules to executable forcing unused symbols to be preserved
-  if(${_SETUP_TYPE} STREQUAL "executable")
+  # link storm modules to executable-engine forcing unused symbols to be preserved
+  if(${_SETUP_TYPE} STREQUAL "executable-engine")
     if(NOT WIN32)
       list(APPEND target_link_flags "-Wl,--whole-archive")
     endif()
