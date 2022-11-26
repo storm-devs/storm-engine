@@ -18,11 +18,13 @@ class SDLWindow : public OSWindow
 
     int Width() const override;
     int Height() const override;
+    WindowSize GetWindowSize() const override;
     bool Fullscreen() const override;
     std::string Title() const override;
 
     void SetFullscreen(bool fullscreen) override;
     void Resize(int width, int height) override;
+    void WarpMouseInWindow(int x, int y) override;
     void SetTitle(const std::string &title) override;
     void SetGamma(const uint16_t (&red)[256], const uint16_t (&green)[256], const uint16_t (&blue)[256]) override;
 

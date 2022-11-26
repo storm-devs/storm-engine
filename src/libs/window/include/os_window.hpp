@@ -6,6 +6,12 @@
 
 namespace storm
 {
+struct WindowSize
+{
+    int width{};
+    int height{};
+};
+
 //! Abstract window
 class OSWindow
 {
@@ -38,6 +44,8 @@ class OSWindow
     virtual int Width() const = 0;
     //! Current height of window
     virtual int Height() const = 0;
+    //! Current window size
+    virtual WindowSize GetWindowSize() const = 0;
     //! Is window fullscreen
     virtual bool Fullscreen() const = 0;
     //! Window title
@@ -47,6 +55,8 @@ class OSWindow
     virtual void SetFullscreen(bool fullscreen) = 0;
     //! Resize window
     virtual void Resize(int width, int height) = 0;
+    //! Warp mouse
+    virtual void WarpMouseInWindow(int x, int y) = 0;
     //! Set window title
     virtual void SetTitle(const std::string &title) = 0;
     //! Set window gamma
