@@ -139,7 +139,7 @@ class DX9RENDER : public VDX9RENDER
     void SaveShoot() override;
 
     // DX9Render: Clip Planes Section
-    HRESULT SetClipPlane(uint32_t Index, CONST float *pPlane) override;
+    HRESULT SetClipPlane(uint32_t Index, const float *pPlane) override;
     PLANE *GetPlanes() override;
 
     // DX9Render: Camera Section
@@ -281,31 +281,31 @@ class DX9RENDER : public VDX9RENDER
     HRESULT GetLevelDesc(IDirect3DTexture9 *ppTexture, UINT Level, D3DSURFACE_DESC *pDesc) override;
     HRESULT GetLevelDesc(IDirect3DCubeTexture9 *ppCubeTexture, UINT Level, D3DSURFACE_DESC *pDesc) override;
     HRESULT LockRect(IDirect3DCubeTexture9 *ppCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level,
-                     D3DLOCKED_RECT *pLockedRect, CONST RECT *pRect, uint32_t Flags) override;
-    HRESULT LockRect(IDirect3DTexture9 *ppTexture, UINT Level, D3DLOCKED_RECT *pLockedRect, CONST RECT *pRect,
+                     D3DLOCKED_RECT *pLockedRect, const RECT *pRect, uint32_t Flags) override;
+    HRESULT LockRect(IDirect3DTexture9 *ppTexture, UINT Level, D3DLOCKED_RECT *pLockedRect, const RECT *pRect,
                      uint32_t Flags) override;
     HRESULT UnlockRect(IDirect3DCubeTexture9 *pCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level) override;
     HRESULT UnlockRect(IDirect3DTexture9 *pTexture, UINT Level) override;
     HRESULT GetSurfaceLevel(IDirect3DTexture9 *ppTexture, UINT Level, IDirect3DSurface9 **ppSurfaceLevel) override;
-    HRESULT UpdateSurface(IDirect3DSurface9 *pSourceSurface, CONST RECT *pSourceRectsArray, UINT cRects,
-                          IDirect3DSurface9 *pDestinationSurface, CONST POINT *pDestPointsArray) override;
+    HRESULT UpdateSurface(IDirect3DSurface9 *pSourceSurface, const RECT *pSourceRectsArray, UINT cRects,
+                          IDirect3DSurface9 *pDestinationSurface, const POINT *pDestPointsArray) override;
     HRESULT StretchRect(IDirect3DSurface9 *pSourceSurface, const RECT *pSourceRect, IDirect3DSurface9 *pDestSurface,
                         const RECT *pDestRect, D3DTEXTUREFILTERTYPE Filter) override;
     HRESULT GetRenderTargetData(IDirect3DSurface9 *pRenderTarget, IDirect3DSurface9 *pDestSurface) override;
 
     // D3D Pixel/Vertex Shaders Section
-    HRESULT CreateVertexDeclaration(CONST D3DVERTEXELEMENT9 *pVertexElements,
+    HRESULT CreateVertexDeclaration(const D3DVERTEXELEMENT9 *pVertexElements,
                                     IDirect3DVertexDeclaration9 **ppDecl) override;
     HRESULT SetVertexDeclaration(IDirect3DVertexDeclaration9 *pDecl) override;
-    HRESULT CreatePixelShader(CONST uint32_t *pFunction, IDirect3DPixelShader9 **ppShader) override;
-    HRESULT CreateVertexShader(CONST uint32_t *pFunction, IDirect3DVertexShader9 **ppShader) override;
+    HRESULT CreatePixelShader(const uint32_t *pFunction, IDirect3DPixelShader9 **ppShader) override;
+    HRESULT CreateVertexShader(const uint32_t *pFunction, IDirect3DVertexShader9 **ppShader) override;
     HRESULT DeletePixelShader(IDirect3DPixelShader9 *pShader) override;
     HRESULT DeleteVertexShader(IDirect3DVertexShader9 *pShader) override;
     HRESULT SetVertexShader(IDirect3DVertexShader9 *pShader) override;
     HRESULT SetPixelShader(IDirect3DPixelShader9 *pShader) override;
-    /*virtual HRESULT SetFVFConstant(DWORD Register, CONST void* pConstantData, DWORD  ConstantCount );*/
-    HRESULT SetVertexShaderConstantF(UINT StartRegister, CONST float *pConstantData, UINT Vector4iCount) override;
-    HRESULT SetPixelShaderConstantF(UINT StartRegister, CONST float *pConstantData, UINT Vector4iCount) override;
+    /*virtual HRESULT SetFVFConstant(DWORD Register, const void* pConstantData, DWORD  ConstantCount );*/
+    HRESULT SetVertexShaderConstantF(UINT StartRegister, const float *pConstantData, UINT Vector4iCount) override;
+    HRESULT SetPixelShaderConstantF(UINT StartRegister, const float *pConstantData, UINT Vector4iCount) override;
     HRESULT SetFVF(uint32_t handle) override;
     HRESULT GetVertexShader(IDirect3DVertexShader9 **ppShader) override;
     HRESULT GetPixelShader(IDirect3DPixelShader9 **ppShader) override;
@@ -316,7 +316,7 @@ class DX9RENDER : public VDX9RENDER
     // D3D Render Target/Begin/End/Clear
     HRESULT GetRenderTarget(IDirect3DSurface9 **ppRenderTarget) override;
     HRESULT SetRenderTarget(IDirect3DSurface9 *pRenderTarget, IDirect3DSurface9 *pNewZStencil) override;
-    HRESULT Clear(uint32_t Count, CONST D3DRECT *pRects, uint32_t Flags, D3DCOLOR Color, float Z,
+    HRESULT Clear(uint32_t Count, const D3DRECT *pRects, uint32_t Flags, D3DCOLOR Color, float Z,
                   uint32_t Stencil) override;
     HRESULT BeginScene() override;
     HRESULT EndScene() override;
