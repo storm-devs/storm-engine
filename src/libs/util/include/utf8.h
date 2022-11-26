@@ -4,7 +4,9 @@
 #include <cstring>
 #include <string>
 
+#ifdef _WIN32 // for WideCharToMultiByte / MultiByteToWideChar
 #include <windows.h>
+#endif
 
 namespace utf8
 {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <windows.h>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>

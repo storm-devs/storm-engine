@@ -8,8 +8,6 @@
 #include "timer.h"
 #include "vma.hpp"
 
-#include <windows.h>
-
 #define ENGINE_SCRIPT_VERSION 54128
 
 class CoreImpl final : public CorePrivate
