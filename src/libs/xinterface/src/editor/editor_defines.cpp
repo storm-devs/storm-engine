@@ -1,5 +1,7 @@
 #include "editor_defines.h"
 
+#include <cstdint>
+
 void GIEditorObject::LinkEvent(GIEditorEventHandler *pEventHandler, const GIEditorEvent &pEventFunction)
 {
     pEventHandler->AddEventFunction(this, pEventFunction);

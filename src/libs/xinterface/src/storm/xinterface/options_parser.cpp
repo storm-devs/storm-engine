@@ -1,5 +1,7 @@
 #include "options_parser.hpp"
 
+#include <algorithm>
+
 namespace storm
 {
 

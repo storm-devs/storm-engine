@@ -2,6 +2,8 @@
 #include "storm_assert.h"
 #include "string.h"
 
+#include <algorithm>
+
 BIImageRender::BIImageRender(VDX9RENDER *pRS)
     : m_nBeginOutputPrioritet(0), m_nEndOutputPrioritet(0)
 {
