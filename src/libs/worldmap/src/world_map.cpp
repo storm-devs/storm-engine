@@ -683,7 +683,7 @@ uint32_t WorldMap::AttributeChanged(ATTRIBUTES *apnt)
                 sprintf_s(buf, "%i", es->type);
                 pa->SetAttribute("type", buf);
                 pa->SetAttributeUseDword("select", es->isSelect);
-                pa->SetAttribute("id", static_cast<WdmEnemyShip *>(wdmObjects->ships[i])->GetAttributeName());
+                pa->SetAttribute("id", (char *)static_cast<WdmEnemyShip *>(wdmObjects->ships[i])->GetAttributeName());
                 // If there is an attacker, get his index
                 if (es->attack)
                 {

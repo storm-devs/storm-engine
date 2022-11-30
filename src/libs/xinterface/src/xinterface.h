@@ -411,7 +411,7 @@ class CONTROLS_CONTAINER : public Entity
 
         CONTEINER_DESCR *next;
 
-        CONTROL_DESCR *FindControl(const std::string_view &cntrlName) const;
+        CONTROL_DESCR *FindControl(const char *cntrlName);
     } * pContainers;
 
   public:
@@ -441,7 +441,7 @@ class CONTROLS_CONTAINER : public Entity
     bool CreateConteinerList(ATTRIBUTES *pA);
     void AddContainer(const char *container);
     void SetContainerLimitVal(const char *container, float fLimitVal);
-    void AddControlsToContainer(const char *container, const std::string_view &controlName, float fValLimit);
+    void AddControlsToContainer(const char *container, const char *controlName, float fValLimit);
 
     CONTEINER_DESCR *FindContainer(const char *sContainer);
 };

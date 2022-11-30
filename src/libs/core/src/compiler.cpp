@@ -176,6 +176,7 @@ void COMPILER::Release()
     SStack.Release();
     EventTab.Release();
     EventMsg.Release();
+    SCodec.Release();
     LibriaryFuncs.clear();
 
     delete[] pDebExpBuffer;
@@ -5716,11 +5717,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
                 else
                     rAP = rAP->GetAttributeClassByCode(*((int32_t *)&pRunCodeBase[TLR_DataOffset]));
                 if (!rAP)
-                {
-                    std::string error_message = fmt::format(
-                        "missed attribute: {}", SCodec.Convert(*((int32_t *)&pRunCodeBase[TLR_DataOffset])));
-                    SetError(error_message.c_str());
-                }
+                    SetError("missed attribute: %s", SCodec.Convert(*((int32_t *)&pRunCodeBase[TLR_DataOffset])));
                 break;
             case VARIABLE:
                 real_var = VarTab.GetVar(*((int32_t *)&pRunCodeBase[TLR_DataOffset]));
@@ -6139,13 +6136,11 @@ ATTRIBUTES *COMPILER::TraceARoot(ATTRIBUTES *pA, const char *&pAccess)
     if (pA->GetThisNameCode() == 0)
         return nullptr; // fix crash at NewGame start
 
-    const std::string_view attr_name = pA->GetThisName();
-    const int32_t slen = attr_name.length() + 1;
+    const int32_t slen = strlen(pA->GetThisName()) + 1;
 
     char *pAS = new char[slen];
 
-    std::copy(std::begin(attr_name), std::end(attr_name), pAS);
-    pAS[slen - 1] = '\0';
+    memcpy(pAS, pA->GetThisName(), slen);
 
     if (pAccess == nullptr)
     {

@@ -561,7 +561,7 @@ void SEAFOAM::Execute(uint32_t dTime)
 //--------------------------------------------------------------------
 uint32_t SEAFOAM::AttributeChanged(ATTRIBUTES *pA)
 {
-    const std::string_view nm = pA->GetThisName();
+    const auto *const nm = pA->GetThisName();
 
     if (storm::iEquals(nm, "storm"))
     {

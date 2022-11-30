@@ -2609,10 +2609,12 @@ uint32_t XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
 {
     if (patr != nullptr && patr->GetParent() != nullptr && patr->GetParent()->GetParent() != nullptr)
     {
-        const std::string_view sParentName = patr->GetParent()->GetParent()->GetThisName();
-        if (!storm::iEquals(sParentName, "pictures"))
+        const char *sParentName = patr->GetParent()->GetParent()->GetThisName();
+        if (sParentName == nullptr || !storm::iEquals(sParentName, "pictures"))
             return 0;
-        const std::string_view sImageName = patr->GetParent()->GetThisName();
+        const char *sImageName = patr->GetParent()->GetThisName();
+        if (sImageName == nullptr)
+            return 0;
         // find this picture
         IMAGE_Entity *pImList = m_imgLists;
         while (pImList != nullptr)
@@ -2630,17 +2632,18 @@ uint32_t XINTERFACE::AttributeChanged(ATTRIBUTES *patr)
                 throw std::runtime_error("Allocation memory error");
             }
             *pImList = {};
-            const auto len = sImageName.length() + 1;
+            const auto len = strlen(sImageName) + 1;
             if ((pImList->sImageName = new char[len]) == nullptr)
             {
                 throw std::runtime_error("Allocate memory error");
             }
-            std::copy(std::begin(sImageName), std::end(sImageName), pImList->sImageName);
-            pImList->sImageName[len - 1] = '\0';
+            memcpy(pImList->sImageName, sImageName, len);
             // insert that into images list
             pImList->next = m_imgLists;
             m_imgLists = pImList;
         }
+        if (patr->GetThisName() == nullptr)
+            return 0;
         // set picture
         if (storm::iEquals(patr->GetThisName(), "pic"))
         {
@@ -3144,9 +3147,11 @@ void XINTERFACE::IncrementGameTime(uint32_t dwDeltaTime)
         core.Event("ievent_SetGameTime", "lll", m_dwGameTimeHour, m_dwGameTimeMin, m_dwGameTimeSec);
 }
 
-std::string AddAttributesStringsToBuffer(ATTRIBUTES *pAttr, std::optional<std::string_view> inBuffer = {}, std::optional<std::string_view> prev_str = {})
+char *AddAttributesStringsToBuffer(char *inBuffer, char *prevStr, ATTRIBUTES *pAttr)
 {
-    std::string new_buffer = std::string(inBuffer.value_or(""));
+    size_t prevLen = 0;
+    if (prevStr != nullptr)
+        prevLen = strlen(prevStr) + std::size(".") - 1;
 
     const int q = pAttr->GetAttributesNum();
     for (int k = 0; k < q; k++)
@@ -3155,37 +3160,52 @@ std::string AddAttributesStringsToBuffer(ATTRIBUTES *pAttr, std::optional<std::s
         if (pA == nullptr)
             continue;
 
-        const auto attrVal = to_string(pA->GetThisAttr());
-        const auto attrName = std::string(pA->GetThisName());
-
-        if (attrVal.length() >= 1 && attrVal[0])
+        const char *attrVal = pA->GetThisAttr();
+        const char *attrName = pA->GetThisName();
+        if (attrName && attrVal && attrVal[0])
         {
-            if (!new_buffer.empty()) {
-                new_buffer += "\n";
+            int nadd = std::size("\n") - 1 + strlen(attrName) + std::size("=") - 1 + strlen(attrVal) + 1;
+            nadd += prevLen;
+            if (inBuffer != nullptr)
+                nadd += strlen(inBuffer);
+
+            auto pNew = new char[nadd];
+            if (pNew == nullptr)
+                continue;
+            pNew[0] = 0;
+
+            if (inBuffer)
+            {
+                strcat_s(pNew, nadd, inBuffer);
+                strcat_s(pNew, nadd, "\n");
             }
 
-            if (prev_str.has_value()) {
-                new_buffer += prev_str.value();
-                new_buffer += ".";
+            if (prevStr)
+            {
+                strcat_s(pNew, nadd, prevStr);
+                strcat_s(pNew, nadd, ".");
             }
 
-            new_buffer += attrName;
-            new_buffer += "=";
-            new_buffer += attrVal;
+            strcat_s(pNew, nadd, attrName);
+            strcat_s(pNew, nadd, "=");
+            strcat_s(pNew, nadd, attrVal);
+
+            delete inBuffer;
+            inBuffer = pNew;
         }
 
         if (pA->GetAttributesNum() != 0)
         {
-            std::string new_prev_str;
-            if (prev_str.has_value()) {
-                new_prev_str = fmt::format("{}.", prev_str.value());
-            }
-            new_prev_str += pA->GetThisName();
-            new_buffer = AddAttributesStringsToBuffer(pA, new_buffer.c_str(), new_prev_str);
+            char param[512];
+            param[0] = 0;
+            if (prevStr)
+                sprintf_s(param, "%s.", prevStr);
+            strcat_s(param, pA->GetThisName());
+            inBuffer = AddAttributesStringsToBuffer(inBuffer, param, pA);
         }
     }
 
-    return new_buffer;
+    return inBuffer;
 }
 
 void XINTERFACE::SaveOptionsFile(const char *fileName, ATTRIBUTES *pAttr)
@@ -3199,19 +3219,25 @@ void XINTERFACE::SaveOptionsFile(const char *fileName, ATTRIBUTES *pAttr)
     strcpy_s(FullPath, fileName);
 
     PrecreateDirForFile(FullPath);
+    auto fileS = fio->_CreateFile(FullPath, std::ios::binary | std::ios::out);
+    if (!fileS.is_open())
+    {
+        return;
+    }
+
+    char *pOutBuffer = nullptr;
 
     if (pAttr)
     {
-        const std::string pOutBuffer = AddAttributesStringsToBuffer(pAttr);
-
-        auto fileS = fio->_CreateFile(FullPath, std::ios::binary | std::ios::out);
-        if (!fileS.is_open())
-        {
-            return;
-        }
-        fio->_WriteFile(fileS, pOutBuffer.c_str(), pOutBuffer.length());
-        fio->_CloseFile(fileS);
+        pOutBuffer = AddAttributesStringsToBuffer(nullptr, nullptr, pAttr);
     }
+
+    if (pOutBuffer)
+    {
+        fio->_WriteFile(fileS, pOutBuffer, strlen(pOutBuffer));
+        delete pOutBuffer;
+    }
+    fio->_CloseFile(fileS);
 }
 
 void XINTERFACE::LoadOptionsFile(std::string_view fileName, ATTRIBUTES *pAttr)
@@ -3500,14 +3526,16 @@ bool CONTROLS_CONTAINER::CreateConteinerList(ATTRIBUTES *pA)
         ATTRIBUTES *pAttr = pA->GetAttributeClass(i);
         if (!pAttr)
             continue;
-        const auto containerName = std::string(pAttr->GetThisName());
-        AddContainer(containerName.c_str());
-        SetContainerLimitVal(containerName.c_str(), static_cast<float>(atof(pAttr->GetThisAttr())));
+        const char *containerName = pAttr->GetThisName();
+        if (!containerName)
+            continue;
+        AddContainer(containerName);
+        SetContainerLimitVal(containerName, static_cast<float>(atof(pAttr->GetThisAttr())));
 
         const int cntSize = pAttr->GetAttributesNum();
         for (int n = 0; n < cntSize; n++)
         {
-            AddControlsToContainer(containerName.c_str(), pAttr->GetAttributeName(n),
+            AddControlsToContainer(containerName, pAttr->GetAttributeName(n),
                                    static_cast<float>(atof(pAttr->GetAttribute(n))));
         }
     }
@@ -3547,9 +3575,9 @@ void CONTROLS_CONTAINER::SetContainerLimitVal(const char *container, float fLimi
     pCont->fMaxVal = fLimitVal;
 }
 
-void CONTROLS_CONTAINER::AddControlsToContainer(const char *container, const std::string_view &controlName, float fValLimit)
+void CONTROLS_CONTAINER::AddControlsToContainer(const char *container, const char *controlName, float fValLimit)
 {
-    if (!container)
+    if (!container || !controlName)
         return;
     CONTEINER_DESCR *pCont = FindContainer(container);
 
@@ -3565,12 +3593,11 @@ void CONTROLS_CONTAINER::AddControlsToContainer(const char *container, const std
     pCont->pControls->fValLimit = fValLimit;
     pCont->pControls->next = pCtrl;
 
-    const auto len = controlName.length() + 1;
+    const auto len = strlen(controlName) + 1;
     pCont->pControls->controlName = new char[len];
     if (!pCont->pControls->controlName)
         throw std::runtime_error("allocate memory error");
-    std::copy(std::begin(controlName), std::end(controlName), pCont->pControls->controlName);
-    pCont->pControls->controlName[len - 1] = '\0';
+    memcpy(pCont->pControls->controlName, controlName, len);
 }
 
 CONTROLS_CONTAINER::CONTEINER_DESCR *CONTROLS_CONTAINER::FindContainer(const char *sContainer)
@@ -3585,8 +3612,10 @@ CONTROLS_CONTAINER::CONTEINER_DESCR *CONTROLS_CONTAINER::FindContainer(const cha
 }
 
 CONTROLS_CONTAINER::CONTEINER_DESCR::CONTROL_DESCR *CONTROLS_CONTAINER::CONTEINER_DESCR::FindControl(
-    const std::string_view &cntrlName) const
+    const char *cntrlName)
 {
+    if (!cntrlName)
+        return nullptr;
 
     CONTROL_DESCR *pCtrl = pControls;
     while (pCtrl)
