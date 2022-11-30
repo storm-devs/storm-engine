@@ -367,10 +367,10 @@ void CXI_QUESTTITLE::SetNewTopQuest(ATTRIBUTES *pA, int topNum)
             }
             m_strList[i].dwSpecColor = pAttr->GetAttributeAsDword("color", 0);
             m_strList[i].complete = pAttr->GetAttributeAsDword("Complete", 0) != 0;
-
             const char *pTmpQuestRecordID = pAttr->GetAttribute("LogName");
-            std::string_view quest_record_id = pTmpQuestRecordID ? pTmpQuestRecordID : pAttr->GetThisName();
-            if (ptrOwner->QuestFileReader()->GetQuestTitle(quest_record_id, pAttr->GetThisName(), param))
+            if (!pTmpQuestRecordID)
+                pTmpQuestRecordID = pAttr->GetThisName();
+            if (ptrOwner->QuestFileReader()->GetQuestTitle(pTmpQuestRecordID, pAttr->GetThisName(), param))
             {
                 const size_t titleSize = param.size();
                 if (titleSize == 0)

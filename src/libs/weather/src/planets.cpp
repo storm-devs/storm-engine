@@ -47,7 +47,7 @@ void Astronomy::PLANETS::Init(ATTRIBUTES *pAP)
             auto *pAPlanet = pAPlanets->GetAttributeClass(i);
             auto *pAMag = pAPlanet->GetAttributeClass("Mag");
 
-            const auto sName = std::string(pAPlanet->GetThisName());
+            std::string sName = pAPlanet->GetThisName();
 
             aPlanets.push_back(Planet{});
             // Planet & p = aPlanets[aPlanets.Add()];

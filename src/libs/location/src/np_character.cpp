@@ -314,10 +314,11 @@ void NPCharacter::Update(float dltTime)
             {
                 for (int32_t i = atr->GetAttributesNum() - 1; i >= 0; i--)
                 {
-                    const auto attr_name = std::string(atr->GetAttributeName(i));
-                    const auto attr_value = to_string(atr->GetAttribute(i));
-                    location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
-                                        "tmpl.%s(%s)", attr_name.c_str(), attr_value.c_str());
+                    fid = atr->GetAttributeName(i);
+                    id = atr->GetAttribute(i);
+                    if (fid && id)
+                        location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
+                                        "tmpl.%s(%s)", fid, id);
                 }
                 if (atr->HasValue())
                 {
@@ -330,11 +331,11 @@ void NPCharacter::Update(float dltTime)
             {
                 for (int32_t i = atr->GetAttributesNum() - 1; i >= 0; i--)
                 {
-                    const auto attr_name = std::string(atr->GetAttributeName(i));
-                    const auto attr_value = to_string(atr->GetAttribute(i));
+                    fid = atr->GetAttributeName(i);
+                    id = atr->GetAttribute(i);
                     if (fid && id)
                         location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f,
-                                        "type.%s(%s)", attr_name.c_str(), attr_value.c_str());
+                                        "type.%s(%s)", fid, id);
                 }
                 if (atr->HasValue())
                     location->Print(curPos + CVECTOR(0.0f, height, 0.0f), rad, line++, 1.0f, 0xffffff, 0.5f, "type(%s)",

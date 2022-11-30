@@ -108,13 +108,13 @@ void WdmEnemyShip::Update(float dltTime)
             slowingAlfa = deleteAlpha;
             if (deleteAlpha < 0.0f)
             {
-                std::string delEnc = "";
+                const auto *delEnc = "";
                 if (saveAttribute)
                 {
                     delEnc = saveAttribute->GetThisName();
                 }
                 VDATA *pVDat = nullptr;
-                if (!killMe && delEnc.length() >= 1 && delEnc[0])
+                if (!killMe && delEnc && delEnc[0])
                 {
                     pVDat = core.Event("WorldMap_EncounterDelete", "s", delEnc);
                 }
@@ -416,7 +416,7 @@ void WdmEnemyShip::SetLiveTime(float time)
 }
 
 // Get attribute name
-std::string_view WdmEnemyShip::GetAttributeName() const
+const char *WdmEnemyShip::GetAttributeName() const
 {
     if (saveAttribute)
     {

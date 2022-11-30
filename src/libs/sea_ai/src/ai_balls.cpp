@@ -386,18 +386,17 @@ uint32_t AIBalls::AttributeChanged(ATTRIBUTES *pAttributeChanged)
         // install balls
         ATTRIBUTES *pAPBalls = AttributesPointer->GetAttributeClass("Balls");
         uint32_t dwIdx = 0;
-        while (pAPBalls != nullptr)
+        while (pAPBalls && true)
         {
-            if (dwIdx >= pAPBalls->GetAttributesNum()) {
+            const char *pName = pAPBalls->GetAttributeName(dwIdx);
+            if (!pName)
                 break;
-            }
-            const std::string_view attr_name = pAPBalls->GetAttributeName(dwIdx);
-            ATTRIBUTES *pAP = pAPBalls->GetAttributeClass(attr_name);
+            ATTRIBUTES *pAP = pAPBalls->GetAttributeClass(pName);
             if (!pAP)
                 break;
 
             BALL_TYPE ballType;
-            ballType.sName = attr_name;
+            ballType.sName = pName;
             ballType.dwSubTexIndex = pAP->GetAttributeAsDword("SubTexIndex");
             ballType.dwGoodIndex = pAP->GetAttributeAsDword("GoodIndex");
             ballType.fSize = pAP->GetAttributeAsFloat("Size");

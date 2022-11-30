@@ -12,11 +12,12 @@ class VSTRING_CODEC
 {
   public:
     VSTRING_CODEC() = default;
-    virtual ~VSTRING_CODEC() noexcept = default;
+    virtual ~VSTRING_CODEC() = default;
 
-    [[nodiscard]] virtual uint32_t GetNum() const = 0;
-    virtual uint32_t Convert(const std::string_view &pString) = 0;
-    [[nodiscard]] virtual std::string_view Convert(uint32_t code) const = 0;
+    virtual uint32_t GetNum() = 0;
+    virtual uint32_t Convert(const char *pString) = 0;
+    virtual uint32_t Convert(const char *pString, int32_t iLen) = 0;
+    virtual const char *Convert(uint32_t code) = 0;
 
     virtual void VariableChanged() = 0;
 };
@@ -39,14 +40,15 @@ class ATTRIBUTES final
     ~ATTRIBUTES();
 
     void SetBreak(bool set_break);
-    [[nodiscard]] ATTRIBUTES *GetParent() const;
-    bool operator==(const std::string_view &str) const;
-    [[nodiscard]] std::string_view GetThisName() const;
+    [[nodiscard]] ATTRIBUTES* GetParent() const;
+    bool operator==(const char *str) const;
+    [[nodiscard]] const char* GetThisName() const;
     [[nodiscard]] bool HasValue() const noexcept;
     [[nodiscard]] const std::string &GetValue() const;
     [[nodiscard]] LegacyProxy GetThisAttr() const;
     void SetName(const std::string_view &new_name);
-    [[deprecated("Pass attribute value by string_view instead")]] void SetValue(const char *new_value);
+    [[deprecated("Pass attribute value by string_view instead")]]
+    void SetValue(const char *new_value);
     void SetValue(const std::string_view &new_value);
     [[nodiscard]] size_t GetAttributesNum() const;
     [[nodiscard]] ATTRIBUTES *GetAttributeClass(const std::string_view &name) const;
@@ -54,7 +56,7 @@ class ATTRIBUTES final
     [[nodiscard]] ATTRIBUTES *VerifyAttributeClass(const std::string_view &name);
     [[nodiscard]] LegacyProxy GetAttribute(size_t n) const;
     [[nodiscard]] LegacyProxy GetAttribute(const std::string_view &name) const;
-    [[nodiscard]] std::string_view GetAttributeName(size_t n) const;
+    [[nodiscard]] const char *GetAttributeName(size_t n) const;
     [[nodiscard]] uint32_t GetAttributeAsDword(const char *name = nullptr, uint32_t def = 0) const;
     [[nodiscard]] uintptr_t GetAttributeAsPointer(const char *name = nullptr, uintptr_t def = 0) const;
     [[nodiscard]] float GetAttributeAsFloat(const char *name = nullptr, float def = 0) const;
@@ -62,8 +64,8 @@ class ATTRIBUTES final
     bool SetAttributeUseFloat(const char *name, float val);
     ATTRIBUTES &CreateAttribute(const std::string_view &name);
     ATTRIBUTES *CreateAttribute(const std::string_view &name, const char *attribute);
-    [[deprecated("Pass attribute value by string_view instead")]] size_t SetAttribute(const std::string_view &name,
-                                                                                      const char *attribute);
+    [[deprecated("Pass attribute value by string_view instead")]]
+    size_t SetAttribute(const std::string_view &name, const char *attribute);
     size_t SetAttribute(const std::string_view &name, const std::string_view &attribute);
     [[nodiscard]] ATTRIBUTES Copy() const;
     bool DeleteAttributeClassX(ATTRIBUTES *pA);
@@ -72,14 +74,14 @@ class ATTRIBUTES final
     [[nodiscard]] ATTRIBUTES *GetAttributeClassByCode(uint32_t name_code) const;
     [[nodiscard]] ATTRIBUTES *VerifyAttributeClassByCode(uint32_t name_code);
     ATTRIBUTES *CreateAttribute(uint32_t name_code, const char *attribute);
-    [[deprecated("Pass attribute value by string_view instead")]] size_t SetAttribute(uint32_t name_code,
-                                                                                      const char *attribute);
+    [[deprecated("Pass attribute value by string_view instead")]]
+    size_t SetAttribute(uint32_t name_code, const char *attribute);
     size_t SetAttribute(uint32_t name_code, const std::string_view &attribute);
     [[nodiscard]] uint32_t GetThisNameCode() const noexcept;
     void SetNameCode(uint32_t n) noexcept;
     [[nodiscard]] VSTRING_CODEC &GetStringCodec() const noexcept;
 
-  private:
+private:
     ATTRIBUTES(VSTRING_CODEC &string_codec, ATTRIBUTES *parent, const std::string_view &name);
     ATTRIBUTES(VSTRING_CODEC &string_codec, ATTRIBUTES *parent, uint32_t name_code);
 
@@ -92,7 +94,7 @@ class ATTRIBUTES final
     std::vector<std::unique_ptr<ATTRIBUTES>> attributes_;
     ATTRIBUTES *parent_{nullptr};
     bool break_{false};
-
+    
     class LegacyProxy
     {
         using value_t = decltype(value_);
@@ -101,11 +103,11 @@ class ATTRIBUTES final
       public:
         LegacyProxy(const LegacyProxy &other) = delete;
         LegacyProxy(LegacyProxy &&other) = delete;
-        LegacyProxy &operator=(const LegacyProxy &other) = delete;
-        LegacyProxy &operator=(LegacyProxy &&other) = delete;
+        LegacyProxy & operator=(const LegacyProxy &other) = delete;
+        LegacyProxy & operator=(LegacyProxy &&other) = delete;
 
         LegacyProxy() : proxy_value_(null_value)
-        {
+        {            
         }
 
         LegacyProxy(proxy_value_t value) : proxy_value_(value)
@@ -134,3 +136,4 @@ class ATTRIBUTES final
         proxy_value_t proxy_value_;
     };
 };
+

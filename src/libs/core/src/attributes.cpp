@@ -3,7 +3,7 @@
 #include "string_compare.hpp"
 #include "platform/platform.hpp"
 
-ATTRIBUTES::ATTRIBUTES(VSTRING_CODEC *p) : ATTRIBUTES(*p)
+ATTRIBUTES::ATTRIBUTES(VSTRING_CODEC *p): ATTRIBUTES(*p)
 {
 }
 
@@ -13,7 +13,7 @@ ATTRIBUTES::ATTRIBUTES(ATTRIBUTES &&other) noexcept
 {
 }
 
-ATTRIBUTES &ATTRIBUTES::operator=(ATTRIBUTES &&other) noexcept
+ATTRIBUTES & ATTRIBUTES::operator=(ATTRIBUTES &&other) noexcept
 {
     stringCodec_ = other.stringCodec_;
     // Do not update name code
@@ -41,12 +41,14 @@ ATTRIBUTES *ATTRIBUTES::GetParent() const
     return parent_;
 }
 
-bool ATTRIBUTES::operator==(const std::string_view &str) const
+bool ATTRIBUTES::operator==(const char *str) const
 {
+    if (!str || !str[0])
+        return false;
     return storm::iEquals(stringCodec_.Convert(nameCode_), str);
 }
 
-std::string_view ATTRIBUTES::GetThisName() const
+const char *ATTRIBUTES::GetThisName() const
 {
     return stringCodec_.Convert(nameCode_);
 }
@@ -56,7 +58,7 @@ bool ATTRIBUTES::HasValue() const noexcept
     return value_.has_value();
 }
 
-const std::string &ATTRIBUTES::GetValue() const
+const std::string & ATTRIBUTES::GetValue() const
 {
     return *value_;
 }
@@ -64,11 +66,12 @@ const std::string &ATTRIBUTES::GetValue() const
 ATTRIBUTES::LegacyProxy ATTRIBUTES::GetThisAttr() const
 {
     return value_;
+
 }
 
 void ATTRIBUTES::SetName(const std::string_view &new_name)
 {
-    nameCode_ = stringCodec_.Convert(new_name);
+    nameCode_ = stringCodec_.Convert(new_name.data());
 }
 
 void ATTRIBUTES::SetValue(const char *new_value)
@@ -77,8 +80,7 @@ void ATTRIBUTES::SetValue(const char *new_value)
     {
         value_.reset();
     }
-    else
-    {
+    else {
         value_ = new_value;
     }
 
@@ -99,7 +101,7 @@ size_t ATTRIBUTES::GetAttributesNum() const
     return attributes_.size();
 }
 
-ATTRIBUTES *ATTRIBUTES::GetAttributeClass(const std::string_view &name) const
+ATTRIBUTES * ATTRIBUTES::GetAttributeClass(const std::string_view &name) const
 {
     for (const auto &attribute : attributes_)
         if (storm::iEquals(name, attribute->GetThisName()))
@@ -107,7 +109,7 @@ ATTRIBUTES *ATTRIBUTES::GetAttributeClass(const std::string_view &name) const
     return nullptr;
 }
 
-ATTRIBUTES *ATTRIBUTES::GetAttributeClass(uint32_t n) const
+ATTRIBUTES * ATTRIBUTES::GetAttributeClass(uint32_t n) const
 {
     return n >= attributes_.size() ? nullptr : attributes_[n].get();
 }
@@ -118,7 +120,7 @@ ATTRIBUTES *ATTRIBUTES::VerifyAttributeClass(const std::string_view &name)
     return (pTemp) ? pTemp : CreateAttribute(name, "");
 }
 
-std::string_view ATTRIBUTES::GetAttributeName(size_t n) const
+const char *ATTRIBUTES::GetAttributeName(size_t n) const
 {
     if (n < attributes_.size())
     {
@@ -126,28 +128,25 @@ std::string_view ATTRIBUTES::GetAttributeName(size_t n) const
     }
     else
     {
-        throw std::runtime_error(
-            fmt::format("Cannot get attribute name, attribute index ({}) out of range ({})", n, attributes_.size()));
+        return nullptr;
     }
 }
 
 ATTRIBUTES::LegacyProxy ATTRIBUTES::GetAttribute(size_t n) const
 {
-    if (n < attributes_.size())
-    {
+    if (n < attributes_.size()) {
         return attributes_[n]->value_;
     }
-    else
-    {
+    else {
         return {};
     }
 }
 
+
 ATTRIBUTES::LegacyProxy ATTRIBUTES::GetAttribute(const std::string_view &name) const
 {
     for (const auto &attribute : attributes_)
-        if (storm::iEquals(name, attribute->GetThisName()))
-        {
+        if (storm::iEquals(name, attribute->GetThisName())) {
             return attribute->value_;
         }
     return {};
@@ -164,7 +163,7 @@ uint32_t ATTRIBUTES::GetAttributeAsDword(const char *name, uint32_t def) const
     }
     else
     {
-        vDword = atol(value_->c_str());
+        vDword = atol( value_->c_str());
     }
     return vDword;
 }
@@ -221,13 +220,13 @@ bool ATTRIBUTES::SetAttributeUseFloat(const char *name, float val)
     return true;
 }
 
-ATTRIBUTES &ATTRIBUTES::CreateAttribute(const std::string_view &name)
+ATTRIBUTES & ATTRIBUTES::CreateAttribute(const std::string_view &name)
 {
     const auto &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name));
     return *attr;
 }
 
-ATTRIBUTES *ATTRIBUTES::CreateAttribute(const std::string_view &name, const char *attribute)
+ATTRIBUTES * ATTRIBUTES::CreateAttribute(const std::string_view &name, const char *attribute)
 {
     const auto &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name));
 
@@ -241,12 +240,12 @@ ATTRIBUTES *ATTRIBUTES::CreateAttribute(const std::string_view &name, const char
 
 size_t ATTRIBUTES::SetAttribute(const std::string_view &name, const char *attribute)
 {
-    return SetAttribute(stringCodec_.Convert(name), attribute);
+    return SetAttribute(stringCodec_.Convert(name.data()), attribute);
 }
 
 size_t ATTRIBUTES::SetAttribute(const std::string_view &name, const std::string_view &attribute)
 {
-    return SetAttribute(stringCodec_.Convert(name), attribute);
+    return SetAttribute(stringCodec_.Convert(name.data()), attribute);
 }
 
 bool ATTRIBUTES::DeleteAttributeClassX(ATTRIBUTES *pA)
@@ -281,7 +280,7 @@ bool ATTRIBUTES::DeleteAttributeClassX(ATTRIBUTES *pA)
     return false;
 }
 
-ATTRIBUTES *ATTRIBUTES::CreateSubAClass(ATTRIBUTES *pRoot, const char *access_string)
+ATTRIBUTES * ATTRIBUTES::CreateSubAClass(ATTRIBUTES *pRoot, const char *access_string)
 {
     uint32_t dwNameCode;
     uint32_t n = 0;
@@ -297,7 +296,7 @@ ATTRIBUTES *ATTRIBUTES::CreateSubAClass(ATTRIBUTES *pRoot, const char *access_st
         switch (access_string[n])
         {
         case '.':
-            dwNameCode = stringCodec_.Convert(std::string_view(access_string, n));
+            dwNameCode = stringCodec_.Convert(access_string, n);
             pTemp = pRoot->GetAttributeClassByCode(dwNameCode);
             if (!pTemp)
                 pTemp = pRoot->CreateNewAttribute(dwNameCode);
@@ -308,14 +307,14 @@ ATTRIBUTES *ATTRIBUTES::CreateSubAClass(ATTRIBUTES *pRoot, const char *access_st
             dwNameCode = stringCodec_.Convert(access_string);
             pResult = pRoot->GetAttributeClassByCode(dwNameCode);
             return (pResult) ? pResult : pRoot->CreateNewAttribute(dwNameCode);
-        default:;
+        default: ;
         }
         n++;
     }
     return nullptr;
 }
 
-ATTRIBUTES *ATTRIBUTES::FindAClass(ATTRIBUTES *pRoot, const char *access_string)
+ATTRIBUTES * ATTRIBUTES::FindAClass(ATTRIBUTES *pRoot, const char *access_string)
 {
     uint32_t n = 0;
     ATTRIBUTES *pResult = nullptr;
@@ -331,7 +330,7 @@ ATTRIBUTES *ATTRIBUTES::FindAClass(ATTRIBUTES *pRoot, const char *access_string)
         switch (access_string[n])
         {
         case '.':
-            pTemp = pRoot->GetAttributeClassByCode(stringCodec_.Convert(std::string_view(access_string, n)));
+            pTemp = pRoot->GetAttributeClassByCode(stringCodec_.Convert(access_string, n));
             if (!pTemp)
                 return nullptr;
             pResult = FindAClass(pTemp, &access_string[n + 1]);
@@ -339,14 +338,14 @@ ATTRIBUTES *ATTRIBUTES::FindAClass(ATTRIBUTES *pRoot, const char *access_string)
         case 0:
             pResult = pRoot->GetAttributeClassByCode(stringCodec_.Convert(access_string));
             return pResult;
-        default:;
+        default: ;
         }
         n++;
     }
     return nullptr;
 }
 
-ATTRIBUTES *ATTRIBUTES::GetAttributeClassByCode(uint32_t name_code) const
+ATTRIBUTES * ATTRIBUTES::GetAttributeClassByCode(uint32_t name_code) const
 {
     for (const auto &attribute : attributes_)
         if (name_code == attribute->nameCode_)
@@ -354,7 +353,7 @@ ATTRIBUTES *ATTRIBUTES::GetAttributeClassByCode(uint32_t name_code) const
     return nullptr;
 }
 
-ATTRIBUTES *ATTRIBUTES::VerifyAttributeClassByCode(uint32_t name_code)
+ATTRIBUTES * ATTRIBUTES::VerifyAttributeClassByCode(uint32_t name_code)
 {
     ATTRIBUTES *pTemp = GetAttributeClassByCode(name_code);
     if (pTemp)
@@ -362,7 +361,7 @@ ATTRIBUTES *ATTRIBUTES::VerifyAttributeClassByCode(uint32_t name_code)
     return CreateAttribute(name_code, "");
 }
 
-ATTRIBUTES *ATTRIBUTES::CreateAttribute(uint32_t name_code, const char *attribute)
+ATTRIBUTES * ATTRIBUTES::CreateAttribute(uint32_t name_code, const char *attribute)
 {
     const auto &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name_code));
 
@@ -399,8 +398,7 @@ size_t ATTRIBUTES::SetAttribute(uint32_t name_code, const char *attribute)
     {
         attributes_[n]->value_ = attribute;
     }
-    else
-    {
+    else {
         attributes_[n]->value_.reset();
     }
 
@@ -436,12 +434,12 @@ void ATTRIBUTES::SetNameCode(uint32_t n) noexcept
     nameCode_ = n;
 }
 
-VSTRING_CODEC &ATTRIBUTES::GetStringCodec() const noexcept
+VSTRING_CODEC & ATTRIBUTES::GetStringCodec() const noexcept
 {
     return stringCodec_;
 }
 
-ATTRIBUTES *ATTRIBUTES::CreateNewAttribute(uint32_t name_code)
+ATTRIBUTES * ATTRIBUTES::CreateNewAttribute(uint32_t name_code)
 {
     const std::unique_ptr<ATTRIBUTES> &attr = attributes_.emplace_back(new ATTRIBUTES(stringCodec_, this, name_code));
     return attr.get();
@@ -452,7 +450,7 @@ ATTRIBUTES::ATTRIBUTES(VSTRING_CODEC &p) : ATTRIBUTES(p, nullptr, "root")
 }
 
 ATTRIBUTES::ATTRIBUTES(VSTRING_CODEC &string_codec, ATTRIBUTES *parent, const std::string_view &name)
-    : ATTRIBUTES(string_codec, parent, string_codec.Convert(name))
+    : ATTRIBUTES(string_codec, parent, string_codec.Convert(name.data()))
 {
 }
 
