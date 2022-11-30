@@ -99,8 +99,8 @@ class GEOS
 
     struct LABEL
     {
+        alignas(16) float m[4][4];
         int32_t flags; // combination of LABEL_FLAG
-        float m[4][4];
         char *group_name;
         char *name;
         int32_t bones[4];
