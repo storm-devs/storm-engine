@@ -6,7 +6,7 @@
 // returns random float
 inline float rand(float r)
 {
-    return r * ((float)rand() / (float)UINT_MAX);
+    return r * ((float)rand() / (float)RAND_MAX);
 }
 
 // returns larger half of random float
