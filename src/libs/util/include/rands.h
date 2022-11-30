@@ -1,13 +1,12 @@
 #pragma once
 
-#include <random>
+#include <cstdlib>
 #include <climits>
 
 // returns random float
 inline float rand(float r)
 {
-    std::random_device rd;
-    return r * ((float)rd() / (float)UINT_MAX);
+    return r * ((float)rand() / (float)UINT_MAX);
 }
 
 // returns larger half of random float
