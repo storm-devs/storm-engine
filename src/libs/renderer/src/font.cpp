@@ -164,7 +164,7 @@ bool FONT::Init(const char *font_name, const char *iniName)
                                nullptr);
     if (vertexBuffer_ == nullptr)
         throw std::runtime_error("vbuffer error");
-    vertexBuffer_->Lock(0, sizeof(FONT_CHAR_VERTEX) * MAX_SYMBOLS * SYM_VERTEXS, (VOID **)&pVertex, 0);
+    vertexBuffer_->Lock(0, sizeof(FONT_CHAR_VERTEX) * MAX_SYMBOLS * SYM_VERTEXS, (void **)&pVertex, 0);
     for (codepoint = 0; codepoint < MAX_SYMBOLS * SYM_VERTEXS; codepoint++)
     {
         pVertex[codepoint].pos.z = 0.5f;
@@ -229,7 +229,7 @@ int32_t FONT::UpdateVertexBuffer(int32_t x, int32_t y, char *data_PTR, int utf8l
 
     s_num = strlen(data_PTR);
 
-    vertexBuffer_->Lock(0, sizeof(FONT_CHAR_VERTEX) * utf8length * SYM_VERTEXS, (VOID **)&pVertex, 0);
+    vertexBuffer_->Lock(0, sizeof(FONT_CHAR_VERTEX) * utf8length * SYM_VERTEXS, (void **)&pVertex, 0);
 
     xoffset = 0;
 

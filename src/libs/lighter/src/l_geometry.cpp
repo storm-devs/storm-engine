@@ -199,7 +199,7 @@ bool LGeometry::Process(VDX9RENDER *rs, int32_t numLights)
             }
             // Copy
             uint8_t *pnt = nullptr;
-            if (vbuf->Lock(0, desc.Size, (VOID **)&pnt, 0) != D3D_OK)
+            if (vbuf->Lock(0, desc.Size, (void **)&pnt, 0) != D3D_OK)
             {
                 core.Trace("Location lighter: vertex buffer no locked, model %s, vbID %i", object[i].nameReal, vbID);
                 return false;

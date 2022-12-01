@@ -33,7 +33,7 @@ class STRSERVICE : public VSTRSERVICE
     void SetLanguage(const char *sLanguage) override;
     char *GetLanguage() override;
 
-    char *GetString(const char *stringName, char *sBuffer = nullptr, size_t bufferSize = 0) override;
+    char *GetString(const char *stringName, char *sBuffer = nullptr, std::size_t bufferSize = 0) override;
     int32_t GetStringNum(const char *stringName) override;
     char *GetString(int32_t strNum) override;
     char *GetStringName(int32_t strNum) override;

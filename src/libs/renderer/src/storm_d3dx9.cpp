@@ -2,6 +2,8 @@
 
 #include "platform/d3dx9.hpp"
 
+#include <cstdio>
+#include <cstring> // for memcpy
 #include <algorithm>
 
 #define WARN(...) fprintf(stdout, __VA_ARGS__)

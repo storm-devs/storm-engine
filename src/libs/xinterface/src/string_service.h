@@ -15,7 +15,7 @@ class VSTRSERVICE : public SERVICE
     virtual void SetLanguage(const char *sLanguage) = 0;
     virtual char *GetLanguage() = 0;
 
-    virtual char *GetString(const char *stringName, char *sBuffer = nullptr, size_t bufferSize = 0) = 0;
+    virtual char *GetString(const char *stringName, char *sBuffer = nullptr, std::size_t bufferSize = 0) = 0;
     virtual int32_t GetStringNum(const char *stringName) = 0;
     virtual char *GetString(int32_t strNum) = 0;
     virtual char *GetStringName(int32_t strNum) = 0;

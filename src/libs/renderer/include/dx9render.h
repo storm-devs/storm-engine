@@ -203,7 +203,7 @@ class VDX9RENDER : public SERVICE
     virtual void SaveShoot() = 0;
 
     // DX9Render: Clip Planes Section
-    virtual HRESULT SetClipPlane(uint32_t Index, CONST float *pPlane) = 0;
+    virtual HRESULT SetClipPlane(uint32_t Index, const float *pPlane) = 0;
     virtual PLANE *GetPlanes() = 0;
 
     // DX9Render: Camera Section
@@ -342,32 +342,32 @@ class VDX9RENDER : public SERVICE
     virtual HRESULT GetLevelDesc(IDirect3DTexture9 *ppTexture, UINT Level, D3DSURFACE_DESC *pDesc) = 0;
     virtual HRESULT GetLevelDesc(IDirect3DCubeTexture9 *ppCubeTexture, UINT Level, D3DSURFACE_DESC *pDesc) = 0;
     virtual HRESULT LockRect(IDirect3DCubeTexture9 *ppCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level,
-                             D3DLOCKED_RECT *pLockedRect, CONST RECT *pRect, uint32_t Flags) = 0;
-    virtual HRESULT LockRect(IDirect3DTexture9 *ppTexture, UINT Level, D3DLOCKED_RECT *pLockedRect, CONST RECT *pRect,
+                             D3DLOCKED_RECT *pLockedRect, const RECT *pRect, uint32_t Flags) = 0;
+    virtual HRESULT LockRect(IDirect3DTexture9 *ppTexture, UINT Level, D3DLOCKED_RECT *pLockedRect, const RECT *pRect,
                              uint32_t Flags) = 0;
     virtual HRESULT UnlockRect(IDirect3DCubeTexture9 *pCubeTexture, D3DCUBEMAP_FACES FaceType, UINT Level) = 0;
     virtual HRESULT UnlockRect(IDirect3DTexture9 *pTexture, UINT Level) = 0;
     virtual HRESULT GetSurfaceLevel(IDirect3DTexture9 *ppTexture, UINT Level, IDirect3DSurface9 **ppSurfaceLevel) = 0;
-    virtual HRESULT UpdateSurface(IDirect3DSurface9 *pSourceSurface, CONST RECT *pSourceRectsArray, UINT cRects,
-                                  IDirect3DSurface9 *pDestinationSurface, CONST POINT *pDestPointsArray) = 0;
+    virtual HRESULT UpdateSurface(IDirect3DSurface9 *pSourceSurface, const RECT *pSourceRectsArray, UINT cRects,
+                                  IDirect3DSurface9 *pDestinationSurface, const POINT *pDestPointsArray) = 0;
     virtual HRESULT StretchRect(IDirect3DSurface9 *pSourceSurface, const RECT *pSourceRect,
                                 IDirect3DSurface9 *pDestSurface, const RECT *pDestRect,
                                 D3DTEXTUREFILTERTYPE Filter) = 0;
     virtual HRESULT GetRenderTargetData(IDirect3DSurface9 *pRenderTarget, IDirect3DSurface9 *pDestSurface) = 0;
 
     // D3D Pixel/Vertex Shaders Section
-    virtual HRESULT CreateVertexDeclaration(CONST D3DVERTEXELEMENT9 *pVertexElements,
+    virtual HRESULT CreateVertexDeclaration(const D3DVERTEXELEMENT9 *pVertexElements,
                                             IDirect3DVertexDeclaration9 **ppDecl) = 0;
     virtual HRESULT SetVertexDeclaration(IDirect3DVertexDeclaration9 *pDecl) = 0;
-    virtual HRESULT CreatePixelShader(CONST uint32_t *pFunction, IDirect3DPixelShader9 **ppShader) = 0;
-    virtual HRESULT CreateVertexShader(CONST uint32_t *pFunction, IDirect3DVertexShader9 **ppShader) = 0;
+    virtual HRESULT CreatePixelShader(const uint32_t *pFunction, IDirect3DPixelShader9 **ppShader) = 0;
+    virtual HRESULT CreateVertexShader(const uint32_t *pFunction, IDirect3DVertexShader9 **ppShader) = 0;
     virtual HRESULT DeletePixelShader(IDirect3DPixelShader9 *pShader) = 0;
     virtual HRESULT DeleteVertexShader(IDirect3DVertexShader9 *pShader) = 0;
     virtual HRESULT SetVertexShader(IDirect3DVertexShader9 *pShader) = 0;
     virtual HRESULT SetPixelShader(IDirect3DPixelShader9 *pShader) = 0;
-    /*virtual HRESULT SetFVFConstant(DWORD Register, CONST void * pConstantData, DWORD  ConstantCount ) = 0;*/
-    virtual HRESULT SetVertexShaderConstantF(UINT StartRegister, CONST float *pConstantData, UINT Vector4iCount) = 0;
-    virtual HRESULT SetPixelShaderConstantF(UINT StartRegister, CONST float *pConstantData, UINT Vector4iCount) = 0;
+    /*virtual HRESULT SetFVFConstant(DWORD Register, const void * pConstantData, DWORD  ConstantCount ) = 0;*/
+    virtual HRESULT SetVertexShaderConstantF(UINT StartRegister, const float *pConstantData, UINT Vector4iCount) = 0;
+    virtual HRESULT SetPixelShaderConstantF(UINT StartRegister, const float *pConstantData, UINT Vector4iCount) = 0;
     virtual HRESULT SetFVF(uint32_t handle) = 0;
     virtual HRESULT GetVertexShader(IDirect3DVertexShader9 **ppShader) = 0;
     virtual HRESULT GetPixelShader(IDirect3DPixelShader9 **ppShader) = 0;
@@ -378,7 +378,7 @@ class VDX9RENDER : public SERVICE
     // D3D Render Target/Begin/End/Clear
     virtual HRESULT GetRenderTarget(IDirect3DSurface9 **ppRenderTarget) = 0;
     virtual HRESULT SetRenderTarget(IDirect3DSurface9 *pRenderTarget, IDirect3DSurface9 *pNewZStencil) = 0;
-    virtual HRESULT Clear(uint32_t Count, CONST D3DRECT *pRects, uint32_t Flags, D3DCOLOR Color, float Z,
+    virtual HRESULT Clear(uint32_t Count, const D3DRECT *pRects, uint32_t Flags, D3DCOLOR Color, float Z,
                           uint32_t Stencil) = 0;
     virtual HRESULT BeginScene() = 0;
     virtual HRESULT EndScene() = 0;
