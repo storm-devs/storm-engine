@@ -2,10 +2,10 @@
 
 #include <thread>
 
-#include "entity.h"
 #include "matrix.h"
 #include "rands.h"
 #include "v_file_service.h"
+#include "vma.hpp"
 #include <fmod_errors.h>
 
 // for debugging
@@ -270,29 +270,9 @@ bool SoundService::AllocateSound(TSD_ID &id)
     return true;
 }
 
-const char *SoundService::GetRandomName(tAlias *_alias) const
+const char *SoundService::GetRandomName(const tAlias *alias) const
 {
-    const auto randomFloat = rand(_alias->fMaxProbabilityValue);
-    auto currentNameIndex = 0;
-    auto currentFloat = 0.f;
-
-    for (;;)
-    {
-        if (currentFloat > randomFloat)
-            break;
-        if ((currentNameIndex + 1) >= static_cast<int>(_alias->SoundFiles.size()))
-            break;
-
-        currentFloat += _alias->SoundFiles[currentNameIndex].fProbability;
-        currentNameIndex++;
-    }
-
-    if (currentNameIndex >= static_cast<int>(_alias->SoundFiles.size()))
-    {
-        currentNameIndex = static_cast<int>(_alias->SoundFiles.size()) - 1;
-    }
-
-    return _alias->SoundFiles[currentNameIndex].FileName.c_str();
+    return alias->soundFiles.pickRandom().c_str();
 }
 
 int SoundService::GetAliasIndexByName(const char *szAliasName)
@@ -325,7 +305,7 @@ TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType 
     {
         // Trying to find in aliases
         const auto AliasIdx = GetAliasIndexByName(_name);
-        if (AliasIdx >= 0 && Aliases[AliasIdx].SoundFiles.size() > 0)
+        if (AliasIdx >= 0 && !Aliases[AliasIdx].soundFiles.empty())
         {
             // play sound from the alias ...
             FileName = GetRandomName(&Aliases[AliasIdx]);
@@ -1031,39 +1011,28 @@ void SoundService::SoundStop(TSD_ID _id, int32_t _time)
 
 void SoundService::AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in_string) const
 {
-    static char tempString2[COMMON_STRING_LENGTH];
-    strncpy_s(tempString2, in_string, COMMON_STRING_LENGTH);
+    static char fileName[COMMON_STRING_LENGTH];
+    strncpy_s(fileName, in_string, COMMON_STRING_LENGTH);
 
-    tAliasSound snd;
+    float probability = DEFAULT_PROBABILITY;
 
-    char *col = strchr(tempString2, ',');
-    if (!col)
+    char *col = strchr(fileName, ',');
+    if (col)
     {
-        // only name, without delays
-        _alias->fMaxProbabilityValue += DEFAULT_PROBABILITY;
-        snd.fProbability = DEFAULT_PROBABILITY;
-        snd.FileName = tempString2;
+        // try to convert forthcoming number
+        float flt;
+        if (sscanf(++col, "%f", &flt) == 1)
+        {
+            probability = flt;
+        }
 
-        if constexpr (TRACE_INFORMATION)
-            core.Trace("  -> sound %s", snd.FileName.c_str());
-        _alias->SoundFiles.push_back(snd);
-
-        return;
+        *(--col) = '\0'; // truncate at first ','
     }
 
-    // try to convert forthcoming number
-    float n1;
-    if (sscanf(++col, "%f", &n1) == 1)
-    {
-        snd.fProbability = n1;
-        _alias->fMaxProbabilityValue += n1;
-    }
-
-    *(--col) = 0; // truncate at first ','
-    snd.FileName = tempString2;
     if constexpr (TRACE_INFORMATION)
-        core.Trace("  -> sound %s, %f", snd.FileName.c_str(), snd.fProbability);
-    _alias->SoundFiles.push_back(snd);
+        core.Trace("  -> sound %s, %f", fileName, probability);
+
+    _alias->soundFiles.emplace(probability, fileName);
 }
 
 void SoundService::AddAlias(INIFILE &_iniFile, char *_sectionName)
@@ -1082,7 +1051,6 @@ void SoundService::AddAlias(INIFILE &_iniFile, char *_sectionName)
     alias.fMinDistance = _iniFile.GetFloat(_sectionName, "minDistance", -1.0f);
     alias.fVolume = _iniFile.GetFloat(_sectionName, "volume", -1.0f);
     alias.iPrior = _iniFile.GetInt(_sectionName, "prior", 128);
-    alias.fMaxProbabilityValue = 0.0f;
 
     if (_iniFile.ReadString(_sectionName, "name", tempString, COMMON_STRING_LENGTH, ""))
     {
