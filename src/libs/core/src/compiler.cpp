@@ -7261,42 +7261,38 @@ void COMPILER::PrintoutUsage()
         core.Controls->GetDebugAsyncKeyState(VK_SHIFT) < 0)
     {
         logTrace_->debug("Script Function Time Usage[func name/code(release mode) : ticks]");
-        for (size_t m = 0; m < FuncTab.GetFuncNum(); m++)
+        FuncInfo fi;
+        for (size_t n = 0; n < FuncTab.GetFuncNum(); n++)
         {
-            FuncInfo fi;
-            for (size_t n = 0; n < FuncTab.GetFuncNum(); n++)
+            FuncTab.GetFuncX(fi, n);
+            if (fi.number_of_calls == 0)
             {
-                FuncTab.GetFuncX(fi, n);
-                if (fi.number_of_calls == 0)
-                {
-                    continue;
-                }
-
-                FuncTab.GetFunc(fi, n);
-                if (!fi.name.empty())
-                {
-                    logTrace_->debug("  {}", fi.name);
-                }
-                else
-                {
-                    logTrace_->debug("  {}", n);
-                }
-                logTrace_->debug("  ticks summary  : {}", fi.usage_time);
-                logTrace_->debug("  calls          : {}", fi.number_of_calls);
-                if (fi.number_of_calls != 0)
-                {
-                    logTrace_->debug("  average ticks  : {}", static_cast<float>(fi.usage_time) / fi.number_of_calls);
-                }
-
-                FuncTab.AddTime(n, ~fi.usage_time);
-                logTrace_->debug("");
+                continue;
             }
+
+            FuncTab.GetFunc(fi, n);
+            if (!fi.name.empty())
+            {
+                logTrace_->debug("  {}", fi.name);
+            }
+            else
+            {
+                logTrace_->debug("  {}", n);
+            }
+            logTrace_->debug("  ticks summary  : {}", fi.usage_time);
+            logTrace_->debug("  calls          : {}", fi.number_of_calls);
+            if (fi.number_of_calls != 0)
+            {
+                logTrace_->debug("  average ticks  : {}", static_cast<float>(fi.usage_time) / fi.number_of_calls);
+            }
+            logTrace_->debug("");
         }
+        FuncTab.ResetTimeAndCalls();
 
         logTrace_->debug("Script Run Time Log [sec : ms]");
         for (size_t n = 0; n < nRuntimeLogEventsNum; n++)
         {
-            logTrace_->debug("  %d : %d", n, pRuntimeLogEvent[n]);
+            logTrace_->debug("  {} : {}", n, pRuntimeLogEvent[n]);
         }
     }
 }

@@ -10,7 +10,7 @@
 #include "string_compare.hpp"
 #include <SDL2/SDL.h>
 
-Core& core = core_internal;
+Core &core = core_internal;
 
 uint64_t get_performance_counter()
 {
@@ -104,21 +104,21 @@ void CoreImpl::Init()
     Compiler = new COMPILER;
 
     /* TODO: place this outside CoreImpl */
-    core.SetLayerType(EXECUTE, layer_type_t::execute);
-    core.SetLayerType(REALIZE, layer_type_t::realize);
-    core.SetLayerType(SEA_EXECUTE, layer_type_t::execute);
-    core.SetLayerType(SEA_REALIZE, layer_type_t::realize);
-    core.SetLayerType(INTERFACE_EXECUTE, layer_type_t::execute);
-    core.SetLayerType(INTERFACE_REALIZE, layer_type_t::realize);
-    core.SetLayerType(FADER_EXECUTE, layer_type_t::execute);
-    core.SetLayerType(FADER_REALIZE, layer_type_t::realize);
-    core.SetLayerType(LIGHTER_EXECUTE, layer_type_t::execute);
-    core.SetLayerType(LIGHTER_REALIZE, layer_type_t::realize);
-    core.SetLayerType(VIDEO_EXECUTE, layer_type_t::execute);
-    core.SetLayerType(VIDEO_REALIZE, layer_type_t::realize);
-    core.SetLayerType(EDITOR_REALIZE, layer_type_t::realize);
-    core.SetLayerType(INFO_REALIZE, layer_type_t::realize);
-    core.SetLayerType(SOUND_DEBUG_REALIZE, layer_type_t::realize);
+    SetLayerType(EXECUTE, layer_type_t::execute);
+    SetLayerType(REALIZE, layer_type_t::realize);
+    SetLayerType(SEA_EXECUTE, layer_type_t::execute);
+    SetLayerType(SEA_REALIZE, layer_type_t::realize);
+    SetLayerType(INTERFACE_EXECUTE, layer_type_t::execute);
+    SetLayerType(INTERFACE_REALIZE, layer_type_t::realize);
+    SetLayerType(FADER_EXECUTE, layer_type_t::execute);
+    SetLayerType(FADER_REALIZE, layer_type_t::realize);
+    SetLayerType(LIGHTER_EXECUTE, layer_type_t::execute);
+    SetLayerType(LIGHTER_REALIZE, layer_type_t::realize);
+    SetLayerType(VIDEO_EXECUTE, layer_type_t::execute);
+    SetLayerType(VIDEO_REALIZE, layer_type_t::realize);
+    SetLayerType(EDITOR_REALIZE, layer_type_t::realize);
+    SetLayerType(INFO_REALIZE, layer_type_t::realize);
+    SetLayerType(SOUND_DEBUG_REALIZE, layer_type_t::realize);
 }
 
 void CoreImpl::InitBase()
@@ -330,7 +330,7 @@ void CoreImpl::Exit()
     Exit_flag = true;
 }
 
-storm::OSWindow * CoreImpl::GetWindow()
+storm::OSWindow *CoreImpl::GetWindow()
 {
     return window_.get();
 }
@@ -1010,7 +1010,7 @@ void CoreImpl::ForEachEntity(const std::function<void(entptr_t)> &f)
     entity_manager_.ForEachEntity(f);
 }
 
-void CoreImpl:: collectCrashInfo() const
+void CoreImpl::collectCrashInfo() const
 {
     Compiler->CollectCallStack();
 }
