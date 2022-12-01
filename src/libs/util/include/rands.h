@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdlib>
-#include <climits>
 
 // returns random float
 inline float rand(float r)
