@@ -1,9 +1,8 @@
 #pragma once
 
-#include <functional>
-
 #include <array>
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 #include "plf_stack.h"
@@ -13,41 +12,6 @@
 
 class EntityManager final
 {
-    constexpr static size_t max_layers_num = 32; // cannot exceed 32
-
-    using entid_index_t = uint32_t;
-    using entid_stamp_t = uint32_t;
-    using entity_index_t = uint32_t;
-
-    enum EntityState : uint8_t
-    {
-        kNotExists = 0,
-        kExists = 1,
-        kValid = 2
-    };
-
-    struct EntityInternalData
-    {
-        using layer_mask_t = uint32_t;
-
-        layer_mask_t mask;
-        priority_t priorities[max_layers_num];
-        EntityState state;
-
-        entptr_t ptr;
-        entid_t id;
-        hash_t hash;
-    };
-
-    struct Layer
-    {
-        std::vector<priority_t> priorities;
-        std::vector<entid_t> entity_ids;
-
-        layer_type_t type;
-        bool frozen;
-    };
-
   public:
     hash_t GetClassCode(entid_t id) const;
     entptr_t GetEntityPointer(entid_t id) const;
@@ -71,6 +35,41 @@ class EntityManager final
     void ForEachEntity(const std::function<void(entptr_t)> &f);
 
   private:
+    constexpr static size_t kMaxLayerNum = sizeof(uint32_t) * 8;
+
+    using entid_index_t = uint32_t;
+    using entid_stamp_t = uint32_t;
+    using entity_index_t = uint32_t;
+
+    enum EntityState : uint8_t
+    {
+        kNotExists = 0,
+        kExists = 1,
+        kValid = 2
+    };
+
+    struct EntityInternalData
+    {
+        using layer_mask_t = uint32_t;
+
+        layer_mask_t mask;
+        priority_t priorities[kMaxLayerNum];
+        EntityState state;
+
+        entptr_t ptr;
+        entid_t id;
+        hash_t hash;
+    };
+
+    struct Layer
+    {
+        std::vector<priority_t> priorities;
+        std::vector<entid_t> entity_ids;
+
+        layer_type_t type;
+        bool frozen;
+    };
+
     static bool EntIdxValid(size_t idx);
     static entid_t CalculateEntityId(size_t idx);
 
@@ -86,7 +85,7 @@ class EntityManager final
     mutable EntityContainerCache cache_;
 
     // array of layers
-    std::array<Layer, max_layers_num> layers_{};
+    std::array<Layer, kMaxLayerNum> layers_{};
 
     // array of all entities
     std::vector<EntityInternalData> entities_;

@@ -21,7 +21,7 @@ using invalid_entity_idx_t = std::integral_constant<size_t, std::numeric_limits<
 
 void EntityManager::EraseAndFree(EntityInternalData &data)
 {
-    for (layer_index_t i = 0; i < max_layers_num; ++i)
+    for (layer_index_t i = 0; i < kMaxLayerNum; ++i)
     {
         if (data.mask >> i & 1)
         {
@@ -29,9 +29,6 @@ void EntityManager::EraseAndFree(EntityInternalData &data)
         }
     }
     delete data.ptr;
-#ifdef _DEBUG
-    data.ptr = reinterpret_cast<entptr_t>(0xDEADC0DELLU);
-#endif
 }
 
 void EntityManager::MarkDeleted(EntityInternalData &data)
@@ -54,7 +51,7 @@ hash_t EntityManager::GetClassCode(const entid_t id) const
 
 void EntityManager::AddToLayer(const layer_index_t index, EntityInternalData &data, const priority_t priority)
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     // set info about layer
     data.mask |= 1 << index;
@@ -75,7 +72,7 @@ void EntityManager::AddToLayer(const layer_index_t index, EntityInternalData &da
 
 void EntityManager::RemoveFromLayer(const layer_index_t index, EntityInternalData &data)
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     auto &mask = data.mask;
 
@@ -279,7 +276,7 @@ entity_container_cref EntityManager::GetEntityIds(const uint32_t hash) const
 
 entity_container_cref EntityManager::GetEntityIds(const layer_index_t index) const
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     return layers_[index].entity_ids;
 }
@@ -331,28 +328,28 @@ entid_t EntityManager::CalculateEntityId(const size_t idx)
 
 layer_type_t EntityManager::GetLayerType(const layer_index_t index) const
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     return layers_[index].type;
 }
 
 void EntityManager::SetLayerType(const layer_index_t index, const layer_type_t type)
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     layers_[index].type = type;
 }
 
 void EntityManager::SetLayerFrozen(const layer_index_t index, const bool freeze)
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     layers_[index].frozen = freeze;
 }
 
 bool EntityManager::IsLayerFrozen(const layer_index_t index) const
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     return layers_[index].frozen;
 }
@@ -478,9 +475,12 @@ entid_t EntityManager::InsertEntity(entptr_t ptr, hash_t hash)
 void EntityManager::ForEachEntity(const std::function<void(entptr_t)> &f)
 {
     std::ranges::for_each(entities_, [&](const EntityInternalData &data) {
-        if (const auto entity_ptr = GetEntityPointer(data.id))
+        if (data.state == kValid)
         {
-            f(entity_ptr);
+            if (const auto entity_ptr = GetEntityPointer(data.id))
+            {
+                f(entity_ptr);
+            }
         }
     });
 }

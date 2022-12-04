@@ -537,7 +537,7 @@ void CoreImpl::ProcessExecute()
     const auto &entIds = core.GetEntityIds(layer_type_t::execute);
     for (auto id : entIds)
     {
-        if (auto *ptr = core.GetEntityPointer(id))
+        if (auto *ptr = core.GetEntityPointerSafe(id))
         {
             ptr->ProcessStage(Entity::Stage::execute, deltatime);
         }
@@ -555,7 +555,7 @@ void CoreImpl::ProcessRealize()
     const auto &entIds = core.GetEntityIds(layer_type_t::realize);
     for (auto id : entIds)
     {
-        if (auto *ptr = core.GetEntityPointer(id))
+        if (auto *ptr = core.GetEntityPointerSafe(id))
         {
             ptr->ProcessStage(Entity::Stage::realize, deltatime);
         }
