@@ -49,6 +49,9 @@ else()
     # Always generate debug information
     add_compile_options(-g)
     add_link_options(-g)
+
+    # Add _DEBUG flag
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 endif()
 
 # this is crucial to include libs first
