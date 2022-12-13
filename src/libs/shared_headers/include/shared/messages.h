@@ -247,6 +247,8 @@
 #define MSG_WORLDMAP_SET_NATION_FLAG 31150 // "ll" nation
 // Print line with coordinates
 #define MSG_WORLDMAP_SET_COORDINATES 31151 // "ls" coordinates string
+// Show or hide WdmWindUI: wind, date, moral, supplies, coordinates, flag
+#define MSG_WORLDMAP_WIND_UI_SET_SHOW 31152 // "l"
 
 // ============================================================================================
 // Effects

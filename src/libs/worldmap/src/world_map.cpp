@@ -604,6 +604,9 @@ uint64_t WorldMap::ProcessMessage(MESSAGE &message)
     case MSG_WORLDMAP_SET_COORDINATES:
         wdmObjects->coordinate = message.String();
         break;
+    case MSG_WORLDMAP_WIND_UI_SET_SHOW:
+        wdmObjects->showWindUI = (message.Long() != 0);
+        break;
     }
     return 0;
 }
