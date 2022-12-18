@@ -18,49 +18,14 @@
 class Color
 {
   public:
-    union {
-        struct
-        {
-            union {
-                struct
-                {
-                    // Red
-                    float r;
-                    // Green
-                    float g;
-                    // Blue
-                    float b;
-                };
-
-                union {
-                    struct
-                    {
-                        // rgb in vector
-                        Vector c;
-                    };
-
-                    struct
-                    {
-                        // rgb in vector
-                        Vector color;
-                    };
-                };
-            };
-
-            union {
-                // Transparency
-                float a;
-                // Transparency
-                float alpha;
-            };
-        };
-
-        struct
-        {
-            // Vector4 representation
-            Vector4 v4;
-        };
-    };
+    // Red
+    float r;
+    // Green
+    float g;
+    // Blue
+    float b;
+    // Transparency
+    float a;
 
     // -----------------------------------------------------------
     // Constructors
@@ -80,8 +45,6 @@ class Color
     Color(const Vector4 &v);
     // Unpack
     Color(uint32_t c);
-    // Unpack
-    Color(int32_t c);
     // Copy constructor
     Color(const Color &c);
 
@@ -216,44 +179,6 @@ class Color
     static unsigned short Make4444(uint32_t color);
 };
 
-// Integer color representation
-class DColor
-{
-  public:
-    union {
-        struct
-        {
-            // Blue
-            unsigned char b;
-            // Green
-            unsigned char g;
-            // Red
-            unsigned char r;
-            // Transparency
-            unsigned char a;
-        };
-
-        union {
-            // Packed color
-            uint32_t c;
-            // Packed color
-            uint32_t color;
-        };
-    };
-
-    // -----------------------------------------------------------
-    // Operators
-    // -----------------------------------------------------------
-  public:
-    // Assign
-    DColor &operator=(uint32_t color);
-    // Assign
-    DColor &operator=(int32_t color);
-
-    // Get int32_t
-    operator uint32_t() const;
-};
-
 // ===========================================================
 // Constructors
 // ===========================================================
@@ -315,13 +240,10 @@ inline Color::Color(const Vector4 &v)
 // Unpack
 inline Color::Color(uint32_t c)
 {
-    *this = c;
-}
-
-// Unpack
-inline Color::Color(int32_t c)
-{
-    *this = static_cast<uint32_t>(c);
+    r = static_cast<unsigned char>(c >> 16) * (1.0f / 255.0f);
+    g = static_cast<unsigned char>(c >> 8) * (1.0f / 255.0f);
+    b = static_cast<unsigned char>(c >> 0) * (1.0f / 255.0f);
+    a = static_cast<unsigned char>(c >> 24) * (1.0f / 255.0f);
 }
 
 // Copy constructor
@@ -1213,7 +1135,13 @@ inline Color &Color::SwapRB()
 // Get packed color as uint32_t
 inline uint32_t Color::GetDword() const
 {
-    /*    int32_t l;*/
+    uint32_t t = (static_cast<uint8_t>(fftoi(r * 255.0f)) << 16) +
+                 (static_cast<uint8_t>(fftoi(g * 255.0f)) << 8) +
+                 (static_cast<uint8_t>(fftoi(b * 255.0f)) << 0) +
+                 (static_cast<uint8_t>(fftoi(a * 255.0f)) << 24);
+
+    return t;
+/*
     DColor color;
     const auto k = 255.0f;
 
@@ -1223,35 +1151,7 @@ inline uint32_t Color::GetDword() const
     color.a = static_cast<uint8_t>(fftoi(a * k));
 
     return color.c;
-
-    /*_asm
-    {
-      mov        eax, this
-      fld        [eax]this.r
-      fld        k
-      fmul
-      fistp    l
-      mov        ebx, l
-      mov        color.r, bl
-      fld        [eax]this.g
-      fld        k
-      fmul
-      fistp    l
-      mov        ebx, l
-      mov        color.g, bl
-      fld        [eax]this.b
-      fld        k
-      fmul
-      fistp    l
-      mov        ebx, l
-      mov        color.b, bl
-      fld        [eax]this.a
-      fld        k
-      fmul
-      fistp    l
-      mov        ebx, l
-      mov        color.a, bl
-    };*/
+*/
 }
 
 // Converting A8R8G8B8 to R5G6B5
@@ -1298,24 +1198,6 @@ inline unsigned short Color::Make4444(uint32_t color)
     const auto r = (color >> 12) & 0xf00;
     const auto a = (color >> 16) & 0xf000;
     return static_cast<unsigned short>(r | g | b | a);
-}
-
-// ===========================================================
-// DColor
-// ===========================================================
-
-// Assign
-inline DColor &DColor::operator=(uint32_t color)
-{
-    c = color;
-    return *this;
-}
-
-// Assign
-inline DColor &DColor::operator=(int32_t color)
-{
-    c = static_cast<uint32_t>(color);
-    return *this;
 }
 
 #pragma pack(pop)

@@ -14,34 +14,10 @@
 class Plane
 {
   public:
-    union {
-        struct
-        {
-            // Normal
-            Vector n;
-        };
-
-        struct
-        {
-            // Normal
-            Vector normal;
-        };
-
-        struct
-        {
-            // Normal
-            Vector N;
-        };
-    };
-
-    union {
-        // Distance from center
-        float d;
-        // Distance from center
-        float dist;
-        // Distance from center
-        float D;
-    };
+    // Normal
+    Vector N;
+    // Distance from center
+    float D;
 
     // -----------------------------------------------------------
     // Constructors
@@ -146,11 +122,11 @@ inline float operator*(const Plane &plane, const Vector &point)
 // Normalize
 inline Plane &Plane::Normalize()
 {
-    const auto d = normal.Normalize();
+    const auto d = N.Normalize();
     if (d != 0.0f)
-        dist /= d;
+        D /= d;
     else
-        dist = 0.0f;
+        D = 0.0f;
     return *this;
 }
 
