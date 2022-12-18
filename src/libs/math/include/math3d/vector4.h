@@ -17,24 +17,12 @@ struct Vector4
     union {
         struct
         {
-            union {
-                struct
-                {
-                    // The X component
-                    float x;
-                    // The Y component
-                    float y;
-                    // The Z component
-                    float z;
-                };
-
-                struct
-                {
-                    // Vector representation
-                    Vector v;
-                };
-            };
-
+            // The X component
+            float x;
+            // The Y component
+            float y;
+            // The Z component
+            float z;
             // Weight component
             float w;
         };
@@ -106,8 +94,11 @@ inline Vector4::Vector4()
 }
 
 // Fill with number
-inline Vector4::Vector4(float f) : v(f)
+inline Vector4::Vector4(float f)
 {
+    x = f;
+    y = f;
+    z = f;
     w = f;
 }
 
@@ -118,33 +109,47 @@ inline Vector4::Vector4(double d)
 }
 
 // Fill 3 components, 1
-inline Vector4::Vector4(float x, float y, float z) : v(x, y, z)
+inline Vector4::Vector4(float x, float y, float z)
 {
+    this->x = x;
+    this->y = y;
+    this->z = z;
     w = 1.0f;
 }
 
 // Fill all components
-inline Vector4::Vector4(float x, float y, float z, float w) : v(x, y, z)
+inline Vector4::Vector4(float x, float y, float z, float w)
 {
+    this->x = x;
+    this->y = y;
+    this->z = z;
     this->w = w;
 }
 
 // Fill 3 components, 1
-inline Vector4::Vector4(const float f[3]) : v(f[0], f[1], f[2])
+inline Vector4::Vector4(const float f[3])
 {
+    x = f[0];
+    y = f[1];
+    z = f[2];
     w = 1.0f;
 }
 
 // Fill 3 components, 1
 inline Vector4::Vector4(const double d[3])
-    : v(static_cast<float>(d[0]), static_cast<float>(d[1]), static_cast<float>(d[2]))
 {
+    x = static_cast<float>(d[0]);
+    y = static_cast<float>(d[1]);
+    z = static_cast<float>(d[2]);
     w = 1.0f;
 }
 
 // Fill 3 components, 1
-inline Vector4::Vector4(const Vector &vc) : v(vc)
+inline Vector4::Vector4(const Vector &vc)
 {
+    x = vc.x;
+    y = vc.y;
+    z = vc.z;
     w = 1.0f;
 }
 
@@ -181,7 +186,9 @@ inline Vector4 Vector4::operator-() const
 // Assign
 inline Vector4 &Vector4::operator=(float f)
 {
-    v = f;
+    x = f;
+    y = f;
+    z = f;
     w = 1.0f;
     return *this;
 }
@@ -189,7 +196,9 @@ inline Vector4 &Vector4::operator=(float f)
 // Assign
 inline Vector4 &Vector4::operator=(double d)
 {
-    v = d;
+    x = static_cast<float>(d);
+    y = static_cast<float>(d);
+    z = static_cast<float>(d);
     w = 1.0f;
     return *this;
 }
@@ -197,7 +206,9 @@ inline Vector4 &Vector4::operator=(double d)
 // Assign
 inline Vector4 &Vector4::operator=(const Vector &v)
 {
-    this->v = v;
+    x = v.x;
+    y = v.y;
+    z = v.z;
     w = 1.0f;
     return *this;
 }
