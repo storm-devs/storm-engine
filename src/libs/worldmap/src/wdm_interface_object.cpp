@@ -8,7 +8,8 @@
 //
 //============================================================================================
 
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 
 #include "wdm_interface_object.h"
 #include "wdm_objects.h"
