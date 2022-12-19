@@ -18,45 +18,18 @@ class Sphere
     union {
         struct
         {
-            union {
-                struct
-                {
-                    // X Position
-                    float x;
-                    // Y position
-                    float y;
-                    // Z Position
-                    float z;
-                };
-
-                union {
-                    struct
-                    {
-                        // Position
-                        Vector p;
-                    };
-
-                    struct
-                    {
-                        // Position
-                        Vector pos;
-                    };
-                };
-            };
-
-            union {
-                // Radius
-                float r;
-                // Radius
-                float radius;
-            };
+            // X Position
+            float x;
+            // Y position
+            float y;
+            // Z Position
+            float z;
+            // Radius
+            float r;
         };
 
-        struct
-        {
-            // Vector4 representation
-            Vector4 v4;
-        };
+        // Vector4 representation
+        Vector4 v4;
     };
 
     // -----------------------------------------------------------
@@ -112,7 +85,7 @@ inline Sphere::Sphere(const Sphere &s)
 // Point in sphere
 inline bool Sphere::Intersection(const Vector &p)
 {
-    return ~(pos - p) <= radius * radius;
+    return ~Vector(x - p.x, y - p.y, z - p.z) <= r * r;
 }
 
 // Check intersection of line and sphere
@@ -123,14 +96,14 @@ inline bool Sphere::Intersection(const Vector &src, const Vector &dst)
     if (len > 1e-10f)
     {
         float dist;
-        if (!Intersection(src, dir, pos, r, &dist))
+        if (!Intersection(src, dir, Vector(x, y, z), r, &dist))
             return false;
         if (dist >= 0.0f)
         {
             return (dist <= len);
         }
         dir = -dir;
-        if (!Intersection(dst, dir, pos, r, &dist))
+        if (!Intersection(dst, dir, Vector(x, y, z), r, &dist))
             return false;
         if (dist >= 0.0f)
         {
@@ -138,25 +111,27 @@ inline bool Sphere::Intersection(const Vector &src, const Vector &dst)
         }
         return false;
     }
-    return ~(pos - src) <= radius * radius;
+    return ~Vector(x - src.x, y - src.y, z - src.z) <= r * r;
 }
 
 // Check ray and sphere intersection
 inline bool Sphere::Intersection(const Vector &orig, const Vector &normdir, float *res)
 {
-    return Intersection(orig, normdir, pos, r, res);
+    return Intersection(orig, normdir, Vector(x, y, z), r, res);
 }
 
 // Check sphere and sphere intersection
 inline bool Sphere::Intersection(const Sphere &sph)
 {
-    return (~(p - sph.p) <= (r + sph.r) * (r + sph.r));
+    return (~Vector(x - sph.x, y - sph.y, z - sph.z) <= (r + sph.r) * (r + sph.r));
 }
 
 // Set sphere in a point with 0 radius
 inline void Sphere::Reset(const Vector &p)
 {
-    pos = p;
+    x = p.x;
+    y = p.y;
+    z = p.z;
     r = 0.0f;
 }
 
@@ -164,9 +139,9 @@ inline void Sphere::Reset(const Vector &p)
 inline void Sphere::AddPoint(const Vector &p)
 {
     // Vector from point to center
-    const float dx = pos.x - p.x;
-    const float dy = pos.y - p.y;
-    const float dz = pos.z - p.z;
+    const float dx = x - p.x;
+    const float dy = y - p.y;
+    const float dz = z - p.z;
     float len = dx * dx + dy * dy + dz * dz;
     if (len <= r * r)
         return;
@@ -175,9 +150,9 @@ inline void Sphere::AddPoint(const Vector &p)
     r = (len + r) * 0.5f;
     // New position
     len = r / len;
-    pos.x = p.x + dx * len;
-    pos.y = p.y + dy * len;
-    pos.z = p.z + dz * len;
+    x = p.x + dx * len;
+    y = p.y + dy * len;
+    z = p.z + dz * len;
 }
 
 // Check ray and sphere intersection
