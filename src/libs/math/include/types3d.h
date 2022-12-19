@@ -9,58 +9,58 @@
 
 #define SQR(x) ((x) * (x))
 
-using VECTOR = struct
+typedef struct
 {
     float x;
     float y;
     float z;
-};
+} VECTOR;
 
-using VECTOR4 = struct
+typedef struct
 {
     float x;
     float y;
     float z;
     float w;
-};
+} VECTOR4;
 
-using PLANE = struct
+typedef struct
 {
     float Nx;
     float Ny;
     float Nz;
     float D;
-};
+} PLANE;
 
-using CHECK_SPHERE = struct
+typedef struct
 {
     float cx;
     float cy;
     float cz;
     float R;
-};
+} CHECK_SPHERE;
 
-using COLOR = struct
+typedef struct
 {
     float r;
     float g;
     float b;
-};
+} COLOR;
 
-using COLORA = struct
+typedef struct
 {
     float r;
     float g;
     float b;
     float a;
-};
+} COLORA;
 
-using MATRIX = struct
+typedef struct
 {
     union {
         float matrix[16];
         float m[4][4];
     };
-};
+} MATRIX;
 
 #pragma pack(pop)
