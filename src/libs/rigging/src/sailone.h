@@ -89,7 +89,7 @@ struct SAILGEOMETRY
             CVECTOR normL, dnormL;    // Vectors for leftside sail normals
             CVECTOR normR, dnormR;    // Vectors for rightside sail normals
             CVECTOR dopV;             // Vector for rope tie;
-        };
+        } cv;
     };
 };
 
