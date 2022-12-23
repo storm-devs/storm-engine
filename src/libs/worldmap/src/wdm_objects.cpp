@@ -39,6 +39,7 @@ WdmObjects::WdmObjects()
     islands = nullptr;
     playerShip = nullptr;
     isDebug = false;
+    showWindUI = true;
     Clear();
     enemyShip = nullptr;
     enableSkipEnemy = false;

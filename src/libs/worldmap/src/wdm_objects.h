@@ -99,6 +99,7 @@ class WdmObjects
 
     bool isPause;
     bool isDebug;
+    bool showWindUI;
 
     void DrawCircle(const CVECTOR &pos, float radius, uint32_t color) const;
     void DrawCircle(CMatrix &mtx, float radius, uint32_t color) const;
