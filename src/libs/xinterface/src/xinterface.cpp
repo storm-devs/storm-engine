@@ -1063,27 +1063,24 @@ void XINTERFACE::LoadIni()
     // GUARD(XINTERFACE::LoadIni());
     char section[256];
 
-    auto platform = "PC_SCREEN";
     auto ini = fio->OpenIniFile(RESOURCE_FILENAME);
     if (!ini)
         throw std::runtime_error("ini file not found!");
 
+    int sdlScreenWidth, sdlScreenHeight;
 #ifdef _WIN32 // FIX_LINUX GetWindowRect
     RECT Screen_Rect;
     GetWindowRect(static_cast<HWND>(core.GetWindow()->OSHandle()), &Screen_Rect);
+    sdlScreenWidth = Screen_Rect.right - Screen_Rect.left;
+    sdlScreenHeight = Screen_Rect.bottom - Screen_Rect.top;
 #else
-    int sdlScreenWidth, sdlScreenHeight;
     SDL_GetWindowSize(reinterpret_cast<SDL_Window *>(core.GetWindow()->OSHandle()), &sdlScreenWidth, &sdlScreenHeight);
 #endif
 
     fScale = 1.0f;
     const auto screenSize = core.GetScreenSize();
     dwScreenHeight = screenSize.height;
-#ifdef _WIN32 // FIX_LINUX GetWindowRect
-    dwScreenWidth = (Screen_Rect.right - Screen_Rect.left) * dwScreenHeight / (Screen_Rect.bottom - Screen_Rect.top);
-#else
     dwScreenWidth = sdlScreenWidth * dwScreenHeight / sdlScreenHeight;
-#endif
     if (dwScreenWidth < screenSize.width)
         dwScreenWidth = screenSize.width;
     GlobalScreenRect.top = 0;
@@ -1091,6 +1088,32 @@ void XINTERFACE::LoadIni()
     GlobalScreenRect.left = (dwScreenWidth - screenSize.width) / 2;
     GlobalScreenRect.right = screenSize.width + GlobalScreenRect.left;
 
+    char platform[23];
+    bool sectionFound = false;
+    if (ini->GetSectionName(platform, sizeof(platform) - 1))
+    {
+        float windowRatio = (float)sdlScreenWidth / (float)sdlScreenHeight;
+        float iniRatio;
+        char splitPlatform[23], *platformW, *platformH;
+        do
+        {
+            if(starts_with(platform, "PC_SCREEN_"))
+            {
+                strcpy_s(splitPlatform, platform);
+                platformW = std::strtok(splitPlatform, "_:"); // PC
+                platformW = std::strtok(nullptr, "_:"); // SCREEN
+                platformW = std::strtok(nullptr, "_:"); // Width
+                platformH = std::strtok(nullptr, "_:"); // Height
+                iniRatio = (float)atoi(platformW) / (float)atoi(platformH);
+                // +- 3%
+                if (iniRatio*0.97  <= windowRatio && windowRatio <= iniRatio*1.03)
+                    sectionFound = true;
+            }
+        } while (!sectionFound && ini->GetSectionNameNext(platform, sizeof(platform) - 1));
+    }
+    if (!sectionFound)
+        strcpy_s(platform, "PC_SCREEN");
+    core.Trace("Using %s parameters", platform);
     sprintf_s(section, "COMMON");
 
     // set screen parameters
