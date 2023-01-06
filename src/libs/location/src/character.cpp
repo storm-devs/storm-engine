@@ -4605,6 +4605,11 @@ void Character::UpdateAnimation()
                 {
                     fgtCurType = fgtSetType;
                     fgtCurIndex = fgtSetIndex;
+
+                    if (fgtCurType == fgt_block || fgtCurType == fgt_blockhit)
+                    {
+                        blockStart = std::chrono::steady_clock::now();
+                    }
                 }
                 fgtSetType = fgt_none;
                 fgtSetIndex = -1;
@@ -5082,13 +5087,20 @@ inline void Character::CheckAttackHit(bool isGunBlade)
                 }
             }
             fc.c->Hit(hitReaction);
-            core.Event("Location_CharacterAttack", "iisll", GetId(), fc.c->GetId(), aname,
-                       static_cast<int32_t>(isBlocked), static_cast<int32_t>(isGunBlade));
+            int blockTime = -1;
+            if (isBlocked)
+            {
+                blockTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
+                                                                                  fc.c->blockStart)
+                                .count();
+            }
+            core.Event("Location_CharacterAttack", "iislll", GetId(), fc.c->GetId(), aname,
+                       static_cast<int32_t>(isBlocked), static_cast<int32_t>(isGunBlade), blockTime);
             // boal 09/12/06 energy consumption after impact -->
             if (isUseEnergy && fgtCurType != fgt_attack_feintc)
             {
-                // for fgt_attack_feintc there is an overexertion in the animation, and here will be a "feint", and it
-                // costs 0
+                // for fgt_attack_feintc there is an overexertion in the animation, and here will be a "feint", and
+                // it costs 0
                 core.Event("ChrFgtActApply", "is", GetId(), aname);
                 isUseEnergy = false;
             }
