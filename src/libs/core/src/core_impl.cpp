@@ -970,6 +970,11 @@ entid_t CoreImpl::GetEntityId(const char *name) const
     return entity_manager_.GetEntityId(name);
 }
 
+bool CoreImpl::IsEntityValid(entid_t id) const
+{
+    return entity_manager_.IsEntityValid(id);
+}
+
 entity_container_cref CoreImpl::GetEntityIds(layer_type_t type) const
 {
     return entity_manager_.GetEntityIds(type);
