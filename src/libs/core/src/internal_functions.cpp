@@ -709,7 +709,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV2->SetType(VAR_AREFERENCE);
         pV2->SetAReference(core_internal.Entity_GetAttributePointer(ent));
 
-        if (core.GetEntityPointer(ent))
+        if (core.IsEntityValid(ent))
             TempLong1 = 1;
         else
             TempLong1 = 0;
@@ -754,7 +754,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV2->SetType(VAR_AREFERENCE);
         pV2->SetAReference(core_internal.Entity_GetAttributePointer(ent));
 
-        if (core.GetEntityPointer(ent))
+        if (core.IsEntityValid(ent))
             TempLong1 = 1;
         else
             TempLong1 = 0;
@@ -786,7 +786,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV2->SetType(VAR_AREFERENCE);
         pV2->SetAReference(core_internal.Entity_GetAttributePointer(ent));
 
-        if (core.GetEntityPointer(ent))
+        if (core.IsEntityValid(ent))
             TempLong1 = 1;
         else
             TempLong1 = 0;
@@ -1511,7 +1511,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         pV = pV->GetVarPointer();
         pV->Get(TempEid);
         pV = SStack.Push();
-        if (core.GetEntityPointer(TempEid) != nullptr)
+        if (core.IsEntityValid(TempEid))
             TempLong1 = 1;
         else
             TempLong1 = 0;
@@ -1859,7 +1859,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         CreateMessage(&ms, s_off, 1);
 
         uint64_t mresult = 0;
-        pE = core.GetEntityPointer(ent);
+        pE = core.GetEntityPointerSafe(ent);
         if (pE)
         {
             ms.Move2Start();

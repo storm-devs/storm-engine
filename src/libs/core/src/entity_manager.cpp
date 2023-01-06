@@ -1,4 +1,4 @@
-#include "entity_manager.h"
+﻿#include "entity_manager.h"
 
 #include <algorithm>
 #include <cassert>
@@ -21,21 +21,20 @@ using invalid_entity_idx_t = std::integral_constant<size_t, std::numeric_limits<
 
 void EntityManager::EraseAndFree(EntityInternalData &data)
 {
-    for (layer_index_t i = 0; i < max_layers_num; ++i)
+    for (layer_index_t i = 0; i < kMaxLayerNum; ++i)
     {
         if (data.mask >> i & 1)
         {
             RemoveFromLayer(i, data);
         }
     }
-
     delete data.ptr;
 }
 
-void EntityManager::MarkDeleted(const entid_t id)
+void EntityManager::MarkDeleted(EntityInternalData &data)
 {
-    const auto index = static_cast<entid_index_t>(id);
-    entities_[index].valid = false;
+    data.state = kExists;
+    const auto index = static_cast<entid_index_t>(data.id);
     deletedIndices_.push(index);
 }
 
@@ -52,7 +51,7 @@ hash_t EntityManager::GetClassCode(const entid_t id) const
 
 void EntityManager::AddToLayer(const layer_index_t index, EntityInternalData &data, const priority_t priority)
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     // set info about layer
     data.mask |= 1 << index;
@@ -65,8 +64,7 @@ void EntityManager::AddToLayer(const layer_index_t index, EntityInternalData &da
     // duplicate assert
     assert(std::ranges::find(entity_ids, data.id) == std::end(entity_ids));
 
-    const auto targetIdx =
-        std::distance(std::begin(priorities), std::ranges::upper_bound(priorities, priority));
+    const auto targetIdx = std::distance(std::begin(priorities), std::ranges::upper_bound(priorities, priority));
 
     priorities.insert(std::begin(priorities) + targetIdx, priority);
     entity_ids.insert(std::begin(entity_ids) + targetIdx, data.id);
@@ -74,7 +72,7 @@ void EntityManager::AddToLayer(const layer_index_t index, EntityInternalData &da
 
 void EntityManager::RemoveFromLayer(const layer_index_t index, EntityInternalData &data)
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     auto &mask = data.mask;
 
@@ -150,10 +148,11 @@ entid_t EntityManager::CreateEntity(const char *name, ATTRIBUTES *attr)
         cache_.UpdateErase(hash, id);
 
         // delete if fail
-        MarkDeleted(id);
+        const auto index = static_cast<entid_index_t>(id);
+        MarkDeleted(entities_[index]);
         return invalid_entity;
     }
-    
+
     return id;
 }
 
@@ -165,10 +164,10 @@ void EntityManager::EraseEntity(const entid_t id)
         return;
     }
 
-    const auto &data = entities_[idx];
+    auto &data = entities_[idx];
 
     // check if already erased
-    if (data.valid == false)
+    if (data.state != kValid)
     {
         return;
     }
@@ -181,22 +180,23 @@ void EntityManager::EraseEntity(const entid_t id)
 
     // remove from cache
     cache_.UpdateErase(data.hash, id);
-
-    MarkDeleted(id);
+    MarkDeleted(data);
 }
 
 void EntityManager::EraseAll()
 {
     for (auto it = std::begin(entities_); it != std::end(entities_); ++it)
     {
-        const auto index = static_cast<entid_index_t>(it->id);
-
-        // release
-        EraseAndFree(entities_[index]);
-        entities_[index] = {};
+        it->state = kNotExists;
+        delete it->ptr;
     }
 
     // clear containers
+    for (auto &layer : layers_)
+    {
+        layer.entity_ids.clear();
+        layer.priorities.clear();
+    }
     entities_.clear();
     freeIndices_.clear();
     deletedIndices_.clear();
@@ -213,33 +213,6 @@ entptr_t EntityManager::GetEntityPointer(const entid_t id) const
         return nullptr;
     }
 
-    // This check was intentionally removed to workaround some rare corner cases that are not handled properly.
-    //
-    // Here's an example of such a corner case that leads to crash due to missing sanity checks:
-    // Location entity is being destroyed (marked as invalid) from scripts. Therefore in the next frame its
-    // destructor is called, invoking Supervisor destructor which in turn destroys (marks as invalid) all the
-    // Player entities.
-    // Here's how it looks like:
-    // + - exists and operates; ! - invalidated (marked as invalid); x - deleted
-    //               |  Frame 0 | Frame 1 | Frame 2 | Frame 3 |
-    // Location      |     +    |    !    |    x    |    x    |
-    // Supervisor    |     +    |    +    |    x    |    x    |
-    // Players[s]    |     +    |    +    |    !    |    x    |
-    //
-    // As it's shown, while Player[s] exists Location is always marked as invalid and doesn't return its pointer.
-    // At this point using an existing pointer to Location without check for validity would work (despite the
-    // inadmissibility of such); but calling GetEntityPointer legally returns nullptr due to `valid` flag unset.
-    // This case is exacerbated by the fact that in this corner case calls to `Player` are done via PostEvent.
-    //
-    // Although in this case it would be more consistent with introducing sanity checks over the code,
-    // such issues are very difficult to catch. And since this workaround doesn't introduce any harm except for
-    // encouraging inconsistency code, it makes sense to left it as a lifebuoy for the existing issues.
-    //
-    // if (!entities_[idx].valid)
-    // {
-    //     return nullptr;
-    // }
-
     return entities_[idx].ptr;
 }
 
@@ -249,7 +222,7 @@ entity_container_cref EntityManager::GetEntityIds(const layer_type_t type) const
     static std::vector<entid_t> result;
     result.reserve(entities_.size());
     result.clear();
-    
+
     for (auto it = std::begin(layers_); it != std::end(layers_); ++it)
     {
         if (it->frozen)
@@ -262,7 +235,7 @@ entity_container_cref EntityManager::GetEntityIds(const layer_type_t type) const
             std::ranges::copy(it->entity_ids, std::back_inserter(result));
         }
     }
-    
+
     // TODO: Investigate:
     // Some entities are referenced in multiple layers of same type
     // therefore there are getting processed multiple times.
@@ -290,7 +263,7 @@ entity_container_cref EntityManager::GetEntityIds(const uint32_t hash) const
     {
         for (auto it = std::begin(entities_); it != std::end(entities_); ++it)
         {
-            if (it->hash == hash && it->valid)
+            if (it->hash == hash && it->state == kValid)
             {
                 cache_.Add(hash, it->id);
                 empty = false;
@@ -303,7 +276,7 @@ entity_container_cref EntityManager::GetEntityIds(const uint32_t hash) const
 
 entity_container_cref EntityManager::GetEntityIds(const layer_index_t index) const
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     return layers_[index].entity_ids;
 }
@@ -313,11 +286,17 @@ entid_t EntityManager::GetEntityId(const char *name) const
     return GetEntityId(MakeHashValue(name));
 }
 
+bool EntityManager::IsEntityValid(entid_t id) const
+{
+    const auto index = GetEntityDataIdx(id);
+    return EntIdxValid(index) && entities_[index].state == kValid;
+}
+
 entid_t EntityManager::GetEntityId(const uint32_t hash) const
 {
     for (auto it = std::begin(entities_); it != std::end(entities_); ++it)
     {
-        if (it->hash == hash && it->valid)
+        if (it->hash == hash && it->state == kValid)
         {
             return it->id;
         }
@@ -349,28 +328,28 @@ entid_t EntityManager::CalculateEntityId(const size_t idx)
 
 layer_type_t EntityManager::GetLayerType(const layer_index_t index) const
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     return layers_[index].type;
 }
 
 void EntityManager::SetLayerType(const layer_index_t index, const layer_type_t type)
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     layers_[index].type = type;
 }
 
 void EntityManager::SetLayerFrozen(const layer_index_t index, const bool freeze)
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     layers_[index].frozen = freeze;
 }
 
 bool EntityManager::IsLayerFrozen(const layer_index_t index) const
 {
-    assert(index < max_layers_num);
+    assert(index < kMaxLayerNum);
 
     return layers_[index].frozen;
 }
@@ -408,10 +387,11 @@ void EntityManager::NewLifecycle()
         assert(entity_idx < entities_.size());
         deletedIndices_.pop();
 
+        auto &data = entities_[entity_idx];
         // release
-        EraseAndFree(entities_[entity_idx]);
+        EraseAndFree(data);
         // erase entity data
-        entities_[entity_idx] = {};
+        data = {};
         // push free index to stack instead of shifting
         freeIndices_.push(entity_idx);
     }
@@ -433,7 +413,32 @@ size_t EntityManager::GetEntityDataIdx(const entid_t id) const
 
     // check validity
     auto &data = entities_[index];
-    if(data.valid == false)
+    // This check was intentionally removed to workaround some rare corner cases that are not handled properly.
+    //
+    // Here's an example of such a corner case that leads to crash due to missing sanity checks:
+    // Location entity is being destroyed (marked as invalid) from scripts. Therefore in the next frame its
+    // destructor is called, invoking Supervisor destructor which in turn destroys (marks as invalid) all the
+    // Player entities.
+    // Here's how it looks like:
+    // + - exists and operates; ! - invalidated (marked as invalid); x - deleted
+    //               |  Frame 0 | Frame 1 | Frame 2 | Frame 3 |
+    // Location      |     +    |    !    |    x    |    x    |
+    // Supervisor    |     +    |    +    |    x    |    x    |
+    // Players[s]    |     +    |    +    |    !    |    x    |
+    //
+    // As it's shown, while Player[s] exists Location is always marked as invalid and doesn't return its pointer.
+    // At this point using an existing pointer to Location without check for validity would work (despite the
+    // inadmissibility of such); but calling GetEntityPointer legally returns nullptr due to `valid` flag unset.
+    // This case is exacerbated by the fact that in this corner case calls to `Player` are done via PostEvent.
+    //
+    // Although in this case it would be more consistent with introducing sanity checks over the code,
+    // such issues are very difficult to catch. And since this workaround doesn't introduce any harm except for
+    // encouraging inconsistency code, it makes sense to left it as a lifebuoy for the existing issues.
+    // if (data.valid == false)
+    // {
+    //     return invalid_entity_idx_t{};
+    // }
+    if (data.state == kNotExists)
     {
         return invalid_entity_idx_t{};
     }
@@ -443,7 +448,6 @@ size_t EntityManager::GetEntityDataIdx(const entid_t id) const
     {
         return invalid_entity_idx_t{};
     }
-        
 
     return index;
 }
@@ -455,14 +459,14 @@ entid_t EntityManager::InsertEntity(entptr_t ptr, hash_t hash)
     {
         const entid_index_t index = std::size(entities_);
         id = CalculateEntityId(index);
-        entities_.emplace_back(EntityInternalData{true, {}, {}, ptr, id, hash});
+        entities_.emplace_back(EntityInternalData{{}, {}, kValid, ptr, id, hash});
     }
     else
     {
         const entid_index_t index = freeIndices_.top();
         id = CalculateEntityId(index);
         freeIndices_.pop();
-        entities_[index] = {true, {}, {}, ptr, id, hash};
+        entities_[index] = {{}, {}, kValid, ptr, id, hash};
     }
 
     return id;
@@ -470,10 +474,13 @@ entid_t EntityManager::InsertEntity(entptr_t ptr, hash_t hash)
 
 void EntityManager::ForEachEntity(const std::function<void(entptr_t)> &f)
 {
-    std::ranges::for_each(entities_, [&](const EntityInternalData& data) {
-        if (const auto entity_ptr = GetEntityPointer(data.id))
+    std::ranges::for_each(entities_, [&](const EntityInternalData &data) {
+        if (data.state == kValid)
+        {
+            if (const auto entity_ptr = GetEntityPointer(data.id))
             {
                 f(entity_ptr);
             }
-        });
+        }
+    });
 }
