@@ -10,12 +10,14 @@
 
 #pragma once
 
+#include <string>
+#include <chrono>
+
 #include "animation.h"
 #include "matrix.h"
 #include "model.h"
 #include "string_compare.hpp"
 #include "vma.hpp"
-#include <string>
 
 class Location;
 class MODEL;
@@ -714,6 +716,8 @@ class Character : public Entity
   private:
     // The location the character is in
     entid_t loc_id;
+
+    std::chrono::steady_clock::time_point blockStart{};
 };
 
 inline void Character::AlreadyDeleted()
