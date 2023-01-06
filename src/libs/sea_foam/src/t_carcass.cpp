@@ -20,7 +20,7 @@ TCarcass::TCarcass(int _levelsCount, int _measurePointsCount, VDX9RENDER *_rende
     uSpeed = 15e-5f;
     iBuffer = renderer->CreateIndexBuffer(3 * 2 * (MEASURE_POINTS - 1) * (TRACE_STEPS_Z - 1) * sizeof(uint16_t));
     vBuffer = renderer->CreateVertexBuffer(
-        CARCASS_VERTEX_FORMAT, MEASURE_POINTS * (TRACE_STEPS_Z + 1) * sizeof(tCarcassVertex), D3DUSAGE_WRITEONLY);
+        CARCASS_VERTEX_FORMAT, MEASURE_POINTS * (TRACE_STEPS_Z + 1) * sizeof(tCarcassVertex), 0, D3DPOOL_MANAGED);
 }
 
 //--------------------------------------------------------------------

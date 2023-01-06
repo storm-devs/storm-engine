@@ -279,7 +279,8 @@ class VDX9RENDER : public SERVICE
     virtual void ReleaseVideoTexture(CVideoTexture *pVTexture) = 0;
 
     // DX9Render: Vertex/Index Buffers Section
-    virtual int32_t CreateVertexBuffer(int32_t type, size_t nverts, uint32_t usage) = 0;
+    virtual int32_t CreateVertexBuffer(int32_t type, size_t nverts, uint32_t usage,
+                                       uint32_t dwPool = D3DPOOL_DEFAULT) = 0;
     virtual int32_t CreateIndexBuffer(size_t ntrgs, uint32_t dwUsage = D3DUSAGE_WRITEONLY) = 0;
 
     virtual IDirect3DVertexBuffer9 *GetVertexBuffer(int32_t id) = 0;
