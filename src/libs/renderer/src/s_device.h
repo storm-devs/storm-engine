@@ -211,8 +211,8 @@ class DX9RENDER : public VDX9RENDER
     void ReleaseVideoTexture(CVideoTexture *pVTexture) override;
 
     // DX9Render: Vertex/Index Buffers Section
-    int32_t CreateVertexBuffer(int32_t type, size_t nverts, uint32_t usage) override;
-    int32_t CreateIndexBuffer(size_t ntrgs, uint32_t dwUsage = D3DUSAGE_WRITEONLY) override;
+    int32_t CreateVertexBuffer(int32_t type, size_t nverts, uint32_t usage, uint32_t dwPool) override;
+    int32_t CreateIndexBuffer(size_t ntrgs, uint32_t dwUsage) override;
 
     IDirect3DVertexBuffer9 *GetVertexBuffer(int32_t id) override;
     int32_t GetVertexBufferFVF(int32_t id) override;

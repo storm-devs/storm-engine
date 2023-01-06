@@ -2179,7 +2179,7 @@ bool DX9RENDER::GetLight(uint32_t dwIndex, D3DLIGHT9 *pLight)
 
 //################################################################################
 
-int32_t DX9RENDER::CreateVertexBuffer(int32_t type, size_t size, uint32_t dwUsage)
+int32_t DX9RENDER::CreateVertexBuffer(int32_t type, size_t size, uint32_t dwUsage, uint32_t dwPool)
 {
     if (size <= 0)
         return -1; // fix
@@ -2192,7 +2192,8 @@ int32_t DX9RENDER::CreateVertexBuffer(int32_t type, size_t size, uint32_t dwUsag
     if (b == MAX_BUFFERS)
         return -1;
 
-    if (CHECKD3DERR(d3d9->CreateVertexBuffer(size, dwUsage, type, D3DPOOL_DEFAULT, &VertexBuffers[b].buff, NULL)))
+    if (CHECKD3DERR(d3d9->CreateVertexBuffer(size, dwUsage, type, static_cast<D3DPOOL>(dwPool),
+                                             &VertexBuffers[b].buff, NULL)))
         return -1;
 
     VertexBuffers[b].type = type;
