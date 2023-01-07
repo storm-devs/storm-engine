@@ -63,6 +63,13 @@ void BICommandList::Draw()
 
 void BICommandList::Update(int32_t nTopLine, int32_t nCharacterIndex, int32_t nCommandMode)
 {
+
+    if (m_nCurrentCommandMode != nCommandMode)
+    {
+        m_nStartUsedCommandIndex = 0;
+        m_nSelectedCommandIndex = 0;
+    }
+
     int32_t nOldSelIndex = 0;
     if (nTopLine == m_LeftTopPoint.y && nCharacterIndex == m_nCurrentCommandCharacterIndex &&
         m_nCurrentCommandMode == nCommandMode)
@@ -74,8 +81,6 @@ void BICommandList::Update(int32_t nTopLine, int32_t nCharacterIndex, int32_t nC
     m_nCurrentCommandCharacterIndex = nCharacterIndex;
     m_nCurrentCommandMode = nCommandMode;
 
-    m_nStartUsedCommandIndex = 0;
-    m_nSelectedCommandIndex = 0;
     m_aUsedCommand.clear();
     m_aCooldownUpdate.clear();
 
@@ -314,9 +319,9 @@ void BICommandList::Init()
     m_nIconShowMaxQuantity = 5;
 }
 
-int32_t BICommandList::AddToIconList(int32_t nTextureNum, int32_t nNormPictureNum, int32_t nSelPictureNum, int32_t nCooldownPictureNum,
-                                  int32_t nCharacterIndex, const char *pcCommandName, int32_t nTargetIndex,
-                                  const char *pcLocName, const char *pcNoteName)
+int32_t BICommandList::AddToIconList(int32_t nTextureNum, int32_t nNormPictureNum, int32_t nSelPictureNum,
+                                     int32_t nCooldownPictureNum, int32_t nCharacterIndex, const char *pcCommandName,
+                                     int32_t nTargetIndex, const char *pcLocName, const char *pcNoteName)
 {
     int32_t n;
     // filtering out already used objects
@@ -361,7 +366,8 @@ int32_t BICommandList::AddToIconList(int32_t nTextureNum, int32_t nNormPictureNu
     return 1;
 }
 
-void BICommandList::AddAdditiveToIconList(int32_t nTextureNum, int32_t nPictureNum, float fDist, float fWidth, float fHeight)
+void BICommandList::AddAdditiveToIconList(int32_t nTextureNum, int32_t nPictureNum, float fDist, float fWidth,
+                                          float fHeight)
 {
     if (m_aUsedCommand.empty())
         return;
@@ -395,7 +401,7 @@ int32_t BICommandList::IconAdd(int32_t nPictureNum, int32_t nTextureNum, RECT &r
 }
 
 int32_t BICommandList::ClockIconAdd(int32_t nForePictureNum, int32_t nBackPictureNum, int32_t nTextureNum, RECT &rpos,
-                                 float fFactor)
+                                    float fFactor)
 {
     if (nTextureNum < 0 || nTextureNum >= m_aTexture.size() || nForePictureNum < 0 ||
         nForePictureNum >= m_aTexture[nTextureNum].nCols * m_aTexture[nTextureNum].nRows)
