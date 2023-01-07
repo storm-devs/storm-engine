@@ -1,14 +1,15 @@
 #pragma once
 
-#include "c_vector.h"
-#include "dx9render.h"
-#include "sound_defines.h"
-#include "v_sound_service.h"
-#include "vma.hpp"
-#include <fmod.hpp>
-
 #include <stack>
 #include <string>
+
+#include "c_vector.h"
+#include "dx9render.h"
+#include "probability_table.hpp"
+#include "sound_defines.h"
+#include "v_sound_service.h"
+
+#include <fmod.hpp>
 
 #define MAX_SOUNDS_SLOTS 4095
 
@@ -107,23 +108,16 @@ class SoundService : public VSoundService
     void CreateEntityIfNeed();
 
     // Aliases ------------------------------------------------------------
-    struct tAliasSound
-    {
-        std::string FileName;
-        float fProbability;
-    };
-
     struct tAlias
     {
         std::string Name;
         uint32_t dwNameHash;
-
-        float fMaxProbabilityValue;
+        
         float fMinDistance;
         float fMaxDistance;
         int32_t iPrior;
         float fVolume;
-        std::vector<tAliasSound> SoundFiles;
+        storm::ProbabilityTable<std::string> soundFiles;
 
         tAlias()
         {
@@ -132,7 +126,7 @@ class SoundService : public VSoundService
 
     std::vector<tAlias> Aliases;
 
-    const char *GetRandomName(tAlias *_alias) const;
+    const char *GetRandomName(const tAlias *alias) const;
     int GetAliasIndexByName(const char *szAliasName);
     void AnalyseNameStringAndAddToAlias(tAlias *_alias, const char *in_string) const;
     void AddAlias(INIFILE &_iniFile, char *_sectionName);
