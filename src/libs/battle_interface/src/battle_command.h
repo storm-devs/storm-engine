@@ -47,9 +47,9 @@ class BICommandList
 
     virtual void Init();
 
-    int32_t AddToIconList(int32_t nTextureNum, int32_t nNormPictureNum, int32_t nSelPictureNum, int32_t nCooldownPictureNum,
-                       int32_t nCharacterIndex, const char *pcCommandName, int32_t nTargetIndex, const char *pcLocName,
-                       const char *pcNoteName);
+    int32_t AddToIconList(int32_t nTextureNum, int32_t nNormPictureNum, int32_t nSelPictureNum,
+                          int32_t nCooldownPictureNum, int32_t nCharacterIndex, const char *pcCommandName,
+                          int32_t nTargetIndex, const char *pcLocName, const char *pcNoteName);
     void AddAdditiveToIconList(int32_t nTextureNum, int32_t nPictureNum, float fDist, float fWidth, float fHeight);
 
   protected:
@@ -100,8 +100,6 @@ class BICommandList
     int32_t m_nStartUsedCommandIndex;
     int32_t m_nSelectedCommandIndex;
     int32_t m_nIconShowMaxQuantity;
-    bool m_bLeftArrow;
-    bool m_bRightArrow;
 
     IPOINT m_pntActiveIconOffset;
     IPOINT m_pntActiveIconSize;
@@ -118,6 +116,15 @@ class BICommandList
     IPOINT m_pntUpDownArrowSize;
     IPOINT m_pntUpArrowOffset;
     IPOINT m_pntDownArrowOffset;
+
+    bool m_bLeftArrow;
+    bool m_bRightArrow;
+    std::string m_sLeftRightArrowTexture;
+    FRECT m_frLeftArrowUV;
+    FRECT m_frRightArrowUV;
+    IPOINT m_pntLeftRightArrowSize;
+    IPOINT m_pntLeftArrowOffset;
+    IPOINT m_pntRightArrowOffset;
 
     std::string m_sCurrentCommandName;
     int32_t m_nCurrentCommandCharacterIndex;
@@ -146,7 +153,8 @@ class BICommandList
     void Release();
 
     int32_t IconAdd(int32_t nPictureNum, int32_t nTextureNum, RECT &rpos);
-    int32_t ClockIconAdd(int32_t nForePictureNum, int32_t nBackPictureNum, int32_t nTextureNum, RECT &rpos, float fFactor);
+    int32_t ClockIconAdd(int32_t nForePictureNum, int32_t nBackPictureNum, int32_t nTextureNum, RECT &rpos,
+                         float fFactor);
     void AdditiveIconAdd(float fX, float fY, std::vector<UsedCommand::AdditiveIcon> &aList);
     FRECT &GetPictureUV(int32_t nTextureNum, int32_t nPictureNum, FRECT &uv);
     RECT &GetCurrentPos(int32_t num, RECT &rpos) const;
