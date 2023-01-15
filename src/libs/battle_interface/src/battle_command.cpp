@@ -22,7 +22,7 @@ BICommandList::BICommandList(entid_t eid, ATTRIBUTES *pA, VDX9RENDER *rs)
     m_NotePos.x = m_NotePos.y = 0;
     m_NoteOffset.x = m_NoteOffset.y = 0;
 
-    m_bUpArrow = m_bDownArrow = false;
+    m_bUpArrow = m_bDownArrow = m_bLeftArrow = m_bRightArrow = false;
 
     m_bActive = false;
 
@@ -232,6 +232,15 @@ void BICommandList::Init()
     m_pntDownArrowOffset.x = 32;
     m_pntDownArrowOffset.y = 66;
 
+    m_sLeftRightArrowTexture = "";
+    m_pntLeftRightArrowSize.x = m_pntLeftRightArrowSize.y = 0;
+    FULLRECT(m_frLeftArrowUV);
+    FULLRECT(m_frRightArrowUV);
+    m_pntLeftArrowOffset.x = 0;
+    m_pntLeftArrowOffset.y = 0;
+    m_pntRightArrowOffset.x = 0;
+    m_pntRightArrowOffset.y = 0;
+
     // default data for active icon
     m_sActiveIconTexture = "";
     m_pntActiveIconOffset.x = -33;
@@ -273,6 +282,17 @@ void BICommandList::Init()
                                  m_pntUpArrowOffset.x, m_pntUpArrowOffset.y);
         BIUtils::ReadPosFromAttr(pAList, "UDArrow_Offset_Down", m_pntDownArrowOffset.x, m_pntDownArrowOffset.y,
                                  m_pntDownArrowOffset.x, m_pntDownArrowOffset.y);
+
+        if (attr = pAList->GetAttribute("LRArrow_Texture"))
+            m_sLeftRightArrowTexture = attr;
+        BIUtils::ReadRectFromAttr(pAList, "LRArrow_UV_Left", m_frLeftArrowUV, m_frLeftArrowUV);
+        BIUtils::ReadRectFromAttr(pAList, "LRArrow_UV_Right", m_frRightArrowUV, m_frRightArrowUV);
+        BIUtils::ReadPosFromAttr(pAList, "LRArrow_Size", m_pntLeftRightArrowSize.x, m_pntLeftRightArrowSize.y,
+                                 m_pntLeftRightArrowSize.x, m_pntLeftRightArrowSize.y);
+        BIUtils::ReadPosFromAttr(pAList, "LRArrow_Offset_Left", m_pntLeftArrowOffset.x, m_pntLeftArrowOffset.y,
+                                 m_pntLeftArrowOffset.x, m_pntLeftArrowOffset.y);
+        BIUtils::ReadPosFromAttr(pAList, "LRArrow_Offset_Right", m_pntRightArrowOffset.x, m_pntRightArrowOffset.y,
+                                 m_pntRightArrowOffset.x, m_pntRightArrowOffset.y);
 
         // set values for the menu activity icon
         if (attr = pAList->GetAttribute("ActiveIcon_Texture"))
@@ -489,7 +509,7 @@ void BICommandList::UpdateShowIcon()
     m_pImgRender->CreateImage(BIType_square, m_sActiveIconTexture.c_str(), 0xFF808080, m_frActiveIconUV2, rPos);
 
     m_bLeftArrow = m_nStartUsedCommandIndex > 0;
-    m_bRightArrow = false;
+    m_bRightArrow = m_aUsedCommand.size() - m_nStartUsedCommandIndex > m_nIconShowMaxQuantity;
 
     int32_t i = 0;
     for (auto n = m_nStartUsedCommandIndex; n < m_aUsedCommand.size() && i < m_nIconShowMaxQuantity; n++)
@@ -538,6 +558,22 @@ void BICommandList::UpdateShowIcon()
         rPos.right = rPos.left + m_pntUpDownArrowSize.x;
         rPos.bottom = rPos.top + m_pntUpDownArrowSize.y;
         m_pImgRender->CreateImage(BIType_square, m_sUpDownArrowTexture.c_str(), 0xFF808080, m_frDownArrowUV, rPos);
+    }
+    if (m_bLeftArrow)
+    {
+        rPos.left = m_LeftTopPoint.x + m_pntLeftArrowOffset.x;
+        rPos.top = m_LeftTopPoint.y + m_pntLeftArrowOffset.y;
+        rPos.right = rPos.left + m_pntLeftRightArrowSize.x;
+        rPos.bottom = rPos.top + m_pntLeftRightArrowSize.y;
+        m_pImgRender->CreateImage(BIType_square, m_sLeftRightArrowTexture.c_str(), 0xFF808080, m_frLeftArrowUV, rPos);
+    }
+    if (m_bRightArrow)
+    {
+        rPos.left = m_LeftTopPoint.x + m_pntRightArrowOffset.x;
+        rPos.top = m_LeftTopPoint.y + m_pntRightArrowOffset.y;
+        rPos.right = rPos.left + m_pntLeftRightArrowSize.x;
+        rPos.bottom = rPos.top + m_pntLeftRightArrowSize.y;
+        m_pImgRender->CreateImage(BIType_square, m_sLeftRightArrowTexture.c_str(), 0xFF808080, m_frRightArrowUV, rPos);
     }
 }
 
