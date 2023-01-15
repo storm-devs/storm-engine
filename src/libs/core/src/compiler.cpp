@@ -2582,6 +2582,12 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
             // CompileToken(Segment,EX);
 
             CompileToken(Segment, POP_EXPRESULT); // pop
+
+            if (bound_type == IF_BLOCK)
+            {
+                return true;
+            }
+
             break;
         case ELSE_BLOCK:
             update_offset = Segment.BCode_Program_size + 2;
@@ -2596,7 +2602,8 @@ bool COMPILER::CompileBlock(SEGMENT_DESC &Segment, bool &bFunctionBlock, uint32_
             else
             {
                 Token.StepBack();
-                if (!CompileBlock(Segment, bFunctionBlock, inout, SEPARATOR, continue_jump, break_offset, BreakTable))
+                if (!CompileBlock(Segment, bFunctionBlock, inout, Token_type == IF_BLOCK ? IF_BLOCK : SEPARATOR,
+                                  continue_jump, break_offset, BreakTable))
                     return false;
             }
             memcpy(&Segment.pCode[update_offset], &Segment.BCode_Program_size, sizeof(uint32_t));
