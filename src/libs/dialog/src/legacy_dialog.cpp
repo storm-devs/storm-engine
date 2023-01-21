@@ -438,7 +438,7 @@ void LegacyDialog::DrawBackground(size_t start, size_t count)
 
 void LegacyDialog::SetAction(std::string action)
 {
-    if (!headModel_)
+    if (headModel_ == invalid_entity)
         return;
 
     std::string preparedAction = action;
@@ -465,13 +465,18 @@ void LegacyDialog::SetAction(std::string action)
 
 void LegacyDialog::UpdateHeadModel(const std::string &headModelPath)
 {
-    core.EraseEntity(headModel_);
-
     const std::string newHeadModelPath = fmt::format("Heads/{}", headModelPath);
 
     if (headModelPath_ != newHeadModelPath)
     {
         headModelPath_ = newHeadModelPath;
+
+        if (headModel_ != invalid_entity)
+        {
+            core.EraseEntity(headModel_);
+            headModel_ = invalid_entity;
+        }
+
         headModel_ = core.CreateEntity("MODELR");
         auto gs = static_cast<VGEOMETRY *>(core.GetService("geometry"));
         gs->SetTexturePath("characters\\");
@@ -505,7 +510,7 @@ void LegacyDialog::UpdateHeadModel(const std::string &headModelPath)
 
 void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
 {
-    if (headModel_)
+    if (headModel_ != invalid_entity)
     {
         D3DVIEWPORT9 viewport;
         RenderService->GetViewport(&viewport);
