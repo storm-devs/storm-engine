@@ -97,7 +97,7 @@ class LegacyDialog final : public Entity
 
     int32_t fadeTime_{};
 
-    entid_t headModel_;
+    entid_t headModel_{invalid_entity};
 
     std::string mood_ = "normal";
 
