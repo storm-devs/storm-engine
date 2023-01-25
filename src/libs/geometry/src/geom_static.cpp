@@ -9,6 +9,8 @@ Import library main file
 ******************************************************************************/
 #include "geom.h"
 
+#include <fmt/format.h>
+
 #include <cstdint>
 #include <cstring>
 #include <vector>
@@ -17,6 +19,13 @@ Import library main file
 
 namespace
 {
+
+#ifdef _DEBUG
+constexpr bool VALIDATE_COLLISION_DATA = true;
+#else
+constexpr bool VALIDATE_COLLISION_DATA = false;
+#endif
+
 std::vector<uint32_t> getColData(GEOM_SERVICE &srv, const std::string_view &file_name)
 {
     std::vector<uint32_t> result;
@@ -192,14 +201,25 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, int32_t
         RDF_BSPHEAD bhead;
         srv.ReadFile(file, &bhead, sizeof(RDF_BSPHEAD));
 
-        sroot = static_cast<BSP_NODE *>(srv.malloc(bhead.nnodes * sizeof(BSP_NODE)));
-        srv.ReadFile(file, sroot, bhead.nnodes * sizeof(BSP_NODE));
+        sroot = std::vector<BSP_NODE>(bhead.nnodes);
+        srv.ReadFile(file, sroot.data(), sroot.size() * sizeof(BSP_NODE));
 
-        vrt = static_cast<CVECTOR *>(srv.malloc(bhead.nvertices * sizeof(RDF_BSPVERTEX)));
-        srv.ReadFile(file, vrt, bhead.nvertices * sizeof(RDF_BSPVERTEX));
+        vrt = std::vector<CVECTOR>(bhead.nvertices);
+        srv.ReadFile(file, vrt.data(), vrt.size() * sizeof(RDF_BSPVERTEX));
 
-        btrg = static_cast<RDF_BSPTRIANGLE *>(srv.malloc(bhead.ntriangles * sizeof(RDF_BSPTRIANGLE)));
-        srv.ReadFile(file, btrg, bhead.ntriangles * sizeof(RDF_BSPTRIANGLE));
+        btrg = std::vector<RDF_BSPTRIANGLE>(bhead.ntriangles);
+        srv.ReadFile(file, btrg.data(), btrg.size() * sizeof(RDF_BSPTRIANGLE));
+
+        if constexpr (VALIDATE_COLLISION_DATA)  {
+            const bool valid = std::all_of(std::begin(btrg), std::end(btrg), [this](const auto &triangle) {
+                return triangle.getIndex(0) < vrt.size() && triangle.getIndex(1) < vrt.size() &&
+                       triangle.getIndex(2) < vrt.size();
+            });
+            if (!valid)
+            {
+                throw std::runtime_error(fmt::format("Detected invalid collision data while loading file '{}'", fname));
+            }
+        }
     }
 
     srv.CloseFile(file);
@@ -234,9 +254,9 @@ GEOM::~GEOM()
     if (rhead.flags & FLAGS_BSP_PRESENT)
     {
         // bsp
-        srv.free(btrg);
-        srv.free(vrt);
-        srv.free(sroot);
+        btrg.clear();
+        vrt.clear();
+        sroot.clear();
     }
 
     for (int32_t v = 0; v < rhead.nvrtbuffs; v++)

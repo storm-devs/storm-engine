@@ -12,6 +12,8 @@ Import library class
 #include "rdf.h"
 #include "geos.h"
 
+#include <vector>
+
 #define EPSILON 4e-7
 
 struct SAVAGE
@@ -23,9 +25,9 @@ struct SAVAGE
 class GEOM : public GEOS
 {
     static SAVAGE _stack[256];
-    CVECTOR *vrt;
-    RDF_BSPTRIANGLE *btrg;
-    BSP_NODE *sroot;
+    std::vector<CVECTOR> vrt{};
+    std::vector<RDF_BSPTRIANGLE> btrg{};
+    std::vector<BSP_NODE> sroot{};
 
     CVECTOR res_norm;
     float res_pldist;
@@ -43,18 +45,18 @@ class GEOM : public GEOS
     GEOM_SERVICE &srv;
 
     RDF_HEAD rhead;
-    char *globname;
-    int32_t *names;
-    int32_t *tname;
-    int32_t *tlookup;
-    MATERIAL *material;
-    LIGHT *light;
-    LABEL *label;
-    OBJECT *object;
+    char *globname = nullptr;
+    int32_t *names = nullptr;
+    int32_t *tname = nullptr;
+    int32_t *tlookup = nullptr;
+    MATERIAL *material = nullptr;
+    LIGHT *light = nullptr;
+    LABEL *label = nullptr;
+    OBJECT *object = nullptr;
     int32_t idx_buff;
-    VERTEX_BUFFER *vbuff;
+    VERTEX_BUFFER *vbuff = nullptr;
 
-    int32_t *atriangles;
+    int32_t *atriangles = nullptr;
     int32_t traceid;
     DVECTOR src, dst;
 

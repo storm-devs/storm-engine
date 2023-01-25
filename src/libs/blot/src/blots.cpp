@@ -283,7 +283,7 @@ void Blots::SetNodesCollision(NODE *n, bool isSet)
         n->flags |= n->flags >> 24;
         n->flags &= 0x00ffffff;
     }
-    for (int32_t i = 0; i < n->nnext; i++)
+    for (int32_t i = 0; i < n->next.size(); i++)
         SetNodesCollision(n->next[i], isSet);
 }
 
