@@ -276,12 +276,7 @@ NODER::~NODER()
 #endif
 
     delete geo;
-    for (NODE *node : next) {
-        if (node != nullptr) {
-            delete node;
-        }
-    }
-    next.clear();
+    std::destroy(next.begin(), next.end());
 }
 
 void NODER::ReleaseGeometry()

@@ -7,6 +7,7 @@ include(StormSetup)
 
 option(STORM_ENABLE_CRASH_REPORTS "Enable automatic crash reports" OFF)
 option(STORM_ENABLE_STEAM "Enable Steam integration" OFF)
+option(STORM_ENABLE_SAFE_MODE "Enable additional runtime checks" OFF)
 
 ### Set up output paths
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})

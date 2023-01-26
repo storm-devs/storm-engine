@@ -8,24 +8,17 @@ Comments:
 Import library main file
 ******************************************************************************/
 #include "geom.h"
-
-#include <fmt/format.h>
+#include <storm/config.hpp>
 
 #include <cstdint>
 #include <cstring>
+#include <format>
 #include <vector>
 
 #include "../../util/include/string_compare.hpp"
 
 namespace
 {
-
-#ifdef _DEBUG
-constexpr bool VALIDATE_COLLISION_DATA = true;
-#else
-constexpr bool VALIDATE_COLLISION_DATA = false;
-#endif
-
 std::vector<uint32_t> getColData(GEOM_SERVICE &srv, const std::string_view &file_name)
 {
     std::vector<uint32_t> result;
@@ -210,14 +203,14 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, int32_t
         btrg = std::vector<RDF_BSPTRIANGLE>(bhead.ntriangles);
         srv.ReadFile(file, btrg.data(), btrg.size() * sizeof(RDF_BSPTRIANGLE));
 
-        if constexpr (VALIDATE_COLLISION_DATA)  {
+        if constexpr (storm::kValidateCollisionData)  {
             const bool valid = std::all_of(std::begin(btrg), std::end(btrg), [this](const auto &triangle) {
                 return triangle.getIndex(0) < vrt.size() && triangle.getIndex(1) < vrt.size() &&
                        triangle.getIndex(2) < vrt.size();
             });
             if (!valid)
             {
-                throw std::runtime_error(fmt::format("Detected invalid collision data while loading file '{}'", fname));
+                throw std::runtime_error(std::format("Detected invalid collision data while loading file '{}'", fname));
             }
         }
     }
@@ -251,14 +244,6 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, int32_t
 // delete all textures, buffers, memory
 GEOM::~GEOM()
 {
-    if (rhead.flags & FLAGS_BSP_PRESENT)
-    {
-        // bsp
-        btrg.clear();
-        vrt.clear();
-        sroot.clear();
-    }
-
     for (int32_t v = 0; v < rhead.nvrtbuffs; v++)
         srv.ReleaseVertexBuffer(vbuff[v].dev_buff);
     srv.free(vbuff);
