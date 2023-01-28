@@ -33,7 +33,7 @@ float GEOM::Trace(VERTEX &start, VERTEX &finish)
     diss = 0.0;
     dise = 1.0;
     dirvec = dst - src;
-    node = sroot;
+    node = sroot.data();
     stack = _stack - 1;
 
 rec_loop:;
@@ -129,9 +129,9 @@ rec_return:;
         const auto face = (static_cast<int32_t>(*(pface + 2)) << 16) | (static_cast<int32_t>(*(pface + 1)) << 8) |
                           (static_cast<int32_t>(*(pface + 0)) << 0);
         int32_t vindex[3];
-        vindex[0] = (btrg[face].vindex[0][0] << 0) | (btrg[face].vindex[0][1] << 8) | (btrg[face].vindex[0][2] << 16);
-        vindex[1] = (btrg[face].vindex[1][0] << 0) | (btrg[face].vindex[1][1] << 8) | (btrg[face].vindex[1][2] << 16);
-        vindex[2] = (btrg[face].vindex[2][0] << 0) | (btrg[face].vindex[2][1] << 8) | (btrg[face].vindex[2][2] << 16);
+        vindex[0] = btrg[face].getIndex(0);
+        vindex[1] = btrg[face].getIndex(1);
+        vindex[2] = btrg[face].getIndex(2);
 
         // Tomas Moller and Ben Trumbore algorithm
 
@@ -296,7 +296,7 @@ bool GEOM::Clip(const PLANE *planes, int32_t nplanes, const VERTEX &center, floa
         attempt++;
     }
 
-    BSP_NODE *node = sroot;
+    BSP_NODE *node = sroot.data();
     int32_t rec_level = -1;
 
 rec_loop:;

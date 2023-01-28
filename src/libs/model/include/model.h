@@ -28,8 +28,7 @@ class NODE
     GEOS *geo;
     GEOS::MATERIAL_FUNC geoMaterialFunc;
     // children
-    int32_t nnext;
-    NODE **next;
+    std::vector<NODE *> next;
     // 0 for root
     NODE *parent;
 

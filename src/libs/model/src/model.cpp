@@ -158,7 +158,7 @@ void SetChildrenTechnique(NODE *_root, const char *_name)
     if (!_root || !_name)
         return;
     _root->SetTechnique(_name);
-    for (int i = 0; i < _root->nnext; i++)
+    for (int i = 0; i < _root->next.size(); i++)
         SetChildrenTechnique(_root->next[i], _name);
 }
 

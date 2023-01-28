@@ -86,7 +86,7 @@ bool NODER::Clip()
     }
 
     if (flags & CLIP_ENABLE_TREE)
-        for (int32_t l = 0; l < nnext; l++)
+        for (int32_t l = 0; l < next.size(); l++)
             if (next[l] != nullptr && static_cast<NODER *>(next[l])->Clip() == true)
                 retval = true;
     return retval;
@@ -102,7 +102,7 @@ float NODER::Update(CMatrix &mtx, CVECTOR &cnt)
     center = geo_center;
     radius = geo_radius;
 
-    for (int32_t l = 0; l < nnext; l++)
+    for (int32_t l = 0; l < next.size(); l++)
         if (next[l] != nullptr)
         {
             CVECTOR cnt; // TODO: huh? ~!~
@@ -134,7 +134,7 @@ float NODER::Trace(const CVECTOR &src, const CVECTOR &dst)
     auto best_dist = 2.0f;
 
     if (flags & TRACE_ENABLE_TREE)
-        for (int32_t n = 0; n < nnext; n++)
+        for (int32_t n = 0; n < next.size(); n++)
         {
             if (next[n] == nullptr)
                 continue;
@@ -170,8 +170,6 @@ NODER::NODER()
     sphere = 0;
 #endif
     geo = nullptr;
-    nnext = 0;
-    next = nullptr;
     parent = nullptr;
 
     max_view_dist = 0.f;
@@ -225,16 +223,14 @@ bool NODER::Init(const char *lightPath, const char *pname, const char *oname, co
         strcpy_s(name, pname);
     // calculate number of labels
     const auto idGeo = geo->FindName("geometry");
-    nnext = 0;
+    int32_t node_count = 0;
     int32_t sti = -1;
     while ((sti = geo->FindLabelG(sti + 1, idGeo)) > -1)
-        nnext++;
+        node_count++;
 
-    if (nnext > 0)
+    if (node_count > 0)
     {
-        next = static_cast<NODE **>(malloc(sizeof(NODE *) * nnext));
-        for (int32_t ii = 0; ii < nnext; ii++)
-            next[ii] = nullptr;
+        next = std::vector<NODE *>(node_count, nullptr);
         int32_t sti = -1;
         int32_t l = 0;
         while ((sti = geo->FindLabelG(sti + 1, idGeo)) > -1)
@@ -280,11 +276,7 @@ NODER::~NODER()
 #endif
 
     delete geo;
-    for (int32_t l = 0; l < nnext; l++)
-        if (next[l] != nullptr)
-            delete next[l];
-    if (nnext > 0)
-        free(next);
+    std::destroy(next.begin(), next.end());
 }
 
 void NODER::ReleaseGeometry()
@@ -294,7 +286,7 @@ void NODER::ReleaseGeometry()
     delete geo;
     geo = nullptr;
     isReleased = true;
-    for (int32_t i = 0; i < nnext; i++)
+    for (int32_t i = 0; i < next.size(); i++)
     {
         if (!next[i])
             continue;
@@ -319,7 +311,7 @@ void NODER::RestoreGeometry()
         throw std::runtime_error(fmt::format("Cannot restore geometry {}", sys_modelName_full));
 
     isReleased = false;
-    for (int32_t i = 0; i < nnext; i++)
+    for (int32_t i = 0; i < next.size(); i++)
     {
         if (!next[i])
             continue;
@@ -438,7 +430,7 @@ void NODER::Draw()
 
     // draw all children
     if (flags & VISIBLE_TREE)
-        for (int32_t l = 0; l < nnext; l++)
+        for (int32_t l = 0; l < next.size(); l++)
             if (next[l] != nullptr)
                 static_cast<NODER *>(next[l])->Draw();
 }
@@ -450,7 +442,7 @@ NODER *NODER::FindNode(const char *cNodeName)
 {
     if (storm::iEquals(cNodeName, name))
         return this;
-    for (int32_t i = 0; i < nnext; i++)
+    for (int32_t i = 0; i < next.size(); i++)
     {
         if (!next[i])
             continue;
@@ -475,7 +467,7 @@ NODER *NODER::GetNode(int32_t n)
         return this;
     }
     node++;
-    for (int32_t l = 0; l < nnext; l++)
+    for (int32_t l = 0; l < next.size(); l++)
     {
         if (next[l] == nullptr)
             continue;
@@ -530,7 +522,7 @@ entid_t NODER::Unlink2Model()
         // get parent matrix
         mdl->mtx = parent->glob_mtx;
 
-        for (int32_t l = 0; l < parent->nnext; l++)
+        for (int32_t l = 0; l < parent->next.size(); l++)
             if (parent->next[l] == this)
             {
                 parent->next[l] = nullptr;
@@ -552,14 +544,12 @@ void NODER::Link(entid_t id, bool transform)
         return;
 
     // increment number of children
-    nnext++;
-    next = static_cast<NODE **>(realloc(next, sizeof(NODE *) * nnext));
-    next[nnext - 1] = mdl->root;
+    next.push_back(mdl->root);
 
     // modify loc_mtx of node
     if (transform)
     {
-        CMatrix glob_parent = next[nnext - 1]->glob_mtx;
+        CMatrix glob_parent = next.back()->glob_mtx;
         // glob_parent.Transposition();
         // next[nnext-1]->loc_mtx = mdl->mtx * glob_parent;
     }
@@ -589,7 +579,7 @@ const char *NODER::GetTechnique()
 void NODER::SetMaxViewDist(float fDist)
 {
     max_view_dist = fDist;
-    for (int32_t n = 0; n < nnext; n++)
+    for (int32_t n = 0; n < next.size(); n++)
         if (next[n])
             static_cast<NODER *>(next[n])->SetMaxViewDist(fDist);
 }

@@ -271,6 +271,10 @@ struct RDF_BSPHEAD
 struct RDF_BSPTRIANGLE
 {
     unsigned char vindex[3][3];
+
+    constexpr int32_t getIndex(size_t i) const {
+        return (vindex[i][0] << 0) | (vindex[i][1] << 8) | (vindex[i][2] << 16);
+    }
 };
 
 #define RDF_BSPVERTEX CVECTOR

@@ -395,7 +395,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
         }
 
         // set the left and right points of the yard
-        for (i = 0; i < mastNodePointer->nnext; i++)
+        for (i = 0; i < mastNodePointer->next.size(); i++)
             if (!strncmp(mastNodePointer->next[i]->GetName(), "rey", 3))
             {
                 mastNodePointer->next[i]->geo->GetInfo(gi);
@@ -409,7 +409,7 @@ void MAST::Mount(entid_t modelEI, entid_t shipEI, NODE *mastNodePointer)
                 }
                 break;
             }
-        if (i == mastNodePointer->nnext)
+        if (i == mastNodePointer->next.size())
             mm.brey = mm.erey = CVECTOR(0.f, 0.f, 0.f);
         else
         {
