@@ -80,7 +80,7 @@ BEGIN
             VALUE "FileDescription", "Storm 2.9 Core"
             VALUE "FileVersion", "2, 9, 0, 1"
             VALUE "InternalName", "ENGINE"
-            VALUE "LegalCopyright", "Copyright © 2008-2019"
+            VALUE "LegalCopyright", "Copyright ï¿½ 2008-2019"
             VALUE "OriginalFilename", "ENGINE.exe"
             VALUE "ProductName", "BlackMark Studio ENGINE"
             VALUE "ProductVersion", "2, 9, 0, 1"
@@ -218,7 +218,7 @@ IDC_DRAGNODROP          CURSOR                  "dragpoin.cur"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "icon1.ico"
+IDI_ICON1               ICON                    "compass.ico"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
