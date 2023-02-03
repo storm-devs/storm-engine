@@ -29,7 +29,6 @@ class StormEngine(ConanFile):
             self.requires("7zip/19.00")
         else:
             # conan-center
-            self.requires("libsafec/3.6.0")
             self.requires("openssl/1.1.1n")#fix for error: 'sentry-crashpad/0.4.13' requires 'openssl/1.1.1n' while 'pulseaudio/14.2' requires 'openssl/1.1.1q'
         if self.options.steam:
             self.requires("steamworks/1.5.1@storm/prebuilt")
