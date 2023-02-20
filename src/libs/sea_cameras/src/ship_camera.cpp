@@ -125,7 +125,7 @@ void SHIP_CAMERA::Move(float fDeltaTime)
     const auto *modelMtx = GetAIObj()->GetMatrix();
     auto boxSize = GetAIObj()->GetBoxsize();
     // Recalculate box size: (box size + immersion) * hand-fitted scale
-    boxSize.y += modelMtx->pos.y;
+    boxSize.y += modelMtx->v.pos.y;
     boxSize *= CVECTOR(SCMR_BOXSCALE_X * 0.5f, SCMR_BOXSCALE_Y * 0.5f, SCMR_BOXSCALE_Z * 0.5f);
     // Project real height (with masts)
     const auto realBoxSize = GetAIObj()->GetRealBoxsize();
