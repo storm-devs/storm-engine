@@ -705,7 +705,7 @@ uint32_t CoreImpl::Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, 
     return pE->AttributesPointer->GetAttributeAsDword(name, def);
 }
 
-FLOAT CoreImpl::Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT def)
+float CoreImpl::Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, float def)
 {
     Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
@@ -735,7 +735,7 @@ bool CoreImpl::Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uin
     return pE->AttributesPointer->SetAttributeUseDword(name, val);
 }
 
-bool CoreImpl::Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val)
+bool CoreImpl::Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, float val)
 {
     Entity *pE = GetEntityPointer(id_PTR);
     if (pE == nullptr)
