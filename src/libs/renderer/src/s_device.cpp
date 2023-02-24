@@ -1077,8 +1077,8 @@ void DX9RENDER::BlurGlowTexture()
 
 void DX9RENDER::CopyGlowToScreen()
 {
-    const FLOAT sx = static_cast<FLOAT>(screen_size.x);
-    const auto sy = static_cast<FLOAT>(screen_size.y);
+    const auto sx = static_cast<float>(screen_size.x);
+    const auto sy = static_cast<float>(screen_size.y);
     // Render to screen
     PostProcessQuad[0].vPos = Vector4(0, sy, 0.0f, 1.0f);
     PostProcessQuad[1].vPos = Vector4(0, 0, 0.0f, 1.0f);
@@ -1116,8 +1116,8 @@ void DX9RENDER::CopyGlowToScreen()
 
 void DX9RENDER::CopyPostProcessToScreen()
 {
-    const FLOAT sx = static_cast<FLOAT>(screen_size.x);
-    const auto sy = static_cast<FLOAT>(screen_size.y);
+    const auto sx = static_cast<float>(screen_size.x);
+    const auto sy = static_cast<float>(screen_size.y);
     PostProcessQuad[0].vPos = Vector4(0, sy, 0.0f, 1.0f);
     PostProcessQuad[1].vPos = Vector4(0, 0, 0.0f, 1.0f);
     PostProcessQuad[2].vPos = Vector4(sx, sy, 0.0f, 1.0f);

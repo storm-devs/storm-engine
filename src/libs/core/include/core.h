@@ -63,10 +63,10 @@ class Core
     virtual ATTRIBUTES *Entity_GetAttributeClass(entid_t id_PTR, const char *name) = 0;
     virtual const char *Entity_GetAttribute(entid_t id_PTR, const char *name) = 0;
     virtual uint32_t Entity_GetAttributeAsDword(entid_t id_PTR, const char *name, uint32_t def = 0) = 0;
-    virtual FLOAT Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, FLOAT def = 0) = 0;
+    virtual float Entity_GetAttributeAsFloat(entid_t id_PTR, const char *name, float def = 0) = 0;
     virtual bool Entity_SetAttribute(entid_t id_PTR, const char *name, const char *attribute) = 0;
     virtual bool Entity_SetAttributeUseDword(entid_t id_PTR, const char *name, uint32_t val) = 0;
-    virtual bool Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, FLOAT val) = 0;
+    virtual bool Entity_SetAttributeUseFloat(entid_t id_PTR, const char *name, float val) = 0;
     virtual void Entity_SetAttributePointer(entid_t id_PTR, ATTRIBUTES *pA) = 0;
     virtual uint32_t Entity_AttributeChanged(entid_t id_PTR, ATTRIBUTES *) = 0;
     virtual ATTRIBUTES *Entity_GetAttributePointer(entid_t id_PTR) = 0;
