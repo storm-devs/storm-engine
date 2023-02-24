@@ -662,11 +662,11 @@ CTechnique::~CTechnique()
             technique_t *pTech = &pB->pTechniques[j];
             for (k = 0; k < pTech->dwNumPasses; k++)
                 STORM_DELETE(pTech->pPasses[k].pPass);
-            STORM_DELETE(pTech->pPasses);
+            free(pTech->pPasses);
         }
         STORM_DELETE(pB->pParams);
         STORM_DELETE(pB->pBlockName);
-        STORM_DELETE(pB->pTechniques);
+        free(pB->pTechniques);
     }
     for (i = 0; i < dwNumShaders; i++)
     {
@@ -683,10 +683,10 @@ CTechnique::~CTechnique()
             pShaders[i].pVertexShader = nullptr;
         }
     }
-    STORM_DELETE(pShaders);
-    STORM_DELETE(pBlocks);
-    STORM_DELETE(pSavedStates);
-    STORM_DELETE(pCurParams);
+    free(pShaders);
+    free(pBlocks);
+    free(pSavedStates);
+    free(pCurParams);
 }
 
 #define END_TEST (uint32_t(pCurrent - pBegin) >= dwSize - 2)
