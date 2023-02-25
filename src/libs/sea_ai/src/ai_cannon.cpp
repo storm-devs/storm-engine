@@ -127,9 +127,24 @@ void AICannon::RealFire()
 
     // raw angle
     const CVECTOR vFlatEnemyDir = !(CVECTOR(vEnemyPos.x, vPosTemp.y, vEnemyPos.z) - vPosTemp);
-    float fAngle = acosf(vFlatEnemyDir | vEnemyDir);
+    float fAngle;
+    const float dp = vFlatEnemyDir | vEnemyDir;
+    if (dp >= 1.0f)
+    {
+        fAngle = 0.0f;
+    }
+    else if (dp <= -1.0f)
+    {
+        fAngle = PI;
+    }
+    else
+    {
+        fAngle = acosf(dp);
+    }
     if (vEnemyPos.y < vPosTemp.y)
+    {
         fAngle = -fAngle;
+    }
 
     core.Event(CANNON_FIRE, "afffffffff", pAHolder->GetACharacter(), vPosTemp.x, vPosTemp.y, vPosTemp.z, fSpeedV0,
                fFireDirection, fFireHeightAngle, fDirY, fMaxFireDistance, fAngle);
