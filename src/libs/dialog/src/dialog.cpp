@@ -1134,14 +1134,19 @@ uint64_t DIALOG::ProcessMessage(MESSAGE &message)
         charMdl = message.EntityID();
         const char *attr = nullptr;
         if (attr = core.Entity_GetAttribute(charId, "name"))
+        {
             m_sTalkPersName = attr;
-        if (m_sTalkPersName.size() > 0)
-            m_sTalkPersName += " ";
+        }
         if (attr = core.Entity_GetAttribute(charId, "lastname"))
+        {
+            if (m_sTalkPersName.size() > 0 && *attr != '\0')
+            {
+                m_sTalkPersName += " ";
+            }
             m_sTalkPersName += attr;
+        }
         m_BackParams.fCharacterNameRectCenterWidth =
-            4.f +
-            RenderService->StringWidth((char *)m_sTalkPersName.c_str(), m_nCharNameTextFont, m_fCharNameTextScale);
+            4.f + RenderService->StringWidth(m_sTalkPersName, m_nCharNameTextFont, m_fCharNameTextScale);
         break;
     }
     return 0;
