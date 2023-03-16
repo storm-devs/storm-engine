@@ -83,8 +83,10 @@ bool BITimer::ReadAndCreate()
     BIUtils::ReadRectFromAttr(AttributesPointer, "timerforeuv", rForeUV, rForeUV);
 
     // read texture & color
-    auto *pcBackTexture = AttributesPointer ? AttributesPointer->GetAttribute("timerbacktexture") : nullptr;
-    auto *pcForeTexture = AttributesPointer ? AttributesPointer->GetAttribute("timerforetexture") : nullptr;
+    auto *pcBackTexture =
+        AttributesPointer ? static_cast<const char *>(AttributesPointer->GetAttribute("timerbacktexture")) : nullptr;
+    auto *pcForeTexture =
+        AttributesPointer ? static_cast<const char *>(AttributesPointer->GetAttribute("timerforetexture")) : nullptr;
     auto dwColorBack =
         AttributesPointer ? AttributesPointer->GetAttributeAsDword("timerbackcolor", 0xFFFFFFFF) : 0xFFFFFFFF;
     auto dwColorFore =

@@ -487,7 +487,9 @@ void ISPYGLASS::FindNewTargetShip()
                     continue;
                 Sphere sph;
                 const auto &vec = pSD->pShip->GetPos();
-                sph.pos = {vec.x, vec.y, vec.z};
+                sph.x = vec.x;
+                sph.y = vec.y;
+                sph.z = vec.z;
                 sph.r = 40.f;
                 if (sph.Intersection(vsrc, vdst))
                 {

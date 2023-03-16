@@ -461,14 +461,14 @@ void SAILONE::FillVertex(SAILVERTEX *pv)
     auto tmpRow = 1.f / static_cast<float>((SAIL_ROW_MAX - 1));
 
     auto pStart = ss.hardPoints[0];
-    auto dVStart = sgeo.dVv;
-    auto dVhStart = sgeo.dVh;
+    auto dVStart = sgeo.cv.dVv;
+    auto dVhStart = sgeo.cv.dVh;
 
     if (ss.eSailType == SAIL_TREANGLE)
     {
         dStart = (ss.hardPoints[1] - pStart) * tmpRow;
         // define the center of divergence of normals
-        dnorm = ss.boundSphere.c - sgeo.normL * ss.boundSphere.r;
+        dnorm = ss.boundSphere.c - sgeo.cv.normL * ss.boundSphere.r;
         // enumeration of sections along the sail and looping through them
         // ===============================================================
         for (idx = ix = 0; ix < SAIL_ROW_MAX; ix++)
@@ -488,7 +488,7 @@ void SAILONE::FillVertex(SAILVERTEX *pv)
                 pcur += dV;
             }
             pStart += dStart;
-            dVhStart += sgeo.ddVh;
+            dVhStart += sgeo.cv.ddVh;
             dVStart += dVhStart;
         }
 
@@ -499,9 +499,9 @@ void SAILONE::FillVertex(SAILVERTEX *pv)
     else
     {
         dStart = (ss.hardPoints[1] - pStart) * tmpCol;
-        dnorm = ss.boundSphere.c - sgeo.dnormL * ss.boundSphere.r;
+        dnorm = ss.boundSphere.c - sgeo.cv.dnormL * ss.boundSphere.r;
         if (ss.eSailType == SAIL_TRAPECIDAL)
-            dnorm = ss.boundSphere.c - sgeo.normL * ss.boundSphere.r;
+            dnorm = ss.boundSphere.c - sgeo.cv.normL * ss.boundSphere.r;
         // enumeration of sections along the sail and looping through them
         // ===============================================================
         for (idx = ix = 0; ix < SAIL_COL_MAX; ix++)
@@ -509,8 +509,8 @@ void SAILONE::FillVertex(SAILVERTEX *pv)
             // set the coordinates of the starting point and their increments at each step
             pcur = pStart;
             dV = dVStart;
-            ddV = sgeo.ddVv;
-            dddV = sgeo.dddVv;
+            ddV = sgeo.cv.ddVv;
+            dddV = sgeo.cv.dddVv;
             // sail calculation along the section line
             // |||||||||||||||||||||||||||||||||||
             for (iy = 0; iy < SAIL_ROW_MAX; iy++, idx++)
@@ -524,7 +524,7 @@ void SAILONE::FillVertex(SAILVERTEX *pv)
                 pcur += dV;
             }
             pStart += dStart;
-            dVhStart += sgeo.ddVh;
+            dVhStart += sgeo.cv.ddVh;
             dVStart += dVhStart;
         }
 
@@ -632,7 +632,7 @@ bool SAILONE::SetSail()
     int hpq;
 
     // there is no rope tension on the sail by default
-    sgeo.dopV = CVECTOR(0.f, 0.f, 0.f);
+    sgeo.cv.dopV = CVECTOR(0.f, 0.f, 0.f);
 
     // Set sail turn and roll resolution
     ss.maxAngle = PI / 6.f; // the maximum sail turn angle is 30 degrees.
@@ -766,12 +766,12 @@ void SAILONE::GoTWave(SAILVERTEX *pv)
 {
     int iy, ix, idx;
 
-    auto k = (sailWind.x * sgeo.normL.x + sailWind.y * sgeo.normL.y + sailWind.z * sgeo.normL.z);
+    auto k = (sailWind.x * sgeo.cv.normL.x + sailWind.y * sgeo.cv.normL.y + sailWind.z * sgeo.cv.normL.z);
     CVECTOR CenterFlex;
     if (k < 0.f)
-        CenterFlex = k * sgeo.normL * ss.fDeepH;
+        CenterFlex = k * sgeo.cv.normL * ss.fDeepH;
     else
-        CenterFlex = k * sgeo.normL * ss.fDeepZ;
+        CenterFlex = k * sgeo.cv.normL * ss.fDeepZ;
 
     auto pStart = ss.hardPoints[0];
     auto pStartDelta = (ss.hardPoints[1] - ss.hardPoints[0]) / static_cast<float>((SAIL_ROW_MAX - 1));
@@ -786,7 +786,7 @@ void SAILONE::GoTWave(SAILVERTEX *pv)
     // Set rope point
     if (sailtrope.pnttie[0])
     {
-        pStart += WindAmplitude * sgeo.normL * pp->WindVect[VertIdx] * static_cast<float>(SAIL_ROW_MAX);
+        pStart += WindAmplitude * sgeo.cv.normL * pp->WindVect[VertIdx] * static_cast<float>(SAIL_ROW_MAX);
         *sailtrope.pPos[0] = pStart;
     }
 
@@ -796,8 +796,8 @@ void SAILONE::GoTWave(SAILVERTEX *pv)
     for (ix = 0; ix < SAIL_ROW_MAX;)
     {
         pcur = pStart;
-        dV = sgeo.dVv + static_cast<float>(ix) * (sgeo.dVh + static_cast<float>(ix + 1) * 0.5f * sgeo.ddVh);
-        WindAdd = (pp->WindVect[VertIdx] * WindAmplitude * static_cast<float>(ix)) * sgeo.normL + CenterFlex;
+        dV = sgeo.cv.dVv + static_cast<float>(ix) * (sgeo.cv.dVh + static_cast<float>(ix + 1) * 0.5f * sgeo.cv.ddVh);
+        WindAdd = (pp->WindVect[VertIdx] * WindAmplitude * static_cast<float>(ix)) * sgeo.cv.normL + CenterFlex;
         dV += WindAdd;
         if (sailtrope.pnttie[2])
             ddV = -WindAdd * 1.8f / static_cast<float>((SAIL_ROW_MAX));
@@ -916,15 +916,15 @@ void SAILONE::GoVWave(SAILVERTEX *pv)
 
     auto dVH = (ss.hardPoints[1] - ss.hardPoints[3]) / static_cast<float>((SAIL_ROW_MAX + 1)) * ss.fDeepVh;
     //*(1.f-fWindBase);
-    auto ddVH = sgeo.ddVh + dVH * 2.f / static_cast<float>((SAIL_COL_MAX - 1));
-    dVH = sgeo.dVh - dVH;
+    auto ddVH = sgeo.cv.ddVh + dVH * 2.f / static_cast<float>((SAIL_COL_MAX - 1));
+    dVH = sgeo.cv.dVh - dVH;
     auto StartPoint = ss.hardPoints[0];
     auto StartDelta = (ss.hardPoints[1] - ss.hardPoints[0]) / static_cast<float>((SAIL_COL_MAX - 1));
     if (m_dwCol == 7)
         StartDelta *= 2.f;
     else if (m_dwCol == 4)
         StartDelta *= 4.f;
-    dddV = sgeo.dddVv;
+    dddV = sgeo.cv.dddVv;
 
     if (sroll)
         SailDownVect.y -= SumWind * sroll->delta;
@@ -950,8 +950,8 @@ void SAILONE::GoVWave(SAILVERTEX *pv)
 
         // set the coordinates of the starting point and their increments at each step
         pcur = StartPoint;
-        dV = sgeo.dVv + static_cast<float>(ix) * (dVH + static_cast<float>(ix) * 0.5f * ddVH) + WindAdd + SailDownVect;
-        ddV = sgeo.ddVv - WindAdd * (2.f - k) / static_cast<float>(SAIL_ROW_MAX) -
+        dV = sgeo.cv.dVv + static_cast<float>(ix) * (dVH + static_cast<float>(ix) * 0.5f * ddVH) + WindAdd + SailDownVect;
+        ddV = sgeo.cv.ddVv - WindAdd * (2.f - k) / static_cast<float>(SAIL_ROW_MAX) -
               SailDownVect * 2.f / static_cast<float>(SAIL_ROW_MAX);
 
         idx = ix * SAIL_ROW_MAX;
@@ -1037,11 +1037,11 @@ void SAILONE::SetGeometry()
         p01 = ss.hardPoints[1] - ss.hardPoints[0];
         p13 = ss.hardPoints[2] - ss.hardPoints[1];
 
-        pG->normL = !(p13 ^ p01);
-        pG->dVv = p13 * tmpRow;
+        pG->cv.normL = !(p13 ^ p01);
+        pG->cv.dVv = p13 * tmpRow;
 
-        pG->dVh = p13 * (-ss.fDeepVh * tmpRow);
-        pG->ddVh = pG->dVh * (-2.f / static_cast<float>(SAIL_ROW_MAX));
+        pG->cv.dVh = p13 * (-ss.fDeepVh * tmpRow);
+        pG->cv.ddVh = pG->cv.dVh * (-2.f / static_cast<float>(SAIL_ROW_MAX));
     }
     else
     {
@@ -1053,27 +1053,27 @@ void SAILONE::SetGeometry()
         p01 = ss.hardPoints[1] - ss.hardPoints[0];
         p23 = ss.hardPoints[3] - ss.hardPoints[2];
 
-        pG->normL = !(p02 ^ p01);
-        pG->normR = !(p13 ^ p01);
+        pG->cv.normL = !(p02 ^ p01);
+        pG->cv.normR = !(p13 ^ p01);
         normLD = !(p02 ^ p23);
-        pG->dnormL = (normLD - pG->normL) * tmpRow;
-        pG->dnormR = (!(p13 ^ p23) - pG->normR) * tmpRow;
+        pG->cv.dnormL = (normLD - pG->cv.normL) * tmpRow;
+        pG->cv.dnormR = (!(p13 ^ p23) - pG->cv.normR) * tmpRow;
 
-        pG->dddVv = CVECTOR(0.f, 0.f, 0.f);
-        pG->dVv = pG->normL * ss.fDeepZ * (1.f - ss.holeCount * pp->fSHoleFlexDepend) + pG->dopV;
-        pG->ddVv = pG->dVv * (-2.f / static_cast<float>(SAIL_ROW_MAX));
-        pG->dVv += p02 * tmpRow;
+        pG->cv.dddVv = CVECTOR(0.f, 0.f, 0.f);
+        pG->cv.dVv = pG->cv.normL * ss.fDeepZ * (1.f - ss.holeCount * pp->fSHoleFlexDepend) + pG->cv.dopV;
+        pG->cv.ddVv = pG->cv.dVv * (-2.f / static_cast<float>(SAIL_ROW_MAX));
+        pG->cv.dVv += p02 * tmpRow;
 
-        pG->dVh = (normLD * ss.fDeepH - p13 * ss.fDeepVh + pG->normR * ss.fDeepVz) * tmpRow *
+        pG->cv.dVh = (normLD * ss.fDeepH - p13 * ss.fDeepVh + pG->cv.normR * ss.fDeepVz) * tmpRow *
                   (1.f - ss.holeCount * pp->fSHoleFlexDepend);
-        pG->ddVh = pG->dVh * (-2.f * tmpCol);
-        pG->dVh += (p13 - p02) * tmpCol * tmpRow;
+        pG->cv.ddVh = pG->cv.dVh * (-2.f * tmpCol);
+        pG->cv.dVh += (p13 - p02) * tmpCol * tmpRow;
     }
     // Calculate sphere radius
     ss.boundSphere.r = sqrtf(~(ss.hardPoints[0] - ss.boundSphere.c));
 
     if (sroll != nullptr)
-        sgeo.dopV = sroll->oldgeo.dopV;
+        sgeo.cv.dopV = sroll->oldgeo.cv.dopV;
 }
 
 void SAILONE::SetRolling(bool bRoll)
@@ -1163,15 +1163,15 @@ void SAILONE::DoRollingStep(uint32_t Delta_Time)
         }
     }
 
-    sgeo.dddVv = sroll->oldgeo.dddVv * delta;
-    sgeo.ddVh = sroll->oldgeo.ddVh * delta;
-    sgeo.ddVv = sroll->oldgeo.ddVv * delta;
-    sgeo.dVh = sroll->oldgeo.dVh * delta;
-    sgeo.dVv = sroll->oldgeo.dVv * delta;
-    sgeo.normL = sroll->oldgeo.normL * delta;
-    sgeo.normR = sroll->oldgeo.normR * delta;
-    sgeo.dnormL = sroll->oldgeo.dnormL * delta;
-    sgeo.dnormR = sroll->oldgeo.dnormR * delta;
+    sgeo.cv.dddVv = sroll->oldgeo.cv.dddVv * delta;
+    sgeo.cv.ddVh = sroll->oldgeo.cv.ddVh * delta;
+    sgeo.cv.ddVv = sroll->oldgeo.cv.ddVv * delta;
+    sgeo.cv.dVh = sroll->oldgeo.cv.dVh * delta;
+    sgeo.cv.dVv = sroll->oldgeo.cv.dVv * delta;
+    sgeo.cv.normL = sroll->oldgeo.cv.normL * delta;
+    sgeo.cv.normR = sroll->oldgeo.cv.normR * delta;
+    sgeo.cv.dnormL = sroll->oldgeo.cv.dnormL * delta;
+    sgeo.cv.dnormR = sroll->oldgeo.cv.dnormR * delta;
 
     sroll->delta = delta;
 }
@@ -1460,12 +1460,12 @@ void SAILONE::DoSRollSail(SAILVERTEX *pv)
 
     auto idx = 0;
     CVECTOR dv1, dv2, dv3, dv4;
-    dv1 = sgeo.normL * (.5f * dz);
+    dv1 = sgeo.cv.normL * (.5f * dz);
     dv1.y -= dy;
     dv2 = CVECTOR(0.f, -dy * 1.2f, 0.f);
-    dv3 = sgeo.normL * (-1.f * dz);
+    dv3 = sgeo.cv.normL * (-1.f * dz);
     dv3.y -= dy;
-    dv4 = sgeo.normL * (-.5f * dz);
+    dv4 = sgeo.cv.normL * (-.5f * dz);
     for (i = 0; i < static_cast<int>(m_dwCol); i++)
     {
         windVal = 1.f - pp->WindVect[VertIdx] * pp->ROLL_Z_DELTA;
@@ -1504,12 +1504,12 @@ void SAILONE::DoTRollSail(SAILVERTEX *pv)
     }
 
     CVECTOR dv1, dv2, dv3, dv4;
-    dv1 = sgeo.normL * (.5f * dx);
+    dv1 = sgeo.cv.normL * (.5f * dx);
     dv1.y -= dy;
     dv2 = CVECTOR(0.f, -dy * 1.2f, 0.f);
-    dv3 = sgeo.normL * (-1.f * dx);
+    dv3 = sgeo.cv.normL * (-1.f * dx);
     dv3.y -= dy;
-    dv4 = sgeo.normL * (-.5f * dx);
+    dv4 = sgeo.cv.normL * (-.5f * dx);
 
     auto idx = 6;
     pv[idx++].pos = pcur;

@@ -801,8 +801,8 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
                             if (so->ss.eSailType != SAIL_TREANGLE)
                             {
                                 CVECTOR tmpv;
-                                tmpv = so->sgeo.dVv + so->sgeo.ddVv * static_cast<float>(SAIL_ROW_MAX);
-                                tmpv = so->sgeo.dVv + so->sgeo.ddVv * static_cast<float>(SAIL_ROW_MAX);
+                                tmpv = so->sgeo.cv.dVv + so->sgeo.cv.ddVv * static_cast<float>(SAIL_ROW_MAX);
+                                tmpv = so->sgeo.cv.dVv + so->sgeo.cv.ddVv * static_cast<float>(SAIL_ROW_MAX);
                                 tmpv = (so->sailtrope.rrs[0]->r1) * (!tmpv);
                                 tmpv = *pos - tmpv;
 
@@ -834,7 +834,7 @@ uint64_t SAIL::ProcessMessage(MESSAGE &message)
                             if (so->ss.eSailType != SAIL_TREANGLE)
                             {
                                 CVECTOR tmpv;
-                                tmpv = so->sgeo.dVv + so->sgeo.ddVv * static_cast<float>(SAIL_ROW_MAX);
+                                tmpv = so->sgeo.cv.dVv + so->sgeo.cv.ddVv * static_cast<float>(SAIL_ROW_MAX);
                                 tmpv = (so->sailtrope.rrs[1]->r1) * (!tmpv);
                                 tmpv = *pos - tmpv;
 

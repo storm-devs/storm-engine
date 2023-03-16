@@ -53,7 +53,7 @@ class CMatrix
             CVECTOR pos;
             // Added weight value
             float w;
-        };
+        } v;
     };
 
     //-----------------------------------------------------------

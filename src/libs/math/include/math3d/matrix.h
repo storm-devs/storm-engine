@@ -55,7 +55,7 @@ class Matrix
             Vector pos;
             // Added weight value
             float w;
-        };
+        } v;
     };
 
     // -----------------------------------------------------------
@@ -314,21 +314,21 @@ inline Matrix &Matrix::operator=(const Matrix &mtx)
 // Assign a number to the position
 inline Matrix &Matrix::operator=(float f)
 {
-    pos = f;
+    v.pos = f;
     return *this;
 }
 
 // Assign a number to the position
 inline Matrix &Matrix::operator=(double d)
 {
-    pos = d;
+    v.pos = d;
     return *this;
 }
 
 // Assign a vector to the position
-inline Matrix &Matrix::operator=(const Vector &v)
+inline Matrix &Matrix::operator=(const Vector &vec)
 {
-    pos = v;
+    v.pos = vec;
     return *this;
 }
 
@@ -799,7 +799,7 @@ inline bool Matrix::BuildView(Vector lookFrom, Vector lookTo, Vector upVector)
     if (lookTo.Normalize() == 0.0f)
     {
         // Putting a position for a non-rotated matrix
-        pos = -lookFrom;
+        v.pos = -lookFrom;
         return false;
     }
     // Directing the vector up in the desired direction
@@ -808,13 +808,13 @@ inline bool Matrix::BuildView(Vector lookFrom, Vector lookTo, Vector upVector)
     if (upVector.Normalize() == 0.0f)
         upVector.y = 1.0f;
     // looking for the third vector of the basis
-    auto v = upVector ^ lookTo;
-    if (v.Normalize() != 0.0f)
+    auto vec = upVector ^ lookTo;
+    if (vec.Normalize() != 0.0f)
     {
         // set the rotation matrix
-        m[0][0] = v.x;
-        m[1][0] = v.y;
-        m[2][0] = v.z;
+        m[0][0] = vec.x;
+        m[1][0] = vec.y;
+        m[2][0] = vec.z;
         m[0][1] = upVector.x;
         m[1][1] = upVector.y;
         m[2][1] = upVector.z;
@@ -825,12 +825,12 @@ inline bool Matrix::BuildView(Vector lookFrom, Vector lookTo, Vector upVector)
     else
     {
         // Setting a position for a non-rotated matrix
-        pos = -lookFrom;
+        v.pos = -lookFrom;
         return false;
     }
     // set the position
     // pos = -MulNormalByInverse (lookFrom);
-    pos = -MulNormal(lookFrom);
+    v.pos = -MulNormal(lookFrom);
     return true;
 }
 
@@ -840,22 +840,22 @@ inline bool Matrix::BuildOrient(Vector zAxisDirection, Vector upVector)
     // Normalize the direction vector z
     if (zAxisDirection.Normalize() < 1e-37f || upVector.Normalize() < 1e-37f)
     {
-        vx = Vector(1.0f, 0.0f, 0.0f);
-        vy = Vector(0.0f, 1.0f, 0.0f);
-        vz = Vector(0.0f, 0.0f, 1.0f);
+        v.vx = Vector(1.0f, 0.0f, 0.0f);
+        v.vy = Vector(0.0f, 1.0f, 0.0f);
+        v.vz = Vector(0.0f, 0.0f, 1.0f);
         return false;
     }
     // calculate
-    vx = zAxisDirection ^ upVector;
-    if (vx.Normalize() == 0.0f)
+    v.vx = zAxisDirection ^ upVector;
+    if (v.vx.Normalize() == 0.0f)
     {
-        vx = Vector(1.0f, 0.0f, 0.0f);
-        vy = Vector(0.0f, 1.0f, 0.0f);
-        vz = Vector(0.0f, 0.0f, 1.0f);
+        v.vx = Vector(1.0f, 0.0f, 0.0f);
+        v.vy = Vector(0.0f, 1.0f, 0.0f);
+        v.vz = Vector(0.0f, 0.0f, 1.0f);
         return false;
     }
-    vy = zAxisDirection ^ vx;
-    vz = zAxisDirection;
+    v.vy = zAxisDirection ^ v.vx;
+    v.vz = zAxisDirection;
     return true;
 }
 
@@ -867,37 +867,37 @@ inline bool Matrix::BuildOriented(Vector position, Vector lookTo, Vector upVecto
     // Normalize the direction vector z
     if (lookTo.Normalize() == 0.0f || upVector.Normalize() == 0.0f)
     {
-        vx = Vector(1.0f, 0.0f, 0.0f);
-        wx = 0.0f;
-        vy = Vector(0.0f, 1.0f, 0.0f);
-        wy = 0.0f;
-        vz = Vector(0.0f, 0.0f, 1.0f);
-        wz = 0.0f;
-        pos = position;
-        w = 1.0f;
+        v.vx = Vector(1.0f, 0.0f, 0.0f);
+        v.wx = 0.0f;
+        v.vy = Vector(0.0f, 1.0f, 0.0f);
+        v.wy = 0.0f;
+        v.vz = Vector(0.0f, 0.0f, 1.0f);
+        v.wz = 0.0f;
+        v.pos = position;
+        v.w = 1.0f;
         return false;
     }
     // calculate
-    vx = lookTo ^ upVector;
-    wx = 0.0f;
-    if (vx.Normalize() == 0.0f)
+    v.vx = lookTo ^ upVector;
+    v.wx = 0.0f;
+    if (v.vx.Normalize() == 0.0f)
     {
-        vx = Vector(1.0f, 0.0f, 0.0f);
-        wx = 0.0f;
-        vy = Vector(0.0f, 1.0f, 0.0f);
-        wy = 0.0f;
-        vz = Vector(0.0f, 0.0f, 1.0f);
-        wz = 0.0f;
-        pos = position;
-        w = 1.0f;
+        v.vx = Vector(1.0f, 0.0f, 0.0f);
+        v.wx = 0.0f;
+        v.vy = Vector(0.0f, 1.0f, 0.0f);
+        v.wy = 0.0f;
+        v.vz = Vector(0.0f, 0.0f, 1.0f);
+        v.wz = 0.0f;
+        v.pos = position;
+        v.w = 1.0f;
         return false;
     }
-    vy = lookTo ^ vx;
-    wy = 0.0f;
-    vz = lookTo;
-    wz = 0.0f;
-    pos = position;
-    w = 1.0f;
+    v.vy = lookTo ^ v.vx;
+    v.wy = 0.0f;
+    v.vz = lookTo;
+    v.wz = 0.0f;
+    v.pos = position;
+    v.w = 1.0f;
     return true;
 }
 
@@ -975,18 +975,18 @@ inline Matrix &Matrix::Rotate(const Vector &ang)
 // Move
 inline Matrix &Matrix::Move(float dX, float dY, float dZ)
 {
-    pos.x += dX;
-    pos.y += dY;
-    pos.z += dZ;
+    v.pos.x += dX;
+    v.pos.y += dY;
+    v.pos.z += dZ;
     return *this;
 }
 
 // Move
 inline Matrix &Matrix::Move(const Vector &pos)
 {
-    this->pos.x += pos.x;
-    this->pos.y += pos.y;
-    this->pos.z += pos.z;
+    this->v.pos.x += pos.x;
+    this->v.pos.y += pos.y;
+    this->v.pos.z += pos.z;
     return *this;
 }
 
@@ -1054,7 +1054,7 @@ inline Matrix &Matrix::Scale3x3(const Vector &scale)
 // Calculating the inverse matrix
 inline Matrix &Matrix::Inverse()
 {
-    pos = Vector(-(pos | vx), -(pos | vy), -(pos | vz));
+    v.pos = Vector(-(v.pos | v.vx), -(v.pos | v.vy), -(v.pos | v.vz));
     Transposition3X3();
     return *this;
 }
@@ -1062,7 +1062,7 @@ inline Matrix &Matrix::Inverse()
 // Calculating an inverse matrix from another
 inline Matrix &Matrix::Inverse(const Matrix &mtx)
 {
-    pos = Vector(-(mtx.pos | mtx.vx), -(mtx.pos | mtx.vy), -(mtx.pos | mtx.vz));
+    v.pos = Vector(-(mtx.v.pos | mtx.v.vx), -(mtx.v.pos | mtx.v.vy), -(mtx.v.pos | mtx.v.vz));
     matrix[0] = mtx.matrix[0];
     matrix[1] = mtx.matrix[4];
     matrix[2] = mtx.matrix[8];
@@ -1133,7 +1133,7 @@ inline Matrix &Matrix::InverseWhithScale()
             matrix[i] = 0.0f;
     }
     // Position
-    pos = -(MulNormal(pos));
+    v.pos = -(MulNormal(v.pos));
     return *this;
 }
 
@@ -1341,7 +1341,7 @@ inline Vector Matrix::MulNormalByInverse(const Vector &v) const
 // Get camera position from camera matrix
 inline Vector Matrix::GetCamPos() const
 {
-    return -MulNormalByInverse(pos);
+    return -MulNormalByInverse(v.pos);
 }
 
 // Identity matrix or not
@@ -1387,13 +1387,13 @@ inline bool Matrix::IsIdentity() const
 inline bool Matrix::IsScale() const
 {
     const auto eps = 1e-4f;
-    if (fabsf(~vx - 1.0f) > eps)
+    if (fabsf(~v.vx - 1.0f) > eps)
         return true;
-    if (fabsf(~vy - 1.0f) > eps)
+    if (fabsf(~v.vy - 1.0f) > eps)
         return true;
-    if (fabsf(~vz - 1.0f) > eps)
+    if (fabsf(~v.vz - 1.0f) > eps)
         return true;
-    if (fabsf(w - 1.0f) > eps)
+    if (fabsf(v.w - 1.0f) > eps)
         return true;
     return false;
 }
@@ -1444,24 +1444,24 @@ inline void Matrix::Projection(Vector4 *dstArray, Vector *srcArray, int32_t num,
 // Get angles from unscaled rotation matrix
 inline void Matrix::GetAngles(float &ax, float &ay, float &az) const
 {
-    if (vz.y < 1.0f)
+    if (v.vz.y < 1.0f)
     {
-        if (vz.y > -1.0f)
+        if (v.vz.y > -1.0f)
         {
-            ax = static_cast<float>(asin(-vz.y));
-            ay = static_cast<float>(atan2(vz.x, vz.z));
-            az = static_cast<float>(atan2(vx.y, vy.y));
+            ax = static_cast<float>(asin(-v.vz.y));
+            ay = static_cast<float>(atan2(v.vz.x, v.vz.z));
+            az = static_cast<float>(atan2(v.vx.y, v.vy.y));
             return;
         }
         ax = 3.141592654f * 0.5f;
         ay = 0.0f;
-        az = static_cast<float>(atan2(vx.z, vx.x));
+        az = static_cast<float>(atan2(v.vx.z, v.vx.x));
     }
     else
     {
         ax = -3.141592654f * 0.5f;
         ay = 0.0f;
-        az = static_cast<float>(-atan2(vx.z, vx.x));
+        az = static_cast<float>(-atan2(v.vx.z, v.vx.x));
     }
 }
 

@@ -764,10 +764,10 @@ bool LocationCamera::LoadCameraTrack(const char *pcTrackFile, float fTrackTime)
     Matrix view;
     m_track.GetPoint(0.f, pos, ang);
     ang.GetMatrix(view);
-    view.vx = -view.vx;
-    view.vz = -view.vz;
+    view.v.vx = -view.v.vx;
+    view.v.vz = -view.v.vz;
     view.Inverse();
-    view.pos = view * -pos;
+    view.v.pos = view * -pos;
     rs->SetView(*(CMatrix *)&view);
     rs->SetPerspective(cameraPerspective);
 
@@ -786,8 +786,8 @@ void LocationCamera::TurnOffTrackCamera()
         Matrix view;
         m_track.GetPoint(0.99999f, pos, ang);
         ang.GetMatrix(view);
-        view.vx = -view.vx;
-        view.vz = -view.vz;
+        view.v.vx = -view.v.vx;
+        view.v.vz = -view.v.vz;
         view.Inverse();
 
         oldPos = *(CVECTOR *)&pos;
@@ -811,10 +811,10 @@ void LocationCamera::ProcessTrackCamera()
     Matrix view;
     m_track.GetPoint(fTrackTime / m_fTrackMaxTime, pos, ang);
     ang.GetMatrix(view);
-    view.vx = -view.vx;
-    view.vz = -view.vz;
+    view.v.vx = -view.v.vx;
+    view.v.vz = -view.v.vz;
     view.Inverse();
-    view.pos = view * -pos;
+    view.v.pos = view * -pos;
     rs->SetView(*(CMatrix *)&view);
     rs->SetPerspective(cameraPerspective);
 }
