@@ -30,7 +30,7 @@ class StormEngine(ConanFile):
         else:
             # conan-center
             self.requires("openssl/1.1.1n")#fix for error: 'sentry-crashpad/0.4.13' requires 'openssl/1.1.1n' while 'pulseaudio/14.2' requires 'openssl/1.1.1q'
-            self.requires("nas/1.9.4#a477daba39c6a686aa2e04234a4da3aa")#fix for error: nas/1.9.4: Invalid ID: Recipe cannot be built with clang
+            self.options["sdl"].nas = False #fix for https://github.com/conan-io/conan-center-index/issues/16606 - error: nas/1.9.4: Invalid ID: Recipe cannot be built with clang
         if self.options.steam:
             self.requires("steamworks/1.5.1@storm/prebuilt")
 
