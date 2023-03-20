@@ -1,11 +1,11 @@
+#pragma once
+
 #include <algorithm>
 #include <limits>
 #include <ranges>
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "rands.h"
 
 namespace storm
 {
@@ -14,7 +14,7 @@ template <typename Type> struct RandCstd
 {
     Type operator()(Type max) noexcept
     {
-        return rand(max);
+        return max * static_cast<float>(std::rand()) / static_cast<float>((RAND_MAX + 1));
     }
 };
 
@@ -50,7 +50,7 @@ class ProbabilityTable
     const Type &pickRandom() const
     {
 
-        const Resolution random_value = provider_(weight_sum_ - weight_sum_ * std::numeric_limits<Resolution>::epsilon());
+        const Resolution random_value = provider_(weight_sum_);
         const auto it = std::ranges::upper_bound(table_, random_value, EpsilonLessThan<Resolution>{}, &element::first);
         return it->second;
     }
