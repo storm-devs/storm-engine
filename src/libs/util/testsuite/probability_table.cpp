@@ -28,11 +28,11 @@ TEST_CASE("EpsilonLessThan", "[utils]")
 template <typename T> class RandProviderMock
 {
   public:
-    T operator()(T max)
+    T operator()(T max_excluded)
     {
         if (ret_max_)
         {
-            return max;
+            return max_excluded - (max_excluded > 1.0f ? max_excluded : 1.0f) * std::numeric_limits<T>::epsilon();
         }
         return ret_;
     }
