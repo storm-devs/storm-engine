@@ -47,7 +47,7 @@ if (NOT WIN32)
         GIT_SHALLOW       ON
         BUILD_ALWAYS      OFF
         CONFIGURE_HANDLED_BY_BUILD ON
-        CONFIGURE_COMMAND meson ../dxvk-native
+        CONFIGURE_COMMAND meson setup ../dxvk-native --buildtype=release -Denable_d3d11=false -Denable_d3d10=false -Denable_dxgi=false
         BUILD_COMMAND     ninja
         INSTALL_COMMAND   ""
     )
@@ -56,9 +56,9 @@ if (NOT WIN32)
         "${SOURCE_DIR}/include/native/directx"
         "${SOURCE_DIR}/include/native/windows"
     )
-    set(DXVK_NATIVE_D3D9_LIB ${BINARY_DIR}/src/d3d9/libdxvk_d3d9.so)
+    set(NATIVE_D3D9_LIBS ${BINARY_DIR}/src/d3d9/libdxvk_d3d9.so)
     include_directories("${DXVK_NATIVE_INCLUDE_DIRS}")
-    ADD_CUSTOM_TARGET(dependencies ALL DEPENDS dxvk-native)
+    add_custom_target(dependencies ALL DEPENDS dxvk-native)
 endif()
 
 ### Define library ALIASes for use without CONAN_PKG:: prefix
