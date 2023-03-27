@@ -34,8 +34,7 @@ jobs:
       fail-fast: false
       matrix:
         configuration: [Debug]
-        clang_version: [11, 12]
-    name: 'linux [${{ matrix.configuration}}] [clang-${{matrix.clang_version}}]'
+    name: 'linux [${{ matrix.configuration}}]'
     steps:
     - uses: actions/checkout@v2
       with:
@@ -49,8 +48,8 @@ jobs:
       run: pip install conan==1.59.0
     - name: Configure with cmake
       run: |
-        export CC=clang-${{matrix.clang_version}}
-        export CXX=clang++-${{matrix.clang_version}}
+        export CC=clang-12
+        export CXX=clang++-12
         ${CXX} --version
         mkdir build && cd build
         conan profile new default --detect
