@@ -16,6 +16,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug
 
 set(STORM_WATERMARK_FILE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/watermark.hpp CACHE FILEPATH "Include file containing build revision, etc." FORCE)
 
+if (NOT WIN32)
+    include(linux)
+endif()
+
 ### Set up third-party dependencies
 set(ENV{CONAN_REVISIONS_ENABLED} 1)
 conan_add_remote(NAME bincrafters
@@ -36,30 +40,6 @@ conan_cmake_run(CONANFILE conanfile.py
         crash_reports=${STORM_ENABLE_CRASH_REPORTS}
         steam=${STORM_ENABLE_STEAM}
 )
-
-if (NOT WIN32)
-    message("Using DXVK-native for D3D9 API")
-
-    include(ExternalProject)
-    ExternalProject_Add(dxvk-native
-        GIT_REPOSITORY    https://github.com/Joshua-Ashton/dxvk-native
-        GIT_TAG           a2dc99c407340432d4ba5bfa29efa685c27942ea
-        GIT_SHALLOW       ON
-        BUILD_ALWAYS      OFF
-        CONFIGURE_HANDLED_BY_BUILD ON
-        CONFIGURE_COMMAND meson setup ../dxvk-native --buildtype=release -Denable_d3d11=false -Denable_d3d10=false -Denable_dxgi=false
-        BUILD_COMMAND     ninja
-        INSTALL_COMMAND   ""
-    )
-    ExternalProject_Get_property(dxvk-native SOURCE_DIR BINARY_DIR)
-    set(DXVK_NATIVE_INCLUDE_DIRS
-        "${SOURCE_DIR}/include/native/directx"
-        "${SOURCE_DIR}/include/native/windows"
-    )
-    set(NATIVE_D3D9_LIBS ${BINARY_DIR}/src/d3d9/libdxvk_d3d9.so)
-    include_directories("${DXVK_NATIVE_INCLUDE_DIRS}")
-    add_custom_target(dependencies ALL DEPENDS dxvk-native)
-endif()
 
 ### Define library ALIASes for use without CONAN_PKG:: prefix
 foreach (conan_target ${CONAN_TARGETS})
