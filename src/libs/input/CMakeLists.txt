@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME input
     TYPE library
-    DEPENDENCIES sdl util
+    DEPENDENCIES ${SDL2_LIBRARIES} util
 )

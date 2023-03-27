@@ -1,3 +1,12 @@
+if(STORM_USE_CONAN_SDL)
+    set(SDL2_LIBRARIES "sdl")
+else()
+    find_package(SDL2 REQUIRED)
+    message(STATUS "SDL2_LIBRARIES="${SDL2_LIBRARIES})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${SDL2_INCLUDE_DIRS} -fsigned-char")
+    message(STATUS "CMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS})
+endif()
+
 message("Using DXVK-native for D3D9 API")
 
 include(ExternalProject)

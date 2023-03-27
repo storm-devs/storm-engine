@@ -1,5 +1,5 @@
 STORM_SETUP(
     TARGET_NAME window
     TYPE library
-    DEPENDENCIES sdl
+    DEPENDENCIES ${SDL2_LIBRARIES}
 )
