@@ -29,13 +29,12 @@ jobs:
   build-linux:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
         configuration: [Debug]
-        clang_version: [11, 12]
-    name: 'linux [${{ matrix.configuration}}] [clang-${{matrix.clang_version}}]'
+    name: 'linux [${{ matrix.configuration}}]'
     steps:
     - uses: actions/checkout@v2
       with:
@@ -49,13 +48,10 @@ jobs:
       run: pip install conan==1.59.0
     - name: Configure with cmake
       run: |
-        export CC=clang-${{matrix.clang_version}}
-        export CXX=clang++-${{matrix.clang_version}}
+        export CC=clang-12
+        export CXX=clang++-12
         ${CXX} --version
         mkdir build && cd build
-        conan profile new default --detect
-        conan profile update conf.tools.system.package_manager:mode=install default
-        conan profile update conf.tools.system.package_manager:sudo=True default
         cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.configuration}}
     - name: Build dependencies
       run: ninja dependencies
