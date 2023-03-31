@@ -50,9 +50,8 @@ else()
     add_compile_options(-v)
     add_link_options(-v)
 
-    # Always generate debug information
-    add_compile_options(-g)
-    add_link_options(-g)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
 
     # Add _DEBUG flag
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
