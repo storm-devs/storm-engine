@@ -16,14 +16,12 @@
     {
       "name": "debug",
       "configurePreset": "default",
-      "configuration": "Debug",
-      "jobs": 8
+      "configuration": "Debug"
     },
     {
       "name": "release",
       "configurePreset": "default",
-      "configuration": "Release",
-      "jobs": 8
+      "configuration": "Release"
     }
   ]
 }
