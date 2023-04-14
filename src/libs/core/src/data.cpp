@@ -2431,6 +2431,9 @@ DATA *DATA::GetVarPointer()
     // if(!bRef) return this;
     if (Data_type != VAR_REFERENCE)
         return this;
+    if (pReference == this) {
+        return this;
+    }
     if (pReference)
     {
         return pReference->GetVarPointer();
