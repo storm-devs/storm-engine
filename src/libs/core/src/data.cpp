@@ -2432,6 +2432,7 @@ DATA *DATA::GetVarPointer()
     if (Data_type != VAR_REFERENCE)
         return this;
     if (pReference == this) {
+        Error("ref points to itself");
         return this;
     }
     if (pReference)
