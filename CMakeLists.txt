@@ -25,10 +25,6 @@ endif()
 
 ### Set up third-party dependencies
 set(ENV{CONAN_REVISIONS_ENABLED} 1)
-conan_add_remote(NAME bincrafters
-    URL https://bincrafters.jfrog.io/artifactory/api/conan/public-conan
-    VERIFY_SSL True
-)
 conan_add_remote(NAME storm
     URL https://storm.jfrog.io/artifactory/api/conan/conan-remote
     VERIFY_SSL True
