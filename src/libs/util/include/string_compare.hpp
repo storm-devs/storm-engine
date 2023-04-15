@@ -1,5 +1,7 @@
 #pragma once
 
+#include "istring.hpp"
+
 #include <algorithm>
 #include <cctype>
 #include <string>
@@ -13,22 +15,6 @@ struct is_iequal
     template <typename T1, typename T2 = T1> bool operator()(const T1 &first, const T2 &second) const
     {
         return std::toupper(first) == std::toupper(second);
-    }
-};
-
-struct is_iless
-{
-    template <typename T1, typename T2 = T1> bool operator()(const T1 &first, const T2 &second) const
-    {
-        return std::toupper(first) < std::toupper(second);
-    }
-};
-
-struct is_iless_eq
-{
-    template <typename T1, typename T2 = T1> bool operator()(const T1 &first, const T2 &second) const
-    {
-        return std::toupper(first) <= std::toupper(second);
     }
 };
 
@@ -70,18 +56,10 @@ bool iEquals(const Range1T &first, const Range2T &second, const size_t count)
 
 template <typename Range1T, typename Range2T = Range1T> bool iEquals(const Range1T &first, const Range2T &second)
 {
-    detail::is_iequal comp;
-
     const auto &first_normalized = std::is_pointer<Range1T>::value ? std::string_view(first) : first;
     const auto &second_normalized = std::is_pointer<Range1T>::value ? std::string_view(second) : second;
 
-    const auto first_begin = std::begin(first_normalized);
-    const auto second_begin = std::begin(second_normalized);
-
-    const auto first_end = std::end(first_normalized);
-    const auto second_end = std::end(second_normalized);
-
-    return std::equal(first_begin, first_end, second_begin, second_end, comp);
+    return traits_cast<ichar_traits<char>>(first_normalized) == traits_cast<ichar_traits<char>>(second_normalized);
 }
 
 template <typename Range1T, typename Range2T = Range1T> bool iLess(const Range1T &first, const Range2T &second)
@@ -89,8 +67,7 @@ template <typename Range1T, typename Range2T = Range1T> bool iLess(const Range1T
     const auto &first_normalized = std::is_pointer<Range1T>::value ? std::string_view(first) : first;
     const auto &second_normalized = std::is_pointer<Range1T>::value ? std::string_view(second) : second;
 
-    return std::lexicographical_compare(std::begin(first_normalized), std::end(first_normalized),
-                                        std::begin(second_normalized), std::end(second_normalized), detail::is_iless{});
+    return traits_cast<ichar_traits<char>>(first_normalized) < traits_cast<ichar_traits<char>>(second_normalized);
 }
 
 template <typename Range1T, typename Range2T = Range1T> bool iLessOrEqual(const Range1T &first, const Range2T &second)
@@ -98,9 +75,7 @@ template <typename Range1T, typename Range2T = Range1T> bool iLessOrEqual(const 
     const auto &first_normalized = std::is_pointer<Range1T>::value ? std::string_view(first) : first;
     const auto &second_normalized = std::is_pointer<Range1T>::value ? std::string_view(second) : second;
 
-    return std::lexicographical_compare(std::begin(first_normalized), std::end(first_normalized),
-                                        std::begin(second_normalized), std::end(second_normalized),
-                                        detail::is_iless_eq{});
+    return traits_cast<ichar_traits<char>>(first_normalized) <= traits_cast<ichar_traits<char>>(second_normalized);
 }
 
 template <typename Range1T, typename Range2T = Range1T> bool iGreater(const Range1T &first, const Range2T &second)
