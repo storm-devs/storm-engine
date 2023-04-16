@@ -3,6 +3,8 @@
 #include "storm/config.hpp"
 #include "utf8.h"
 
+#include <format>
+
 namespace
 {
 
