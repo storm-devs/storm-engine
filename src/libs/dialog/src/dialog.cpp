@@ -146,7 +146,7 @@ void DIALOG::DlgTextDescribe::Show(int32_t nY)
         nEnd = asText.size();
     for (n = currentLine_; i < nShowQuantity && n < nEnd; i++, n++)
     {
-        RenderService->ExtPrint(nFontID, dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, offset.x, y, "%s", asText[n].c_str());
+        RenderService->ExtPrint(nFontID, dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, offset.x, y, asText[n].c_str());
         y += nLineInterval;
     }
 }
@@ -186,24 +186,25 @@ void DIALOG::DlgTextDescribe::NextPage()
 
 void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
 {
-    nEditLine = -1;
+    edit_.reset();
     asText.clear();
     anLineEndIndex.clear();
     if (!pALinks)
         return;
 
-    for (int32_t n = 0; n < static_cast<int32_t>(pALinks->GetAttributesNum()); n++)
+    const size_t number_of_links = pALinks->GetAttributesNum();
+    for (size_t i = 0; i < number_of_links; ++i)
     {
-        auto *pA = pALinks->GetAttributeClass(n);
+        auto *pA = pALinks->GetAttributeClass(i);
         if (pA)
         {
-            // int32_t i = asText.Add();
-            // asText[i] = pA->GetThisAttr();
             if (pA->GetAttribute("edit"))
             {
-                nEditLine = n;
-                nEditVarIndex = pA->GetAttributeAsDword("edit", 0);
-                nEditCharIndex = 0;
+                const bool is_var = storm::iEquals(to_string(pA->GetAttribute("edit")), "string");
+                edit_ = EditConfig{
+                    .line = static_cast<int32_t>(i),
+                    .varIndex = is_var ? static_cast<int32_t>(pA->GetAttributeAsDword("edit", 0)) : -1,
+                };
             }
             Assert(pA->HasValue());
             storm::dialog::AddToStringArrayLimitedByWidth(pA->GetValue(), nFontID, fScale, nWindowWidth, asText, &GetStringWidth);
@@ -212,7 +213,7 @@ void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
     }
 
     nStartIndex = 0;
-    nSelectLine = 0;
+    selectedLine_ = 0;
     fCursorCurrentTime = 0.f;
 }
 
@@ -244,9 +245,9 @@ void DIALOG::DlgLinkDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *p
     nShowQuantity = 5;
     if (pIni)
         nShowQuantity = pIni->GetInt("DIALOG", "maxlinkslines", nShowQuantity);
-    nSelectLine = 0;
+    selectedLine_ = 0;
 
-    nEditLine = -1;
+    edit_.reset();
     fCursorVisibleTime = 0.8f;
     fCursorInvisibleTime = 0.2f;
 }
@@ -266,20 +267,20 @@ void DIALOG::DlgLinkDescribe::Show(int32_t nY)
     y = nY + offset.y;
     n = nStartIndex;
     nBeg = 0;
-    if (nSelectLine < anLineEndIndex.size() && nSelectLine >= 0)
+    if (selectedLine_ < anLineEndIndex.size() && selectedLine_ >= 0)
     {
-        if (nSelectLine > 0)
-            nBeg = anLineEndIndex[nSelectLine - 1];
-        nEnd = anLineEndIndex[nSelectLine];
+        if (selectedLine_ > 0)
+            nBeg = anLineEndIndex[selectedLine_ - 1];
+        nEnd = anLineEndIndex[selectedLine_];
     }
     else
         nEnd = -1;
     for (i = 0; i < nShowQuantity && n < asText.size(); i++, n++)
     {
         rs->ExtPrint(nFontID, (n >= nBeg && n < nEnd) ? dwSelColor : dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0,
-                     offset.x, y, "%s", asText[n].c_str());
+                     offset.x, y, asText[n].c_str());
 
-        if (nEditLine != -1 && (n >= nBeg && n < nEnd) && nSelectLine == nEditLine)
+        if (edit_.has_value() && (n >= nBeg && n < nEnd) && selectedLine_ == edit_->line)
         {
             dialog_.bEditMode = true;
             ShowEditMode(offset.x, y, n);
@@ -306,29 +307,29 @@ void DIALOG::DlgLinkDescribe::ShowEditMode(int32_t nX, int32_t nY, int32_t nText
                     switch (pKeys[n].ucVKey.c)
                     {
                     case VK_LEFT:
-                        if (nEditCharIndex > 0)
-                            nEditCharIndex--;
+                        if (edit_->charIndex > 0)
+                            edit_->charIndex--;
                         break;
                     case VK_BACK:
-                        if (nEditCharIndex > 0)
+                        if (edit_->charIndex > 0)
                         {
-                            nEditCharIndex--;
-                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                            edit_->charIndex--;
+                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
                             int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
                             asText[nTextIdx].erase(offset, length);
                         }
                         break;
                     case VK_RIGHT: {
                         int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
-                        if (nEditCharIndex < strLength)
-                            nEditCharIndex++;
+                        if (edit_->charIndex < strLength)
+                            edit_->charIndex++;
                     }
                     break;
                     case VK_DELETE: {
                         int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
-                        if (nEditCharIndex >= 0 && nEditCharIndex < strLength)
+                        if (edit_->charIndex >= 0 && edit_->charIndex < strLength)
                         {
-                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
                             int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
                             asText[nTextIdx].erase(offset, length);
                         }
@@ -341,13 +342,13 @@ void DIALOG::DlgLinkDescribe::ShowEditMode(int32_t nX, int32_t nY, int32_t nText
                     continue;
 
                 std::string tmp(pKeys[n].ucVKey.b, pKeys[n].ucVKey.l);
-                if (rs->StringWidth((char *)asText[nTextIdx].c_str(), nFontID, fScale, 0) +
+                if (rs->StringWidth(asText[nTextIdx], nFontID, fScale, 0) +
                         rs->CharWidth(pKeys[n].ucVKey, nFontID, fScale) <=
                     nWindowWidth)
                 {
-                    int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                    int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
                     asText[nTextIdx].insert(offset, tmp.c_str());
-                    nEditCharIndex++;
+                    edit_->charIndex++;
                 }
             }
         }
@@ -363,25 +364,29 @@ void DIALOG::DlgLinkDescribe::ShowEditMode(int32_t nX, int32_t nY, int32_t nText
         if (!asText[nTextIdx].empty())
         {
             int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
-            if (nEditCharIndex < strLength)
+            if (edit_->charIndex < strLength)
             {
-                int offset = utf8::u8_offset(asText[nTextIdx].c_str(), nEditCharIndex);
+                int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
                 const auto cTmp = asText[nTextIdx][offset];
                 asText[nTextIdx][offset] = 0;
-                nW = rs->StringWidth(asText[nTextIdx].c_str(), nFontID, fScale, 0);
+                nW = rs->StringWidth(asText[nTextIdx], nFontID, fScale, 0);
                 asText[nTextIdx][offset] = cTmp;
             }
             else
-                nW = rs->StringWidth(asText[nTextIdx].c_str(), nFontID, fScale, 0);
+                nW = rs->StringWidth(asText[nTextIdx], nFontID, fScale, 0);
         }
         rs->ExtPrint(nFontID, dwSelColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, nX + nW, nY, "_");
     }
 
-    if (nEditVarIndex >= 0 && nEditVarIndex < 10)
+    if (dialog_.AttributesPointer) {
+        dialog_.AttributesPointer->SetAttribute("value", asText[nTextIdx]);
+    }
+
+    if (edit_->varIndex >= 0 && edit_->varIndex < 10)
     {
         auto *pDat = static_cast<VDATA *>(core.GetScriptVariable("dialogEditStrings"));
         if (pDat)
-            pDat->Set((char *)asText[nTextIdx].c_str(), nEditVarIndex);
+            pDat->Set((char *)asText[nTextIdx].c_str(), edit_->varIndex);
     }
 }
 
@@ -899,10 +904,10 @@ void DIALOG::Realize(uint32_t Delta_Time)
 
         if (m_DlgText.IsLastPage())
         {
-            if (m_DlgLinks.nSelectLine > 0)
-                m_DlgLinks.nSelectLine--;
+            if (m_DlgLinks.selectedLine_ > 0)
+                m_DlgLinks.selectedLine_--;
             const int32_t nTmp =
-                (m_DlgLinks.nSelectLine > 0) ? m_DlgLinks.anLineEndIndex[m_DlgLinks.nSelectLine - 1] : 0;
+                (m_DlgLinks.selectedLine_ > 0) ? m_DlgLinks.anLineEndIndex[m_DlgLinks.selectedLine_ - 1] : 0;
             if (m_DlgLinks.nStartIndex > nTmp)
             {
                 m_DlgLinks.nStartIndex = nTmp;
@@ -919,11 +924,11 @@ void DIALOG::Realize(uint32_t Delta_Time)
 
         if (m_DlgText.IsLastPage())
         {
-            if (m_DlgLinks.nSelectLine < static_cast<int32_t>(m_DlgLinks.anLineEndIndex.size()) - 1)
-                m_DlgLinks.nSelectLine++;
-            if (m_DlgLinks.nStartIndex + m_DlgLinks.nShowQuantity < m_DlgLinks.anLineEndIndex[m_DlgLinks.nSelectLine])
+            if (m_DlgLinks.selectedLine_ < static_cast<int32_t>(m_DlgLinks.anLineEndIndex.size()) - 1)
+                m_DlgLinks.selectedLine_++;
+            if (m_DlgLinks.nStartIndex + m_DlgLinks.nShowQuantity < m_DlgLinks.anLineEndIndex[m_DlgLinks.selectedLine_])
             {
-                m_DlgLinks.nStartIndex = m_DlgLinks.anLineEndIndex[m_DlgLinks.nSelectLine] - m_DlgLinks.nShowQuantity;
+                m_DlgLinks.nStartIndex = m_DlgLinks.anLineEndIndex[m_DlgLinks.selectedLine_] - m_DlgLinks.nShowQuantity;
                 FillButtons();
             }
         }
@@ -975,7 +980,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
             // showing answer options
             ATTRIBUTES *pA = AttributesPointer->GetAttributeClass("links");
             if (pA)
-                pA = pA->GetAttributeClass(m_DlgLinks.nSelectLine);
+                pA = pA->GetAttributeClass(m_DlgLinks.selectedLine_);
             if (pA)
             {
                 const char *goName = pA->GetAttribute("go");

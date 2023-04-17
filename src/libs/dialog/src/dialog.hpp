@@ -120,16 +120,20 @@ class DIALOG final : public Entity
         uint32_t dwSelColor;
         int32_t nWindowWidth;
 
-        int32_t nEditLine;
-        int32_t nEditVarIndex;
-        int32_t nEditCharIndex;
+        struct EditConfig {
+            int32_t line = 0;
+            int32_t varIndex = -1;
+            int32_t charIndex = 0;
+        };
+
+        std::optional<EditConfig> edit_;
 
         float fCursorCurrentTime, fCursorVisibleTime, fCursorInvisibleTime;
 
       public:
         int32_t nStartIndex;
         int32_t nShowQuantity;
-        int32_t nSelectLine;
+        int32_t selectedLine_;
         std::vector<std::string> asText;
 
         std::vector<int32_t> anLineEndIndex;
