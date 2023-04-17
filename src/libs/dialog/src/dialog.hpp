@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
-#define MAX_LINES 5
-#define SCROLL_LINE_TIME 100
-#define TILED_LINE_HEIGHT 26
-#define SBL 6
+constexpr auto MAX_LINES = 5;
+constexpr auto SCROLL_LINE_TIME = 100;
+constexpr auto TILED_LINE_HEIGHT = 26;
+constexpr auto SBL = 6;
 #define TICK_SOUND "interface\\ok.wav"
 
 #define XI_TEX_FVF (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
@@ -24,10 +24,10 @@ struct XI_TEX_VERTEX
     float u, v;
 };
 
-#define BUTTON_STATE_UPENABLE 1
-#define BUTTON_STATE_DOWNENABLE 2
-#define BUTTON_STATE_UPLIGHT 4
-#define BUTTON_STATE_DOWNLIGHT 8
+constexpr auto BUTTON_STATE_UPENABLE = 1;
+constexpr auto BUTTON_STATE_DOWNENABLE = 2;
+constexpr auto BUTTON_STATE_UPLIGHT = 4;
+constexpr auto BUTTON_STATE_DOWNLIGHT = 8;
 
 class VSoundService;
 
@@ -62,8 +62,7 @@ class DIALOG final : public Entity
         }
     }
 
-    static void AddToStringArrayLimitedByWidth(const std::string_view &text, int32_t nFontID, float fScale, int32_t nLimitWidth,
-                                               std::vector<std::string> &asOutTextList, VDX9RENDER *renderService);
+    static int32_t GetStringWidth(const std::string_view &text, int32_t font_id, float scale);
 
   private:
     void EmergencyExit();
@@ -71,42 +70,13 @@ class DIALOG final : public Entity
     // Nikita data
     std::string m_sTalkPersName;
 
-    struct TextDescribe
-    {
-        VDX9RENDER *rs;
-        POINT offset;
-        int32_t nWindowWidth;
-        int32_t nFontID;
-        uint32_t dwColor;
-        uint32_t dwSelColor;
-        float fScale;
-        int32_t nLineInterval;
-        std::vector<std::string> asText;
-        int32_t nStartIndex;
-        int32_t nShowQuantity;
-        int32_t nSelectLine;
-
-        TextDescribe()
-        {
-            rs = nullptr;
-            nFontID = -1;
-        }
-
-        virtual ~TextDescribe()
-        {
-            if (rs && nFontID >= 0)
-                rs->UnloadFont(nFontID);
-            nFontID = -1;
-            asText.clear();
-        }
-    };
-
     bool m_bDlgChanged;
     void UpdateDlgTexts();
     void UpdateDlgViewport();
 
     struct DlgTextDescribe
     {
+      private:
         POINT offset;
         int32_t nWindowWidth;
         int32_t nFontID;
@@ -114,11 +84,18 @@ class DIALOG final : public Entity
         float fScale;
         int32_t nLineInterval;
         std::vector<std::string> asText;
-        int32_t currentPage_;
         int32_t nShowQuantity;
 
-        float fScrollTime{};
-        std::vector<int32_t> anPageEndIndex;
+        std::vector<int32_t> pageBreaks_;
+
+      public:
+        int32_t currentLine_;
+
+        ~DlgTextDescribe()
+        {
+            if (RenderService && nFontID >= 0)
+                RenderService->UnloadFont(nFontID);
+        }
 
         void ChangeText(std::string_view text);
         void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
@@ -131,29 +108,50 @@ class DIALOG final : public Entity
 
     DlgTextDescribe m_DlgText;
 
-    struct DlgLinkDescribe : public TextDescribe
+    struct DlgLinkDescribe
     {
-        std::vector<int32_t> anLineEndIndex;
+      private:
+        VDX9RENDER *rs = nullptr;
+        POINT offset;
+        int32_t nFontID = -1;
+        uint32_t dwColor;
+        float fScale;
+        int32_t nLineInterval;
+        uint32_t dwSelColor;
+        int32_t nWindowWidth;
 
         int32_t nEditLine;
         int32_t nEditVarIndex;
         int32_t nEditCharIndex;
+
         float fCursorCurrentTime, fCursorVisibleTime, fCursorInvisibleTime;
-        DIALOG *pDlg = nullptr;
+
+      public:
+        int32_t nStartIndex;
+        int32_t nShowQuantity;
+        int32_t nSelectLine;
+        std::vector<std::string> asText;
+
+        std::vector<int32_t> anLineEndIndex;
+
+        DIALOG &dialog_;
+
+        explicit DlgLinkDescribe(DIALOG &dialog): dialog_(dialog) {}
+
+        ~DlgLinkDescribe()
+        {
+            if (rs && nFontID >= 0)
+                rs->UnloadFont(nFontID);
+        }
 
         void ChangeText(ATTRIBUTES *pALinks);
         void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
         int32_t GetShowHeight();
         void Show(int32_t nY);
         void ShowEditMode(int32_t nX, int32_t nY, int32_t nTextIdx);
-
-        void SetDlg(DIALOG *_pDlg)
-        {
-            pDlg = _pDlg;
-        }
     };
 
-    DlgLinkDescribe m_DlgLinks;
+    DlgLinkDescribe m_DlgLinks{*this};
 
     struct BackParameters
     {

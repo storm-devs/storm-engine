@@ -55,7 +55,7 @@ inline void SetVerticesForSquare(XI_TEX_VERTEX *pV, FRECT uv, float left, float 
 void DIALOG::DlgTextDescribe::ChangeText(const std::string_view text)
 {
     asText.clear();
-    anPageEndIndex.clear();
+    pageBreaks_.clear();
     if (text.empty())
         return;
 
@@ -71,7 +71,7 @@ void DIALOG::DlgTextDescribe::ChangeText(const std::string_view text)
             if (storm::ichar_traits<char>::eq(next_char, 'n'))
             {
                 const auto temp_text = std::string(current_span.substr(0, next_break)) + "...";
-                AddToStringArrayLimitedByWidth(temp_text, nFontID, fScale, nWindowWidth, asText, RenderService);
+                storm::dialog::AddToStringArrayLimitedByWidth(temp_text, nFontID, fScale, nWindowWidth, asText, &GetStringWidth);
                 current_span = current_span.substr(next_break + 2);
                 forced_page_breaks.push_back(asText.size());
             }
@@ -81,12 +81,12 @@ void DIALOG::DlgTextDescribe::ChangeText(const std::string_view text)
         }
         else
         {
-            AddToStringArrayLimitedByWidth(current_span, nFontID, fScale, nWindowWidth, asText, RenderService);
+            storm::dialog::AddToStringArrayLimitedByWidth(current_span, nFontID, fScale, nWindowWidth, asText, &GetStringWidth);
             break;
         }
     }
-    currentPage_ = 0;
-    anPageEndIndex = storm::dialog::SplitIntoPages(asText.size(), nShowQuantity, forced_page_breaks);
+    currentLine_ = 0;
+    pageBreaks_ = storm::dialog::SplitIntoPages(asText.size(), nShowQuantity, forced_page_breaks);
 }
 
 void DIALOG::DlgTextDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
@@ -110,8 +110,8 @@ void DIALOG::DlgTextDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *p
     fScale = GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "mainFontScale", 1.f) : 1.f);
     nLineInterval = static_cast<int32_t>(pRS->CharHeight(nFontID) * fScale);
 
-    currentPage_ = 0;
-    nShowQuantity = 5;
+    currentLine_ = 0;
+    nShowQuantity = MAX_LINES;
     if (pIni)
         nShowQuantity = pIni->GetInt("DIALOG", "maxtextlines", nShowQuantity);
 }
@@ -119,13 +119,13 @@ void DIALOG::DlgTextDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *p
 int32_t DIALOG::DlgTextDescribe::GetShowHeight()
 {
     int32_t n;
-    for (n = 0; n < anPageEndIndex.size(); n++)
-        if (currentPage_ < anPageEndIndex[n])
+    for (n = 0; n < pageBreaks_.size(); n++)
+        if (currentLine_ < pageBreaks_[n])
             break;
-    if (n < anPageEndIndex.size())
-        n = anPageEndIndex[n] - currentPage_;
+    if (n < pageBreaks_.size())
+        n = pageBreaks_[n] - currentLine_;
     else
-        n = asText.size() - currentPage_;
+        n = asText.size() - currentLine_;
     if (n > nShowQuantity)
         n = nShowQuantity;
     return (n * nLineInterval);
@@ -137,14 +137,14 @@ void DIALOG::DlgTextDescribe::Show(int32_t nY)
 
     y = nY + offset.y;
     i = 0;
-    for (n = 0; n < anPageEndIndex.size(); n++)
-        if (anPageEndIndex[n] > currentPage_)
+    for (n = 0; n < pageBreaks_.size(); n++)
+        if (pageBreaks_[n] > currentLine_)
             break;
-    if (n < anPageEndIndex.size())
-        nEnd = anPageEndIndex[n];
+    if (n < pageBreaks_.size())
+        nEnd = pageBreaks_[n];
     else
         nEnd = asText.size();
-    for (n = currentPage_; i < nShowQuantity && n < nEnd; i++, n++)
+    for (n = currentLine_; i < nShowQuantity && n < nEnd; i++, n++)
     {
         RenderService->ExtPrint(nFontID, dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, offset.x, y, "%s", asText[n].c_str());
         y += nLineInterval;
@@ -154,10 +154,10 @@ void DIALOG::DlgTextDescribe::Show(int32_t nY)
 bool DIALOG::DlgTextDescribe::IsLastPage()
 {
     int32_t n;
-    for (n = 0; n < anPageEndIndex.size(); n++)
-        if (anPageEndIndex[n] > currentPage_)
+    for (n = 0; n < pageBreaks_.size(); n++)
+        if (pageBreaks_[n] > currentLine_)
             break;
-    if (n >= anPageEndIndex.size() || anPageEndIndex[n] >= asText.size())
+    if (n >= pageBreaks_.size() || pageBreaks_[n] >= asText.size())
         return true;
     return false;
 }
@@ -165,23 +165,23 @@ bool DIALOG::DlgTextDescribe::IsLastPage()
 void DIALOG::DlgTextDescribe::PrevPage()
 {
     int32_t n;
-    for (n = anPageEndIndex.size() - 1; n >= 0; n--)
-        if (anPageEndIndex[n] < currentPage_)
+    for (n = pageBreaks_.size() - 1; n >= 0; n--)
+        if (pageBreaks_[n] < currentLine_)
             break;
     if (n >= 0)
-        currentPage_ = anPageEndIndex[n];
+        currentLine_ = pageBreaks_[n];
     else
-        currentPage_ = 0;
+        currentLine_ = 0;
 }
 
 void DIALOG::DlgTextDescribe::NextPage()
 {
     int32_t n;
-    for (n = 0; n < anPageEndIndex.size(); n++)
-        if (anPageEndIndex[n] > currentPage_)
+    for (n = 0; n < pageBreaks_.size(); n++)
+        if (pageBreaks_[n] > currentLine_)
             break;
-    if (n < anPageEndIndex.size() && anPageEndIndex[n] < asText.size())
-        currentPage_ = anPageEndIndex[n];
+    if (n < pageBreaks_.size() && pageBreaks_[n] < asText.size())
+        currentLine_ = pageBreaks_[n];
 }
 
 void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
@@ -206,7 +206,7 @@ void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
                 nEditCharIndex = 0;
             }
             Assert(pA->HasValue());
-            AddToStringArrayLimitedByWidth(pA->GetValue(), nFontID, fScale, nWindowWidth, asText, RenderService);
+            storm::dialog::AddToStringArrayLimitedByWidth(pA->GetValue(), nFontID, fScale, nWindowWidth, asText, &GetStringWidth);
             anLineEndIndex.push_back(asText.size());
         }
     }
@@ -281,12 +281,11 @@ void DIALOG::DlgLinkDescribe::Show(int32_t nY)
 
         if (nEditLine != -1 && (n >= nBeg && n < nEnd) && nSelectLine == nEditLine)
         {
-            if (pDlg)
-                pDlg->bEditMode = true;
+            dialog_.bEditMode = true;
             ShowEditMode(offset.x, y, n);
         }
-        else if (pDlg)
-            pDlg->bEditMode = false;
+        else
+            dialog_.bEditMode = false;
 
         y += nLineInterval;
     }
@@ -411,7 +410,6 @@ DIALOG::DIALOG()
     strcpy_s(charDefSnd, "\0");
 
     bEditMode = false;
-    m_DlgLinks.SetDlg(this);
 }
 
 //--------------------------------------------------------------------
@@ -603,7 +601,7 @@ void DIALOG::FillButtons()
     if (m_DlgText.IsLastPage() && m_DlgLinks.nStartIndex > 0)
         m_dwButtonState |= BUTTON_STATE_UPENABLE;
 
-    if (m_DlgText.currentPage_ > 0)
+    if (m_DlgText.currentLine_ > 0)
         m_dwButtonState |= BUTTON_STATE_UPENABLE;
 
     auto pV = static_cast<XI_TEX_VERTEX *>(RenderService->LockVertexBuffer(m_idVBufButton));
@@ -778,62 +776,9 @@ void DIALOG::GetPointFromIni(INIFILE *ini, const char *pcSection, const char *pc
     sscanf(param, "%f,%f", &fpoint.x, &fpoint.y);
 }
 
-void DIALOG::AddToStringArrayLimitedByWidth(const std::string_view &text, int32_t nFontID, float fScale,
-                                            int32_t nLimitWidth, std::vector<std::string> &asOutTextList,
-                                            VDX9RENDER *renderService)
+int32_t DIALOG::GetStringWidth(const std::string_view &text, int32_t font_id, float scale)
 {
-    if (nLimitWidth < 20)
-        nLimitWidth = 20;
-
-    size_t current_offset = 0;
-    std::string_view current_span = text;
-    for (;;)
-    {
-        const size_t next_space = current_span.find_first_of(" \\", current_offset);
-
-        if (next_space != std::string_view::npos)
-        {
-            const std::string_view text_section = current_span.substr(0, next_space);
-            const int32_t nW = renderService->StringWidth(text_section, nFontID, fScale);
-            if (nW > nLimitWidth)
-            {
-                const size_t last_space = text_section.find_last_of(" \\");
-                asOutTextList.emplace_back(text_section.substr(0, last_space));
-
-                if (current_span[last_space] == '\\' && current_span.size() > last_space + 1 &&
-                    current_span[last_space + 1] == 'n')
-                {
-                    current_span = current_span.substr(last_space);
-                    current_offset = 0;
-                }
-                else
-                {
-                    current_span = current_span.substr(last_space + 1u);
-                    current_offset = 0;
-                }
-            }
-            else if (current_span[next_space] == '\\' && current_span.size() > next_space + 1 &&
-                     current_span[next_space + 1] == 'n')
-            {
-                asOutTextList.emplace_back(text_section.substr(0, next_space));
-                current_span = current_span.substr(next_space + 2u);
-                current_offset = 0;
-            }
-            else
-            {
-                current_offset = next_space + 1;
-            }
-        }
-        else
-        {
-            asOutTextList.emplace_back(current_span);
-        }
-
-        if (next_space == std::string_view::npos)
-        {
-            break;
-        }
-    }
+    return RenderService->StringWidth(text, font_id, scale);
 }
 
 //--------------------------------------------------------------------
@@ -989,7 +934,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     {
         if (snd)
             snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
-        if (m_DlgText.currentPage_ > 0)
+        if (m_DlgText.currentLine_ > 0)
         {
             m_DlgText.PrevPage();
             UpdateDlgViewport();
