@@ -1,6 +1,9 @@
 #include "font.h"
 #include "core.h"
+#include "storm/config.hpp"
 #include "utf8.h"
+
+#include <fmt/format.h>
 
 namespace
 {
@@ -201,7 +204,14 @@ int32_t FONT::GetStringWidth(const std::string_view &text, std::optional<float> 
     for (int32_t i = 0; i < s_num; i += utf8::u8_inc(text.data() + i))
     {
         uint32_t Codepoint = utf8::Utf8ToCodepoint(text.data() + i);
-        Assert(Codepoint < USED_CODES);
+
+        if (Codepoint > USED_CODES) {
+            core.Trace("Invalid codepoint: %d", Codepoint);
+            if constexpr(storm::kIsDebug) {
+                throw std::runtime_error(fmt::format("Invalid codepoint: {}", Codepoint));
+            }
+            continue;
+        }
 
         FLOAT_RECT pos = charDescriptors_[Codepoint].Pos;
 
@@ -238,7 +248,14 @@ int32_t FONT::UpdateVertexBuffer(int32_t x, int32_t y, char *data_PTR, int utf8l
         Assert(curLetter < utf8length);
 
         int Codepoint = utf8::Utf8ToCodepoint(data_PTR + i);
-        Assert(Codepoint < USED_CODES);
+
+        if (Codepoint > USED_CODES) {
+            core.Trace("Invalid codepoint: %d", Codepoint);
+            if constexpr(storm::kIsDebug) {
+                throw std::runtime_error(fmt::format("Invalid codepoint: {}", Codepoint));
+            }
+            continue;
+        }
 
         n = curLetter * 6;
         FLOAT_RECT pos = charDescriptors_[Codepoint].Pos;
