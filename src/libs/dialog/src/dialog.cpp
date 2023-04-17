@@ -51,36 +51,38 @@ inline void SetVerticesForSquare(XI_TEX_VERTEX *pV, FRECT uv, float left, float 
     pV[3].v = uv.bottom;
 }
 
-void DIALOG::DlgTextDescribe::ChangeText(const char *pcText)
+void DIALOG::DlgTextDescribe::ChangeText(const std::string_view text)
 {
     asText.clear();
     anPageEndIndex.clear();
-    if (!pcText)
+    if (text.empty())
         return;
 
-    int32_t i = 0;
-    for (int32_t n = 0; pcText[n] != 0; n++)
+    size_t current_offset = 0;
+    std::string_view current_span = text;
+    for (;;)
     {
-        if (pcText[n] == '\\' && (pcText[n + 1] == 'n' || pcText[n + 1] == 'N'))
+        const size_t next_break = current_span.find_first_of('\\');
+        if (next_break != std::string_view::npos && next_break < current_span.size() - 1)
         {
-            auto *const pcTmp = new char[4 + n - i];
-            Assert(pcTmp);
-            if (n - i > 0)
-                memcpy(pcTmp, &pcText[i], (n - i) * sizeof(char));
-            memcpy(&pcTmp[n - i], "...", 4 * sizeof(char));
-            i = n + 2;
-            n++;
-            AddToStringArrayLimitedByWidth(pcTmp, nFontID, fScale, nWindowWidth, asText, RenderService, &anPageEndIndex,
-                                           nShowQuantity);
-            if (anPageEndIndex.size() == 0 || anPageEndIndex[anPageEndIndex.size() - 1] != asText.size())
-                anPageEndIndex.push_back(asText.size());
-            delete[] pcTmp;
+            const auto next_char = current_span[next_break + 1];
+            if (storm::ichar_traits<char>::eq(next_char, 'n'))
+            {
+                const auto temp_text = std::string(current_span.substr(0, next_break)) + "...";
+                AddToStringArrayLimitedByWidth(temp_text, nFontID, fScale, nWindowWidth, asText, RenderService,
+                                               &anPageEndIndex, nShowQuantity);
+                current_span = current_span.substr(next_break + 2);
+                if (anPageEndIndex.size() == 0 || anPageEndIndex[anPageEndIndex.size() - 1] != asText.size())
+                    anPageEndIndex.push_back(asText.size());
+            }
+        }
+        else
+        {
+            AddToStringArrayLimitedByWidth(current_span, nFontID, fScale, nWindowWidth, asText, RenderService,
+                                           &anPageEndIndex, nShowQuantity);
+            break;
         }
     }
-    AddToStringArrayLimitedByWidth(&pcText[i], nFontID, fScale, nWindowWidth, asText, RenderService, &anPageEndIndex,
-                                   nShowQuantity);
-    //    if( anPageEndIndex.size()!=0 && anPageEndIndex[anPageEndIndex.size()-1]!=asText.size() )
-    //        anPageEndIndex.Add( asText.size() );
     nStartIndex = 0;
     nSelectLine = -1;
 }
@@ -431,9 +433,6 @@ DIALOG::~DIALOG()
     if (m_idIBufButton == -1)
         RenderService->ReleaseIndexBuffer(m_idIBufButton);
     m_idIBufButton = -1;
-
-    m_DlgText.Release();
-    m_DlgLinks.Release();
 
     if (m_nCharNameTextFont != -1)
         RenderService->UnloadFont(m_nCharNameTextFont);
@@ -1167,7 +1166,8 @@ void DIALOG::UpdateDlgTexts()
     if (!AttributesPointer)
         return;
 
-    m_DlgText.ChangeText(AttributesPointer->GetAttribute("Text"));
+    const std::string &text = AttributesPointer->GetAttribute("Text");
+    m_DlgText.ChangeText(text);
     m_DlgLinks.ChangeText(AttributesPointer->GetAttributeClass("Links"));
 
     bEditMode = false;

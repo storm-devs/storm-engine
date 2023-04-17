@@ -93,12 +93,7 @@ class DIALOG final : public Entity
             nFontID = -1;
         }
 
-        ~TextDescribe()
-        {
-            Release();
-        }
-
-        void Release()
+        virtual ~TextDescribe()
         {
             if (rs && nFontID >= 0)
                 rs->UnloadFont(nFontID);
@@ -113,24 +108,10 @@ class DIALOG final : public Entity
 
     struct DlgTextDescribe : public TextDescribe
     {
-        float fScrollTime;
+        float fScrollTime{};
         std::vector<int32_t> anPageEndIndex;
 
-        DlgTextDescribe() : TextDescribe(), fScrollTime(0)
-        {
-        }
-
-        virtual ~DlgTextDescribe()
-        {
-            Release();
-        }
-
-        virtual void Release()
-        {
-            TextDescribe::Release();
-        }
-
-        void ChangeText(const char *pcText);
+        void ChangeText(std::string_view text);
         void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
         int32_t GetShowHeight();
         void Show(int32_t nY);
@@ -149,22 +130,7 @@ class DIALOG final : public Entity
         int32_t nEditVarIndex;
         int32_t nEditCharIndex;
         float fCursorCurrentTime, fCursorVisibleTime, fCursorInvisibleTime;
-        DIALOG *pDlg;
-
-        DlgLinkDescribe() : TextDescribe()
-        {
-            pDlg = nullptr;
-        }
-
-        virtual ~DlgLinkDescribe()
-        {
-            Release();
-        }
-
-        virtual void Release()
-        {
-            TextDescribe::Release();
-        }
+        DIALOG *pDlg = nullptr;
 
         void ChangeText(ATTRIBUTES *pALinks);
         void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
