@@ -43,36 +43,34 @@ uint32_t _GetAssembledString(VS_STACK *pS)
         return IFUNCRESULT_FAILED;
     auto *const formatStr = pFormatStr->GetString();
 
-    char retString[1024];
-    retString[0] = 0;
+    std::string retString;
+    retString.reserve(1024);
     if (formatStr != nullptr && pAttr != nullptr)
     {
         bool bBuildAccessString = false;
-        char accessString[sizeof(retString)];
-        accessString[0] = 0;
-        int accessStrSize = 0;
+        std::string accessString;
+        accessString.reserve(1024);
         for (int i = 0;; i++)
         {
             if (formatStr[i] == '#' || !formatStr[i])
             {
-                accessString[accessStrSize] = 0;
                 if (bBuildAccessString)
                 {
-                    if (accessStrSize > 1)
+                    if (accessString.size() > 1)
                     {
                         int nAttrNameStart = 1;
                         if (accessString[0] == 'f' && accessString[1] == '.')
                         {
                             nAttrNameStart = 3;
                         }
-                        ATTRIBUTES *pA = pAttr->FindAClass(pAttr, &accessString[nAttrNameStart]);
+                        ATTRIBUTES *pA = pAttr->FindAClass(pAttr, accessString.c_str() + nAttrNameStart);
                         if (pA != nullptr && pA->HasValue())
                         {
                             const char *writeStr = pA->GetThisAttr();
                             switch (accessString[0])
                             {
                             case 's':
-                                strcat_s(retString, writeStr);
+                                retString += writeStr;
                                 break;
                             case 'f': {
                                 char tmpp[256];
@@ -90,7 +88,7 @@ uint32_t _GetAssembledString(VS_STACK *pS)
                                     tmpFmtStr[4] = 0;
                                     sprintf_s(tmpp, tmpFmtStr, ftmp);
                                 }
-                                strcat_s(retString, tmpp);
+                                retString += tmpp;
                             }
                             break;
                             case 'd': {
@@ -98,7 +96,7 @@ uint32_t _GetAssembledString(VS_STACK *pS)
                                 int ntmp = 0;
                                 sscanf(writeStr, "%d", &ntmp);
                                 sprintf_s(tmpp, "%d", ntmp);
-                                strcat_s(retString, tmpp);
+                                retString += tmpp;
                             }
                             break;
                             }
@@ -106,13 +104,13 @@ uint32_t _GetAssembledString(VS_STACK *pS)
                     }
                 }
                 else
-                    strcat_s(retString, accessString);
+                    retString += accessString;
                 bBuildAccessString = !bBuildAccessString;
-                accessStrSize = 0;
+                accessString.clear();
             }
             else
             {
-                accessString[accessStrSize++] = formatStr[i];
+                accessString += formatStr[i];
             }
             if (!formatStr[i])
                 break;
