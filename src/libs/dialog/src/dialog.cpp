@@ -1,4 +1,5 @@
 #include "dialog.hpp"
+#include "dialog_utils.hpp"
 #include "core.h"
 #include "string_compare.hpp"
 #include "v_sound_service.h"
@@ -58,39 +59,39 @@ void DIALOG::DlgTextDescribe::ChangeText(const std::string_view text)
     if (text.empty())
         return;
 
+    std::vector<int32_t> forced_page_breaks{};
     size_t current_offset = 0;
     std::string_view current_span = text;
     for (;;)
     {
-        const size_t next_break = current_span.find_first_of('\\');
+        const size_t next_break = current_span.find_first_of('\\', current_offset);
         if (next_break != std::string_view::npos && next_break < current_span.size() - 1)
         {
             const auto next_char = current_span[next_break + 1];
             if (storm::ichar_traits<char>::eq(next_char, 'n'))
             {
                 const auto temp_text = std::string(current_span.substr(0, next_break)) + "...";
-                AddToStringArrayLimitedByWidth(temp_text, nFontID, fScale, nWindowWidth, asText, RenderService,
-                                               &anPageEndIndex, nShowQuantity);
+                AddToStringArrayLimitedByWidth(temp_text, nFontID, fScale, nWindowWidth, asText, RenderService);
                 current_span = current_span.substr(next_break + 2);
-                if (anPageEndIndex.size() == 0 || anPageEndIndex[anPageEndIndex.size() - 1] != asText.size())
-                    anPageEndIndex.push_back(asText.size());
+                forced_page_breaks.push_back(asText.size());
+            }
+            else {
+                current_offset = next_break + 1;
             }
         }
         else
         {
-            AddToStringArrayLimitedByWidth(current_span, nFontID, fScale, nWindowWidth, asText, RenderService,
-                                           &anPageEndIndex, nShowQuantity);
+            AddToStringArrayLimitedByWidth(current_span, nFontID, fScale, nWindowWidth, asText, RenderService);
             break;
         }
     }
-    nStartIndex = 0;
-    nSelectLine = -1;
+    currentPage_ = 0;
+    anPageEndIndex = storm::dialog::SplitIntoPages(asText.size(), nShowQuantity, forced_page_breaks);
 }
 
 void DIALOG::DlgTextDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
 {
     Assert(pRS);
-    rs = pRS;
 
     offset.x = 20;
     offset.y = 0;
@@ -102,30 +103,29 @@ void DIALOG::DlgTextDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *p
         pIni->ReadString("DIALOG", "mainfont", FName, MAX_PATH, "DIALOG2");
     else
         strcpy_s(FName, "DIALOG2");
-    nFontID = rs->LoadFont(FName);
+    nFontID = pRS->LoadFont(FName);
 
     dwColor = ARGB(255, 210, 227, 227);
     dwColor = pIni ? pIni->GetInt("DIALOG", "mainFontColor", dwColor) : dwColor;
     fScale = GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "mainFontScale", 1.f) : 1.f);
-    nLineInterval = static_cast<int32_t>(rs->CharHeight(nFontID) * fScale);
+    nLineInterval = static_cast<int32_t>(pRS->CharHeight(nFontID) * fScale);
 
-    nStartIndex = 0;
+    currentPage_ = 0;
     nShowQuantity = 5;
     if (pIni)
         nShowQuantity = pIni->GetInt("DIALOG", "maxtextlines", nShowQuantity);
-    nSelectLine = -1;
 }
 
 int32_t DIALOG::DlgTextDescribe::GetShowHeight()
 {
     int32_t n;
     for (n = 0; n < anPageEndIndex.size(); n++)
-        if (nStartIndex < anPageEndIndex[n])
+        if (currentPage_ < anPageEndIndex[n])
             break;
     if (n < anPageEndIndex.size())
-        n = anPageEndIndex[n] - nStartIndex;
+        n = anPageEndIndex[n] - currentPage_;
     else
-        n = asText.size() - nStartIndex;
+        n = asText.size() - currentPage_;
     if (n > nShowQuantity)
         n = nShowQuantity;
     return (n * nLineInterval);
@@ -138,15 +138,15 @@ void DIALOG::DlgTextDescribe::Show(int32_t nY)
     y = nY + offset.y;
     i = 0;
     for (n = 0; n < anPageEndIndex.size(); n++)
-        if (anPageEndIndex[n] > nStartIndex)
+        if (anPageEndIndex[n] > currentPage_)
             break;
     if (n < anPageEndIndex.size())
         nEnd = anPageEndIndex[n];
     else
         nEnd = asText.size();
-    for (n = nStartIndex; i < nShowQuantity && n < nEnd; i++, n++)
+    for (n = currentPage_; i < nShowQuantity && n < nEnd; i++, n++)
     {
-        rs->ExtPrint(nFontID, dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, offset.x, y, "%s", asText[n].c_str());
+        RenderService->ExtPrint(nFontID, dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, offset.x, y, "%s", asText[n].c_str());
         y += nLineInterval;
     }
 }
@@ -155,7 +155,7 @@ bool DIALOG::DlgTextDescribe::IsLastPage()
 {
     int32_t n;
     for (n = 0; n < anPageEndIndex.size(); n++)
-        if (anPageEndIndex[n] > nStartIndex)
+        if (anPageEndIndex[n] > currentPage_)
             break;
     if (n >= anPageEndIndex.size() || anPageEndIndex[n] >= asText.size())
         return true;
@@ -166,22 +166,22 @@ void DIALOG::DlgTextDescribe::PrevPage()
 {
     int32_t n;
     for (n = anPageEndIndex.size() - 1; n >= 0; n--)
-        if (anPageEndIndex[n] < nStartIndex)
+        if (anPageEndIndex[n] < currentPage_)
             break;
     if (n >= 0)
-        nStartIndex = anPageEndIndex[n];
+        currentPage_ = anPageEndIndex[n];
     else
-        nStartIndex = 0;
+        currentPage_ = 0;
 }
 
 void DIALOG::DlgTextDescribe::NextPage()
 {
     int32_t n;
     for (n = 0; n < anPageEndIndex.size(); n++)
-        if (anPageEndIndex[n] > nStartIndex)
+        if (anPageEndIndex[n] > currentPage_)
             break;
     if (n < anPageEndIndex.size() && anPageEndIndex[n] < asText.size())
-        nStartIndex = anPageEndIndex[n];
+        currentPage_ = anPageEndIndex[n];
 }
 
 void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
@@ -206,8 +206,7 @@ void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
                 nEditCharIndex = 0;
             }
             Assert(pA->HasValue());
-            AddToStringArrayLimitedByWidth(pA->GetValue(), nFontID, fScale, nWindowWidth, asText, RenderService,
-                                           nullptr, 100);
+            AddToStringArrayLimitedByWidth(pA->GetValue(), nFontID, fScale, nWindowWidth, asText, RenderService);
             anLineEndIndex.push_back(asText.size());
         }
     }
@@ -604,7 +603,7 @@ void DIALOG::FillButtons()
     if (m_DlgText.IsLastPage() && m_DlgLinks.nStartIndex > 0)
         m_dwButtonState |= BUTTON_STATE_UPENABLE;
 
-    if (m_DlgText.nStartIndex > 0)
+    if (m_DlgText.currentPage_ > 0)
         m_dwButtonState |= BUTTON_STATE_UPENABLE;
 
     auto pV = static_cast<XI_TEX_VERTEX *>(RenderService->LockVertexBuffer(m_idVBufButton));
@@ -781,15 +780,10 @@ void DIALOG::GetPointFromIni(INIFILE *ini, const char *pcSection, const char *pc
 
 void DIALOG::AddToStringArrayLimitedByWidth(const std::string_view &text, int32_t nFontID, float fScale,
                                             int32_t nLimitWidth, std::vector<std::string> &asOutTextList,
-                                            VDX9RENDER *renderService, std::vector<int32_t> *panPageIndices,
-                                            int32_t nPageSize)
+                                            VDX9RENDER *renderService)
 {
     if (nLimitWidth < 20)
         nLimitWidth = 20;
-
-    size_t nPrevIdx = 0;
-    if (panPageIndices && !panPageIndices->empty())
-        nPrevIdx = panPageIndices->back();
 
     size_t current_offset = 0;
     std::string_view current_span = text;
@@ -833,12 +827,6 @@ void DIALOG::AddToStringArrayLimitedByWidth(const std::string_view &text, int32_
         else
         {
             asOutTextList.emplace_back(current_span);
-        }
-
-        if (panPageIndices && asOutTextList.size() - nPrevIdx == nPageSize)
-        {
-            nPrevIdx = asOutTextList.size();
-            panPageIndices->push_back(static_cast<long>(nPrevIdx));
         }
 
         if (next_space == std::string_view::npos)
@@ -1001,7 +989,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     {
         if (snd)
             snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
-        if (m_DlgText.nStartIndex > 0)
+        if (m_DlgText.currentPage_ > 0)
         {
             m_DlgText.PrevPage();
             UpdateDlgViewport();

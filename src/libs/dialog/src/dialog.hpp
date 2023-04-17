@@ -63,8 +63,7 @@ class DIALOG final : public Entity
     }
 
     static void AddToStringArrayLimitedByWidth(const std::string_view &text, int32_t nFontID, float fScale, int32_t nLimitWidth,
-                                               std::vector<std::string> &asOutTextList, VDX9RENDER *renderService,
-                                               std::vector<int32_t> *panPageIndices, int32_t nPageSize);
+                                               std::vector<std::string> &asOutTextList, VDX9RENDER *renderService);
 
   private:
     void EmergencyExit();
@@ -106,8 +105,18 @@ class DIALOG final : public Entity
     void UpdateDlgTexts();
     void UpdateDlgViewport();
 
-    struct DlgTextDescribe : public TextDescribe
+    struct DlgTextDescribe
     {
+        POINT offset;
+        int32_t nWindowWidth;
+        int32_t nFontID;
+        uint32_t dwColor;
+        float fScale;
+        int32_t nLineInterval;
+        std::vector<std::string> asText;
+        int32_t currentPage_;
+        int32_t nShowQuantity;
+
         float fScrollTime{};
         std::vector<int32_t> anPageEndIndex;
 
