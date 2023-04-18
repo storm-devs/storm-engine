@@ -17,6 +17,7 @@ DlgLinkDescribe::~DlgLinkDescribe()
 
 void DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
 {
+    editMode_ = false;
     edit_.reset();
     asText.clear();
     anLineEndIndex.clear();
@@ -85,12 +86,12 @@ void DlgLinkDescribe::Show(int32_t nY)
 
         if (edit_.has_value() && (n >= nBeg && n < nEnd) && selectedLine_ == edit_->line)
         {
-            dialog_.bEditMode = true;
+            editMode_ = true;
             UpdateEditMode(n);
             ShowEditMode(offset.x, y, n);
         }
         else
-            dialog_.bEditMode = false;
+            editMode_ = false;
 
         y += nLineInterval;
     }
@@ -182,8 +183,8 @@ void DlgLinkDescribe::ShowEditMode(int32_t nX, int32_t nY, int32_t nTextIdx)
         rs->ExtPrint(nFontID, dwSelColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, nX + nW, nY, "_");
     }
 
-    if (dialog_.AttributesPointer) {
-        dialog_.AttributesPointer->SetAttribute("value", asText[nTextIdx]);
+    if (attributes_) {
+        attributes_->SetAttribute("value", asText[nTextIdx]);
     }
 
     if (edit_->varIndex >= 0 && edit_->varIndex < 10)
@@ -192,6 +193,12 @@ void DlgLinkDescribe::ShowEditMode(int32_t nX, int32_t nY, int32_t nTextIdx)
         if (pDat)
             pDat->Set((char *)asText[nTextIdx].c_str(), edit_->varIndex);
     }
+}
+
+DlgLinkDescribe &DlgLinkDescribe::SetAttributes(ATTRIBUTES *attributes)
+{
+    attributes_ = attributes;
+    return *this;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::SetRenderer(VDX9RENDER *renderer)
@@ -251,6 +258,11 @@ DlgLinkDescribe &DlgLinkDescribe::SetSelectedColor(uint32_t color)
 int32_t DlgLinkDescribe::GetSelectedLine() const noexcept
 {
     return selectedLine_;
+}
+
+bool DlgLinkDescribe::IsInEditMode() const noexcept
+{
+    return editMode_;
 }
 
 bool DlgLinkDescribe::CanMoveUp() const noexcept

@@ -152,7 +152,7 @@ bool LegacyDialog::Init()
 
     UpdateScreenSize();
 
-    const char *texture = this->AttributesPointer->GetAttribute("texture");
+    const char *texture = AttributesPointer->GetAttribute("texture");
     if (texture == nullptr)
     {
         texture = DEFAULT_INTERFACE_TEXTURE;
@@ -160,6 +160,15 @@ bool LegacyDialog::Init()
     interfaceTexture_ = RenderService->TextureCreate(texture);
 
     CreateBackBuffers();
+
+    linkDescribe_.SetAttributes(AttributesPointer);
+    linkDescribe_.SetRenderer(RenderService);
+    linkDescribe_.SetFont(subFont_);
+    linkDescribe_.SetFontScale(fontScale_);
+    linkDescribe_.SetLineHeight(lineHeight_);
+    linkDescribe_.SetMaxLinesPerPage(5);
+    linkDescribe_.SetColor(COLOR_LINK_UNSELECTED);
+    linkDescribe_.SetSelectedColor(COLOR_NORMAL);
 
     return true;
 }
@@ -190,6 +199,12 @@ void LegacyDialog::Realize(uint32_t deltaTime)
 
     UpdateScreenSize();
 
+    if (dialogNeedsUpdate_) {
+        UpdateLinks();
+        UpdateDialogText();
+        dialogNeedsUpdate_ = false;
+    }
+
     ProcessControls();
 
     if (backNeedsUpdate_)
@@ -197,7 +212,7 @@ void LegacyDialog::Realize(uint32_t deltaTime)
         UpdateBackBuffers();
     }
 
-    const bool shouldDrawDivider = !formattedLinks_.empty();
+    const bool shouldDrawDivider = linkDescribe_.GetShowHeight() != 0;
     DrawBackground(2, 5 + textureLines_);
     DrawBackground(7 + DIALOG_MAX_LINES, shouldDrawDivider ? 2 : 1);
 
@@ -249,8 +264,7 @@ uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
     }
     else
     {
-        UpdateLinks();
-        UpdateDialogText();
+        dialogNeedsUpdate_ = true;
     }
 
     return Entity::AttributeChanged(attributes);
@@ -390,11 +404,11 @@ void LegacyDialog::UpdateBackBuffers()
 
     // Top of main dialog
     {
-        const size_t text_lines = formattedDialogText_.size() + formattedLinks_.size();
+        const size_t text_lines = formattedDialogText_.size();
         textureLines_ = static_cast<int32_t>(
-            std::floor(static_cast<double>((text_lines * lineHeight_) / vScale) / DIALOG_LINE_HEIGHT));
+            std::floor(static_cast<double>((text_lines * lineHeight_ + linkDescribe_.GetShowHeight()) / vScale) / DIALOG_LINE_HEIGHT));
 
-        if (!formattedLinks_.empty())
+        if (linkDescribe_.GetShowHeight() != 0)
         {
             textureLines_ += 1;
         }
@@ -414,7 +428,7 @@ void LegacyDialog::UpdateBackBuffers()
     // Divider
     {
         sprite_data = SPRITE_DATA[9];
-        const auto offset = static_cast<float>(formattedLinks_.size()) * static_cast<float>(lineHeight_) / vScale;
+        const auto offset = linkDescribe_.GetShowHeight() / vScale;
         sprite_data.position.top -= offset;
         sprite_data.position.bottom -= offset;
 
@@ -578,38 +592,18 @@ void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
 
 void LegacyDialog::UpdateLinks()
 {
-    const size_t previous_link_lines = formattedLinks_.size();
-
-    links_.clear();
-    formattedLinks_.clear();
     ATTRIBUTES *links_attr = AttributesPointer->GetAttributeClass("Links");
-    if (links_attr)
-    {
-        D3DVIEWPORT9 vp;
-        RenderService->GetViewport(&vp);
 
-        const auto text_width_limit = static_cast<int32_t>(570.f * (vp.Width / 640.f));
+    const auto oldHeight = linkDescribe_.GetShowHeight();
 
-        const size_t number_of_links = links_attr->GetAttributesNum();
-        for (size_t i = 0; i < number_of_links; ++i)
-        {
-            const std::string_view link_text = links_attr->GetAttributeClass(i)->GetValue();
-            links_.emplace_back(link_text);
+    D3DVIEWPORT9 vp;
+    RenderService->GetViewport(&vp);
 
-            std::vector<std::string> link_texts;
-            storm::dialog::AddToStringArrayLimitedByWidth(
-                link_text, text_width_limit, link_texts, [this](const std::string_view &text) {
-                    return RenderService->StringWidth(text, subFont_, fontScale_);
-                });
+    const auto text_width_limit = static_cast<int32_t>(570.f * (vp.Width / 640.f));
+    linkDescribe_.SetWindowWidth(text_width_limit);
+    linkDescribe_.ChangeText(links_attr);
 
-            for (const auto &text : link_texts)
-            {
-                formattedLinks_.emplace_back(LinkEntry{text, static_cast<int32_t>(i)});
-            }
-        }
-    }
-
-    if (previous_link_lines != formattedLinks_.size())
+    if (oldHeight != linkDescribe_.GetShowHeight())
     {
         backNeedsUpdate_ = true;
     }
@@ -617,20 +611,11 @@ void LegacyDialog::UpdateLinks()
 
 void LegacyDialog::DrawLinks()
 {
-    if (!formattedLinks_.empty())
-    {
-        int32_t line_offset = 0;
-        int32_t offset = lineHeight_ * static_cast<int32_t>(formattedLinks_.size());
-        for (auto &link : formattedLinks_)
-        {
-            const bool isSelected = link.lineIndex == selectedLink_;
-            RenderService->ExtPrint(subFont_, isSelected ? COLOR_NORMAL : COLOR_LINK_UNSELECTED, 0, PR_ALIGN_LEFT, true,
-                                    fontScale_, 0, 0, static_cast<int32_t>(screenScale_.x * 35),
-                                    static_cast<int32_t>(screenScale_.y * 450 - offset) + line_offset,
-                                    link.text.c_str());
-            line_offset += lineHeight_;
-        }
-    }
+    linkDescribe_.SetOffset({
+        .x = static_cast<int32_t>(screenScale_.x * 35),
+        .y = static_cast<int32_t>(screenScale_.y * 450) - linkDescribe_.GetShowHeight(),
+    });
+    linkDescribe_.Show(0);
 }
 
 void LegacyDialog::UpdateDialogText()
@@ -694,22 +679,24 @@ void LegacyDialog::ProcessControls()
         bDoUp = true;
     }
 
-    core.Controls->GetControlState("DlgUp2", cs);
-    if (cs.state == CST_ACTIVATED)
-    {
-        bDoUp = true;
+    if (!linkDescribe_.IsInEditMode()) {
+        core.Controls->GetControlState("DlgUp2", cs);
+        if (cs.state == CST_ACTIVATED)
+        {
+            bDoUp = true;
+        }
+
+        core.Controls->GetControlState("DlgUp3", cs);
+        if (cs.state == CST_ACTIVATED)
+        {
+            bDoUp = true;
+        }
     }
 
-    core.Controls->GetControlState("DlgUp3", cs);
-    if (cs.state == CST_ACTIVATED)
-    {
-        bDoUp = true;
-    }
-
-    if (bDoUp && selectedLink_ > 0)
+    if (bDoUp && linkDescribe_.CanMoveUp())
     {
         PlayTick();
-        --selectedLink_;
+        linkDescribe_.MoveUp();
     }
 
     core.Controls->GetControlState("DlgDown", cs);
@@ -718,28 +705,33 @@ void LegacyDialog::ProcessControls()
         bDoDown = true;
     }
 
-    core.Controls->GetControlState("DlgDown2", cs);
-    if (cs.state == CST_ACTIVATED)
+    if (!linkDescribe_.IsInEditMode())
     {
-        bDoDown = true;
+        core.Controls->GetControlState("DlgDown2", cs);
+        if (cs.state == CST_ACTIVATED)
+        {
+            bDoDown = true;
+        }
+
+        core.Controls->GetControlState("DlgDown3", cs);
+        if (cs.state == CST_ACTIVATED)
+        {
+            bDoDown = true;
+        }
     }
 
-    core.Controls->GetControlState("DlgDown3", cs);
-    if (cs.state == CST_ACTIVATED)
-    {
-        bDoDown = true;
-    }
-
-    if (bDoDown && selectedLink_ < links_.size() - 1)
+    if (bDoDown && linkDescribe_.CanMoveDown())
     {
         PlayTick();
-        ++selectedLink_;
+        linkDescribe_.MoveDown();
     }
 
-    core.Controls->GetControlState("DlgAction", cs);
-    if (cs.state == CST_ACTIVATED)
-    {
-        bDoAction = true;
+    if (!linkDescribe_.IsInEditMode()) {
+        core.Controls->GetControlState("DlgAction", cs);
+        if (cs.state == CST_ACTIVATED)
+        {
+            bDoAction = true;
+        }
     }
 
     core.Controls->GetControlState("DlgAction1", cs);
@@ -760,12 +752,11 @@ void LegacyDialog::ProcessControls()
         ATTRIBUTES *links_attr = AttributesPointer->GetAttributeClass("Links");
         if (links_attr)
         {
-            ATTRIBUTES *selected_attr = links_attr->GetAttributeClass(selectedLink_);
+            ATTRIBUTES *selected_attr = links_attr->GetAttributeClass(linkDescribe_.GetSelectedLine());
             if (selected_attr)
             {
                 const char *go = selected_attr->GetAttribute("go");
                 AttributesPointer->SetAttribute("CurrentNode", go);
-                selectedLink_ = 0;
                 core.Event("DialogEvent");
             }
         }

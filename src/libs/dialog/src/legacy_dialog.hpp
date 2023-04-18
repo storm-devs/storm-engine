@@ -1,5 +1,7 @@
 #pragma once
 
+#include "link_describe.hpp"
+
 #include <dx9render.h>
 #include <entity.h>
 #include <v_sound_service.h>
@@ -61,13 +63,7 @@ class LegacyDialog final : public Entity
     void PlayTick();
     void Unfade();
 
-    struct LinkEntry
-    {
-        std::string text;
-        int32_t lineIndex{};
-    };
-    std::vector<std::string> links_;
-    std::vector<LinkEntry> formattedLinks_;
+    storm::dialog::DlgLinkDescribe linkDescribe_;
 
     std::vector<std::string> formattedDialogText_;
     std::string dialogText_;
@@ -83,8 +79,6 @@ class LegacyDialog final : public Entity
 
     int32_t lineHeight_{};
     int32_t textureLines_{};
-
-    int32_t selectedLink_{};
 
     int32_t mainFont_{};
     int32_t nameFont_{};
@@ -105,5 +99,6 @@ class LegacyDialog final : public Entity
     int32_t currentSound_ = 0;
     std::string soundName_;
 
+    bool dialogNeedsUpdate_ = false;
     bool backNeedsUpdate_ = true;
 };

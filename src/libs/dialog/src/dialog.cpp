@@ -211,8 +211,6 @@ DIALOG::DIALOG()
     m_bDlgChanged = true;
 
     strcpy_s(charDefSnd, "\0");
-
-    bEditMode = false;
 }
 
 //--------------------------------------------------------------------
@@ -621,6 +619,7 @@ void DIALOG::InitLinks(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
 {
     m_DlgLinks.Init();
 
+    m_DlgLinks.SetAttributes(AttributesPointer);
     m_DlgLinks.SetRenderer(pRS);
 
     POINT offset{20, 0};
@@ -705,7 +704,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     core.Controls->GetControlState("DlgUp", cs);
     if (cs.state == CST_ACTIVATED)
         bDoUp = true;
-    if (!bEditMode)
+    if (!m_DlgLinks.IsInEditMode())
     {
         core.Controls->GetControlState("DlgUp2", cs);
         if (cs.state == CST_ACTIVATED)
@@ -718,7 +717,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     core.Controls->GetControlState("DlgDown", cs);
     if (cs.state == CST_ACTIVATED)
         bDoDown = true;
-    if (!bEditMode)
+    if (!m_DlgLinks.IsInEditMode())
     {
         core.Controls->GetControlState("DlgDown2", cs);
         if (cs.state == CST_ACTIVATED)
@@ -792,7 +791,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     core.Controls->GetControlState("DlgAction", cs);
     core.Controls->GetControlState("DlgAction2", cs2);
     core.Controls->GetControlState("DlgAction1", cs1); // boal
-    if (bEditMode)
+    if (m_DlgLinks.IsInEditMode())
     {
         cs.state = CST_INACTIVE;
     }
@@ -935,7 +934,6 @@ void DIALOG::UpdateDlgTexts()
     m_DlgText.ChangeText(text);
     m_DlgLinks.ChangeText(AttributesPointer->GetAttributeClass("Links"));
 
-    bEditMode = false;
     m_bDlgChanged = false;
 }
 

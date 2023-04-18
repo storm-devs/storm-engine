@@ -109,7 +109,7 @@ class DIALOG final : public Entity
 
     DlgTextDescribe m_DlgText;
 
-    storm::dialog::DlgLinkDescribe m_DlgLinks{*this};
+    storm::dialog::DlgLinkDescribe m_DlgLinks;
 
     struct BackParameters
     {
