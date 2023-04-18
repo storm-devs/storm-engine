@@ -1,10 +1,10 @@
 #include "dialog.hpp"
-#include "dialog_utils.hpp"
-#include "core.h"
-#include "string_compare.hpp"
-#include "v_sound_service.h"
 
-#include "v_file_service.h"
+#include <dialog/dialog_utils.hpp>
+#include <core.h>
+#include <string_compare.hpp>
+#include <v_sound_service.h>
+#include <v_file_service.h>
 
 CREATE_CLASS(DIALOG)
 

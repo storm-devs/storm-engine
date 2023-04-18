@@ -1,10 +1,4 @@
-#include "dialog_utils.hpp"
-
-#define CATCH_CONFIG_MAIN
-
-#ifdef _WIN32
-#define CATCH_CONFIG_WINDOWS_CRTDBG
-#endif
+#include "dialog/dialog_utils.hpp"
 
 #include <catch2/catch.hpp>
 

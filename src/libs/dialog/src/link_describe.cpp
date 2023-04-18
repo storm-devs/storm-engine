@@ -1,11 +1,12 @@
 #include "link_describe.hpp"
 
-#include "core.h"
 #include "dialog.hpp"
-#include "dialog_utils.hpp"
-#include "string_compare.hpp"
-#include "vma.hpp"
-#include "v_file_service.h"
+
+#include <core.h>
+#include <dialog/dialog_utils.hpp>
+#include <string_compare.hpp>
+#include <vma.hpp>
+#include <v_file_service.h>
 
 namespace storm::dialog {
 

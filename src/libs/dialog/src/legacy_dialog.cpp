@@ -1,7 +1,7 @@
 #include "legacy_dialog.hpp"
 
 #include "dialog.hpp"
-#include "dialog_utils.hpp"
+#include <dialog/dialog_utils.hpp>
 
 #include <animation.h>
 #include <core.h>

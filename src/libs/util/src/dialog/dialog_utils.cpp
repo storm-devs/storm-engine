@@ -1,4 +1,4 @@
-#include "dialog_utils.hpp"
+#include "dialog/dialog_utils.hpp"
 
 namespace storm::dialog {
 

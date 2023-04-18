@@ -235,6 +235,4 @@ class DIALOG final : public Entity
     bool start;
 
     bool bEditMode;
-
-    friend storm::dialog::DlgLinkDescribe;
 };
