@@ -18,7 +18,7 @@ extern long cur_depth;
 extern long cdepth;
 extern long tnode;
 
-#define LIE_PREC 0.0001
+#define LIE_PREC 0.00001
 
 BUILD_BSP_NODE::~BUILD_BSP_NODE()
 {
