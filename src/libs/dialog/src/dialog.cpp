@@ -59,6 +59,10 @@ void DIALOG::DlgTextDescribe::ChangeText(const std::string_view text)
     if (text.empty())
         return;
 
+    const auto get_string_width = [this](const std::string_view &text) {
+        return RenderService->StringWidth(text, nFontID, fScale);
+    };
+
     std::vector<int32_t> forced_page_breaks{};
     size_t current_offset = 0;
     std::string_view current_span = text;
@@ -71,7 +75,7 @@ void DIALOG::DlgTextDescribe::ChangeText(const std::string_view text)
             if (storm::ichar_traits<char>::eq(next_char, 'n'))
             {
                 const auto temp_text = std::string(current_span.substr(0, next_break)) + "...";
-                storm::dialog::AddToStringArrayLimitedByWidth(temp_text, nFontID, fScale, nWindowWidth, asText, &GetStringWidth);
+                storm::dialog::AddToStringArrayLimitedByWidth(temp_text, nWindowWidth, asText, get_string_width);
                 current_span = current_span.substr(next_break + 2);
                 forced_page_breaks.push_back(asText.size());
             }
@@ -81,7 +85,7 @@ void DIALOG::DlgTextDescribe::ChangeText(const std::string_view text)
         }
         else
         {
-            storm::dialog::AddToStringArrayLimitedByWidth(current_span, nFontID, fScale, nWindowWidth, asText, &GetStringWidth);
+            storm::dialog::AddToStringArrayLimitedByWidth(current_span, nWindowWidth, asText, get_string_width);
             break;
         }
     }
@@ -182,212 +186,6 @@ void DIALOG::DlgTextDescribe::NextPage()
             break;
     if (n < pageBreaks_.size() && pageBreaks_[n] < asText.size())
         currentLine_ = pageBreaks_[n];
-}
-
-void DIALOG::DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
-{
-    edit_.reset();
-    asText.clear();
-    anLineEndIndex.clear();
-    if (!pALinks)
-        return;
-
-    const size_t number_of_links = pALinks->GetAttributesNum();
-    for (size_t i = 0; i < number_of_links; ++i)
-    {
-        auto *pA = pALinks->GetAttributeClass(i);
-        if (pA)
-        {
-            if (pA->GetAttribute("edit"))
-            {
-                const bool is_var = storm::iEquals(to_string(pA->GetAttribute("edit")), "string");
-                edit_ = EditConfig{
-                    .line = static_cast<int32_t>(i),
-                    .varIndex = is_var ? static_cast<int32_t>(pA->GetAttributeAsDword("edit", 0)) : -1,
-                };
-            }
-            Assert(pA->HasValue());
-            storm::dialog::AddToStringArrayLimitedByWidth(pA->GetValue(), nFontID, fScale, nWindowWidth, asText, &GetStringWidth);
-            anLineEndIndex.push_back(asText.size());
-        }
-    }
-
-    nStartIndex = 0;
-    selectedLine_ = 0;
-    fCursorCurrentTime = 0.f;
-}
-
-void DIALOG::DlgLinkDescribe::Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
-{
-    Assert(pRS);
-    rs = pRS;
-
-    offset.x = 20;
-    offset.y = 0;
-    nWindowWidth = vp.Width - 2 * offset.x;
-    offset.x += vp.X;
-
-    char FName[MAX_PATH];
-    if (pIni)
-        pIni->ReadString("DIALOG", "subfont", FName, MAX_PATH, "DIALOG3");
-    else
-        strcpy_s(FName, "DIALOG3");
-    nFontID = rs->LoadFont(FName);
-
-    dwColor = 0xFF808080;
-    dwSelColor = 0xFFFFFFFF;
-    dwColor = pIni ? pIni->GetInt("DIALOG", "subFontColor", dwColor) : dwColor;
-    dwSelColor = pIni ? pIni->GetInt("DIALOG", "subFontColorSelect", dwSelColor) : dwSelColor;
-    fScale = GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "subFontScale", 1.f) : 1.f);
-    nLineInterval = static_cast<int32_t>(rs->CharHeight(nFontID) * fScale * .9f);
-
-    nStartIndex = 0;
-    nShowQuantity = 5;
-    if (pIni)
-        nShowQuantity = pIni->GetInt("DIALOG", "maxlinkslines", nShowQuantity);
-    selectedLine_ = 0;
-
-    edit_.reset();
-    fCursorVisibleTime = 0.8f;
-    fCursorInvisibleTime = 0.2f;
-}
-
-int32_t DIALOG::DlgLinkDescribe::GetShowHeight()
-{
-    int32_t n = asText.size() - nStartIndex;
-    if (n > nShowQuantity)
-        n = nShowQuantity;
-    return (n * nLineInterval);
-}
-
-void DIALOG::DlgLinkDescribe::Show(int32_t nY)
-{
-    int32_t n, nBeg, nEnd, i, y;
-
-    y = nY + offset.y;
-    n = nStartIndex;
-    nBeg = 0;
-    if (selectedLine_ < anLineEndIndex.size() && selectedLine_ >= 0)
-    {
-        if (selectedLine_ > 0)
-            nBeg = anLineEndIndex[selectedLine_ - 1];
-        nEnd = anLineEndIndex[selectedLine_];
-    }
-    else
-        nEnd = -1;
-    for (i = 0; i < nShowQuantity && n < asText.size(); i++, n++)
-    {
-        rs->ExtPrint(nFontID, (n >= nBeg && n < nEnd) ? dwSelColor : dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0,
-                     offset.x, y, asText[n].c_str());
-
-        if (edit_.has_value() && (n >= nBeg && n < nEnd) && selectedLine_ == edit_->line)
-        {
-            dialog_.bEditMode = true;
-            ShowEditMode(offset.x, y, n);
-        }
-        else
-            dialog_.bEditMode = false;
-
-        y += nLineInterval;
-    }
-}
-
-void DIALOG::DlgLinkDescribe::ShowEditMode(int32_t nX, int32_t nY, int32_t nTextIdx)
-{
-    const auto nKeyQ = core.Controls->GetKeyBufferLength();
-    if (nKeyQ > 0)
-    {
-        const auto *const pKeys = core.Controls->GetKeyBuffer();
-        if (pKeys)
-        {
-            for (int32_t n = 0; n < nKeyQ; n++)
-            {
-                if (pKeys[n].bSystem)
-                {
-                    switch (pKeys[n].ucVKey.c)
-                    {
-                    case VK_LEFT:
-                        if (edit_->charIndex > 0)
-                            edit_->charIndex--;
-                        break;
-                    case VK_BACK:
-                        if (edit_->charIndex > 0)
-                        {
-                            edit_->charIndex--;
-                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
-                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
-                            asText[nTextIdx].erase(offset, length);
-                        }
-                        break;
-                    case VK_RIGHT: {
-                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
-                        if (edit_->charIndex < strLength)
-                            edit_->charIndex++;
-                    }
-                    break;
-                    case VK_DELETE: {
-                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
-                        if (edit_->charIndex >= 0 && edit_->charIndex < strLength)
-                        {
-                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
-                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
-                            asText[nTextIdx].erase(offset, length);
-                        }
-                    }
-                    break;
-                    }
-                    continue;
-                }
-                if (pKeys[n].ucVKey.c < 0x20)
-                    continue;
-
-                std::string tmp(pKeys[n].ucVKey.b, pKeys[n].ucVKey.l);
-                if (rs->StringWidth(asText[nTextIdx], nFontID, fScale, 0) +
-                        rs->CharWidth(pKeys[n].ucVKey, nFontID, fScale) <=
-                    nWindowWidth)
-                {
-                    int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
-                    asText[nTextIdx].insert(offset, tmp.c_str());
-                    edit_->charIndex++;
-                }
-            }
-        }
-    }
-
-    // show cursor
-    fCursorCurrentTime += core.GetRDeltaTime() * 0.001f;
-    if (fCursorCurrentTime > fCursorVisibleTime + fCursorInvisibleTime)
-        fCursorCurrentTime -= fCursorVisibleTime + fCursorInvisibleTime;
-    if (fCursorCurrentTime <= fCursorVisibleTime)
-    {
-        int32_t nW = 0;
-        if (!asText[nTextIdx].empty())
-        {
-            int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
-            if (edit_->charIndex < strLength)
-            {
-                int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
-                const auto cTmp = asText[nTextIdx][offset];
-                asText[nTextIdx][offset] = 0;
-                nW = rs->StringWidth(asText[nTextIdx], nFontID, fScale, 0);
-                asText[nTextIdx][offset] = cTmp;
-            }
-            else
-                nW = rs->StringWidth(asText[nTextIdx], nFontID, fScale, 0);
-        }
-        rs->ExtPrint(nFontID, dwSelColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, nX + nW, nY, "_");
-    }
-
-    if (dialog_.AttributesPointer) {
-        dialog_.AttributesPointer->SetAttribute("value", asText[nTextIdx]);
-    }
-
-    if (edit_->varIndex >= 0 && edit_->varIndex < 10)
-    {
-        auto *pDat = static_cast<VDATA *>(core.GetScriptVariable("dialogEditStrings"));
-        if (pDat)
-            pDat->Set((char *)asText[nTextIdx].c_str(), edit_->varIndex);
-    }
 }
 
 //--------------------------------------------------------------------
@@ -600,10 +398,10 @@ void DIALOG::FillButtons()
 
     m_dwButtonState &= ~(BUTTON_STATE_UPENABLE | BUTTON_STATE_DOWNENABLE);
 
-    if ((!m_DlgText.IsLastPage()) || (m_DlgLinks.nStartIndex + m_DlgLinks.nShowQuantity < m_DlgLinks.asText.size()))
+    if ((!m_DlgText.IsLastPage()) || m_DlgLinks.CanScrollDown())
         m_dwButtonState |= BUTTON_STATE_DOWNENABLE;
 
-    if (m_DlgText.IsLastPage() && m_DlgLinks.nStartIndex > 0)
+    if (m_DlgText.IsLastPage() && m_DlgLinks.CanScrollUp())
         m_dwButtonState |= BUTTON_STATE_UPENABLE;
 
     if (m_DlgText.currentLine_ > 0)
@@ -781,11 +579,6 @@ void DIALOG::GetPointFromIni(INIFILE *ini, const char *pcSection, const char *pc
     sscanf(param, "%f,%f", &fpoint.x, &fpoint.y);
 }
 
-int32_t DIALOG::GetStringWidth(const std::string_view &text, int32_t font_id, float scale)
-{
-    return RenderService->StringWidth(text, font_id, scale);
-}
-
 //--------------------------------------------------------------------
 bool DIALOG::Init()
 {
@@ -816,12 +609,52 @@ bool DIALOG::Init()
 
     auto ini = fio->OpenIniFile("Resource\\Ini\\dialog.ini");
     m_DlgText.Init(RenderService, textViewport, ini.get());
-    m_DlgLinks.Init(RenderService, textViewport, ini.get());
+    InitLinks(RenderService, textViewport, ini.get());
 
     CreateButtons();
     FillButtons();
 
     return true;
+}
+
+void DIALOG::InitLinks(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
+{
+    m_DlgLinks.Init();
+
+    m_DlgLinks.SetRenderer(pRS);
+
+    POINT offset{20, 0};
+    offset.x += vp.X;
+    m_DlgLinks.SetOffset(offset);
+
+    int32_t window_width = vp.Width - 2 * offset.x;
+    m_DlgLinks.SetWindowWidth(window_width);
+
+    char FName[MAX_PATH];
+    if (pIni)
+        pIni->ReadString("DIALOG", "subfont", FName, MAX_PATH, "DIALOG3");
+    else
+        strcpy_s(FName, "DIALOG3");
+    int32_t font_id = pRS->LoadFont(FName);
+    m_DlgLinks.SetFont(font_id);
+
+    float scale = GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "subFontScale", 1.f) : 1.f);
+    m_DlgLinks.SetFontScale(scale);
+
+    int32_t line_height = static_cast<int32_t>(pRS->CharHeight(font_id) * scale * .9f);
+    m_DlgLinks.SetLineHeight(line_height);
+
+    int32_t lines_per_page = 5;
+    if (pIni)
+        lines_per_page = pIni->GetInt("DIALOG", "maxlinkslines", lines_per_page);
+    m_DlgLinks.SetMaxLinesPerPage(lines_per_page);
+
+    uint32_t color = 0xFF808080;
+    uint32_t selection_color = 0xFFFFFFFF;
+    color = pIni ? pIni->GetInt("DIALOG", "subFontColor", color) : color;
+    selection_color = pIni ? pIni->GetInt("DIALOG", "subFontColorSelect", selection_color) : selection_color;
+    m_DlgLinks.SetColor(color);
+    m_DlgLinks.SetSelectedColor(selection_color);
 }
 
 //--------------------------------------------------------------------
@@ -904,13 +737,9 @@ void DIALOG::Realize(uint32_t Delta_Time)
 
         if (m_DlgText.IsLastPage())
         {
-            if (m_DlgLinks.selectedLine_ > 0)
-                m_DlgLinks.selectedLine_--;
-            const int32_t nTmp =
-                (m_DlgLinks.selectedLine_ > 0) ? m_DlgLinks.anLineEndIndex[m_DlgLinks.selectedLine_ - 1] : 0;
-            if (m_DlgLinks.nStartIndex > nTmp)
+            if (m_DlgLinks.CanMoveUp())
             {
-                m_DlgLinks.nStartIndex = nTmp;
+                m_DlgLinks.MoveUp();
                 FillButtons();
             }
         }
@@ -924,11 +753,9 @@ void DIALOG::Realize(uint32_t Delta_Time)
 
         if (m_DlgText.IsLastPage())
         {
-            if (m_DlgLinks.selectedLine_ < static_cast<int32_t>(m_DlgLinks.anLineEndIndex.size()) - 1)
-                m_DlgLinks.selectedLine_++;
-            if (m_DlgLinks.nStartIndex + m_DlgLinks.nShowQuantity < m_DlgLinks.anLineEndIndex[m_DlgLinks.selectedLine_])
+            if (m_DlgLinks.CanMoveDown())
             {
-                m_DlgLinks.nStartIndex = m_DlgLinks.anLineEndIndex[m_DlgLinks.selectedLine_] - m_DlgLinks.nShowQuantity;
+                m_DlgLinks.MoveDown();
                 FillButtons();
             }
         }
@@ -980,7 +807,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
             // showing answer options
             ATTRIBUTES *pA = AttributesPointer->GetAttributeClass("links");
             if (pA)
-                pA = pA->GetAttributeClass(m_DlgLinks.selectedLine_);
+                pA = pA->GetAttributeClass(m_DlgLinks.GetSelectedLine());
             if (pA)
             {
                 const char *goName = pA->GetAttribute("go");

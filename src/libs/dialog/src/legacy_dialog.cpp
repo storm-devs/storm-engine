@@ -598,9 +598,8 @@ void LegacyDialog::UpdateLinks()
 
             std::vector<std::string> link_texts;
             storm::dialog::AddToStringArrayLimitedByWidth(
-                link_text, subFont_, fontScale_, text_width_limit, link_texts,
-                [](const std::string_view &text, int32_t font_id, float scale) {
-                    return RenderService->StringWidth(text, font_id, scale);
+                link_text, text_width_limit, link_texts, [this](const std::string_view &text) {
+                    return RenderService->StringWidth(text, subFont_, fontScale_);
                 });
 
             for (const auto &text : link_texts)
@@ -651,10 +650,10 @@ void LegacyDialog::UpdateDialogText()
 
         const int32_t text_width_limit = static_cast<int32_t>(570.f * (vp.Width / 640.f));
 
-        storm::dialog::AddToStringArrayLimitedByWidth(dialogText_, mainFont_, fontScale_, text_width_limit,
+        storm::dialog::AddToStringArrayLimitedByWidth(dialogText_, text_width_limit,
                                                       formattedDialogText_,
-                                                      [](const std::string_view &text, int32_t font_id, float scale) {
-                                                          return RenderService->StringWidth(text, font_id, scale);
+                                                      [this](const std::string_view &text) {
+                                                          return RenderService->StringWidth(text, mainFont_, fontScale_);
                                                       });
     }
 

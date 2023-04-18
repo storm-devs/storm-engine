@@ -1,5 +1,7 @@
 #pragma once
 
+#include "link_describe.hpp"
+
 #include "dx9render.h"
 #include "matrix.h"
 #include "vma.hpp"
@@ -42,6 +44,7 @@ class DIALOG final : public Entity
     ~DIALOG();
 
     bool Init();
+    void InitLinks(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
     void Realize(uint32_t Delta_Time);
     uint32_t AttributeChanged(ATTRIBUTES *pA);
     uint64_t ProcessMessage(MESSAGE &message);
@@ -61,8 +64,6 @@ class DIALOG final : public Entity
                 RestoreRender(delta); break;*/
         }
     }
-
-    static int32_t GetStringWidth(const std::string_view &text, int32_t font_id, float scale);
 
   private:
     void EmergencyExit();
@@ -108,54 +109,7 @@ class DIALOG final : public Entity
 
     DlgTextDescribe m_DlgText;
 
-    struct DlgLinkDescribe
-    {
-      private:
-        VDX9RENDER *rs = nullptr;
-        POINT offset;
-        int32_t nFontID = -1;
-        uint32_t dwColor;
-        float fScale;
-        int32_t nLineInterval;
-        uint32_t dwSelColor;
-        int32_t nWindowWidth;
-
-        struct EditConfig {
-            int32_t line = 0;
-            int32_t varIndex = -1;
-            int32_t charIndex = 0;
-        };
-
-        std::optional<EditConfig> edit_;
-
-        float fCursorCurrentTime, fCursorVisibleTime, fCursorInvisibleTime;
-
-      public:
-        int32_t nStartIndex;
-        int32_t nShowQuantity;
-        int32_t selectedLine_;
-        std::vector<std::string> asText;
-
-        std::vector<int32_t> anLineEndIndex;
-
-        DIALOG &dialog_;
-
-        explicit DlgLinkDescribe(DIALOG &dialog): dialog_(dialog) {}
-
-        ~DlgLinkDescribe()
-        {
-            if (rs && nFontID >= 0)
-                rs->UnloadFont(nFontID);
-        }
-
-        void ChangeText(ATTRIBUTES *pALinks);
-        void Init(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni);
-        int32_t GetShowHeight();
-        void Show(int32_t nY);
-        void ShowEditMode(int32_t nX, int32_t nY, int32_t nTextIdx);
-    };
-
-    DlgLinkDescribe m_DlgLinks{*this};
+    storm::dialog::DlgLinkDescribe m_DlgLinks{*this};
 
     struct BackParameters
     {
@@ -281,4 +235,6 @@ class DIALOG final : public Entity
     bool start;
 
     bool bEditMode;
+
+    friend storm::dialog::DlgLinkDescribe;
 };

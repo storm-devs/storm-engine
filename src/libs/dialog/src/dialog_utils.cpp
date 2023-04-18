@@ -28,9 +28,9 @@ std::vector<int32_t> SplitIntoPages(const size_t line_count, const int32_t page_
     return page_ends;
 }
 
-void AddToStringArrayLimitedByWidth(const std::string_view &text, int32_t nFontID, float fScale,
-                                            int32_t nLimitWidth, std::vector<std::string> &asOutTextList,
-                                        const GetStringWidthFunction &get_string_width)
+void AddToStringArrayLimitedByWidth(const std::string_view &text, int32_t nLimitWidth,
+                                    std::vector<std::string> &asOutTextList,
+                                    const GetStringWidthFunction &get_string_width)
 {
     if (nLimitWidth < 20)
         nLimitWidth = 20;
@@ -44,7 +44,7 @@ void AddToStringArrayLimitedByWidth(const std::string_view &text, int32_t nFontI
         if (next_space != std::string_view::npos)
         {
             const std::string_view text_section = current_span.substr(0, next_space);
-            const int32_t nW = get_string_width(text_section, nFontID, fScale);
+            const int32_t nW = get_string_width(text_section);
             if (nW > nLimitWidth)
             {
                 const size_t last_space = text_section.find_last_of(" \\");
