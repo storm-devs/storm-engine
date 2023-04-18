@@ -9,18 +9,25 @@
 
 namespace storm::dialog {
 
+namespace {
+
+constexpr float kEditCursorVisibleTime{0.8f};
+constexpr float kEditCursorInvisibleTime{0.2f};
+
+} // namespace
+
 DlgLinkDescribe::~DlgLinkDescribe()
 {
-    if (rs && nFontID >= 0)
-        rs->UnloadFont(nFontID);
+    if (renderer_ && fontId_ >= 0)
+        renderer_->UnloadFont(fontId_);
 }
 
 void DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
 {
     editMode_ = false;
     edit_.reset();
-    asText.clear();
-    anLineEndIndex.clear();
+    textLines_.clear();
+    lineBreaks_.clear();
     if (!pALinks)
         return;
 
@@ -40,15 +47,15 @@ void DlgLinkDescribe::ChangeText(ATTRIBUTES *pALinks)
             }
             Assert(pA->HasValue());
             AddToStringArrayLimitedByWidth(
-                pA->GetValue(), nWindowWidth, asText,
-                [this](const std::string_view &text) { return rs->StringWidth(text, nFontID, fScale); });
-            anLineEndIndex.push_back(asText.size());
+                pA->GetValue(), windowWidth_, textLines_,
+                [this](const std::string_view &text) { return renderer_->StringWidth(text, fontId_, fontScale_); });
+            lineBreaks_.push_back(textLines_.size());
         }
     }
 
-    nStartIndex = 0;
+    startIndex_ = 0;
     selectedLine_ = 0;
-    fCursorCurrentTime = 0.f;
+    currentCursorTime_ = 0.f;
 }
 
 void DlgLinkDescribe::Init()
@@ -58,42 +65,41 @@ void DlgLinkDescribe::Init()
 
 int32_t DlgLinkDescribe::GetShowHeight()
 {
-    int32_t n = asText.size() - nStartIndex;
-    if (n > nShowQuantity)
-        n = nShowQuantity;
-    return (n * nLineInterval);
+    int32_t n = textLines_.size() - startIndex_;
+    if (n > maxLinesPerPage_)
+        n = maxLinesPerPage_;
+    return (n * lineHeight_);
 }
 
 void DlgLinkDescribe::Show(int32_t nY)
 {
     int32_t n, nBeg, nEnd, i, y;
 
-    y = nY + offset.y;
-    n = nStartIndex;
+    y = nY + offset_.y;
+    n = startIndex_;
     nBeg = 0;
-    if (selectedLine_ < anLineEndIndex.size() && selectedLine_ >= 0)
+    if (selectedLine_ < lineBreaks_.size() && selectedLine_ >= 0)
     {
         if (selectedLine_ > 0)
-            nBeg = anLineEndIndex[selectedLine_ - 1];
-        nEnd = anLineEndIndex[selectedLine_];
+            nBeg = lineBreaks_[selectedLine_ - 1];
+        nEnd = lineBreaks_[selectedLine_];
     }
     else
         nEnd = -1;
-    for (i = 0; i < nShowQuantity && n < asText.size(); i++, n++)
+    for (i = 0; i < maxLinesPerPage_ && n < textLines_.size(); i++, n++)
     {
-        rs->ExtPrint(nFontID, (n >= nBeg && n < nEnd) ? dwSelColor : dwColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0,
-                     offset.x, y, asText[n].c_str());
+        renderer_->ExtPrint(fontId_, (n >= nBeg && n < nEnd) ? selectedTextColor_ : textColor_, 0, PR_ALIGN_LEFT, true, fontScale_, 0, 0, offset_.x, y, textLines_[n].c_str());
 
         if (edit_.has_value() && (n >= nBeg && n < nEnd) && selectedLine_ == edit_->line)
         {
             editMode_ = true;
             UpdateEditMode(n);
-            ShowEditMode(offset.x, y, n);
+            ShowEditMode(offset_.x, y, n);
         }
         else
             editMode_ = false;
 
-        y += nLineInterval;
+        y += lineHeight_;
     }
 }
 
@@ -119,24 +125,24 @@ void DlgLinkDescribe::UpdateEditMode(int32_t nTextIdx)
                         if (edit_->charIndex > 0)
                         {
                             edit_->charIndex--;
-                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
-                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
-                            asText[nTextIdx].erase(offset, length);
+                            int offset = utf8::u8_offset(textLines_[nTextIdx].c_str(), edit_->charIndex);
+                            int length = utf8::u8_inc(textLines_[nTextIdx].c_str() + offset);
+                            textLines_[nTextIdx].erase(offset, length);
                         }
                         break;
                     case VK_RIGHT: {
-                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
+                        int strLength = utf8::Utf8StringLength(textLines_[nTextIdx].c_str());
                         if (edit_->charIndex < strLength)
                             edit_->charIndex++;
                     }
                     break;
                     case VK_DELETE: {
-                        int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
+                        int strLength = utf8::Utf8StringLength(textLines_[nTextIdx].c_str());
                         if (edit_->charIndex >= 0 && edit_->charIndex < strLength)
                         {
-                            int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
-                            int length = utf8::u8_inc(asText[nTextIdx].c_str() + offset);
-                            asText[nTextIdx].erase(offset, length);
+                            int offset = utf8::u8_offset(textLines_[nTextIdx].c_str(), edit_->charIndex);
+                            int length = utf8::u8_inc(textLines_[nTextIdx].c_str() + offset);
+                            textLines_[nTextIdx].erase(offset, length);
                         }
                     }
                     break;
@@ -147,12 +153,12 @@ void DlgLinkDescribe::UpdateEditMode(int32_t nTextIdx)
                     continue;
 
                 std::string tmp(pKeys[n].ucVKey.b, pKeys[n].ucVKey.l);
-                if (rs->StringWidth(asText[nTextIdx], nFontID, fScale, 0) +
-                        rs->CharWidth(pKeys[n].ucVKey, nFontID, fScale) <=
-                    nWindowWidth)
+                if (renderer_->StringWidth(textLines_[nTextIdx], fontId_, fontScale_, 0) +
+                        renderer_->CharWidth(pKeys[n].ucVKey, fontId_, fontScale_) <=
+                    windowWidth_)
                 {
-                    int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
-                    asText[nTextIdx].insert(offset, tmp.c_str());
+                    int offset = utf8::u8_offset(textLines_[nTextIdx].c_str(), edit_->charIndex);
+                    textLines_[nTextIdx].insert(offset, tmp.c_str());
                     edit_->charIndex++;
                 }
             }
@@ -163,35 +169,35 @@ void DlgLinkDescribe::UpdateEditMode(int32_t nTextIdx)
 void DlgLinkDescribe::ShowEditMode(int32_t nX, int32_t nY, int32_t nTextIdx)
 {
     // show cursor
-    fCursorCurrentTime += core.GetRDeltaTime() * 0.001f;
-    if (fCursorCurrentTime > fCursorVisibleTime + fCursorInvisibleTime)
-        fCursorCurrentTime -= fCursorVisibleTime + fCursorInvisibleTime;
-    if (fCursorCurrentTime <= fCursorVisibleTime)
+    currentCursorTime_ += core.GetRDeltaTime() * 0.001f;
+    if (currentCursorTime_ > kEditCursorVisibleTime + kEditCursorInvisibleTime)
+        currentCursorTime_ -= kEditCursorVisibleTime + kEditCursorInvisibleTime;
+    if (currentCursorTime_ <= kEditCursorVisibleTime)
     {
         int32_t nW = 0;
-        if (!asText[nTextIdx].empty())
+        if (!textLines_[nTextIdx].empty())
         {
-            int strLength = utf8::Utf8StringLength(asText[nTextIdx].c_str());
+            int strLength = utf8::Utf8StringLength(textLines_[nTextIdx].c_str());
             if (edit_->charIndex < strLength)
             {
-                int offset = utf8::u8_offset(asText[nTextIdx].c_str(), edit_->charIndex);
-                nW = rs->StringWidth(asText[nTextIdx].substr(0, offset), nFontID, fScale, 0);
+                int offset = utf8::u8_offset(textLines_[nTextIdx].c_str(), edit_->charIndex);
+                nW = renderer_->StringWidth(textLines_[nTextIdx].substr(0, offset), fontId_, fontScale_, 0);
             }
             else
-                nW = rs->StringWidth(asText[nTextIdx], nFontID, fScale, 0);
+                nW = renderer_->StringWidth(textLines_[nTextIdx], fontId_, fontScale_, 0);
         }
-        rs->ExtPrint(nFontID, dwSelColor, 0, PR_ALIGN_LEFT, true, fScale, 0, 0, nX + nW, nY, "_");
+        renderer_->ExtPrint(fontId_, selectedTextColor_, 0, PR_ALIGN_LEFT, true, fontScale_, 0, 0, nX + nW, nY, "_");
     }
 
     if (attributes_) {
-        attributes_->SetAttribute("value", asText[nTextIdx]);
+        attributes_->SetAttribute("value", textLines_[nTextIdx]);
     }
 
     if (edit_->varIndex >= 0 && edit_->varIndex < 10)
     {
         auto *pDat = static_cast<VDATA *>(core.GetScriptVariable("dialogEditStrings"));
         if (pDat)
-            pDat->Set((char *)asText[nTextIdx].c_str(), edit_->varIndex);
+            pDat->Set((char *)textLines_[nTextIdx].c_str(), edit_->varIndex);
     }
 }
 
@@ -203,55 +209,55 @@ DlgLinkDescribe &DlgLinkDescribe::SetAttributes(ATTRIBUTES *attributes)
 
 DlgLinkDescribe &DlgLinkDescribe::SetRenderer(VDX9RENDER *renderer)
 {
-    rs = renderer;
+    renderer_ = renderer;
     return *this;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::SetOffset(const POINT &new_offset)
 {
-    offset = new_offset;
+    offset_ = new_offset;
     return *this;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::SetWindowWidth(int32_t width)
 {
-    nWindowWidth = width;
+    windowWidth_ = width;
     return *this;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::SetFont(int32_t font_id)
 {
-    nFontID = font_id;
+    fontId_ = font_id;
     return *this;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::SetFontScale(float scale)
 {
-    fScale = scale;
+    fontScale_ = scale;
     return *this;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::SetLineHeight(int32_t line_height)
 {
-    nLineInterval = line_height;
+    lineHeight_ = line_height;
     return *this;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::SetMaxLinesPerPage(int32_t max_lines)
 {
-    nShowQuantity = max_lines;
+    maxLinesPerPage_ = max_lines;
     return *this;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::SetColor(uint32_t color)
 {
-    dwColor = color;
+    textColor_ = color;
     return *this;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::SetSelectedColor(uint32_t color)
 {
-    dwSelColor = color;
+    selectedTextColor_ = color;
     return *this;
 }
 
@@ -275,12 +281,12 @@ DlgLinkDescribe &DlgLinkDescribe::MoveUp()
     if (CanMoveUp()) {
         --selectedLine_;
         if (selectedLine_ > 0) {
-            if (nStartIndex > anLineEndIndex[selectedLine_ - 1]) {
-                nStartIndex = anLineEndIndex[selectedLine_ - 1];
+            if (startIndex_ > lineBreaks_[selectedLine_ - 1]) {
+                startIndex_ = lineBreaks_[selectedLine_ - 1];
             }
         }
         else {
-            nStartIndex = 0;
+            startIndex_ = 0;
         }
     }
     return *this;
@@ -288,15 +294,15 @@ DlgLinkDescribe &DlgLinkDescribe::MoveUp()
 
 bool DlgLinkDescribe::CanMoveDown() const noexcept
 {
-    return selectedLine_ < asText.size() - 1;
+    return selectedLine_ < textLines_.size() - 1;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::MoveDown()
 {
     if (CanMoveDown()) {
         ++selectedLine_;
-        if (nStartIndex + nShowQuantity < anLineEndIndex[selectedLine_]) {
-            nStartIndex = anLineEndIndex[selectedLine_] - nShowQuantity;
+        if (startIndex_ + maxLinesPerPage_ < lineBreaks_[selectedLine_]) {
+            startIndex_ = lineBreaks_[selectedLine_] - maxLinesPerPage_;
         }
     }
     return *this;
@@ -304,12 +310,12 @@ DlgLinkDescribe &DlgLinkDescribe::MoveDown()
 
 bool DlgLinkDescribe::CanScrollDown() const noexcept
 {
-    return (nStartIndex + nShowQuantity < asText.size());
+    return (startIndex_ + maxLinesPerPage_ < textLines_.size());
 }
 
 bool DlgLinkDescribe::CanScrollUp() const noexcept
 {
-    return nStartIndex > 0;
+    return startIndex_ > 0;
 }
 
 } // namespace storm::dialog

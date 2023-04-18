@@ -396,10 +396,10 @@ void DIALOG::FillButtons()
 
     m_dwButtonState &= ~(BUTTON_STATE_UPENABLE | BUTTON_STATE_DOWNENABLE);
 
-    if ((!m_DlgText.IsLastPage()) || m_DlgLinks.CanScrollDown())
+    if ((!m_DlgText.IsLastPage()) || linkDescribe_.CanScrollDown())
         m_dwButtonState |= BUTTON_STATE_DOWNENABLE;
 
-    if (m_DlgText.IsLastPage() && m_DlgLinks.CanScrollUp())
+    if (m_DlgText.IsLastPage() && linkDescribe_.CanScrollUp())
         m_dwButtonState |= BUTTON_STATE_UPENABLE;
 
     if (m_DlgText.currentLine_ > 0)
@@ -617,17 +617,17 @@ bool DIALOG::Init()
 
 void DIALOG::InitLinks(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
 {
-    m_DlgLinks.Init();
+    linkDescribe_.Init();
 
-    m_DlgLinks.SetAttributes(AttributesPointer);
-    m_DlgLinks.SetRenderer(pRS);
+    linkDescribe_.SetAttributes(AttributesPointer);
+    linkDescribe_.SetRenderer(pRS);
 
     POINT offset{20, 0};
     offset.x += vp.X;
-    m_DlgLinks.SetOffset(offset);
+    linkDescribe_.SetOffset(offset);
 
     int32_t window_width = vp.Width - 2 * offset.x;
-    m_DlgLinks.SetWindowWidth(window_width);
+    linkDescribe_.SetWindowWidth(window_width);
 
     char FName[MAX_PATH];
     if (pIni)
@@ -635,25 +635,25 @@ void DIALOG::InitLinks(VDX9RENDER *pRS, D3DVIEWPORT9 &vp, INIFILE *pIni)
     else
         strcpy_s(FName, "DIALOG3");
     int32_t font_id = pRS->LoadFont(FName);
-    m_DlgLinks.SetFont(font_id);
+    linkDescribe_.SetFont(font_id);
 
     float scale = GetScrHeight(pIni ? pIni->GetFloat("DIALOG", "subFontScale", 1.f) : 1.f);
-    m_DlgLinks.SetFontScale(scale);
+    linkDescribe_.SetFontScale(scale);
 
     int32_t line_height = static_cast<int32_t>(pRS->CharHeight(font_id) * scale * .9f);
-    m_DlgLinks.SetLineHeight(line_height);
+    linkDescribe_.SetLineHeight(line_height);
 
     int32_t lines_per_page = 5;
     if (pIni)
         lines_per_page = pIni->GetInt("DIALOG", "maxlinkslines", lines_per_page);
-    m_DlgLinks.SetMaxLinesPerPage(lines_per_page);
+    linkDescribe_.SetMaxLinesPerPage(lines_per_page);
 
     uint32_t color = 0xFF808080;
     uint32_t selection_color = 0xFFFFFFFF;
     color = pIni ? pIni->GetInt("DIALOG", "subFontColor", color) : color;
     selection_color = pIni ? pIni->GetInt("DIALOG", "subFontColorSelect", selection_color) : selection_color;
-    m_DlgLinks.SetColor(color);
-    m_DlgLinks.SetSelectedColor(selection_color);
+    linkDescribe_.SetColor(color);
+    linkDescribe_.SetSelectedColor(selection_color);
 }
 
 //--------------------------------------------------------------------
@@ -704,7 +704,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     core.Controls->GetControlState("DlgUp", cs);
     if (cs.state == CST_ACTIVATED)
         bDoUp = true;
-    if (!m_DlgLinks.IsInEditMode())
+    if (!linkDescribe_.IsInEditMode())
     {
         core.Controls->GetControlState("DlgUp2", cs);
         if (cs.state == CST_ACTIVATED)
@@ -717,7 +717,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     core.Controls->GetControlState("DlgDown", cs);
     if (cs.state == CST_ACTIVATED)
         bDoDown = true;
-    if (!m_DlgLinks.IsInEditMode())
+    if (!linkDescribe_.IsInEditMode())
     {
         core.Controls->GetControlState("DlgDown2", cs);
         if (cs.state == CST_ACTIVATED)
@@ -736,9 +736,9 @@ void DIALOG::Realize(uint32_t Delta_Time)
 
         if (m_DlgText.IsLastPage())
         {
-            if (m_DlgLinks.CanMoveUp())
+            if (linkDescribe_.CanMoveUp())
             {
-                m_DlgLinks.MoveUp();
+                linkDescribe_.MoveUp();
                 FillButtons();
             }
         }
@@ -752,9 +752,9 @@ void DIALOG::Realize(uint32_t Delta_Time)
 
         if (m_DlgText.IsLastPage())
         {
-            if (m_DlgLinks.CanMoveDown())
+            if (linkDescribe_.CanMoveDown())
             {
-                m_DlgLinks.MoveDown();
+                linkDescribe_.MoveDown();
                 FillButtons();
             }
         }
@@ -791,7 +791,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     core.Controls->GetControlState("DlgAction", cs);
     core.Controls->GetControlState("DlgAction2", cs2);
     core.Controls->GetControlState("DlgAction1", cs1); // boal
-    if (m_DlgLinks.IsInEditMode())
+    if (linkDescribe_.IsInEditMode())
     {
         cs.state = CST_INACTIVE;
     }
@@ -806,7 +806,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
             // showing answer options
             ATTRIBUTES *pA = AttributesPointer->GetAttributeClass("links");
             if (pA)
-                pA = pA->GetAttributeClass(m_DlgLinks.GetSelectedLine());
+                pA = pA->GetAttributeClass(linkDescribe_.GetSelectedLine());
             if (pA)
             {
                 const char *goName = pA->GetAttribute("go");
@@ -843,7 +843,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
 
     m_DlgText.Show(textViewport.Y);
     if (m_DlgText.IsLastPage())
-        m_DlgLinks.Show(
+        linkDescribe_.Show(
             static_cast<int32_t>(textViewport.Y + m_BackParams.nDividerOffsetY + m_BackParams.nDividerHeight));
 
     if (snd && !snd->SoundIsPlaying(curSnd))
@@ -932,7 +932,7 @@ void DIALOG::UpdateDlgTexts()
 
     const std::string &text = AttributesPointer->GetAttribute("Text");
     m_DlgText.ChangeText(text);
-    m_DlgLinks.ChangeText(AttributesPointer->GetAttributeClass("Links"));
+    linkDescribe_.ChangeText(AttributesPointer->GetAttributeClass("Links"));
 
     m_bDlgChanged = false;
 }
@@ -940,7 +940,7 @@ void DIALOG::UpdateDlgTexts()
 void DIALOG::UpdateDlgViewport()
 {
     const int32_t nTextHeight = m_DlgText.GetShowHeight();
-    const int32_t nLinksHeight = m_DlgText.IsLastPage() ? m_DlgLinks.GetShowHeight() : 0;
+    const int32_t nLinksHeight = m_DlgText.IsLastPage() ? linkDescribe_.GetShowHeight() : 0;
 
     int32_t nAllHeight = nTextHeight;
     if (nLinksHeight > 0)

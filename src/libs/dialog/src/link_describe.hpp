@@ -47,17 +47,17 @@ class DlgLinkDescribe final
     void UpdateEditMode(int32_t nTextIdx);
     void ShowEditMode(int32_t nX, int32_t nY, int32_t nTextIdx);
 
-    VDX9RENDER *rs = nullptr;
-    POINT offset{};
-    int32_t nFontID = -1;
-    float fScale{1.0f};
-    int32_t nLineInterval{};
-    uint32_t dwColor{};
-    uint32_t dwSelColor{};
-    int32_t nWindowWidth;
+    VDX9RENDER *renderer_ = nullptr;
+    POINT offset_{};
+    int32_t fontId_ = -1;
+    float fontScale_{1.0f};
+    int32_t lineHeight_{};
+    uint32_t textColor_{};
+    uint32_t selectedTextColor_{};
+    int32_t windowWidth_;
     int32_t selectedLine_{};
-    int32_t nStartIndex{};
-    int32_t nShowQuantity{5};
+    int32_t startIndex_{};
+    int32_t maxLinesPerPage_{5};
 
     struct EditConfig {
         int32_t line = 0;
@@ -67,13 +67,10 @@ class DlgLinkDescribe final
 
     std::optional<EditConfig> edit_;
 
-    float fCursorCurrentTime{};
-    float fCursorVisibleTime{0.8f};
-    float fCursorInvisibleTime{0.2f};
+    float currentCursorTime_{};
 
-    std::vector<std::string> asText;
-
-    std::vector<int32_t> anLineEndIndex;
+    std::vector<std::string> textLines_;
+    std::vector<int32_t> lineBreaks_;
 
     bool editMode_ = false;
 
