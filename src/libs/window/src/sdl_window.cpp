@@ -55,6 +55,13 @@ int SDLWindow::Height() const
     return h;
 }
 
+WindowSize SDLWindow::GetWindowSize() const
+{
+    int w, h;
+    SDL_GetWindowSize(window_.get(), &w, &h);
+    return {w, h};
+}
+
 bool SDLWindow::Fullscreen() const
 {
     return fullscreen_;
@@ -74,6 +81,11 @@ void SDLWindow::SetFullscreen(bool fullscreen)
 void SDLWindow::Resize(int width, int height)
 {
     SDL_SetWindowSize(window_.get(), width, height);
+}
+
+void SDLWindow::WarpMouseInWindow(int x, int y)
+{
+    SDL_WarpMouseInWindow(window_.get(), x, y);
 }
 
 void SDLWindow::SetTitle(const std::string &title)
