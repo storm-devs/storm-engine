@@ -272,7 +272,8 @@ void BICommandList::Init()
             sscanf(pAList->GetAttribute("CommandNoteOffset"), "%d,%d", &m_NoteOffset.x, &m_NoteOffset.y);
 
         // Setting values for arrows (up / down)
-        if (attr = pAList->GetAttribute("UDArrow_Texture"))
+        attr = pAList->GetAttribute("UDArrow_Texture");
+        if (attr)
             m_sUpDownArrowTexture = attr;
         BIUtils::ReadRectFromAttr(pAList, "UDArrow_UV_Up", m_frUpArrowUV, m_frUpArrowUV);
         BIUtils::ReadRectFromAttr(pAList, "UDArrow_UV_Down", m_frDownArrowUV, m_frDownArrowUV);
@@ -283,7 +284,8 @@ void BICommandList::Init()
         BIUtils::ReadPosFromAttr(pAList, "UDArrow_Offset_Down", m_pntDownArrowOffset.x, m_pntDownArrowOffset.y,
                                  m_pntDownArrowOffset.x, m_pntDownArrowOffset.y);
 
-        if (attr = pAList->GetAttribute("LRArrow_Texture"))
+        attr = pAList->GetAttribute("LRArrow_Texture");
+        if (attr)
             m_sLeftRightArrowTexture = attr;
         BIUtils::ReadRectFromAttr(pAList, "LRArrow_UV_Left", m_frLeftArrowUV, m_frLeftArrowUV);
         BIUtils::ReadRectFromAttr(pAList, "LRArrow_UV_Right", m_frRightArrowUV, m_frRightArrowUV);
@@ -295,7 +297,8 @@ void BICommandList::Init()
                                  m_pntRightArrowOffset.x, m_pntRightArrowOffset.y);
 
         // set values for the menu activity icon
-        if (attr = pAList->GetAttribute("ActiveIcon_Texture"))
+        attr = pAList->GetAttribute("ActiveIcon_Texture");
+        if (attr)
             m_sActiveIconTexture = attr;
         BIUtils::ReadPosFromAttr(pAList, "ActiveIcon_Offset", m_pntActiveIconOffset.x, m_pntActiveIconOffset.y,
                                  m_pntActiveIconOffset.x, m_pntActiveIconOffset.y);
@@ -303,7 +306,8 @@ void BICommandList::Init()
                                  m_pntActiveIconSize.x, m_pntActiveIconSize.y);
         BIUtils::ReadRectFromAttr(pAList, "ActiveIcon_UV1", m_frActiveIconUV1, m_frActiveIconUV1);
         BIUtils::ReadRectFromAttr(pAList, "ActiveIcon_UV2", m_frActiveIconUV2, m_frActiveIconUV2);
-        if (attr = pAList->GetAttribute("ActiveIcon_Note"))
+        attr = pAList->GetAttribute("ActiveIcon_Note");
+        if (attr)
             m_sActiveIconNote = attr;
     }
 

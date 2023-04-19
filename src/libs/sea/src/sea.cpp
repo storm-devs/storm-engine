@@ -12,6 +12,8 @@
 #include "tga.h"
 #include "v_file_service.h"
 
+using storm::Sqr;
+
 CREATE_CLASS(SEA)
 
 //#define OLD_WORLD_POS

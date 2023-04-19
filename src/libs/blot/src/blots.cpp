@@ -76,9 +76,7 @@ uint64_t Blots::ProcessMessage(MESSAGE &message)
         if (pCharAttributeRoot)
         {
             blotsInfo = pCharAttributeRoot->CreateSubAClass(pCharAttributeRoot, "ship.blots");
-            char buf[32];
-            sprintf_s(buf, "%i", BLOTS_MAX);
-            blotsInfo->SetValue(buf);
+            blotsInfo->SetValue(std::to_string(BLOTS_MAX));
             for (int32_t i = 0; i < BLOTS_MAX; i++)
                 LoadBlot(i);
         }

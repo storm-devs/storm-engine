@@ -3,6 +3,8 @@
 #include "math_inlines.h"
 #include "shared/messages.h"
 
+using storm::Sqr;
+
 AIBalls *AIBalls::pAIBalls = nullptr;
 
 AIBalls::AIBalls()

@@ -1,13 +1,9 @@
 #pragma once
 
+#include "math_common.hpp"
+
 #pragma pack(push)
 #pragma pack(1)
-
-#ifdef SQR
-#undef SQR
-#endif
-
-#define SQR(x) ((x) * (x))
 
 typedef struct
 {

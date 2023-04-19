@@ -9,6 +9,8 @@
 #include "tga.h"
 #include <cstdio>
 
+using storm::Sqr;
+
 CREATE_CLASS(ISLAND)
 
 CREATE_CLASS(CoastFoam)
