@@ -22,6 +22,7 @@ CorePrivate *core_private;
 constexpr char defaultLoggerName[] = "system";
 bool isRunning = false;
 bool bActive = true;
+bool bAutoMute = true;
 
 storm::diag::LifecycleDiagnosticsService lifecycleDiagnostics;
 
@@ -95,7 +96,8 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
         if (core_private->initialized())
         {
             core_private->AppState(bActive);
-            if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService")))
+            if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService"));
+                soundService && bAutoMute)
             {
                 soundService->SetActiveWithFade(true);
             }
@@ -107,7 +109,8 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
         if (core_private->initialized())
         {
             core_private->AppState(bActive);
-            if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService")))
+            if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService"));
+                soundService && bAutoMute)
             {
                 soundService->SetActiveWithFade(false);
             }
@@ -179,6 +182,7 @@ int main(int argc, char *argv[])
     int preferred_display = 0;
     bool fullscreen = false;
     bool show_borders = false;
+    bool auto_pause = true;
 
     if (ini)
     {
@@ -194,6 +198,8 @@ int main(int argc, char *argv[])
         preferred_display = ini->GetInt(nullptr, "display", 0);
         fullscreen = ini->GetInt(nullptr, "full_screen", false);
         show_borders = ini->GetInt(nullptr, "window_borders", false);
+        auto_pause = ini->GetInt(nullptr, "auto_pause", true);
+        bAutoMute = auto_pause || ini->GetInt(nullptr, "auto_mute", false);
         bSteam = ini->GetInt(nullptr, "Steam", 1) != 0;
     }
 
@@ -227,7 +233,7 @@ int main(int argc, char *argv[])
         SDL_PumpEvents();
         SDL_FlushEvents(0, SDL_LASTEVENT);
 
-        if (bActive)
+        if (bActive || !auto_pause)
         {
             if (dwMaxFPS)
             {
