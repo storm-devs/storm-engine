@@ -13,8 +13,12 @@ namespace storm {
 
 constexpr const float kRandMaxFloat = static_cast<float>(RAND_MAX);
 
+inline float RandomFloat() {
+    return static_cast<float>(rand()) / storm::kRandMaxFloat;
+}
+
 inline float RandomFloat(const float x) {
-    return x * static_cast<float>(rand()) / storm::kRandMaxFloat;
+    return x * RandomFloat();
 }
 
 template<typename T>

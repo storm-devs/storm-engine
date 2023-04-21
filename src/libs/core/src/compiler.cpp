@@ -6341,7 +6341,7 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
                 else if (eType == S_TOKEN_TYPE::VAR_OBJECT)
                 {
                     ReadData(nullptr, sizeof(uint64_t));
-                    ATTRIBUTES TA(&SCodec);
+                    ATTRIBUTES TA(SCodec);
                     ReadAttributesData(&TA, nullptr);
                 }
                 else
@@ -6391,12 +6391,12 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
             pV->Set(eid);
 
             if (pV->AttributesClass == nullptr)
-                pV->AttributesClass = new ATTRIBUTES(&SCodec);
+                pV->AttributesClass = new ATTRIBUTES(SCodec);
             ReadAttributesData(pV->AttributesClass, nullptr);
         }
         else
         {
-            ATTRIBUTES *pTA = new ATTRIBUTES(&SCodec);
+            ATTRIBUTES *pTA = new ATTRIBUTES(SCodec);
             ReadAttributesData(pTA, nullptr);
             delete pTA;
         }
@@ -6450,7 +6450,7 @@ bool COMPILER::ReadVariable(char *name, /* DWORD code,*/ bool bDim, uint32_t a_i
         }
 
         if (pVRef->AttributesClass == nullptr)
-            pVRef->AttributesClass = new ATTRIBUTES(&SCodec);
+            pVRef->AttributesClass = new ATTRIBUTES(SCodec);
         if (pString)
         {
             pA = pVRef->AttributesClass->CreateSubAClass(pVRef->AttributesClass, pString);

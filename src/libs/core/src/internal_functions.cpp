@@ -1,6 +1,7 @@
 #include "compiler.h"
 #include "core_impl.h"
 #include "debug-trap.h"
+#include "math_common.hpp"
 
 #include <execution>
 
@@ -1534,7 +1535,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         break;
 
     case FUNC_FRAND:
-        TempFloat1 = static_cast<float>(rand()) / RAND_MAX;
+        TempFloat1 = storm::RandomFloat();
         pV = SStack.Push();
         // TempFloat1 = 1.0f;    // ***
         pV->Set(TempFloat1);
@@ -1581,7 +1582,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
 
         pV2->Get(pChar);
-        if (ent = core.CreateEntity(pChar, pV->GetAClass()))
+        if (ent = core.CreateEntity(pChar, pV->GetAClass()); ent)
         {
             // core_internal.Entity_SetAttributePointer(&entid_t,pV->GetAClass());
             pV->Set(ent);
@@ -1607,7 +1608,7 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
             break;
         }
         pV->Get(pChar);
-        if (ent = core.CreateEntity(pChar))
+        if (ent = core.CreateEntity(pChar); ent)
         {
             pV = SStack.Push();
             pV->Set(ent);

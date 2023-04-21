@@ -19,12 +19,12 @@ class CoastFoam : public Entity
 {
   public:
     CoastFoam();
-    ~CoastFoam();
+    ~CoastFoam() override;
 
-    bool Init();
+    bool Init() override;
     void Realize(uint32_t Delta_Time);
     void Execute(uint32_t Delta_Time);
-    uint32_t AttributeChanged(ATTRIBUTES *pA);
+    uint32_t AttributeChanged(ATTRIBUTES *pA) override;
 
     void ProcessStage(Stage stage, uint32_t delta) override
     {

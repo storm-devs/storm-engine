@@ -125,7 +125,7 @@ class IFS : public INIFILE
     IFS_NOT_IMPLEMENTED(float GetFloat(const char *section_name, const char *key_name, float def_val))
     IFS_NOT_IMPLEMENTED(bool GetFloatNext(const char *section_name, const char *key_name, float *val))
 
-    bool CaseSensitive(bool yes)
+    bool CaseSensitive(bool yes) override
     {
         return false;
     }
