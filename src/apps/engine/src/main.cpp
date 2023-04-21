@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
 
-        if (core.Controls->GetDebugAsyncKeyState(VK_F1) && core.Controls->GetDebugAsyncKeyState(VK_SHIFT))
+        if (core.Controls && core.Controls->GetDebugAsyncKeyState(VK_F1) && core.Controls->GetDebugAsyncKeyState(VK_SHIFT))
         {
             mi_stats_print_out(mimalloc_fun, nullptr);
             std::this_thread::sleep_for(std::chrono::milliseconds(100));

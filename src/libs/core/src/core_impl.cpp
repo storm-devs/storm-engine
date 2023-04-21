@@ -505,8 +505,10 @@ void *CoreImpl::GetService(const char *service_name)
     const auto class_code = MakeHashValue(service_name);
     pClass->SetHash(class_code);
 
-    if (!service_PTR->Init())
+    if (!service_PTR->Init()) {
         CheckAutoExceptions(0);
+        return nullptr;
+    }
 
     Services_List.Add(class_code, class_code, service_PTR);
 
