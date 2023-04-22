@@ -3,6 +3,8 @@
 #include "control_tree.h"
 #include "key_buffer.h"
 
+#include <shared/controls.h>
+
 #include <memory>
 
 namespace storm
@@ -18,10 +20,6 @@ struct SYSTEM_CONTROL_ELEMENT
 };
 
 #define CONTROL_ELEMENTS_NUM 260
-#define CE_MOUSE_X_AXIS 256
-#define CE_MOUSE_Y_AXIS 257
-#define CE_MOUSE_WHEEL_UP 258
-#define CE_MOUSE_WHEEL_DOWN 259
 
 class PCS_CONTROLS : public CONTROLS
 {
