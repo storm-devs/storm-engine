@@ -8,7 +8,7 @@ SDLWindow::SDLWindow(int width, int height, int preferred_display, bool fullscre
     : fullscreen_(fullscreen)
 {
     uint32_t flags = (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_HIDDEN;
-#ifndef _WIN32 // DXVK-Native
+#if !defined(_WIN32) && !defined(STORM_MESA_NINE) // DXVK-Native
     flags |= SDL_WINDOW_VULKAN;
 #endif
     window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window *)>>(
@@ -55,6 +55,13 @@ int SDLWindow::Height() const
     return h;
 }
 
+WindowSize SDLWindow::GetWindowSize() const
+{
+    int w, h;
+    SDL_GetWindowSize(window_.get(), &w, &h);
+    return {w, h};
+}
+
 bool SDLWindow::Fullscreen() const
 {
     return fullscreen_;
@@ -74,6 +81,11 @@ void SDLWindow::SetFullscreen(bool fullscreen)
 void SDLWindow::Resize(int width, int height)
 {
     SDL_SetWindowSize(window_.get(), width, height);
+}
+
+void SDLWindow::WarpMouseInWindow(int x, int y)
+{
+    SDL_WarpMouseInWindow(window_.get(), x, y);
 }
 
 void SDLWindow::SetTitle(const std::string &title)
