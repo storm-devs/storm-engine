@@ -1,15 +1,12 @@
 #pragma once
 
+#include <shared/controls.h>
+
 #include "utf8.h"
 #include <cstdint>
 
 #define INVALID_CONTROL_CODE 0xffffffff
 #define UNASSIGNED_CONTROL 0xffffffff
-
-// control flags
-#define USE_AXIS_AS_BUTTON 0x1
-#define USE_AXIS_AS_INVERSEBUTTON 0x2
-#define INVERSE_CONTROL 0x4
 
 struct DEVICE_DESC
 {
