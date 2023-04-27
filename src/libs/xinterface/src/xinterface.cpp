@@ -2401,8 +2401,10 @@ void XINTERFACE::MouseClick(bool bFirstClick)
         return;
     }
     if (!m_bNotFirstPress)
+    {
+        m_nPressDelay = m_nMaxPressDelay;
         m_bNotFirstPress = true;
-    m_nPressDelay = m_nMaxPressDelay;
+    }
 
     if (bFirstClick && m_nMouseLastClickTimeCur > 0 && clickNod->CheckCommandUsed(ACTION_MOUSEDBLCLICK))
     {
