@@ -80,6 +80,10 @@ bool SoundService::Init()
 
     rs = static_cast<VDX9RENDER *>(core.GetService("DX9RENDER"));
 
+    if (rs == nullptr) {
+        return false;
+    }
+
     CHECKFMODERR(FMOD::System_Create(&system));
     unsigned version;
     CHECKFMODERR(system->getVersion(&version));
@@ -824,6 +828,10 @@ void SoundService::SetActiveWithFade(const bool active)
 {
     if (fadeTimeInSeconds == 0.0f)
     {
+        return;
+    }
+
+    if (system == nullptr) {
         return;
     }
 
