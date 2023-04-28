@@ -22,7 +22,7 @@ CorePrivate *core_private;
 constexpr char defaultLoggerName[] = "system";
 bool isRunning = false;
 bool bActive = true;
-bool bAutoMute = true;
+bool bSoundInBackground = false;
 
 storm::diag::LifecycleDiagnosticsService lifecycleDiagnostics;
 
@@ -97,7 +97,7 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
         {
             core_private->AppState(bActive);
             if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService"));
-                soundService && bAutoMute)
+                soundService && !bSoundInBackground)
             {
                 soundService->SetActiveWithFade(true);
             }
@@ -110,7 +110,7 @@ void HandleWindowEvent(const storm::OSWindow::Event &event)
         {
             core_private->AppState(bActive);
             if (const auto soundService = static_cast<VSoundService *>(core.GetService("SoundService"));
-                soundService && bAutoMute)
+                soundService && !bSoundInBackground)
             {
                 soundService->SetActiveWithFade(false);
             }
@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
     int preferred_display = 0;
     bool fullscreen = false;
     bool show_borders = false;
-    bool auto_pause = true;
+    bool run_in_background = false;
 
     if (ini)
     {
@@ -198,8 +198,8 @@ int main(int argc, char *argv[])
         preferred_display = ini->GetInt(nullptr, "display", 0);
         fullscreen = ini->GetInt(nullptr, "full_screen", false);
         show_borders = ini->GetInt(nullptr, "window_borders", false);
-        auto_pause = ini->GetInt(nullptr, "auto_pause", true);
-        bAutoMute = auto_pause || ini->GetInt(nullptr, "auto_mute", false);
+        run_in_background = ini->GetInt(nullptr, "run_in_background ", false);
+        bSoundInBackground = (!run_in_background) || ini->GetInt(nullptr, "sound_in_background ", true);
         bSteam = ini->GetInt(nullptr, "Steam", 1) != 0;
     }
 
@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
         SDL_PumpEvents();
         SDL_FlushEvents(0, SDL_LASTEVENT);
 
-        if (bActive || !auto_pause)
+        if (bActive || run_in_background)
         {
             if (dwMaxFPS)
             {
