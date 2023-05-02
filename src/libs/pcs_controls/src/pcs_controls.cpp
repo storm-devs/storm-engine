@@ -53,6 +53,7 @@ PCS_CONTROLS::~PCS_CONTROLS()
 
 void PCS_CONTROLS::AppState(bool state)
 {
+    updateCursor_ = state;
     if (state)
     {
         // RECT r;
@@ -435,17 +436,23 @@ void PCS_CONTROLS::Update(uint32_t DeltaTime)
 {
 #ifdef _WIN32
     static int nMouseXPrev, nMouseYPrev;
-    POINT point;
-    GetCursorPos(&point);
+    if (updateCursor_) {
+        POINT point;
+        GetCursorPos(&point);
 
-    nMouseDx = point.x - nMouseXPrev;
-    nMouseDy = point.y - nMouseYPrev;
+        nMouseDx = point.x - nMouseXPrev;
+        nMouseDy = point.y - nMouseYPrev;
 
-    RECT r;
-    GetWindowRect(static_cast<HWND>(core.GetWindow()->OSHandle()), &r);
-    nMouseXPrev = r.left + (r.right - r.left) / 2;
-    nMouseYPrev = r.top + (r.bottom - r.top) / 2;
-    SetCursorPos(nMouseXPrev, nMouseYPrev);
+        RECT r;
+        GetWindowRect(static_cast<HWND>(core.GetWindow()->OSHandle()), &r);
+        nMouseXPrev = r.left + (r.right - r.left) / 2;
+        nMouseYPrev = r.top + (r.bottom - r.top) / 2;
+        SetCursorPos(nMouseXPrev, nMouseYPrev);
+    }
+    else {
+        nMouseDx = 0;
+        nMouseDy = 0;
+    }
 #endif
 
     m_ControlTree.Process();
