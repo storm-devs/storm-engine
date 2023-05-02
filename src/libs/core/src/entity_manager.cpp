@@ -203,6 +203,8 @@ void EntityManager::EraseAll()
 
     // clear cache
     cache_.Clear();
+
+    previousStamp_ = 0;
 }
 
 entptr_t EntityManager::GetEntityPointer(const entid_t id) const
@@ -315,12 +317,7 @@ entid_t EntityManager::CalculateEntityId(const size_t idx)
     // assert for idx exceeding 2^32
     assert(static_cast<size_t>(static_cast<uint32_t>(idx)) == idx);
 
-    // calculate stamp
-    const auto ms =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
-
-    // assemble entity id
-    const auto stamp = static_cast<entid_stamp_t>(ms.count());
+    const auto stamp = ++previousStamp_;
     const auto id = static_cast<entid_t>(stamp) << 32 | idx;
 
     return id;
