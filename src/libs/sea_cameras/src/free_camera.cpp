@@ -79,17 +79,12 @@ void FREE_CAMERA::Execute(uint32_t Delta_Time)
     if (!pIslandBase)
         pIslandBase = static_cast<ISLAND_BASE *>(core.GetEntityPointer(core.GetEntityId("island")));
 
-    if (!pIslandBase)
-        return;
-
     Move(core.GetDeltaTime());
 }
 
 void FREE_CAMERA::Move(uint32_t DeltaTime)
 {
     if (!isActive())
-        return;
-    if (core.Controls->GetKeyState(VK_NUMLOCK) < 0)
         return;
 
     // POINT pnt;
