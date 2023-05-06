@@ -601,7 +601,7 @@ def parse_gm(file_path="", report_func=None):
             for buffer in object_vertex_buffer:
                 tu1 = buffer.get("tu1")
                 tv1 = buffer.get("tv1")
-                if tu1:
+                if tu1 is not None:
                     object_uv_normals.append([tu1, -tv1])
             object_uv_normals = object_uv_normals if len(object_uv_normals) > 0 else None
 
