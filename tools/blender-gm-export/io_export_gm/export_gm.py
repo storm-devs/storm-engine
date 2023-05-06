@@ -20,7 +20,7 @@ bl_info = {
     "description": "Export GM files",
     "author": "Artess999",
     "version": (0, 9, 9),
-    "blender": (2, 92, 0),
+    "blender": (3, 5, 1),
     "location": "File > Export",
     "warning": "",
     "support": "COMMUNITY",
@@ -141,11 +141,11 @@ def get_material_data(object_data):
         if base_color_node_output_type == 'TEX_IMAGE':
             textures = [remove_blender_name_postfix(
                 base_color_node_output.image.name)]
-        elif base_color_node_output_type == 'MIX_RGB':
+        elif base_color_node_output_type == 'MIX':
             texture = remove_blender_name_postfix(
-                base_color_node_output.inputs['Color1'].links[0].from_node.image.name)
-            texture_normals = remove_blender_name_postfix(base_color_node_output.inputs['Color2'].links[
-                0].from_node.inputs['Color1'].links[0].from_node.image.name)
+                base_color_node_output.inputs[6].links[0].from_node.image.name)
+            texture_normals = remove_blender_name_postfix(base_color_node_output.inputs[7].links[
+                0].from_node.inputs[6].links[0].from_node.image.name)
 
             textures = [texture, texture_normals]
 
@@ -315,7 +315,7 @@ def export_gm(context, file_path="", triangulate=False):
     x_is_mirrored = not is_animated
 
     bpy.context.scene.frame_set(0)
-	
+
     bpy.context.scene.cursor.location = root.location
 
     for object in objects:
@@ -325,7 +325,7 @@ def export_gm(context, file_path="", triangulate=False):
             bpy.ops.uv.select_all(action='SELECT')
             bpy.ops.uv.seams_from_islands()
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-			
+
             object.select_set(True)
             bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
             object.select_set(False)
