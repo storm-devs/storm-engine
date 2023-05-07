@@ -71,7 +71,7 @@ class EntityManager final
     };
 
     static bool EntIdxValid(size_t idx);
-    static entid_t CalculateEntityId(size_t idx);
+    entid_t CalculateEntityId(size_t idx);
 
     size_t GetEntityDataIdx(entid_t id) const;
     entid_t GetEntityId(uint32_t hash) const;
@@ -95,4 +95,6 @@ class EntityManager final
 
     // stack of entities for deferred delete
     plf::stack<entity_index_t> deletedIndices_;
+
+    entid_stamp_t previousStamp_ = 0;
 };
