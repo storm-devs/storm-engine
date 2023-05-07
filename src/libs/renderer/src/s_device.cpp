@@ -2094,17 +2094,28 @@ void DX9RENDER::SetNearFarPlane(float fNear, float fFar)
 
 bool DX9RENDER::SetPerspective(float perspective, float fAspectRatio)
 {
-    if (fAspectRatio < 0)
-    {
-         fAspectRatio = static_cast<float>(screen_size.x) / screen_size.y;
-    }
-
     const float near_plane = fNearClipPlane; // Distance to near clipping
     const float far_plane = fFarClipPlane;   // Distance to far clipping
-    const float fov_vert = 2.0f * atanf(tanf(perspective * 0.5f * FovMultiplier) / fAspectRatio);
+    const float fov_horiz = perspective;     // Horizontal field of view  angle, in radians
+    if (fAspectRatio < 0)
+    {
+        fAspectRatio = static_cast<float>(screen_size.y) / screen_size.x;
+    }
+    aspectRatio = fAspectRatio;
+    // Vertical field of view  angle, in radians
+    const float fov_vert = 2.f * atanf(tanf(perspective * 0.5f * FovMultiplier) * fAspectRatio);
 
-    D3DXMATRIX mtx{};
-    D3DXMatrixPerspectiveFovLH(&mtx, fov_vert, fAspectRatio, near_plane, far_plane);
+    const float w = 1.0f / tanf(fov_vert * 0.5f) * fAspectRatio;
+    const float h = 1.0f / tanf(fov_vert * 0.5f);
+    const float Q = far_plane / (far_plane - near_plane);
+
+    D3DMATRIX mtx{};
+
+    mtx._11 = w;
+    mtx._22 = h;
+    mtx._33 = Q;
+    mtx._43 = -Q * near_plane;
+    mtx._34 = 1.0f;
 
     if (CHECKD3DERR(d3d9->SetTransform(D3DTS_PROJECTION, &mtx)) == true)
         return false;
