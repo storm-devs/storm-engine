@@ -52,7 +52,7 @@ void AIShip::SetSeaAIAttributes(ATTRIBUTES *pAAttr, VAI_INNEROBJ *pObj) const
     pAAttr = pAAttr->CreateAttribute(str, "");
 
     // set common attributes
-    pAAttr->SetAttributeUseDword("relation", Helper.GetRelation(GetACharacter(), pObj->GetACharacter()));
+    pAAttr->SetAttributeUseDword("relation", Helper.GetRelationSafe(GetACharacter(), pObj->GetACharacter()));
     pAAttr->SetAttributeUseDword("idx", GetIndex(pObj->GetACharacter()));
     // pAAttr->SetAttributeUseFloat("x", pObj->GetPos().x);
     // pAAttr->SetAttributeUseFloat("y", pObj->GetPos().y);

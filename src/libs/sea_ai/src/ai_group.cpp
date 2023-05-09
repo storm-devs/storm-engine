@@ -47,7 +47,7 @@ void AIGroup::AddShip(entid_t eidShip, ATTRIBUTES *pACharacter, ATTRIBUTES *pASh
         pShip = new AIShipWar();
     }
 
-    CVECTOR vShipPos;
+    CVECTOR vShipPos{};
 
     if (const char *event = GetCommanderACharacter()->GetAttribute("GroupShipPos_event"))
     {
