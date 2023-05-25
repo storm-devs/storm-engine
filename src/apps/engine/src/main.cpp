@@ -264,6 +264,8 @@ int main(int argc, char *argv[])
     core_private->ReleaseBase();
 #ifdef _WIN32 // FIX_LINUX Cursor
     ClipCursor(nullptr);
+#elif _DEBUG
+    mi_option_set(mi_option_verbose, 0); // disable statistics writing in Linux
 #endif
     SDL_Quit();
 
