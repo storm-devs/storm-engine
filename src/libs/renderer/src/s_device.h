@@ -13,6 +13,7 @@
 
 #include "d3d9types.h"
 #include "script_libriary.h"
+#include "storm/renderer/image_loader.hpp"
 
 #include <stack>
 #include <vector>
@@ -462,6 +463,8 @@ private:
     IDirect3D9 *d3d;
     HWND hwnd;
 
+    storm::renderer::ImageLoader imageLoader_;
+
     CVECTOR Pos, Ang;
     float Fov;
 
@@ -599,5 +602,5 @@ private:
     std::string screenshotExt;
 
     bool TextureLoad(int32_t texid);
-    bool TextureLoadUsingD3DX(const char *path, int32_t texid);
+    bool TextureLoadFromFile(const char *path, int32_t t);
 };
