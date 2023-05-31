@@ -199,7 +199,12 @@ int main(int argc, char *argv[])
         fullscreen = ini->GetInt(nullptr, "full_screen", false);
         show_borders = ini->GetInt(nullptr, "window_borders", false);
         run_in_background = ini->GetInt(nullptr, "run_in_background", false);
-        bSoundInBackground = (!run_in_background) || ini->GetInt(nullptr, "sound_in_background", true);
+        if (run_in_background) {
+            bSoundInBackground = ini->GetInt(nullptr, "sound_in_background", true);
+        }
+        else {
+            bSoundInBackground = false;
+        }
         bSteam = ini->GetInt(nullptr, "Steam", 1) != 0;
     }
 
