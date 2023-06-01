@@ -15,7 +15,8 @@ class AIGroup
     std::string sGroupName;
     std::string sLocationNearOtherGroup;
     std::string sGroupType;
-    CVECTOR vInitGroupPos, vMovePoint;
+    CVECTOR vInitGroupPos{};
+    CVECTOR vMovePoint{};
     bool bFirstExecute;
 
     ATTRIBUTES *pACommander;

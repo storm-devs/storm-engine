@@ -140,17 +140,17 @@ uint32_t AIHelper::GetRelation(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const
 
 bool AIHelper::isFriend(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const
 {
-    return GetRelation(pA1, pA2) == RELATION_FRIEND;
+    return GetRelationSafe(pA1, pA2) == RELATION_FRIEND;
 }
 
 bool AIHelper::isEnemy(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const
 {
-    return GetRelation(pA1, pA2) == RELATION_ENEMY;
+    return GetRelationSafe(pA1, pA2) == RELATION_ENEMY;
 }
 
 bool AIHelper::isNeutral(ATTRIBUTES *pA1, ATTRIBUTES *pA2) const
 {
-    return GetRelation(pA1, pA2) == RELATION_NEUTRAL;
+    return GetRelationSafe(pA1, pA2) == RELATION_NEUTRAL;
 }
 
 VAI_INNEROBJ *AIHelper::FindAIInnerObj(ATTRIBUTES *pACharacter)
