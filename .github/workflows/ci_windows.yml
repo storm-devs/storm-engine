@@ -41,7 +41,7 @@ jobs:
     - name: Install Conan
       run: pip install conan==1.59.0
     - name: Configure and build
-      uses: lukka/run-cmake@v10.3
+      uses: lukka/run-cmake@v10.2
       with:
         configurePreset: default
         buildPreset: '${{ matrix.configuration }}'
