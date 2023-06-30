@@ -520,6 +520,7 @@ void WorldMap::Realize(uint32_t delta_time)
     // renew the wind
     wdmObjects->UpdateWind(dltTime);
     wdmObjects->isNextDayUpdate = false;
+    wdmObjects->forceUpdate = false;
     // Notify scripts about wind change
     auto wind_dir = CVECTOR();
     auto x = 0.0f;
@@ -606,6 +607,9 @@ uint64_t WorldMap::ProcessMessage(MESSAGE &message)
         break;
     case MSG_WORLDMAP_WIND_UI_SET_SHOW:
         wdmObjects->showWindUI = (message.Long() != 0);
+        break;
+    case MSG_WORLDMAP_UPDATE:
+        wdmObjects->forceUpdate = true;
         break;
     }
     return 0;
