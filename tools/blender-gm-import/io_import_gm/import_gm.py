@@ -15,7 +15,7 @@ bl_info = {
     "description": "Import GM files",
     "author": "Artess999",
     "version": (0, 0, 1),
-    "blender": (2, 92, 0),
+    "blender": (3, 5, 1),
     "location": "File > Import",
     "warning": "",
     "support": "COMMUNITY",
@@ -601,7 +601,7 @@ def parse_gm(file_path="", report_func=None):
             for buffer in object_vertex_buffer:
                 tu1 = buffer.get("tu1")
                 tv1 = buffer.get("tv1")
-                if tu1:
+                if tu1 is not None:
                     object_uv_normals.append([tu1, -tv1])
             object_uv_normals = object_uv_normals if len(object_uv_normals) > 0 else None
 
@@ -966,28 +966,30 @@ def import_gm(
                     normalUVMap = mtl.node_tree.nodes.new('ShaderNodeUVMap')
                     normalUVMap.uv_map = "UVMap_normals"
 
-                    mixer = mtl.node_tree.nodes.new('ShaderNodeMixRGB')
+                    mixer = mtl.node_tree.nodes.new('ShaderNodeMix')
+                    mixer.data_type = 'RGBA'
                     mixer.blend_type = 'MULTIPLY'
-                    mixer.inputs['Fac'].default_value = 1.0
+                    mixer.inputs['Factor'].default_value = 1.0
 
-                    gray_divider = mtl.node_tree.nodes.new('ShaderNodeMixRGB')
+                    gray_divider = mtl.node_tree.nodes.new('ShaderNodeMix')
+                    gray_divider.data_type = 'RGBA'
                     gray_divider.blend_type = 'DIVIDE'
-                    gray_divider.inputs['Fac'].default_value = 1.0
-                    gray_divider.inputs['Color2'].default_value = (
+                    gray_divider.inputs['Factor'].default_value = 1.0
+                    gray_divider.inputs[7].default_value = (
                         0.2, 0.2, 0.2, 1)
 
                     mtl.node_tree.links.new(
-                        mixer.inputs['Color1'], tex.outputs['Color'])
+                        mixer.inputs[6], tex.outputs['Color'])
 
                     mtl.node_tree.links.new(
-                        gray_divider.inputs['Color1'], normalTex.outputs['Color'])
+                        gray_divider.inputs[6], normalTex.outputs['Color'])
                     mtl.node_tree.links.new(
-                        mixer.inputs['Color2'], gray_divider.outputs['Color'])
+                        mixer.inputs[7], gray_divider.outputs[2])
                     mtl.node_tree.links.new(
                         normalTex.inputs['Vector'], normalUVMap.outputs['UV'])
 
                     mtl.node_tree.links.new(
-                        bsdf.inputs['Base Color'], mixer.outputs['Color'])
+                        bsdf.inputs['Base Color'], mixer.outputs[2])
                 else:
                     mtl.node_tree.links.new(
                         bsdf.inputs['Base Color'], tex.outputs['Color'])

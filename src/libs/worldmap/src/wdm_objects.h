@@ -131,6 +131,7 @@ class WdmObjects
     char attrMonth[256];  // Month at the current frame
     char attrYear[256];   // Year at the current frame
     bool isNextDayUpdate; // Time to update next day data
+    bool forceUpdate;     // Force to update data
 
     std::optional<int32_t> nationFlagIndex; // national flag index
 

@@ -248,7 +248,9 @@
 // Print line with coordinates
 #define MSG_WORLDMAP_SET_COORDINATES 31151 // "ls" coordinates string
 // Show or hide WdmWindUI: wind, date, moral, supplies, coordinates, flag
-#define MSG_WORLDMAP_WIND_UI_SET_SHOW 31152 // "l"
+#define MSG_WORLDMAP_WIND_UI_SET_SHOW 31152 // "ll" status
+// Update WdmWindUI on the map: wind, date, moral, supplies, coordinates, flag
+#define MSG_WORLDMAP_UPDATE 31153 // "l" 
 
 // ============================================================================================
 // Effects

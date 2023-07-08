@@ -53,6 +53,7 @@ class STRING_CODEC : public VSTRING_CODEC
             HTable[m].pElements = nullptr;
             HTable[m].nStringsNum = 0;
         }
+        nStringsNum = 0;
     }
 
     uint32_t Convert(const char *pString, int32_t iLen) override

@@ -96,6 +96,7 @@ void WdmObjects::Clear()
     enableSkipEnemy = false;
     playarInStorm = false;
     isNextDayUpdate = true;
+    forceUpdate = false;
     nationFlagIndex.reset();
     SetWorldSize(2000.0f, 2000.0f);
 }

@@ -2104,7 +2104,7 @@ bool DX9RENDER::SetPerspective(float perspective, float fAspectRatio)
         fAspectRatio = static_cast<float>(screen_size.y) / screen_size.x;
     }
     aspectRatio = fAspectRatio;
-    const float fov_vert = perspective * fAspectRatio; // Vertical field of view  angle, in radians
+    const float fov_vert = 2.f * atanf(tanf(perspective / 2.f) * fAspectRatio); // Vertical field of view  angle, in radians
 
     const float w = 1.0f / tanf(fov_horiz * 0.5f);
     const float h = 1.0f / tanf(fov_vert * 0.5f);

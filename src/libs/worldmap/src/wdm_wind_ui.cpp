@@ -355,7 +355,7 @@ void WdmWindUI::LRender(VDX9RENDER *rs)
     if (!wdmObjects->showWindUI)
         return;
 
-    if (wdmObjects->isNextDayUpdate)
+    if ((wdmObjects->isNextDayUpdate) || (wdmObjects->forceUpdate))
     {
         auto *data = core.Event("WorldMap_GetMoral");
         if (data)

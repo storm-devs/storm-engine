@@ -812,7 +812,9 @@ void SHIP::Execute(uint32_t DeltaTime)
                         pACollideCharacter = pShip->GetACharacter();
                     pV = core.Event(SHIP_MAST_DAMAGE, "llffffaa", SHIP_MAST_TOUCH_SHIP, pM->iMastNum, v1.x, v1.y, v1.z,
                                     pM->fDamage, GetACharacter(), pACollideCharacter);
-                    pM->fDamage = Clamp(pV->GetFloat());
+                    if (pV != nullptr) {
+                        pM->fDamage = Clamp(pV->GetFloat());
+                    }
                 }
 
                 id = GetModelEID();

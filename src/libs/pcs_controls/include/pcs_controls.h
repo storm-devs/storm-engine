@@ -24,6 +24,7 @@ struct SYSTEM_CONTROL_ELEMENT
 class PCS_CONTROLS : public CONTROLS
 {
     bool m_bLockAll;
+    bool updateCursor_ = true;
 
     float fMouseSensivityX;
     float fMouseSensivityY;
