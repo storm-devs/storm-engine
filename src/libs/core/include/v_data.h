@@ -44,7 +44,7 @@ class VDATA
     virtual bool IsArray() = 0;
     virtual bool IsReference() = 0;
     virtual bool IsAReference() = 0;
-    virtual DATA *GetVarPointer() = 0;
+    virtual VDATA *GetVarPointer() = 0;
     virtual entid_t GetObjectIDPTR() = 0;
 
     // operations

@@ -56,6 +56,7 @@ class ATTRIBUTES final
     [[nodiscard]] ATTRIBUTES *VerifyAttributeClass(const std::string_view &name);
     [[nodiscard]] LegacyProxy GetAttribute(size_t n) const;
     [[nodiscard]] LegacyProxy GetAttribute(const std::string_view &name) const;
+    [[nodiscard]] bool HasAttribute(const std::string_view &name) const;
     [[nodiscard]] const char *GetAttributeName(size_t n) const;
     [[nodiscard]] uint32_t GetAttributeAsDword(const char *name = nullptr, uint32_t def = 0) const;
     [[nodiscard]] uintptr_t GetAttributeAsPointer(const char *name = nullptr, uintptr_t def = 0) const;

@@ -152,6 +152,13 @@ ATTRIBUTES::LegacyProxy ATTRIBUTES::GetAttribute(const std::string_view &name) c
     return {};
 }
 
+bool ATTRIBUTES::HasAttribute(const std::string_view &name) const
+{
+    return std::any_of(begin(attributes_), end(attributes_), [&name] (const auto &attribute) -> bool {
+        return storm::iEquals(name, attribute->GetThisName());
+    });
+}
+
 uint32_t ATTRIBUTES::GetAttributeAsDword(const char *name, uint32_t def) const
 {
     uint32_t vDword = def;
