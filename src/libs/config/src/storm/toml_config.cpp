@@ -17,24 +17,18 @@ void ConvertValue(ATTRIBUTES *target, const std::string &key, const toml::node &
     {
         const auto *array = node.as_array();
         ATTRIBUTES *new_element = target->VerifyAttributeClass(key);
-        const size_t existing_attr_count = new_element->GetAttributesNum();
         size_t offset = 0;
-        for (size_t i = 0; i < existing_attr_count; ++i) {
-            if (new_element->HasAttribute(std::to_string(i))) {
+        array->for_each([&](size_t index, auto &&el) {
+            while(new_element->HasAttribute(std::to_string(offset + index))) {
                 ++offset;
             }
-            else {
-                break;
-            }
-        }
-        array->for_each([&](size_t index, auto &&el) {
             std::string index_key = std::to_string(offset + index);
             ConvertValue(new_element, index_key, el, entity_id);
         });
     }
     else if (node.is_table())
     {
-        ConvertTable(&(target->CreateAttribute(key)), *node.as_table(), entity_id);
+        ConvertTable(target->VerifyAttributeClass(key), *node.as_table(), entity_id);
     }
     else if (node.is_string())
     {
@@ -81,7 +75,7 @@ void ConvertTable(ATTRIBUTES *target, const toml::table &table, entid_t entity_i
 
 } // namespace
 
-bool LoadConfig(ATTRIBUTES *target, const std::string_view &file_path, entid_t entity_id)
+bool LoadTomlConfig(ATTRIBUTES *target, const std::string_view &file_path, entid_t entity_id)
 {
     auto table = toml::parse_file(file_path);
     ConvertTable(target, table, entity_id);

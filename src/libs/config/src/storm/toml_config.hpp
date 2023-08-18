@@ -7,6 +7,6 @@
 namespace storm
 {
 
-bool LoadConfig(ATTRIBUTES *target, const std::string_view &file_path, entid_t entity_id);
+bool LoadTomlConfig(ATTRIBUTES *target, const std::string_view &file_path, entid_t entity_id);
 
 } // namespace storm
