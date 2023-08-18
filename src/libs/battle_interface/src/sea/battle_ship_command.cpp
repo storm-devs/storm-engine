@@ -54,6 +54,9 @@ void BIShipCommandList::FillIcons()
         if (check(BI_COMMODE_USER_ICONS))
             nIconsQuantity += UserIconsAdding();
 
+        if (check(BI_COMMODE_ABILITY_ICONS))
+            nIconsQuantity += AbilityAdding();
+
         if (check(BI_COMMODE_ENEMY_TOWN))
             nIconsQuantity +=
                 TownAdding((m_nCurrentCommandMode & BI_COMMODE_ALLLOCATOR_SELECT) != 0, true, true, true, false, false);
