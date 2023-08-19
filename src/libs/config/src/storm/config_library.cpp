@@ -129,7 +129,7 @@ uint32_t ListFilesImpl(VS_STACK *pS) {
         size_t index = 0;
         for (const auto &entry : it) {
             std::string index_string = std::to_string(index++);
-            std::u8string path_str_u8 = entry.path().u8string();
+            std::u8string path_str_u8 = entry.path().filename().u8string();
             std::string path_str(path_str_u8.begin(), path_str_u8.end());
             list_attr->SetAttribute(index_string, path_str);
         }
