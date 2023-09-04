@@ -17,7 +17,7 @@ class StormEngine(ConanFile):
 
     # dependencies used in deploy binaries
     # conan-center
-    requires = ["zlib/1.2.13", "spdlog/1.9.2", "fast_float/3.4.0", "mimalloc/2.0.3", "sentry-native/0.5.0",
+    requires = ["zlib/1.2.13", "spdlog/1.12.0", "fast_float/5.2.0", "mimalloc/2.1.2", "sentry-native/0.6.5",
     # storm.jfrog.io
     "directx/9.0@storm/prebuilt", "fmod/2.02.05@storm/prebuilt"]
     # aux dependencies (e.g. for tests)
@@ -64,10 +64,7 @@ class StormEngine(ConanFile):
                 self.__install_lib("steam_api64.dll")
 
             self.__install_bin("mimalloc-redirect.dll")
-            if self.settings.build_type == "Debug":
-                self.__install_bin("mimalloc-debug.dll")
-            else:
-                self.__install_bin("mimalloc.dll")
+            self.__install_bin("mimalloc.dll")
 
         else: # not Windows
             if self.settings.build_type == "Debug":

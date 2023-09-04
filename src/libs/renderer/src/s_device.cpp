@@ -14,8 +14,6 @@
 #include <algorithm>
 #include <SDL_timer.h>
 
-#include <fmt/chrono.h>
-
 #ifdef _WIN32
 #include <DxErr.h>
 #include <corecrt_io.h>
@@ -3278,8 +3276,8 @@ void DX9RENDER::MakeScreenShot()
         core.Trace("Failed to make screenshot");
         return;
     }
-
-    const auto screenshot_base_filename = fmt::format("{:%Y-%m-%d_%H-%M-%S}", fmt::localtime(std::time(nullptr)));
+    
+    const auto screenshot_base_filename = std::format("{:%Y-%m-%d_%H-%M-%S}", std::chrono::system_clock::now());
     auto screenshot_path = fs::GetScreenshotsPath() / screenshot_base_filename;
     screenshot_path.replace_extension(screenshotExt);
     for(size_t i = 0; exists(screenshot_path); ++i)

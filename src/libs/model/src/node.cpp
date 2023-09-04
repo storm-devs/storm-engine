@@ -189,12 +189,12 @@ bool NODER::Init(const char *lightPath, const char *pname, const char *oname, co
 
     if (pname == nullptr)
     {
-        throw std::runtime_error(fmt::format("NODER::Init: got nullptr model name"));
+        throw std::runtime_error(std::format("NODER::Init: got nullptr model name"));
     }
     sys_modelName_base = pname;
 
     if (oname && oname[0])
-        sys_modelName_full = fmt::format("{}_{}", sys_modelName_base, oname);
+        sys_modelName_full = std::format("{}_{}", sys_modelName_base, oname);
     else
         sys_modelName_full = sys_modelName_base;
     
@@ -308,7 +308,7 @@ void NODER::RestoreGeometry()
     gs->SetTexturePath(ttPath);
     delete[] ttPath;
     if (!geo)
-        throw std::runtime_error(fmt::format("Cannot restore geometry {}", sys_modelName_full));
+        throw std::runtime_error(std::format("Cannot restore geometry {}", sys_modelName_full));
 
     isReleased = false;
     for (int32_t i = 0; i < next.size(); i++)
@@ -586,7 +586,7 @@ void NODER::SetMaxViewDist(float fDist)
 
 void NODER::SubstituteGeometry(const std::string &new_model)
 {
-    sys_modelName_full = fmt::format("{}_{}", sys_modelName_base, new_model);
+    sys_modelName_full = std::format("{}_{}", sys_modelName_base, new_model);
     ReleaseGeometry();
     RestoreGeometry();
 }

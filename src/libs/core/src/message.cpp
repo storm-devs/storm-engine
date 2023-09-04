@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-#include <fmt/format.h>
+#include <format>
 
 void MESSAGE::Move2Start()
 {
@@ -208,6 +208,6 @@ storm::MessageParam MESSAGE::GetParamValue(const char c, va_list&args)
         return std::string(ptr);
     }
     default:
-        throw std::runtime_error(fmt::format("Unknown message format: '{}'", c));
+        throw std::runtime_error(std::format("Unknown message format: '{}'", c));
     }
 }

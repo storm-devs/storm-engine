@@ -637,7 +637,7 @@ void Lights::PrintDebugInfo()
 
         rs->ExtPrint(FONT_DEFAULT, D3DCOLOR_ARGB(255, 255, 255, 255), 0x00000000, PR_ALIGN_CENTER, 
             false, scale, 0, 0,
-                     static_cast<int32_t>(vrt.x), static_cast<int32_t>(vrt.y), fmt::format("{}", d).c_str());
+                     static_cast<int32_t>(vrt.x), static_cast<int32_t>(vrt.y), std::format("{}", d).c_str());
 
         // print idx
         auto color = D3DCOLOR_ARGB(255, 233, 30, 30);
@@ -651,7 +651,7 @@ void Lights::PrintDebugInfo()
         }
         rs->ExtPrint(FONT_DEFAULT, color, 0x00000000, PR_ALIGN_CENTER, false, scale, 0, 0, static_cast<int32_t>(vrt.x),
                      static_cast<int32_t>(vrt.y),
-                     fmt::format("{}", i).c_str());
+                     std::format("{}", i).c_str());
 
         
         rs->SetTransform(D3DTS_VIEW, view);

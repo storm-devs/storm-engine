@@ -288,7 +288,7 @@ uint64_t LegacyDialog::ProcessMessage(MESSAGE &msg)
         const auto last_name_attr = core.Entity_GetAttribute(charId, "lastname");
         const std::string_view name = name_attr ? name_attr : "";
         const std::string_view last_name = last_name_attr ? last_name_attr : "";
-        characterName_ = fmt::format("{} {}", name, last_name);
+        characterName_ = std::format("{} {}", name, last_name);
         std::transform(characterName_.begin(), characterName_.end(), characterName_.begin(), ::toupper);
         break;
     }
@@ -480,7 +480,7 @@ void LegacyDialog::SetAction(std::string action)
 
 void LegacyDialog::UpdateHeadModel(const std::string &headModelPath)
 {
-    const std::string newHeadModelPath = fmt::format("Heads/{}", headModelPath);
+    const std::string newHeadModelPath = std::format("Heads/{}", headModelPath);
 
     if (headModelPath_ != newHeadModelPath)
     {

@@ -4,7 +4,7 @@
 #include "debug-trap.h"
 #else
 #include <stdexcept>
-#include <fmt/format.h>
+#include <format>
 #endif
 
 inline void __Storm_Assert__(bool expression, const char *file, int32_t line, const char *str)
@@ -14,7 +14,8 @@ inline void __Storm_Assert__(bool expression, const char *file, int32_t line, co
 #ifdef EX_OFF
         psnip_trap();
 #else
-        throw std::runtime_error(fmt::format("Assert failed in {} line {}, expression string {}", file, line, str ? str : ""));
+        throw std::runtime_error(
+            std::format("Assert failed in {} line {}, expression string {}", file, line, str ? str : ""));
 #endif
     }
 }

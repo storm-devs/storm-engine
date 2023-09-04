@@ -44,17 +44,9 @@ void storm::logging::sinks::syncable_sink::set_formatter(std::unique_ptr<spdlog:
     formatter_ = std::move(sink_formatter);
 }
 
-void storm::logging::sinks::syncable_sink::sync() const
+void storm::logging::sinks::syncable_sink::sync()
 {
-#ifdef _WIN32
-    const auto success = FlushFileBuffers(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(file_helper_.getfd()))));
-    if (!success)
-    {
-        OutputDebugStringA(std::format("failed to flush:{} ({})", file_helper_.filename(), GetLastError()).c_str());
-    }
-#else
-    fsync(fileno(file_helper_.getfd()));
-#endif
+    file_helper_.sync();
 }
 
 void storm::logging::sinks::syncable_sink::terminate_immediately()

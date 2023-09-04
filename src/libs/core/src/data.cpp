@@ -1684,7 +1684,7 @@ bool DATA::Plus(DATA *pV)
             Set(sValue + std::to_string(pV->lValue));
             break;
         case VAR_FLOAT:
-            Set(sValue + fmt::format("{}", pV->fValue));
+            Set(sValue + std::format("{}", pV->fValue));
             break;
         case VAR_STRING:
             Set(sValue + pV->sValue);

@@ -163,7 +163,7 @@ uint64_t CAviPlayer::ProcessMessage(MESSAGE &message)
     {
     case MSG_SET_VIDEO_PLAY: {
         const std::string &param = message.String();
-        const std::string vidName = fmt::format("{}\\{}", VIDEO_DIRECTORY, param);
+        const std::string vidName = std::format("{}\\{}", VIDEO_DIRECTORY, param);
         filename = vidName;
         if (!PlayMedia(vidName.c_str()))
         {

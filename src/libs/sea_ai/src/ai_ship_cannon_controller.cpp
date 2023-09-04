@@ -626,7 +626,7 @@ void AIShipCannonController::Realize(float fDeltaTime)
         std::string buf;
         for (const auto &bort : aShipBorts)
         {
-            buf += fmt::format("{:.3f} ", GetBortHeightAngle(bort));
+            buf += std::format("{:.3f} ", GetBortHeightAngle(bort));
         }
         AIHelper::pRS->Print(200, 20, buf.c_str());
     }
