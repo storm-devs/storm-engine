@@ -3,7 +3,7 @@
 #include "storm/config.hpp"
 #include "utf8.h"
 
-#include <fmt/format.h>
+#include <format>
 
 namespace
 {
@@ -208,7 +208,7 @@ int32_t FONT::GetStringWidth(const std::string_view &text, std::optional<float> 
         if (Codepoint > USED_CODES) {
             core.Trace("Invalid codepoint: %d", Codepoint);
             if constexpr(storm::kIsDebug) {
-                throw std::runtime_error(fmt::format("Invalid codepoint: {}", Codepoint));
+                throw std::runtime_error(std::format("Invalid codepoint: {}", Codepoint));
             }
             continue;
         }
@@ -252,7 +252,7 @@ int32_t FONT::UpdateVertexBuffer(int32_t x, int32_t y, char *data_PTR, int utf8l
         if (Codepoint > USED_CODES) {
             core.Trace("Invalid codepoint: %d", Codepoint);
             if constexpr(storm::kIsDebug) {
-                throw std::runtime_error(fmt::format("Invalid codepoint: {}", Codepoint));
+                throw std::runtime_error(std::format("Invalid codepoint: {}", Codepoint));
             }
             continue;
         }

@@ -12,7 +12,7 @@ Import library main file
 
 #include <cstdint>
 #include <cstring>
-#include <fmt/format.h>
+#include <format>
 #include <vector>
 
 #include "../../util/include/string_compare.hpp"
@@ -210,7 +210,7 @@ GEOM::GEOM(const char *fname, const char *lightname, GEOM_SERVICE &_srv, int32_t
             });
             if (!valid)
             {
-                throw std::runtime_error(fmt::format("Detected invalid collision data while loading file '{}'", fname));
+                throw std::runtime_error(std::format("Detected invalid collision data while loading file '{}'", fname));
             }
         }
     }
