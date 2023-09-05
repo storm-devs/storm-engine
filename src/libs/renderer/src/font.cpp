@@ -153,9 +153,14 @@ bool FONT::Init(const char *font_name, const char *iniName)
             charDescriptors_[codepoint].Tuv.x1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(textureSizeX_);
         if (!MakeLong(&pData, &ltmp))
             throw std::runtime_error("invalid font record");
-        charDescriptors_[codepoint].Pos.y1 =
-            static_cast<float>(height_ - static_cast<int32_t>(ltmp * verticalAspectRatio_));
-        charDescriptors_[codepoint].Pos.y2 = static_cast<float>(height_); //((int32_t)(ltmp*m_fAspectRatioV));
+        if (core.GetTargetEngineVersion() <= storm::ENGINE_VERSION::PIRATES_OF_THE_CARIBBEAN) {
+            charDescriptors_[codepoint].Pos.y2 = static_cast<float>(ltmp*verticalAspectRatio_);
+        }
+        else {
+            charDescriptors_[codepoint].Pos.y1 =
+                static_cast<float>(height_ - static_cast<int32_t>(ltmp * verticalAspectRatio_));
+            charDescriptors_[codepoint].Pos.y2 = static_cast<float>(height_);
+        }
         charDescriptors_[codepoint].Tuv.y2 =
             charDescriptors_[codepoint].Tuv.y1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(textureSizeY_);
     }
