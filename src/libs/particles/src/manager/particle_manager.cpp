@@ -87,7 +87,7 @@ void ParticleManager::SetProjectTexture(const char *FileName)
     pProjectTexture = pRS->TextureCreate(FileName);
 
     const std::filesystem::path path = FileName;
-    pProjectTextureNormalMap = pRS->TextureCreate((path.stem().string() + "nm").c_str());
+     pProjectTextureNormalMap = pRS->TextureCreate((path.stem().string() + "nm.tga").c_str());
 
     TextureName = FileName;
 }
