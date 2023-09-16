@@ -295,7 +295,7 @@ DlgLinkDescribe &DlgLinkDescribe::MoveUp()
 
 bool DlgLinkDescribe::CanMoveDown() const noexcept
 {
-    return selectedLine_ < lineBreaks_.size() - 1;
+    return lineBreaks_.size() > 0 && selectedLine_ < lineBreaks_.size() - 1;
 }
 
 DlgLinkDescribe &DlgLinkDescribe::MoveDown()
