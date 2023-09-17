@@ -465,17 +465,19 @@ void LegacyDialog::SetAction(std::string action)
         preparedAction += "_" + mood_;
     };
 
-    model->GetAnimation()->CopyPlayerState(0, 1);
+    if (auto *animation = model->GetAnimation(); animation != nullptr) {
+        animation->CopyPlayerState(0, 1);
 
-    model->GetAnimation()->Player(0).SetAction(preparedAction.c_str());
-    model->GetAnimation()->Player(0).Play();
+        animation->Player(0).SetAction(preparedAction.c_str());
+        animation->Player(0).Play();
 
-    model->GetAnimation()->Timer(0).ResetTimer();
-    model->GetAnimation()->Timer(0).Start(0.2f);
-    model->GetAnimation()->Player(0).SetAutoStop(false);
-    model->GetAnimation()->Player(1).SetAutoStop(true);
-    model->GetAnimation()->Timer(0).SetPlayer(0, false);
-    model->GetAnimation()->Timer(0).SetPlayer(1, true);
+        animation->Timer(0).ResetTimer();
+        animation->Timer(0).Start(0.2f);
+        animation->Player(0).SetAutoStop(false);
+        animation->Player(1).SetAutoStop(true);
+        animation->Timer(0).SetPlayer(0, false);
+        animation->Timer(0).SetPlayer(1, true);
+    }
 }
 
 void LegacyDialog::UpdateHeadModel(const std::string &headModelPath)
@@ -577,7 +579,9 @@ void LegacyDialog::DrawHeadModel(uint32_t deltaTime)
         RenderService->SetLight(0, &headLight);
         RenderService->LightEnable(0, TRUE);
         const auto model = dynamic_cast<MODEL *>(core.GetEntityPointer(headModel_));
-        model->ProcessStage(Entity::Stage::realize, deltaTime);
+        if (model != nullptr) {
+            model->ProcessStage(Entity::Stage::realize, deltaTime);
+        }
 
         RenderService->SetLight(0, &oldLight);
         RenderService->LightEnable(0, oldLightEnabled);
