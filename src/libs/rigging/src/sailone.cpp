@@ -2067,6 +2067,6 @@ float SAILONE::GetDistanceFromPointTo3Point(const CVECTOR &v, const CVECTOR &vB1
     const CVECTOR vN = !((vB1 - vB2) ^ (vB3 - vB2));
     const float fD = -(vN | vB2);
 
-    const float f = v | vN + fD;
+    const float f = (v | vN) + fD;
     return f;
 }
