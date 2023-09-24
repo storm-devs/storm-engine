@@ -1626,6 +1626,10 @@ DATA *COMPILER::BC_CallIntFunction(uint32_t func_code, DATA *&pVResult, uint32_t
         }
         pV->Get(ent);
         core.EraseEntity(ent);
+
+        // Make sure to clear entity id
+        ent = invalid_entity;
+        pV->Set(ent);
         break;
         //
     case FUNC_DEL_EVENT_HANDLER:
