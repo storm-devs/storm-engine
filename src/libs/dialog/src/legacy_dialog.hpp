@@ -26,6 +26,8 @@ class LegacyDialog final : public Entity
   public:
     static VDX9RENDER *RenderService;
 
+    LegacyDialog();
+
     ~LegacyDialog() noexcept override;
 
     bool Init() override;
@@ -63,6 +65,8 @@ class LegacyDialog final : public Entity
     void PlayTick();
     void Unfade();
 
+    void SetTickSound();
+
     storm::dialog::DlgLinkDescribe linkDescribe_;
 
     std::vector<std::string> formattedDialogText_;
@@ -70,6 +74,8 @@ class LegacyDialog final : public Entity
 
     std::string characterName_;
     std::string headModelPath_;
+
+    std::string tickSound_;
 
     ScreenScale screenScale_{};
 

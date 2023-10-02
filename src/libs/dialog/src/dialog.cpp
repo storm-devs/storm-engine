@@ -732,7 +732,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     {
         // play click of the pressed key
         if (snd)
-            snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
+            snd->SoundPlay(DEFAULT_TICK_SOUND, PCM_STEREO, VOLUME_FX);
 
         if (m_DlgText.IsLastPage())
         {
@@ -748,7 +748,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     {
         // play click of the pressed key
         if (snd)
-            snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
+            snd->SoundPlay(DEFAULT_TICK_SOUND, PCM_STEREO, VOLUME_FX);
 
         if (m_DlgText.IsLastPage())
         {
@@ -764,7 +764,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     if (cs.state == CST_ACTIVATED)
     {
         if (snd)
-            snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
+            snd->SoundPlay(DEFAULT_TICK_SOUND, PCM_STEREO, VOLUME_FX);
         if (m_DlgText.currentLine_ > 0)
         {
             m_DlgText.PrevPage();
@@ -778,7 +778,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     if (cs.state == CST_ACTIVATED)
     {
         if (snd)
-            snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
+            snd->SoundPlay(DEFAULT_TICK_SOUND, PCM_STEREO, VOLUME_FX);
         if (!m_DlgText.IsLastPage())
         {
             m_DlgText.NextPage();
@@ -799,7 +799,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
     {
         // play click of the pressed key
         if (snd)
-            snd->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
+            snd->SoundPlay(DEFAULT_TICK_SOUND, PCM_STEREO, VOLUME_FX);
 
         if (m_DlgText.IsLastPage())
         {

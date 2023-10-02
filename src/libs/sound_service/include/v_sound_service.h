@@ -4,6 +4,8 @@
 #include "service.h"
 #include "sound_defines.h"
 #include "v_sound_service.h"
+
+#include <string_view>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////
@@ -78,7 +80,7 @@ class VSoundService : public SERVICE
     // + play assumes _name a plain file name
     // + for now loop_pause_time works only for OGG-STEREO sounds
     ///////////////////////////////////////////////////////////////
-    virtual TSD_ID SoundPlay(const char *_name,
+    virtual TSD_ID SoundPlay(const std::string_view &name,
                              eSoundType _type,          // sound type
                              eVolumeType _volumeType,   // volume type
                              bool _simpleCache = false, // cache only, not play

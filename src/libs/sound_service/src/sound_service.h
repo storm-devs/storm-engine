@@ -181,7 +181,7 @@ class SoundService : public VSoundService
     void RunStart() override;
     void RunEnd() override;
 
-    TSD_ID SoundPlay(const char *_name, eSoundType _type, eVolumeType _volumeType, bool _simpleCache = false,
+    TSD_ID SoundPlay(const std::string_view &name, eSoundType _type, eVolumeType _volumeType, bool _simpleCache = false,
                      bool _looped = false, bool _cached = false, int32_t _time = 0,
                      const CVECTOR *_startPosition = nullptr, float _minDistance = -1.0f, float _maxDistance = -1.0f,
                      int32_t _loopPauseTime = 0, float _volume = 1.0f, int32_t _prior = 128) override;

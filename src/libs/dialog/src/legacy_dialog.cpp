@@ -129,6 +129,10 @@ constexpr auto SPRITE_COUNT = SPRITE_DATA.size() + (DIALOG_MAX_LINES - 1);
 
 VDX9RENDER *LegacyDialog::RenderService = nullptr;
 
+LegacyDialog::LegacyDialog() : tickSound_(DEFAULT_TICK_SOUND)
+{
+}
+
 LegacyDialog::~LegacyDialog() noexcept
 {
     core.SetTimeScale(1.f);
@@ -169,6 +173,8 @@ bool LegacyDialog::Init()
     linkDescribe_.SetMaxLinesPerPage(5);
     linkDescribe_.SetColor(COLOR_LINK_UNSELECTED);
     linkDescribe_.SetSelectedColor(COLOR_NORMAL);
+
+    SetTickSound();
 
     return true;
 }
@@ -261,6 +267,10 @@ uint32_t LegacyDialog::AttributeChanged(ATTRIBUTES *attributes)
         const std::string soundName = attributes->GetThisAttr();
         soundName_ = soundName;
         soundState_ = SOUND_STARTING;
+    }
+    else if (storm::iEquals(attributeName, "tickSound"))
+    {
+        SetTickSound();
     }
     else
     {
@@ -771,7 +781,7 @@ void LegacyDialog::PlayTick()
 {
     if (soundService_)
     {
-        soundService_->SoundPlay(TICK_SOUND, PCM_STEREO, VOLUME_FX);
+        soundService_->SoundPlay(tickSound_, PCM_STEREO, VOLUME_FX);
     }
 }
 
@@ -785,5 +795,16 @@ void LegacyDialog::Unfade()
         if (timeK > 1.f)
             timeK = 1.f;
         core.SetTimeScale(timeK);
+    }
+}
+
+void LegacyDialog::SetTickSound()
+{
+    const char *tick_sound_ptr = AttributesPointer->GetAttribute("tickSound");
+    if (tick_sound_ptr != nullptr) {
+        tickSound_ = tick_sound_ptr;
+    }
+    else {
+        tickSound_ = DEFAULT_TICK_SOUND;
     }
 }

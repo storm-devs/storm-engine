@@ -295,20 +295,20 @@ int SoundService::GetAliasIndexByName(const char *szAliasName)
     return -1;
 }
 
-TSD_ID SoundService::SoundPlay(const char *_name, eSoundType _type, eVolumeType _volumeType,
+TSD_ID SoundService::SoundPlay(const std::string_view &name, eSoundType _type, eVolumeType _volumeType,
                                bool _simpleCache /* = false*/, bool _looped /* = false*/, bool _cached /* = false*/,
                                int32_t _time /* = 0*/, const CVECTOR *_startPosition /* = 0*/,
                                float _minDistance /* = -1.0f*/, float _maxDistance /* = -1.0f*/,
                                int32_t _loopPauseTime /* = 0*/, float _volume, /* = 1.0f*/
                                int32_t _prior)
 {
-    std::string FileName = _name;
+    auto FileName = std::string(name);
 
     // aliases don`t contain `\`
-    if (!strchr(_name, '\\'))
+    if (!name.contains('\\'))
     {
         // Trying to find in aliases
-        const auto AliasIdx = GetAliasIndexByName(_name);
+        const auto AliasIdx = GetAliasIndexByName(FileName.c_str());
         if (AliasIdx >= 0 && !Aliases[AliasIdx].soundFiles.empty())
         {
             // play sound from the alias ...

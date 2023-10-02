@@ -13,7 +13,7 @@ constexpr auto MAX_LINES = 5;
 constexpr auto SCROLL_LINE_TIME = 100;
 constexpr auto TILED_LINE_HEIGHT = 26;
 constexpr auto SBL = 6;
-#define TICK_SOUND "interface\\ok.wav"
+constexpr std::string_view DEFAULT_TICK_SOUND = "interface\\ok.wav";
 
 #define XI_TEX_FVF (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
 class INIFILE;
