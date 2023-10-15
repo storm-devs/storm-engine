@@ -255,6 +255,17 @@ void ModelArray::SetRotation(int32_t modelIndex, float rx, float ry, float rz)
     model[modelIndex].rotator->rz = rz;
 }
 
+// Set base rotation angle
+void ModelArray::SetRotationAngle(int32_t modelIndex, float ax, float ay, float az)
+{
+    Assert(modelIndex >= 0 && modelIndex < numModels);
+    auto *mdl = static_cast<MODEL *>(core.GetEntityPointer(model[modelIndex].id));
+    if (mdl)
+    {
+        CMatrix mtr(ax, ay, az);
+        mdl->mtx = CMatrix(mtr, mdl->mtx);
+    }
+}
 // Set the reflection matrix generation mode to the model
 void ModelArray::SetReflection(int32_t modelIndex, float scale)
 {
