@@ -233,6 +233,7 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
 {
     int32_t i;
     float u0, v0, u1, v1;
+    float ax, ay, az;
     int32_t level;
     LocatorArray *la;
     switch (message.Long())
@@ -284,6 +285,14 @@ uint64_t Location::ProcessMessage(MESSAGE &message)
         v0 = message.Float(); // ry
         u1 = message.Float(); // rz
         model.SetRotation(lastLoadStaticModel, u0, v0, u1);
+        return 1;
+    case MSG_LOCATION_MODEL_SET_ROT_ANGLE:
+        if (lastLoadStaticModel < 0)
+            return 0;
+        ax = message.Float(); // ax
+        ay = message.Float(); // ay
+        az = message.Float(); // az
+        model.SetRotationAngle(lastLoadStaticModel, ax, ay, az);
         return 1;
     case MSG_LOCATION_MODEL_SET_UVS:
         if (lastLoadStaticModel < 0)

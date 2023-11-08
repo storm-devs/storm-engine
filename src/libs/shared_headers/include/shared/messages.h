@@ -99,6 +99,7 @@
 #define MSG_LOCATION_MODEL_LAMPS 30113 // "l" add the current model to the ignore list for tracing rays from lamps
 // "lf" set the effect of generating the matrix for reflection, f is the scaling factor
 #define MSG_LOCATION_MODEL_REFLECTION 30114
+#define MSG_LOCATION_MODEL_SET_ROT_ANGLE 30115 //  "lfff" set the base rotation angle of the last loaded model
 // Install patches
 #define MSG_LOCATION_SET_CHRS_PATCH 30120 // "ls" load the character patch
 #define MSG_LOCATION_SET_CAM_PATCH 30121  // "ls" load camera patch

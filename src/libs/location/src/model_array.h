@@ -103,6 +103,8 @@ class ModelArray
     void SetUVSlide(int32_t modelIndex, float u0, float v0, float u1, float v1);
     // Set a rotation animation to the model
     void SetRotation(int32_t modelIndex, float rx, float ry, float rz);
+    // Set base rotation angle
+    void SetRotationAngle(int32_t modelIndex, float ax, float ay, float az);
     // Set the reflection matrix generation mode to the model
     void SetReflection(int32_t modelIndex, float scale);
 
