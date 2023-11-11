@@ -1461,7 +1461,7 @@ bool DX9RENDER::TextureLoad(int32_t t)
         path_to_tex.replace_extension();
         if (exists(path_to_tex))
         {
-            return TextureLoadUsingD3DX(path_to_tex.string().c_str(), t);
+            return TextureLoadFromFile(path_to_tex.string().c_str(), t);
         }
         if (bTrace)
         {
@@ -1768,32 +1768,49 @@ bool DX9RENDER::TextureLoad(int32_t t)
     return true;
 }
 
-bool DX9RENDER::TextureLoadUsingD3DX(const char* path, int32_t t)
+bool DX9RENDER::TextureLoadFromFile(const char* path, int32_t t)
 {
-#ifdef _WIN32 // TextureLoadUsingD3DX - used only for loading raw Targa
-    // TODO: reimplement the whole thing in a tidy way
-    IDirect3DTexture9 *pTex;
-    if(CHECKD3DERR(D3DXCreateTextureFromFileA(d3d9, path, &pTex)))
-    {
+    auto image = imageLoader_.LoadImageFromFile(path);
+
+    if (image) {
+        IDirect3DTexture9 *texture;
+        const auto d3d_format = image->bpp == 24 ? D3DFMT_X8R8G8B8 : D3DFMT_A8R8G8B8;
+        if (CHECKD3DERR(d3d9->CreateTexture(image->width, image->height, 0, 0, d3d_format, D3DPOOL_MANAGED, &texture,
+                                            NULL))) {
+            delete Textures[t].name;
+            Textures[t].name = nullptr;
+            return false;
+        }
+
+        IDirect3DSurface9 *surface = nullptr;
+        texture->GetSurfaceLevel(0, &surface);
+        D3DLOCKED_RECT rect;
+        if (CHECKD3DERR(surface->LockRect(&rect, nullptr, 0))) {
+            delete Textures[t].name;
+            Textures[t].name = nullptr;
+            return {};
+        }
+        imageLoader_.CopyImageToBuffer(*image, static_cast<uint8_t *>(rect.pBits));
+        surface->UnlockRect();
+        surface->Release();
+
+        D3DSURFACE_DESC desc;
+        texture->GetLevelDesc(0, &desc);
+
+        Textures[t].hash = 0;
+        Textures[t].ref = 1;
+        Textures[t].d3dtex = texture;
+        Textures[t].isCubeMap = false;
+        Textures[t].dwSize = desc.Height * desc.Width * 4;
+        Textures[t].loaded = true;
+
+        return true;
+    }
+    else {
         delete Textures[t].name;
         Textures[t].name = nullptr;
         return false;
     }
-
-    D3DSURFACE_DESC desc;
-    pTex->GetLevelDesc(0, &desc);
-
-    Textures[t].hash = 0;
-    Textures[t].ref = 1;
-    Textures[t].d3dtex = pTex;
-    Textures[t].isCubeMap = false;
-    Textures[t].dwSize = desc.Height * desc.Width * 4;
-    Textures[t].loaded = true;
-
-    return true;
-#else
-    return false;
-#endif
 }
 
 IDirect3DBaseTexture9 *DX9RENDER::GetBaseTexture(int32_t iTexture)

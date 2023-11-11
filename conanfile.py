@@ -17,7 +17,7 @@ class StormEngine(ConanFile):
 
     # dependencies used in deploy binaries
     # conan-center
-    requires = ["zlib/1.2.13", "spdlog/1.9.2", "fast_float/3.4.0", "mimalloc/2.0.3", "sentry-native/0.5.0",
+    requires = ["zlib/1.2.13", "spdlog/1.9.2", "fast_float/3.4.0", "mimalloc/2.0.3", "freeimage/3.18.0", "sentry-native/0.5.0",
     # storm.jfrog.io
     "directx/9.0@storm/prebuilt", "fmod/2.02.05@storm/prebuilt"]
     # aux dependencies (e.g. for tests)
@@ -37,6 +37,15 @@ class StormEngine(ConanFile):
             self.requires("steamworks/1.5.1@storm/prebuilt")
         if self.options.conan_sdl:
             self.requires("sdl/2.0.18")
+        self.options["freeimage"].with_jpeg = "libjpeg-turbo"
+        self.options["freeimage"].with_png = True
+        self.options["freeimage"].with_tiff = False
+        self.options["freeimage"].with_jpeg2000 = False
+        self.options["freeimage"].with_openexr = False
+        self.options["freeimage"].with_eigen = False
+        self.options["freeimage"].with_webp = False
+        self.options["freeimage"].with_raw = False
+        self.options["freeimage"].with_jxr = False
 
     generators = "cmake_multi"
 
