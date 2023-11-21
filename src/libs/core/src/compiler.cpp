@@ -4456,6 +4456,7 @@ bool COMPILER::BC_Execute(uint32_t function_code, DATA *&pVReturnResult, const c
             pVResult = nullptr;
             if (!BC_CallFunction(func_code, ip, pVResult))
                 return false;
+            ExpressionResult.ClearType();
             if (pVResult)
             {
                 ExpressionResult.Set(1);
