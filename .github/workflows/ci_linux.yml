@@ -55,7 +55,7 @@ jobs:
         conan profile new default --detect
         conan profile update conf.tools.system.package_manager:mode=install default
         conan profile update conf.tools.system.package_manager:sudo=True default
-        cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.configuration}}
+        cmake .. -DSTORM_USE_CONAN_SDL=OFF -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.configuration}}
     - name: Build dependencies
       run: ninja dependencies
       working-directory: build
