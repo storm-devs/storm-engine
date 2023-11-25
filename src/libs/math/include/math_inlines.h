@@ -1,5 +1,7 @@
 #pragma once
 
+#include "math_common.hpp"
+
 #include <cstdint>
 #include <cmath>
 
@@ -7,8 +9,6 @@
 
 #include "c_vector.h"
 
-#define SQR(a) ((a) * (a))
-#define FRAND(x) ((x) * (float)rand() / (float)RAND_MAX)
 #define SIGN(x) ((x) < 0 ? -1.0f : 1.0f)
 #define SIGNZ(x) ((x) == 0.0f ? 0.0f : ((x) < 0.0f ? -1.0f : 1.0f))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
@@ -61,11 +61,6 @@ template <class T> T Min(T t1, T t2)
 template <class T> T Max(T t1, T t2)
 {
     return ((t1 > t2) ? t1 : t2);
-};
-
-template <class T> T Sqr(T t1)
-{
-    return (t1 * t1);
 };
 
 constexpr float PI = 3.14159265358979323846f;

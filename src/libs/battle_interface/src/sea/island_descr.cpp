@@ -65,12 +65,14 @@ void ISLAND_DESCRIBER::SetIsland(ATTRIBUTES *pAIsland)
         {
             int32_t lTmp;
             if (pvdat->Get(lTmp, 0))
+            {
                 if (lTmp == 0)
                     m_pLocators[i].locatorType = ISLAND_LOCATOR_LAND;
                 else if (lTmp == 1)
                     m_pLocators[i].locatorType = ISLAND_LOCATOR_FORT;
                 else
                     m_pLocators[i].locatorType = ISLAND_LOCATOR_TOWN;
+            }
             if (pvdat->Get(lTmp, 1))
                 m_pLocators[i].relation = lTmp;
             if (pvdat->Get(lTmp, 2))

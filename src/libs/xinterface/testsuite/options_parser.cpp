@@ -67,7 +67,7 @@ TEST_CASE("Parse options", "[xinterface]")
     {
         auto source = "title=My title\ntext=Hello, World!\n"s;
 
-        ATTRIBUTES attribute(&string_codec);
+        ATTRIBUTES attribute(string_codec);
 
         storm::parseOptions(source, attribute);
 
@@ -86,7 +86,7 @@ TEST_CASE("Parse options", "[xinterface]")
     {
         auto source = "title=My title\ntext=Hello, World!"s;
 
-        ATTRIBUTES attribute(&string_codec);
+        ATTRIBUTES attribute(string_codec);
 
         storm::parseOptions(source, attribute);
 
@@ -110,7 +110,7 @@ TEST_CASE("Parse options", "[xinterface]")
             "had better get away before I am detected and destroyed with the rest of the English here.\n"
             "text.t2=A French squadron captured the English colony, #sOxbay# on #sisland_Oxbay#. The French succeeded because the fort's defences were so weak. I escaped only by great good fortune. I suppose I should inform the governor of the main English colony - #sRedmond# on the island #sisland_Redmond#, Sir Robert Christopher Silehard, about the attack, so he can take appropriate measures. By chance, I noticed someone else also managed to escape the French. I saw a ship sailing away from the bay. I wonder who the captain was.\n"s;
 
-        ATTRIBUTES attribute(&string_codec);
+        ATTRIBUTES attribute(string_codec);
 
         storm::parseOptions(source, attribute);
 

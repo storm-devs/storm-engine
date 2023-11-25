@@ -240,6 +240,7 @@ void AnimationImp::BuildAnimationMatrices()
 
     // Auto normalization
     if (normBlend != 0.0f)
+    {
         if (plCnt > 1)
         {
             normBlend = 1.0f / normBlend;
@@ -381,6 +382,7 @@ void AnimationImp::BuildAnimationMatrices()
             //    for(int32_t j = 0; j < nbones; j++)
             //        aniInfo->GetBone(j).BlendFrame(frame);
         }
+    }
     for (int32_t j = 0; j < nbones; j++)
     {
         auto &bn = aniInfo->GetBone(j);

@@ -26,10 +26,16 @@ bool ItemEntity::Init()
 void ItemEntity::Realize(uint32_t delta_time)
 {
     if (m_bVisible && m_pModel)
+    {
         if (m_bTieToLocator)
+        {
             DrawIntoLocator();
+        }
         else
+        {
             m_pModel->ProcessStage(Stage::realize, delta_time);
+        }
+    }
 }
 
 uint64_t ItemEntity::ProcessMessage(MESSAGE &message)
@@ -107,7 +113,8 @@ bool ItemEntity::ReadAndCreate()
     auto *const pcTechnique = BIUtils::GetStringFromAttr(AttributesPointer, "technique", "");
     if (pcModelName)
     {
-        if (m_eidModel = core.CreateEntity("modelr"))
+        m_eidModel = core.CreateEntity("modelr");
+        if (m_eidModel)
         {
             core.Send_Message(m_eidModel, "ls", MSG_MODEL_LOAD_GEO, pcModelName);
             m_pModel = static_cast<MODEL *>(core.GetEntityPointer(m_eidModel));

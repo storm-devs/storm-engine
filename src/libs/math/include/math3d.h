@@ -94,13 +94,13 @@ inline float sqrf(float f)
 // Random number
 inline float Rnd(float max = 1.0f)
 {
-    return rand() * (max * (1.0f / RAND_MAX));
+    return storm::RandomFloat(max);
 }
 
 // Random number
 inline float RRnd(float min, float max)
 {
-    return min + rand() * ((max - min) * (1.0f / RAND_MAX));
+    return min + storm::RandomFloat(max - min);
 }
 
 // Limit float

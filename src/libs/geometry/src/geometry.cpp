@@ -369,13 +369,15 @@ void GEOM_SERVICE_R::ReleaseVertexBuffer(GEOS::ID vb)
     if (vb == INVALID_BUFFER_ID)
         return;
     if (RenderService)
+    {
         if (vb >= SHIFT_VALUE)
         {
-            delete static_cast<char*>(avb[vb - SHIFT_VALUE].buff);
+            delete static_cast<char *>(avb[vb - SHIFT_VALUE].buff);
             avb[vb - SHIFT_VALUE].nvertices = 0;
         }
         else
             RenderService->ReleaseVertexBuffer(vb);
+    }
 }
 
 GEOS::ID GEOM_SERVICE_R::CreateIndexBuffer(int32_t size)

@@ -402,9 +402,9 @@ void DATA::Set(const char *attribute_name, const char *attribute_value)
             return;
         }
 
-        AttributesClass = new ATTRIBUTES(pVCompiler->GetVSC());
+        AttributesClass = new ATTRIBUTES(*pVCompiler->GetVSC());
     }
-    AttributesClass->SetAttribute(attribute_name, attribute_value);
+    AttributesClass->SetAttribute(std::string_view(attribute_name), std::string_view(attribute_value));
     // Attributes.SetAttribute(attribute_name,attribute_value);
 }
 
@@ -2357,7 +2357,7 @@ ATTRIBUTES *DATA::GetAClass()
             return nullptr;
         }
 
-        AttributesClass = new ATTRIBUTES(pVCompiler->GetVSC());
+        AttributesClass = new ATTRIBUTES(*pVCompiler->GetVSC());
     }
     return AttributesClass;
 }

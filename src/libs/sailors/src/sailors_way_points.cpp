@@ -83,7 +83,7 @@ void SailorsPoints::Draw(VDX9RENDER *rs, bool pointmode)
 
     RS_RECT pRSR;
     pRSR.fSize = 1;
-    pRSR.fAngle = PI * 2.0f * rand() / RAND_MAX;
+    pRSR.fAngle = storm::RandomFloat(PI * 2.0f * rand());
 
     for (auto i = 0; i < points.count; i++)
     {

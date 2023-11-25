@@ -118,10 +118,10 @@ class ISLAND : public ISLAND_BASE
 
   public:
     ISLAND();
-    ~ISLAND();
-    bool Init();
+    ~ISLAND() override;
+    bool Init() override;
     void Realize(uint32_t Delta_Time);
-    uint64_t ProcessMessage(MESSAGE &message);
+    uint64_t ProcessMessage(MESSAGE &message) override;
 
     void ProcessStage(Stage stage, uint32_t delta) override
     {
@@ -143,28 +143,28 @@ class ISLAND : public ISLAND_BASE
     void SetDevice();
 
     // inherit functions COLLISION_OBJECT
-    float Trace(const CVECTOR &src, const CVECTOR &dst);
+    float Trace(const CVECTOR &src, const CVECTOR &dst) override;
 
-    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly)
+    bool Clip(const PLANE *planes, int32_t nplanes, const CVECTOR &center, float radius, ADD_POLYGON_FUNC addpoly) override
     {
         return false;
     };
 
-    const char *GetCollideMaterialName()
+    const char *GetCollideMaterialName() override
     {
         return nullptr;
     };
 
-    bool GetCollideTriangle(TRIANGLE &triangle)
+    bool GetCollideTriangle(TRIANGLE &triangle) override
     {
         return false;
     };
 
     // inherit functions CANNON_TRACE_BASE
-    float Cannon_Trace(int32_t iBallOwner, const CVECTOR &src, const CVECTOR &dst);
+    float Cannon_Trace(int32_t iBallOwner, const CVECTOR &src, const CVECTOR &dst) override;
 
     // inherit functions ISLAND_BASE
-    bool GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes);
+    bool GetMovePoint(CVECTOR &vSrc, CVECTOR &vDst, CVECTOR &vRes) override;
 
     entid_t GetModelEID()
     {

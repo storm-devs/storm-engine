@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include <math.h>
-#include <stdlib.h>
+#include "../math_common.hpp"
+
+#include <cstdlib>
 
 #pragma pack(push, 1)
 
@@ -1042,24 +1043,24 @@ inline Vector &Vector::Reflection(const Vector &normal)
 // Fill with a unit vector with a random direction
 inline Vector &Vector::Rand()
 {
-    Make2D(rand() * ((2.0f * 3.141592654f) / RAND_MAX));
+    Make2D(storm::RandomFloat(2.0f * 3.141592654f));
     y = z;
     z = 0.0f;
-    return Rotate(rand() * ((2.0f * 3.141592654f) / RAND_MAX));
+    return Rotate(storm::RandomFloat(2.0f * 3.141592654f));
 }
 
 // Fill with unit vector with random direction in XZ
 inline Vector &Vector::Rand2D()
 {
-    return Make2D(rand() * ((2.0f * 3.141592654f) / RAND_MAX));
+    return Make2D(storm::RandomFloat(2.0f * 3.141592654f));
 }
 
 // Fill with random values in a given ABB
 inline Vector &Vector::Rand(const Vector &min, const Vector &max)
 {
-    x = min.x + rand() * ((max.x - min.x) * (1.0f / RAND_MAX));
-    y = min.y + rand() * ((max.y - min.y) * (1.0f / RAND_MAX));
-    z = min.z + rand() * ((max.z - min.z) * (1.0f / RAND_MAX));
+    x = min.x + storm::RandomFloat(max.x - min.x);
+    x = min.y + storm::RandomFloat(max.y - min.y);
+    x = min.z + storm::RandomFloat(max.z - min.z);
     return *this;
 }
 
@@ -1067,7 +1068,7 @@ inline Vector &Vector::Rand(const Vector &min, const Vector &max)
 inline Vector &Vector::Rand(const Vector &pos, float radius)
 {
     Rand();
-    *this *= rand() * (radius * (1.0f / RAND_MAX));
+    *this *= storm::RandomFloat(radius);
     return *this;
 }
 

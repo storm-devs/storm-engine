@@ -13,17 +13,17 @@
 class CoreImpl final : public CorePrivate
 {
   public:
-    void Init();
+    void Init() override;
 
-    void InitBase();
-    void ReleaseBase();
+    void InitBase() override;
+    void ReleaseBase() override;
 
-    void CleanUp();
+    void CleanUp() override;
 
     void SetWindow(std::shared_ptr<storm::OSWindow> window) override;
     bool Initialize();
     void ResetCore();
-    bool Run();
+    bool Run() override;
     bool LoadClassesTable();
 
     void ProcessExecute();
@@ -43,7 +43,7 @@ class CoreImpl final : public CorePrivate
     void EraseEntities();
     void ClearEvents();
     void *MakeClass(const char *class_name);
-    void AppState(bool state);
+    void AppState(bool state) override;
     uint32_t MakeHashValue(const char *string);
     VMA *FindVMA(const char *class_name);
     VMA *FindVMA(int32_t hash);
@@ -133,9 +133,9 @@ class CoreImpl final : public CorePrivate
     bool IsLayerFrozen(layer_index_t index) const override;
     void ForEachEntity(const std::function<void(entptr_t)>& f) override;
 
-    void collectCrashInfo() const;
+    void collectCrashInfo() const override;
 
-    [[nodiscard]] bool initialized() const
+    [[nodiscard]] bool initialized() const override
     {
         return Initialized;
     }
