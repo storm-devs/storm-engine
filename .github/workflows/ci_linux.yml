@@ -48,14 +48,14 @@ jobs:
       run: pip install conan==1.59.0
     - name: Configure with cmake
       run: |
-        export CC=clang-12
-        export CXX=clang++-12
+        export CC=clang-15
+        export CXX=clang++-15
         ${CXX} --version
         mkdir build && cd build
         conan profile new default --detect
         conan profile update conf.tools.system.package_manager:mode=install default
         conan profile update conf.tools.system.package_manager:sudo=True default
-        cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.configuration}}
+        cmake .. -DSTORM_USE_CONAN_SDL=OFF -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.configuration}}
     - name: Build dependencies
       run: ninja dependencies
       working-directory: build
